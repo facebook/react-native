@@ -15,9 +15,8 @@ import java.util.Map;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
@@ -33,11 +32,6 @@ public class ReactScrollViewManager
 
   private static final String REACT_CLASS = "RCTScrollView";
 
-  @UIProp(UIProp.Type.BOOLEAN) public static final String PROP_SHOWS_VERTICAL_SCROLL_INDICATOR =
-      "showsVerticalScrollIndicator";
-  @UIProp(UIProp.Type.BOOLEAN) public static final String PROP_SHOWS_HORIZONTAL_SCROLL_INDICATOR =
-      "showsHorizontalScrollIndicator";
-
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -48,20 +42,14 @@ public class ReactScrollViewManager
     return new ReactScrollView(context);
   }
 
-  @Override
-  public void updateView(ReactScrollView scrollView, CatalystStylesDiffMap props) {
-    super.updateView(scrollView, props);
-    if (props.hasKey(PROP_SHOWS_VERTICAL_SCROLL_INDICATOR)) {
-      scrollView.setVerticalScrollBarEnabled(
-          props.getBoolean(PROP_SHOWS_VERTICAL_SCROLL_INDICATOR, true));
-    }
+  @ReactProp(name = "showsVerticalScrollIndicator")
+  public void setShowsVerticalScrollIndicator(ReactScrollView view, boolean value) {
+    view.setVerticalScrollBarEnabled(value);
+  }
 
-    if (props.hasKey(PROP_SHOWS_HORIZONTAL_SCROLL_INDICATOR)) {
-      scrollView.setHorizontalScrollBarEnabled(
-          props.getBoolean(PROP_SHOWS_HORIZONTAL_SCROLL_INDICATOR, true));
-    }
-
-    ReactClippingViewGroupHelper.applyRemoveClippedSubviewsProperty(scrollView, props);
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactScrollView view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   @Override
@@ -82,6 +70,13 @@ public class ReactScrollViewManager
       ReactScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
     scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+  }
+
+  @Override
+  public void scrollWithoutAnimationTo(
+      ReactScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.scrollTo(data.mDestX, data.mDestY);
   }
 
   @Override

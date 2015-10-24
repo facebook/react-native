@@ -11,7 +11,7 @@
 const Bundle = require('../Bundler/Bundle');
 const Promise = require('promise');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketClient');
+const debug = require('debug')('ReactNativePackager:SocketClient');
 const fs = require('fs');
 const net = require('net');
 const path  = require('path');
@@ -29,7 +29,14 @@ class SocketClient {
 
     this._sock = net.connect(sockPath);
     this._ready = new Promise((resolve, reject) => {
-      this._sock.on('connect', () => resolve(this));
+      this._sock.on('connect', () => {
+        this._sock.removeAllListeners('error');
+        process.on('uncaughtException', (error) => {
+          console.error('uncaught error', error.stack);
+          setImmediate(() => process.exit(1));
+        });
+        resolve(this);
+      });
       this._sock.on('error', (e) => {
         e.message = `Error connecting to server on ${sockPath} ` +
                     `with error: ${e.message}`;
@@ -46,7 +53,24 @@ class SocketClient {
 
     this._sock.on('close', () => {
       if (!this._closing) {
-        throw new Error('Server closed unexpectedly' + getServerLogs());
+        const terminate = (result) => {
+          const sockPathExists = fs.existsSync(sockPath);
+          throw new Error(
+            'Server closed unexpectedly.\n' +
+            'Server ping connection attempt result: ' + result + '\n' +
+            'Socket path: `' + sockPath + '` ' +
+            (sockPathExists ? ' exists.' : 'doesn\'t exist') + '\n' +
+            getServerLogs()
+          );
+        };
+
+        // before throwing ping the server to see if it's still alive
+        const socket = net.connect(sockPath);
+        socket.on('connect', () => {
+          socket.end();
+          terminate('OK');
+        });
+        socket.on('error', error => terminate(error));
       }
     });
   }
@@ -58,6 +82,13 @@ class SocketClient {
   getDependencies(main) {
     return this._send({
       type: 'getDependencies',
+      data: main,
+    });
+  }
+
+  getOrderedDependencyPaths(main) {
+    return this._send({
+      type: 'getOrderedDependencyPaths',
       data: main,
     });
   }

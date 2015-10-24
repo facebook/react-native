@@ -27,13 +27,11 @@ import com.facebook.react.animation.AnimationListener;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -93,7 +91,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       throw new IllegalViewOperationException("Trying to update view with tag " + tag
           + " which doesn't exist");
     }
-    viewManager.updateView(viewToUpdate, props);
+    viewManager.updateProperties(viewToUpdate, props);
   }
 
   public void updateViewExtraData(int tag, Object extraData) {
@@ -179,7 +177,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     // creating another (potentially much more expensive) mapping from view to React tag
     view.setId(tag);
     if (initialProps != null) {
-      viewManager.updateView(view, initialProps);
+      viewManager.updateProperties(view, initialProps);
     }
   }
 
@@ -420,9 +418,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   public void removeRootView(int rootViewTag) {
     UiThreadUtil.assertOnUiThread();
-    SoftAssertions.assertCondition(
-        mRootTags.get(rootViewTag),
-        "View with tag " + rootViewTag + " is not registered as a root view");
+    if (!mRootTags.get(rootViewTag)) {
+        SoftAssertions.assertUnreachable(
+            "View with tag " + rootViewTag + " is not registered as a root view");
+    }
     View rootView = mTagsToViews.get(rootViewTag);
     dropView(rootView);
     mRootTags.delete(rootViewTag);
@@ -455,9 +454,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    SoftAssertions.assertCondition(
-        !mRootTags.get(reactTag),
-        "Cannot block native responder on " + reactTag + " that is a root view");
+    if (mRootTags.get(reactTag)) {
+      SoftAssertions.assertUnreachable(
+          "Cannot block native responder on " + reactTag + " that is a root view");
+    }
     ViewParent viewParent = blockNativeResponder ? mTagsToViews.get(reactTag).getParent() : null;
     mJSResponderHandler.setJSResponder(reactTag, viewParent);
   }

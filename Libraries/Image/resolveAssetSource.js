@@ -7,10 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule resolveAssetSource
+ * @flow
  *
  * Resolves an asset into a `source` for `Image`.
  */
 'use strict';
+
+export type ResolvedAssetSource = {
+  __packager_asset: boolean,
+  width: number,
+  height: number,
+  uri: string,
+  scale: number,
+};
 
 var AssetRegistry = require('AssetRegistry');
 var PixelRatio = require('PixelRatio');
@@ -20,10 +29,6 @@ var SourceCode = require('NativeModules').SourceCode;
 var _serverURL;
 
 function getDevServerURL() {
-  if (!__DEV__) {
-    // In prod we want assets to be loaded from the archive
-    return null;
-  }
   if (_serverURL === undefined) {
     var scriptURL = SourceCode.scriptURL;
     var match = scriptURL && scriptURL.match(/^https?:\/\/.*?\//);
@@ -90,7 +95,7 @@ function getScaledAssetPath(asset) {
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 
-function pickScale(scales, deviceScale) {
+function pickScale(scales: Array<number>, deviceScale: number): number {
   // Packager guarantees that `scales` array is sorted
   for (var i = 0; i < scales.length; i++) {
     if (scales[i] >= deviceScale) {
@@ -104,7 +109,7 @@ function pickScale(scales, deviceScale) {
   return scales[scales.length - 1] || 1;
 }
 
-function resolveAssetSource(source) {
+function resolveAssetSource(source: any): ?ResolvedAssetSource {
   if (typeof source === 'object') {
     return source;
   }
@@ -117,23 +122,15 @@ function resolveAssetSource(source) {
   return null;
 }
 
-function assetToImageSource(asset) {
+function assetToImageSource(asset): ResolvedAssetSource {
   var devServerURL = getDevServerURL();
-  if (devServerURL) {
-    return {
-      width: asset.width,
-      height: asset.height,
-      uri: getPathOnDevserver(devServerURL, asset),
-      isStatic: false,
-    };
-  } else {
-    return {
-      width: asset.width,
-      height: asset.height,
-      uri: getPathInArchive(asset),
-      isStatic: true,
-    };
-  }
+  return {
+    __packager_asset: true,
+    width: asset.width,
+    height: asset.height,
+    uri: devServerURL ? getPathOnDevserver(devServerURL, asset) : getPathInArchive(asset),
+    scale: pickScale(asset.scales, PixelRatio.get()),
+  };
 }
 
 module.exports = resolveAssetSource;

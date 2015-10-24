@@ -95,29 +95,6 @@ describe('MessageQueue', () => {
     queue.__invokeCallback(1);
     expect(() => queue.__invokeCallback(0)).toThrow();
   });
-
-  describe('processBatch', () => {
-
-    it('should call __invokeCallback for invokeCallbackAndReturnFlushedQueue', () => {
-      queue.__invokeCallback = jasmine.createSpy();
-      queue.processBatch([{
-        method: 'invokeCallbackAndReturnFlushedQueue',
-        args: [],
-      }]);
-      expect(queue.__invokeCallback.callCount).toEqual(1);
-    });
-
-    it('should call __callFunction for callFunctionReturnFlushedQueue', () => {
-      queue.__callFunction = jasmine.createSpy();
-      queue.processBatch([{
-        method: 'callFunctionReturnFlushedQueue',
-        args: [],
-      }]);
-      expect(queue.__callFunction.callCount).toEqual(1);
-    });
-
-  });
-
 });
 
 var remoteModulesConfig = {

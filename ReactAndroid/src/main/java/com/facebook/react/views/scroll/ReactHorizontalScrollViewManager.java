@@ -12,6 +12,7 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 
@@ -37,6 +38,11 @@ public class ReactHorizontalScrollViewManager
     return new ReactHorizontalScrollView(context);
   }
 
+  @ReactProp(name = "showsHorizontalScrollIndicator")
+  public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
+    view.setHorizontalScrollBarEnabled(value);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,
@@ -50,5 +56,12 @@ public class ReactHorizontalScrollViewManager
       ReactHorizontalScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
     scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+  }
+
+  @Override
+  public void scrollWithoutAnimationTo(
+      ReactHorizontalScrollView scrollView,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.scrollTo(data.mDestX, data.mDestY);
   }
 }

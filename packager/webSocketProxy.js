@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var WebSocketServer = require('ws').Server;
 
 function attachToServer(server, path) {
+  var WebSocketServer = require('ws').Server;
   var wss = new WebSocketServer({
     server: server,
     path: path
@@ -22,7 +22,7 @@ function attachToServer(server, path) {
       try {
         cn.send(JSON.stringify(message));
       } catch(e) {
-        console.warn('WARN: ' + e.message);
+        // Sometimes this call throws 'not opened'
       }
     });
   }
@@ -49,14 +49,23 @@ function attachToServer(server, path) {
     ws.on('message', function(message) {
       allClientsExcept(ws).forEach(function(cn) {
         try {
-          // Sometimes this call throws 'not opened'
           cn.send(message);
         } catch(e) {
-          console.warn('WARN: ' + e.message);
+          // Sometimes this call throws 'not opened'
         }
       });
     });
   });
+
+  return {
+    server: wss,
+    isChromeConnected: function() {
+      return clients
+        .map(function(ws) { return ws.upgradeReq.headers['user-agent']; })
+        .filter(Boolean)
+        .some(function(userAgent) { return userAgent.includes('Chrome'); })
+    }
+  };
 }
 
 module.exports = {

@@ -155,10 +155,10 @@ You may have noticed that we passed all of the props down to the child
 view using `{...this.props}`. The reason for this is that
 `TouchableOpacity` is actually a composite component, and so in addition
 to depending on `setNativeProps` on its child, it also requires that the
-child perform touch handling. To dot this, it passes on [various
+child perform touch handling. To do this, it passes on [various
 props](https://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder)
 that call back to the `TouchableOpacity` component.
-`TouchableHighlight`, in contrast, is backed by a native view only
+`TouchableHighlight`, in contrast, is backed by a native view and only
 requires that we implement `setNativeProps`.
 
 ## Precomputing style

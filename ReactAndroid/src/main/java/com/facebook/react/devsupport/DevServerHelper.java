@@ -49,19 +49,19 @@ import okio.Sink;
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
-  private static final String EMULATOR_LOCALHOST = "10.0.2.2";
-  private static final String GENYMOTION_LOCALHOST = "10.0.3.2";
-  private static final String DEVICE_LOCALHOST = "localhost";
+  private static final String EMULATOR_LOCALHOST = "10.0.2.2:8081";
+  private static final String GENYMOTION_LOCALHOST = "10.0.3.2:8081";
+  private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s:8081/%s.bundle?platform=android";
+      "http://%s/%s.bundle?platform=android&dev=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
-      "http://%s:8081/launch-chrome-devtools";
+      "http://%s/launch-chrome-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
-      "http://%s:8081/onchange";
-  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s:8081/debugger-proxy";
+      "http://%s/onchange";
+  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy";
 
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
@@ -78,10 +78,10 @@ import okio.Sink;
 
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
+  private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
   private @Nullable OkHttpClient mOnChangePollingClient;
-  private @Nullable Handler mRestartOnChangePollingHandler;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
 
   public DevServerHelper(DevInternalSettings settings) {
@@ -92,6 +92,7 @@ import okio.Sink;
     // No read or write timeouts by default
     mClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
     mClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+    mRestartOnChangePollingHandler = new Handler();
   }
 
   /** Intent action for reloading the JS */
@@ -107,7 +108,14 @@ import okio.Sink;
    * @return the host to use when connecting to the bundle server from the host itself.
    */
   private static String getHostForJSProxy() {
-    return "localhost";
+    return DEVICE_LOCALHOST;
+  }
+
+  /**
+   * @return whether we should enabled dev mode or not when requesting JS bundles.
+   */
+  private boolean getDevMode() {
+    return mSettings.isJSDevModeEnabled();
   }
 
   /**
@@ -144,15 +152,15 @@ import okio.Sink;
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private String createBundleURL(String host, String jsModulePath) {
-    return String.format(BUNDLE_URL_FORMAT, host, jsModulePath);
+  private String createBundleURL(String host, String jsModulePath, boolean devMode) {
+    return String.format(BUNDLE_URL_FORMAT, host, jsModulePath, devMode);
   }
 
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
       final String jsModulePath,
       final File outputFile) {
-    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath);
+    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode());
     Request request = new Request.Builder()
         .url(bundleURL)
         .build();
@@ -193,10 +201,7 @@ import okio.Sink;
 
   public void stopPollingOnChangeEndpoint() {
     mOnChangePollingEnabled = false;
-    if (mRestartOnChangePollingHandler != null) {
-      mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
-      mRestartOnChangePollingHandler = null;
-    }
+    mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
     if (mOnChangePollingClient != null) {
       mOnChangePollingClient.cancel(this);
       mOnChangePollingClient = null;
@@ -216,7 +221,6 @@ import okio.Sink;
     mOnChangePollingClient
         .setConnectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS))
         .setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-    mRestartOnChangePollingHandler = new Handler();
     enqueueOnChangeEndpointLongPolling();
   }
 
@@ -246,7 +250,7 @@ import okio.Sink;
           // of a failure, so that we don't flood network queue with frequent requests in case when
           // dev server is down
           FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
-          Assertions.assertNotNull(mRestartOnChangePollingHandler).postDelayed(
+          mRestartOnChangePollingHandler.postDelayed(
               new Runnable() {
             @Override
             public void run() {
@@ -291,17 +295,17 @@ import okio.Sink;
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName);
+    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName);
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the Chrome proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName);
+    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode());
   }
 }

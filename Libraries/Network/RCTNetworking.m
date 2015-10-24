@@ -11,7 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTConvert.h"
-#import "RCTDownloadTask.h"
+#import "RCTNetworkTask.h"
 #import "RCTURLRequestHandler.h"
 #import "RCTEventDispatcher.h"
 #import "RCTHTTPRequestHandler.h"
@@ -37,10 +37,10 @@ typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSD
 
 @implementation RCTHTTPFormDataHelper
 {
-  NSMutableArray *parts;
-  NSMutableData *multipartBody;
+  NSMutableArray *_parts;
+  NSMutableData *_multipartBody;
   RCTHTTPQueryResult _callback;
-  NSString *boundary;
+  NSString *_boundary;
 }
 
 static NSString *RCTGenerateFormBoundary()
@@ -56,19 +56,19 @@ static NSString *RCTGenerateFormBoundary()
   return [[NSString alloc] initWithBytesNoCopy:bytes length:boundaryLength encoding:NSUTF8StringEncoding freeWhenDone:YES];
 }
 
-- (RCTURLRequestCancellationBlock)process:(NSArray *)formData
+- (RCTURLRequestCancellationBlock)process:(NSDictionaryArray *)formData
                                  callback:(RCTHTTPQueryResult)callback
 {
   if (formData.count == 0) {
     return callback(nil, nil);
   }
 
-  parts = [formData mutableCopy];
+  _parts = [formData mutableCopy];
   _callback = callback;
-  multipartBody = [NSMutableData new];
-  boundary = RCTGenerateFormBoundary();
+  _multipartBody = [NSMutableData new];
+  _boundary = RCTGenerateFormBoundary();
 
-  return [_networker processDataForHTTPQuery:parts[0] callback:^(NSError *error, NSDictionary *result) {
+  return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *error, NSDictionary *result) {
     return [self handleResult:result error:error];
   }];
 }
@@ -81,37 +81,37 @@ static NSString *RCTGenerateFormBoundary()
   }
 
   // Start with boundary.
-  [multipartBody appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary]
-                             dataUsingEncoding:NSUTF8StringEncoding]];
+  [_multipartBody appendData:[[NSString stringWithFormat:@"--%@\r\n", _boundary]
+                              dataUsingEncoding:NSUTF8StringEncoding]];
 
   // Print headers.
-  NSMutableDictionary *headers = [parts[0][@"headers"] mutableCopy];
+  NSMutableDictionary *headers = [_parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
   if (partContentType != nil) {
     headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
-    [multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
-                               dataUsingEncoding:NSUTF8StringEncoding]];
+    [_multipartBody appendData:[[NSString stringWithFormat:@"%@: %@\r\n", parameterKey, parameterValue]
+                                dataUsingEncoding:NSUTF8StringEncoding]];
   }];
 
   // Add the body.
-  [multipartBody appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-  [multipartBody appendData:result[@"body"]];
-  [multipartBody appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+  [_multipartBody appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+  [_multipartBody appendData:result[@"body"]];
+  [_multipartBody appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
 
-  [parts removeObjectAtIndex:0];
-  if (parts.count) {
-    return [_networker processDataForHTTPQuery:parts[0] callback:^(NSError *err, NSDictionary *res) {
+  [_parts removeObjectAtIndex:0];
+  if (_parts.count) {
+    return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *err, NSDictionary *res) {
       return [self handleResult:res error:err];
     }];
   }
 
   // We've processed the last item. Finish and return.
-  [multipartBody appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary]
-                             dataUsingEncoding:NSUTF8StringEncoding]];
-  NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=\"%@\"", boundary];
-  return _callback(nil, @{@"body": multipartBody, @"contentType": contentType});
+  [_multipartBody appendData:[[NSString stringWithFormat:@"--%@--\r\n", _boundary]
+                              dataUsingEncoding:NSUTF8StringEncoding]];
+  NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=\"%@\"", _boundary];
+  return _callback(nil, @{@"body": _multipartBody, @"contentType": contentType});
 }
 
 @end
@@ -122,6 +122,7 @@ static NSString *RCTGenerateFormBoundary()
 @implementation RCTNetworking
 {
   NSMutableDictionary *_tasksByRequestID;
+  NSArray *_handlers;
 }
 
 @synthesize bridge = _bridge;
@@ -129,12 +130,65 @@ static NSString *RCTGenerateFormBoundary()
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    _tasksByRequestID = [NSMutableDictionary new];
+  // get handlers
+  NSMutableArray *handlers = [NSMutableArray array];
+  for (id<RCTBridgeModule> module in bridge.modules.allValues) {
+    if ([module conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
+      [handlers addObject:module];
+    }
   }
-  return self;
+
+  // Sort handlers in reverse priority order (highest priority first)
+  [handlers sortUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+    float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
+    float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
+    if (priorityA > priorityB) {
+      return NSOrderedAscending;
+    } else if (priorityA < priorityB) {
+      return NSOrderedDescending;
+    } else {
+      return NSOrderedSame;
+    }
+  }];
+
+  _bridge = bridge;
+  _handlers = handlers;
+  _tasksByRequestID = [NSMutableDictionary new];
+}
+
+- (id<RCTURLRequestHandler>)handlerForRequest:(NSURLRequest *)request
+{
+  if (RCT_DEBUG) {
+    // Check for handler conflicts
+    float previousPriority = 0;
+    id<RCTURLRequestHandler> previousHandler = nil;
+    for (id<RCTURLRequestHandler> handler in _handlers) {
+      if ([handler canHandleRequest:request]) {
+        float priority = [handler respondsToSelector:@selector(handlerPriority)] ? [handler handlerPriority] : 0;
+        if (previousHandler) {
+          if (priority == previousPriority) {
+            RCTLogError(@"The RCTURLRequestHandlers %@ and %@ both reported that"
+                        " they can handle the request %@, and have equal priority"
+                        " (%g). This could result in non-deterministic behavior.",
+                        handler, previousHandler, request, priority);
+          }
+        } else {
+          previousHandler = handler;
+          previousPriority = priority;
+        }
+      }
+    }
+  }
+
+  // Normal code path
+  for (id<RCTURLRequestHandler> handler in _handlers) {
+    if ([handler canHandleRequest:request]) {
+      return handler;
+    }
+  }
+  return nil;
 }
 
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary *)query
@@ -169,37 +223,9 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (id<RCTURLRequestHandler>)handlerForRequest:(NSURLRequest *)request
+- (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  NSMutableArray *handlers = [NSMutableArray array];
-  for (id<RCTBridgeModule> module in _bridge.modules.allValues) {
-    if ([module conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
-      if ([(id<RCTURLRequestHandler>)module canHandleRequest:request]) {
-        [handlers addObject:module];
-      }
-    }
-  }
-  [handlers sortUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
-    float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
-    float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
-    if (priorityA < priorityB) {
-      return NSOrderedAscending;
-    } else if (priorityA > priorityB) {
-      return NSOrderedDescending;
-    } else {
-      RCTLogError(@"The RCTURLRequestHandlers %@ and %@ both reported that"
-                  " they can handle the request %@, and have equal priority"
-                  " (%g). This could result in non-deterministic behavior.",
-                  a, b, request, priorityA);
-
-      return NSOrderedSame;
-    }
-  }];
-  id<RCTURLRequestHandler> handler = handlers.lastObject;
-  if (!handler) {
-    RCTLogError(@"No suitable request handler found for %@", request.URL);
-  }
-  return handler;
+  return [self handlerForRequest:request] != nil;
 }
 
 /**
@@ -234,11 +260,13 @@ RCT_EXPORT_MODULE()
   if (request) {
 
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
-    RCTDownloadTask *task = [self downloadTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
+    RCTNetworkTask *task = [self networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
     }];
 
-    __weak RCTDownloadTask *weakTask = task;
+    [task start];
+
+    __weak RCTNetworkTask *weakTask = task;
     return ^{
       [weakTask cancel];
       if (cancellationBlock) {
@@ -257,7 +285,7 @@ RCT_EXPORT_MODULE()
   return callback(nil, nil);
 }
 
-- (void)sendData:(NSData *)data forTask:(RCTDownloadTask *)task
+- (void)sendData:(NSData *)data forTask:(RCTNetworkTask *)task
 {
   if (data.length == 0) {
     return;
@@ -276,7 +304,7 @@ RCT_EXPORT_MODULE()
   if (!responseText && data.length) {
 
     // We don't have an encoding, or the encoding is incorrect, so now we
-    // try to guess (unfortunately, this feature is available of iOS 8+ only)
+    // try to guess (unfortunately, this feature is available in iOS 8+ only)
     if ([NSString respondsToSelector:@selector(stringEncodingForData:
                                                encodingOptions:
                                                convertedString:
@@ -303,7 +331,7 @@ RCT_EXPORT_MODULE()
  incrementalUpdates:(BOOL)incrementalUpdates
      responseSender:(RCTResponseSenderBlock)responseSender
 {
-  __block RCTDownloadTask *task;
+  __block RCTNetworkTask *task;
 
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
     dispatch_async(_methodQueue, ^{
@@ -314,16 +342,17 @@ RCT_EXPORT_MODULE()
 
   void (^responseBlock)(NSURLResponse *) = ^(NSURLResponse *response) {
     dispatch_async(_methodQueue, ^{
-      NSHTTPURLResponse *httpResponse = nil;
-      if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-        // Might be a local file request
-        httpResponse = (NSHTTPURLResponse *)response;
+      NSDictionary *headers;
+      NSInteger status;
+      if ([response isKindOfClass:[NSHTTPURLResponse class]]) { // Might be a local file request
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        headers = httpResponse.allHeaderFields ?: @{};
+        status = httpResponse.statusCode;
+      } else {
+        headers = response.MIMEType ? @{@"Content-Type": response.MIMEType} : @{};
+        status = 200;
       }
-      NSArray *responseJSON = @[task.requestID,
-                                @(httpResponse.statusCode ?: 200),
-                                httpResponse.allHeaderFields ?: @{},
-                                ];
-
+      NSArray *responseJSON = @[task.requestID, @(status), headers];
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
                                                   body:responseJSON];
     });
@@ -352,7 +381,7 @@ RCT_EXPORT_MODULE()
     });
   };
 
-  task = [self downloadTaskWithRequest:request completionBlock:completionBlock];
+  task = [self networkTaskWithRequest:request completionBlock:completionBlock];
   task.incrementalDataBlock = incrementalDataBlock;
   task.responseBlock = responseBlock;
   task.uploadProgressBlock = uploadProgressBlock;
@@ -361,19 +390,22 @@ RCT_EXPORT_MODULE()
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[task.requestID]);
   }
+
+  [task start];
 }
 
 #pragma mark - Public API
 
-- (RCTDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request
+- (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
                              completionBlock:(RCTURLRequestCompletionBlock)completionBlock
 {
   id<RCTURLRequestHandler> handler = [self handlerForRequest:request];
   if (!handler) {
+    RCTLogError(@"No suitable URL request handler found for %@", request.URL);
     return nil;
   }
 
-  return [[RCTDownloadTask alloc] initWithRequest:request
+  return [[RCTNetworkTask alloc] initWithRequest:request
                                           handler:handler
                                   completionBlock:completionBlock];
 }

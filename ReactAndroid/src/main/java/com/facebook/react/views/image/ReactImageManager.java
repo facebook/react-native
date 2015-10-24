@@ -15,10 +15,9 @@ import android.graphics.Color;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewProps;
 
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
@@ -29,15 +28,6 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   public String getName() {
     return REACT_CLASS;
   }
-
-  // In JS this is Image.props.source.uri
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_SRC = "src";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_BORDER_RADIUS = "borderRadius";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_RESIZE_MODE = ViewProps.RESIZE_MODE;
-  private static final String PROP_TINT_COLOR = "tintColor";
 
   private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
@@ -63,27 +53,48 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
         mCallerContext);
   }
 
-  @Override
-  public void updateView(final ReactImageView view, final CatalystStylesDiffMap props) {
-    super.updateView(view, props);
+  // In JS this is Image.props.source.uri
+  @ReactProp(name = "src")
+  public void setSource(ReactImageView view, @Nullable String source) {
+    view.setSource(source);
+  }
 
-    if (props.hasKey(PROP_RESIZE_MODE)) {
-      view.setScaleType(ImageResizeMode.toScaleType(props.getString(PROP_RESIZE_MODE)));
+  @ReactProp(name = "borderColor", customType = "Color")
+  public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
+    if (borderColor == null) {
+      view.setBorderColor(Color.TRANSPARENT);
+    } else {
+      view.setBorderColor(borderColor);
     }
-    if (props.hasKey(PROP_SRC)) {
-       view.setSource(props.getString(PROP_SRC));
+  }
+
+  @ReactProp(name = "borderWidth")
+  public void setBorderWidth(ReactImageView view, float borderWidth) {
+    view.setBorderWidth(borderWidth);
+  }
+
+  @ReactProp(name = "borderRadius")
+  public void setBorderRadius(ReactImageView view, float borderRadius) {
+    view.setBorderRadius(borderRadius);
+  }
+
+  @ReactProp(name = ViewProps.RESIZE_MODE)
+  public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
+    view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
+  }
+
+  @ReactProp(name = "tintColor", customType = "Color")
+  public void setTintColor(ReactImageView view, @Nullable Integer tintColor) {
+    if (tintColor == null) {
+      view.clearColorFilter();
+    } else {
+      view.setColorFilter(tintColor);
     }
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(props.getFloat(PROP_BORDER_RADIUS, 0.0f));
-    }
-    if (props.hasKey(PROP_TINT_COLOR)) {
-      if (props.isNull(PROP_TINT_COLOR)) {
-        view.clearColorFilter();
-      } else {
-        final int tintColor = props.getColorInt(PROP_TINT_COLOR, Color.TRANSPARENT);
-        view.setColorFilter(tintColor);
-      }
-    }
+  }
+
+  @Override
+  protected void onAfterUpdateTransaction(ReactImageView view) {
+    super.onAfterUpdateTransaction(view);
     view.maybeUpdateView();
   }
 }

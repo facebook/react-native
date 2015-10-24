@@ -1,0 +1,445 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
+package com.facebook.react.uimanager;
+
+import javax.annotation.Nullable;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import android.view.View;
+
+import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+
+/**
+ * This class is responsible for holding view manager property setters and is used in a process of
+ * updating views with the new properties set in JS.
+ */
+/*package*/ class ViewManagersPropertyCache {
+
+  private static final Map<Class, Map<String, PropSetter>> CLASS_PROPS_CACHE = new HashMap<>();
+  private static final Map<String, PropSetter> EMPTY_PROPS_MAP = new HashMap<>();
+
+  /*package*/ static abstract class PropSetter {
+
+    protected final String mPropName;
+    protected final String mPropType;
+    protected final Method mSetter;
+    protected final @Nullable Integer mIndex; /* non-null only for group setters */
+
+    // The following Object arrays are used to prevent extra allocations from varargs when we call
+    // Method.invoke. It's safe for those objects to be static as we update properties in a single
+    // thread sequentially
+    private static final Object[] VIEW_MGR_ARGS = new Object[2];
+    private static final Object[] VIEW_MGR_GROUP_ARGS = new Object[3];
+    private static final Object[] SHADOW_ARGS = new Object[1];
+    private static final Object[] SHADOW_GROUP_ARGS = new Object[2];
+
+    private PropSetter(ReactProp prop, String defaultType, Method setter) {
+      mPropName = prop.name();
+      mPropType = ReactProp.USE_DEFAULT_TYPE.equals(prop.customType()) ?
+          defaultType : prop.customType();
+      mSetter = setter;
+      mIndex = null;
+    }
+
+    private PropSetter(ReactPropGroup prop, String defaultType, Method setter, int index) {
+      mPropName = prop.names()[index];
+      mPropType = ReactPropGroup.USE_DEFAULT_TYPE.equals(prop.customType()) ?
+          defaultType : prop.customType();
+      mSetter = setter;
+      mIndex = index;
+    }
+
+    public String getPropName() {
+      return mPropName;
+    }
+
+    public String getPropType() {
+      return mPropType;
+    }
+
+    public void updateViewProp(
+        ViewManager viewManager,
+        View viewToUpdate,
+        CatalystStylesDiffMap props) {
+      try {
+        if (mIndex == null) {
+          VIEW_MGR_ARGS[0] = viewToUpdate;
+          VIEW_MGR_ARGS[1] = extractProperty(props);
+          mSetter.invoke(viewManager, VIEW_MGR_ARGS);
+        } else {
+          VIEW_MGR_GROUP_ARGS[0] = viewToUpdate;
+          VIEW_MGR_GROUP_ARGS[1] = mIndex;
+          VIEW_MGR_GROUP_ARGS[2] = extractProperty(props);
+          mSetter.invoke(viewManager, VIEW_MGR_GROUP_ARGS);
+        }
+      } catch (Throwable t) {
+        FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
+        throw new JSApplicationIllegalArgumentException("Error while updating property '" +
+            mPropName + "' of a view managed by: " + viewManager.getName(), t);
+      }
+    }
+
+    public void updateShadowNodeProp(
+        ReactShadowNode nodeToUpdate,
+        CatalystStylesDiffMap props) {
+      try {
+        if (mIndex == null) {
+          SHADOW_ARGS[0] = extractProperty(props);
+          mSetter.invoke(nodeToUpdate, SHADOW_ARGS);
+        } else {
+          SHADOW_GROUP_ARGS[0] = mIndex;
+          SHADOW_GROUP_ARGS[1] = extractProperty(props);
+          mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS);
+        }
+      } catch (Throwable t) {
+        FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
+        throw new JSApplicationIllegalArgumentException("Error while updating property '" +
+            mPropName + "' in shadow node of type: " + nodeToUpdate.getViewClass(), t);
+      }
+    }
+
+    protected abstract @Nullable Object extractProperty(CatalystStylesDiffMap props);
+  }
+
+  private static class IntPropSetter extends PropSetter {
+
+    private final int mDefaultValue;
+
+    public IntPropSetter(ReactProp prop, Method setter, int defaultValue) {
+      super(prop, "number", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    public IntPropSetter(ReactPropGroup prop, Method setter, int index, int defaultValue) {
+      super(prop, "number", setter, index);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getInt(mPropName, mDefaultValue);
+    }
+  }
+
+  private static class DoublePropSetter extends PropSetter {
+
+    private final double mDefaultValue;
+
+    public DoublePropSetter(ReactProp prop, Method setter, double defaultValue) {
+      super(prop, "number", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getDouble(mPropName, mDefaultValue);
+    }
+  }
+
+  private static class BooleanPropSetter extends PropSetter {
+
+    private final boolean mDefaultValue;
+
+    public BooleanPropSetter(ReactProp prop, Method setter, boolean defaultValue) {
+      super(prop, "boolean", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getBoolean(mPropName, mDefaultValue) ? Boolean.TRUE : Boolean.FALSE;
+    }
+  }
+
+  private static class FloatPropSetter extends PropSetter {
+
+    private final float mDefaultValue;
+
+    public FloatPropSetter(ReactProp prop, Method setter, float defaultValue) {
+      super(prop, "number", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    public FloatPropSetter(ReactPropGroup prop, Method setter, int index, float defaultValue) {
+      super(prop, "number", setter, index);
+      mDefaultValue = defaultValue;
+    }
+
+    @Override
+    protected Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getFloat(mPropName, mDefaultValue);
+    }
+  }
+
+  private static class ArrayPropSetter extends PropSetter {
+
+    public ArrayPropSetter(ReactProp prop, Method setter) {
+      super(prop, "Array", setter);
+    }
+
+    @Override
+    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getArray(mPropName);
+    }
+  }
+
+  private static class MapPropSetter extends PropSetter {
+
+    public MapPropSetter(ReactProp prop, Method setter) {
+      super(prop, "Map", setter);
+    }
+
+    @Override
+    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getMap(mPropName);
+    }
+  }
+
+  private static class StringPropSetter extends PropSetter {
+
+    public StringPropSetter(ReactProp prop, Method setter) {
+      super(prop, "String", setter);
+    }
+
+    @Override
+    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+      return props.getString(mPropName);
+    }
+  }
+
+  private static class BoxedBooleanPropSetter extends PropSetter {
+
+    public BoxedBooleanPropSetter(ReactProp prop, Method setter) {
+      super(prop, "boolean", setter);
+    }
+
+    @Override
+    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+      if (!props.isNull(mPropName)) {
+        return props.getBoolean(mPropName, /* ignored */ false) ? Boolean.TRUE : Boolean.FALSE;
+      }
+      return null;
+    }
+  }
+
+  private static class BoxedIntPropSetter extends PropSetter {
+
+    public BoxedIntPropSetter(ReactProp prop, Method setter) {
+      super(prop, "number", setter);
+    }
+
+    public BoxedIntPropSetter(ReactPropGroup prop, Method setter, int index) {
+      super(prop, "number", setter, index);
+    }
+
+    @Override
+    protected @Nullable Object extractProperty(CatalystStylesDiffMap props) {
+      if (!props.isNull(mPropName)) {
+        return props.getInt(mPropName, /* ignored */ 0);
+      }
+      return null;
+    }
+  }
+
+  /*package*/ static Map<String, String> getNativePropsForView(
+      Class<? extends ViewManager> viewManagerTopClass,
+      Class<? extends ReactShadowNode> shadowNodeTopClass) {
+    Map<String, String> nativeProps = new HashMap<>();
+
+    Map<String, PropSetter> viewManagerProps =
+        getNativePropSettersForViewManagerClass(viewManagerTopClass);
+    for (PropSetter setter : viewManagerProps.values()) {
+      nativeProps.put(setter.getPropName(), setter.getPropType());
+    }
+
+    Map<String, PropSetter> shadowNodeProps =
+        getNativePropSettersForShadowNodeClass(shadowNodeTopClass);
+    for (PropSetter setter : shadowNodeProps.values()) {
+      nativeProps.put(setter.getPropName(), setter.getPropType());
+    }
+
+    return nativeProps;
+  }
+
+  /**
+   * Returns map from property name to setter instances for all the property setters annotated with
+   * {@link ReactProp} in the given {@link ViewManager} class plus all the setter declared by its
+   * parent classes.
+   */
+  /*package*/ static Map<String, PropSetter> getNativePropSettersForViewManagerClass(
+      Class<? extends ViewManager> cls) {
+    if (cls == ViewManager.class) {
+      return EMPTY_PROPS_MAP;
+    }
+    Map<String, PropSetter> props = CLASS_PROPS_CACHE.get(cls);
+    if (props != null) {
+      return props;
+    }
+    // This is to include all the setters from parent classes. Once calculated the result will be
+    // stored in CLASS_PROPS_CACHE so that we only scan for @ReactProp annotations once per class.
+    props = new HashMap<>(
+        getNativePropSettersForViewManagerClass(
+            (Class<? extends ViewManager>) cls.getSuperclass()));
+    extractPropSettersFromViewManagerClassDefinition(cls, props);
+    CLASS_PROPS_CACHE.put(cls, props);
+    return props;
+  }
+
+  /**
+   * Returns map from property name to setter instances for all the property setters annotated with
+   * {@link ReactProp} (or {@link ReactPropGroup} in the given {@link ReactShadowNode} subclass plus
+   * all the setters declared by its parent classes up to {@link ReactShadowNode} which is treated
+   * as a base class.
+   */
+  /*package*/ static Map<String, PropSetter> getNativePropSettersForShadowNodeClass(
+      Class<? extends ReactShadowNode> cls) {
+    if (cls == ReactShadowNode.class) {
+      return EMPTY_PROPS_MAP;
+    }
+    Map<String, PropSetter> props = CLASS_PROPS_CACHE.get(cls);
+    if (props != null) {
+      return props;
+    }
+    // This is to include all the setters from parent classes up to ReactShadowNode class
+    props = new HashMap<>(
+        getNativePropSettersForShadowNodeClass(
+            (Class<? extends ReactShadowNode>) cls.getSuperclass()));
+    extractPropSettersFromShadowNodeClassDefinition(cls, props);
+    CLASS_PROPS_CACHE.put(cls, props);
+    return props;
+  }
+
+  private static PropSetter createPropSetter(
+      ReactProp annotation,
+      Method method,
+      Class<?> propTypeClass) {
+    if (propTypeClass == boolean.class) {
+      return new BooleanPropSetter(annotation, method, annotation.defaultBoolean());
+    } else if (propTypeClass == int.class) {
+      return new IntPropSetter(annotation, method, annotation.defaultInt());
+    } else if (propTypeClass == float.class) {
+      return new FloatPropSetter(annotation, method, annotation.defaultFloat());
+    } else if (propTypeClass == double.class) {
+      return new DoublePropSetter(annotation, method, annotation.defaultDouble());
+    } else if (propTypeClass == String.class) {
+      return new StringPropSetter(annotation, method);
+    } else if (propTypeClass == Boolean.class) {
+      return new BoxedBooleanPropSetter(annotation, method);
+    } else if (propTypeClass == Integer.class) {
+      return new BoxedIntPropSetter(annotation, method);
+    } else if (propTypeClass == ReadableArray.class) {
+      return new ArrayPropSetter(annotation, method);
+    } else if (propTypeClass == ReadableMap.class) {
+      return new MapPropSetter(annotation, method);
+    } else {
+      throw new RuntimeException("Unrecognized type: " + propTypeClass + " for method: " +
+          method.getDeclaringClass().getName() + "#" + method.getName());
+    }
+  }
+
+  private static void createPropSetters(
+      ReactPropGroup annotation,
+      Method method,
+      Class<?> propTypeClass,
+      Map<String, PropSetter> props) {
+    String[] names = annotation.names();
+    if (propTypeClass == int.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new IntPropSetter(annotation, method, i, annotation.defaultInt()));
+      }
+    } else if (propTypeClass == float.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new FloatPropSetter(annotation, method, i, annotation.defaultFloat()));
+      }
+    } else if (propTypeClass == Integer.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new BoxedIntPropSetter(annotation, method, i));
+      }
+    } else {
+      throw new RuntimeException("Unrecognized type: " + propTypeClass + " for method: " +
+          method.getDeclaringClass().getName() + "#" + method.getName());
+    }
+  }
+
+  private static void extractPropSettersFromViewManagerClassDefinition(
+      Class<? extends ViewManager> cls,
+      Map<String, PropSetter> props) {
+    Method[] declaredMethods = cls.getDeclaredMethods();
+    for (int i = 0; i < declaredMethods.length; i++) {
+      Method method = declaredMethods[i];
+      ReactProp annotation = method.getAnnotation(ReactProp.class);
+      if (annotation != null) {
+        Class<?>[] paramTypes = method.getParameterTypes();
+        if (paramTypes.length != 2) {
+          throw new RuntimeException("Wrong number of args for prop setter: " +
+              cls.getName() + "#" + method.getName());
+        }
+        if (!View.class.isAssignableFrom(paramTypes[0])) {
+          throw new RuntimeException("First param should be a view subclass to be updated: " +
+              cls.getName() + "#" + method.getName());
+        }
+        props.put(annotation.name(), createPropSetter(annotation, method, paramTypes[1]));
+      }
+
+      ReactPropGroup groupAnnotation = method.getAnnotation(ReactPropGroup.class);
+      if (groupAnnotation != null) {
+        Class<?> [] paramTypes = method.getParameterTypes();
+        if (paramTypes.length != 3) {
+          throw new RuntimeException("Wrong number of args for group prop setter: " +
+              cls.getName() + "#" + method.getName());
+        }
+        if (!View.class.isAssignableFrom(paramTypes[0])) {
+          throw new RuntimeException("First param should be a view subclass to be updated: " +
+              cls.getName() + "#" + method.getName());
+        }
+        if (paramTypes[1] != int.class) {
+          throw new RuntimeException("Second argument should be property index: " +
+              cls.getName() + "#" + method.getName());
+        }
+        createPropSetters(groupAnnotation, method, paramTypes[2], props);
+      }
+    }
+  }
+
+  private static void extractPropSettersFromShadowNodeClassDefinition(
+      Class<? extends ReactShadowNode> cls,
+      Map<String, PropSetter> props) {
+    for (Method method : cls.getDeclaredMethods()) {
+      ReactProp annotation = method.getAnnotation(ReactProp.class);
+      if (annotation != null) {
+        Class<?>[] paramTypes = method.getParameterTypes();
+        if (paramTypes.length != 1) {
+          throw new RuntimeException("Wrong number of args for prop setter: " +
+              cls.getName() + "#" + method.getName());
+        }
+        props.put(annotation.name(), createPropSetter(annotation, method, paramTypes[0]));
+      }
+
+      ReactPropGroup groupAnnotation = method.getAnnotation(ReactPropGroup.class);
+      if (groupAnnotation != null) {
+        Class<?> [] paramTypes = method.getParameterTypes();
+        if (paramTypes.length != 2) {
+          throw new RuntimeException("Wrong number of args for group prop setter: " +
+              cls.getName() + "#" + method.getName());
+        }
+        if (paramTypes[0] != int.class) {
+          throw new RuntimeException("Second argument should be property index: " +
+              cls.getName() + "#" + method.getName());
+        }
+        createPropSetters(groupAnnotation, method, paramTypes[1], props);
+      }
+    }
+  }
+}

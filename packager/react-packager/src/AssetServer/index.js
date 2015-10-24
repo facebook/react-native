@@ -60,6 +60,7 @@ class AssetServer {
 
     return this._getAssetRecord(assetPath, platform).then(record => {
       data.scales = record.scales;
+      data.files = record.files;
 
       return Promise.all(
         record.files.map(file => stat(file))

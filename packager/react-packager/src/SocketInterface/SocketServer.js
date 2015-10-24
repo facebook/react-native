@@ -11,7 +11,7 @@
 const Promise = require('promise');
 const Server = require('../Server');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketServer');
+const debug = require('debug')('ReactNativePackager:SocketServer');
 const fs = require('fs');
 const net = require('net');
 
@@ -23,8 +23,15 @@ class SocketServer {
     this._server = net.createServer();
     this._server.listen(sockPath);
     this._ready = new Promise((resolve, reject) => {
-      this._server.on('error', (e) => reject(e));
-      this._server.on('listening', () => {
+      this._server.once('error', (e) => reject(e));
+      this._server.once('listening', () => {
+        // Remove error listener so we make sure errors propagate.
+        this._server.removeAllListeners('error');
+        this._server.on(
+          'close',
+          () => debug('server closed')
+        );
+
         debug(
           'Process %d listening on socket path %s ' +
           'for server with options %j',
@@ -33,8 +40,16 @@ class SocketServer {
           options
         );
         resolve(this);
-        process.on('exit', () => fs.unlinkSync(sockPath));
+        process.on('exit', code => {
+          debug('exit code:', code);
+          fs.unlinkSync(sockPath);
+        });
       });
+    });
+
+    process.on('uncaughtException', (error) => {
+      debug('uncaught error', error.stack);
+      setImmediate(() => process.exit(1));
     });
 
     this._numConnections = 0;
@@ -102,6 +117,14 @@ class SocketServer {
         this._jobs++;
         this._packagerServer.buildBundle(m.data).then(
           (result) => this._reply(sock, m.id, 'result', result),
+          handleError,
+        );
+        break;
+
+      case 'getOrderedDependencyPaths':
+        this._jobs++;
+        this._packagerServer.getOrderedDependencyPaths(m.data).then(
+          (dependencies) => this._reply(sock, m.id, 'result', dependencies),
           handleError,
         );
         break;

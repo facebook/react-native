@@ -337,6 +337,42 @@ BOOL RCTRunningInTestEnvironment(void)
   return isTestEnvironment;
 }
 
+BOOL RCTRunningInAppExtension(void)
+{
+  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+}
+
+id RCTSharedApplication(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+  
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+{
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
+    return nil;
+  }
+  
+  UIAlertView *alertView = [[UIAlertView alloc] init];
+  alertView.title = title;
+  alertView.message = message;
+  alertView.delegate = delegate;
+  if (cancelButtonTitle != nil) {
+    [alertView addButtonWithTitle:cancelButtonTitle];
+    alertView.cancelButtonIndex = 0;
+  }
+  for (NSString *buttonTitle in otherButtonTitles)
+  {
+    [alertView addButtonWithTitle:buttonTitle];
+  }
+  return alertView;
+}
+
 BOOL RCTImageHasAlpha(CGImageRef image)
 {
   switch (CGImageGetAlphaInfo(image)) {
@@ -421,4 +457,39 @@ NSData *RCTGzipData(NSData *input, float level)
   dlclose(libz);
 
   return output;
+}
+
+NSString *RCTBundlePathForURL(NSURL *URL)
+{
+  if (!URL.fileURL) {
+    // Not a file path
+    return nil;
+  }
+  NSString *path = URL.path;
+  NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
+  if (![path hasPrefix:bundlePath]) {
+    // Not a bundle-relative file
+    return nil;
+  }
+  return [path substringFromIndex:bundlePath.length + 1];
+}
+
+BOOL RCTIsXCAssetURL(NSURL *imageURL)
+{
+  NSString *name = RCTBundlePathForURL(imageURL);
+  if (name.pathComponents.count != 1) {
+    // URL is invalid, or is a file path, not an XCAsset identifier
+    return NO;
+  }
+  NSString *extension = [name pathExtension];
+  if (extension.length && ![extension isEqualToString:@"png"]) {
+    // Not a png
+    return NO;
+  }
+  extension = extension.length ? nil : @"png";
+  if ([[NSBundle mainBundle] pathForResource:name ofType:extension]) {
+    // File actually exists in bundle, so is not an XCAsset
+    return NO;
+  }
+  return YES;
 }

@@ -247,6 +247,27 @@ var ScrollView = React.createClass({
     stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
     style: StyleSheetPropType(ViewStylePropTypes),
     /**
+     * When set, causes the scroll view to stop at multiples of the value of
+     * `snapToInterval`. This can be used for paginating through children
+     * that have lengths smaller than the scroll view. Used in combination
+     * with `snapToAlignment`.
+     * @platform ios
+     */
+    snapToInterval: PropTypes.number,
+    /**
+     * When `snapToInterval` is set, `snapToAlignment` will define the relationship
+     * of the the snapping to the scroll view.
+     *   - `start` (the default) will align the snap at the left (horizontal) or top (vertical)
+     *   - `center` will align the snap in the center
+     *   - `end` will align the snap at the right (horizontal) or bottom (vertical)
+     * @platform ios
+     */
+    snapToAlignment: PropTypes.oneOf([
+      'start', // default
+      'center',
+      'end',
+    ]),
+    /**
      * Experimental: When true, offscreen child views (whose `overflow` value is
      * `hidden`) are removed from their native backing superview when offscreen.
      * This can improve scrolling performance on long lists. The default value is
@@ -290,10 +311,10 @@ var ScrollView = React.createClass({
   },
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
-    RCTUIManager.scrollWithoutAnimationTo(
-      React.findNodeHandle(this),
+    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
+    this.getScrollResponder().scrollResponderScrollWithouthAnimationTo(
       destX || 0,
-      destY || 0
+      destY || 0,
     );
   },
 
@@ -430,6 +451,8 @@ var validAttributes = {
   scrollsToTop: true,
   showsHorizontalScrollIndicator: true,
   showsVerticalScrollIndicator: true,
+  snapToInterval: true,
+  snapToAlignment: true,
   stickyHeaderIndices: {diff: deepDiffer},
   scrollEventThrottle: true,
   zoomScale: true,

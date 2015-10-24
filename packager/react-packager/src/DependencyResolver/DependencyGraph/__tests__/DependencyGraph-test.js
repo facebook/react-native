@@ -14,7 +14,8 @@ const Promise = require('promise');
 
 jest
   .mock('fs')
-  .mock('../../../Cache');
+  .mock('../../../Cache')
+  .mock('../../../Activity');
 
 var Cache = require('../../../Cache');
 var DependencyGraph = require('../index');
@@ -216,6 +217,55 @@ describe('DependencyGraph', function() {
               id: 'package/b.json',
               isJSON: true,
               path: '/root/b.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
+    pit('should get package json as a dep', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'package.json': JSON.stringify({
+            name: 'package'
+          }),
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("./package.json")',
+          ].join('\n'),
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(deps => {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['./package.json'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'package/package.json',
+              isJSON: true,
+              path: '/root/package.json',
               dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,
@@ -1069,7 +1119,7 @@ describe('DependencyGraph', function() {
       });
     });
 
-    pit('can have multiple modules with the same name', function() {
+    pit('should fatal on multiple modules with the same name', function() {
       var root = '/root';
       fs.__setMockFilesystem({
         'root': {
@@ -1077,86 +1127,20 @@ describe('DependencyGraph', function() {
             '/**',
             ' * @providesModule index',
             ' */',
-            'require("b")',
           ].join('\n'),
           'b.js': [
-            '/**',
-            ' * @providesModule b',
-            ' */',
-          ].join('\n'),
-          'c.js': [
-            '/**',
-            ' * @providesModule c',
-            ' */',
-          ].join('\n'),
-          'somedir': {
-            'somefile.js': [
-              '/**',
-              ' * @providesModule index',
-              ' */',
-              'require("c")',
-            ].join('\n')
-          }
-        }
-      });
-
-      var dgraph = new DependencyGraph({
-        roots: [root],
-        fileWatcher: fileWatcher,
-        assetExts: ['png', 'jpg'],
-        cache: cache,
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/somedir/somefile.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/somedir/somefile.js',
-              dependencies: ['c'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-            {
-              id: 'c',
-              path: '/root/c.js',
-              dependencies: [],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-            },
-          ]);
-      });
-    });
-
-    pit('providesModule wins when conflict with package', function() {
-      var root = '/root';
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': [
             '/**',
             ' * @providesModule index',
             ' */',
-            'require("aPackage")',
           ].join('\n'),
-          'b.js': [
-            '/**',
-            ' * @providesModule aPackage',
-            ' */',
-          ].join('\n'),
-          'aPackage': {
-            'package.json': JSON.stringify({
-              name: 'aPackage',
-              main: 'main.js'
-            }),
-            'main.js': 'lol'
-          }
         }
       });
+
+      const _exit = process.exit;
+      const _error = console.error;
+
+      process.exit = jest.genMockFn();
+      console.error = jest.genMockFn();
 
       var dgraph = new DependencyGraph({
         roots: [root],
@@ -1164,32 +1148,12 @@ describe('DependencyGraph', function() {
         assetExts: ['png', 'jpg'],
         cache: cache,
       });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
-        expect(deps)
-          .toEqual([
-            {
-              id: 'index',
-              path: '/root/index.js',
-              dependencies: ['aPackage'],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-            {
-              id: 'aPackage',
-              path: '/root/b.js',
-              dependencies: [],
-              isAsset: false,
-              isAsset_DEPRECATED: false,
-              isJSON: false,
-              isPolyfill: false,
-              resolution: undefined,
-              resolveDependency: undefined,
-            },
-          ]);
+
+      return dgraph.load().catch(() => {
+        expect(process.exit).toBeCalledWith(1);
+        expect(console.error).toBeCalled();
+        process.exit = _exit;
+        console.error = _error;
       });
     });
 
@@ -2615,6 +2579,11 @@ describe('DependencyGraph', function() {
              * @providesModule a
              */
           `,
+          'a.web.js': `
+            /**
+             * @providesModule a
+             */
+          `,
         }
       });
 
@@ -2696,6 +2665,89 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
             },
+          ]);
+      });
+    });
+
+    pit('should require package.json', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("foo/package.json");',
+            'require("bar");',
+          ].join('\n'),
+          'node_modules': {
+            'foo': {
+              'package.json': JSON.stringify({
+                name: 'foo',
+                main: 'main.js',
+              }),
+            },
+            'bar': {
+              'package.json': JSON.stringify({
+                name: 'bar',
+                main: 'main.js',
+              }),
+              'main.js': 'require("./package.json")',
+            },
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+        cache: cache,
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(deps => {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['foo/package.json', 'bar'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'foo/package.json',
+              path: '/root/node_modules/foo/package.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: true,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'bar/main.js',
+              path: '/root/node_modules/bar/main.js',
+              dependencies: ['./package.json'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'bar/package.json',
+              path: '/root/node_modules/bar/package.json',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: true,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+
           ]);
       });
     });

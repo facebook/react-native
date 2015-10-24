@@ -9,17 +9,21 @@
 'use strict';
 
 const path = require('path');
-const getPontentialPlatformExt = require('../../lib/getPlatformExtension');
+const getPlatformExtension = require('../../lib/getPlatformExtension');
+const Promise = require('promise');
+
+const GENERIC_PLATFORM = 'generic';
 
 class HasteMap {
   constructor({ fastfs, moduleCache, helpers }) {
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._helpers = helpers;
-    this._map = Object.create(null);
   }
 
   build() {
+    this._map = Object.create(null);
+
     let promises = this._fastfs.findFilesByExt('js', {
       ignore: (file) => this._helpers.isNodeModulesDir(file)
     }).map(file => this._processHasteModule(file));
@@ -38,10 +42,11 @@ class HasteMap {
       /*eslint no-labels: 0 */
       if (type === 'delete' || type === 'change') {
         loop: for (let name in this._map) {
-          let modules = this._map[name];
-          for (var i = 0; i < modules.length; i++) {
-            if (modules[i].path === absPath) {
-              modules.splice(i, 1);
+          const modulesMap = this._map[name];
+          for (let platform in modulesMap) {
+            const module = modulesMap[platform];
+            if (module.path === absPath) {
+              delete modulesMap[platform];
               break loop;
             }
           }
@@ -64,19 +69,23 @@ class HasteMap {
   }
 
   getModule(name, platform = null) {
-    if (this._map[name]) {
-      const modules = this._map[name];
-      if (platform != null) {
-        for (let i = 0; i < modules.length; i++) {
-          if (getPontentialPlatformExt(modules[i].path) === platform) {
-            return modules[i];
-          }
-        }
-      }
-
-      return modules[0];
+    const modulesMap = this._map[name];
+    if (modulesMap == null) {
+      return null;
     }
-    return null;
+
+    // If no platform is given we choose the generic platform module list.
+    // If a platform is given and no modules exist we fallback
+    // to the generic platform module list.
+    if (platform == null) {
+      return modulesMap[GENERIC_PLATFORM];
+    } else {
+      let module = modulesMap[platform];
+      if (module == null) {
+        module = modulesMap[GENERIC_PLATFORM];
+      }
+      return module;
+    }
   }
 
   _processHasteModule(file) {
@@ -104,15 +113,20 @@ class HasteMap {
 
   _updateHasteMap(name, mod) {
     if (this._map[name] == null) {
-      this._map[name] = [];
+      this._map[name] = Object.create(null);
     }
 
-    if (mod.type === 'Module') {
-      // Modules takes precendence over packages.
-      this._map[name].unshift(mod);
-    } else {
-      this._map[name].push(mod);
+    const moduleMap = this._map[name];
+    const modulePlatform = getPlatformExtension(mod.path) || GENERIC_PLATFORM;
+
+    if (moduleMap[modulePlatform]) {
+      throw new Error(
+        `Naming collision detected: ${mod.path} ` +
+        `collides with ${moduleMap[modulePlatform].path}`
+      );
     }
+
+    moduleMap[modulePlatform] = mod;
   }
 }
 

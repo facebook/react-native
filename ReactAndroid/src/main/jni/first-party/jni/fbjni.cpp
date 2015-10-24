@@ -149,33 +149,36 @@ DEFINE_PRIMITIVE_METHODS(jdouble, Double)
 
 
 #define DEFINE_PRIMITIVE_ARRAY_UTILS(TYPE, NAME)                                                \
+                                                                                                \
 local_ref<j ## TYPE ## Array> make_ ## TYPE ## _array(jsize size) {                             \
   auto array = internal::getEnv()->New ## NAME ## Array(size);                                  \
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!array);                                                      \
   return adopt_local(array);                                                                    \
 }                                                                                               \
                                                                                                 \
-j ## TYPE*                                                                                      \
-JObjectWrapper<j ## TYPE ## Array>::getRegion(jsize start, jsize length, j ## TYPE* buf) {      \
+local_ref<j ## TYPE ## Array> JArray ## NAME::newArray(size_t count) {                          \
+  return make_ ## TYPE ## _array(count);                                                        \
+}                                                                                               \
+                                                                                                \
+j ## TYPE* JArray ## NAME::getRegion(jsize start, jsize length, j ## TYPE* buf) {               \
   internal::getEnv()->Get ## NAME ## ArrayRegion(self(), start, length, buf);                   \
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                       \
   return buf;                                                                                   \
 }                                                                                               \
                                                                                                 \
-std::unique_ptr<j ## TYPE[]>                                                                    \
-JObjectWrapper<j ## TYPE ## Array>::getRegion(jsize start, jsize length) {                      \
+std::unique_ptr<j ## TYPE[]> JArray ## NAME::getRegion(jsize start, jsize length) {             \
   auto buf = std::unique_ptr<j ## TYPE[]>{new j ## TYPE[length]};                               \
   internal::getEnv()->Get ## NAME ## ArrayRegion(self(), start, length, buf.get());             \
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                       \
   return buf;                                                                                   \
 }                                                                                               \
                                                                                                 \
-void JObjectWrapper<j ## TYPE ## Array>::setRegion(jsize start, jsize length, j ## TYPE* buf) { \
+void JArray ## NAME::setRegion(jsize start, jsize length, const j ## TYPE* buf) {               \
   internal::getEnv()->Set ## NAME ## ArrayRegion(self(), start, length, buf);                   \
   FACEBOOK_JNI_THROW_PENDING_EXCEPTION();                                                       \
 }                                                                                               \
                                                                                                 \
-PinnedPrimitiveArray<j ## TYPE> JObjectWrapper<j ## TYPE ## Array>::pin() {                     \
+PinnedPrimitiveArray<j ## TYPE> JArray ## NAME::pin() {                                         \
   return PinnedPrimitiveArray<j ## TYPE>{self()};                                               \
 }                                                                                               \
 

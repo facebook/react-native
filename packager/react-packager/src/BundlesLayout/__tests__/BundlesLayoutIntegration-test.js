@@ -10,7 +10,8 @@
 
 jest
   .autoMockOff()
-  .mock('../../Cache');
+  .mock('../../Cache')
+  .mock('../../Activity');
 
 const Promise = require('promise');
 const path = require('path');

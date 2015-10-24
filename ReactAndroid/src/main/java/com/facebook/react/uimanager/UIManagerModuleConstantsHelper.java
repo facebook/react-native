@@ -64,13 +64,9 @@ import com.facebook.react.common.MapBuilder;
       if (viewManagerCommands != null) {
         viewManagerConstants.put("Commands", viewManagerCommands);
       }
-      Map<String, UIProp.Type> viewManagerNativeProps = viewManager.getNativeProps();
+      Map<String, String> viewManagerNativeProps = viewManager.getNativeProps();
       if (!viewManagerNativeProps.isEmpty()) {
-        Map<String, String> nativeProps = new HashMap<>();
-        for (Map.Entry<String, UIProp.Type> entry : viewManagerNativeProps.entrySet()) {
-          nativeProps.put(entry.getKey(), entry.getValue().toString());
-        }
-        viewManagerConstants.put("NativeProps", nativeProps);
+        viewManagerConstants.put("NativeProps", viewManagerNativeProps);
       }
       if (!viewManagerConstants.isEmpty()) {
         constants.put(viewManager.getName(), viewManagerConstants);

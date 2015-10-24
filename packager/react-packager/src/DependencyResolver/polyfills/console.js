@@ -367,6 +367,9 @@
   };
 
   function setupConsole(global) {
+
+    var originalConsole = global.console;
+
     if (!global.nativeLoggingHook) {
       return;
     }
@@ -462,6 +465,20 @@
       table: consoleTablePolyfill
     };
 
+    // If available, also call the original `console` method since that is
+    // sometimes useful. Ex: on OS X, this will let you see rich output in
+    // the Safari Web Inspector console.
+    if (__DEV__ && originalConsole) {
+      Object.keys(global.console).forEach(methodName => {
+        var reactNativeMethod = global.console[methodName];
+        if (originalConsole[methodName]) {
+          global.console[methodName] = function() {
+            originalConsole[methodName](...arguments);
+            reactNativeMethod.apply(global.console, arguments);
+          };
+        }
+      });
+    }
   }
 
   if (typeof module !== 'undefined') {

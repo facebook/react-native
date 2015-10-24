@@ -451,7 +451,7 @@ static float getDimWithMargin(css_node_t *node, css_flex_direction_t axis) {
 
 static bool isDimDefined(css_node_t *node, css_flex_direction_t axis) {
   float value = node->style.dimensions[dim[axis]];
-  return !isUndefined(value) && value > 0.0;
+  return !isUndefined(value) && value >= 0.0;
 }
 
 static bool isPosDefined(css_node_t *node, css_position_t position) {
@@ -582,7 +582,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, css_direction
     if (isRowUndefined || isColumnUndefined) {
       css_dim_t measureDim = node->measure(
         node->context,
-        
+
         width
       );
       if (isRowUndefined) {
@@ -1004,7 +1004,7 @@ static void layoutNodeImpl(css_node_t *node, float parentMaxWidth, css_direction
           if (alignItem == CSS_ALIGN_STRETCH) {
             // You can only stretch if the dimension has not already been set
             // previously.
-            if (isUndefined(child->layout.dimensions[dim[crossAxis]])) {
+            if (!isDimDefined(child, crossAxis)) {
               child->layout.dimensions[dim[crossAxis]] = fmaxf(
                 boundAxis(child, crossAxis, containerCrossAxis -
                   paddingAndBorderAxisCross - getMarginAxis(child, crossAxis)),

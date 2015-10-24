@@ -9,8 +9,8 @@
 
 package com.facebook.react.views.text;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 /**
@@ -42,7 +42,12 @@ public class ReactRawTextManager extends ReactTextViewManager {
   }
 
   @Override
-  public ReactTextShadowNode createCSSNodeInstance() {
+  public ReactTextShadowNode createShadowNodeInstance() {
     return new ReactTextShadowNode(true);
+  }
+
+  @Override
+  public Class<ReactTextShadowNode> getShadowNodeClass() {
+    return ReactTextShadowNode.class;
   }
 }

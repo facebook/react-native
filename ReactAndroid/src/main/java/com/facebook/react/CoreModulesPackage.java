@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.catalyst.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -29,6 +28,7 @@ import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.ReactNative;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
@@ -60,7 +60,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
         new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager()),
         new Timing(catalystApplicationContext),
         new SourceCodeModule(
-            mReactInstanceManager.getDevSupportManager().getSourceUrl(),
+            mReactInstanceManager.getSourceUrl(),
             mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
         new UIManagerModule(
             catalystApplicationContext,

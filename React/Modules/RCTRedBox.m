@@ -126,7 +126,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   self.hidden = YES;
   [self resignFirstResponder];
-  [[UIApplication sharedApplication].delegate.window makeKeyWindow];
+  [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 
 - (void)reload
@@ -193,9 +193,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   cell.textLabel.text = stackFrame[@"methodName"];
-
-  NSString *fileAndLine = [stackFrame[@"file"] lastPathComponent];
-  cell.detailTextLabel.text = fileAndLine ? [fileAndLine stringByAppendingFormat:@":%@", stackFrame[@"lineNumber"]] : nil;
+  cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %@:%@",
+    [stackFrame[@"file"] lastPathComponent], stackFrame[@"lineNumber"], stackFrame[@"column"]];
   return cell;
 }
 

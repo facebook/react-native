@@ -15,10 +15,14 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptDownload = 0,
   RCTPLScriptExecution,
   RCTPLNativeModuleInit,
+  RCTPLNativeModulePrepareConfig,
+  RCTPLNativeModuleInjectConfig,
   RCTPLTTI,
+  RCTPLBundleSize,
   RCTPLSize
 };
 
 void RCTPerformanceLoggerStart(RCTPLTag tag);
 void RCTPerformanceLoggerEnd(RCTPLTag tag);
+void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value);
 NSArray *RCTPerformanceLoggerOutput(void);

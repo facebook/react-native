@@ -14,11 +14,14 @@ const babel = require('babel-core');
 const inlineRequires = require('fbjs-scripts/babel/inline-requires');
 
 function transform(src, filename, options) {
+  options = options || {};
   const plugins = [];
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins.push('node-env-inline', 'dunderscore-dev-inline');
-  } else if (process.env.NODE_ENV === 'test') {
+  if (
+    options.inlineRequires &&
+    // (TODO: balpert, cpojer): Remove this once react is updated to 0.14
+    !filename.endsWith('performanceNow.js')
+  ) {
     plugins.push({
       position: 'after',
       transformer: inlineRequires,
@@ -31,10 +34,13 @@ function transform(src, filename, options) {
     comments: false,
     filename,
     whitelist: [
+      // Keep in sync with packager/react-packager/.babelrc
       'es6.arrowFunctions',
       'es6.blockScoping',
       'es6.classes',
+      'es6.constants',
       'es6.destructuring',
+      'es6.modules',
       'es6.parameters',
       'es6.properties.computed',
       'es6.properties.shorthand',
@@ -62,7 +68,7 @@ function transform(src, filename, options) {
 module.exports = function(data, callback) {
   let result;
   try {
-    result = transform(data.sourceCode, data.filename);
+    result = transform(data.sourceCode, data.filename, data.options);
   } catch (e) {
     callback(e);
     return;

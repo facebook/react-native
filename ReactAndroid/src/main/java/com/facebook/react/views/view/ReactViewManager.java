@@ -25,12 +25,12 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.BaseViewPropertyApplicator;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.ReactPropGroup;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 
@@ -45,18 +45,82 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
-  private static final String[] PROPS_BORDER_COLOR = {
-      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
-  };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
   private static final int[] sLocationBuf = new int[2];
 
-  @UIProp(UIProp.Type.STRING) public static final String PROP_ACCESSIBLE = "accessible";
-  @UIProp(UIProp.Type.NUMBER) public static final String PROP_BORDER_RADIUS = "borderRadius";
-  @UIProp(UIProp.Type.STRING) public static final String PROP_BORDER_STYLE = "borderStyle";
-  @UIProp(UIProp.Type.STRING) public static final String PROP_POINTER_EVENTS = "pointerEvents";
-  @UIProp(UIProp.Type.MAP) public static final String PROP_NATIVE_BG = "nativeBackgroundAndroid";
+  @ReactProp(name = "accessible")
+  public void setAccessible(ReactViewGroup view, boolean accessible) {
+    view.setFocusable(accessible);
+  }
+
+  @ReactProp(name = "borderRadius")
+  public void setBorderRadius(ReactViewGroup view, float borderRadius) {
+    view.setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
+  }
+
+  @ReactProp(name = "borderStyle")
+  public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
+    view.setBorderStyle(borderStyle);
+  }
+
+  @ReactProp(name = "pointerEvents")
+  public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
+    if (pointerEventsStr != null) {
+      PointerEvents pointerEvents =
+          PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
+      view.setPointerEvents(pointerEvents);
+    }
+  }
+
+  @ReactProp(name = "nativeBackgroundAndroid")
+  public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
+    view.setTranslucentBackgroundDrawable(bg == null ?
+            null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
+  }
+
+  @ReactProp(name = ViewProps.BORDER_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderWidth(ReactViewGroup view, float width) {
+    if (!CSSConstants.isUndefined(width)) {
+      width = PixelUtil.toPixelFromDIP(width);
+    }
+    view.setBorderWidth(Spacing.ALL, width);
+  }
+
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
+  }
+
+  @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
+  public void setNeedsOffscreenAlphaCompositing(
+      ReactViewGroup view,
+      boolean needsOffscreenAlphaCompositing) {
+    view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
+  }
+
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_WIDTH,
+      ViewProps.BORDER_LEFT_WIDTH,
+      ViewProps.BORDER_RIGHT_WIDTH,
+      ViewProps.BORDER_TOP_WIDTH,
+      ViewProps.BORDER_BOTTOM_WIDTH,
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderWidth(ReactViewGroup view, int index, float width) {
+    if (!CSSConstants.isUndefined(width)) {
+      width = PixelUtil.toPixelFromDIP(width);
+    }
+    view.setBorderWidth(SPACING_TYPES[index], width);
+  }
+
+  @ReactPropGroup(names = {
+      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
+  }, customType = "Color")
+  public void setBorderColor(ReactViewGroup view, int index, Integer color) {
+    view.setBorderColor(
+        SPACING_TYPES[index],
+        color == null ? CSSConstants.UNDEFINED : (float) color);
+  }
 
   @Override
   public String getName() {
@@ -66,86 +130,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   @Override
   public ReactViewGroup createViewInstance(ThemedReactContext context) {
     return new ReactViewGroup(context);
-  }
-
-  @Override
-  public Map<String, UIProp.Type> getNativeProps() {
-    Map<String, UIProp.Type> nativeProps = super.getNativeProps();
-    Map<String, UIProp.Type> baseProps = BaseViewPropertyApplicator.getCommonProps();
-    for (Map.Entry<String, UIProp.Type> entry : baseProps.entrySet()) {
-      nativeProps.put(entry.getKey(), entry.getValue());
-    }
-    for (int i = 0; i < SPACING_TYPES.length; i++) {
-      nativeProps.put(ViewProps.BORDER_WIDTHS[i], UIProp.Type.NUMBER);
-      nativeProps.put(PROPS_BORDER_COLOR[i], UIProp.Type.STRING);
-    }
-    return nativeProps;
-  }
-
-  @Override
-  public void updateView(ReactViewGroup view, CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-    ReactClippingViewGroupHelper.applyRemoveClippedSubviewsProperty(view, props);
-
-    // Border widths
-    for (int i = 0; i < SPACING_TYPES.length; i++) {
-      String key = ViewProps.BORDER_WIDTHS[i];
-      if (props.hasKey(key)) {
-        float width = props.getFloat(key, CSSConstants.UNDEFINED);
-        if (!CSSConstants.isUndefined(width)) {
-          width = PixelUtil.toPixelFromDIP(width);
-        }
-        view.setBorderWidth(SPACING_TYPES[i], width);
-      }
-    }
-
-    // Border colors
-    for (int i = 0; i < SPACING_TYPES.length; i++) {
-      String key = PROPS_BORDER_COLOR[i];
-      if (props.hasKey(key)) {
-        float color = CSSConstants.UNDEFINED;
-        if (!props.isNull(PROPS_BORDER_COLOR[i])) {
-          // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-          int colorInt = props.getColorInt(PROPS_BORDER_COLOR[i], Color.TRANSPARENT);
-          color = colorInt;
-        }
-        view.setBorderColor(SPACING_TYPES[i], color);
-      }
-    }
-
-    // Border radius
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(PixelUtil.toPixelFromDIP(props.getFloat(PROP_BORDER_RADIUS, 0.0f)));
-    }
-
-    if (props.hasKey(PROP_BORDER_STYLE)) {
-      view.setBorderStyle(props.getString(PROP_BORDER_STYLE));
-    }
-
-    if (props.hasKey(PROP_POINTER_EVENTS)) {
-      String pointerEventsStr = props.getString(PROP_POINTER_EVENTS);
-      if (pointerEventsStr != null) {
-        PointerEvents pointerEvents =
-            PointerEvents.valueOf(pointerEventsStr.toUpperCase(Locale.US).replace("-", "_"));
-        view.setPointerEvents(pointerEvents);
-      }
-    }
-
-    // Native background
-    if (props.hasKey(PROP_NATIVE_BG)) {
-      ReadableMap map = props.getMap(PROP_NATIVE_BG);
-      view.setTranslucentBackgroundDrawable(map == null ?
-              null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), map));
-    }
-
-    if (props.hasKey(PROP_ACCESSIBLE)) {
-      view.setFocusable(props.getBoolean(PROP_ACCESSIBLE, false));
-    }
-
-    if (props.hasKey(ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)) {
-      view.setNeedsOffscreenAlphaCompositing(
-          props.getBoolean(ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING, false));
-    }
   }
 
   @Override

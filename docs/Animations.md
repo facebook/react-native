@@ -242,7 +242,7 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/AnimationExample).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
@@ -458,7 +458,7 @@ use this.
 
 ![](/react-native/img/Rebound.gif) Screenshot from
 [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view).
-You can run a simlar example [here](https://rnplay.org/apps/qHU_5w).
+You can run a similar example [here](https://rnplay.org/apps/qHU_5w).
 
 #### A sidenote about setNativeProps
 
@@ -542,7 +542,7 @@ var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
 });
 
 var CustomSceneConfig = Object.assign({}, BaseConfig, {
-  // A very tighly wound spring will make this transition fast
+  // A very tightly wound spring will make this transition fast
   springTension: 100,
   springFriction: 1,
 

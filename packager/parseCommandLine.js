@@ -20,7 +20,8 @@
 
 var optimist = require('optimist');
 
-function parseCommandLine(config) {
+function parseCommandLine(config, args) {
+  args = args || process.argv;
   // optimist default API requires you to write the command name three time
   // This is a small wrapper to accept an object instead
   for (var i = 0; i < config.length; ++i) {
@@ -38,7 +39,7 @@ function parseCommandLine(config) {
       optimist.demand(config[i].command);
     }
   }
-  var argv = optimist.parse(process.argv);
+  var argv = optimist.parse(args);
 
   // optimist doesn't have support for --dev=false, instead it returns 'false'
   for (var i = 0; i < config.length; ++i) {

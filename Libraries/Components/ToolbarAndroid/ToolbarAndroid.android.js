@@ -13,11 +13,20 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
+
+var optionalImageSource = ReactPropTypes.oneOfType([
+  Image.propTypes.source,
+  // Image.propTypes.source is required but we want it to be optional, so we OR
+  // it with a nullable propType.
+  ReactPropTypes.oneOf([])
+]);
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -26,6 +35,12 @@ var requireNativeComponent = require('requireNativeComponent');
  * subtitle in the middle and the actions on the right.
  *
  * If the toolbar has an only child, it will be displayed between the title and actions.
+ *
+ * Although the Toolbar supports remote images for the logo, navigation and action icons, this
+ * should only be used in DEV mode where `require('./some_icon.png')` translates into a packager
+ * URL. In release mode you should always use a drawable resource for these icons. Using
+ * `require('./some_icon.png')` will do this automatically for you, so as long as you don't
+ * explicitly use e.g. `{uri: 'http://...'}`, you will be good.
  *
  * Example:
  *
@@ -67,18 +82,18 @@ var ToolbarAndroid = React.createClass({
      */
     actions: ReactPropTypes.arrayOf(ReactPropTypes.shape({
       title: ReactPropTypes.string.isRequired,
-      icon: Image.propTypes.source,
+      icon: optionalImageSource,
       show: ReactPropTypes.oneOf(['always', 'ifRoom', 'never']),
       showWithText: ReactPropTypes.bool
     })),
     /**
      * Sets the toolbar logo.
      */
-    logo: Image.propTypes.source,
+    logo: optionalImageSource,
     /**
      * Sets the navigation icon.
      */
-    navIcon: Image.propTypes.source,
+    navIcon: optionalImageSource,
     /**
      * Callback that is called when an action is selected. The only argument that is passeed to the
      * callback is the position of the action in the actions array.
@@ -88,6 +103,10 @@ var ToolbarAndroid = React.createClass({
      * Callback called when the icon is selected.
      */
     onIconClicked: ReactPropTypes.func,
+    /**
+     * Sets the overflow icon.
+     */
+    overflowIcon: optionalImageSource,
     /**
      * Sets the toolbar subtitle.
      */
@@ -115,16 +134,13 @@ var ToolbarAndroid = React.createClass({
       ...this.props,
     };
     if (this.props.logo) {
-      if (!this.props.logo.isStatic) {
-        throw 'logo prop should be a static image (obtained via ix)';
-      }
-      nativeProps.logo = this.props.logo.uri;
+      nativeProps.logo = resolveAssetSource(this.props.logo);
     }
     if (this.props.navIcon) {
-      if (!this.props.navIcon.isStatic) {
-        throw 'navIcon prop should be static image (obtained via ix)';
-      }
-      nativeProps.navIcon = this.props.navIcon.uri;
+      nativeProps.navIcon = resolveAssetSource(this.props.navIcon);
+    }
+    if (this.props.overflowIcon) {
+      nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
     }
     if (this.props.actions) {
       nativeProps.actions = [];
@@ -133,10 +149,10 @@ var ToolbarAndroid = React.createClass({
           ...this.props.actions[i],
         };
         if (action.icon) {
-          if (!action.icon.isStatic) {
-            throw 'action icons should be static images (obtained via ix)';
-          }
-          action.icon = action.icon.uri;
+          action.icon = resolveAssetSource(action.icon);
+        }
+        if (action.show) {
+          action.show = RCTUIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
         }
         nativeProps.actions.push(action);
       }
@@ -160,6 +176,7 @@ var toolbarAttributes = {
   actions: true,
   logo: true,
   navIcon: true,
+  overflowIcon: true,
   subtitle: true,
   subtitleColor: true,
   title: true,

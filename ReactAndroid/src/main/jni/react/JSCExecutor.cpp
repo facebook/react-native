@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <string>
 #include <fb/log.h>
 #include <folly/json.h>
 #include <folly/String.h>
@@ -26,12 +27,21 @@ using fbsystrace::FbSystraceSection;
 namespace facebook {
 namespace react {
 
+static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
+static JSValueRef nativeFlushQueueImmediate(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception);
 static JSValueRef nativeLoggingHook(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
     size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception);
+    const JSValueRef arguments[],
+    JSValueRef *exception);
 
 static JSValueRef evaluateScriptWithJSC(
     JSGlobalContextRef ctx,
@@ -47,12 +57,15 @@ static JSValueRef evaluateScriptWithJSC(
   return result;
 }
 
-std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor() {
-  return std::unique_ptr<JSExecutor>(new JSCExecutor());
+std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateCallback cb) {
+  return std::unique_ptr<JSExecutor>(new JSCExecutor(cb));
 }
 
-JSCExecutor::JSCExecutor() {
+JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
+    m_flushImmediateCallback(cb) {
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
+  s_globalContextRefToJSCExecutor[m_context] = this;
+  installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
@@ -62,6 +75,7 @@ JSCExecutor::JSCExecutor() {
 }
 
 JSCExecutor::~JSCExecutor() {
+  s_globalContextRefToJSCExecutor.erase(m_context);
   JSGlobalContextRelease(m_context);
 }
 
@@ -70,6 +84,10 @@ void JSCExecutor::executeApplicationScript(
     const std::string& sourceURL) {
   String jsScript(script.c_str());
   String jsSourceURL(sourceURL.c_str());
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
+    "sourceURL", sourceURL);
+  #endif
   evaluateScriptWithJSC(m_context, jsScript, jsSourceURL);
 }
 
@@ -128,6 +146,42 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   #endif
 }
 
+void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
+  m_flushImmediateCallback(queueJSON);
+}
+
+static JSValueRef createErrorString(JSContextRef ctx, const char *msg) {
+  return JSValueMakeString(ctx, String(msg));
+}
+
+static JSValueRef nativeFlushQueueImmediate(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception) {
+  if (argumentCount != 1) {
+    *exception = createErrorString(ctx, "Got wrong number of args");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSCExecutor *executor;
+  try {
+    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
+  } catch (std::out_of_range& e) {
+    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSValueProtect(ctx, arguments[0]);
+  std::string resStr = Value(ctx, arguments[0]).toJSONString();
+
+  executor->flushQueueImmediate(resStr);
+
+  return JSValueMakeUndefined(ctx);
+}
+
 static JSValueRef nativeLoggingHook(
     JSContextRef ctx,
     JSObjectRef function,
@@ -137,8 +191,8 @@ static JSValueRef nativeLoggingHook(
   android_LogPriority logLevel = ANDROID_LOG_DEBUG;
   if (argumentCount > 1) {
     int level = (int) JSValueToNumber(ctx, arguments[1], NULL);
-    // The lowest log level we get from JS is 0.  We shift and cap it to be
-    // in the range Android logging method expects.
+    // The lowest log level we get from JS is 0. We shift and cap it to be
+    // in the range the Android logging method expects.
     logLevel = std::min(
         static_cast<android_LogPriority>(level + ANDROID_LOG_VERBOSE),
         ANDROID_LOG_FATAL);

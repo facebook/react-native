@@ -8,8 +8,8 @@
  */
 'use strict';
 
-jest.dontMock('../index');
-jest.mock('fs');
+jest.dontMock('../index')
+    .mock('fs');
 
 var Promise = require('promise');
 var BundlesLayout = require('../index');

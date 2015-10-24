@@ -42,32 +42,28 @@ function setStatus(status) {
   document.getElementById('status').innerHTML = status;
 }
 
+// This worker will run the application javascript code,
+// making sure that it's run in an environment without a global
+// document, to make it consistent with the JSC executor environment.
+var worker = new Worker('debuggerWorker.js');
+
 var messageHandlers = {
   // This method is a bit hacky. Catalyst asks for a new clean JS runtime.
   // The easiest way to do this is to reload this page. That also means that
   // web socket connection will be lost. To send reply back we need to remember
-  // message id
+  // message id.
+  // This message also needs to be handled outside of the worker, since the worker
+  // doesn't have access to local storage.
   'prepareJSRuntime': function(message) {
     window.onbeforeunload = undefined;
     window.localStorage.setItem('sessionID', message.id);
     window.location.reload();
   },
-  'executeApplicationScript': function(message, sendReply) {
-    for (var key in message.inject) {
-      window[key] = JSON.parse(message.inject[key]);
-    }
-    loadScript(message.url, sendReply.bind(null, null));
+  'executeApplicationScript': function(message) {
+    worker.postMessage(message);
   },
-  'executeJSCall': function(message, sendReply) {
-    var returnValue = null;
-    try {
-      if (window && window.require) {
-        var module = window.require(message.moduleName);
-        returnValue = module[message.moduleMethod].apply(module, message.arguments);
-      }
-    } finally {
-      sendReply(JSON.stringify(returnValue));
-    }
+  'executeJSCall': function(message) {
+    worker.postMessage(message);
   }
 };
 
@@ -89,12 +85,9 @@ function connectToDebuggerProxy() {
       return;
     }
 
-    var sendReply = function(result) {
-      ws.send(JSON.stringify({replyID: object.id, result: result}));
-    };
     var handler = messageHandlers[object.method];
     if (handler) {
-      handler(object, sendReply);
+      handler(object);
     } else {
       console.warn('Unknown method: ' + object.method);
     }
@@ -107,17 +100,13 @@ function connectToDebuggerProxy() {
     window.localStorage.removeItem('sessionID');
     debuggerSetTimeout(connectToDebuggerProxy, 100);
   };
+
+  worker.onmessage = function(message) {
+    ws.send(JSON.stringify(message.data));
+  }
 }
 
 connectToDebuggerProxy();
-
-function loadScript(src, callback) {
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = src;
-  script.onload = callback;
-  document.head.appendChild(script);
-}
 
 })();
 </script>

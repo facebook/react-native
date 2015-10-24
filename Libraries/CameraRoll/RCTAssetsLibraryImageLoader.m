@@ -11,6 +11,7 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ImageIO/ImageIO.h>
+#import <libkern/OSAtomic.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTBridge.h"
@@ -40,24 +41,63 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return [requestURL.scheme.lowercaseString isEqualToString:@"assets-library"];
+  return [requestURL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(UIViewContentMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
+  __block volatile uint32_t cancelled = 0;
+
   [[self assetsLibrary] assetForURL:imageURL resultBlock:^(ALAsset *asset) {
+    if (cancelled) {
+      return;
+    }
+
     if (asset) {
       // ALAssetLibrary API is async and will be multi-threaded. Loading a few full
       // resolution images at once will spike the memory up to store the image data,
       // and might trigger memory warnings and/or OOM crashes.
       // To improve this, process the loaded asset in a serial queue.
       dispatch_async(RCTAssetsLibraryImageLoaderQueue(), ^{
+        if (cancelled) {
+          return;
+        }
+
         // Also make sure the image is released immediately after it's used so it
         // doesn't spike the memory up during the process.
         @autoreleasepool {
-
           BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
           ALAssetRepresentation *representation = [asset defaultRepresentation];
+
+#if RCT_DEV
+
+          CGSize sizeBeingLoaded = size;
+          if (useMaximumSize) {
+            CGSize pointSize = representation.dimensions;
+            sizeBeingLoaded = CGSizeMake(pointSize.width * representation.scale, pointSize.height * representation.scale);
+          }
+
+          CGSize screenSize;
+          if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedDescending) {
+            screenSize = [UIScreen mainScreen].nativeBounds.size;
+          } else {
+            CGSize mainScreenSize = [UIScreen mainScreen].bounds.size;
+            CGFloat mainScreenScale = [[UIScreen mainScreen] scale];
+            screenSize = CGSizeMake(mainScreenSize.width * mainScreenScale, mainScreenSize.height * mainScreenScale);
+          }
+          CGFloat maximumPixelDimension = fmax(screenSize.width, screenSize.height);
+
+          if (sizeBeingLoaded.width > maximumPixelDimension || sizeBeingLoaded.height > maximumPixelDimension) {
+            RCTLogInfo(@"[PERF ASSETS] Loading %@ at size %@, which is larger than screen size %@",
+                       representation.filename, NSStringFromCGSize(sizeBeingLoaded), NSStringFromCGSize(screenSize));
+          }
+
+#endif
 
           UIImage *image;
           NSError *error = nil;
@@ -74,30 +114,29 @@ RCT_EXPORT_MODULE()
       });
     } else {
       NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@ with no error message.", imageURL];
-      NSError *error = RCTErrorWithMessage(errorText);
-      completionHandler(error, nil);
+      completionHandler(RCTErrorWithMessage(errorText), nil);
     }
   } failureBlock:^(NSError *loadError) {
+    if (cancelled) {
+      return;
+    }
+
     NSString *errorText = [NSString stringWithFormat:@"Failed to load asset at URL %@.\niOS Error: %@", imageURL, loadError];
-    NSError *error = RCTErrorWithMessage(errorText);
-    completionHandler(error, nil);
+    completionHandler(RCTErrorWithMessage(errorText), nil);
   }];
 
-  return ^{};
+  return ^{
+    OSAtomicOr32Barrier(1, &cancelled);
+  };
 }
 
 @end
 
 @implementation RCTBridge (RCTAssetsLibraryImageLoader)
 
-- (RCTAssetsLibraryImageLoader *)assetsLibraryImageLoader
-{
-  return self.modules[RCTBridgeModuleNameForClass([RCTAssetsLibraryImageLoader class])];
-}
-
 - (ALAssetsLibrary *)assetsLibrary
 {
-  return [self.assetsLibraryImageLoader assetsLibrary];
+  return [self.modules[RCTBridgeModuleNameForClass([RCTAssetsLibraryImageLoader class])] assetsLibrary];
 }
 
 @end
@@ -116,7 +155,11 @@ static dispatch_queue_t RCTAssetsLibraryImageLoaderQueue(void)
 // Why use a custom scaling method? Greater efficiency, reduced memory overhead:
 // http://www.mindsea.com/2012/12/downscaling-huge-alassets-without-fear-of-sigkill
 
-static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation, CGSize size, CGFloat scale, UIViewContentMode resizeMode, NSError **error)
+static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
+                                       CGSize size,
+                                       CGFloat scale,
+                                       UIViewContentMode resizeMode,
+                                       NSError **error)
 {
   NSUInteger length = (NSUInteger)representation.size;
   NSMutableData *data = [NSMutableData dataWithLength:length];

@@ -40,7 +40,7 @@
 - (void)testNativeLoggingHookExceptionBehavior
 {
   dispatch_semaphore_t doneSem = dispatch_semaphore_create(0);
-  [_executor executeApplicationScript:@"var x = {toString: function() { throw 1; }}; nativeLoggingHook(x);"
+  [_executor executeApplicationScript:[@"var x = {toString: function() { throw 1; }}; nativeLoggingHook(x);" dataUsingEncoding:NSUTF8StringEncoding]
                            sourceURL:[NSURL URLWithString:@"file://"]
                           onComplete:^(__unused id error){
                             dispatch_semaphore_signal(doneSem);
@@ -128,7 +128,7 @@ static uint64_t _get_time_nanoseconds(void)
     } \
   ";
 
-  [_executor executeApplicationScript:script sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(__unused NSError *error) {
+  [_executor executeApplicationScript:[script dataUsingEncoding:NSUTF8StringEncoding] sourceURL:[NSURL URLWithString:@"http://localhost:8081/"] onComplete:^(__unused NSError *error) {
     NSMutableArray *params = [NSMutableArray new];
     id data = @1;
     for (int i = 0; i < 4; i++) {

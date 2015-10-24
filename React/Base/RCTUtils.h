@@ -11,6 +11,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "RCTAssert.h"
 #import "RCTDefines.h"
@@ -51,6 +52,16 @@ RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
 
+// Returns YES if React is running in an iOS App Extension
+RCT_EXTERN BOOL RCTRunningInAppExtension(void);
+
+// Returns the shared UIApplication instance, or nil if running in an App Extension
+RCT_EXTERN UIApplication *RCTSharedApplication(void);
+
+// Return a UIAlertView initialized with the given values
+// or nil if running in an app extension
+RCT_EXTERN UIAlertView *RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles);
+
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 
@@ -66,3 +77,10 @@ RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
 
 // Gzip functionality - compression level in range 0 - 1 (-1 for default)
 RCT_EXTERN NSData *RCTGzipData(NSData *data, float level);
+
+// Returns the relative path within the main bundle for an absolute URL
+// (or nil, if the URL does not specify a path within the main bundle)
+RCT_EXTERN NSString *RCTBundlePathForURL(NSURL *URL);
+
+// Determines if a given image URL actually refers to an XCAsset
+RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *imageURL);

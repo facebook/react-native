@@ -28,6 +28,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
+import com.facebook.systrace.TraceListener;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -40,7 +41,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @DoNotStrip
 public class CatalystInstance {
 
-  private static final int BRIDGE_SETUP_TIMEOUT_MS = 15000;
+  private static final int BRIDGE_SETUP_TIMEOUT_MS = 30000;
+  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 30000;
 
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
 
@@ -51,6 +53,9 @@ public class CatalystInstance {
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
   private volatile boolean mDestroyed = false;
+  private final TraceListener mTraceListener;
+  private final JavaScriptModuleRegistry mJSModuleRegistry;
+  private final JSBundleLoader mJSBundleLoader;
 
   // Access from native modules thread
   private final NativeModuleRegistry mJavaRegistry;
@@ -59,7 +64,7 @@ public class CatalystInstance {
 
   // Access from JS thread
   private @Nullable ReactBridge mBridge;
-  private @Nullable JavaScriptModuleRegistry mJSModuleRegistry;
+  private boolean mJSBundleHasLoaded;
 
   private CatalystInstance(
       final CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
@@ -71,19 +76,20 @@ public class CatalystInstance {
     mCatalystQueueConfiguration = CatalystQueueConfiguration.create(
         catalystQueueConfigurationSpec,
         new NativeExceptionHandler());
-    mBridgeIdleListeners = new CopyOnWriteArrayList<NotThreadSafeBridgeIdleDebugListener>();
+    mBridgeIdleListeners = new CopyOnWriteArrayList<>();
     mJavaRegistry = registry;
+    mJSModuleRegistry = new JavaScriptModuleRegistry(CatalystInstance.this, jsModulesConfig);
+    mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mTraceListener = new JSProfilerTraceListener();
+    Systrace.registerListener(mTraceListener);
 
     final CountDownLatch initLatch = new CountDownLatch(1);
     mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
         new Runnable() {
           @Override
           public void run() {
-            initializeBridge(jsExecutor, registry, jsModulesConfig, jsBundleLoader);
-            mJSModuleRegistry =
-                new JavaScriptModuleRegistry(CatalystInstance.this, jsModulesConfig);
-
+            initializeBridge(jsExecutor, jsModulesConfig);
             initLatch.countDown();
           }
         });
@@ -99,19 +105,48 @@ public class CatalystInstance {
 
   private void initializeBridge(
       JavaScriptExecutor jsExecutor,
-      NativeModuleRegistry registry,
-      JavaScriptModulesConfig jsModulesConfig,
-      JSBundleLoader jsBundleLoader) {
+      JavaScriptModulesConfig jsModulesConfig) {
     mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
     Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
+
     mBridge = new ReactBridge(
         jsExecutor,
         new NativeModulesReactCallback(),
         mCatalystQueueConfiguration.getNativeModulesQueueThread());
     mBridge.setGlobalVariable(
         "__fbBatchedBridgeConfig",
-        buildModulesConfigJSONProperty(registry, jsModulesConfig));
-    jsBundleLoader.loadScript(mBridge);
+        buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
+  }
+
+  public void runJSBundle() {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "CatalystInstance_runJSBundle");
+
+    try {
+      final CountDownLatch initLatch = new CountDownLatch(1);
+      mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
+          new Runnable() {
+            @Override
+            public void run() {
+              Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
+              mJSBundleHasLoaded = true;
+
+              incrementPendingJSCalls();
+
+              mJSBundleLoader.loadScript(mBridge);
+
+              initLatch.countDown();
+            }
+          });
+      Assertions.assertCondition(
+          initLatch.await(LOAD_JS_BUNDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+          "Timed out loading JS!");
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   /* package */ void callFunction(
@@ -198,6 +233,10 @@ public class CatalystInstance {
       for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
         listener.onTransitionToBridgeIdle();
       }
+    }
+
+    if (mTraceListener != null) {
+      Systrace.unregisterListener(mTraceListener);
     }
 
     // We can access the Bridge from any thread now because we know either we are on the JS thread
@@ -299,6 +338,7 @@ public class CatalystInstance {
 
   private void decrementPendingJSCalls() {
     int newPendingCalls = mPendingJSCalls.decrementAndGet();
+    Assertions.assertCondition(newPendingCalls >= 0);
     boolean isNowIdle = newPendingCalls == 0;
     Systrace.traceCounter(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -360,6 +400,44 @@ public class CatalystInstance {
             @Override
             public void run() {
               destroy();
+            }
+          });
+    }
+  }
+
+  private class JSProfilerTraceListener implements TraceListener {
+    @Override
+    public void onTraceStarted() {
+      mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
+          new Runnable() {
+            @Override
+            public void run() {
+              mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
+
+              if (mDestroyed) {
+                return;
+              }
+              Assertions.assertNotNull(mBridge).setGlobalVariable(
+                  "__BridgeProfilingIsProfiling",
+                  "true");
+            }
+          });
+    }
+
+    @Override
+    public void onTraceStopped() {
+      mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
+          new Runnable() {
+            @Override
+            public void run() {
+              mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
+
+              if (mDestroyed) {
+                return;
+              }
+              Assertions.assertNotNull(mBridge).setGlobalVariable(
+                  "__BridgeProfilingIsProfiling",
+                  "false");
             }
           });
     }

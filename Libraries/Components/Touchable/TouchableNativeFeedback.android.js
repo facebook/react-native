@@ -25,7 +25,7 @@ var processColor = require('processColor');
 
 var rippleBackgroundPropType = createStrictShapeTypeChecker({
   type: React.PropTypes.oneOf(['RippleAndroid']),
-  color: PropTypes.string,
+  color: PropTypes.number,
   borderless: PropTypes.bool,
 });
 
@@ -95,7 +95,7 @@ var TouchableNativeFeedback = React.createClass({
      * selectable elements (?android:attr/selectableItemBackgroundBorderless).
      * Available on android API level 21+
      *
-     * 3) TouchableNativeFeedback.RippleAndroid(color, borderless) - will create
+     * 3) TouchableNativeFeedback.Ripple(color, borderless) - will create
      * object that represents ripple drawable with specified color (as a
      * string). If property `borderless` evaluates to true the ripple will
      * render outside of the view bounds (see native actionbar buttons as an

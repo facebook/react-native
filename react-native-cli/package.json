@@ -1,8 +1,11 @@
 {
   "name": "react-native-cli",
-  "version": "0.1.4",
-  "description": "The ReactNative cli tools",
+  "version": "0.1.6",
+  "description": "The React Native CLI tools",
   "main": "index.js",
+  "engines": {
+    "node": ">=4"
+  },
   "scripts": {
     "test": "mocha"
   },
@@ -10,6 +13,8 @@
     "react-native": "index.js"
   },
   "dependencies": {
-    "prompt": "^0.2.14"
+    "chalk": "^1.1.1",
+    "prompt": "^0.2.14",
+    "semver": "^5.0.3"
   }
 }

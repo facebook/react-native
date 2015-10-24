@@ -40,9 +40,12 @@ var notMultiline = {
   onSubmitEditing: true,
 };
 
-var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-var RCTTextView = requireNativeComponent('RCTTextView', null);
-var RCTTextField = requireNativeComponent('RCTTextField', null);
+if (Platform.OS === 'android') {
+  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+} else if (Platform.OS === 'ios') {
+  var RCTTextView = requireNativeComponent('RCTTextView', null);
+  var RCTTextField = requireNativeComponent('RCTTextField', null);
+}
 
 type Event = Object;
 
@@ -65,8 +68,8 @@ type Event = Object;
  *   />
  * ```
  *
- * Note that some props are only available with multiline={true/false}:
- *
+ * Note that some props are only available with `multiline={true/false}`:
+ * ```
  *   var onlyMultiline = {
  *     onSelectionChange: true, // not supported in Open Source yet
  *     onTextInput: true, // not supported in Open Source yet
@@ -76,6 +79,7 @@ type Event = Object;
  *   var notMultiline = {
  *     onSubmitEditing: true,
  *   };
+ * ```
  */
 var TextInput = React.createClass({
   propTypes: {
@@ -104,7 +108,7 @@ var TextInput = React.createClass({
     autoFocus: PropTypes.bool,
     /**
      * Set the position of the cursor from where editing will begin.
-     * @platorm android
+     * @platform android
      */
     textAlign: PropTypes.oneOf([
       'start',

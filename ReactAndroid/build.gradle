@@ -10,8 +10,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
 // We download various C++ open-source dependencies into downloads.
-// We then copy both downloaded code and our custom makefiles and headers into third-party-ndk
-// After that we build native code from src/main/jni with module path pointing at third-party-ndk
+// We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
+// After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
 def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
@@ -160,11 +160,18 @@ def findNdkBuildFullPath() {
 
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
-    if (ndkBuildFullPath == null || !new File(ndkBuildFullPath).canExecute()) {
+    if (ndkBuildFullPath == null) {
         throw new GradleScriptException(
             "ndk-build binary cannot be found, check if you've set " +
             "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
             "setup in local.properties",
+            null)
+    }
+    if (!new File(ndkBuildFullPath).canExecute()) {
+        throw new GradleScriptException(
+            "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
+            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.proerties, is set correctly.\n" +
+            "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
             null)
     }
     return ndkBuildFullPath
@@ -232,6 +239,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.6.1'
     compile 'com.facebook.fresco:imagepipeline-okhttp:0.6.1'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
@@ -243,4 +251,3 @@ dependencies {
 }
 
 apply from: 'release.gradle'
-

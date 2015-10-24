@@ -34,6 +34,8 @@ function getNameFromPath(filepath) {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
     return 'TabBarIOS.Item';
+  } else if (filepath === 'AnimatedImplementation') {
+    return 'Animated';
   }
   return filepath;
 }
@@ -43,7 +45,7 @@ function getPlatformFromPath(filepath) {
   while (ext = path.extname(filepath)) {
     filepath = path.basename(filepath, ext);
   }
-  
+
   if (endsWith(filepath, 'Android')) {
     return ANDROID_SUFFIX;
   } else if (endsWith(filepath, 'IOS')) {
@@ -107,7 +109,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
   var componentPlatform = getPlatformFromPath(filepath);
   var docFilePath = '../docs/' + componentName + '.md';
-  
+
   if (fs.existsSync(docFilePath)) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
@@ -211,21 +213,24 @@ var components = [
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
+  '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
   '../Libraries/Utilities/AlertIOS.js',
-  '../Libraries/Animated/Animated.js',
+  '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
   '../Libraries/Storage/AsyncStorage.ios.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
+  '../Libraries/ReactIOS/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',

@@ -64,6 +64,12 @@ public class ScrollEvent extends Event<ScrollEvent> {
   }
 
   private WritableMap serializeEventData() {
+    WritableMap contentInset = Arguments.createMap();
+    contentInset.putDouble("top", 0);
+    contentInset.putDouble("bottom", 0);
+    contentInset.putDouble("left", 0);
+    contentInset.putDouble("right", 0);
+
     WritableMap contentOffset = Arguments.createMap();
     contentOffset.putDouble("x", PixelUtil.toDIPFromPixel(mScrollX));
     contentOffset.putDouble("y", PixelUtil.toDIPFromPixel(mScrollY));
@@ -77,6 +83,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
     layoutMeasurement.putDouble("height", PixelUtil.toDIPFromPixel(mScrollViewHeight));
 
     WritableMap event = Arguments.createMap();
+    event.putMap("contentInset", contentInset);
     event.putMap("contentOffset", contentOffset);
     event.putMap("contentSize", contentSize);
     event.putMap("layoutMeasurement", layoutMeasurement);

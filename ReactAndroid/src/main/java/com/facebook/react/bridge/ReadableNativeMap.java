@@ -33,6 +33,8 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   @Override
   public native double getDouble(String name);
   @Override
+  public native int getInt(String name);
+  @Override
   public native String getString(String name);
   @Override
   public native ReadableNativeArray getArray(String name);
@@ -42,30 +44,20 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   public native ReadableType getType(String name);
 
   @Override
-  public ReadableMapKeySeyIterator keySetIterator() {
-    return new ReadableNativeMapKeySeyIterator(this);
+  public ReadableMapKeySetIterator keySetIterator() {
+    return new ReadableNativeMapKeySetIterator(this);
   }
 
-  @Override
-  public int getInt(String name) {
-    return (int) getDouble(name);
-  }
-
-  // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-  @Override
-  public int getColorInt(String name) {
-    return (int) (long) getDouble(name);
-  }
   /**
    * Implementation of a {@link ReadableNativeMap} iterator in native memory.
    */
   @DoNotStrip
-  private static class ReadableNativeMapKeySeyIterator extends Countable
-      implements ReadableMapKeySeyIterator {
+  private static class ReadableNativeMapKeySetIterator extends Countable
+      implements ReadableMapKeySetIterator {
 
     private final ReadableNativeMap mReadableNativeMap;
 
-    public ReadableNativeMapKeySeyIterator(ReadableNativeMap readableNativeMap) {
+    public ReadableNativeMapKeySetIterator(ReadableNativeMap readableNativeMap) {
       mReadableNativeMap = readableNativeMap;
       initialize(mReadableNativeMap);
     }

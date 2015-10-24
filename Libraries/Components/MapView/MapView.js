@@ -82,7 +82,7 @@ var MapView = React.createClass({
 
     /**
      * If `false` the user won't be able to pinch/zoom the map.
-     * Default `value` is true.
+     * Default value is `true`.
      */
     zoomEnabled: React.PropTypes.bool,
 
@@ -211,7 +211,7 @@ var MapView = React.createClass({
     onRegionChangeComplete: React.PropTypes.func,
 
     /**
-     * Callback that is called once, when the user is clicked on a annotation.
+     * Callback that is called once, when the user taps an annotation.
      */
     onAnnotationPress: React.PropTypes.func,
   },

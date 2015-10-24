@@ -16,11 +16,10 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.uimanager.BaseViewPropertyApplicator;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIProp;
-import com.facebook.react.uimanager.ViewManager;
 
 /**
  * Manages instances of ProgressBar. ProgressBar is wrapped in a FrameLayout because the style of
@@ -28,9 +27,10 @@ import com.facebook.react.uimanager.ViewManager;
  * we have to drop the existing ProgressBar (if there is one) and create a new one with the style
  * given.
  */
-public class ReactProgressBarViewManager extends ViewManager<FrameLayout, ProgressBarShadowNode> {
+public class ReactProgressBarViewManager extends
+    BaseViewManager<FrameLayout, ProgressBarShadowNode> {
 
-  @UIProp(UIProp.Type.STRING) public static final String PROP_STYLE = "styleAttr";
+  /* package */ static final String PROP_STYLE = "styleAttr";
 
   /* package */ static final String REACT_CLASS = "AndroidProgressBar";
   /* package */ static final String DEFAULT_STYLE = "Large";
@@ -45,23 +45,25 @@ public class ReactProgressBarViewManager extends ViewManager<FrameLayout, Progre
     return new FrameLayout(context);
   }
 
-  @Override
-  public void updateView(FrameLayout view, CatalystStylesDiffMap props) {
-    BaseViewPropertyApplicator.applyCommonViewProperties(view, props);
-    if (props.hasKey(PROP_STYLE)) {
-      final int style = getStyleFromString(props.getString(PROP_STYLE));
-      view.removeAllViews();
-      view.addView(
-          new ProgressBar(view.getContext(), null, style),
-          new ViewGroup.LayoutParams(
-              ViewGroup.LayoutParams.WRAP_CONTENT,
-              ViewGroup.LayoutParams.WRAP_CONTENT));
-    }
+  @ReactProp(name = PROP_STYLE)
+  public void setStyle(FrameLayout view, @Nullable String styleName) {
+    final int style = getStyleFromString(styleName);
+    view.removeAllViews();
+    view.addView(
+        new ProgressBar(view.getContext(), null, style),
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT));
   }
 
   @Override
-  public ProgressBarShadowNode createCSSNodeInstance() {
+  public ProgressBarShadowNode createShadowNodeInstance() {
     return new ProgressBarShadowNode();
+  }
+
+  @Override
+  public Class<ProgressBarShadowNode> getShadowNodeClass() {
+    return ProgressBarShadowNode.class;
   }
 
   @Override

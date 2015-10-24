@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -32,9 +31,11 @@ import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -53,10 +54,12 @@ import com.facebook.react.uimanager.ViewProps;
  * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used
  * solely for layouting
  */
-public class ReactTextShadowNode extends ReactShadowNode {
+public class ReactTextShadowNode extends LayoutShadowNode {
 
-  public static final String PROP_TEXT = "text";
   public static final int UNSET = -1;
+
+  @VisibleForTesting
+  public static final String PROP_TEXT = "text";
 
   private static final TextPaint sTextPaintInstance = new TextPaint();
 
@@ -73,7 +76,13 @@ public class ReactTextShadowNode extends ReactShadowNode {
       this.what = what;
     }
     public void execute(SpannableStringBuilder sb) {
-      sb.setSpan(what, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+      // All spans will automatically extend to the right of the text, but not the left - except
+      // for spans that start at the beginning of the text.
+      int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
+      if (start == 0) {
+        spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
+      }
+      sb.setSpan(what, start, end, spanFlags);
     }
   }
 
@@ -134,7 +143,7 @@ public class ReactTextShadowNode extends ReactShadowNode {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<SetSpanOperation>();
     buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
-    if (textCSSNode.mFontSize == -1) {
+    if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
           new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
           0,
@@ -228,12 +237,14 @@ public class ReactTextShadowNode extends ReactShadowNode {
   }
 
   private int mLineHeight = UNSET;
-  private int mNumberOfLines = UNSET;
   private boolean mIsColorSet = false;
   private int mColor;
   private boolean mIsBackgroundColorSet = false;
   private int mBackgroundColor;
-  private int mFontSize = UNSET;
+
+  protected int mNumberOfLines = UNSET;
+  protected int mFontSize = UNSET;
+
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
    * mFontWeight can be {@link Typeface#NORMAL} or {@link Typeface#BOLD}.
@@ -281,84 +292,88 @@ public class ReactTextShadowNode extends ReactShadowNode {
     }
   }
 
-  @Override
-  public void updateProperties(CatalystStylesDiffMap styles) {
-    super.updateProperties(styles);
+  @ReactProp(name = PROP_TEXT)
+  public void setText(@Nullable String text) {
+    mText = text;
+    markUpdated();
+  }
 
-    if (styles.hasKey(PROP_TEXT)) {
-      mText = styles.getString(PROP_TEXT);
-      markUpdated();
-    }
-    if (styles.hasKey(ViewProps.NUMBER_OF_LINES)) {
-      mNumberOfLines = styles.getInt(ViewProps.NUMBER_OF_LINES, UNSET);
-      markUpdated();
-    }
-    if (styles.hasKey(ViewProps.LINE_HEIGHT)) {
-      mLineHeight = styles.getInt(ViewProps.LINE_HEIGHT, UNSET);
-      markUpdated();
-    }
-    if (styles.hasKey(ViewProps.FONT_SIZE)) {
-      if (styles.isNull(ViewProps.FONT_SIZE)) {
-        mFontSize = UNSET;
-      } else {
-        mFontSize = (int) Math.ceil(PixelUtil.toPixelFromSP(
-            styles.getFloat(ViewProps.FONT_SIZE, ViewDefaults.FONT_SIZE_SP)));
-      }
-      markUpdated();
-    }
-    if (styles.hasKey(ViewProps.COLOR)) {
-      if (styles.isNull(ViewProps.COLOR)) {
-        mIsColorSet = false;
-      } else {
-        mColor = styles.getColorInt(ViewProps.COLOR, Color.TRANSPARENT);
-        mIsColorSet = true;
-      }
-      markUpdated();
-    }
-    if (styles.hasKey(ViewProps.BACKGROUND_COLOR)) {
-      if (styles.isNull(ViewProps.BACKGROUND_COLOR)) {
-        mIsBackgroundColorSet = false;
-      } else {
-        mBackgroundColor = styles.getColorInt(ViewProps.BACKGROUND_COLOR, Color.TRANSPARENT);
-        mIsBackgroundColorSet = true;
-      }
-      markUpdated();
-    }
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
+  public void setNumberOfLines(int numberOfLines) {
+    mNumberOfLines = numberOfLines;
+    markUpdated();
+  }
 
-    if (styles.hasKey(ViewProps.FONT_FAMILY)) {
-      mFontFamily = styles.getString(ViewProps.FONT_FAMILY);
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultInt = UNSET)
+  public void setLineHeight(int lineHeight) {
+    mLineHeight = lineHeight;
+    markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
+  public void setFontSize(float fontSize) {
+    if (fontSize != UNSET) {
+      fontSize = (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize));
+    }
+    mFontSize = (int) fontSize;
+    markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.COLOR)
+  public void setColor(@Nullable Integer color) {
+    mIsColorSet = (color != null);
+    if (mIsColorSet) {
+      mColor = color;
+    }
+    markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR)
+  public void setBackgroundColor(Integer color) {
+    // Don't apply background color to anchor TextView since it will be applied on the View directly
+    if (!isVirtualAnchor()) {
+      mIsBackgroundColorSet = (color != null);
+      if (mIsBackgroundColorSet) {
+        mBackgroundColor = color;
+      }
       markUpdated();
     }
+  }
 
-    if (styles.hasKey(ViewProps.FONT_WEIGHT)) {
-      String fontWeightString = styles.getString(ViewProps.FONT_WEIGHT);
-      int fontWeightNumeric = fontWeightString != null ?
-          parseNumericFontWeight(fontWeightString) : -1;
-      int fontWeight = UNSET;
-      if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
-        fontWeight = Typeface.BOLD;
-      } else if ("normal".equals(fontWeightString) ||
-          (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
-        fontWeight = Typeface.NORMAL;
-      }
-      if (fontWeight != mFontWeight) {
-        mFontWeight = fontWeight;
-        markUpdated();
-      }
+  @ReactProp(name = ViewProps.FONT_FAMILY)
+  public void setFontFamily(@Nullable String fontFamily) {
+    mFontFamily = fontFamily;
+    markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.FONT_WEIGHT)
+  public void setFontWeight(@Nullable String fontWeightString) {
+    int fontWeightNumeric = fontWeightString != null ?
+        parseNumericFontWeight(fontWeightString) : -1;
+    int fontWeight = UNSET;
+    if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
+      fontWeight = Typeface.BOLD;
+    } else if ("normal".equals(fontWeightString) ||
+        (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
+      fontWeight = Typeface.NORMAL;
     }
+    if (fontWeight != mFontWeight) {
+      mFontWeight = fontWeight;
+      markUpdated();
+    }
+  }
 
-    if (styles.hasKey(ViewProps.FONT_STYLE)) {
-      String fontStyleString = styles.getString(ViewProps.FONT_STYLE);
-      int fontStyle = UNSET;
-      if ("italic".equals(fontStyleString)) {
-        fontStyle = Typeface.ITALIC;
-      } else if ("normal".equals(fontStyleString)) {
-        fontStyle = Typeface.NORMAL;
-      }
-      if (fontStyle != mFontStyle) {
-        mFontStyle = fontStyle;
-        markUpdated();
-      }
+  @ReactProp(name = ViewProps.FONT_STYLE)
+  public void setFontStyle(@Nullable String fontStyleString) {
+    int fontStyle = UNSET;
+    if ("italic".equals(fontStyleString)) {
+      fontStyle = Typeface.ITALIC;
+    } else if ("normal".equals(fontStyleString)) {
+      fontStyle = Typeface.NORMAL;
+    }
+    if (fontStyle != mFontStyle) {
+      mFontStyle = fontStyle;
+      markUpdated();
     }
   }
 

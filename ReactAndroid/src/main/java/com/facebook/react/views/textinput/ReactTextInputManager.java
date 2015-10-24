@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.text.Editable;
@@ -31,14 +30,13 @@ import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.BaseViewPropertyApplicator;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
@@ -46,45 +44,13 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil;
 /**
  * Manages instances of TextInput.
  */
-public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextInputShadowNode> {
+public class ReactTextInputManager extends
+    BaseViewManager<ReactEditText, ReactTextInputShadowNode> {
 
   /* package */ static final String REACT_CLASS = "AndroidTextInput";
 
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
-
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_TEXT_INPUT_TEXT = "text";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEXT_INPUT_MOST_RECENT_EVENT_COUNT = "mostRecentEventCount";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_FONT_SIZE = ViewProps.FONT_SIZE;
-  @UIProp(UIProp.Type.BOOLEAN)
-  public static final String PROP_TEXT_INPUT_AUTO_CORRECT = "autoCorrect";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEXT_INPUT_AUTO_CAPITALIZE = "autoCapitalize";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEXT_ALIGN = "textAlign";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEXT_ALIGN_VERTICAL = "textAlignVertical";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_TEXT_INPUT_HINT = "placeholder";
-  @UIProp(UIProp.Type.COLOR)
-  public static final String PROP_TEXT_INPUT_HINT_COLOR = "placeholderTextColor";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEXT_INPUT_NUMLINES = ViewProps.NUMBER_OF_LINES;
-  @UIProp(UIProp.Type.BOOLEAN)
-  public static final String PROP_TEXT_INPUT_MULTILINE = "multiline";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_TEXT_INPUT_KEYBOARD_TYPE = "keyboardType";
-  @UIProp(UIProp.Type.BOOLEAN)
-  public static final String PROP_TEXT_INPUT_PASSWORD = "password";
-  @UIProp(UIProp.Type.BOOLEAN)
-  public static final String PROP_TEXT_INPUT_EDITABLE = "editable";
-  @UIProp(UIProp.Type.COLOR)
-  public static final String PROP_TEXT_INPUT_UNDERLINE_COLOR = "underlineColorAndroid";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_TEST_ID = "testID";
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
@@ -107,8 +73,13 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
   }
 
   @Override
-  public ReactTextInputShadowNode createCSSNodeInstance() {
+  public ReactTextInputShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
+  }
+
+  @Override
+  public Class<ReactTextInputShadowNode> getShadowNodeClass() {
+    return ReactTextInputShadowNode.class;
   }
 
   @Nullable
@@ -179,140 +150,130 @@ public class ReactTextInputManager extends ViewManager<ReactEditText, ReactTextI
     }
   }
 
+  @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
+  public void setFontSize(ReactEditText view, float fontSize) {
+    view.setTextSize(
+        TypedValue.COMPLEX_UNIT_PX,
+        (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+  }
+
+  @ReactProp(name = "placeholder")
+  public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
+    view.setHint(placeholder);
+  }
+
+  @ReactProp(name = "placeholderTextColor", customType = "Color")
+  public void setPlaceholderTextColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
+    } else {
+      view.setHintTextColor(color);
+    }
+  }
+
+  @ReactProp(name = "underlineColorAndroid", customType = "Color")
+  public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
+    if (underlineColor == null) {
+      view.getBackground().clearColorFilter();
+    } else {
+      view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
+    }
+  }
+
+  @ReactProp(name = "textAlign")
+  public void setTextAlign(ReactEditText view, int gravity) {
+    view.setGravityHorizontal(gravity);
+  }
+
+  @ReactProp(name = "textAlignVertical")
+  public void setTextAlignVertical(ReactEditText view, int gravity) {
+    view.setGravityVertical(gravity);
+  }
+
+  @ReactProp(name = "editable", defaultBoolean = true)
+  public void setEditable(ReactEditText view, boolean editable) {
+    view.setEnabled(editable);
+  }
+
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = 1)
+  public void setNumLines(ReactEditText view, int numLines) {
+    view.setLines(numLines);
+  }
+
+  @ReactProp(name = "autoCorrect")
+  public void setAutoCorrect(ReactEditText view, @Nullable Boolean autoCorrect) {
+    // clear auto correct flags, set SUGGESTIONS or NO_SUGGESTIONS depending on value
+    updateStagedInputTypeFlag(
+        view,
+        InputType.TYPE_TEXT_FLAG_AUTO_CORRECT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS,
+        autoCorrect != null ?
+            (autoCorrect.booleanValue() ?
+                InputType.TYPE_TEXT_FLAG_AUTO_CORRECT : InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+            : 0);
+  }
+
+  @ReactProp(name = "multiline", defaultBoolean = false)
+  public void setMultiline(ReactEditText view, boolean multiline) {
+    updateStagedInputTypeFlag(
+        view,
+        multiline ? 0 : InputType.TYPE_TEXT_FLAG_MULTI_LINE,
+        multiline ? InputType.TYPE_TEXT_FLAG_MULTI_LINE : 0);
+  }
+
+  @ReactProp(name = "password", defaultBoolean = false)
+  public void setPassword(ReactEditText view, boolean password) {
+    updateStagedInputTypeFlag(
+        view,
+        password ? 0 : InputType.TYPE_TEXT_VARIATION_PASSWORD,
+        password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : 0);
+  }
+
+  @ReactProp(name = "autoCapitalize", defaultInt = InputType.TYPE_CLASS_TEXT)
+  public void setAutoCapitalize(ReactEditText view, int autoCapitalize) {
+    int flagsToSet = 0;
+    switch (autoCapitalize) {
+      case InputType.TYPE_TEXT_FLAG_CAP_SENTENCES:
+      case InputType.TYPE_TEXT_FLAG_CAP_WORDS:
+      case InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS:
+      case InputType.TYPE_CLASS_TEXT:
+        flagsToSet = autoCapitalize;
+        break;
+      default:
+        throw new
+            JSApplicationCausedNativeException("Invalid autoCapitalize value: " + autoCapitalize);
+    }
+    updateStagedInputTypeFlag(
+        view,
+        InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_CAP_WORDS |
+            InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
+        flagsToSet);
+  }
+
+  @ReactProp(name = "keyboardType")
+  public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
+    int flagsToSet = 0;
+    if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_CLASS_NUMBER;
+    } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+    }
+    updateStagedInputTypeFlag(
+        view,
+        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+        flagsToSet);
+  }
+
   @Override
-  public void updateView(ReactEditText view, CatalystStylesDiffMap props) {
-    BaseViewPropertyApplicator.applyCommonViewProperties(view, props);
+  protected void onAfterUpdateTransaction(ReactEditText view) {
+    super.onAfterUpdateTransaction(view);
+    view.commitStagedInputType();
+  }
 
-    if (props.hasKey(PROP_FONT_SIZE)) {
-      float textSize = props.getFloat(PROP_FONT_SIZE, ViewDefaults.FONT_SIZE_SP);
-      view.setTextSize(
-          TypedValue.COMPLEX_UNIT_PX,
-          (int) Math.ceil(PixelUtil.toPixelFromSP(textSize)));
-    }
-
-    //Prevents flickering color while waiting for JS update.
-    if (props.hasKey(ViewProps.COLOR)) {
-      if (props.isNull(ViewProps.COLOR)) {
-        view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
-      } else {
-        final int textColor = props.getColorInt(ViewProps.COLOR, Color.TRANSPARENT);
-        view.setTextColor(textColor);
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_HINT)) {
-      view.setHint(props.getString(PROP_TEXT_INPUT_HINT));
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_HINT_COLOR)) {
-      if (props.isNull(PROP_TEXT_INPUT_HINT_COLOR)) {
-        view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
-      } else {
-        final int hintColor = props.getColorInt(PROP_TEXT_INPUT_HINT_COLOR, Color.TRANSPARENT);
-        view.setHintTextColor(hintColor);
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_UNDERLINE_COLOR)) {
-      if (props.isNull(PROP_TEXT_INPUT_UNDERLINE_COLOR)) {
-        view.getBackground().clearColorFilter();
-      } else {
-        final int underlineColor =
-            props.getColorInt(PROP_TEXT_INPUT_UNDERLINE_COLOR, Color.TRANSPARENT);
-        view.getBackground().setColorFilter(underlineColor, PorterDuff.Mode.SRC_IN);
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_ALIGN)) {
-      int gravityHorizontal = props.getInt(PROP_TEXT_ALIGN, 0);
-      view.setGravityHorizontal(gravityHorizontal);
-    }
-
-    if (props.hasKey(PROP_TEXT_ALIGN_VERTICAL)) {
-      int gravityVertical = props.getInt(PROP_TEXT_ALIGN_VERTICAL, 0);
-      view.setGravityVertical(gravityVertical);
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_EDITABLE)) {
-      if (props.getBoolean(PROP_TEXT_INPUT_EDITABLE, true)) {
-        view.setEnabled(true);
-      } else {
-        view.setEnabled(false);
-      }
-    }
-
-    // newInputType will collect all content attributes that have to be set in the InputText.
-    int newInputType = view.getInputType();
-
-    if (props.hasKey(PROP_TEXT_INPUT_AUTO_CORRECT)) {
-      // clear auto correct flags
-      newInputType
-          &= ~(InputType.TYPE_TEXT_FLAG_AUTO_CORRECT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-      if (props.getBoolean(PROP_TEXT_INPUT_AUTO_CORRECT, false)) {
-        newInputType |= InputType.TYPE_TEXT_FLAG_AUTO_CORRECT;
-      } else if (!props.isNull(PROP_TEXT_INPUT_AUTO_CORRECT)) {
-        newInputType |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_MULTILINE)) {
-      if (props.getBoolean(PROP_TEXT_INPUT_MULTILINE, false)) {
-        newInputType |= InputType.TYPE_TEXT_FLAG_MULTI_LINE;
-      } else {
-        newInputType &= ~InputType.TYPE_TEXT_FLAG_MULTI_LINE;
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_KEYBOARD_TYPE)) {
-      // reset keyboard type defaults
-      newInputType = newInputType &
-          ~InputType.TYPE_CLASS_NUMBER &
-          ~InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-
-      String keyboardType = props.getString(PROP_TEXT_INPUT_KEYBOARD_TYPE);
-      if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
-        newInputType |= InputType.TYPE_CLASS_NUMBER;
-      } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
-        newInputType |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_PASSWORD)) {
-      if (props.getBoolean(PROP_TEXT_INPUT_PASSWORD, false)) {
-        newInputType |= InputType.TYPE_TEXT_VARIATION_PASSWORD;
-      } else {
-        newInputType &= ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
-      }
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_AUTO_CAPITALIZE)) {
-      // clear auto capitalization flags
-      newInputType &= ~(
-          InputType.TYPE_TEXT_FLAG_CAP_SENTENCES |
-              InputType.TYPE_TEXT_FLAG_CAP_WORDS |
-              InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-      int autoCapitalize = props.getInt(PROP_TEXT_INPUT_AUTO_CAPITALIZE, InputType.TYPE_CLASS_TEXT);
-
-      switch (autoCapitalize) {
-        case InputType.TYPE_TEXT_FLAG_CAP_SENTENCES:
-        case InputType.TYPE_TEXT_FLAG_CAP_WORDS:
-        case InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS:
-        case InputType.TYPE_CLASS_TEXT:
-          newInputType |= autoCapitalize;
-          break;
-        default:
-          throw new
-              JSApplicationCausedNativeException("Invalid autoCapitalize value: " + autoCapitalize);
-      }
-    }
-
-    if (view.getInputType() != newInputType) {
-      view.setInputType(newInputType);
-    }
-
-    if (props.hasKey(PROP_TEXT_INPUT_NUMLINES)) {
-      view.setLines(props.getInt(PROP_TEXT_INPUT_NUMLINES, 1));
-    }
+  private static void updateStagedInputTypeFlag(
+      ReactEditText view,
+      int flagsToUnset,
+      int flagsToSet) {
+    view.setStagedInputType((view.getStagedInputType() & ~flagsToUnset) | flagsToSet);
   }
 
   private class ReactTextInputTextWatcher implements TextWatcher {
