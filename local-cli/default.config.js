@@ -12,15 +12,7 @@ var path = require('path');
  */
 var config = {
   getProjectRoots() {
-    if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli$/)) {
-      // packager is running from node_modules of another project
-      return [path.resolve(__dirname, '../../..')];
-    } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
-      // packager is running from node_modules of another project
-      return [path.resolve(__dirname, '../../..')];
-    } else {
-      return [path.resolve(__dirname, '..')];
-    }
+    return getRoots();
   },
 
   /**
@@ -29,7 +21,7 @@ var config = {
    * `./<image.extension>` don't require any entry in here.
    */
   getAssetRoots() {
-    return [];
+    return getRoots();
   },
 
   /**
@@ -40,5 +32,17 @@ var config = {
     return blacklist(platform);
   }
 };
+
+function getRoots() {
+  if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli$/)) {
+    // packager is running from node_modules of another project
+    return [path.resolve(__dirname, '../../..')];
+  } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
+    // packager is running from node_modules of another project
+    return [path.resolve(__dirname, '../../..')];
+  } else {
+    return [path.resolve(__dirname, '..')];
+  }
+}
 
 module.exports = config;
