@@ -89,7 +89,7 @@
 
 - (UIBarButtonItem *)leftButtonItem
 {
-  if (_navigationItem.rightBarButtonItem) {
+  if (_navigationItem.leftBarButtonItem) {
     return _navigationItem.leftBarButtonItem;
   }
   if (self.leftButtonIcon) {
