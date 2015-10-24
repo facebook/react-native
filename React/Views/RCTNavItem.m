@@ -100,7 +100,6 @@
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(handleNavLeftButtonTapped)];
-      
     } else if (_leftButtonTitle.length) {
       _leftButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_leftButtonTitle
@@ -144,7 +143,6 @@
                                        style:UIBarButtonItemStylePlain
                                       target:self
                                       action:@selector(handleNavRightButtonTapped)];
-      
     } else if (_rightButtonTitle.length) {
       _rightButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
