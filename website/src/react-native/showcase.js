@@ -97,6 +97,12 @@ var apps = [
     author: 'Foodstand, Inc.',
   },
   {
+    name: 'Go Fire',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/gou-huo/id1001476888?ls=1&mt=8',
+    author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
     name: 'Hashley',
     icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
