@@ -11,6 +11,10 @@
 
 @implementation RCTNavItem
 
+@synthesize backButtonItem = _backButtonItem;
+@synthesize leftButtonItem = _leftButtonItem;
+@synthesize rightButtonItem = _rightButtonItem;
+
 - (void)setNavigationBar:(UINavigationBar *)navigationBar
 {
   _navigationBar = navigationBar;
@@ -42,69 +46,69 @@
 - (void)setBackButtonTitle:(NSString *)backButtonTitle
 {
   _backButtonTitle = backButtonTitle;
-  _navigationItem.backBarButtonItem = nil;
-  [self backButtonItem]; // to trigger the reset.
+  _backButtonItem = nil;
+  _navigationItem.backBarButtonItem = [self backButtonItem];
 }
 
 - (void)setBackButtonIcon:(UIImage *)backButtonIcon
 {
   _backButtonIcon = backButtonIcon;
-  _navigationItem.backBarButtonItem = nil;
-  [self backButtonItem]; // to trigger the reset.
+  _backButtonItem = nil;
+  _navigationItem.backBarButtonItem = [self backButtonItem];
 }
 
 - (UIBarButtonItem *)backButtonItem
 {
-  if (_navigationItem.backBarButtonItem) {
-    return _navigationItem.backBarButtonItem;
+  if (_backButtonItem) {
+    return _backButtonItem;
   }
   if (self.backButtonIcon) {
-    return _navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:self.backButtonIcon
-                                                                                style:UIBarButtonItemStylePlain
-                                                                               target:nil
-                                                                               action:nil];
+    _backButtonItem = [[UIBarButtonItem alloc] initWithImage:self.backButtonIcon
+                                                       style:UIBarButtonItemStylePlain
+                                                      target:nil
+                                                      action:nil];
   }
   if (self.backButtonTitle.length) {
-    return _navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:self.backButtonTitle
-                                                                                style:UIBarButtonItemStylePlain
-                                                                               target:nil
-                                                                               action:nil];
+    _backButtonItem = [[UIBarButtonItem alloc] initWithTitle:self.backButtonTitle
+                                                       style:UIBarButtonItemStylePlain
+                                                      target:nil
+                                                      action:nil];
   }
-  return _navigationItem.backBarButtonItem = nil;
+  return _navigationItem.backBarButtonItem = _backButtonItem;
 }
 
 - (void)setLeftButtonTitle:(NSString *)leftButtonTitle
 {
   _leftButtonTitle = leftButtonTitle;
-  _navigationItem.leftBarButtonItem = nil;
-  [self leftButtonItem]; // to trigger the reset.
+  _leftButtonItem = nil;
+  _navigationItem.leftBarButtonItem = [self leftButtonItem];
 }
 
 - (void)setLeftButtonIcon:(UIImage *)leftButtonIcon
 {
   _leftButtonIcon = leftButtonIcon;
-  _navigationItem.leftBarButtonItem = nil;
-  [self leftButtonItem]; // to trigger the reset.
+  _leftButtonItem = nil;
+  _navigationItem.leftBarButtonItem = [self leftButtonItem];
 }
 
 - (UIBarButtonItem *)leftButtonItem
 {
-  if (_navigationItem.leftBarButtonItem) {
-    return _navigationItem.leftBarButtonItem;
+  if (_leftButtonItem) {
+    return _leftButtonItem;
   }
   if (self.leftButtonIcon) {
-    return _navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:self.leftButtonIcon
-                                                                                style:UIBarButtonItemStylePlain
-                                                                               target:self
-                                                                               action:@selector(handleNavLeftButtonTapped)];
+    _leftButtonItem = [[UIBarButtonItem alloc] initWithImage:self.leftButtonIcon
+                                                       style:UIBarButtonItemStylePlain
+                                                      target:self
+                                                      action:@selector(handleNavLeftButtonTapped)];
   }
   if (self.leftButtonTitle.length) {
-    return _navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:self.leftButtonTitle
-                                                                                style:UIBarButtonItemStylePlain
-                                                                               target:self
-                                                                               action:@selector(handleNavLeftButtonTapped)];
+    _leftButtonItem = [[UIBarButtonItem alloc] initWithTitle:self.leftButtonTitle
+                                                       style:UIBarButtonItemStylePlain
+                                                      target:self
+                                                      action:@selector(handleNavLeftButtonTapped)];
   }
-  return _navigationItem.leftBarButtonItem = nil;
+  return _navigationItem.leftBarButtonItem = _leftButtonItem;
 }
 
 - (void)handleNavLeftButtonTapped
@@ -117,35 +121,35 @@
 - (void)setRightButtonTitle:(NSString *)rightButtonTitle
 {
   _rightButtonTitle = rightButtonTitle;
-  _navigationItem.rightBarButtonItem = nil;
-  [self rightButtonItem]; // to trigger the reset.
+  _rightButtonItem = nil;
+  _navigationItem.rightBarButtonItem = [self rightButtonItem];
 }
 
 - (void)setRightButtonIcon:(UIImage *)rightButtonIcon
 {
   _rightButtonIcon = rightButtonIcon;
-  _navigationItem.rightBarButtonItem = nil;
-  [self rightButtonItem]; // to trigger the reset.
+  _rightButtonItem = nil;
+  _navigationItem.rightBarButtonItem = [self rightButtonItem];
 }
 
 - (UIBarButtonItem *)rightButtonItem
 {
-  if (_navigationItem.rightBarButtonItem) {
-    return _navigationItem.rightBarButtonItem;
+  if (_rightButtonItem) {
+    return _rightButtonItem;
   }
   if (self.rightButtonIcon) {
-    return _navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:self.rightButtonIcon
-                                                                                 style:UIBarButtonItemStylePlain
-                                                                                target:self
-                                                                                action:@selector(handleNavRightButtonTapped)];
+    _rightButtonItem = [[UIBarButtonItem alloc] initWithImage:self.rightButtonIcon
+                                                        style:UIBarButtonItemStylePlain
+                                                       target:self
+                                                       action:@selector(handleNavRightButtonTapped)];
   }
   if (self.rightButtonTitle.length) {
-    return _navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:self.rightButtonTitle
-                                                                                 style:UIBarButtonItemStylePlain
-                                                                                target:self
-                                                                                action:@selector(handleNavRightButtonTapped)];
+    _rightButtonItem = [[UIBarButtonItem alloc] initWithTitle:self.rightButtonTitle
+                                                        style:UIBarButtonItemStylePlain
+                                                       target:self
+                                                       action:@selector(handleNavRightButtonTapped)];
   }
-  return _navigationItem.rightBarButtonItem = nil;
+  return _navigationItem.rightBarButtonItem = _rightButtonItem;
 }
 
 - (void)handleNavRightButtonTapped
