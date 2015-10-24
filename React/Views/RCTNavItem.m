@@ -47,14 +47,14 @@
 {
   _backButtonTitle = backButtonTitle;
   _backButtonItem = nil;
-  _navigationItem.backBarButtonItem = [self backButtonItem];
+  _navigationItem.backBarButtonItem = self.backButtonItem;
 }
 
 - (void)setBackButtonIcon:(UIImage *)backButtonIcon
 {
   _backButtonIcon = backButtonIcon;
   _backButtonItem = nil;
-  _navigationItem.backBarButtonItem = [self backButtonItem];
+  _navigationItem.backBarButtonItem = self.backButtonItem;
 }
 
 - (UIBarButtonItem *)backButtonItem
@@ -81,14 +81,14 @@
 {
   _leftButtonTitle = leftButtonTitle;
   _leftButtonItem = nil;
-  _navigationItem.leftBarButtonItem = [self leftButtonItem];
+  _navigationItem.leftBarButtonItem = self.leftButtonItem;
 }
 
 - (void)setLeftButtonIcon:(UIImage *)leftButtonIcon
 {
   _leftButtonIcon = leftButtonIcon;
   _leftButtonItem = nil;
-  _navigationItem.leftBarButtonItem = [self leftButtonItem];
+  _navigationItem.leftBarButtonItem = self.leftButtonItem;
 }
 
 - (UIBarButtonItem *)leftButtonItem
@@ -124,14 +124,14 @@
 {
   _rightButtonTitle = rightButtonTitle;
   _rightButtonItem = nil;
-  _navigationItem.rightBarButtonItem = [self rightButtonItem];
+  _navigationItem.rightBarButtonItem = self.rightButtonItem;
 }
 
 - (void)setRightButtonIcon:(UIImage *)rightButtonIcon
 {
   _rightButtonIcon = rightButtonIcon;
   _rightButtonItem = nil;
-  _navigationItem.rightBarButtonItem = [self rightButtonItem];
+  _navigationItem.rightBarButtonItem = self.rightButtonItem;
 }
 
 - (UIBarButtonItem *)rightButtonItem
