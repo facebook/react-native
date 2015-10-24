@@ -13,8 +13,8 @@
 
 @interface RCTNavItem : UIView
 
-@property (nonatomic, assign) UINavigationBar *navigationBar;
-@property (nonatomic, assign) UINavigationItem *navigationItem;
+@property (nonatomic, strong) UINavigationBar *navigationBar;
+@property (nonatomic, strong) UINavigationItem *navigationItem;
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, strong) UIImage *leftButtonIcon;
