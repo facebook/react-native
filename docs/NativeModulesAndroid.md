@@ -113,7 +113,7 @@ public class AnExampleReactPackage implements ReactPackage {
   public List<NativeModule> createNativeModules(
                               ReactApplicationContext reactContext) {
     //Registering the module.
-    return Arrays.asList(new ToastModule(reactContext));
+    return Arrays.<NativeModule>asList(new ToastModule(reactContext));
   }
 
   @Override
