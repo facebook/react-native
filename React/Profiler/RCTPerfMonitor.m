@@ -34,8 +34,16 @@ static BOOL RCTJSCSetOption(const char *option)
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
+    /**
+     * JSC private C++ static method to toggle options at runtime
+     *
+     * JSC::Options::setOptions - JavaScriptCore/runtime/Options.h
+     */
     setOption = dlsym(RTLD_DEFAULT, "_ZN3JSC7Options9setOptionEPKc");
-    setOption("logGC=1");
+
+    if (RCT_DEBUG && setOption == NULL) {
+      RCTLogWarn(@"The symbol used to enable JSC runtime options is not available in this iOS version");
+    }
   });
 
   if (setOption) {
@@ -117,8 +125,8 @@ RCT_EXPORT_MODULE()
     __weak __typeof__(self) weakSelf = self;
     _devMenuItem =
       [RCTDevMenuItem toggleItemWithKey:RCTPerfMonitorKey
-                                  title:@"Show Monitor"
-                          selectedTitle:@"Hide Monitor"
+                                  title:@"Show Perf Monitor"
+                          selectedTitle:@"Hide Perf Monitor"
                                 handler:
                                 ^(BOOL selected) {
                                   if (selected) {
