@@ -199,6 +199,12 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'RenovationFind',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
+    link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
+    author: 'Christopher Lord'
+  },
+  {
     name: 'RepairShopr',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/fa/96/ee/fa96ee57-c5f0-0c6f-1a34-64c9d3266b86/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/repairshopr-payments-lite/id1023262888?mt=8',
