@@ -190,12 +190,12 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     // Force JS __DEV__ value to match RCT_DEBUG
     if (shouldOverrideDev) {
       NSString *sourceString = [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
-      NSRange range = [sourceString rangeOfString:@"__DEV__="];
+      NSRange range = [sourceString rangeOfString:@"__DEV__ ="];
       RCTAssert(range.location != NSNotFound, @"It looks like the implementation"
                 "of __DEV__ has changed. Update -[RCTBatchedBridge loadSource:].");
-      NSRange valueRange = {range.location + range.length, 2};
-      if ([[sourceString substringWithRange:valueRange] isEqualToString:@"!1"]) {
-        source = [[sourceString stringByReplacingCharactersInRange:valueRange withString:@" 1"] dataUsingEncoding:NSUTF8StringEncoding];
+      NSRange valueRange = {range.location + range.length + 2, 5};
+      if ([[sourceString substringWithRange:valueRange] isEqualToString:@"false"]) {
+        source = [[sourceString stringByReplacingCharactersInRange:valueRange withString:@" true"] dataUsingEncoding:NSUTF8StringEncoding];
       }
     }
 
