@@ -24,6 +24,7 @@
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
+#import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"
@@ -357,10 +358,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
 
     if (RCTIsReactRootView(reactTag)) {
-      if (CGRectEqualToRect(frame, rootShadowView.frame) && rootShadowView.sizeFlexibility == sizeFlexibility) {
-        // This is to prevent infinite recursion when the frame update is trigerred by TODO(8608567):<DelegateName>
-        return;
-      }
       rootShadowView.frame = frame;
       rootShadowView.sizeFlexibility = sizeFlexibility;
     } else {
@@ -491,6 +488,22 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         },
       });
     }
+
+    if (RCTIsReactRootView(shadowView.reactTag)) {
+      NSNumber *reactTag = shadowView.reactTag;
+      CGSize contentSize = shadowView.frame.size;
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        UIView *view = _viewRegistry[reactTag];
+        RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
+
+        RCTRootView *rootView = (RCTRootView *)[view superview];
+        RCTAssert(rootView != nil, @"View with react tag %@ has not a superview", reactTag);
+
+        rootView.intrinsicSize = contentSize;
+      });
+    }
+
     if (block) {
       [updateBlocks addObject:block];
     }
