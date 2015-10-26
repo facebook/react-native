@@ -145,6 +145,12 @@ var apps = [
     author: 'Joshua Habdas',
   },
   {
+    name: 'Makerist Mediathek',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple3/v4/fa/5f/4c/fa5f4ce8-5aaa-5a4b-ddcc-a0c6f681d08a/icon175x175.png',
+    link: 'https://itunes.apple.com/de/app/makerist-mediathek/id1019504544',
+    author: 'Railslove',
+  },
+  {
     name: 'MinTrain',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/51/51/68/51516875-1323-3100-31a8-cd1853d9a2c0/mzl.gozwmstp.png',
     link: 'https://itunes.apple.com/us/app/mintrain/id1015739031?mt=8',
