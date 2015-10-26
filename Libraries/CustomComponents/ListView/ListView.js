@@ -202,6 +202,13 @@ var ListView = React.createClass({
      * containers.  Use at your own risk.
      */
     removeClippedSubviews: React.PropTypes.bool,
+
+    /**
+     * When true, the list view's items are arranged horizontally in a row
+     * instead of vertically in a column. The default value is false.
+     */
+    horizontal: React.PropTypes.bool
+
   },
 
   /**
