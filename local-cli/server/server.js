@@ -11,10 +11,11 @@
 const chalk = require('chalk');
 const checkNodeVersion = require('./checkNodeVersion');
 const formatBanner = require('./formatBanner');
-const parseCommandLine = require('../../../packager/parseCommandLine');
+const parseCommandLine = require('../../packager/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
 const runServer = require('./runServer');
+const webSocketProxy = require('../../packager/webSocketProxy.js');
 
 /**
  * Starts the React Native Packager Server.
@@ -47,7 +48,7 @@ function _server(argv, config, resolve, reject) {
   }, {
     command: 'transformer',
     type: 'string',
-    default: require.resolve('../../../packager/transformer'),
+    default: require.resolve('../../packager/transformer'),
     description: 'Specify a custom transformer to be used (absolute path)'
   }, {
     command: 'resetCache',
@@ -137,9 +138,12 @@ function _server(argv, config, resolve, reject) {
 }
 
 function startServer(args, config) {
-  runServer(args, config, () =>
+  const serverInstance = runServer(args, config, () =>
     console.log('\nReact packager ready.\n')
   );
+
+  webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+  webSocketProxy.attachToServer(serverInstance, '/devtools');
 }
 
 function argToArray(arg) {

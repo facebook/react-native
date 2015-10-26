@@ -11,7 +11,7 @@
 const log = require('../util/log').out('bundle');
 const processBundle = require('./processBundle');
 const Promise = require('promise');
-const ReactPackager = require('../../../packager/react-packager');
+const ReactPackager = require('../../packager/react-packager');
 const saveBundleAndMap = require('./saveBundleAndMap');
 
 function buildBundle(args, config) {

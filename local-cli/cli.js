@@ -13,20 +13,28 @@ require('../packager/babelRegisterOnly')([
   /local-cli/
 ]);
 
-var bundle = require('../private-cli/src/bundle/bundle');
+var bundle = require('./bundle/bundle');
 var childProcess = require('child_process');
-var Config = require('../private-cli/src/util/Config');
+var Config = require('./util/Config');
 var defaultConfig = require('./default.config');
+var dependencies = require('./dependencies/dependencies');
 var fs = require('fs');
-var generate = require('../private-cli/src/generate/generate');
-var library = require('../private-cli/src/library/library');
+var generate = require('./generate/generate');
+var library = require('./library/library');
 var path = require('path');
 var Promise = require('promise');
-var runAndroid = require('../private-cli/src/runAndroid/runAndroid');
-var server = require('../private-cli/src/server/server');
+var runAndroid = require('./runAndroid/runAndroid');
+var server = require('./server/server');
 var TerminalAdapter = require('yeoman-environment/lib/adapter.js');
 var yeoman = require('yeoman-environment');
-var upgrade = require('../private-cli/src/upgrade/upgrade');
+var upgrade = require('./upgrade/upgrade');
+
+var fs = require('fs');
+var gracefulFs = require('graceful-fs');
+
+// graceful-fs helps on getting an error when we run out of file
+// descriptors. When that happens it will enqueue the operation and retry it.
+gracefulFs.gracefulify(fs);
 
 var documentedCommands = {
   'start': [server, 'starts the webserver'],
@@ -37,6 +45,11 @@ var documentedCommands = {
   'upgrade': [upgrade, 'upgrade your app\'s template files to the latest version; run this after ' +
                        'updating the react-native version in your package.json and running npm install']
 };
+
+var exportedCommands = {dependencies: dependencies};
+Object.keys(documentedCommands).forEach(function(command) {
+  exportedCommands[command] = documentedCommands[command][0];
+});
 
 var undocumentedCommands = {
   'init': [printInitWarning, ''],
@@ -148,4 +161,5 @@ if (require.main === module) {
 module.exports = {
   run: run,
   init: init,
+  commands: exportedCommands
 };

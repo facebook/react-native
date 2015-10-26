@@ -9,24 +9,21 @@
 'use strict';
 
 const connect = require('connect');
-// TODO: move middlewares to private-cli/src/server
-const cpuProfilerMiddleware = require('../../../packager/cpuProfilerMiddleware');
-const getDevToolsMiddleware = require('../../../packager/getDevToolsMiddleware');
+const cpuProfilerMiddleware = require('../../packager/cpuProfilerMiddleware');
+const getDevToolsMiddleware = require('../../packager/getDevToolsMiddleware');
 const http = require('http');
 const isAbsolutePath = require('absolute-path');
-const loadRawBodyMiddleware = require('../../../packager/loadRawBodyMiddleware');
-const openStackFrameInEditorMiddleware = require('../../../packager/openStackFrameInEditorMiddleware');
+const loadRawBodyMiddleware = require('../../packager/loadRawBodyMiddleware');
+const openStackFrameInEditorMiddleware = require('../../packager/openStackFrameInEditorMiddleware');
 const path = require('path');
-const ReactPackager = require('../../../packager/react-packager');
-const statusPageMiddleware = require('../../../packager/statusPageMiddleware.js');
-const systraceProfileMiddleware = require('../../../packager/systraceProfileMiddleware.js');
-const webSocketProxy = require('../../../packager/webSocketProxy.js');
+const ReactPackager = require('../../packager/react-packager');
+const statusPageMiddleware = require('../../packager/statusPageMiddleware.js');
+const systraceProfileMiddleware = require('../../packager/systraceProfileMiddleware.js');
 
 function runServer(args, config, readyCallback) {
-  var wsProxy = null;
   const app = connect()
     .use(loadRawBodyMiddleware)
-    .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
+    .use(getDevToolsMiddleware(args))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
@@ -41,15 +38,7 @@ function runServer(args, config, readyCallback) {
     .use(connect.compress())
     .use(connect.errorHandler());
 
-  const serverInstance = http.createServer(app).listen(
-    args.port,
-    '::',
-    function() {
-      wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
-      webSocketProxy.attachToServer(serverInstance, '/devtools');
-      readyCallback();
-    }
-  );
+  return http.createServer(app).listen(args.port, '::', readyCallback);
 }
 
 function getAppMiddleware(args, config) {
@@ -69,7 +58,7 @@ function getAppMiddleware(args, config) {
     resetCache: args.resetCache || args['reset-cache'],
     polyfillModuleNames: [
       require.resolve(
-        '../../../Libraries/JavaScriptAppEngine/polyfills/document.js'
+        '../../Libraries/JavaScriptAppEngine/polyfills/document.js'
       ),
     ],
     verbose: args.verbose,
