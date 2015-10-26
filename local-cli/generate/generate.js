@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const parseCommandLine = require('../../../packager/parseCommandLine');
+const parseCommandLine = require('../../packager/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
 const yeoman = require('yeoman-environment');
@@ -46,7 +46,7 @@ function _generate(argv, config, resolve, reject) {
   process.chdir(args['project-path']);
 
   const env = yeoman.createEnv();
-  env.register(path.join(__dirname, '../../../local-cli/generator'), 'react:app');
+  env.register(path.join(__dirname, '../generator'), 'react:app');
   env.run(
     ['react:app', args['project-name']],
     {
