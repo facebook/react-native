@@ -19,7 +19,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 
 /**
  * Manages instances of ProgressBar. ProgressBar is wrapped in a FrameLayout because the style of
