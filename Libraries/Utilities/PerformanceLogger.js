@@ -14,6 +14,7 @@
 var performanceNow = require('performanceNow');
 
 var timespans = {};
+var extras = {};
 
 /**
  * This is meant to collect and log performance data in production, which means
@@ -72,6 +73,7 @@ var PerformanceLogger = {
 
   clearTimespans() {
     timespans = {};
+    extras = {};
   },
 
   getTimespans() {
@@ -99,6 +101,23 @@ var PerformanceLogger = {
         label
       );
     }
+  },
+
+  setExtra(key, value) {
+    if (extras[key]) {
+      if (__DEV__) {
+        console.log(
+          'PerformanceLogger: Attempting to set an extra that already exists ',
+          key
+        );
+      }
+      return;
+    }
+    extras[key] = value;
+  },
+
+  getExtras() {
+    return extras;
   }
 };
 
