@@ -12,6 +12,20 @@
 #import "RCTBridge.h"
 
 /**
+ * This enum is used to define size flexibility type of the root view.
+ * If a dimension is flexible, the view will recalculate that dimension
+ * so the content fits. Recalculations are performed when the root's frame,
+ * size flexibility mode or content size changes. After a recalculation,
+ * TODO:<DelegateName> will be called with the new size passed as an argument.
+ */
+typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
+  RCTRootViewSizeFlexibilityNone = 0,
+  RCTRootViewSizeFlexibilityWidth,
+  RCTRootViewSizeFlexibilityHeight,
+  RCTRootViewSizeFlexibilityWidthAndHeight,
+};
+
+/**
  * This notification is sent when the first subviews are added to the root view
  * after the application has loaded. This is used to hide the `loadingView`, and
  * is a good indicator that the application is ready to use.
@@ -70,6 +84,11 @@ extern NSString *const RCTContentDidAppearNotification;
  * Changes will take effect next time the bundle is reloaded.
  */
 @property (nonatomic, strong) Class executorClass;
+
+/**
+ * The size flexibility mode of the root view.
+ */
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
 /**
  * The backing view controller of the root view.
