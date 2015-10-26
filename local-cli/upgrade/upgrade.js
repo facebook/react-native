@@ -17,7 +17,7 @@ module.exports = function upgrade(args, config) {
   args = args || process.argv;
   let env = yeoman.createEnv();
   let name = JSON.parse(fs.readFileSync('package.json', 'utf8')).name;
-  let generatorPath = path.join(__dirname, '..', '..', '..', 'local-cli', 'generator');
+  let generatorPath = path.join(__dirname, '..', 'generator');
   env.register(generatorPath, 'react:app');
   let generatorArgs = ['react:app', name].concat(args);
   return new Promise((resolve) => env.run(generatorArgs, {upgrade: true}, resolve));

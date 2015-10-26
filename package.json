@@ -33,7 +33,6 @@
     "packager",
     "cli.js",
     "local-cli",
-    "private-cli",
     "init.sh",
     "LICENSE",
     "PATENTS",
