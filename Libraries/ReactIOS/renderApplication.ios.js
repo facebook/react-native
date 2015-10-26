@@ -87,11 +87,7 @@ function renderApplication<D, P, S>(
 
 var styles = StyleSheet.create({
   appContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
   },
 });
 

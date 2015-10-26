@@ -72,6 +72,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _initialProperties = [initialProperties copy];
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
+    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(javaScriptDidLoad:)
@@ -187,6 +188,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   [bridge enqueueJSCall:@"AppRegistry.runApplication"
                    args:@[moduleName, appParameters]];
+}
+
+- (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+{
+  _sizeFlexibility = sizeFlexibility;
+  [self setNeedsLayout];
 }
 
 - (void)layoutSubviews

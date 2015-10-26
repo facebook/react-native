@@ -11,6 +11,7 @@
 
 #import "Layout.h"
 #import "RCTComponent.h"
+#import "RCTRootView.h"
 
 @class RCTSparseArray;
 
@@ -63,6 +64,12 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 
 - (void)setTopLeft:(CGPoint)topLeft;
 - (void)setSize:(CGSize)size;
+
+/**
+ * Size flexibility type used to find size constraints.
+ * Default to RCTRootViewSizeFlexibilityNone
+ */
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
@@ -127,8 +134,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
  * Calculate all views whose frame needs updating after layout has been calculated.
  * The viewsWithNewFrame set contains the reactTags of the views that need updating.
  */
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
-                parentConstraint:(CGSize)parentConstraint;
+- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame;
 
 /**
  * Recursively apply layout to children.

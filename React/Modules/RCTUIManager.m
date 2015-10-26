@@ -347,11 +347,26 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 {
   RCTAssertMainThread();
 
+  // The following variables have no meaning if the view is not a react root view
+  RCTRootView *rootView = (RCTRootView *)[view superview];
+  RCTRootViewSizeFlexibility sizeFlexibility = rootView != nil ? rootView.sizeFlexibility : RCTRootViewSizeFlexibilityNone;
+
   NSNumber *reactTag = view.reactTag;
   dispatch_async(_shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
-    rootShadowView.frame = frame;
+
+    if (RCTIsReactRootView(reactTag)) {
+      if (CGRectEqualToRect(frame, rootShadowView.frame) && rootShadowView.sizeFlexibility == sizeFlexibility) {
+        // This is to prevent infinite recursion when the frame update is trigerred by TODO(8608567):<DelegateName>
+        return;
+      }
+      rootShadowView.frame = frame;
+      rootShadowView.sizeFlexibility = sizeFlexibility;
+    } else {
+      rootShadowView.frame = frame;
+    }
+
     [rootShadowView updateLayout];
 
     [self batchDidComplete];
@@ -437,8 +452,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   // these structures in the UI-thread block. `NSMutableArray` is not thread
   // safe so we rely on the fact that we never mutate it after it's passed to
   // the main thread.
-  [rootShadowView collectRootUpdatedFrames:viewsWithNewFrames
-                          parentConstraint:(CGSize){CSS_UNDEFINED, CSS_UNDEFINED}];
+  [rootShadowView collectRootUpdatedFrames:viewsWithNewFrames];
 
   // Parallel arrays are built and then handed off to main thread
   NSMutableArray *frameReactTags = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
