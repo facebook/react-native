@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const launchEditor = require('./launchEditor');
+const launchEditor = require('../util/launchEditor');
 
 module.exports = function(req, res, next) {
   if (req.url === '/open-stack-frame') {
