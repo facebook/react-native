@@ -11,12 +11,14 @@
 
 #import "RCTBridge.h"
 
+@protocol RCTRootViewDelegate;
+
 /**
  * This enum is used to define size flexibility type of the root view.
  * If a dimension is flexible, the view will recalculate that dimension
  * so the content fits. Recalculations are performed when the root's frame,
  * size flexibility mode or content size changes. After a recalculation,
- * TODO:<DelegateName> will be called with the new size passed as an argument.
+ * rootViewDidChangeIntrinsicSize method of the RCTRootViewDelegate will be called.
  */
 typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
   RCTRootViewSizeFlexibilityNone = 0,
@@ -89,6 +91,17 @@ extern NSString *const RCTContentDidAppearNotification;
  * The size flexibility mode of the root view.
  */
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+
+/**
+ * The size of the root view's content. This is set right before the
+ * rootViewDidChangeIntrinsicSize method of RCTRootViewDelegate is called.
+ */
+@property (readonly, nonatomic, assign) CGSize intrinsicSize;
+
+/**
+ * The delegate that handles intrinsic size updates.
+ */
+@property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
 
 /**
  * The backing view controller of the root view.

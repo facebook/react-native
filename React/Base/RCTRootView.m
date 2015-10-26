@@ -8,6 +8,8 @@
  */
 
 #import "RCTRootView.h"
+#import "RCTRootViewDelegate.h"
+#import "RCTRootViewInternal.h"
 
 #import <objc/runtime.h>
 
@@ -204,6 +206,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+}
+
+- (void)setIntrinsicSize:(CGSize)intrinsicSize
+{
+  if (!CGSizeEqualToSize(_intrinsicSize, intrinsicSize)) {
+    _intrinsicSize = intrinsicSize;
+    [_delegate rootViewDidChangeIntrinsicSize:self];
+  }
 }
 
 - (NSNumber *)reactTag
