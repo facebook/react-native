@@ -16,7 +16,6 @@ Our provisional plan for common views and modules includes:
 #### Views
 
 ```
-View Pager
 Swipe Refresh
 Spinner
 ART
