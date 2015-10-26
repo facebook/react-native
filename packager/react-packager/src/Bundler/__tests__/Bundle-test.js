@@ -188,7 +188,7 @@ describe('Bundle', function() {
             map: {
               file: 'image.png',
               mappings: 'AAAA;AACA;',
-              names: {},
+              names: [],
               sources: [ 'image.png' ],
               sourcesContent: ['image module;\nimage module;'],
               version: 3,
@@ -202,7 +202,7 @@ describe('Bundle', function() {
             map: {
               file: 'RunMainModule.js',
               mappings: 'AAAA;',
-              names: {},
+              names: [],
               sources: [ 'RunMainModule.js' ],
               sourcesContent: [';require("foo");'],
               version: 3,
