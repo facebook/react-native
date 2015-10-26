@@ -45,6 +45,9 @@
     "lint": "eslint Examples/ Libraries/",
     "start": "./packager/packager.sh || true"
   },
+  "bin": {
+    "react-native": "local-cli/wrong-react-native.js"
+  },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "babel": "^5.8.23",
