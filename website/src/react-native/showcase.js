@@ -264,6 +264,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.ziliunapp',
     author: 'Sonny Lazuardi',
   },
+  {
+    name: 'YazBoz',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/80/4f/43/804f431d-2828-05aa-2593-99cfb0475351/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
+    author: 'Melih Mucuk',
+  },
 ];
 
 var showcase = React.createClass({
