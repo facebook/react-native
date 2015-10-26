@@ -223,26 +223,37 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     }
   }
 
-  @Override
-  protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-    super.onScrollChanged(l, t, oldl, oldt);
-
-    ReactListAdapter adapter = (ReactListAdapter) getAdapter();
-
+  private int calculateAbsoluteOffset() {
     int offsetY = 0;
     if (getChildCount() > 0) {
       View recyclerViewChild = getChildAt(0);
       int childPosition = getChildAdapterPosition(recyclerViewChild);
-      offsetY = adapter.getTopOffsetForItem(childPosition) - recyclerViewChild.getTop();
+      offsetY = ((ReactListAdapter) getAdapter()).getTopOffsetForItem(childPosition) -
+          recyclerViewChild.getTop();
     }
+    return offsetY;
+  }
+
+  /*package*/ void scrollTo(int scrollX, int scrollY, boolean animated) {
+    int deltaY = scrollY - calculateAbsoluteOffset();
+    if (animated) {
+      smoothScrollBy(0, deltaY);
+    } else {
+      scrollBy(0, deltaY);
+    }
+  }
+
+  @Override
+  protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+    super.onScrollChanged(l, t, oldl, oldt);
 
     ScrollEvent event = new ScrollEvent(
         getId(),
         SystemClock.uptimeMillis(),
         0, /* offsetX = 0, horizontal scrolling only */
-        offsetY,
+        calculateAbsoluteOffset(),
         getWidth(),
-        adapter.getTotalChildrenHeight(),
+        ((ReactListAdapter) getAdapter()).getTotalChildrenHeight(),
         getWidth(),
         getHeight());
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
