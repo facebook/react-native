@@ -464,10 +464,10 @@ var MatrixMath = {
 
       // Solve the equation by inverting perspectiveMatrix and multiplying
       // rightHandSide by the inverse.
-      var inversePerspectiveMatrix = MatrixMath.inverse3x3(
+      var inversePerspectiveMatrix = MatrixMath.inverse(
         perspectiveMatrix
       );
-      var transposedInversePerspectiveMatrix = MatrixMath.transpose4x4(
+      var transposedInversePerspectiveMatrix = MatrixMath.transpose(
         inversePerspectiveMatrix
       );
       var perspective = MatrixMath.multiplyVectorByMatrix(
@@ -575,13 +575,12 @@ var MatrixMath = {
     // expose both base data and convenience names
     return {
       rotationDegrees,
-      perspective,
       quaternion,
       scale,
       skew,
       translation,
 
-      rotate: rotationDegrees[2],
+      perspective: perspective[2] != 0 ? -1/perspective[2] : 1280,
       scaleX: scale[0],
       scaleY: scale[1],
       translateX: translation[0],
