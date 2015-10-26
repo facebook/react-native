@@ -169,6 +169,12 @@ var apps = [
     author: 'NBC News Digital, LLC',
   },
   {
+    name: 'Noodler',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/noodler-noodle-soup-oracle/id1013183002?mt=8',
+    author: 'Michele Humes & Joshua Sierles',
+  },
+  {
     name: 'Night Light',
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
     link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
