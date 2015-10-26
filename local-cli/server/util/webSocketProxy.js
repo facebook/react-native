@@ -63,7 +63,7 @@ function attachToServer(server, path) {
       return clients
         .map(function(ws) { return ws.upgradeReq.headers['user-agent']; })
         .filter(Boolean)
-        .some(function(userAgent) { return userAgent.includes('Chrome'); })
+        .some(function(userAgent) { return userAgent.includes('Chrome'); });
     }
   };
 }

@@ -12,7 +12,7 @@ const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const parseCommandLine = require('../../packager/parseCommandLine');
+const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
 

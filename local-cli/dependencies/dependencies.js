@@ -10,7 +10,7 @@
 
 const fs = require('fs');
 const log = require('../util/log').out('dependencies');
-const parseCommandLine = require('../../packager/parseCommandLine');
+const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
 const ReactPackager = require('../../packager/react-packager');

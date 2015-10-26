@@ -10,7 +10,7 @@
 
 const buildBundle = require('./buildBundle');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const parseCommandLine = require('../../packager/parseCommandLine');
+const parseCommandLine = require('../util/parseCommandLine');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
