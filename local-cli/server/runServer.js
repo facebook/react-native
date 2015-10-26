@@ -9,21 +9,23 @@
 'use strict';
 
 const connect = require('connect');
-const cpuProfilerMiddleware = require('../../packager/cpuProfilerMiddleware');
-const getDevToolsMiddleware = require('../../packager/getDevToolsMiddleware');
+const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
+const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
 const http = require('http');
 const isAbsolutePath = require('absolute-path');
-const loadRawBodyMiddleware = require('../../packager/loadRawBodyMiddleware');
-const openStackFrameInEditorMiddleware = require('../../packager/openStackFrameInEditorMiddleware');
+const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
+const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
 const path = require('path');
 const ReactPackager = require('../../packager/react-packager');
-const statusPageMiddleware = require('../../packager/statusPageMiddleware.js');
-const systraceProfileMiddleware = require('../../packager/systraceProfileMiddleware.js');
+const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
+const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
+const webSocketProxy = require('./util/webSocketProxy.js');
 
 function runServer(args, config, readyCallback) {
+  var wsProxy = null;
   const app = connect()
     .use(loadRawBodyMiddleware)
-    .use(getDevToolsMiddleware(args))
+    .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
@@ -38,7 +40,15 @@ function runServer(args, config, readyCallback) {
     .use(connect.compress())
     .use(connect.errorHandler());
 
-  return http.createServer(app).listen(args.port, '::', readyCallback);
+  const serverInstance = http.createServer(app).listen(
+    args.port,
+    '::',
+    function() {
+      wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
+      webSocketProxy.attachToServer(serverInstance, '/devtools');
+      readyCallback();
+    }
+  );
 }
 
 function getAppMiddleware(args, config) {

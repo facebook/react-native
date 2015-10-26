@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const parseCommandLine = require('../../packager/parseCommandLine');
+const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
 const Promise = require('promise');
 const yeoman = require('yeoman-environment');
