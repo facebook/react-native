@@ -37,19 +37,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
         ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(getClass());
     ReadableMap propMap = props.mBackingMap;
     ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    // TODO(krzysztof): Remove missingSetters code once all views are migrated to @ReactProp
-    boolean missingSetters = false;
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
       if (setter != null) {
         setter.updateViewProp(this, viewToUpdate, props);
-      } else {
-        missingSetters = true;
       }
-    }
-    if (missingSetters) {
-      updateView(viewToUpdate, props);
     }
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -112,18 +105,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
    * to JS (e.g. scroll events).
    */
   protected void addEventEmitters(ThemedReactContext reactContext, T view) {
-  }
-
-  /**
-   * Subclass should use this method to populate native view with updated style properties. In case
-   * when a certain property is present in {@param props} map but the value is null, this property
-   * should be reset to the default value
-   *
-   * TODO(krzysztof) This method should be replaced by updateShadowNode and removed completely after
-   * all view managers adapt @ReactProp
-   */
-  @Deprecated
-  protected void updateView(T root, CatalystStylesDiffMap props) {
   }
 
   /**
