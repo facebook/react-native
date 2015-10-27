@@ -96,7 +96,7 @@ public class TouchEvent extends Event<TouchEvent> {
   }
 
   @Override
-  public void dispose() {
+  public void onDispose() {
     mMotionEvent.recycle();
   }
 }
