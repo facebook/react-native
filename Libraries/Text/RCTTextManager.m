@@ -88,7 +88,7 @@ RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
     }
   }
 
-  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {};
+  return nil;
 }
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView
