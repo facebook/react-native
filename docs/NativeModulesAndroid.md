@@ -229,7 +229,7 @@ sendEvent(reactContext, "keyboardWillShow", params);
 JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin
 
 ```js
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var { DeviceEventEmitter } = require('react-native');
 ...
 
 var ScrollResponderMixin = {
@@ -238,7 +238,7 @@ var ScrollResponderMixin = {
 
   componentWillMount: function() {
     ...
-    this.addListenerOn(RCTDeviceEventEmitter,
+    this.addListenerOn(DeviceEventEmitter,
                        'keyboardWillShow',
                        this.scrollResponderKeyboardWillShow);
     ...
@@ -247,4 +247,16 @@ var ScrollResponderMixin = {
     this.keyboardWillOpenTo = e;
     this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
   },
+```
+
+You can also directly use the `DeviceEventEmitter` module to listen for events.
+
+```js
+...
+componentWillMount: function() {
+  DeviceEventEmitter.addListener('keyboardWillShow', function(e: Event) {
+    // handle event.
+  });
+}
+...
 ```
