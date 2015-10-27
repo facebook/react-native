@@ -135,6 +135,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       FLog.w(
         ReactConstants.TAG,
         "Cannot close WebSocket. Unknown WebSocket id " + id);
+
+      return;
     }
     try {
       client.close(code, reason);
