@@ -44,7 +44,7 @@ public final class AsyncStorageModule
 
   public AsyncStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    mReactDatabaseSupplier = new ReactDatabaseSupplier(reactContext);
+    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
   }
 
   @Override
@@ -68,23 +68,7 @@ public final class AsyncStorageModule
     // Clear local storage. If fails, crash, since the app is potentially in a bad state and could
     // cause a privacy violation. We're still not recovering from this well, but at least the error
     // will be reported to the server.
-    clear(
-        new Callback() {
-          @Override
-          public void invoke(Object... args) {
-            if (args.length == 0) {
-              FLog.d(ReactConstants.TAG, "Cleaned AsyncLocalStorage.");
-              return;
-            }
-            // Clearing the database has failed, delete it instead.
-            if (mReactDatabaseSupplier.deleteDatabase()) {
-              FLog.d(ReactConstants.TAG, "Deleted Local Database AsyncLocalStorage.");
-              return;
-            }
-            // Everything failed, crash the app
-            throw new RuntimeException("Clearing and deleting database failed: " + args[0]);
-          }
-        });
+    mReactDatabaseSupplier.clearAndCloseDatabase();
   }
 
   /**
@@ -353,7 +337,7 @@ public final class AsyncStorageModule
           return;
         }
         try {
-          mReactDatabaseSupplier.get().delete(TABLE_CATALYST, null, null);
+          mReactDatabaseSupplier.clear();
           callback.invoke();
         } catch (Exception e) {
           FLog.w(ReactConstants.TAG, e.getMessage(), e);
