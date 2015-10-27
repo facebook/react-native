@@ -218,6 +218,13 @@ var apps = [
   },
   {
     name: 'RN Playground',
+    name: 'RN Playground - Android',
+    icon: 'https://lh3.googleusercontent.com/CulnTs4lfjHWzK-MJHXZbEQuw_kCwBU0fHYTOZC0FejcPK1B58Qmxyvu8xSzs6iUWhg=w300',
+    link: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
+    author: 'Joshua Sierles',
+  },
+  {
+    name: 'RN Playground - iOS',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
     link: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
     author: 'Joshua Sierles',
