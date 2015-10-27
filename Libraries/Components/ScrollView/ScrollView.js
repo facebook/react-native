@@ -207,9 +207,10 @@ var ScrollView = React.createClass({
     scrollEnabled: PropTypes.bool,
     /**
      * This controls how often the scroll event will be fired while scrolling
-     * (in events per seconds). A higher number yields better accuracy for code
+     * (as a time interval in ms). A lower number yields better accuracy for code
      * that is tracking the scroll position, but can lead to scroll performance
      * problems due to the volume of information being send over the bridge.
+     * You should NOT set this value below 16ms as you will be wasting frames.
      * The default value is zero, which means the scroll event will be sent
      * only once each time the view is scrolled.
      * @platform ios
