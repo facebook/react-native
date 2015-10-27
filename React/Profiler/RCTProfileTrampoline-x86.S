@@ -1,9 +1,10 @@
 #include "RCTDefines.h"
+#include "RCTMacros.h"
 
 #if RCT_DEV && defined(__i386__)
 
-  .globl _RCTProfileTrampoline
-_RCTProfileTrampoline:
+  .globl SYMBOL_NAME(RCTProfileTrampoline)
+SYMBOL_NAME(RCTProfileTrampoline):
   /**
    * The x86 version is much simpler, since all the arguments are passed in the
    * stack, so we just have to preserve the stack pointer (%esp) and the callee
@@ -20,7 +21,7 @@ _RCTProfileTrampoline:
    */
   subl $0x8, %esp // stack padding (16-byte alignment for function calls)
   pushl $0xc // allocate 12-bytes
-  calll _malloc
+  calll SYMBOL_NAME(malloc)
   addl $0xc, %esp // restore stack (8-byte padding + 4-byte argument)
 
   /**
@@ -37,7 +38,7 @@ _RCTProfileTrampoline:
    *
    * Get the address of the actual C function we have to profile
    */
-  calll _RCTProfileGetImplementation
+  calll SYMBOL_NAME(RCTProfileGetImplementation)
   movl %eax, 0x8(%edi) // Save it in the allocated memory
 
   /**
@@ -47,7 +48,7 @@ _RCTProfileTrampoline:
    * stack since it takes the same first 2 arguments as the any ObjC function -
    * "self" and "_cmd"
    */
-  calll _RCTProfileTrampolineStart
+  calll SYMBOL_NAME(RCTProfileTrampolineStart)
 
   /**
    * Call the actual function and save it's return value, since it should be the
@@ -58,7 +59,7 @@ _RCTProfileTrampoline:
 
   // Align stack and end profile
   subl $0xc, %esp
-  calll _RCTProfileTrampolineEnd
+  calll SYMBOL_NAME(RCTProfileTrampolineEnd)
   addl $0xc, %esp // restore the stack
 
   /**
@@ -75,7 +76,7 @@ _RCTProfileTrampoline:
    * the stack has already been padded and the first and only argument, the
    * memory address, is already in the bottom of the stack.
    */
-  calll _free
+  calll SYMBOL_NAME(free)
   addl $0x8, %esp
 
   /**

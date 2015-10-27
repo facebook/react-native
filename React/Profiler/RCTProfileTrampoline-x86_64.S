@@ -1,9 +1,13 @@
 #include "RCTDefines.h"
+#include "RCTMacros.h"
 
 #if RCT_DEV && defined(__x86_64__)
 
-  .globl _RCTProfileTrampoline
-_RCTProfileTrampoline:
+/**
+ * Define both symbols for compatibility with other assemblers
+ */
+  .globl SYMBOL_NAME(RCTProfileTrampoline)
+SYMBOL_NAME(RCTProfileTrampoline):
 
   /**
    * Saves all the state so we can restore it before calling the functions being
@@ -40,7 +44,7 @@ _RCTProfileTrampoline:
    * This is a C function defined in `RCTProfile.m`, the object and the selector
    * already have to be on %rdi and %rsi respectively, as in any ObjC call.
    */
-  callq _RCTProfileGetImplementation
+  callq SYMBOL_NAME(RCTProfileGetImplementation)
 
   // Restore/unalign the stack pointer, so we can access the registers we stored
   movq %r12, %rsp
@@ -71,7 +75,7 @@ _RCTProfileTrampoline:
 
   // allocate 16 bytes
   movq $0x10, %rdi
-  callq _malloc
+  callq SYMBOL_NAME(malloc)
 
   // store the initial value of calle saved registers %r13 and %r14
   movq %r13, 0x0(%rax)
@@ -89,7 +93,7 @@ _RCTProfileTrampoline:
   movq 0x38(%r12), %rsi // selector
 
   // void RCTProfileTrampolineStart(id, SEL) in RCTProfile.m
-  callq _RCTProfileTrampolineStart
+  callq SYMBOL_NAME(RCTProfileTrampolineStart)
 
   // unalign the stack and restore %r12
   movq %r12, %rsp
@@ -121,7 +125,7 @@ _RCTProfileTrampoline:
   andq $-0x10, %rsp
 
   // void RCTProfileTrampolineEnd(void) in RCTProfile.m - just ends this profile
-  callq _RCTProfileTrampolineEnd
+  callq SYMBOL_NAME(RCTProfileTrampolineEnd)
 
   // unalign stack and restore %r12
   movq %r12, %rsp
@@ -151,7 +155,7 @@ _RCTProfileTrampoline:
 
   // Free the memory allocated to stash callee saved registers
   movq %rdx, %rdi
-  callq _free
+  callq SYMBOL_NAME(free)
 
   // unalign  stack and restore %r12
   movq %r12, %rsp
