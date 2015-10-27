@@ -348,9 +348,15 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 {
   RCTAssertMainThread();
 
-  // The following variables have no meaning if the view is not a react root view
-  RCTRootView *rootView = (RCTRootView *)[view superview];
-  RCTRootViewSizeFlexibility sizeFlexibility = rootView != nil ? rootView.sizeFlexibility : RCTRootViewSizeFlexibilityNone;
+  // The following variable has no meaning if the view is not a react root view
+  RCTRootViewSizeFlexibility sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+
+  if (RCTIsReactRootView(view.reactTag)) {
+    RCTRootView *rootView = (RCTRootView *)[view superview];
+    if (rootView != nil) {
+      sizeFlexibility = rootView.sizeFlexibility;
+    }
+  }
 
   NSNumber *reactTag = view.reactTag;
   dispatch_async(_shadowQueue, ^{
