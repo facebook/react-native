@@ -575,13 +575,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         } withCompletionBlock:nil];
       }
     }
-
-    /**
-     * TODO(tadeu): Remove it once and for all
-     */
-    for (id<RCTComponent> node in _bridgeTransactionListeners) {
-      [node reactBridgeDidFinishTransaction];
-    }
   };
 }
 
@@ -907,6 +900,14 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
     @try {
       for (dispatch_block_t block in previousPendingUIBlocks) {
         block();
+      }
+      /**
+       * TODO(tadeu): Remove it once and for all
+       */
+      if (previousPendingUIBlocks.count) {
+        for (id<RCTComponent> node in _bridgeTransactionListeners) {
+          [node reactBridgeDidFinishTransaction];
+        }
       }
     }
     @catch (NSException *exception) {
