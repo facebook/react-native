@@ -44,7 +44,7 @@ class WebSocketBase extends EventTarget {
       protocols = [];
     }
 
-    this.readyState === WebSocketBase.CONNECTING;
+    this.readyState = WebSocketBase.CONNECTING;
     this.connectToSocketImpl(url);
   }
 
@@ -58,7 +58,7 @@ class WebSocketBase extends EventTarget {
       this.cancelConnectionImpl();
     }
 
-    this.readyState === WebSocketBase.CLOSING;
+    this.readyState = WebSocketBase.CLOSING;
     this.closeConnectionImpl();
   }
 
