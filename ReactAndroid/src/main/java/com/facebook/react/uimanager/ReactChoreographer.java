@@ -26,15 +26,21 @@ import com.facebook.react.common.ReactConstants;
 public class ReactChoreographer {
 
   public static enum CallbackType {
+
+    /**
+     * For use by perf markers that need to happen immediately after draw
+     */
+    PERF_MARKERS(0),
+
     /**
      * For use by {@link com.facebook.react.uimanager.UIManagerModule}
      */
-    DISPATCH_UI(0),
+    DISPATCH_UI(1),
 
     /**
      * Events that make JS do things.
      */
-    TIMERS_EVENTS(1),
+    TIMERS_EVENTS(2),
     ;
 
     private final int mOrder;
