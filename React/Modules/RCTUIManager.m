@@ -898,31 +898,31 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   _pendingUIBlocks = [NSMutableArray new];
   [_pendingUIBlocksLock unlock];
 
-  // Execute the previously queued UI blocks
-  RCTProfileBeginFlowEvent();
-  dispatch_async(dispatch_get_main_queue(), ^{
-    RCTProfileEndFlowEvent();
-    RCTProfileBeginEvent(0, @"UIManager flushUIBlocks", nil);
-    @try {
-      for (dispatch_block_t block in previousPendingUIBlocks) {
-        block();
-      }
-      /**
-       * TODO(tadeu): Remove it once and for all
-       */
-      if (previousPendingUIBlocks.count) {
+  if (previousPendingUIBlocks.count) {
+    // Execute the previously queued UI blocks
+    RCTProfileBeginFlowEvent();
+    dispatch_async(dispatch_get_main_queue(), ^{
+      RCTProfileEndFlowEvent();
+      RCTProfileBeginEvent(0, @"UIManager flushUIBlocks", nil);
+      @try {
+        for (dispatch_block_t block in previousPendingUIBlocks) {
+          block();
+        }
+        /**
+         * TODO(tadeu): Remove it once and for all
+         */
         for (id<RCTComponent> node in _bridgeTransactionListeners) {
           [node reactBridgeDidFinishTransaction];
         }
       }
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
-    }
-    RCTProfileEndEvent(0, @"objc_call", @{
-      @"count": @(previousPendingUIBlocks.count),
+      @catch (NSException *exception) {
+        RCTLogError(@"Exception thrown while executing UI block: %@", exception);
+      }
+      RCTProfileEndEvent(0, @"objc_call", @{
+        @"count": @(previousPendingUIBlocks.count),
+      });
     });
-  });
+  }
 }
 
 RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag
