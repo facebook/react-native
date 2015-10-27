@@ -211,9 +211,13 @@ class DependencyGraph {
     // we are in an error state and we should decide to do a full rebuild.
     this._loading = this._loading.finally(() => {
       if (this._hasteMapError) {
+        console.warn(
+          'Rebuilding haste map to recover from error:\n' +
+          this._hasteMapError.stack
+        );
         this._hasteMapError = null;
+
         // Rebuild the entire map if last change resulted in an error.
-        console.warn('Rebuilding haste map to recover from error');
         this._loading = this._hasteMap.build();
       } else {
         this._loading = this._hasteMap.processFileChange(type, absPath);
