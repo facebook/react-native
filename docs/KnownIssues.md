@@ -20,6 +20,7 @@ Swipe Refresh
 Spinner
 ART
 Maps
+Modal
 Webview
 ```
 
