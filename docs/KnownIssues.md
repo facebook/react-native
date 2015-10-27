@@ -35,6 +35,7 @@ Dialog
 Intent
 Media
 Pasteboard
+PushNotificationIOS
 Alert
 ```
 
