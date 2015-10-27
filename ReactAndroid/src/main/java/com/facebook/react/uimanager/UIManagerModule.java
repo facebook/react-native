@@ -806,7 +806,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       // notify JS about layout event if requested
       if (cssNode.shouldNotifyOnLayout()) {
         mEventDispatcher.dispatchEvent(
-            OnLayoutEvent.obtain(
+            new OnLayoutEvent(
                 tag,
                 cssNode.getScreenX(),
                 cssNode.getScreenY(),
