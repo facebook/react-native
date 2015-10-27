@@ -55,7 +55,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromFile(sourceURL, cachedFileLocation);
+        bridge.loadScriptFromFile(cachedFileLocation, sourceURL);
       }
 
       @Override
@@ -74,7 +74,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromFile(sourceURL, null);
+        bridge.loadScriptFromFile(null, sourceURL);
       }
 
       @Override
