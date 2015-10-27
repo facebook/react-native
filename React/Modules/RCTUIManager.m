@@ -509,6 +509,10 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     }
   }
 
+  if (!viewsWithNewFrames.count) {
+    // no frame change results in no UI update block
+    return nil;
+  }
   // Perform layout (possibly animated)
   return ^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTResponseSenderBlock callback = self->_layoutAnimation.callback;
@@ -583,11 +587,13 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   NSMutableSet *applierBlocks = [NSMutableSet setWithCapacity:1];
   [topView collectUpdatedProperties:applierBlocks parentProperties:@{}];
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    for (RCTApplierBlock block in applierBlocks) {
-      block(viewRegistry);
-    }
-  }];
+  if (applierBlocks.count) {
+    [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+      for (RCTApplierBlock block in applierBlocks) {
+        block(viewRegistry);
+      }
+    }];
+  }
 }
 
 /**
