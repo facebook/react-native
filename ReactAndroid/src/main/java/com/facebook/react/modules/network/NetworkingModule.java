@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -46,6 +49,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private final OkHttpClient mClient;
   private final @Nullable String mDefaultUserAgent;
   private boolean mShuttingDown;
+  private final CookieManager mCookieManager;
 
   /* package */ NetworkingModule(
       ReactApplicationContext reactContext,
@@ -55,6 +59,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mClient = client;
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
+    mCookieManager = new CookieManager();
+    mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+    mClient.setCookieHandler(mCookieManager);
   }
 
   /**
