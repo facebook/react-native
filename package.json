@@ -13,6 +13,10 @@
   "jest": {
     "scriptPreprocessor": "jestSupport/preprocessor.js",
     "setupEnvScriptFile": "jestSupport/env.js",
+    "moduleNameMapper": {
+      "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
+      "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
+    },
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],
