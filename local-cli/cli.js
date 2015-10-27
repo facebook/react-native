@@ -21,6 +21,7 @@ var dependencies = require('./dependencies/dependencies');
 var fs = require('fs');
 var generate = require('./generate/generate');
 var library = require('./library/library');
+var link = require('./library/link');
 var path = require('path');
 var Promise = require('promise');
 var runAndroid = require('./runAndroid/runAndroid');
@@ -40,6 +41,7 @@ var documentedCommands = {
   'start': [server, 'starts the webserver'],
   'bundle': [bundle, 'builds the javascript bundle for offline use'],
   'new-library': [library, 'generates a native library bridge'],
+  'link': [link, 'Adds a third-party library to your project. Example: react-native link awesome-camera'],
   'android': [generateWrapper, 'generates an Android project for your app'],
   'run-android': [runAndroid, 'builds your app and starts it on a connected Android emulator or device'],
   'upgrade': [upgrade, 'upgrade your app\'s template files to the latest version; run this after ' +
