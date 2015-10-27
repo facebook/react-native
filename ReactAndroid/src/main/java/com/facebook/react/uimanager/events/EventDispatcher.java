@@ -110,6 +110,7 @@ public class EventDispatcher implements LifecycleEventListener {
    * Sends the given Event to JS, coalescing eligible events if JS is backed up.
    */
   public void dispatchEvent(Event event) {
+    Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
     }
