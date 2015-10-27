@@ -99,3 +99,10 @@ This usually happens when you install a package using one version of Node and th
 
     $ npm uninstall -g sinopia
     $ npm install -g sinopia
+    
+After upgrading to Node 4 you might also need to reinstall npm. What worked for me was:
+
+    $ npm uninstall -g npm
+    $ nvm install npm
+    
+ See the [nvm guide](https://github.com/creationix/nvm#usage) for more info.
