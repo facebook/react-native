@@ -7,20 +7,29 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AsyncStorage
- * @flow
+ * @flow-weak
  */
 'use strict';
 
-var RCTAsyncStorage = require('NativeModules').AsyncSQLiteDBStorage;
+var NativeModules = require('NativeModules');
+var RCTAsyncSQLiteStorage = NativeModules.AsyncSQLiteDBStorage;
+var RCTAsyncRocksDBStorage = NativeModules.AsyncRocksDBStorage;
+var RCTAsyncFileStorage = NativeModules.AsyncLocalStorage;
+
+// Use RocksDB if available, then SQLite, then file storage.
+var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyncFileStorage;
 
 /**
- * AsyncStorage is a simple, asynchronous, persistent, global, key-value storage system.
+ * AsyncStorage is a simple, asynchronous, persistent, key-value storage
+ * system that is global to the app.  It should be used instead of LocalStorage.
  *
- * It is recommended that you use an abstraction on top of AsyncStorage instead of AsyncStorage
- * directly for anything more than light usage since it operates globally.
+ * It is recommended that you use an abstraction on top of AsyncStorage instead
+ * of AsyncStorage directly for anything more than light usage since it
+ * operates globally.
  *
- * This JS code is a simple facade over the native android implementation to provide a clear
- * JS API, real Error objects, and simple non-multi functions.
+ * This JS code is a simple facade over the native iOS implementation to provide
+ * a clear JS API, real Error objects, and simple non-multi functions. Each
+ * method returns a `Promise` object.
  */
 var AsyncStorage = {
   /**
@@ -30,19 +39,21 @@ var AsyncStorage = {
   getItem: function(
     key: string,
     callback?: ?(error: ?Error, result: ?string) => void
-  ) {
+  ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiGet([key], function(error, result) {
+      RCTAsyncStorage.multiGet([key], function(errors, result) {
+        // Unpack result to get value from [[key,value]]
         var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
-        callback && callback((error && convertError(error)) || null, value);
-        if (error) {
-          reject(convertError(error));
+        callback && callback((errors && convertError(errors[0])) || null, value);
+        if (errors) {
+          reject(convertError(errors[0]));
         } else {
           resolve(value);
         }
       });
     });
   },
+
   /**
    * Sets `value` for `key` and calls `callback` on completion, along with an
    * `Error` if there is any. Returns a `Promise` object.
@@ -53,16 +64,17 @@ var AsyncStorage = {
     callback?: ?(error: ?Error) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiSet([[key,value]], function(error) {
-        callback && callback((error && convertError(error)) || null);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiSet([[key,value]], function(errors) {
+        callback && callback((errors && convertError(errors[0])) || null);
+        if (errors) {
+          reject(convertError(errors[0]));
         } else {
           resolve(null);
         }
       });
     });
   },
+
   /**
    * Returns a `Promise` object.
    */
@@ -71,19 +83,20 @@ var AsyncStorage = {
     callback?: ?(error: ?Error) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiRemove([key], function(error) {
-        callback && callback((error && convertError(error)) || null);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiRemove([key], function(errors) {
+        callback && callback((errors && convertError(errors[0])) || null);
+        if (errors) {
+          reject(convertError(errors[0]));
         } else {
           resolve(null);
         }
       });
     });
   },
+
   /**
    * Merges existing value with input value, assuming they are stringified json.
-   * Returns a `Promise` object.
+   * Returns a `Promise` object. Not supported by all native implementations.
    */
   mergeItem: function(
     key: string,
@@ -91,16 +104,17 @@ var AsyncStorage = {
     callback?: ?(error: ?Error) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiMerge([[key,value]], function(error) {
-        callback && callback((error && convertError(error)) || null);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiMerge([[key,value]], function(errors) {
+        callback && callback((errors && convertError(errors[0])) || null);
+        if (errors) {
+          reject(convertError(errors[0]));
         } else {
           resolve(null);
         }
       });
     });
   },
+
   /**
    * Erases *all* AsyncStorage for all clients, libraries, etc.  You probably
    * don't want to call this - use removeItem or multiRemove to clear only your
@@ -109,8 +123,8 @@ var AsyncStorage = {
   clear: function(callback?: ?(error: ?Error) => void): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.clear(function(error) {
-        callback && callback(convertError(error) || null);
-        if (error) {
+        callback && callback(convertError(error));
+        if (error && convertError(error)){
           reject(convertError(error));
         } else {
           resolve(null);
@@ -118,13 +132,14 @@ var AsyncStorage = {
       });
     });
   },
+
   /**
    * Gets *all* keys known to the app, for all callers, libraries, etc. Returns a `Promise` object.
    */
   getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.getAllKeys(function(error, keys) {
-        callback && callback((error && convertError(error)) || null, keys);
+        callback && callback(convertError(error), keys);
         if (error) {
           reject(convertError(error));
         } else {
@@ -133,12 +148,15 @@ var AsyncStorage = {
       });
     });
   },
+
   /**
    * The following batched functions are useful for executing a lot of
    * operations at once, allowing for native optimizations and provide the
    * convenience of a single callback after all operations are complete.
    *
-   * In case of errors, these functions return the first encountered error and abort.
+   * These functions return arrays of errors, potentially one for every key.
+   * For key-specific errors, the Error object will have a key property to
+   * indicate which key caused the error.
    */
 
   /**
@@ -152,16 +170,18 @@ var AsyncStorage = {
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiGet(keys, function(error, result) {
-        callback && callback((error && convertError(error)) || null, result);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiGet(keys, function(errors, result) {
+        var error = (errors && errors.map((error) => convertError(error))) || null;
+        callback && callback(error, result);
+        if (errors) {
+          reject(error);
         } else {
           resolve(result);
         }
       });
     });
   },
+
   /**
    * multiSet and multiMerge take arrays of key-value array pairs that match
    * the output of multiGet, e.g. Returns a `Promise` object.
@@ -173,16 +193,18 @@ var AsyncStorage = {
     callback?: ?(errors: ?Array<Error>) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiSet(keyValuePairs, function(error) {
-        callback && callback((error && convertError(error)) || null);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
+        var error = (errors && errors.map((error) => convertError(error))) || null;
+        callback && callback(error);
+        if (errors) {
+          reject(error);
         } else {
           resolve(null);
         }
       });
     });
   },
+
   /**
    * Delete all the keys in the `keys` array. Returns a `Promise` object.
    */
@@ -191,29 +213,34 @@ var AsyncStorage = {
     callback?: ?(errors: ?Array<Error>) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiRemove(keys, function(error) {
-        callback && callback((error && convertError(error)) || null);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiRemove(keys, function(errors) {
+        var error = (errors && errors.map((error) => convertError(error))) || null;
+        callback && callback(error);
+        if (errors) {
+          reject(error);
         } else {
           resolve(null);
         }
       });
     });
   },
+
   /**
    * Merges existing values with input values, assuming they are stringified
    * json. Returns a `Promise` object.
+   *
+   * Not supported by all native implementations.
    */
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,
     callback?: ?(errors: ?Array<Error>) => void
   ): Promise {
     return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiMerge(keyValuePairs, function(error) {
-        callback && callback((error && convertError(error)) || null);
-        if (error) {
-          reject(convertError(error));
+      RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
+        var error = (errors && errors.map((error) => convertError(error))) || null;
+        callback && callback(error);
+        if (errors) {
+          reject(error);
         } else {
           resolve(null);
         }
@@ -222,12 +249,19 @@ var AsyncStorage = {
   },
 };
 
+// Not all native implementations support merge.
+if (!RCTAsyncStorage.multiMerge) {
+  delete AsyncStorage.mergeItem;
+  delete AsyncStorage.multiMerge;
+}
+
 function convertError(error) {
   if (!error) {
     return null;
   }
   var out = new Error(error.message);
-  return [out];
+  out.key = error.key; // flow doesn't like this :(
+  return out;
 }
 
 module.exports = AsyncStorage;
