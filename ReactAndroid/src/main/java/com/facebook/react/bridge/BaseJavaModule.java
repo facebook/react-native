@@ -46,70 +46,161 @@ import java.util.Map;
  * with the same name.
  */
 public abstract class BaseJavaModule implements NativeModule {
+  private interface ArgumentExtractor {
+    @Nullable Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex);
+  }
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_BOOLEAN = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return Boolean.valueOf(jsArguments.getBoolean(atIndex));
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_DOUBLE = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return Double.valueOf(jsArguments.getDouble(atIndex));
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_FLOAT = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return Float.valueOf((float) jsArguments.getDouble(atIndex));
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_INTEGER = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return Integer.valueOf((int) jsArguments.getDouble(atIndex));
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_STRING = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return jsArguments.getString(atIndex);
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_ARRAY = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return jsArguments.getArray(atIndex);
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_MAP = new ArgumentExtractor() {
+    @Override
+    public Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      return jsArguments.getMap(atIndex);
+    }
+  };
+
+  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_CALLBACK = new ArgumentExtractor() {
+    @Override
+    public @Nullable Object extractArgument(
+        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
+    ) {
+      if (jsArguments.isNull(atIndex)) {
+        return null;
+      }
+      else {
+        int id = (int) jsArguments.getDouble(atIndex);
+        return new CallbackImpl(catalystInstance, id);
+      }
+    }
+  };
+
+  private static ArgumentExtractor[] buildArgumentExtractors(Class[] parameterTypes) {
+    ArgumentExtractor[] argumentExtractors = new ArgumentExtractor[parameterTypes.length];
+    for (int i = 0; i < parameterTypes.length; i++) {
+      Class argumentClass = parameterTypes[i];
+      if (argumentClass == Boolean.class || argumentClass == boolean.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_BOOLEAN;
+      } else if (argumentClass == Integer.class || argumentClass == int.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_INTEGER;
+      } else if (argumentClass == Double.class || argumentClass == double.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_DOUBLE;
+      } else if (argumentClass == Float.class || argumentClass == float.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_FLOAT;
+      } else if (argumentClass == String.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_STRING;
+      } else if (argumentClass == Callback.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_CALLBACK;
+      } else if (argumentClass == ReadableMap.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
+      } else if (argumentClass == ReadableArray.class) {
+        argumentExtractors[i] = ARGUMENT_EXTRACTOR_ARRAY;
+      } else {
+        throw new RuntimeException(
+            "Got unknown argument class: " + argumentClass.getSimpleName());
+      }
+    }
+    return argumentExtractors;
+  }
+
   private class JavaMethod implements NativeMethod {
-    private Method method;
+    private Method mMethod;
+    private ArgumentExtractor[] mArgumentExtractors;
+    private Object[] mArguments;
 
     public JavaMethod(Method method) {
-      this.method = method;
+      mMethod = method;
+      Class[] parameterTypes = method.getParameterTypes();
+      mArgumentExtractors = buildArgumentExtractors(parameterTypes);
+      // Since native methods are invoked from a message queue executed on a single thread, it is
+      // save to allocate only one arguments object per method that can be reused across calls
+      mArguments = new Object[mArgumentExtractors.length];
     }
 
     @Override
     public void invoke(CatalystInstance catalystInstance, ReadableNativeArray parameters) {
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod");
       try {
-        Class[] types = method.getParameterTypes();
-        if (types.length != parameters.size()) {
+        if (mArgumentExtractors.length != parameters.size()) {
           throw new NativeArgumentsParseException(
-              BaseJavaModule.this.getName() + "." + method.getName() + " got " + parameters.size() +
-              " arguments, expected " + types.length);
+              BaseJavaModule.this.getName() + "." + mMethod.getName() + " got " +
+              parameters.size() + " arguments, expected " + mArgumentExtractors.length);
         }
-        Object[] arguments = new Object[types.length];
 
         int i = 0;
         try {
-          for (; i < types.length; i++) {
-            Class argumentClass = types[i];
-            if (argumentClass == Boolean.class || argumentClass == boolean.class) {
-              arguments[i] = Boolean.valueOf(parameters.getBoolean(i));
-            } else if (argumentClass == Integer.class || argumentClass == int.class) {
-              arguments[i] = Integer.valueOf((int) parameters.getDouble(i));
-            } else if (argumentClass == Double.class || argumentClass == double.class) {
-              arguments[i] = Double.valueOf(parameters.getDouble(i));
-            } else if (argumentClass == Float.class || argumentClass == float.class) {
-              arguments[i] = Float.valueOf((float) parameters.getDouble(i));
-            } else if (argumentClass == String.class) {
-              arguments[i] = parameters.getString(i);
-            } else if (argumentClass == Callback.class) {
-              if (parameters.isNull(i)) {
-                arguments[i] = null;
-              } else {
-                int id = (int) parameters.getDouble(i);
-                arguments[i] = new CallbackImpl(catalystInstance, id);
-              }
-            } else if (argumentClass == ReadableMap.class) {
-              arguments[i] = parameters.getMap(i);
-            } else if (argumentClass == ReadableArray.class) {
-              arguments[i] = parameters.getArray(i);
-            } else {
-              throw new RuntimeException(
-                  "Got unknown argument class: " + argumentClass.getSimpleName());
-            }
+          for (; i < mArgumentExtractors.length; i++) {
+            mArguments[i] = mArgumentExtractors[i].extractArgument(catalystInstance, parameters, i);
           }
         } catch (UnexpectedNativeTypeException e) {
           throw new NativeArgumentsParseException(
               e.getMessage() + " (constructing arguments for " + BaseJavaModule.this.getName() +
-              "." + method.getName() + " at argument index " + i + ")",
+              "." + mMethod.getName() + " at argument index " + i + ")",
               e);
         }
 
         try {
-          method.invoke(BaseJavaModule.this, arguments);
+          mMethod.invoke(BaseJavaModule.this, mArguments);
         } catch (IllegalArgumentException ie) {
           throw new RuntimeException(
-              "Could not invoke " + BaseJavaModule.this.getName() + "." + method.getName(), ie);
+              "Could not invoke " + BaseJavaModule.this.getName() + "." + mMethod.getName(), ie);
         } catch (IllegalAccessException iae) {
           throw new RuntimeException(
-              "Could not invoke " + BaseJavaModule.this.getName() + "." + method.getName(), iae);
+              "Could not invoke " + BaseJavaModule.this.getName() + "." + mMethod.getName(), iae);
         } catch (InvocationTargetException ite) {
           // Exceptions thrown from native module calls end up wrapped in InvocationTargetException
           // which just make traces harder to read and bump out useful information
@@ -117,7 +208,7 @@ public abstract class BaseJavaModule implements NativeModule {
             throw (RuntimeException) ite.getCause();
           }
           throw new RuntimeException(
-              "Could not invoke " + BaseJavaModule.this.getName() + "." + method.getName(), ite);
+              "Could not invoke " + BaseJavaModule.this.getName() + "." + mMethod.getName(), ite);
         }
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
