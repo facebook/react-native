@@ -131,8 +131,13 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   public void close(int code, String reason, int id) {
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
-      // This is a programmer error
-      throw new RuntimeException("Cannot close WebSocket. Unknown WebSocket id " + id);
+      // WebSocket is already closed
+      // Don't do anything, mirror the behaviour on web
+      FLog.w(
+        ReactConstants.TAG,
+        "Cannot close WebSocket. Unknown WebSocket id " + id);
+
+      return;
     }
     try {
       client.close(code, reason);
