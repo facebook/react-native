@@ -49,8 +49,17 @@ var INNERVIEW = 'InnerScrollView';
  * views have bounded height. Forgetting to transfer `{flex: 1}` down the
  * view stack can lead to errors here, which the element inspector makes
  * easy to debug.
+ * 
+ * In addition to the onScroll and onScrollAnimationEnd events listed here, there are a number of additonal events
+ * available for this component via the ScrollResponder. They are, in order of appearance:
+ * 1. `onTouchStartCapture`   (when you press down)
+ * 2. `onTouchStart`          (same, but bubble phase)
+ * 3. `onTouchEnd`            (You could hold the touch start for a long time)
+ * 4. `onResponderRelease`    (when lifting up - you could pause forever before lifting)
+ * 5. `onMomentumScrollBegin` (when animation begins after letting up)
+ * 6. `onMomentumScrollEnd`   (when the scrolling animation ends)
  *
- * Doesn't yet support other contained responders from blocking this scroll
+ * The componenet doesn't yet support other contained responders from blocking this scroll
  * view from becoming the responder.
  */
 var ScrollView = React.createClass({
