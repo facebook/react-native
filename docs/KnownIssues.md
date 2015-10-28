@@ -20,6 +20,7 @@ Swipe Refresh
 Spinner
 ART
 Maps
+Modal
 Webview
 ```
 
@@ -34,6 +35,7 @@ Dialog
 Intent
 Media
 Pasteboard
+PushNotificationIOS
 Alert
 ```
 

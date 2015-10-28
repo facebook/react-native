@@ -18,7 +18,6 @@ module.exports = [
     command: 'platform',
     description: 'Either "ios" or "android"',
     type: 'string',
-    required: true,
   }, {
     command: 'transformer',
     description: 'Specify a custom transformer to be used (absolute path)',
@@ -33,6 +32,11 @@ module.exports = [
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
     type: 'string',
     required: true,
+  }, {
+    command: 'bundle-encoding',
+    description: 'Encoding the bundle should be written in (https://nodejs.org/api/buffer.html#buffer_buffer).',
+    type: 'string',
+    default: 'utf8',
   }, {
     command: 'sourcemap-output',
     description: 'File name where to store the sourcemap file for resulting bundle, ex. /tmp/groups.map',

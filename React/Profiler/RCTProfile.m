@@ -190,16 +190,15 @@ IMP RCTProfileGetImplementation(id obj, SEL cmd)
  * The implementation can be found in RCTProfileTrampoline-<arch>.s where arch
  * is one of: x86, x86_64, arm, arm64.
  */
-static IMP RCTProfileGetTrampoline(void)
-{
-  static void (*RCTProfileTrampoline)(void);
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    RCTProfileTrampoline = dlsym(RTLD_DEFAULT, "RCTProfileTrampoline");
-  });
+#if defined(__x86__) || \
+    defined(__x86_64__) || \
+    defined(__arm__) || \
+    defined(__arm64__)
 
-  return (IMP)RCTProfileTrampoline;
-}
+  RCT_EXTERN void RCTProfileTrampoline(void);
+#else
+  static void *RCTProfileTrampoline = NULL;
+#endif
 
 RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
 void RCTProfileTrampolineStart(id self, SEL cmd)
@@ -216,9 +215,12 @@ void RCTProfileTrampolineEnd(void)
 
 void RCTProfileHookModules(RCTBridge *bridge)
 {
-  if (RCTProfileGetTrampoline() == NULL) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-pointer-compare"
+  if (RCTProfileTrampoline == NULL) {
     return;
   }
+#pragma clang diagnostic pop
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     [moduleData dispatchBlock:^{
@@ -239,7 +241,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
         }
         const char *types = method_getTypeEncoding(method);
 
-        class_addMethod(proxyClass, selector, RCTProfileGetTrampoline(), types);
+        class_addMethod(proxyClass, selector, RCTProfileTrampoline, types);
       }
       free(methods);
 

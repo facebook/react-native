@@ -28,7 +28,7 @@ $ npm install
 
 ## 2. Upgrade your project templates
 
-> NOTE: This feature is not yet available in the stable release of React Native. Stay tuned.
+> NOTE: This feature is available in version 0.14.0-rc and higher.
 
 The new npm package will likely contain updates to the files that are normally generated when you
 run `react-native init`, like the iOS and the Android sub-projects. To get these latest changes,

@@ -1,10 +1,11 @@
 #include "RCTDefines.h"
+#include "RCTMacros.h"
 
 #if RCT_DEV && defined(__arm__)
 
 	.align 5
-  .globl _RCTProfileTrampoline
-_RCTProfileTrampoline:
+  .globl SYMBOL_NAME(RCTProfileTrampoline)
+SYMBOL_NAME(RCTProfileTrampoline):
   /**
    * The explanation here is shorter, refer to the x86_64 implementation to a
    * richer explanation
@@ -24,7 +25,7 @@ _RCTProfileTrampoline:
    * profile
    */
   mov r0, #0xc
-  bl _malloc
+  bl SYMBOL_NAME(malloc)
   /**
    * r4 is the callee saved register we'll use to refer to the allocated memory,
    * store its initial value, so we can restore it later
@@ -40,7 +41,7 @@ _RCTProfileTrampoline:
    */
   ldr r0, [sp]
   ldr r1, [sp, #0x4]
-  bl _RCTProfileGetImplementation
+  bl SYMBOL_NAME(RCTProfileGetImplementation)
   // store the actual function address in the allocated memory
   str r0, [r4, #0x4]
 
@@ -51,7 +52,7 @@ _RCTProfileTrampoline:
    */
   ldr r0, [sp]
   ldr r1, [sp, #0x4]
-  bl _RCTProfileTrampolineStart
+  bl SYMBOL_NAME(RCTProfileTrampolineStart)
 
   /**
    * Restore the state to call the actual function we want to profile: pop
@@ -66,7 +67,7 @@ _RCTProfileTrampoline:
   push {r0} // save return value
 
   // void RCTProfileTrampolineEnd(void) in RCTProfile.m - just ends this profile
-  bl _RCTProfileTrampolineEnd
+  bl SYMBOL_NAME(RCTProfileTrampolineEnd)
 
   /**
    * Save the value we still need from the allocated memory (caller address),
@@ -76,7 +77,7 @@ _RCTProfileTrampoline:
   ldr r1, [r4, #0x8]
   ldr r4, [r4]
   push {r1} // save the caller on the stack
-  bl _free
+  bl SYMBOL_NAME(free)
 
   pop {lr} // pop the caller
   pop {r0} // pop the return value
