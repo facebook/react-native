@@ -2,6 +2,8 @@
 
 ## 0.15
 
+None so far.
+
 ## 0.14
 
 - D2533877: `react-native bundle` API changes:
