@@ -20,11 +20,12 @@ function saveBundleAndMap(
   codeWithMap,
   platform,
   bundleOutput,
+  encoding,
   sourcemapOutput,
   assetsDest
 ) {
   log('Writing bundle output to:', bundleOutput);
-  fs.writeFileSync(bundleOutput, sign(codeWithMap.code));
+  fs.writeFileSync(bundleOutput, sign(codeWithMap.code), encoding);
   log('Done writing bundle output');
 
   if (sourcemapOutput) {

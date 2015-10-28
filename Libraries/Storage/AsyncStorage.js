@@ -44,9 +44,10 @@ var AsyncStorage = {
       RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
         var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
-        callback && callback((errors && convertError(errors[0])) || null, value);
-        if (errors) {
-          reject(convertError(errors[0]));
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0], value);
+        if (errs) {
+          reject(errs[0]);
         } else {
           resolve(value);
         }
@@ -65,9 +66,10 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet([[key,value]], function(errors) {
-        callback && callback((errors && convertError(errors[0])) || null);
-        if (errors) {
-          reject(convertError(errors[0]));
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
         } else {
           resolve(null);
         }
@@ -84,9 +86,10 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove([key], function(errors) {
-        callback && callback((errors && convertError(errors[0])) || null);
-        if (errors) {
-          reject(convertError(errors[0]));
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
         } else {
           resolve(null);
         }
@@ -105,9 +108,10 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge([[key,value]], function(errors) {
-        callback && callback((errors && convertError(errors[0])) || null);
-        if (errors) {
-          reject(convertError(errors[0]));
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
         } else {
           resolve(null);
         }
@@ -171,9 +175,9 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet(keys, function(errors, result) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = convertErrors(errors);
         callback && callback(error, result);
-        if (errors) {
+        if (error) {
           reject(error);
         } else {
           resolve(result);
@@ -194,9 +198,9 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = convertErrors(errors);
         callback && callback(error);
-        if (errors) {
+        if (error) {
           reject(error);
         } else {
           resolve(null);
@@ -214,9 +218,9 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiRemove(keys, function(errors) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = convertErrors(errors);
         callback && callback(error);
-        if (errors) {
+        if (error) {
           reject(error);
         } else {
           resolve(null);
@@ -237,9 +241,9 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
-        var error = (errors && errors.map((error) => convertError(error))) || null;
+        var error = convertErrors(errors);
         callback && callback(error);
-        if (errors) {
+        if (error) {
           reject(error);
         } else {
           resolve(null);
@@ -253,6 +257,13 @@ var AsyncStorage = {
 if (!RCTAsyncStorage.multiMerge) {
   delete AsyncStorage.mergeItem;
   delete AsyncStorage.multiMerge;
+}
+
+function convertErrors(errs) {
+  if (!errs) {
+    return null;
+  }
+  return (Array.isArray(errs) ? errs : [errs]).map((e) => convertError(e));
 }
 
 function convertError(error) {
