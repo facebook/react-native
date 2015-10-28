@@ -18,7 +18,6 @@ module.exports = [
     command: 'platform',
     description: 'Either "ios" or "android"',
     type: 'string',
-    required: true,
   }, {
     command: 'transformer',
     description: 'Specify a custom transformer to be used (absolute path)',
