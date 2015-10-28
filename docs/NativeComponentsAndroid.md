@@ -67,42 +67,19 @@ Setter declaration requirements for methods annotated with `@ReactPropGroup` are
 
 ```java
   @ReactProp(name = "src")
-  public void setSrc(ReactImageView view, String src) {
+  public void setSrc(ReactImageView view, @Nullable String src) {
+    view.setSource(src);
   }
   
-  @ReactProp(name = "borderRadius")
+  @ReactProp(name = "borderRadius", defaultFLoat = 0f)
   public void setBorderRadius(ReactImageView view, float borderRadius) {
+    view.setBorderRadius(borderRadius);
   }
-  
   
   @ReactProp(name = ViewProps.RESIZE_MODE)
-  public void setResizeMode(ReactImageView view, String resizeMode) {
+  public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
+    view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
   }
-```
-
-## 4. Implement method `updateView`
-
-Setting properties on a view is not handled by automatically calling setter methods as it is on iOS; for Android, you manually invoke the setters via the `updateView` of your `ViewManager`. Values are fetched from the `CatalystStylesDiffMap` and dispatched to the `View` instance as required. It is up to a combination of `updateView` and the `View` class to check the validity of the properties and behave accordingly.
-
-```java
-  @Override
-  public void updateView(final ReactImageView view,
-                         final CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-
-    if (props.hasKey(PROP_RESIZE_MODE)) {
-      view.setScaleType(
-        ImageResizeMode.toScaleType(props.getString(PROP_RESIZE_MODE)));
-    }
-    if (props.hasKey(PROP_SRC)) {
-       view.setSource(props.getString(PROP_SRC));
-    }
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(props.getFloat(PROP_BORDER_RADIUS, 0.0f));
-    }
-    view.maybeUpdateView();
-  }
-}
 ```
 
 ## 5. Register the `ViewManager`
