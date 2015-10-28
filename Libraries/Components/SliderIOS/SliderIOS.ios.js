@@ -46,6 +46,8 @@ var SliderIOS = React.createClass({
      * between 0 and difference maximumValue - minimumValue.
      * If step value less or equal 0 or bigger then (maximumValue - minimumValue)
      * step parameter will be ignored.
+     * During dragging onValueChange will return actual value (not stepped).
+     * Only when dragging is stoped - onSlidingComplete will return stepped value.
      * Default value is 0.
      */
     step: PropTypes.number,
