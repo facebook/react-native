@@ -28,19 +28,24 @@ You can also pack all the JavaScript code within the app itself. This way you ca
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Follow the instructions for "OPTION 2":
   * Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
-  * Run the `react-native bundle` command in terminal from the root directory of your app
+  * Run the `react-native bundle --platform <ios|android> --entry-file <path> --bundle-output <path> [--sourcemap-output path> --dev --minify]` command in terminal from the root directory of your app
 
 The bundle script supports a couple of flags:
 
+* `--platform <ios|android>` - indicates which platform the bundle should be built for.
+* `--entry-file <path>` - indicates the entry point of the bundle.
+* `--bundle-output <path>` - indicates where the generated bundle should be saved.
+* `--sourcemap-output <path>` - indicates where the sourcemaps should be saved. If you don't specify this option, no sourcemaps will be generated.
 * `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
 * `--minify` - pipe the JS code through UglifyJS.
 
-Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
+For instance a typical `bundle` command for `ios` looks like:
 
-* API is now `entry-file <path>` based instead of url based.
-* Need to specify which platform you're bundling for `--platform <ios|android>`.
-* Option `--out` has been renamed for `--bundle-output`.
-* Source maps are no longer automatically generated. Need to specify `--sourcemap-output <path>` 
+      $ react-native bundle --platform ios --entry-file index.ios.bundle --bundle-output ios/main.jsbundle --sourcemap-output ios/index.ios.map --dev false --minify true
+
+whereas the typical for android looks like:
+
+      $ react-native bundle --platform android --entry-file index.android.bundle --bundle-output android/app/src/main/assets/index.android.bundle --sourcemap-output android/index.android.map --dev false --minify true
 
 ## Disabling in-app developer menu
 
