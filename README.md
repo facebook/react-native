@@ -9,6 +9,7 @@ Supported operating systems are >= Android 4.1 (API 16) and >= iOS 7.0.
 - [Documentation](#documentation)
 - [Examples](#examples)
 - [Extending React Native](#extending-react-native)
+- [Upgrading](#upgrading)
 - [Opening Issues](#opening-issues)
 - [Contributing](#contributing)
 - [License](#license)
@@ -73,6 +74,10 @@ Note that you'll need the Android NDK installed, see [prerequisites](https://git
 - Fellow developers write and publish React Native modules to npm and open source them on GitHub.
 - Making modules helps grow the React Native ecosystem and community. We recommend writing modules for your use cases and sharing them on npm.
 - Read the guides on Native Modules ([iOS](http://facebook.github.io/react-native/docs/native-modules-ios.html), [Android](http://facebook.github.io/react-native/docs/native-modules-android.html)) and Native UI Components ([iOS](http://facebook.github.io/react-native/docs/native-components-ios.html), [Android](http://facebook.github.io/react-native/docs/native-components-android.html)) if you are interested in extending native functionality.
+
+## Upgrading
+
+React Native is under active development. See the guide on [upgrading React Native](https://facebook.github.io/react-native/docs/upgrading.html) to keep your project up-to-date.
 
 ## Opening Issues
 
