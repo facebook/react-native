@@ -9,6 +9,7 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.support.v4.util.Pools;
 import android.view.MotionEvent;
 
 /**
@@ -21,16 +22,42 @@ import android.view.MotionEvent;
  */
 public class TouchEvent extends Event<TouchEvent> {
 
-  private final MotionEvent mMotionEvent;
-  private final TouchEventType mTouchEventType;
-  private final short mCoalescingKey;
+  private static final Pools.SynchronizedPool<TouchEvent> EVENTS_POOL =
+      new Pools.SynchronizedPool<>(3);
 
-  public TouchEvent(
+  public static TouchEvent obtain(
       int viewTag,
       long timestampMs,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy) {
-    super(viewTag, timestampMs);
+    TouchEvent event = EVENTS_POOL.acquire();
+    if (event == null) {
+      event = new TouchEvent();
+    }
+    event.init(viewTag, timestampMs, touchEventType, motionEventToCopy);
+    return event;
+  }
+
+  private MotionEvent mMotionEvent;
+  private TouchEventType mTouchEventType;
+  private short mCoalescingKey;
+
+  private TouchEvent() {
+  }
+
+  @Override
+  public void onDispose() {
+    mMotionEvent.recycle();
+    mMotionEvent = null;
+    EVENTS_POOL.release(this);
+  }
+
+  private void init(
+      int viewTag,
+      long timestampMs,
+      TouchEventType touchEventType,
+      MotionEvent motionEventToCopy) {
+    super.init(viewTag, timestampMs);
     mTouchEventType = touchEventType;
     mMotionEvent = MotionEvent.obtain(motionEventToCopy);
 
@@ -93,10 +120,5 @@ public class TouchEvent extends Event<TouchEvent> {
         mTouchEventType,
         getViewTag(),
         mMotionEvent);
-  }
-
-  @Override
-  public void onDispose() {
-    mMotionEvent.recycle();
   }
 }

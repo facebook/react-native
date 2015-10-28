@@ -145,7 +145,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       mChildIsHandlingNativeGesture = false;
       mTargetTag = TouchTargetHelper.findTargetTagForTouch(ev.getY(), ev.getX(), this);
       eventDispatcher.dispatchEvent(
-          new TouchEvent(mTargetTag, SystemClock.uptimeMillis(),TouchEventType.START, ev));
+          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.START, ev));
     } else if (mChildIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
       // gesture, so we shouldn't send any more touches related to it.
@@ -161,20 +161,20 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // End of the gesture. We reset target tag to -1 and expect no further event associated with
       // this gesture.
       eventDispatcher.dispatchEvent(
-          new TouchEvent(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.END, ev));
+          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.END, ev));
       mTargetTag = -1;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
       eventDispatcher.dispatchEvent(
-          new TouchEvent(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.MOVE, ev));
+          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.MOVE, ev));
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
-          new TouchEvent(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.START, ev));
+          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.START, ev));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
       // Exactly onw of the pointers goes up
       eventDispatcher.dispatchEvent(
-          new TouchEvent(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.END, ev));
+          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.END, ev));
     } else if (action == MotionEvent.ACTION_CANCEL) {
       dispatchCancelEvent(ev);
       mTargetTag = -1;
@@ -219,7 +219,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         !mChildIsHandlingNativeGesture,
         "Expected to not have already sent a cancel for this gesture");
     Assertions.assertNotNull(eventDispatcher).dispatchEvent(
-        new TouchEvent(
+        TouchEvent.obtain(
             mTargetTag,
             SystemClock.uptimeMillis(),
             TouchEventType.CANCEL,
