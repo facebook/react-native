@@ -19,7 +19,7 @@
 static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
 {
   for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
-    if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
+    if (!subview.clipsToBounds && !subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
       CGPoint convertedPoint = [subview convertPoint:point fromView:view];
       UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
       if (subviewHitTestView != nil) {
