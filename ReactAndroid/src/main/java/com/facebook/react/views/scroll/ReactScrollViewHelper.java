@@ -28,7 +28,7 @@ public class ReactScrollViewHelper {
     View contentView = scrollView.getChildAt(0);
     ReactContext reactContext = (ReactContext) scrollView.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-        new ScrollEvent(
+        ScrollEvent.obtain(
             scrollView.getId(),
             SystemClock.uptimeMillis(),
             scrollX,

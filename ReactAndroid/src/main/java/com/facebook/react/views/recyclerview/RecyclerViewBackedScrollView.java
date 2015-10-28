@@ -247,17 +247,16 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
   protected void onScrollChanged(int l, int t, int oldl, int oldt) {
     super.onScrollChanged(l, t, oldl, oldt);
 
-    ScrollEvent event = new ScrollEvent(
-        getId(),
-        SystemClock.uptimeMillis(),
-        0, /* offsetX = 0, horizontal scrolling only */
-        calculateAbsoluteOffset(),
-        getWidth(),
-        ((ReactListAdapter) getAdapter()).getTotalChildrenHeight(),
-        getWidth(),
-        getHeight());
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
-        .dispatchEvent(event);
+        .dispatchEvent(ScrollEvent.obtain(
+                getId(),
+                SystemClock.uptimeMillis(),
+                0, /* offsetX = 0, horizontal scrolling only */
+                calculateAbsoluteOffset(),
+                getWidth(),
+                ((ReactListAdapter) getAdapter()).getTotalChildrenHeight(),
+                getWidth(),
+                getHeight()));
   }
 
   public RecyclerViewBackedScrollView(Context context) {
