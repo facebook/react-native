@@ -260,7 +260,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     [self setUp];
-    self.frame = frame;
     self.layer.backgroundColor = NULL;
   }
   return self;
