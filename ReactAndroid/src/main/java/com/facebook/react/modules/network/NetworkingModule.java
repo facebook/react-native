@@ -197,7 +197,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
               if (responseHeaders.hasKey(headers.name(i))) {
                 responseHeaders.putString(
                   headers.name(i),
-                  responseHeaders.getString(headers.name(i)) + "," + headers.value(i)
+                  responseHeaders.getString(headers.name(i)) + ", " + headers.value(i)
                 ) ;
               } else {
                 responseHeaders.putString(headers.name(i), headers.value(i));
