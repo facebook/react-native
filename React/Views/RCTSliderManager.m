@@ -30,6 +30,13 @@ RCT_EXPORT_MODULE()
 
 static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 {
+  if (sender.step > 0 &&
+    sender.step <= (sender.maximumValue - sender.minimumValue)) {
+    int step = ((int)((sender.value + sender.step / 2) / sender.step) * sender.step);
+    [sender setValue: step
+            animated: NO];
+  }
+
   if (sender.onChange) {
     sender.onChange(@{
       @"value": @(sender.value),
@@ -49,6 +56,7 @@ static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 }
 
 RCT_EXPORT_VIEW_PROPERTY(value, float);
+RCT_EXPORT_VIEW_PROPERTY(step, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumTrackTintColor, UIColor);
