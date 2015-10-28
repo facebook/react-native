@@ -15,5 +15,6 @@
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic) float step;
+@property (nonatomic) float lastValue;
 
 @end

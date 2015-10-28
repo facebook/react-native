@@ -30,24 +30,30 @@ RCT_EXPORT_MODULE()
 
 static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 {
+  float value = sender.value;
 
-  if (!continuous && sender.step > 0 &&
+  if (sender.step > 0 &&
     sender.step <= (sender.maximumValue - sender.minimumValue)) {
-    float value =
+    value =
       MAX(sender.minimumValue,
         MIN(sender.maximumValue,
           sender.minimumValue + round((sender.value - sender.minimumValue) / sender.step) * sender.step
         )
       );
-    sender.value =  value;
   }
 
-  if (sender.onChange) {
+  if (!continuous) {
+    sender.value = value;
+  }
+
+  if (sender.onChange && (sender.lastValue != value || !continuous)) {
     sender.onChange(@{
-      @"value": @(sender.value),
+      @"value": @(value),
       @"continuous": @(continuous),
     });
   }
+
+  sender.lastValue = value;
 }
 
 - (void)sliderValueChanged:(RCTSlider *)sender
