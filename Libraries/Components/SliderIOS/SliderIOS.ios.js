@@ -64,6 +64,12 @@ var SliderIOS = React.createClass({
     maximumTrackTintColor: PropTypes.string,
 
     /**
+     * If true the user won't be able to move the slider.
+     * Default value is false.
+     */
+    disabled: PropTypes.bool,
+
+    /**
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,
@@ -86,6 +92,12 @@ var SliderIOS = React.createClass({
     }
   },
 
+  getDefaultProps: function() : any {
+    return {
+      disabled: false,
+    };
+  },
+
   render: function() {
     return (
       <RCTSlider
@@ -95,6 +107,7 @@ var SliderIOS = React.createClass({
         minimumValue={this.props.minimumValue}
         minimumTrackTintColor={this.props.minimumTrackTintColor}
         maximumTrackTintColor={this.props.maximumTrackTintColor}
+        disabled={this.props.disabled}
         onChange={this._onValueChange}
       />
     );
