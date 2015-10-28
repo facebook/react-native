@@ -73,7 +73,7 @@ Setter declaration requirements for methods annotated with `@ReactPropGroup` are
     view.setSource(src);
   }
   
-  @ReactProp(name = "borderRadius", defaultFLoat = 0f)
+  @ReactProp(name = "borderRadius", defaultFloat = 0f)
   public void setBorderRadius(ReactImageView view, float borderRadius) {
     view.setBorderRadius(borderRadius);
   }
