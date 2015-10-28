@@ -638,7 +638,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   auto bridge = extractRefPtr<Bridge>(env, obj);
   auto assetNameStr = fromJString(env, assetName);
 
-  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_start"));
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_start"));
   auto script = react::loadScriptFromAssets(env, assetManager, assetNameStr);
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
@@ -646,30 +646,27 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
     "assetName", assetNameStr);
   #endif
 
-  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
   executeApplicationScript(bridge, script, assetNameStr);
-  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_done"));
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_done"));
 }
 
-static void loadScriptFromNetworkCached(JNIEnv* env, jobject obj, jstring sourceURL,
-                                   jstring tempFileName) {
+static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstring sourceURL) {
   jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
 
   auto bridge = jni::extractRefPtr<Bridge>(env, obj);
-  std::string script = "";
-  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_start"));
-  if (tempFileName != NULL) {
-    script = react::loadScriptFromFile(jni::fromJString(env, tempFileName));
-  }
+  auto fileNameStr = fileName == NULL ? "" : fromJString(env, fileName);
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_start"));
+  auto script = fileName == NULL ? "" : react::loadScriptFromFile(fileNameStr);
   #ifdef WITH_FBSYSTRACE
-  auto sourceURLStr = fromJString(env, sourceURL);
+  auto sourceURLStr = sourceURL == NULL ? fileNameStr : fromJString(env, sourceURL);
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
     "executeApplicationScript",
     "sourceURL", sourceURLStr);
   #endif
-  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_read"));
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_read"));
   executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
-  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromNetworkCached_exec"));
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_exec"));
 }
 
 static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
@@ -821,7 +818,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod(
           "loadScriptFromAssets", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
           bridge::loadScriptFromAssets),
-        makeNativeMethod("loadScriptFromNetworkCached", bridge::loadScriptFromNetworkCached),
+        makeNativeMethod("loadScriptFromFile", bridge::loadScriptFromFile),
         makeNativeMethod("callFunction", bridge::callFunction),
         makeNativeMethod("invokeCallback", bridge::invokeCallback),
         makeNativeMethod("setGlobalVariable", bridge::setGlobalVariable),
