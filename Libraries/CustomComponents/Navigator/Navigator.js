@@ -346,6 +346,7 @@ var Navigator = React.createClass({
       this._navigationContext.dispose();
       this._navigationContext = null;
     }
+    this.spring.removeAllListeners();
   },
 
   /**
