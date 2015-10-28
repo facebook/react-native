@@ -49,6 +49,7 @@ function buildBundle(args, config) {
           outputBundle,
           args.platform,
           args['bundle-output'],
+          args['bundle-encoding'],
           args['sourcemap-output'],
           args['assets-dest']
         ));
