@@ -14,8 +14,6 @@
   float _unclippedValue;
 }
 
-@synthesize step;
-
 - (void)setValue:(float)value
 {
   _unclippedValue = value;
