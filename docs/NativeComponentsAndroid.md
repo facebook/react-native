@@ -82,7 +82,7 @@ Setter declaration requirements for methods annotated with `@ReactPropGroup` are
   }
 ```
 
-## 5. Register the `ViewManager`
+## 4. Register the `ViewManager`
 
 The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](NativeModulesAndroid.md), via the applications package member function `createViewManagers.`
 
@@ -96,7 +96,7 @@ The final Java step is to register the ViewManager to the application, this happ
   }
 ```
 
-## 6. Implement the JavaScript module
+## 5. Implement the JavaScript module
 
 The very final step is to create the JavaScript module that defines the interface layer between Java and JavaScript for the users of your new view. Much of the effort is handled by internal React code in Java and JavaScript and all that is left for you is to describe the `propTypes`.
 
