@@ -33,6 +33,11 @@ module.exports = [
     type: 'string',
     required: true,
   }, {
+    command: 'bundle-encoding',
+    description: 'Encoding the bundle should be written in (https://nodejs.org/api/buffer.html#buffer_buffer).',
+    type: 'string',
+    default: 'utf8',
+  }, {
     command: 'sourcemap-output',
     description: 'File name where to store the sourcemap file for resulting bundle, ex. /tmp/groups.map',
     type: 'string',
