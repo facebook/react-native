@@ -367,10 +367,18 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   }
 
   public String getSourceMapUrl() {
+    if (mJSAppBundleName == null) {
+      return "";
+    }
+
     return mDevServerHelper.getSourceMapUrl(Assertions.assertNotNull(mJSAppBundleName));
   }
 
   public String getSourceUrl() {
+    if (mJSAppBundleName == null) {
+      return "";
+    }
+
     return mDevServerHelper.getSourceUrl(Assertions.assertNotNull(mJSAppBundleName));
   }
 

@@ -1,10 +1,11 @@
 #include "RCTDefines.h"
+#include "RCTMacros.h"
 
 #if RCT_DEV && defined(__arm64__)
 
   .align 5
-  .globl _RCTProfileTrampoline
-_RCTProfileTrampoline:
+  .globl SYMBOL_NAME(RCTProfileTrampoline)
+SYMBOL_NAME(RCTProfileTrampoline):
   /**
    * The explanation here is shorter, refer to the x86_64 implementation to  a
    * richer explanation
@@ -38,7 +39,7 @@ _RCTProfileTrampoline:
    * the implementation and the caller address.
    */
   mov x0, #0x10
-  bl _malloc
+  bl SYMBOL_NAME(malloc)
   // store the initial value of r19, the callee saved register we'll use
   str x19, [x0]
   mov x19, x0
@@ -50,7 +51,7 @@ _RCTProfileTrampoline:
    * this function
    */
   ldp	x0, x1, [sp, #(8*16+0*8)]
-  bl _RCTProfileGetImplementation
+  bl SYMBOL_NAME(RCTProfileGetImplementation)
   str x0, [x19, #0x8] // store the actual function address
 
   /**
@@ -59,7 +60,7 @@ _RCTProfileTrampoline:
    * start the profile, it takes the same first 2 arguments as above.
    */
   ldp	x0, x1, [sp, #(8*16+0*8)]
-  bl _RCTProfileTrampolineStart
+  bl SYMBOL_NAME(RCTProfileTrampolineStart)
 
   // Restore all the parameter registers to the initial state.
   ldp	q0, q1, [sp, #(0*16)]
@@ -91,7 +92,7 @@ _RCTProfileTrampoline:
   str x0, [sp, #0x10] // 8-byte return value
 
   // void RCTProfileTrampolineEnd(void) in RCTProfile.m - just ends this profile
-  bl _RCTProfileTrampolineEnd
+  bl SYMBOL_NAME(RCTProfileTrampolineEnd)
 
   /**
    * restore the callee saved registers, move the values we still need to the
@@ -101,7 +102,7 @@ _RCTProfileTrampoline:
   ldr x10, [x19, #0x8] //  load the caller address
   ldr x19, [x19] // restore x19
   str x10, [sp, #0x18] // store x10 on the stack space allocated above
-  bl _free
+  bl SYMBOL_NAME(free)
 
   // Load both return values and link register from the stack
   ldr q0, [sp, #0x0]
