@@ -12,9 +12,12 @@
 'use strict';
 
 /**
- * Make sure `setTimeout`/`setInterval` are patched correctly.
+ * Make sure essential globals are available and are patched correctly. Please don't remove this
+ * line. Bundles created by react-packager `require` it before executing any application code. This
+ * ensures it exists in the dependency graph and can be `require`d.
  */
 require('InitializeJavaScriptAppEngine');
+
 var EventPluginHub = require('EventPluginHub');
 var EventPluginUtils = require('EventPluginUtils');
 var IOSDefaultEventPluginOrder = require('IOSDefaultEventPluginOrder');
