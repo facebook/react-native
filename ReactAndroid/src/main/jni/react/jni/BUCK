@@ -1,0 +1,53 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We depend on JSC, support the same platforms
+SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
+
+cxx_library(
+  name = 'jni',
+  soname = 'libreactnativejni.so',
+  header_namespace = 'react/jni',
+  supported_platforms_regex = SUPPORTED_PLATFORMS,
+  srcs = [
+    'NativeArray.cpp',
+    'OnLoad.cpp',
+    'ProxyExecutor.cpp',
+    'JSLoader.cpp',
+  ],
+  headers = [
+    'ProxyExecutor.h',
+    'JSLoader.h',
+  ],
+  exported_headers = [
+    'NativeArray.h',
+    'ReadableNativeArray.h',
+  ],
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNativeJNI"',
+    '-DWITH_FBSYSTRACE=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-Werror',
+    '-fexceptions',
+    '-std=c++11',
+    '-fvisibility=hidden',
+    '-frtti',
+  ],
+  visibility = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('jni/react/...'),
+    react_native_dep('native/react/...')
+  ],
+  deps = [
+    react_native_target('jni/react:react'),
+    '//native/jni:jni',
+    '//native/third-party/jsc:jsc',
+    '//native/third-party/jsc:jsc_legacy_profiler',
+    '//xplat/folly:json',
+  ],
+)
+
+project_config(
+  src_target = ':jni',
+)

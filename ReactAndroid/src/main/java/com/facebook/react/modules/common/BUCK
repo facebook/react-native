@@ -1,0 +1,20 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'common',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    '//libraries/fbcore/src/main/java/com/facebook/common/logging:logging',
+    '//third-party/java/infer-annotations:infer-annotations',
+    '//third-party/java/jsr-305:jsr-305',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':common',
+)
