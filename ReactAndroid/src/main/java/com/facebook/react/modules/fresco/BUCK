@@ -1,0 +1,28 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'fresco',
+  srcs = glob(['**/*.java']),
+  deps = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/modules/common:common'),
+    react_native_target('java/com/facebook/react/modules/network:network'),
+    react_native_dep('java/com/facebook/systrace:systrace'),
+    '//libraries/fbcore/src/main/java/com/facebook/common/internal:internal',
+    '//libraries/fbcore/src/main/java/com/facebook/common/soloader:soloader',
+    '//libraries/fresco/drawee-backends/drawee-pipeline/src/main/java/com/facebook/drawee/backends/pipeline:pipeline',
+    '//libraries/fresco/imagepipeline-backends/imagepipeline-okhttp/src/main/java/com/facebook/imagepipeline/backends/okhttp:okhttp',
+    '//libraries/imagepipeline/src/main/java/com/facebook/cache/common:common',
+    '//libraries/imagepipeline/src/main/java/com/facebook/cache/disk:disk',
+    '//libraries/imagepipeline/src/main/java/com/facebook/imagepipeline/core:core',
+    '//libraries/soloader/java/com/facebook/soloader:soloader',
+    '//third-party/java/okhttp:okhttp',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':fresco',
+)
