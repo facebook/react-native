@@ -83,10 +83,16 @@ var MapView = React.createClass({
     /**
      * If `true` the app will and focus on the user's location
      * Default value is `false`.
-     * **NOTE**: You need to set to `true` showsUserLocation
+     * **NOTE**: `showsUserLocation` must be set to `true` to follow a user's location.
      *
      */
+     
     followUserLocation: React.PropTypes.bool,
+     /* If `false` points of interest won't be displayed on the map.
+     * Default value is `true`.
+     * @platform ios
+     */
+    showsPointsOfInterest: React.PropTypes.bool,
 
     /**
      * If `false` the user won't be able to pinch/zoom the map.
