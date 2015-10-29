@@ -132,12 +132,19 @@ class Bundler {
     return this._bundlesLayout.generateLayout(main, isDev);
   }
 
-  bundle(main, runModule, sourceMapUrl, isDev, platform) {
+  bundle({
+    entryFile,
+    runModule: runMainModule,
+    runBeforeMainModule,
+    sourceMapUrl,
+    dev: isDev,
+    platform,
+  }) {
     const bundle = new Bundle(sourceMapUrl);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    return this.getDependencies(main, isDev, platform).then((response) => {
+    return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
 
@@ -174,7 +181,7 @@ class Bundler {
         bundle.addModule(moduleTransport);
       });
 
-      bundle.finalize({ runMainModule: runModule });
+      bundle.finalize({runBeforeMainModule, runMainModule});
       return bundle;
     });
   }

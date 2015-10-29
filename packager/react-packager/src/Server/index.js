@@ -94,7 +94,14 @@ const bundleOpts = declareOpts({
   platform: {
     type: 'string',
     required: true,
-  }
+  },
+  runBeforeMainModule: {
+    type: 'array',
+    default: [
+      // Ensures essential globals are available and are patched correctly.
+      'InitializeJavaScriptAppEngine'
+    ],
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -179,13 +186,7 @@ class Server {
       }
 
       const opts = bundleOpts(options);
-      return this._bundler.bundle(
-        opts.entryFile,
-        opts.runModule,
-        opts.sourceMapUrl,
-        opts.dev,
-        opts.platform
-      );
+      return this._bundler.bundle(opts);
     });
   }
 
