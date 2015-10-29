@@ -89,13 +89,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   NSMutableArray *methods = self.methods.count ? [NSMutableArray new] : nil;
   NSMutableArray *asyncMethods = nil;
   for (id<RCTBridgeMethod> method in self.methods) {
-    [methods addObject:method.JSMethodName];
     if (method.functionType == RCTFunctionTypePromise) {
       if (!asyncMethods) {
         asyncMethods = [NSMutableArray new];
       }
       [asyncMethods addObject:@(methods.count)];
     }
+    [methods addObject:method.JSMethodName];
   }
 
   NSMutableArray *config = [NSMutableArray new];
