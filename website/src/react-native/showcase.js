@@ -242,6 +242,18 @@ var apps = [
     author: 'Joshua Sierles',
   },
   {
+    name: 'Rota Employer - Hire On Demand',
+    link: 'https://itunes.apple.com/us/app/rota-employer-hire-on-demand/id1042270305?mt=8',
+    icon: 'https://avatars2.githubusercontent.com/u/15051833?v=3&s=200',
+    author: 'Rota',
+  },
+  {
+    name: 'Rota Worker - Shifts On Demand',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/51/ca/49/51ca4924-61c8-be1d-ab6d-afa510b1d393/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/rota-worker-shifts-on-demand/id1042111289?mt=8',
+    author: 'Rota',
+  },
+  {
     name: 'SG Toto 4d',
     icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
