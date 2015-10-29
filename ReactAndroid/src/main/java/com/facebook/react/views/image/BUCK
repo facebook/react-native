@@ -1,0 +1,29 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'image',
+  srcs = glob(['*.java']),
+  deps = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    '//libraries/drawee/src/main/java/com/facebook/drawee/controller:controller',
+    '//libraries/drawee/src/main/java/com/facebook/drawee/drawable:drawable',
+    '//libraries/drawee/src/main/java/com/facebook/drawee/generic:generic',
+    '//libraries/drawee/src/main/java/com/facebook/drawee/interfaces:interfaces',
+    '//libraries/drawee/src/main/java/com/facebook/drawee/view:view',
+    '//libraries/fbcore/src/main/java/com/facebook/common/references:references',
+    '//libraries/fbcore/src/main/java/com/facebook/common/util:util',
+    '//libraries/fresco/drawee-backends/drawee-pipeline/src/main/java/com/facebook/drawee/backends/pipeline:pipeline',
+    '//libraries/imagepipeline/src/main/java/com/facebook/imagepipeline/bitmaps:bitmaps',
+    '//libraries/imagepipeline/src/main/java/com/facebook/imagepipeline/common:common',
+    '//libraries/imagepipeline/src/main/java/com/facebook/imagepipeline/request:request',
+    '//third-party/java/jsr-305:jsr-305',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':image',
+)
