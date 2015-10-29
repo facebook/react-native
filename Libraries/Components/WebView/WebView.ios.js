@@ -75,6 +75,12 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   </View>
 );
 
+/**
+ * Renders a native WebView.
+ *
+ * Note that WebView is only supported on iOS for now,
+ * see https://facebook.github.io/react-native/docs/known-issues.html
+ */
 var WebView = React.createClass({
   statics: {
     JSNavigationScheme: JSNavigationScheme,
