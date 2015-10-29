@@ -249,7 +249,7 @@ var apps = [
   },
   {
     name: 'Rota Employer - Hire On Demand',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/37/c3/96/37c396d5-6895-cb4e-046f-46b9ea16bde2/icon175x175.png',
+    icon: 'https://itunes.apple.com/us/app/rota-employer-hire-on-demand/id1042270305?mt=8',
     link: 'https://avatars2.githubusercontent.com/u/15051833?v=3&s=200',
     author: 'Rota',
   },
