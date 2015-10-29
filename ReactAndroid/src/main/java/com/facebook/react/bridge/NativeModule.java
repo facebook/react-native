@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 public interface NativeModule {
   public static interface NativeMethod {
     void invoke(CatalystInstance catalystInstance, ReadableNativeArray parameters);
+    String getType();
   }
 
   /**
