@@ -89,18 +89,18 @@ function buildAndRun(args, reject) {
   }
 
   try {
-    const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
-      'utf8'
-    ).match(/package="(.+?)"/)[1];
-
-    const adbPath = process.env.ANDROID_HOME
-      ? process.env.ANDROID_HOME + '/platform-tools/adb'
-      : 'adb';
-
-    const adbArgs = [
-      'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-    ];
+    const manifestStr = fs.readFileSync('app/src/main/AndroidManifest.xml', 'utf8');
+    const packageName = manifestStr.match(/package="(.+?)"/)[1];
+    const mainAttrPosition = manifestStr.indexOf('android.intent.action.MAIN')
+    const launcherAttrPosition = manifestStr.indexOf('android.intent.category.LAUNCHER')
+    if(mainAttrPosition !== -1 && launcherAttrPosition !== -1) {
+      const launcherActivityName = '/' + manifestStr.substring(manifestStr.lastIndexOf('<activity', mainAttrPosition), mainAttrPosition).match(/android:name="(.+?)"/)[1];
+    } else {
+      console.log(chalk.red('android.intent.action.MAIN or android.intent.category.LAUNCHER not set in AndroidManifest.xml'));
+      return;
+    }
+    var adbPath = process.env.ANDROID_HOME ? process.env.ANDROID_HOME + '/platform-tools/adb' : 'adb';
+    var adbArgs = ['shell', 'am', 'start', '-n', packageName + launcherActivityName];
 
     console.log(chalk.bold(
       'Starting the app (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
