@@ -475,6 +475,8 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   }
 
   public void handleReloadJS() {
+    UiThreadUtil.assertOnUiThread();
+
     // dismiss redbox if exists
     if (mRedBoxDialog != null) {
       mRedBoxDialog.dismiss();
@@ -494,6 +496,10 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
     } else {
       reloadJSFromServer(progressDialog);
     }
+  }
+
+  public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
+    mDevServerHelper.isPackagerRunning(callback);
   }
 
   private void reloadJSInProxyMode(final ProgressDialog progressDialog) {
