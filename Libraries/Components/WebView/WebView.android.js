@@ -31,6 +31,10 @@ var WebViewState = keyMirror({
   ERROR: null,
 });
 
+/**
+ * Note that WebView is only supported on iOS for now,
+ * see https://facebook.github.io/react-native/docs/known-issues.html
+ */
 var WebView = React.createClass({
 
   propTypes: {
