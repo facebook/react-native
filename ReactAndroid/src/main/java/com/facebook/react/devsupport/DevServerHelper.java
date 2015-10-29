@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -32,6 +33,7 @@ import com.squareup.okhttp.ConnectionPool;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 import okio.Okio;
 import okio.Sink;
 
@@ -44,7 +46,7 @@ import okio.Sink;
  *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
-/* package */ class DevServerHelper {
+public class DevServerHelper {
 
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
@@ -62,6 +64,9 @@ import okio.Sink;
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
   private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy";
+  private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
+
+  private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
@@ -74,6 +79,10 @@ import okio.Sink;
 
   public interface OnServerContentChangeListener {
     void onServerContentChanged();
+  }
+
+  public interface PackagerStatusCallback {
+    void onPackagerStatusFetched(boolean packagerIsRunning);
   }
 
   private final DevInternalSettings mSettings;
@@ -197,6 +206,54 @@ import okio.Sink;
         }
       }
     });
+  }
+
+  public void isPackagerRunning(final PackagerStatusCallback callback) {
+    String statusURL = createPacakgerStatusURL(getDebugServerHost());
+    Request request = new Request.Builder()
+        .url(statusURL)
+        .build();
+
+    mClient.newCall(request).enqueue(
+        new Callback() {
+          @Override
+          public void onFailure(Request request, IOException e) {
+            Log.e(ReactConstants.TAG, "IOException requesting status from packager", e);
+            callback.onPackagerStatusFetched(false);
+          }
+
+          @Override
+          public void onResponse(Response response) throws IOException {
+            if (!response.isSuccessful()) {
+              Log.e(
+                  ReactConstants.TAG,
+                  "Got non-success http code from packager when requesting status: " +
+                      response.code());
+              callback.onPackagerStatusFetched(false);
+              return;
+            }
+            ResponseBody body = response.body();
+            if (body == null) {
+              Log.e(
+                  ReactConstants.TAG,
+                  "Got null body response from packager when requesting status");
+              callback.onPackagerStatusFetched(false);
+              return;
+            }
+            if (!PACKAGER_OK_STATUS.equals(body.string())) {
+              Log.e(
+                  ReactConstants.TAG,
+                  "Got unexpected response from packager when requesting status: " + body.string());
+              callback.onPackagerStatusFetched(false);
+              return;
+            }
+            callback.onPackagerStatusFetched(true);
+          }
+        });
+  }
+
+  private String createPacakgerStatusURL(String host) {
+    return String.format(PACKAGER_STATUS_URL_FORMAT, host);
   }
 
   public void stopPollingOnChangeEndpoint() {

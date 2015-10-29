@@ -41,6 +41,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -232,18 +233,42 @@ public class ReactInstanceManager {
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
    * {@link ReactRootView} is available and measured.
+   *
+   * Called from UI thread.
    */
   public void createReactContextInBackground() {
     if (mUseDeveloperSupport && mJSMainModuleName != null) {
       if (mDevSupportManager.hasUpToDateJSBundleInCache()) {
         // If there is a up-to-date bundle downloaded from server, always use that
         onJSBundleLoadedFromServer();
-      } else {
+      } else if (mJSBundleFile == null) {
         mDevSupportManager.handleReloadJS();
+      } else {
+        mDevSupportManager.isPackagerRunning(
+            new DevServerHelper.PackagerStatusCallback() {
+              @Override
+              public void onPackagerStatusFetched(final boolean packagerIsRunning) {
+                UiThreadUtil.runOnUiThread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        if (packagerIsRunning) {
+                          mDevSupportManager.handleReloadJS();
+                        } else {
+                          recreateReactContextInBackgroundFromBundleFile();
+                        }
+                      }
+                    });
+              }
+            });
       }
       return;
     }
 
+    recreateReactContextInBackgroundFromBundleFile();
+  }
+
+  private void recreateReactContextInBackgroundFromBundleFile() {
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor(),
         JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
@@ -579,7 +604,7 @@ public class ReactInstanceManager {
      * Example: {@code "index.android.js"}
      */
     public Builder setBundleAssetName(String bundleAssetName) {
-      return this.setJSBundleFile("assets://" + bundleAssetName);
+      return this.setJSBundleFile(bundleAssetName == null ? null : "assets://" + bundleAssetName);
     }
 
     /**
