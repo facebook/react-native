@@ -260,6 +260,9 @@ var PanResponder = {
    *  are the responder.
    */
   create: function(config) {
+    if (__DEV__) {
+      PanResponder._validateKeys(config);
+    }
     var gestureState = {
       // Useful for debugging
       stateID: Math.random(),
@@ -356,6 +359,32 @@ var PanResponder = {
     };
     return {panHandlers: panHandlers};
   },
+
+  _validKeys: __DEV__ && {
+    onMoveShouldSetPanResponder: 1,
+    onMoveShouldSetPanResponderCapture: 1,
+    onStartShouldSetPanResponder: 1,
+    onStartShouldSetPanResponderCapture: 1,
+    onPanResponderReject: 1,
+    onPanResponderGrant: 1,
+    onPanResponderStart: 1,
+    onPanResponderEnd: 1,
+    onPanResponderRelease: 1,
+    onPanResponderMove: 1,
+    onPanResponderTerminate: 1,
+    onPanResponderTerminationRequest: 1,
+  },
+
+  _validateKeys: __DEV__ && function(config) {
+    var validKeys = PanResponder._validKeys;
+    var keys = Object.keys(config);
+    var length = keys.length;
+    for (var i = 0; i < length; i++) {
+      if (!validKeys[keys[i]]) {
+        throw Error('\'' + keys[i] + '\' is an invalid key.');
+      }
+    }
+  }
 };
 
 module.exports = PanResponder;
