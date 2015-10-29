@@ -363,12 +363,23 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       if (nullability == RCTNonnullable) {
         RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
         argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSUInteger index, id json) {
-          if (json == nil) {
-            RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
-            return NO;
-          } else {
-            return oldBlock(bridge, index, json);
+          if (json != nil) {
+            if (!oldBlock(bridge, index, json)) {
+              return NO;
+            }
+            if (isNullableType) {
+              // Check converted value wasn't null either, as method probably
+              // won't gracefully handle a nil vallue for a nonull argument
+              void *value;
+              [invocation getArgument:&value atIndex:index + 2];
+              if (value == NULL) {
+                return NO;
+              }
+            }
+            return YES;
           }
+          RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
+          return NO;
         };
       }
     }
