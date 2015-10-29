@@ -54,6 +54,7 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 }
 
 @synthesize JSMethodName = _JSMethodName;
+@synthesize functionType = _functionType;
 
 static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
                                 id valueOrType, const char *issue)

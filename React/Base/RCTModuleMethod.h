@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, RCTNullability) {
 
 @property (nonatomic, readonly) Class moduleClass;
 @property (nonatomic, readonly) SEL selector;
-@property (nonatomic, readonly) RCTFunctionType functionType;
 
 - (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
