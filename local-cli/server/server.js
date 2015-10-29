@@ -122,7 +122,7 @@ function _server(argv, config, resolve, reject) {
     }
     console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
     console.log('for common problems and solutions.');
-    reject();
+    process.exit(1);
   });
 
   // TODO: remove once we deprecate this arg
