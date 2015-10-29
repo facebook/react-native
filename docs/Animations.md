@@ -167,7 +167,7 @@ Input | Output
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
-class including quadradic, exponential, and bezier curves as well as functions
+class including quadratic, exponential, and bezier curves as well as functions
 like step and bounce.  `interpolation` also has configurable behavior for
 extrapolation, the default being `'extend'`, but `'clamp'` is also very useful
 to prevent the output value from exceeding `outputRange`.
