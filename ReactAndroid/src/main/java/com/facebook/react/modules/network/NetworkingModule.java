@@ -193,14 +193,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             WritableMap responseHeaders = Arguments.createMap();
             Headers headers = response.headers();
             for (int i = 0; i < headers.size(); i++) {
+              String headerName = headers.name(i);
               // multiple values for the same header
-              if (responseHeaders.hasKey(headers.name(i))) {
+              if (responseHeaders.hasKey(headerName)) {
                 responseHeaders.putString(
-                  headers.name(i),
-                  responseHeaders.getString(headers.name(i)) + ", " + headers.value(i)
-                ) ;
+                  headerName,
+                  responseHeaders.getString(headerName) + ", " + headers.value(i));
               } else {
-                responseHeaders.putString(headers.name(i), headers.value(i));
+                responseHeaders.putString(headerName, headers.value(i));
               }
             }
 
