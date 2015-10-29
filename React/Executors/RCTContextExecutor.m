@@ -231,11 +231,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       (__typeof__(nativeProfilerEnd))dlsym(JSCProfiler, "nativeProfilerEnd");
 
     if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-      void (*nativeProfilerEnableByteCode)(void) =
-        (__typeof__(nativeProfilerEnableByteCode))dlsym(JSCProfiler, "nativeProfilerEnableByteCode");
+      void (*nativeProfilerEnableBytecode)(void) =
+        (__typeof__(nativeProfilerEnableBytecode))dlsym(JSCProfiler, "nativeProfilerEnableBytecode");
 
-      if (nativeProfilerEnableByteCode != NULL) {
-        nativeProfilerEnableByteCode();
+      if (nativeProfilerEnableBytecode != NULL) {
+        nativeProfilerEnableBytecode();
       }
 
       static BOOL isProfiling = NO;
