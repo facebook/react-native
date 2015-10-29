@@ -53,13 +53,8 @@ class Bundle {
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
-      const runCode = ';require("' + this._mainModuleId + '");';
-      this.addModule(new ModuleTransport({
-        code: runCode,
-        virtual: true,
-        sourceCode: runCode,
-        sourcePath: 'RunMainModule.js'
-      }));
+      options.runBeforeMainModule.forEach(this._addRequireCall, this);
+      this._addRequireCall(this._mainModuleId);
     }
 
     Object.freeze(this._modules);
@@ -67,6 +62,18 @@ class Bundle {
     Object.freeze(this._assets);
     Object.seal(this._assets);
     this._finalized = true;
+  }
+
+  _addRequireCall(moduleId) {
+    const code = ';require("' + moduleId + '");';
+    const name = 'require-' + moduleId;
+    this.addModule(new ModuleTransport({
+      name,
+      code,
+      virtual: true,
+      sourceCode: code,
+      sourcePath: name + '.js',
+    }));
   }
 
   _assertFinalized() {
