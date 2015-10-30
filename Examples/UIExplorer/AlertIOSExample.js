@@ -132,7 +132,7 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.promptResponse)}>
+          onPress={this.prompt.bind(this, this.title, null, null, this.promptResponse)}>
 
           <View style={styles.button}>
             <Text>
@@ -143,7 +143,7 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.buttons)}>
+          onPress={this.prompt.bind(this, this.title, null, this.buttons, null)}>
 
           <View style={styles.button}>
             <Text>
@@ -154,7 +154,7 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.promptResponse)}>
+          onPress={this.prompt.bind(this, this.title, this.defaultValue, null, this.promptResponse)}>
 
           <View style={styles.button}>
             <Text>
@@ -165,7 +165,7 @@ class PromptExample extends React.Component {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.buttons)}>
+          onPress={this.prompt.bind(this, this.title, this.defaultValue, this.buttons, null)}>
 
           <View style={styles.button}>
             <Text>
