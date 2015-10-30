@@ -42,6 +42,13 @@ var SliderIOS = React.createClass({
     value: PropTypes.number,
 
     /**
+     * Step value of the slider. The value should be
+     * between 0 and (maximumValue - minimumValue).
+     * Default value is 0.
+     */
+    step: PropTypes.number,
+
+    /**
      * Initial minimum value of the slider. Default value is 0.
      */
     minimumValue: PropTypes.number,
@@ -103,6 +110,7 @@ var SliderIOS = React.createClass({
       <RCTSlider
         style={[styles.slider, this.props.style]}
         value={this.props.value}
+        step={this.props.step}
         maximumValue={this.props.maximumValue}
         minimumValue={this.props.minimumValue}
         minimumTrackTintColor={this.props.minimumTrackTintColor}
