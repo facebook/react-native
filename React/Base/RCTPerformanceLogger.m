@@ -56,6 +56,19 @@ NSArray *RCTPerformanceLoggerOutput(void)
   ];
 }
 
+NSArray *RCTPerformanceLoggerLabels(void)
+{
+  return @[
+    @"ScriptDownload",
+    @"ScriptExecution",
+    @"NativeModuleInit",
+    @"NativeModulePrepareConfig",
+    @"NativeModuleInjectConfig",
+    @"TTI",
+    @"BundleSize",
+  ];
+}
+
 @interface RCTPerformanceLogger : NSObject <RCTBridgeModule>
 
 @end
@@ -88,15 +101,7 @@ RCT_EXPORT_MODULE()
 
   [_bridge enqueueJSCall:@"PerformanceLogger.addTimespans" args:@[
     RCTPerformanceLoggerOutput(),
-    @[
-      @"ScriptDownload",
-      @"ScriptExecution",
-      @"NativeModuleInit",
-      @"NativeModulePrepareConfig",
-      @"NativeModuleInjectConfig",
-      @"TTI",
-      @"BundleSize",
-    ],
+    RCTPerformanceLoggerLabels(),
   ]];
 }
 
