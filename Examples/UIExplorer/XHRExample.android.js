@@ -25,6 +25,8 @@ var {
   View,
 } = React;
 
+var XHRExampleHeaders = require('./XHRExampleHeaders');
+
 // TODO t7093728 This is a simlified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
 // we should make this consistent with iOS.
@@ -259,7 +261,6 @@ class FormUploader extends React.Component {
   }
 }
 
-
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
 exports.description = 'Example that demonstrates upload and download requests ' +
@@ -273,6 +274,11 @@ exports.examples = [{
   title: 'multipart/form-data Upload',
   render() {
     return <FormUploader/>;
+  }
+}, {
+  title: 'Headers',
+  render() {
+    return <XHRExampleHeaders/>;
   }
 }];
 
