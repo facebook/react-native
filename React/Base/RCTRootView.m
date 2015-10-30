@@ -54,6 +54,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTBridge *_bridge;
   NSString *_moduleName;
   NSDictionary *_launchOptions;
+  NSDictionary *_initialProperties;
   RCTRootContentView *_contentView;
 }
 
@@ -72,6 +73,7 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _bridge = bridge;
     _moduleName = moduleName;
     _initialProperties = [initialProperties copy];
+    _appProperties = [initialProperties copy];
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
@@ -182,10 +184,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
 
+  [self runApplication:bridge];
+}
+
+- (void)runApplication:(RCTBridge *)bridge
+{
   NSString *moduleName = _moduleName ?: @"";
   NSDictionary *appParameters = @{
     @"rootTag": _contentView.reactTag,
-    @"initialProps": _initialProperties ?: @{},
+    @"initialProps": _appProperties ?: @{},
   };
 
   [bridge enqueueJSCall:@"AppRegistry.runApplication"
@@ -206,6 +213,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+}
+
+- (NSDictionary *)initialProperties
+{
+  RCTLogWarn(@"Using deprecated 'initialProperties' property. Use 'appProperties' instead.");
+  return _initialProperties;
+}
+
+- (void)setAppProperties:(NSDictionary *)appProperties
+{
+  RCTAssertMainThread();
+
+  if ([_appProperties isEqualToDictionary:appProperties]) {
+    return;
+  }
+
+  _appProperties = [appProperties copy];
+
+  if (_bridge.valid && !_bridge.loading) {
+    [self runApplication:_bridge.batchedBridge];
+  }
 }
 
 - (void)setIntrinsicSize:(CGSize)intrinsicSize
