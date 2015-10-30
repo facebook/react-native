@@ -37,7 +37,7 @@ var SliderExample = React.createClass({
           {this.state.value}
         </Text>
         <SliderIOS
-          style={styles.slider}
+          {...this.props}
           onValueChange={(value) => this.setState({value: value})} />
       </View>
     );
@@ -62,7 +62,26 @@ exports.displayName = 'SliderExample';
 exports.description = 'Slider input for numeric values';
 exports.examples = [
   {
-    title: 'SliderIOS',
-    render(): ReactElement { return <SliderExample />; }
+    title: 'Default settings',
+    render(): ReactElement {
+      return <SliderExample />;
+    }
+  },
+  {
+    title: 'minimumValue: -1, maximumValue: 2',
+    render(): ReactElement {
+      return (
+        <SliderExample
+          minimumValue={-1}
+          maximumValue={2}
+        />
+      );
+    }
+  },
+  {
+    title: 'step: 0.25',
+    render(): ReactElement {
+      return <SliderExample step={0.25} />;
+    }
   }
 ];
