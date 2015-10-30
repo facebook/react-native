@@ -13,16 +13,13 @@ import javax.annotation.Nullable;
 
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * Abstract ContextWrapper for Android applicaiton or activity {@link Context} and
@@ -32,8 +29,6 @@ public class ReactContext extends ContextWrapper {
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
-  private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
-      new CopyOnWriteArraySet<>();
 
   private @Nullable CatalystInstance mCatalystInstance;
   private @Nullable LayoutInflater mInflater;
@@ -41,7 +36,6 @@ public class ReactContext extends ContextWrapper {
   private @Nullable MessageQueueThread mNativeModulesMessageQueueThread;
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
-  private @Nullable Activity mCurrentActivity;
 
   public ReactContext(Context base) {
     super(base);
@@ -122,20 +116,11 @@ public class ReactContext extends ContextWrapper {
     mLifecycleEventListeners.remove(listener);
   }
 
-  public void addActivityEventListener(ActivityEventListener listener) {
-    mActivityEventListeners.add(listener);
-  }
-
-  public void removeActivityEventListener(ActivityEventListener listener) {
-    mActivityEventListeners.remove(listener);
-  }
-
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
-  public void onResume(@Nullable Activity activity) {
+  public void onResume() {
     UiThreadUtil.assertOnUiThread();
-    mCurrentActivity = activity;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostResume();
     }
@@ -146,7 +131,6 @@ public class ReactContext extends ContextWrapper {
    */
   public void onPause() {
     UiThreadUtil.assertOnUiThread();
-    mCurrentActivity = null;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
     }
@@ -162,15 +146,6 @@ public class ReactContext extends ContextWrapper {
     }
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
-    }
-  }
-
-  /**
-   * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
-   */
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    for (ActivityEventListener listener : mActivityEventListeners) {
-      listener.onActivityResult(requestCode, resultCode, data);
     }
   }
 
@@ -223,14 +198,5 @@ public class ReactContext extends ContextWrapper {
     } else {
       throw e;
     }
-  }
-
-  /**
-   * Same as {@link Activity#startActivityForResult(Intent, int)}, this just redirects the call to
-   * the current activity.
-   */
-  public void startActivityForResult(Intent intent, int code, Bundle bundle) {
-    Assertions.assertNotNull(mCurrentActivity);
-    mCurrentActivity.startActivityForResult(intent, code, bundle);
   }
 }
