@@ -73,6 +73,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     this(reactContext, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
   }
 
+  public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
+    this(reactContext, null, client);
+  }
+
   @Override
   public String getName() {
     return "RCTNetworking";
