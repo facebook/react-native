@@ -35,4 +35,4 @@ To do that, your laptop and your phone have to be on the same wifi network.
 1. Open rage shake menu (shake the device) or run `adb shell input keyevent 82`
 2. Go to `Dev Settings`
 3. Go to `Debug server host for device`
-4. Type in your machine's IP address and the port of the packager and `Reload JS`
+4. Type in your machine's IP address and the port of the packager and `Reload JS`. On Mac, you can find the IP address in System Preferences / Network.
