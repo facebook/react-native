@@ -64,14 +64,14 @@ public class MainReactPackage implements ReactPackage {
       new ReactHorizontalScrollViewManager(),
       new ReactImageManager(),
       new ReactProgressBarViewManager(),
-      new ReactRawTextManager(),
+      new ReactRawTextManager(reactContext.getTypefaceProvider()),
       new ReactScrollViewManager(),
       new ReactSwitchManager(),
-      new ReactTextInputManager(),
-      new ReactTextViewManager(),
+      new ReactTextInputManager(reactContext.getTypefaceProvider()),
+      new ReactTextViewManager(reactContext.getTypefaceProvider()),
       new ReactToolbarManager(),
       new ReactViewManager(),
       new ReactViewPagerManager(),
-      new ReactVirtualTextViewManager());
+      new ReactVirtualTextViewManager(reactContext.getTypefaceProvider()));
   }
 }

@@ -87,6 +87,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   }
 
   private static final void buildSpannedFromTextCSSNode(
+      TypefaceProvider typefaceProvider,
       ReactTextShadowNode textCSSNode,
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops) {
@@ -97,7 +98,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     for (int i = 0, length = textCSSNode.getChildCount(); i < length; i++) {
       CSSNode child = textCSSNode.getChildAt(i);
       if (child instanceof ReactTextShadowNode) {
-        buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
+        buildSpannedFromTextCSSNode(typefaceProvider, (ReactTextShadowNode) child, sb, ops);
       } else {
         throw new IllegalViewOperationException("Unexpected view type nested under text node: "
             + child.getClass());
@@ -126,6 +127,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 start,
                 end,
                 new CustomStyleSpan(
+                    typefaceProvider,
                     textCSSNode.mFontStyle,
                     textCSSNode.mFontWeight,
                     textCSSNode.mFontFamily)));
@@ -142,7 +144,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<SetSpanOperation>();
-    buildSpannedFromTextCSSNode(textCSSNode, sb, ops);
+    buildSpannedFromTextCSSNode(textCSSNode.mTypefaceProvider, textCSSNode, sb, ops);
     if (textCSSNode.mFontSize == UNSET) {
       sb.setSpan(
           new AbsoluteSizeSpan((int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))),
@@ -273,6 +275,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   private @Nullable Spanned mPreparedSpannedText;
   private final boolean mIsVirtual;
+  private final TypefaceProvider mTypefaceProvider;
 
   @Override
   public void onBeforeLayout() {
@@ -398,8 +401,9 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
   }
 
-  public ReactTextShadowNode(boolean isVirtual) {
+  public ReactTextShadowNode(boolean isVirtual, TypefaceProvider typefaceProvider) {
     mIsVirtual = isVirtual;
+    mTypefaceProvider = typefaceProvider;
     if (!isVirtual) {
       setMeasureFunction(TEXT_MEASURE_FUNCTION);
     }

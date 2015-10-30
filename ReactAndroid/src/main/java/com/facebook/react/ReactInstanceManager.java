@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -52,6 +53,8 @@ import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.ReactNative;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.views.text.TypefaceProvider;
+import com.facebook.react.views.text.TypefaceProviderImpl;
 import com.facebook.soloader.SoLoader;
 
 /**
@@ -91,6 +94,7 @@ public class ReactInstanceManager {
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
+  private final TypefaceProvider mTypefaceProvider;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -185,7 +189,8 @@ public class ReactInstanceManager {
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
-      LifecycleState initialLifecycleState) {
+      LifecycleState initialLifecycleState,
+      TypefaceProvider typefaceProvider) {
     initializeSoLoaderIfNecessary(applicationContext);
 
     mApplicationContext = applicationContext;
@@ -204,6 +209,7 @@ public class ReactInstanceManager {
         useDeveloperSupport);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
+    mTypefaceProvider = typefaceProvider;
   }
 
   public DevSupportManager getDevSupportManager() {
@@ -544,6 +550,7 @@ public class ReactInstanceManager {
     if (mUseDeveloperSupport) {
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
+    reactContext.initializeTypefaceProvider(mTypefaceProvider);
 
     CoreModulesPackage coreModulesPackage =
         new CoreModulesPackage(this, mBackBtnHandler);
@@ -605,6 +612,7 @@ public class ReactInstanceManager {
     private @Nullable Application mApplication;
     private boolean mUseDeveloperSupport;
     private @Nullable LifecycleState mInitialLifecycleState;
+    private TypefaceProviderImpl mTypefaceProvider = new TypefaceProviderImpl();
 
     private Builder() {
     }
@@ -680,6 +688,16 @@ public class ReactInstanceManager {
     }
 
     /**
+     * Makes a custom typeface available to the React application, under the provided font family
+     * name.  Named fonts provided via this method will be preferred over the standard fonts in the
+     * event of a naming conflict.
+     */
+    public Builder addTypeFace(String fontFamily, Typeface typeface) {
+      mTypefaceProvider.addTypeFace(fontFamily, typeface);
+      return this;
+    }
+
+    /**
      * Instantiates a new {@link ReactInstanceManager}.
      * Before calling {@code build}, the following must be called:
      * <ul>
@@ -705,7 +723,8 @@ public class ReactInstanceManager {
           mPackages,
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"));
+          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+          mTypefaceProvider);
     }
   }
 }

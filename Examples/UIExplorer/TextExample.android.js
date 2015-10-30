@@ -160,6 +160,11 @@ var TextExample = React.createClass({
             </View>
           </View>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Custom Font">
+          <Text style={{fontFamily: 'DancingScript'}}>
+            Custom font loaded from an application asset TTF file
+          </Text>
+        </UIExplorerBlock>
         <UIExplorerBlock title="Font Size">
           <Text style={{fontSize: 23}}>
             Size 23

@@ -34,6 +34,7 @@ public class ThemedReactContext extends ReactContext {
 
   public ThemedReactContext(ReactApplicationContext reactApplicationContext, Context base) {
     super(base);
+    initializeTypefaceProvider(reactApplicationContext.getTypefaceProvider());
     initializeWithInstance(reactApplicationContext.getCatalystInstance());
     mReactApplicationContext = reactApplicationContext;
   }

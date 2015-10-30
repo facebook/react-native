@@ -20,6 +20,10 @@ public class ReactVirtualTextViewManager extends ReactRawTextManager {
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTVirtualText";
 
+  public ReactVirtualTextViewManager(TypefaceProvider typefaceProvider) {
+    super(typefaceProvider);
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;

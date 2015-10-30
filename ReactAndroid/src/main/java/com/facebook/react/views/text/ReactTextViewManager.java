@@ -39,6 +39,12 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTText";
 
+  protected final TypefaceProvider mTypefaceProvider;
+
+  public ReactTextViewManager(TypefaceProvider typefaceProvider) {
+    mTypefaceProvider = typefaceProvider;
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -87,7 +93,7 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
 
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
-    return new ReactTextShadowNode(false);
+    return new ReactTextShadowNode(false, mTypefaceProvider);
   }
 
   @Override
