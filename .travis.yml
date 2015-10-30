@@ -12,7 +12,7 @@ install:
   - mkdir -p .nvm
   - export NVM_DIR="$PWD/.nvm"
   - source $(brew --prefix nvm)/nvm.sh
-  - nvm install 4
+  - nvm install 5
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
