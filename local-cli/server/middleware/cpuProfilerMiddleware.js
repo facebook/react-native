@@ -24,13 +24,14 @@ module.exports = function(req, res, next) {
 
   var cmdPath = path.join(
     __dirname,
-    '../react-native-github/JSCLegacyProfiler/json2trace'
+    '../../../JSCLegacyProfiler/json2trace'
   );
   execFile(
     cmdPath,
     [
       '-cpuprofiler',
-       dumpName + '.cpuprofile ' + dumpName + '.json'
+      dumpName + '.cpuprofile',
+      dumpName + '.json',
     ],
     function(error) {
       if (error) {

@@ -520,7 +520,7 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
 void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
 {
   if (![bridge.bundleURL.scheme hasPrefix:@"http"]) {
-    RCTLogError(@"Cannot update profile information");
+    RCTLogError(@"Cannot upload profile information");
     return;
   }
 
