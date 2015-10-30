@@ -14,8 +14,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -88,6 +90,7 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private String mSourceUrl;
+  private @Nullable Activity mCurrentActivity;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -317,6 +320,7 @@ public class ReactInstanceManager {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
+    mCurrentActivity = null;
     if (mCurrentReactContext != null) {
       mCurrentReactContext.onPause();
     }
@@ -333,7 +337,7 @@ public class ReactInstanceManager {
    * @param defaultBackButtonImpl a {@link DefaultHardwareBackBtnHandler} from an Activity that owns
    * this instance of {@link ReactInstanceManager}.
    */
-  public void onResume(DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+  public void onResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
 
     mLifecycleState = LifecycleState.RESUMED;
@@ -343,8 +347,9 @@ public class ReactInstanceManager {
       mDevSupportManager.setDevSupportEnabled(true);
     }
 
+    mCurrentActivity = activity;
     if (mCurrentReactContext != null) {
-      mCurrentReactContext.onResume();
+      mCurrentReactContext.onResume(activity);
     }
   }
 
@@ -357,6 +362,12 @@ public class ReactInstanceManager {
 
     if (mCurrentReactContext != null) {
       mCurrentReactContext.onDestroy();
+    }
+  }
+
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (mCurrentReactContext != null) {
+      mCurrentReactContext.onActivityResult(requestCode, resultCode, data);
     }
   }
 
@@ -577,7 +588,7 @@ public class ReactInstanceManager {
 
   private void moveReactContextToCurrentLifecycleState(ReactApplicationContext reactContext) {
     if (mLifecycleState == LifecycleState.RESUMED) {
-      reactContext.onResume();
+      reactContext.onResume(mCurrentActivity);
     }
   }
 
