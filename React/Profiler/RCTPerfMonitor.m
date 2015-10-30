@@ -20,11 +20,16 @@
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
+#import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 
 static NSString *const RCTPerfMonitorKey = @"RCTPerfMonitorKey";
+static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
+
+static CGFloat const RCTPerfMonitorBarHeight = 50;
+static CGFloat const RCTPerfMonitorExpandHeight = 250;
 
 typedef BOOL (*RCTJSCSetOptionType)(const char *);
 
@@ -70,7 +75,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 
 @class RCTDevMenuItem;
 
-@interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating>
+@interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *gestureRecognizer;
@@ -78,6 +83,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 @property (nonatomic, strong, readonly) UILabel *memory;
 @property (nonatomic, strong, readonly) UILabel *heap;
 @property (nonatomic, strong, readonly) UILabel *views;
+@property (nonatomic, strong, readonly) UITableView *metrics;
 @property (nonatomic, strong, readonly) RCTFPSGraph *jsGraph;
 @property (nonatomic, strong, readonly) RCTFPSGraph *uiGraph;
 @property (nonatomic, strong, readonly) UILabel *jsGraphLabel;
@@ -94,6 +100,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
   UILabel *_views;
   UILabel *_uiGraphLabel;
   UILabel *_jsGraphLabel;
+  UITableView *_metrics;
 
   RCTFPSGraph *_uiGraph;
   RCTFPSGraph *_jsGraph;
@@ -108,6 +115,10 @@ static vm_size_t RCTGetResidentMemorySize(void)
   int _stderr;
   int _pipe[2];
   NSString *_remaining;
+
+  CGRect _storedMonitorFrame;
+
+  NSArray *_perfLoggerMarks;
 }
 
 @synthesize bridge = _bridge;
@@ -153,11 +164,13 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, 50)];
+    _container = [[UIView alloc] initWithFrame:CGRectMake(10, 25, 180, RCTPerfMonitorBarHeight)];
     _container.backgroundColor = UIColor.whiteColor;
     _container.layer.borderWidth = 2;
-    _container.layer.borderColor = [UIColor grayColor].CGColor;
+    _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
+    [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                             action:@selector(tap)]];
   }
 
   return _container;
@@ -166,7 +179,7 @@ RCT_EXPORT_MODULE()
 - (UILabel *)memory
 {
   if (!_memory) {
-    _memory = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 44, 50)];
+    _memory = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 44, RCTPerfMonitorBarHeight)];
     _memory.font = [UIFont systemFontOfSize:12];
     _memory.numberOfLines = 3;
     _memory.textAlignment = NSTextAlignmentCenter;
@@ -178,7 +191,7 @@ RCT_EXPORT_MODULE()
 - (UILabel *)heap
 {
   if (!_heap) {
-    _heap = [[UILabel alloc] initWithFrame:CGRectMake(44, 0, 44, 50)];
+    _heap = [[UILabel alloc] initWithFrame:CGRectMake(44, 0, 44, RCTPerfMonitorBarHeight)];
     _heap.font = [UIFont systemFontOfSize:12];
     _heap.numberOfLines = 3;
     _heap.textAlignment = NSTextAlignmentCenter;
@@ -190,7 +203,7 @@ RCT_EXPORT_MODULE()
 - (UILabel *)views
 {
   if (!_views) {
-    _views = [[UILabel alloc] initWithFrame:CGRectMake(88, 0, 44, 50)];
+    _views = [[UILabel alloc] initWithFrame:CGRectMake(88, 0, 44, RCTPerfMonitorBarHeight)];
     _views.font = [UIFont systemFontOfSize:12];
     _views.numberOfLines = 3;
     _views.textAlignment = NSTextAlignmentCenter;
@@ -239,6 +252,24 @@ RCT_EXPORT_MODULE()
   }
 
   return _jsGraphLabel;
+}
+
+- (UITableView *)metrics
+{
+  if (!_metrics) {
+    _metrics = [[UITableView alloc] initWithFrame:CGRectMake(
+      0,
+      RCTPerfMonitorBarHeight,
+      self.container.frame.size.width,
+      self.container.frame.size.height - RCTPerfMonitorBarHeight
+    )];
+    _metrics.dataSource = self;
+    _metrics.delegate = self;
+    _metrics.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [_metrics registerClass:[UITableViewCell class] forCellReuseIdentifier:RCTPerfMonitorCellIdentifier];
+  }
+
+  return _metrics;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -447,10 +478,76 @@ RCT_EXPORT_MODULE()
                              inView:self.container.superview];
 }
 
+- (void)tap
+{
+  if (CGRectIsEmpty(_storedMonitorFrame)) {
+    _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
+    [self.container addSubview:self.metrics];
+    [self loadPerformanceLoggerData];
+  }
+
+  [UIView animateWithDuration:.25 animations:^{
+    CGRect tmp = self.container.frame;
+    self.container.frame = _storedMonitorFrame;
+    _storedMonitorFrame = tmp;
+  }];
+}
+
 - (void)threadUpdate:(CADisplayLink *)displayLink
 {
   RCTFPSGraph *graph = displayLink == _jsDisplayLink ? _jsGraph : _uiGraph;
   [graph onTick:displayLink.timestamp];
+}
+
+- (void)loadPerformanceLoggerData
+{
+  NSMutableArray *data = [NSMutableArray new];
+  NSArray *times = RCTPerformanceLoggerOutput();
+  NSUInteger i = 0;
+  for (NSString *label in RCTPerformanceLoggerLabels()) {
+    [data addObject:[NSString stringWithFormat:@"%@: %lldus", label,
+                     [times[i+1] longLongValue] - [times[i] longLongValue]]];
+    i += 2;
+  }
+  _perfLoggerMarks = [data copy];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView
+{
+  return 1;
+}
+
+- (NSInteger)tableView:(__unused UITableView *)tableView
+ numberOfRowsInSection:(__unused NSInteger)section
+{
+  return _perfLoggerMarks.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:RCTPerfMonitorCellIdentifier
+                                                          forIndexPath:indexPath];
+
+  if (!cell) {
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                  reuseIdentifier:RCTPerfMonitorCellIdentifier];
+  }
+
+  cell.textLabel.text = _perfLoggerMarks[indexPath.row];
+  cell.textLabel.font = [UIFont systemFontOfSize:12];
+
+  return cell;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(__unused UITableView *)tableView
+heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
+{
+  return 20;
 }
 
 @end
