@@ -28,6 +28,42 @@ var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACS
 
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 
+var NetworkImageCallbackExample = React.createClass({
+  getInitialState: function() {
+    return {
+      events: [],
+    };
+  },
+
+  componentWillMount() {
+    this.mountDate = new Date();
+  },
+
+  render: function() {
+    return (
+      <View>
+        <Image
+          source={this.props.source}
+          style={[styles.base, {overflow: 'visible'}]}
+          onLoadStart={() => this._loadEventFired(`✔ onLoadStart (+${new Date() - this.mountDate}ms)`)}
+          onLoad={() => this._loadEventFired(`✔ onLoad (+${new Date() - this.mountDate}ms)`)}
+          onLoadEnd={() => this._loadEventFired(`✔ onLoadEnd (+${new Date() - this.mountDate}ms)`)}
+        />
+
+        <Text style={{marginTop: 20}}>
+          {this.state.events.join('\n')}
+        </Text>
+      </View>
+    );
+  },
+
+  _loadEventFired(event) {
+    this.setState((state) => {
+      return state.events = [...state.events, event];
+    });
+  }
+});
+
 var NetworkImageExample = React.createClass({
   watchID: (null: ?number),
 
@@ -89,6 +125,14 @@ exports.examples = [
           <Image source={require('image!uie_comment_normal')} style={styles.icon} />
           <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
         </View>
+      );
+    },
+  },
+  {
+    title: 'Image Loading Events',
+    render: function() {
+      return (
+        <NetworkImageCallbackExample source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}}/>
       );
     },
   },
