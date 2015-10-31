@@ -30,9 +30,10 @@ Have your device connected via USB with debugging enabled (see paragraph above o
 
 ### Configure device to connect to the dev server via Wi-Fi
 
-To do that, your laptop and your phone have to be on the same wifi network.
-
-1. Open rage shake menu (shake the device) or run `adb shell input keyevent 82`
-2. Go to `Dev Settings`
-3. Go to `Debug server host for device`
-4. Type in your machine's IP address and the port of the packager (e.g. 10.0.1.1:8081) and `Reload JS`. On Mac, you can find the IP address in System Preferences / Network.
+1. Make sure your laptop and your phone are on the same Wi-Fi network.
+2. Open your React Native app on your device.
+3. Open the **Developer menu** by shaking the device or running `adb shell input keyevent 82` from the command line.
+4. Go to `Dev Settings`.
+5. Go to `Debug server host for device`.
+6. Type in your machine's IP address and the port of the packager (e.g. 10.0.1.1:8081). **On Mac**, you can find the IP address in System Preferences / Network. **On Windows**, open the command prompt and type `ipconfig` to find your machine's IP address ([more info](http://windows.microsoft.com/en-us/windows/using-command-line-tools-networking-information)).
+7. Go back to the **Developer menu** and select `Reload JS`.
