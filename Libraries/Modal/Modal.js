@@ -59,7 +59,12 @@ class Modal extends React.Component {
 Modal.propTypes = {
   animated: PropTypes.bool,
   transparent: PropTypes.bool,
+  visible: PropTypes.bool,
   onDismiss: PropTypes.func,
+};
+
+Modal.defaultProps = {
+  visible: true,
 };
 
 var styles = StyleSheet.create({
