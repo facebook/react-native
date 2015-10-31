@@ -69,7 +69,7 @@ public class UIExplorerActivity extends Activity implements DefaultHardwareBackB
     super.onResume();
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onResume(this);
+      mReactInstanceManager.onResume(this, this);
     }
   }
 
