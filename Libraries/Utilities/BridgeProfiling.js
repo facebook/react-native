@@ -34,13 +34,13 @@ var BridgeProfiling = {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      console.profile(TRACE_TAG_REACT_APPS, profileName);
+      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName);
     }
   },
 
   profileEnd() {
     if (_enabled) {
-      console.profileEnd(TRACE_TAG_REACT_APPS);
+      global.nativeTraceEndSection(TRACE_TAG_REACT_APPS);
     }
   },
 
