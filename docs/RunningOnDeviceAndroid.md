@@ -32,7 +32,7 @@ Have your device connected via USB with debugging enabled (see paragraph above o
 
 1. Make sure your laptop and your phone are on the same Wi-Fi network.
 2. Open your React Native app on your device.
-3. You'll see a red screen with an error. This is OK. We'll fix this in the following steps.
+3. You'll see a red screen with an error. This is OK. The following steps will fix that.
 4. Open the **Developer menu** by shaking the device or running `adb shell input keyevent 82` from the command line.
 5. Go to `Dev Settings`.
 6. Go to `Debug server host for device`.
