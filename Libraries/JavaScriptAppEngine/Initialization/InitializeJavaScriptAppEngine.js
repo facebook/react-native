@@ -159,8 +159,6 @@ function setUpWebSockets() {
 }
 
 function setUpProfile() {
-  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
-  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
   if (__DEV__) {
     require('BridgeProfiling').swizzleReactPerf();
   }
