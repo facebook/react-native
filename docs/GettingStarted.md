@@ -9,7 +9,7 @@ next: android-setup
 
 ## Requirements
 
-1. OS X - Only OS X is currently supported
+1. OS X - This guide assumes OS X which is needed for iOS development.
 2. [Homebrew](http://brew.sh/) is the recommended way to install Watchman and Flow.
 3. Install [Node.js](https://nodejs.org/) 4.0 or newer.
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`. With nvm you can install multiple versions of Node.js and easily switch between them.
@@ -26,6 +26,8 @@ We recommend periodically running `brew update && brew upgrade` to keep your pro
 ## Android Setup
 
 To write React Native apps for Android, you will need to install the Android SDK (and an Android emulator if you want to work on your app without having to use a physical device). See [Android setup guide](android-setup.html) for instructions on how to set up your Android environment.
+
+_NOTE:_ There is experimental [Windows and Linux support](/react-native/docs/linux-windows-support.html) for Android development.
 
 ## Quick start
 

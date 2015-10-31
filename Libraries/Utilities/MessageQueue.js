@@ -30,7 +30,6 @@ let MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 let SPY_MODE = false;
 
 let MethodTypes = keyMirror({
-  local: null,
   remote: null,
   remoteAsync: null,
 });
@@ -62,15 +61,18 @@ class MessageQueue {
       'flushedQueue',
     ].forEach((fn) => this[fn] = this[fn].bind(this));
 
-    this._genModules(remoteModules);
+    let modulesConfig = this._genModulesConfig(remoteModules);
+    this._genModules(modulesConfig);
     localModules && this._genLookupTables(
-      localModules, this._moduleTable, this._methodTable);
+      this._genModulesConfig(localModules),this._moduleTable, this._methodTable
+    );
 
     this._debugInfo = {};
     this._remoteModuleTable = {};
     this._remoteMethodTable = {};
     this._genLookupTables(
-      remoteModules, this._remoteModuleTable, this._remoteMethodTable);
+      modulesConfig, this._remoteModuleTable, this._remoteMethodTable
+    );
   }
 
   /**
@@ -182,50 +184,102 @@ class MessageQueue {
   /**
    * Private helper methods
    */
-  _genLookupTables(localModules, moduleTable, methodTable) {
-    let moduleNames = Object.keys(localModules);
-    for (var i = 0, l = moduleNames.length; i < l; i++) {
-      let moduleName = moduleNames[i];
-      let methods = localModules[moduleName].methods;
-      let moduleID = localModules[moduleName].moduleID;
-      moduleTable[moduleID] = moduleName;
-      methodTable[moduleID] = {};
 
-      let methodNames = Object.keys(methods);
-      for (var j = 0, k = methodNames.length; j < k; j++) {
-        let methodName = methodNames[j];
-        let methodConfig = methods[methodName];
-        methodTable[moduleID][methodConfig.methodID] = methodName;
+  /**
+   * Converts the old, object-based module structure to the new
+   * array-based structure. TODO (t8823865) Removed this
+   * function once Android has been updated.
+   */
+  _genModulesConfig(modules /* array or object */) {
+    if (Array.isArray(modules)) {
+      return modules;
+    } else {
+      let moduleArray = [];
+      let moduleNames = Object.keys(modules);
+      for (var i = 0, l = moduleNames.length; i < l; i++) {
+        let moduleName = moduleNames[i];
+        let moduleConfig = modules[moduleName];
+        let module = [moduleName];
+        if (moduleConfig.constants) {
+          module.push(moduleConfig.constants);
+        }
+        let methodsConfig = moduleConfig.methods;
+        if (methodsConfig) {
+          let methods = [];
+          let asyncMethods = [];
+          let methodNames = Object.keys(methodsConfig);
+          for (var j = 0, ll = methodNames.length; j < ll; j++) {
+            let methodName = methodNames[j];
+            let methodConfig = methodsConfig[methodName];
+            methods[methodConfig.methodID] = methodName;
+            if (methodConfig.type === MethodTypes.remoteAsync) {
+              asyncMethods.push(methodConfig.methodID);
+            }
+          }
+          if (methods.length) {
+            module.push(methods);
+            if (asyncMethods.length) {
+              module.push(asyncMethods);
+            }
+          }
+        }
+        moduleArray[moduleConfig.moduleID] = module;
       }
+      return moduleArray;
     }
+  }
+
+  _genLookupTables(modulesConfig, moduleTable, methodTable) {
+    modulesConfig.forEach((module, moduleID) => {
+      if (!module) {
+        return;
+      }
+
+      let moduleName, methods;
+      if (moduleHasConstants(module)) {
+        [moduleName, , methods] = module;
+      } else {
+        [moduleName, methods] = module;
+      }
+
+      moduleTable[moduleID] = moduleName;
+      methodTable[moduleID] = Object.assign({}, methods);
+    });
   }
 
   _genModules(remoteModules) {
-    let moduleNames = Object.keys(remoteModules);
-    for (var i = 0, l = moduleNames.length; i < l; i++) {
-      let moduleName = moduleNames[i];
-      let moduleConfig = remoteModules[moduleName];
+    remoteModules.forEach((module, moduleID) => {
+      if (!module) {
+        return;
+      }
+
+      let moduleName, constants, methods, asyncMethods;
+      if (moduleHasConstants(module)) {
+        [moduleName, constants, methods, asyncMethods] = module;
+      } else {
+        [moduleName, methods, asyncMethods] = module;
+      }
+
+      const moduleConfig = {moduleID, constants, methods, asyncMethods};
       this.RemoteModules[moduleName] = this._genModule({}, moduleConfig);
-    }
+    });
   }
 
   _genModule(module, moduleConfig) {
-    let methodNames = Object.keys(moduleConfig.methods);
-    for (var i = 0, l = methodNames.length; i < l; i++) {
-      let methodName = methodNames[i];
-      let methodConfig = moduleConfig.methods[methodName];
-      module[methodName] = this._genMethod(
-        moduleConfig.moduleID, methodConfig.methodID, methodConfig.type);
-    }
-    Object.assign(module, moduleConfig.constants);
+    const {moduleID, constants, methods = [], asyncMethods = []} = moduleConfig;
+
+    methods.forEach((methodName, methodID) => {
+      const methodType =
+        arrayContains(asyncMethods, methodID) ?
+          MethodTypes.remoteAsync : MethodTypes.remote;
+      module[methodName] = this._genMethod(moduleID, methodID, methodType);
+    });
+    Object.assign(module, constants);
+
     return module;
   }
 
   _genMethod(module, method, type) {
-    if (type === MethodTypes.local) {
-      return null;
-    }
-
     let fn = null;
     let self = this;
     if (type === MethodTypes.remoteAsync) {
@@ -260,7 +314,15 @@ class MessageQueue {
 
 }
 
-function createErrorFromErrorData(errorData: ErrorData): Error {
+function moduleHasConstants(moduleArray: Array<Object|Array<>>): boolean {
+  return !Array.isArray(moduleArray[1]);
+}
+
+function arrayContains<T>(array: Array<T>, value: T): boolean {
+  return array.indexOf(value) !== -1;
+}
+
+function createErrorFromErrorData(errorData: {message: string}): Error {
   var {
     message,
     ...extraErrorInfo,

@@ -143,6 +143,7 @@ var styles = StyleSheet.create({
   },
   innerContainer: {
     borderRadius: 10,
+    alignItems: 'center',
   },
   row: {
     alignItems: 'center',
@@ -158,6 +159,7 @@ var styles = StyleSheet.create({
     borderRadius: 5,
     flex: 1,
     height: 44,
+    alignSelf: 'stretch',
     justifyContent: 'center',
     overflow: 'hidden',
   },

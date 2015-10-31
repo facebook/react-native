@@ -30,6 +30,8 @@ var {
   View,
 } = React;
 
+var XHRExampleHeaders = require('./XHRExampleHeaders');
+
 class Downloader extends React.Component {
 
   xhr: XMLHttpRequest;
@@ -367,6 +369,11 @@ exports.examples = [{
   title: 'fetch test',
   render() {
     return <FetchTest/>;
+  }
+}, {
+  title: 'Headers',
+  render() {
+    return <XHRExampleHeaders/>;
   }
 }];
 

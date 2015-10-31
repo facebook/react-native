@@ -24,5 +24,5 @@ public interface ReadableMap {
   ReadableArray getArray(String name);
   ReadableMap getMap(String name);
   ReadableType getType(String name);
-  ReadableMapKeySeyIterator keySetIterator();
+  ReadableMapKeySetIterator keySetIterator();
 }

@@ -24,6 +24,7 @@
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
+#import "RCTRootViewInternal.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTShadowView.h"
 #import "RCTSparseArray.h"
@@ -347,11 +348,28 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 {
   RCTAssertMainThread();
 
+  // The following variable has no meaning if the view is not a react root view
+  RCTRootViewSizeFlexibility sizeFlexibility = RCTRootViewSizeFlexibilityNone;
+
+  if (RCTIsReactRootView(view.reactTag)) {
+    RCTRootView *rootView = (RCTRootView *)[view superview];
+    if (rootView != nil) {
+      sizeFlexibility = rootView.sizeFlexibility;
+    }
+  }
+
   NSNumber *reactTag = view.reactTag;
   dispatch_async(_shadowQueue, ^{
     RCTShadowView *rootShadowView = _shadowViewRegistry[reactTag];
     RCTAssert(rootShadowView != nil, @"Could not locate root view with tag #%@", reactTag);
-    rootShadowView.frame = frame;
+
+    if (RCTIsReactRootView(reactTag)) {
+      rootShadowView.frame = frame;
+      rootShadowView.sizeFlexibility = sizeFlexibility;
+    } else {
+      rootShadowView.frame = frame;
+    }
+
     [rootShadowView updateLayout];
 
     [self batchDidComplete];
@@ -437,8 +455,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   // these structures in the UI-thread block. `NSMutableArray` is not thread
   // safe so we rely on the fact that we never mutate it after it's passed to
   // the main thread.
-  [rootShadowView collectRootUpdatedFrames:viewsWithNewFrames
-                          parentConstraint:(CGSize){CSS_UNDEFINED, CSS_UNDEFINED}];
+  [rootShadowView collectRootUpdatedFrames:viewsWithNewFrames];
 
   // Parallel arrays are built and then handed off to main thread
   NSMutableArray *frameReactTags = [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
@@ -477,11 +494,31 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         },
       });
     }
+
+    if (RCTIsReactRootView(shadowView.reactTag)) {
+      NSNumber *reactTag = shadowView.reactTag;
+      CGSize contentSize = shadowView.frame.size;
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        UIView *view = _viewRegistry[reactTag];
+        RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
+
+        RCTRootView *rootView = (RCTRootView *)[view superview];
+        RCTAssert(rootView != nil, @"View with react tag %@ has not a superview", reactTag);
+
+        rootView.intrinsicSize = contentSize;
+      });
+    }
+
     if (block) {
       [updateBlocks addObject:block];
     }
   }
 
+  if (!viewsWithNewFrames.count) {
+    // no frame change results in no UI update block
+    return nil;
+  }
   // Perform layout (possibly animated)
   return ^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
     RCTResponseSenderBlock callback = self->_layoutAnimation.callback;
@@ -548,13 +585,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         } withCompletionBlock:nil];
       }
     }
-
-    /**
-     * TODO(tadeu): Remove it once and for all
-     */
-    for (id<RCTComponent> node in _bridgeTransactionListeners) {
-      [node reactBridgeDidFinishTransaction];
-    }
   };
 }
 
@@ -563,11 +593,13 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   NSMutableSet *applierBlocks = [NSMutableSet setWithCapacity:1];
   [topView collectUpdatedProperties:applierBlocks parentProperties:@{}];
 
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    for (RCTApplierBlock block in applierBlocks) {
-      block(viewRegistry);
-    }
-  }];
+  if (applierBlocks.count) {
+    [self addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+      for (RCTApplierBlock block in applierBlocks) {
+        block(viewRegistry);
+      }
+    }];
+  }
 }
 
 /**
@@ -872,23 +904,31 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   _pendingUIBlocks = [NSMutableArray new];
   [_pendingUIBlocksLock unlock];
 
-  // Execute the previously queued UI blocks
-  RCTProfileBeginFlowEvent();
-  dispatch_async(dispatch_get_main_queue(), ^{
-    RCTProfileEndFlowEvent();
-    RCTProfileBeginEvent(0, @"UIManager flushUIBlocks", nil);
-    @try {
-      for (dispatch_block_t block in previousPendingUIBlocks) {
-        block();
+  if (previousPendingUIBlocks.count) {
+    // Execute the previously queued UI blocks
+    RCTProfileBeginFlowEvent();
+    dispatch_async(dispatch_get_main_queue(), ^{
+      RCTProfileEndFlowEvent();
+      RCTProfileBeginEvent(0, @"UIManager flushUIBlocks", nil);
+      @try {
+        for (dispatch_block_t block in previousPendingUIBlocks) {
+          block();
+        }
+        /**
+         * TODO(tadeu): Remove it once and for all
+         */
+        for (id<RCTComponent> node in _bridgeTransactionListeners) {
+          [node reactBridgeDidFinishTransaction];
+        }
       }
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"Exception thrown while executing UI block: %@", exception);
-    }
-    RCTProfileEndEvent(0, @"objc_call", @{
-      @"count": @(previousPendingUIBlocks.count),
+      @catch (NSException *exception) {
+        RCTLogError(@"Exception thrown while executing UI block: %@", exception);
+      }
+      RCTProfileEndEvent(0, @"objc_call", @{
+        @"count": @(previousPendingUIBlocks.count),
+      });
     });
-  });
+  }
 }
 
 RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag

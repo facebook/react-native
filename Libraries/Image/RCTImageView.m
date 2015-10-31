@@ -183,24 +183,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                resizeMode:self.contentMode
                                                             progressBlock:progressHandler
                                                           completionBlock:^(NSError *error, UIImage *image) {
-      if (image.reactKeyframeAnimation) {
-        [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
-      } else {
-        [self.layer removeAnimationForKey:@"contents"];
-        self.image = image;
-      }
-      if (error) {
-        if (_onError) {
-          _onError(@{ @"error": error.localizedDescription });
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (image.reactKeyframeAnimation) {
+          [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+        } else {
+          [self.layer removeAnimationForKey:@"contents"];
+          self.image = image;
         }
-      } else {
-        if (_onLoad) {
-          _onLoad(nil);
+        if (error) {
+          if (_onError) {
+            _onError(@{ @"error": error.localizedDescription });
+          }
+        } else {
+          if (_onLoad) {
+            _onLoad(nil);
+          }
         }
-      }
-      if (_onLoadEnd) {
-         _onLoadEnd(nil);
-      }
+        if (_onLoadEnd) {
+           _onLoadEnd(nil);
+        }
+      });
     }];
   } else {
     [self clearImage];
@@ -210,7 +212,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reactSetFrame:(CGRect)frame
 {
   [super reactSetFrame:frame];
-  if (self.image == nil) {
+
+  if (!self.image || self.image == _defaultImage) {
     _targetSize = frame.size;
     [self reloadImage];
   } else if ([RCTImageView srcNeedsReload:_src]) {
@@ -254,7 +257,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         [strongSelf clearImage];
       }
     });
-  } else if (!self.image && self.src) {
+  } else if (!self.image || self.image == _defaultImage) {
     [self reloadImage];
   }
 }

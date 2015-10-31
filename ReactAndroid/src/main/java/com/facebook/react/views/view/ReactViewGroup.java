@@ -111,19 +111,15 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  public void requestLayout() {
+    // No-op, terminate `requestLayout` here, UIManagerModule handles laying out children and
+    // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
+  }
+
+  @Override
   public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT) {
-      Drawable backgroundDrawble = getBackground();
-      if (mReactBackgroundDrawable != null && (backgroundDrawble instanceof LayerDrawable)) {
-        // extract translucent background portion from layerdrawable
-        super.setBackground(null);
-        LayerDrawable layerDrawable = (LayerDrawable) backgroundDrawble;
-        super.setBackground(layerDrawable.getDrawable(1));
-      } else if (backgroundDrawble instanceof ReactViewBackgroundDrawable) {
-        // mReactBackground is set for background
-        mReactBackgroundDrawable = null;
-        super.setBackground(null);
-      }
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }

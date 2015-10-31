@@ -47,26 +47,18 @@ type FormDataPart = {
  */
 class FormData {
   _parts: Array<FormDataNameValuePair>;
-  _partsByKey: {[key: string]: FormDataNameValuePair};
 
   constructor() {
     this._parts = [];
-    this._partsByKey = {};
   }
 
   append(key: string, value: FormDataValue) {
-    var parts = this._partsByKey[key];
-    if (parts) {
-      // It's a bit unclear what the behaviour should be in this case.
-      // The XMLHttpRequest spec doesn't specify it, while MDN says that
-      // the any new values should appended to existing values. We're not
-      // doing that for now -- it's tedious and doesn't seem worth the effort.
-      parts[1] = value;
-      return;
-    }
-    parts = [key, value];
-    this._parts.push(parts);
-    this._partsByKey[key] = parts;
+    // The XMLHttpRequest spec doesn't specify if duplicate keys are allowed.
+    // MDN says that any new values should be appended to existing values.
+    // In any case, major browsers allow duplicate keys, so that's what we'll do
+    // too. They'll simply get appended as additional form data parts in the
+    // request body, leaving the server to deal with them.
+    this._parts.push([key, value]);
   }
 
   getParts(): Array<FormDataPart> {
