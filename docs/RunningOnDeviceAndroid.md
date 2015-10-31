@@ -28,7 +28,7 @@ Have your device connected via USB with debugging enabled (see paragraph above o
 1. Run `adb reverse tcp:8081 tcp:8081`
 2. You can use `Reload JS` and other development options with no extra configuration
 
-### Configure device to connect to the dev server via Wi-Fi
+### Configure device to connect to the local dev server via Wi-Fi
 
 1. Make sure your laptop and your phone are on the same Wi-Fi network.
 2. Open your React Native app on your device.
