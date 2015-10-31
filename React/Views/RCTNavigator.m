@@ -335,6 +335,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)dealloc
 {
   _navigationController.delegate = nil;
+  _navigationController.viewControllers = nil;
 }
 
 - (UIViewController *)reactViewController
