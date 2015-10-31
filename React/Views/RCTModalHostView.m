@@ -76,15 +76,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
   }
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!_isPresented && self.window) {
+    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
+    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:nil];
+    _isPresented = YES;
+  }
+}
+
 - (void)didMoveToSuperview
 {
   [super didMoveToSuperview];
 
-  if (self.superview) {
-    RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
-    [self.reactViewController presentViewController:_modalViewController animated:self.animated completion:nil];
-    _isPresented = YES;
-  } else {
+  if (_isPresented && !self.superview) {
     [self dismissModalViewController];
   }
 }
