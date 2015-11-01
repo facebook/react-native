@@ -13,6 +13,7 @@
 'use strict';
 
 var ImageStylePropTypes = require('ImageStylePropTypes');
+var Platform = require('Platform');
 var TextStylePropTypes = require('TextStylePropTypes');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
@@ -48,5 +49,17 @@ ReactNativeStyleAttributes.textDecorationColor = colorAttributes;
 ReactNativeStyleAttributes.tintColor = colorAttributes;
 ReactNativeStyleAttributes.textShadowColor = colorAttributes;
 ReactNativeStyleAttributes.overlayColor = colorAttributes;
+
+if (Platform.OS === 'android') {
+  // ReactAndroid doesn't currently have the capability to have variable typing
+  // (eg. string or array) of a native attribute.  To work around that, we can
+  // transform variable types into one standard type, as done here with
+  // textDecorationLine which can be an array of enum values or a space-separated
+  // string containing the same values.
+  var processTextDecorationLine = require('processTextDecorationLine');
+  ReactNativeStyleAttributes.textDecorationLine = {
+    process: processTextDecorationLine
+  };
+}
 
 module.exports = ReactNativeStyleAttributes;
