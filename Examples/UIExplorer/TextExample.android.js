@@ -370,6 +370,22 @@ var TextExample = React.createClass({
             Demo text shadow
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Text Decoration">
+          <View>
+            <Text style={{textDecorationLine: 'underline'}}>
+              Solid underline
+            </Text>
+            <Text style={{textDecorationLine: 'none'}}>
+              None textDecoration
+            </Text>
+            <Text style={{textDecorationLine: 'line-through'}}>
+              Solid line-through
+            </Text>
+            <Text style={{textDecorationLine: 'underline line-through'}}>
+              Both underline and line-through
+            </Text>
+          </View>
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   }

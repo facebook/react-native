@@ -11,6 +11,7 @@ package com.facebook.react.views.text;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Paint;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -76,6 +77,22 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
       view.setLineSpacing(0, 1);
     } else {
       view.setLineSpacing(PixelUtil.toPixelFromSP(lineHeight), 0);
+    }
+  }
+
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(ReactTextView view, @Nullable String textDecorationLine) {
+    int paintFlags = view.getPaintFlags();
+    if (textDecorationLine == null || "none".equals(textDecorationLine)) {
+      view.setPaintFlags(paintFlags & ~Paint.UNDERLINE_TEXT_FLAG & ~Paint.STRIKE_THRU_TEXT_FLAG);
+    } else if ("underline".equals(textDecorationLine)) {
+      view.setPaintFlags(paintFlags | Paint.UNDERLINE_TEXT_FLAG & ~Paint.STRIKE_THRU_TEXT_FLAG);
+    } else if ("line-through".equals(textDecorationLine)) {
+      view.setPaintFlags(paintFlags & ~Paint.UNDERLINE_TEXT_FLAG | Paint.STRIKE_THRU_TEXT_FLAG);
+    } else if ("underline line-through".equals(textDecorationLine)) {
+      view.setPaintFlags(paintFlags | Paint.UNDERLINE_TEXT_FLAG | Paint.STRIKE_THRU_TEXT_FLAG);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textDecorationLine: " + textDecorationLine);
     }
   }
 
