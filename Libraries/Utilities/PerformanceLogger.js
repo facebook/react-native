@@ -71,8 +71,18 @@ var PerformanceLogger = {
       timespans[key].endTime - timespans[key].startTime;
   },
 
-  clearTimespans() {
+  clear() {
     timespans = {};
+    extras = {};
+  },
+
+  clearExceptTimespans(keys) {
+    timespans = Object.keys(timespans).reduce(function(previous, key) {
+      if (keys.indexOf(key) !== -1) {
+        previous[key] = timespans[key];
+      }
+      return previous;
+    }, {});
     extras = {};
   },
 

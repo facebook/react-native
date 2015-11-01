@@ -50,6 +50,7 @@ var COMPONENTS = [
   require('./TextExample.ios'),
   require('./TextInputExample.ios'),
   require('./TouchableExample'),
+  require('./TransparentHitTestExample'),
   require('./ViewExample'),
   require('./WebViewExample'),
 ];

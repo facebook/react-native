@@ -26,6 +26,7 @@ var {
 } = React;
 
 var XHRExampleCookies = require('./XHRExampleCookies');
+var XHRExampleHeaders = require('./XHRExampleHeaders');
 
 // TODO t7093728 This is a simlified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
@@ -261,7 +262,6 @@ class FormUploader extends React.Component {
   }
 }
 
-
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
 exports.description = 'Example that demonstrates upload and download requests ' +
@@ -280,6 +280,10 @@ exports.examples = [{
   title: 'Cookies Test',
   render() {
     return <XHRExampleCookies/>;
+}, {
+  title: 'Headers',
+  render() {
+    return <XHRExampleHeaders/>;
   }
 }];
 

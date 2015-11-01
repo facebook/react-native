@@ -31,6 +31,7 @@ var {
 } = React;
 
 var XHRExampleCookies = require('./XHRExampleCookies');
+var XHRExampleHeaders = require('./XHRExampleHeaders');
 
 class Downloader extends React.Component {
 
@@ -374,6 +375,10 @@ exports.examples = [{
   title: 'Cookies Test',
   render() {
     return <XHRExampleCookies/>;
+}, {
+  title: 'Headers',
+  render() {
+    return <XHRExampleHeaders/>;
   }
 }];
 
