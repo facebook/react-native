@@ -28,7 +28,7 @@ When you are ready to work with CocoaPods, add the following lines to `Podfile`.
 pod 'React', :path => '../node_modules/react-native', :subspecs => [
   'Core',
   'RCTImage',
-  'RCTNetwork'
+  'RCTNetwork',
   'RCTText',
   'RCTWebSocket',
   # Add any other subspecs you want to use in your project
