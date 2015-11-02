@@ -64,6 +64,8 @@ static BOOL RCTLogsError(void (^block)(void))
 - (void)doFooWithInteger:(__unused NSInteger)n { }
 - (void)doFooWithCGRect:(CGRect)s { _s = s; }
 
+- (void)doFoo : (__unused NSString *)foo { }
+
 - (void)testNumbersNonnull
 {
   {
@@ -119,6 +121,24 @@ static BOOL RCTLogsError(void (^block)(void))
   CGRect r = CGRectMake(10, 20, 30, 40);
   [method invokeWithBridge:nil module:self arguments:@[@[@10, @20, @30, @40]]];
   XCTAssertTrue(CGRectEqualToRect(r, _s));
+}
+
+- (void)testWhitespaceTolerance
+{
+  NSString *methodName = @"doFoo : \t (NSString *)foo";
+
+  __block RCTModuleMethod *method;
+  XCTAssertFalse(RCTLogsError(^{
+    method = [[RCTModuleMethod alloc] initWithObjCMethodName:methodName
+                                                JSMethodName:nil
+                                                 moduleClass:[self class]];
+  }));
+
+  XCTAssertEqualObjects(method.JSMethodName, @"doFoo");
+
+  XCTAssertFalse(RCTLogsError(^{
+    [method invokeWithBridge:nil module:self arguments:@[@"bar"]];
+  }));
 }
 
 @end
