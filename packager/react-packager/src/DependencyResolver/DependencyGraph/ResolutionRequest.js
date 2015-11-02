@@ -301,6 +301,8 @@ class ResolutionRequest {
       } else if (this._platform != null &&
                  this._fastfs.fileExists(potentialModulePath + '.' + this._platform + '.js')) {
         file = potentialModulePath + '.' + this._platform + '.js';
+      } else if (this._fastfs.fileExists(potentialModulePath + '.mobile.js')) {
+        file = potentialModulePath + '.mobile.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
         file = potentialModulePath + '.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
