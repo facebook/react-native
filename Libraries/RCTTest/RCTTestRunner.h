@@ -9,12 +9,13 @@
 
 #import <Foundation/Foundation.h>
 
+#ifndef FB_REFERENCE_IMAGE_DIR
+#define FB_REFERENCE_IMAGE_DIR ""
+#endif
+
 /**
- * Use the RCTInitRunnerForApp macro for typical usage.
- *
- * Add this to your test target's gcc preprocessor macros:
- *
- *   FB_REFERENCE_IMAGE_DIR="\"$(SOURCE_ROOT)/$(PROJECT_NAME)Tests/ReferenceImages\""
+ * Use the RCTInitRunnerForApp macro for typical usage. See FBSnapshotTestCase.h for more information
+ * on how to configure the snapshotting system.
  */
 #define RCTInitRunnerForApp(app__, moduleProvider__) \
 [[RCTTestRunner alloc] initWithApp:(app__) \
@@ -31,7 +32,7 @@
  * macro instead of calling this directly.
  *
  * @param app The path to the app bundle without suffixes, e.g. IntegrationTests/IntegrationTestsApp
- * @param referenceDirectory The path for snapshot references images. The RCTInitRunnerForApp macro uses FB_REFERENCE_IMAGE_DIR for this automatically.
+ * @param referenceDirectory The path for snapshot references images.
  * @param block A block that returns an array of extra modules to be used by the test runner.
  */
 - (instancetype)initWithApp:(NSString *)app
