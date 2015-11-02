@@ -143,7 +143,7 @@ public class Arguments {
   }
 
   /**
-   * Covert a {@link WritableMap} to a {@link Bundle}.
+   * Convert a {@link WritableMap} to a {@link Bundle}.
    * @param readableMap the {@link WritableMap} to convert.
    * @return the converted {@link Bundle}.
    */
