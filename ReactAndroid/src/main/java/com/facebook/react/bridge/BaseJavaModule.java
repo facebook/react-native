@@ -51,109 +51,109 @@ public abstract class BaseJavaModule implements NativeModule {
   static final public String METHOD_TYPE_REMOTE = "remote";
   static final public String METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
 
-  private static abstract class ArgumentExtractor {
+  private static abstract class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
       return 1;
     }
 
-    public abstract @Nullable Object extractArgument(
+    public abstract @Nullable T extractArgument(
         CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex);
   }
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_BOOLEAN = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return Boolean.valueOf(jsArguments.getBoolean(atIndex));
-    }
-  };
+  static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
+      new ArgumentExtractor<Boolean>() {
+        @Override
+        public Boolean extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return jsArguments.getBoolean(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_DOUBLE = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return Double.valueOf(jsArguments.getDouble(atIndex));
-    }
-  };
+  static final private ArgumentExtractor<Double> ARGUMENT_EXTRACTOR_DOUBLE =
+      new ArgumentExtractor<Double>() {
+        @Override
+        public Double extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return jsArguments.getDouble(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_FLOAT = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return Float.valueOf((float) jsArguments.getDouble(atIndex));
-    }
-  };
+  static final private ArgumentExtractor<Float> ARGUMENT_EXTRACTOR_FLOAT =
+      new ArgumentExtractor<Float>() {
+        @Override
+        public Float extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return (float) jsArguments.getDouble(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_INTEGER = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return Integer.valueOf((int) jsArguments.getDouble(atIndex));
-    }
-  };
+  static final private ArgumentExtractor<Integer> ARGUMENT_EXTRACTOR_INTEGER =
+      new ArgumentExtractor<Integer>() {
+        @Override
+        public Integer extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return (int) jsArguments.getDouble(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_STRING = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return jsArguments.getString(atIndex);
-    }
-  };
+  static final private ArgumentExtractor<String> ARGUMENT_EXTRACTOR_STRING =
+      new ArgumentExtractor<String>() {
+        @Override
+        public String extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return jsArguments.getString(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_ARRAY = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return jsArguments.getArray(atIndex);
-    }
-  };
+  static final private ArgumentExtractor<ReadableNativeArray> ARGUMENT_EXTRACTOR_ARRAY =
+      new ArgumentExtractor<ReadableNativeArray>() {
+        @Override
+        public ReadableNativeArray extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return jsArguments.getArray(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_MAP = new ArgumentExtractor() {
-    @Override
-    public Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      return jsArguments.getMap(atIndex);
-    }
-  };
+  static final private ArgumentExtractor<ReadableMap> ARGUMENT_EXTRACTOR_MAP =
+      new ArgumentExtractor<ReadableMap>() {
+        @Override
+        public ReadableMap extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          return jsArguments.getMap(atIndex);
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_CALLBACK = new ArgumentExtractor() {
-    @Override
-    public @Nullable Object extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex
-    ) {
-      if (jsArguments.isNull(atIndex)) {
-        return null;
-      }
-      else {
-        int id = (int) jsArguments.getDouble(atIndex);
-        return new CallbackImpl(catalystInstance, id);
-      }
-    }
-  };
+  static final private ArgumentExtractor<Callback> ARGUMENT_EXTRACTOR_CALLBACK =
+      new ArgumentExtractor<Callback>() {
+        @Override
+        public @Nullable Callback extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          if (jsArguments.isNull(atIndex)) {
+            return null;
+          } else {
+            int id = (int) jsArguments.getDouble(atIndex);
+            return new CallbackImpl(catalystInstance, id);
+          }
+        }
+      };
 
-  static final private ArgumentExtractor ARGUMENT_EXTRACTOR_PROMISE = new ArgumentExtractor() {
-    @Override
-    public int getJSArgumentsNeeded() {
-      return 2;
-    }
+  static final private ArgumentExtractor<Promise> ARGUMENT_EXTRACTOR_PROMISE =
+      new ArgumentExtractor<Promise>() {
+        @Override
+        public int getJSArgumentsNeeded() {
+          return 2;
+        }
 
-    @Override
-    public Promise extractArgument(
-        CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
-      Callback resolve = (Callback) ARGUMENT_EXTRACTOR_CALLBACK
-          .extractArgument(catalystInstance, jsArguments, atIndex);
-      Callback reject = (Callback) ARGUMENT_EXTRACTOR_CALLBACK
-          .extractArgument(catalystInstance, jsArguments, atIndex + 1);
-      return new PromiseImpl(resolve, reject);
-    }
-  };
+        @Override
+        public Promise extractArgument(
+            CatalystInstance catalystInstance, ReadableNativeArray jsArguments, int atIndex) {
+          Callback resolve = ARGUMENT_EXTRACTOR_CALLBACK
+              .extractArgument(catalystInstance, jsArguments, atIndex);
+          Callback reject = ARGUMENT_EXTRACTOR_CALLBACK
+              .extractArgument(catalystInstance, jsArguments, atIndex + 1);
+          return new PromiseImpl(resolve, reject);
+        }
+      };
 
   private class JavaMethod implements NativeMethod {
 
