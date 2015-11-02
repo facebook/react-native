@@ -337,7 +337,7 @@ static NSMutableArray *RCTProfileGetThreadEvents(void)
   static NSString *const RCTProfileThreadEventsKey = @"RCTProfileThreadEventsKey";
   NSMutableArray *threadEvents = [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey];
   if (!threadEvents) {
-    threadEvents = [[NSMutableArray alloc] init];
+    threadEvents = [NSMutableArray new];
     [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey] = threadEvents;
   }
   return threadEvents;

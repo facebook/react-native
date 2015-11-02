@@ -338,7 +338,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
     if (!strongSelf->_context) {
-      JSContext *context = [[JSContext alloc] init];
+      JSContext *context = [JSContext new];
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
     }
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];

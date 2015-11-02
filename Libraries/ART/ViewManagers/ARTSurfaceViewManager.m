@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[ARTSurfaceView alloc] init];
+  return [ARTSurfaceView new];
 }
 
 @end
