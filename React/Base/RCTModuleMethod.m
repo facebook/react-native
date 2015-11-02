@@ -130,6 +130,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       if (colonRange.location != NSNotFound) {
         methodName = [methodName substringToIndex:colonRange.location];
       }
+      methodName = [methodName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
       RCTAssert(methodName.length, @"%@ is not a valid JS function name, please"
                 " supply an alternative using RCT_REMAP_METHOD()", objCMethodName);
       methodName;
