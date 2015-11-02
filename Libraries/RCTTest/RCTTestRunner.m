@@ -34,6 +34,9 @@ static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
   RCTAssertParam(referenceDirectory);
 
   if ((self = [super init])) {
+    if (!referenceDirectory.length) {
+      referenceDirectory = [[NSBundle bundleForClass:self.class].resourcePath stringByAppendingPathComponent:@"ReferenceImages"];
+    }
 
     NSString *sanitizedAppName = [app stringByReplacingOccurrencesOfString:@"/" withString:@"-"];
     sanitizedAppName = [sanitizedAppName stringByReplacingOccurrencesOfString:@"\\" withString:@"-"];
