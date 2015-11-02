@@ -353,6 +353,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       [bridge handleBuffer:calls batchEnded:NO];
     };
 
+    strongSelf->_context.context[@"RCTPerformanceNow"] = ^(){
+      return CACurrentMediaTime() * 1000 * 1000;
+    };
+
 #if RCT_DEV
     if (RCTProfileIsProfiling()) {
       strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
