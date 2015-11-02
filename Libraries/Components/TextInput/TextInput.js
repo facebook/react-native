@@ -218,6 +218,13 @@ var TextInput = React.createClass({
      */
     onSubmitEditing: PropTypes.func,
     /**
+     * Callback that is called when a key is pressed.
+     * Pressed key value is passed as an argument to the callback handler.
+     * Fires before onChange callbacks.
+     * @platform ios
+     */
+    onKeyPress: PropTypes.func,
+    /**
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
     onLayout: PropTypes.func,
