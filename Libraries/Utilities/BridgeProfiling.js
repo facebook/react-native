@@ -14,7 +14,7 @@
 var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 
-var _enabled = false;
+var _enabled;
 var _ReactPerf = null;
 function ReactPerf() {
   if (!_ReactPerf) {
@@ -62,5 +62,7 @@ var BridgeProfiling = {
     ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 };
+
+BridgeProfiling.setEnabled(global.__RCTProfileIsProfiling || false);
 
 module.exports = BridgeProfiling;
