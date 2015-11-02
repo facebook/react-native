@@ -358,7 +358,7 @@ id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cance
     return nil;
   }
   
-  UIAlertView *alertView = [[UIAlertView alloc] init];
+  UIAlertView *alertView = [UIAlertView new];
   alertView.title = title;
   alertView.message = message;
   alertView.delegate = delegate;
