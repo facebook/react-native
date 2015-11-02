@@ -15,6 +15,7 @@ var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var RCTUIManager = require('NativeModules').UIManager;
 
 var assign = require('Object.assign');
+var invariant = require('invariant');
 
 var ReactNativeTextComponent = function(props) {
   // This constructor and its argument is currently used by mocks.
@@ -30,6 +31,11 @@ assign(ReactNativeTextComponent.prototype, {
   },
 
   mountComponent: function(rootID, transaction, context) {
+    invariant(
+      context.isInAParentText,
+      'RawText "' + this._stringText + '" must be wrapped in an explicit ' +
+        '<Text> component.'
+    );
     this._rootNodeID = rootID;
     var tag = ReactNativeTagHandles.allocateTag();
     var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
