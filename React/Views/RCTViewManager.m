@@ -80,6 +80,7 @@ RCT_EXPORT_MODULE()
     @"blur",
     @"submitEditing",
     @"endEditing",
+    @"keyPress",
 
     // Touch events
     @"touchStart",
