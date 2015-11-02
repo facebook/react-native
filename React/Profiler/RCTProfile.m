@@ -241,7 +241,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
         }
         const char *types = method_getTypeEncoding(method);
 
-        class_addMethod(proxyClass, selector, RCTProfileTrampoline, types);
+        class_addMethod(proxyClass, selector, (IMP)RCTProfileTrampoline, types);
       }
       free(methods);
 
