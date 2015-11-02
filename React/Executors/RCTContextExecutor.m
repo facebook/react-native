@@ -354,6 +354,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     };
 
 #if RCT_DEV
+    if (RCTProfileIsProfiling()) {
+      strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
+    }
+
     [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
     [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
 
