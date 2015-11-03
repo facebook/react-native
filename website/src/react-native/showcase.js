@@ -163,6 +163,18 @@ var apps = [
     author: 'Railslove',
   },
   {
+    name: 'MaxReward - Android',
+    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.bitstrek.maxreward&hl=en',
+    author: 'Neil Ma',
+  },
+  {
+    name: 'MaxReward - iOS',
+    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
+    link: 'https://itunes.apple.com/us/app/maxreward/id1050479192?ls=1&mt=8',
+    author: 'Neil Ma',
+  },
+  {
     name: 'MinTrain',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/51/51/68/51516875-1323-3100-31a8-cd1853d9a2c0/mzl.gozwmstp.png',
     link: 'https://itunes.apple.com/us/app/mintrain/id1015739031?mt=8',
