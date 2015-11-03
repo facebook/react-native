@@ -16,7 +16,7 @@ You can check that your device has been **successfully connected** by running `a
     $ adb devices
     List of devices attached
     emulator-5554 offline       # Google emulator
-    192.168.10.101:5555	device  # Genymotion
+    192.168.10.101:5555 device  # Genymotion
 
 **device** means the device is connected. Android - go figure :)
 
