@@ -49,6 +49,19 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
       setOffscreenPageLimit(mViews.size());
     }
 
+    void removeViewAt(int index) {
+      mViews.remove(index);
+      notifyDataSetChanged();
+
+      // TODO(7323049): Remove this workaround once we figure out a way to re-layout some views on
+      // request
+      setOffscreenPageLimit(mViews.size());
+    }
+
+    View getViewAt(int index) {
+      return mViews.get(index);
+    }
+
     @Override
     public int getCount() {
       return mViews.size();
@@ -120,11 +133,23 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     return false;
   }
 
-  /* package */ void addViewToAdapter(View child, int index) {
+  /*package*/ void addViewToAdapter(View child, int index) {
     getAdapter().addView(child, index);
   }
 
-  /* package */ void setCurrentItemFromJs(int item) {
+  /*package*/ void removeViewFromAdapter(int index) {
+    getAdapter().removeViewAt(index);
+  }
+
+  /*package*/ int getViewCountInAdapter() {
+    return getAdapter().getCount();
+  }
+
+  /*package*/ View getViewFromAdapter(int index) {
+    return getAdapter().getViewAt(index);
+  }
+
+  /*package*/ void setCurrentItemFromJs(int item) {
     mIsCurrentItemFromJs = true;
     setCurrentItem(item);
     mIsCurrentItemFromJs = false;

@@ -169,8 +169,10 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       notifyDataSetChanged();
     }
 
-    public void removeView(View child) {
-      if (mViews.remove(child)) {
+    public void removeViewAt(int index) {
+      View child = mViews.get(index);
+      if (child != null) {
+        mViews.remove(index);
         mTopOffsetsFromLayout.remove(child);
         child.removeOnLayoutChangeListener(mChildLayoutChangeListener);
         mTotalChildrenHeight -= child.getMeasuredHeight();
@@ -271,8 +273,8 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     ((ReactListAdapter) getAdapter()).addView(child, index);
   }
 
-  /*package*/ void removeViewFromAdapter(View child) {
-    ((ReactListAdapter) getAdapter()).removeView(child);
+  /*package*/ void removeViewFromAdapter(int index) {
+    ((ReactListAdapter) getAdapter()).removeViewAt(index);
   }
 
   /*package*/ View getChildAtFromAdapter(int index) {
