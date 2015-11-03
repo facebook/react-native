@@ -278,7 +278,7 @@ static css_dim_t RCTMeasure(void *context, float width)
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
     paragraphStyle.alignment = _textAlign;
     paragraphStyle.baseWritingDirection = _writingDirection;
-    CGFloat lineHeight = round(_lineHeight * self.fontSizeMultiplier);
+    CGFloat lineHeight = round(_lineHeight * (_allowFontScaling && _fontSizeMultiplier > 0.0 ? _fontSizeMultiplier : 1.0));
     paragraphStyle.minimumLineHeight = lineHeight;
     paragraphStyle.maximumLineHeight = lineHeight;
     [attributedString addAttribute:NSParagraphStyleAttributeName
