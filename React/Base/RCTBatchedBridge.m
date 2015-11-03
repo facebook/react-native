@@ -250,7 +250,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   _moduleDataByID = [NSMutableArray new];
   NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
   for (Class moduleClass in RCTGetModuleClasses()) {
-     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
 
      // Check if module instance has already been registered for this name
      id<RCTBridgeModule> module = modulesByName[moduleName];
