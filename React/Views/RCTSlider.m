@@ -46,5 +46,13 @@
     [super setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
   }
 }
+- (void)setThumbImage:(UIImage *) thumbImage
+{
+  if (thumbImage != _thumbImage) {
+    _thumbImage = thumbImage;
+
+    [self setThumbImage:thumbImage forState:UIControlStateNormal];
+  }
+}
 
 @end
