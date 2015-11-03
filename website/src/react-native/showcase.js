@@ -115,6 +115,12 @@ var apps = [
     author: 'Elephant, LLC',
   },
   {
+    name: 'Hey, Neighbor!',
+    icon: 'https://raw.githubusercontent.com/scrollback/io.scrollback.neighborhoods/master/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
+    link: 'https://play.google.com/store/apps/details?id=io.scrollback.neighborhoods',
+    author: 'Scrollback',
+  },
+  {
     name: 'HSK Level 1 Chinese Flashcards',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
     link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
