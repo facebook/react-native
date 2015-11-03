@@ -12,6 +12,7 @@ const _ = require('underscore');
 const base64VLQ = require('./base64-vlq');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
+const Activity = require('../Activity');
 
 const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
 
@@ -128,11 +129,13 @@ class Bundle {
 
     const source = this._getSource();
     try {
+      const minifyActivity = Activity.startEvent('minify');
       this._minifiedSourceAndMap = UglifyJS.minify(source, {
         fromString: true,
         outSourceMap: 'bundle.js',
         inSourceMap: this.getSourceMap(),
       });
+      Activity.endEvent(minifyActivity);
       return this._minifiedSourceAndMap;
     } catch(e) {
       // Sometimes, when somebody is using a new syntax feature that we
