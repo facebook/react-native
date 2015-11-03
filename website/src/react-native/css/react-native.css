@@ -1115,6 +1115,10 @@ div[data-twttr-id] iframe {
   margin-top: 5px;
 }
 
+.showcase a {
+  font-weight: bold;
+}
+
 .showcase h3, .showcase p {
   color: rgb(72, 72, 72);
 }
