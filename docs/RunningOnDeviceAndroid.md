@@ -11,13 +11,22 @@ next: embedded-app-android
 
 The easiest way to develop on a device is by USB debugging. First, make sure you have [USB debugging enabled on your device](https://www.google.com/search?q=android+Enable+USB+debugging). Once debugging is enabled on the device you can use `react-native run-android` in the same way as with emulator to install and launch your React Native app on the connected device.
 
+You can check that your device has been **successfully connected** by running `adb devices`:
+
+    $ adb devices
+    List of devices attached
+    emulator-5554 offline       # Google emulator
+    192.168.10.101:5555	device  # Genymotion
+
+**device** means the device is connected. Android - go figure :)
+
 ## Accessing development server from device
 
 You can also iterate quickly on device using the development server. Follow one of the steps described below to make your development server running on your laptop accessible for your device.
 
 > Hint
 >
-> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (reload, debug, etc.)
+> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (to reload, debug, etc.)
 
 ### Using adb reverse
 
