@@ -193,7 +193,6 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   // Root views are only mutated on the shadow queue
   NSMutableSet *_rootViewTags;
   NSMutableArray *_pendingUIBlocks;
-  NSLock *_pendingUIBlocksLock;
 
   // Animation
   RCTLayoutAnimation *_nextLayoutAnimation; // RCT thread only
@@ -219,8 +218,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   if ((self = [super init])) {
 
     _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
-
-    _pendingUIBlocksLock = [NSLock new];
 
     _shadowViewRegistry = [RCTSparseArray new];
     _viewRegistry = [RCTSparseArray new];
@@ -253,6 +250,9 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
    * Called on the JS Thread since all modules are invalidated on the JS thread
    */
 
+  // This only accessed from the shadow queue
+  _pendingUIBlocks = nil;
+
   dispatch_async(dispatch_get_main_queue(), ^{
     for (NSNumber *rootViewTag in _rootViewTags) {
       [_viewRegistry[rootViewTag] invalidate];
@@ -263,10 +263,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     _viewRegistry = nil;
     _bridgeTransactionListeners = nil;
     _bridge = nil;
-
-    [_pendingUIBlocksLock lock];
-    _pendingUIBlocks = nil;
-    [_pendingUIBlocksLock unlock];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   });
@@ -439,9 +435,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     }
   };
 
-  [_pendingUIBlocksLock lock];
   [_pendingUIBlocks addObject:outerBlock];
-  [_pendingUIBlocksLock unlock];
 }
 
 - (RCTViewManagerUIBlock)uiBlockWithLayoutUpdateForRootView:(RCTShadowView *)rootShadowView
@@ -896,13 +890,13 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
 
 - (void)flushUIBlocks
 {
+  RCTAssertThread(_shadowQueue, @"flushUIBlocks can only be called from the shadow queue");
+
   // First copy the previous blocks into a temporary variable, then reset the
   // pending blocks to a new array. This guards against mutation while
   // processing the pending blocks in another thread.
-  [_pendingUIBlocksLock lock];
   NSArray *previousPendingUIBlocks = _pendingUIBlocks;
   _pendingUIBlocks = [NSMutableArray new];
-  [_pendingUIBlocksLock unlock];
 
   if (previousPendingUIBlocks.count) {
     // Execute the previously queued UI blocks
