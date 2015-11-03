@@ -44,9 +44,9 @@ __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your 
 
 Genymotion is much easier to set up than stock Google emulators. However, it's only free for personal use. If you want to use the stock Google emulator, see below.
 
-1. Download and install [Genymotion](https://www.genymotion.com/)
-2. Open Genymotion
-3. Create a new emulator and start it
+1. Download and install [Genymotion](https://www.genymotion.com/).
+2. Open Genymotion. It might ask you to install VirtualBox unless you already have it.
+3. Create a new emulator and start it.
 
 ### Alternative: Create a stock Google emulator
 
