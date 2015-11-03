@@ -80,7 +80,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   [self dirtyText];
 }
 
-- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                           parentProperties:(NSDictionary *)parentProperties
 {
   parentProperties = [super processUpdatedProperties:applierBlocks
@@ -99,7 +99,7 @@ static css_dim_t RCTMeasure(void *context, float width)
 }
 
 - (void)applyLayoutNode:(css_node_t *)node
-      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
   [super applyLayoutNode:node viewsWithNewFrame:viewsWithNewFrame absolutePosition:absolutePosition];

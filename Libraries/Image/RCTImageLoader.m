@@ -35,8 +35,8 @@
 
 @implementation RCTImageLoader
 {
-  NSArray *_loaders;
-  NSArray *_decoders;
+  NSArray<id<RCTImageURLLoader>> *_loaders;
+  NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSURLCache *_cache;
 }
 
@@ -47,14 +47,14 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   // Get image loaders and decoders
-  NSMutableArray *loaders = [NSMutableArray array];
-  NSMutableArray *decoders = [NSMutableArray array];
+  NSMutableArray<id<RCTImageURLLoader>> *loaders = [NSMutableArray array];
+  NSMutableArray<id<RCTImageDataDecoder>> *decoders = [NSMutableArray array];
   for (id<RCTBridgeModule> module in bridge.modules.allValues) {
     if ([module conformsToProtocol:@protocol(RCTImageURLLoader)]) {
-      [loaders addObject:module];
+      [loaders addObject:(id<RCTImageURLLoader>)module];
     }
     if ([module conformsToProtocol:@protocol(RCTImageDataDecoder)]) {
-      [decoders addObject:module];
+      [decoders addObject:(id<RCTImageDataDecoder>)module];
     }
   }
 

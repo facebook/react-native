@@ -22,6 +22,8 @@
                 referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
                     moduleProvider:(moduleProvider__)]
 
+@protocol RCTBridgeModule;
+
 @interface RCTTestRunner : NSObject
 
 @property (nonatomic, assign) BOOL recordMode;
@@ -37,7 +39,7 @@
  */
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(NSArray *(^)(void))block NS_DESIGNATED_INITIALIZER;
+             moduleProvider:(NSArray<id<RCTBridgeModule>> *(^)(void))block NS_DESIGNATED_INITIALIZER;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

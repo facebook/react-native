@@ -65,7 +65,7 @@ RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
       continue;
     }
 
-    NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
+    NSMutableArray<RCTShadowView *> *queue = [NSMutableArray arrayWithObject:rootView];
     for (NSInteger i = 0; i < queue.count; i++) {
       RCTShadowView *shadowView = queue[i];
       RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
