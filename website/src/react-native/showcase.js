@@ -127,7 +127,13 @@ var apps = [
     author: 'HS Schaaf',
   },
   {
-    name: 'Kakapo',
+    name: 'Kakapo - Android',
+    icon: 'https://lh3.googleusercontent.com/xDc0D136JB8IvRsct9u4VTGh4nK1QwsZSRuEe-UxWd_JFtvNTrcaO5fEhcj4rGxv60pX=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.kakaponative',
+    author: 'Daniel Levitt',
+  },
+  {
+    name: 'Kakapo - iOS',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
     link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
     author: 'Daniel Levitt',
