@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import android.text.InputFilter;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
@@ -197,6 +198,15 @@ public class ReactTextInputManager extends
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = 1)
   public void setNumLines(ReactEditText view, int numLines) {
     view.setLines(numLines);
+  }
+
+  @ReactProp(name = "maxLength")
+  public void setMaxLength(ReactEditText view, @Nullable Integer maxLength) {
+    if(maxLength != null) {
+      InputFilter[] filterArray = new InputFilter[1];
+      filterArray[0] = new InputFilter.LengthFilter(maxLength);
+      view.setFilters(filterArray);
+    }
   }
 
   @ReactProp(name = "autoCorrect")
