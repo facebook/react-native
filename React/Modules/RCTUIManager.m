@@ -498,7 +498,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-        RCTAssert(rootView != nil, @"View with react tag %@ has not a superview", reactTag);
 
         rootView.intrinsicSize = contentSize;
       });
