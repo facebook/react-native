@@ -307,6 +307,10 @@ void RCTProfileInit(RCTBridge *bridge)
 
 NSString *RCTProfileEnd(RCTBridge *bridge)
 {
+  if (!RCTProfileIsProfiling()) {
+    return nil;
+  }
+
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:nil];
 
