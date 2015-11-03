@@ -58,4 +58,19 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   public void addView(ReactViewPager parent, View child, int index) {
     parent.addViewToAdapter(child, index);
   }
+
+  @Override
+  public int getChildCount(ReactViewPager parent) {
+    return parent.getViewCountInAdapter();
+  }
+
+  @Override
+  public View getChildAt(ReactViewPager parent, int index) {
+    return parent.getViewFromAdapter(index);
+  }
+
+  @Override
+  public void removeViewAt(ReactViewPager parent, int index) {
+    parent.removeViewFromAdapter(index);
+  }
 }
