@@ -7,18 +7,20 @@ permalink: docs/running-on-device-android.html
 next: embedded-app-android
 ---
 
-## USB Debugging
+## Prerequisite: USB Debugging
 
-The easiest way to develop on a device is by USB debugging. First, make sure you have [USB debugging enabled on your device](https://www.google.com/search?q=android+Enable+USB+debugging). Once debugging is enabled on the device you can use `react-native run-android` in the same way as with emulator to install and launch your React Native app on the connected device.
+You'll need this in order to install your app on your device. First, make sure you have [USB debugging enabled on your device](https://www.google.com/search?q=android+Enable+USB+debugging).
 
-You can check that your device has been **successfully connected** by running `adb devices`:
+Check that your device has been **successfully connected** by running `adb devices`:
 
     $ adb devices
     List of devices attached
-    emulator-5554 offline       # Google emulator
-    192.168.10.101:5555 device  # Genymotion
+    emulator-5554 offline   # Google emulator
+    14ed2fcc device         # Physical device
 
-**device** means the device is connected. Android - go figure :)
+Seeing **device** in the right column means the device is connected. Android - go figure :) You must have **only one device connected**.
+
+Now you can use `react-native run-android` to install and lauch your app on the device.
 
 ## Accessing development server from device
 
