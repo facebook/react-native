@@ -15,6 +15,9 @@
 
 @interface UIView (React) <RCTComponent>
 
+- (NSArray<UIView<RCTComponent> *> *)reactSubviews;
+- (UIView<RCTComponent> *)reactSuperview;
+
 /**
  * Used by the UIIManager to set the view frame.
  * May be overriden to disable animation, etc.

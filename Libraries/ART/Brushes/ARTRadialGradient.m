@@ -21,7 +21,7 @@
   CGFloat _radiusRatio;
 }
 
-- (instancetype)initWithArray:(NSArray *)array
+- (instancetype)initWithArray:(NSArray<NSNumber *> *)array
 {
   if ((self = [super initWithArray:array])) {
     if (array.count < 7) {

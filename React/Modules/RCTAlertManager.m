@@ -10,6 +10,7 @@
 #import "RCTAlertManager.h"
 
 #import "RCTAssert.h"
+#import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -19,10 +20,10 @@
 
 @implementation RCTAlertManager
 {
-  NSMutableArray *_alerts;
-  NSMutableArray *_alertControllers;
-  NSMutableArray *_alertCallbacks;
-  NSMutableArray *_alertButtonKeys;
+  NSMutableArray<UIAlertView *> *_alerts;
+  NSMutableArray<UIAlertController *> *_alertControllers;
+  NSMutableArray<RCTResponseSenderBlock> *_alertCallbacks;
+  NSMutableArray<NSArray<NSString *> *> *_alertButtonKeys;
 }
 
 RCT_EXPORT_MODULE()
@@ -70,10 +71,10 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                   callback:(RCTResponseSenderBlock)callback)
 {
-  NSString *title = args[@"title"];
-  NSString *message = args[@"message"];
-  NSString *type = args[@"type"];
-  NSArray *buttons = args[@"buttons"];
+  NSString *title = [RCTConvert NSString:args[@"title"]];
+  NSString *message = [RCTConvert NSString:args[@"message"]];
+  NSString *type = [RCTConvert NSString:args[@"type"]];
+  NSDictionaryArray *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
   BOOL allowsTextInput = [type isEqual:@"plain-text"];
 
   if (!title && !message) {
@@ -95,9 +96,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
+
   if ([UIAlertController class] == nil) {
+
     UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
-    NSMutableArray *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
+    NSMutableArray<NSString *> *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
     if (allowsTextInput) {
       alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
@@ -126,8 +129,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     [_alertButtonKeys addObject:buttonKeys];
 
     [alertView show];
+
   } else
+
 #endif
+
   {
     UIAlertController *alertController =
     [UIAlertController alertControllerWithTitle:title
@@ -152,7 +158,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       UITextField *textField = allowsTextInput ? alertController.textFields.firstObject : nil;
       [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
                                                           style:buttonStyle
-                                                        handler:^(UIAlertAction *action) {
+                                                        handler:^(__unused UIAlertAction *action) {
         if (callback) {
           if (allowsTextInput) {
             callback(@[buttonKey, textField.text]);
@@ -175,16 +181,13 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   RCTAssert(index != NSNotFound, @"Dismissed alert was not recognised");
 
   RCTResponseSenderBlock callback = _alertCallbacks[index];
-  NSArray *buttonKeys = _alertButtonKeys[index];
-  NSArray *args;
+  NSArray<NSString *> *buttonKeys = _alertButtonKeys[index];
 
   if (alertView.alertViewStyle == UIAlertViewStylePlainTextInput) {
-    args = @[buttonKeys[buttonIndex], [alertView textFieldAtIndex:0].text];
+    callback(@[buttonKeys[buttonIndex], [alertView textFieldAtIndex:0].text]);
   } else {
-    args = @[buttonKeys[buttonIndex]];
+    callback(@[buttonKeys[buttonIndex]]);
   }
-
-  callback(args);
 
   [_alerts removeObjectAtIndex:index];
   [_alertCallbacks removeObjectAtIndex:index];

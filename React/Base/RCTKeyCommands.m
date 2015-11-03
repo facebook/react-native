@@ -77,15 +77,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @interface RCTKeyCommands ()
 
-@property (nonatomic, strong) NSMutableSet *commands;
+@property (nonatomic, strong) NSMutableSet<RCTKeyCommand *> *commands;
 
 @end
 
 @implementation UIResponder (RCTKeyCommands)
 
-- (NSArray *)RCT_keyCommands
+- (NSArray<UIKeyCommand *> *)RCT_keyCommands
 {
-  NSSet *commands = [RCTKeyCommands sharedInstance].commands;
+  NSSet<RCTKeyCommand *> *commands = [RCTKeyCommands sharedInstance].commands;
   return [[commands valueForKeyPath:@"keyCommand"] allObjects];
 }
 

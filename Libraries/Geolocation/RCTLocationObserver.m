@@ -100,7 +100,7 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 {
   CLLocationManager *_locationManager;
   NSDictionary *_lastLocationEvent;
-  NSMutableArray *_pendingRequests;
+  NSMutableArray<RCTLocationRequest *> *_pendingRequests;
   BOOL _observingLocation;
   RCTLocationOptions _observerOptions;
 }
@@ -249,7 +249,8 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
   // Create event
   CLLocation *location = locations.lastObject;

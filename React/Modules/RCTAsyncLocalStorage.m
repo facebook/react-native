@@ -14,6 +14,7 @@
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 
+#import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
@@ -23,7 +24,7 @@ static const NSUInteger RCTInlineValueThreshold = 100;
 
 #pragma mark - Static helper functions
 
-static id RCTErrorForKey(NSString *key)
+static NSDictionary *RCTErrorForKey(NSString *key)
 {
   if (![key isKindOfClass:[NSString class]]) {
     return RCTMakeAndLogError(@"Invalid key - must be a string.  Key: ", key, @{@"key": key});
@@ -34,7 +35,7 @@ static id RCTErrorForKey(NSString *key)
   }
 }
 
-static void RCTAppendError(id error, NSMutableArray **errors)
+static void RCTAppendError(NSDictionary *error, NSMutableArray<NSDictionary *> **errors)
 {
   if (error && errors) {
     if (!*errors) {
@@ -44,7 +45,7 @@ static void RCTAppendError(id error, NSMutableArray **errors)
   }
 }
 
-static id RCTReadFile(NSString *filePath, NSString *key, NSDictionary **errorOut)
+static NSString *RCTReadFile(NSString *filePath, NSString *key, NSDictionary **errorOut)
 {
   if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
     NSError *error;
@@ -148,6 +149,14 @@ RCT_EXPORT_MODULE()
   return RCTGetMethodQueue();
 }
 
+- (void)clearAllData
+{
+  dispatch_async(RCTGetMethodQueue(), ^{
+    _manifest = [NSMutableDictionary new];
+    RCTDeleteStorageDirectory();
+  });
+}
+
 + (void)clearAllData
 {
   dispatch_async(RCTGetMethodQueue(), ^{
@@ -181,7 +190,7 @@ RCT_EXPORT_MODULE()
   return [RCTGetStorageDirectory() stringByAppendingPathComponent:safeFileName];
 }
 
-- (id)_ensureSetup
+- (NSDictionary *)_ensureSetup
 {
   RCTAssertThread(RCTGetMethodQueue(), @"Must be executed on storage thread");
 
@@ -199,7 +208,7 @@ RCT_EXPORT_MODULE()
   if (!_haveSetup) {
     NSDictionary *errorOut;
     NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), nil, &errorOut);
-    _manifest = serialized ? [RCTJSONParse(serialized, &error) mutableCopy] : [NSMutableDictionary new];
+    _manifest = serialized ? RCTJSONParseMutable(serialized, &error) : [NSMutableDictionary new];
     if (error) {
       RCTLogWarn(@"Failed to parse manifest - creating new one.\n\n%@", error);
       _manifest = [NSMutableDictionary new];
@@ -209,12 +218,12 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (id)_writeManifest:(NSMutableArray **)errors
+- (NSDictionary *)_writeManifest:(NSMutableArray<NSDictionary *> **)errors
 {
   NSError *error;
   NSString *serialized = RCTJSONStringify(_manifest, &error);
   [serialized writeToFile:RCTGetManifestFilePath() atomically:YES encoding:NSUTF8StringEncoding error:&error];
-  id errorOut;
+  NSDictionary *errorOut;
   if (error) {
     errorOut = RCTMakeError(@"Failed to write manifest file.", error, nil);
     RCTAppendError(errorOut, errors);
@@ -222,20 +231,21 @@ RCT_EXPORT_MODULE()
   return errorOut;
 }
 
-- (id)_appendItemForKey:(NSString *)key toArray:(NSMutableArray *)result
+- (NSDictionary *)_appendItemForKey:(NSString *)key
+                            toArray:(NSMutableArray<NSArray<NSString *> *> *)result
 {
-  id errorOut = RCTErrorForKey(key);
+  NSDictionary *errorOut = RCTErrorForKey(key);
   if (errorOut) {
     return errorOut;
   }
-  id value = [self _getValueForKey:key errorOut:&errorOut];
+  NSString *value = [self _getValueForKey:key errorOut:&errorOut];
   [result addObject:@[key, RCTNullIfNil(value)]]; // Insert null if missing or failure.
   return errorOut;
 }
 
 - (NSString *)_getValueForKey:(NSString *)key errorOut:(NSDictionary **)errorOut
 {
-  id value = _manifest[key]; // nil means missing, null means there is a data file, anything else is an inline value.
+  id value = _manifest[key]; // nil means missing, null means there is a data file, else: NSString
   if (value == (id)kCFNull) {
     NSString *filePath = [self _filePathForKey:key];
     value = RCTReadFile(filePath, key, errorOut);
@@ -243,16 +253,13 @@ RCT_EXPORT_MODULE()
   return value;
 }
 
-- (id)_writeEntry:(NSArray *)entry
+- (NSDictionary *)_writeEntry:(NSArray<NSString *> *)entry
 {
-  if (![entry isKindOfClass:[NSArray class]] || entry.count != 2) {
+  if (entry.count != 2) {
     return RCTMakeAndLogError(@"Entries must be arrays of the form [key: string, value: string], got: ", entry, nil);
   }
-  if (![entry[1] isKindOfClass:[NSString class]]) {
-    return RCTMakeAndLogError(@"Values must be strings, got: ", entry[1], @{@"key": entry[0]});
-  }
   NSString *key = entry[0];
-  id errorOut = RCTErrorForKey(key);
+  NSDictionary *errorOut = RCTErrorForKey(key);
   if (errorOut) {
     return errorOut;
   }
@@ -278,66 +285,63 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Exported JS Functions
 
-RCT_EXPORT_METHOD(multiGet:(NSArray *)keys
+RCT_EXPORT_METHOD(multiGet:(NSStringArray *)keys
                   callback:(RCTResponseSenderBlock)callback)
 {
-  if (!callback) {
-    RCTLogError(@"Called getItem without a callback.");
-    return;
-  }
-
-  id errorOut = [self _ensureSetup];
+  NSDictionary *errorOut = [self _ensureSetup];
   if (errorOut) {
     callback(@[@[errorOut], (id)kCFNull]);
     return;
   }
-  NSMutableArray *errors;
-  NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:keys.count];
+  NSMutableArray<NSDictionary *> *errors;
+  NSMutableArray<NSArray<NSString *> *> *result = [[NSMutableArray alloc] initWithCapacity:keys.count];
   for (NSString *key in keys) {
-    id keyError = [self _appendItemForKey:key toArray:result];
+    NSDictionary *keyError = [self _appendItemForKey:key toArray:result];
     RCTAppendError(keyError, &errors);
   }
   callback(@[RCTNullIfNil(errors), result]);
 }
 
-RCT_EXPORT_METHOD(multiSet:(NSArray *)kvPairs
+RCT_EXPORT_METHOD(multiSet:(NSStringArrayArray *)kvPairs
                   callback:(RCTResponseSenderBlock)callback)
 {
-  id errorOut = [self _ensureSetup];
+  NSDictionary *errorOut = [self _ensureSetup];
   if (errorOut) {
     callback(@[@[errorOut]]);
     return;
   }
-  NSMutableArray *errors;
-  for (NSArray *entry in kvPairs) {
-    id keyError = [self _writeEntry:entry];
+  NSMutableArray<NSDictionary *> *errors;
+  for (NSArray<NSString *> *entry in kvPairs) {
+    NSDictionary *keyError = [self _writeEntry:entry];
     RCTAppendError(keyError, &errors);
   }
   [self _writeManifest:&errors];
-  if (callback) {
-    callback(@[RCTNullIfNil(errors)]);
-  }
+  callback(@[RCTNullIfNil(errors)]);
 }
 
-RCT_EXPORT_METHOD(multiMerge:(NSArray *)kvPairs
-                  callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(multiMerge:(NSStringArrayArray *)kvPairs
+                    callback:(RCTResponseSenderBlock)callback)
 {
-  id errorOut = [self _ensureSetup];
+  NSDictionary *errorOut = [self _ensureSetup];
   if (errorOut) {
     callback(@[@[errorOut]]);
     return;
   }
-  NSMutableArray *errors;
-  for (__strong NSArray *entry in kvPairs) {
-    id keyError;
+  NSMutableArray<NSDictionary *> *errors;
+  for (__strong NSArray<NSString *> *entry in kvPairs) {
+    NSDictionary *keyError;
     NSString *value = [self _getValueForKey:entry[0] errorOut:&keyError];
     if (keyError) {
       RCTAppendError(keyError, &errors);
     } else {
       if (value) {
-        NSMutableDictionary *mergedVal = [RCTJSONParseMutable(value, &keyError) mutableCopy];
-        RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &keyError));
-        entry = @[entry[0], RCTJSONStringify(mergedVal, &keyError)];
+        NSError *jsonError;
+        NSMutableDictionary *mergedVal = RCTJSONParseMutable(value, &jsonError);
+        RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &jsonError));
+        entry = @[entry[0], RCTNullIfNil(RCTJSONStringify(mergedVal, NULL))];
+        if (jsonError) {
+          keyError = RCTJSErrorFromNSError(jsonError);
+        }
       }
       if (!keyError) {
         keyError = [self _writeEntry:entry];
@@ -346,22 +350,20 @@ RCT_EXPORT_METHOD(multiMerge:(NSArray *)kvPairs
     }
   }
   [self _writeManifest:&errors];
-  if (callback) {
-    callback(@[RCTNullIfNil(errors)]);
-  }
+  callback(@[RCTNullIfNil(errors)]);
 }
 
-RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
+RCT_EXPORT_METHOD(multiRemove:(NSStringArray *)keys
                   callback:(RCTResponseSenderBlock)callback)
 {
-  id errorOut = [self _ensureSetup];
+  NSDictionary *errorOut = [self _ensureSetup];
   if (errorOut) {
     callback(@[@[errorOut]]);
     return;
   }
-  NSMutableArray *errors;
+  NSMutableArray<NSDictionary *> *errors;
   for (NSString *key in keys) {
-    id keyError = RCTErrorForKey(key);
+    NSDictionary *keyError = RCTErrorForKey(key);
     if (!keyError) {
       NSString *filePath = [self _filePathForKey:key];
       [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
@@ -370,23 +372,19 @@ RCT_EXPORT_METHOD(multiRemove:(NSArray *)keys
     RCTAppendError(keyError, &errors);
   }
   [self _writeManifest:&errors];
-  if (callback) {
-    callback(@[RCTNullIfNil(errors)]);
-  }
+  callback(@[RCTNullIfNil(errors)]);
 }
 
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
   _manifest = [NSMutableDictionary new];
   NSError *error = RCTDeleteStorageDirectory();
-  if (callback) {
-    callback(@[RCTNullIfNil(error)]);
-  }
+  callback(@[RCTNullIfNil(error)]);
 }
 
 RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
-  id errorOut = [self _ensureSetup];
+  NSDictionary *errorOut = [self _ensureSetup];
   if (errorOut) {
     callback(@[errorOut, (id)kCFNull]);
   } else {

@@ -10,14 +10,8 @@
 #import "RCTPicker.h"
 
 #import "RCTUtils.h"
-#import "UIView+React.h"
 
 @interface RCTPicker() <UIPickerViewDataSource, UIPickerViewDelegate>
-
-@property (nonatomic, copy) NSArray *items;
-@property (nonatomic, assign) NSInteger selectedIndex;
-@property (nonatomic, copy) RCTBubblingEventBlock onChange;
-
 @end
 
 @implementation RCTPicker
@@ -33,7 +27,7 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-- (void)setItems:(NSArray *)items
+- (void)setItems:(NSArray<NSDictionary *> *)items
 {
   _items = [items copy];
   [self setNeedsLayout];

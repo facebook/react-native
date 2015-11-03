@@ -336,10 +336,11 @@ NSString *RCTProfileEnd(RCTBridge *bridge)
   }
 }
 
-static NSMutableArray *RCTProfileGetThreadEvents(void)
+static NSMutableArray<NSArray *> *RCTProfileGetThreadEvents(void)
 {
   static NSString *const RCTProfileThreadEventsKey = @"RCTProfileThreadEventsKey";
-  NSMutableArray *threadEvents = [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey];
+  NSMutableArray<NSArray *> *threadEvents =
+    [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey];
   if (!threadEvents) {
     threadEvents = [NSMutableArray new];
     [NSThread currentThread].threadDictionary[RCTProfileThreadEventsKey] = threadEvents;
@@ -377,7 +378,7 @@ void RCTProfileEndEvent(
     return;
   }
 
-  NSMutableArray *events = RCTProfileGetThreadEvents();
+  NSMutableArray<NSArray *> *events = RCTProfileGetThreadEvents();
   NSArray *event = events.lastObject;
   [events removeLastObject];
 

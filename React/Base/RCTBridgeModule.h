@@ -12,6 +12,7 @@
 #import "RCTDefines.h"
 
 @class RCTBridge;
+@protocol RCTBridgeMethod;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -208,7 +209,8 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  + (NSArray *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+  + (NSArray<NSString *> *)RCT_CONCAT(__rct_export__, \
+    RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
     return @[@#js_name, @#method]; \
   }
 
@@ -217,7 +219,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * methods defined using the macros above.  This method is called only once,
  * before registration.
  */
-- (NSArray *)methodsToExport;
+- (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
 
 /**
  * Injects constants into JS. These constants are made accessible via

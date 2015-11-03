@@ -60,7 +60,11 @@ RCT_EXTERN UIApplication *RCTSharedApplication(void);
 
 // Return a UIAlertView initialized with the given values
 // or nil if running in an app extension
-RCT_EXTERN UIAlertView *RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles);
+RCT_EXTERN UIAlertView *RCTAlertView(NSString *title,
+                                     NSString *message,
+                                     id delegate,
+                                     NSString *cancelButtonTitle,
+                                     NSArray<NSString *> *otherButtonTitles);
 
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);

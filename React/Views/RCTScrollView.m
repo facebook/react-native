@@ -117,7 +117,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (RCTScrollEvent *)coalesceWithEvent:(RCTScrollEvent *)newEvent
 {
-  NSArray *updatedChildFrames = [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
+  NSArray<NSDictionary *> *updatedChildFrames = [_userData[@"updatedChildFrames"] arrayByAddingObjectsFromArray:newEvent->_userData[@"updatedChildFrames"]];
 
   if (updatedChildFrames) {
     NSMutableDictionary *userData = [newEvent->_userData mutableCopy];
@@ -360,7 +360,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTCustomScrollView *_scrollView;
   UIView *_contentView;
   NSTimeInterval _lastScrollDispatchTime;
-  NSMutableArray *_cachedChildFrames;
+  NSMutableArray<NSValue *> *_cachedChildFrames;
   BOOL _allowNextScrollNoMatterWhat;
   CGRect _lastClippedToRect;
 }
@@ -412,7 +412,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [subview removeFromSuperview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView<RCTComponent> *> *)reactSubviews
 {
   return _contentView ? @[_contentView] : @[];
 }
@@ -564,7 +564,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
       (_scrollEventThrottle > 0 && _scrollEventThrottle < (now - _lastScrollDispatchTime))) {
 
     // Calculate changed frames
-    NSArray *childFrames = [self calculateChildFramesData];
+    NSArray<NSDictionary *> *childFrames = [self calculateChildFramesData];
 
     // Dispatch event
     [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
@@ -579,9 +579,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidScroll:scrollView);
 }
 
-- (NSArray *)calculateChildFramesData
+- (NSArray<NSDictionary *> *)calculateChildFramesData
 {
-    NSMutableArray *updatedChildFrames = [NSMutableArray new];
+    NSMutableArray<NSDictionary *> *updatedChildFrames = [NSMutableArray new];
     [[_contentView reactSubviews] enumerateObjectsUsingBlock:
      ^(UIView *subview, NSUInteger idx, __unused BOOL *stop) {
 

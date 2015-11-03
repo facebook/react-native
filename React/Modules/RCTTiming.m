@@ -145,7 +145,7 @@ RCT_EXPORT_MODULE()
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSMutableArray *timersToCall = [NSMutableArray new];
+  NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
