@@ -120,7 +120,7 @@ void RCTAddLogFunction(RCTLogFunction logFunction)
 static RCTLogFunction RCTGetLocalLogFunction()
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSArray *functionStack = threadDictionary[RCTLogFunctionStack];
+  NSArray<RCTLogFunction> *functionStack = threadDictionary[RCTLogFunctionStack];
   RCTLogFunction logFunction = functionStack.lastObject;
   if (logFunction) {
     return logFunction;
@@ -131,7 +131,7 @@ static RCTLogFunction RCTGetLocalLogFunction()
 void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFunction logFunction)
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSMutableArray *functionStack = threadDictionary[RCTLogFunctionStack];
+  NSMutableArray<RCTLogFunction> *functionStack = threadDictionary[RCTLogFunctionStack];
   if (!functionStack) {
     functionStack = [NSMutableArray new];
     threadDictionary[RCTLogFunctionStack] = functionStack;
@@ -216,8 +216,9 @@ void _RCTLogInternal(
 
     // Log to red box
     if ([UIApplication sharedApplication] && level >= RCTLOG_REDBOX_LEVEL) {
-      NSArray *stackSymbols = [NSThread callStackSymbols];
-      NSMutableArray *stack = [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
+      NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
+      NSMutableArray<NSDictionary *> *stack =
+        [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
       [stackSymbols enumerateObjectsUsingBlock:^(NSString *frameSymbols, NSUInteger idx, __unused BOOL *stop) {
         if (idx > 0) { // don't include the current frame
           NSString *address = [[frameSymbols componentsSeparatedByString:@"0x"][1] componentsSeparatedByString:@" "][0];

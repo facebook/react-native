@@ -62,7 +62,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   NSString *title = [RCTConvert NSString:options[@"title"]];
-  NSArray *buttons = [RCTConvert NSStringArray:options[@"options"]];
+  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
@@ -151,7 +151,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     return;
   }
 
-  NSMutableArray *items = [NSMutableArray array];
+  NSMutableArray<id /* NSString or NSURL */> *items = [NSMutableArray array];
   NSString *message = [RCTConvert NSString:options[@"message"]];
   if (message) {
     [items addObject:message];

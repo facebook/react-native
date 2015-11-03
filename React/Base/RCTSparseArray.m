@@ -79,7 +79,7 @@
   return _storage.count;
 }
 
-- (NSArray *)allIndexes
+- (NSArray<NSNumber *> *)allIndexes
 {
   return _storage.allKeys;
 }

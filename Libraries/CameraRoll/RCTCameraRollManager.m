@@ -9,16 +9,69 @@
 
 #import "RCTCameraRollManager.h"
 
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTAssetsLibraryImageLoader.h"
 #import "RCTBridge.h"
+#import "RCTConvert.h"
 #import "RCTImageLoader.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+
+@implementation RCTConvert (ALAssetGroup)
+
+RCT_ENUM_CONVERTER(ALAssetsGroupType, (@{
+
+  // New values
+  @"album": @(ALAssetsGroupAlbum),
+  @"all": @(ALAssetsGroupAll),
+  @"event": @(ALAssetsGroupEvent),
+  @"faces": @(ALAssetsGroupFaces),
+  @"library": @(ALAssetsGroupLibrary),
+  @"photo-stream": @(ALAssetsGroupPhotoStream),
+  @"saved-photos": @(ALAssetsGroupSavedPhotos),
+
+  // Legacy values
+  @"Album": @(ALAssetsGroupAlbum),
+  @"All": @(ALAssetsGroupAll),
+  @"Event": @(ALAssetsGroupEvent),
+  @"Faces": @(ALAssetsGroupFaces),
+  @"Library": @(ALAssetsGroupLibrary),
+  @"PhotoStream": @(ALAssetsGroupPhotoStream),
+  @"SavedPhotos": @(ALAssetsGroupSavedPhotos),
+
+}), ALAssetsGroupSavedPhotos, integerValue)
+
++ (ALAssetsFilter *)ALAssetsFilter:(id)json
+{
+  static NSDictionary *options;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    options = @{
+
+      // New values
+      @"photos": [ALAssetsFilter allPhotos],
+      @"videos": [ALAssetsFilter allVideos],
+      @"all": [ALAssetsFilter allAssets],
+
+      // Legacy values
+      @"Photos": [ALAssetsFilter allPhotos],
+      @"Videos": [ALAssetsFilter allVideos],
+      @"All": [ALAssetsFilter allAssets],
+    };
+  });
+
+  ALAssetsFilter *filter = options[json ?: @"photos"];
+  if (!filter) {
+    RCTLogError(@"Invalid filter option: '%@'. Expected one of 'photos',"
+                "'videos' or 'all'.", json);
+  }
+  return filter ?: [ALAssetsFilter allPhotos];
+}
+
+@end
 
 @implementation RCTCameraRollManager
 
@@ -49,7 +102,9 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
   }];
 }
 
-- (void)callCallback:(RCTResponseSenderBlock)callback withAssets:(NSArray *)assets hasNextPage:(BOOL)hasNextPage
+- (void)callCallback:(RCTResponseSenderBlock)callback
+          withAssets:(NSArray<NSDictionary *> *)assets
+         hasNextPage:(BOOL)hasNextPage
 {
   if (!assets.count) {
     callback(@[@{
@@ -72,45 +127,21 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   callback:(RCTResponseSenderBlock)callback
                   errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
-  NSUInteger first = [params[@"first"] integerValue];
-  NSString *afterCursor = params[@"after"];
-  NSString *groupTypesStr = params[@"groupTypes"];
-  NSString *groupName = params[@"groupName"];
-  NSString *assetType = params[@"assetType"];
-  ALAssetsGroupType groupTypes;
-
-  if ([groupTypesStr isEqualToString:@"Album"]) {
-    groupTypes = ALAssetsGroupAlbum;
-  } else if ([groupTypesStr isEqualToString:@"All"]) {
-    groupTypes = ALAssetsGroupAll;
-  } else if ([groupTypesStr isEqualToString:@"Event"]) {
-    groupTypes = ALAssetsGroupEvent;
-  } else if ([groupTypesStr isEqualToString:@"Faces"]) {
-    groupTypes = ALAssetsGroupFaces;
-  } else if ([groupTypesStr isEqualToString:@"Library"]) {
-    groupTypes = ALAssetsGroupLibrary;
-  } else if ([groupTypesStr isEqualToString:@"PhotoStream"]) {
-    groupTypes = ALAssetsGroupPhotoStream;
-  } else {
-    groupTypes = ALAssetsGroupSavedPhotos;
-  }
+  NSUInteger first = [RCTConvert NSInteger:params[@"first"]];
+  NSString *afterCursor = [RCTConvert NSString:params[@"after"]];
+  NSString *groupName = [RCTConvert NSString:params[@"groupName"]];
+  ALAssetsFilter *assetType = [RCTConvert ALAssetsFilter:params[@"assetType"]];
+  ALAssetsGroupType groupTypes = [RCTConvert ALAssetsGroupType:params[@"groupTypes"]];
 
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
   BOOL __block calledCallback = NO;
-  NSMutableArray *assets = [NSMutableArray new];
+  NSMutableArray<NSDictionary *> *assets = [NSMutableArray new];
 
   [_bridge.assetsLibrary enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
     if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:ALAssetsGroupPropertyName]])) {
 
-      if (assetType == nil || [assetType isEqualToString:@"Photos"]) {
-        [group setAssetsFilter:ALAssetsFilter.allPhotos];
-      } else if ([assetType isEqualToString:@"Videos"]) {
-        [group setAssetsFilter:ALAssetsFilter.allVideos];
-      } else if ([assetType isEqualToString:@"All"]) {
-        [group setAssetsFilter:ALAssetsFilter.allAssets];
-      }
-
+      [group setAssetsFilter:assetType];
       [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stopAssets) {
         if (result) {
           NSString *uri = ((NSURL *)[result valueForProperty:ALAssetPropertyAssetURL]).absoluteString;

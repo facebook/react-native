@@ -36,7 +36,7 @@ void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
   RCTPLData[tag][1] = value;
 }
 
-NSArray *RCTPerformanceLoggerOutput(void)
+NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
   return @[
     @(RCTPLData[RCTPLScriptDownload][0]),

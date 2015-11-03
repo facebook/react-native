@@ -9,6 +9,7 @@
 
 #import "RCTExceptionsManager.h"
 
+#import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTRedBox.h"
@@ -39,7 +40,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
-                  stack:(NSArray *)stack
+                  stack:(NSDictionaryArray *)stack
                   exceptionId:(nonnull NSNumber *)exceptionId)
 {
   // TODO(#7070533): report a soft error to the server
@@ -55,7 +56,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
-                  stack:(NSArray *)stack
+                  stack:(NSDictionaryArray *)stack
                   exceptionId:(nonnull NSNumber *)exceptionId)
 {
   if (_delegate) {
@@ -98,7 +99,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
-                  stack:(NSArray *)stack
+                  stack:(NSDictionaryArray *)stack
                   exceptionId:(nonnull NSNumber *)exceptionId)
 {
   if (_delegate) {
@@ -115,7 +116,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
 
 // Deprecated.  Use reportFatalException directly instead.
 RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
-                  stack:(NSArray *)stack)
+                  stack:(NSDictionaryArray *)stack)
 {
   [self reportFatalException:message stack:stack exceptionId:@-1];
 }

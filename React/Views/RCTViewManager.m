@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE()
   return [RCTShadowView new];
 }
 
-- (NSArray *)customBubblingEventTypes
+- (NSArray<NSString *> *)customBubblingEventTypes
 {
   return @[
 
@@ -90,7 +90,7 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (NSArray *)customDirectEventTypes
+- (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[];
 }

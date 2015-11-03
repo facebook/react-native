@@ -17,7 +17,7 @@
 @implementation RCTTextField
 {
   RCTEventDispatcher *_eventDispatcher;
-  NSMutableArray *_reactSubviews;
+  NSMutableArray<UIView *> *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
 }
@@ -92,7 +92,7 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   RCTUpdatePlaceholder(self);
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   // TODO: do we support subviews of textfield in React?
   // In any case, we should have a better approach than manually
