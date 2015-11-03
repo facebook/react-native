@@ -32,4 +32,16 @@
   super.value = _unclippedValue;
 }
 
+-(void)setTrackImage: (UIImage *) sliderTrackImage
+{
+
+  NSInteger width = sliderTrackImage.size.width;
+
+  UIImage *sliderLeftTrackImage = [sliderTrackImage resizableImageWithCapInsets:UIEdgeInsetsMake(0, width, 0, 0)];
+  UIImage *setMaximumTrackImage = [sliderTrackImage resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, width)];
+
+  [super setMinimumTrackImage:sliderLeftTrackImage forState:UIControlStateNormal];
+  [super setMaximumTrackImage:setMaximumTrackImage forState:UIControlStateNormal];
+}
+
 @end
