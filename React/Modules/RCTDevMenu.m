@@ -138,8 +138,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
-  NSArray *_presentedItems;
-  NSMutableArray *_extraMenuItems;
+  NSArray<RCTDevMenuItem *> *_presentedItems;
+  NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
 }
 
 @synthesize bridge = _bridge;
@@ -375,9 +375,9 @@ RCT_EXPORT_MODULE()
   [self settingsDidChange];
 }
 
-- (NSArray *)menuItems
+- (NSArray<RCTDevMenuItem *> *)menuItems
 {
-  NSMutableArray *items = [NSMutableArray new];
+  NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
 
@@ -435,7 +435,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.title = @"React Native: Development";
   actionSheet.delegate = self;
 
-  NSArray *items = [self menuItems];
+  NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
     switch (item.type) {
       case RCTDevMenuTypeButton: {

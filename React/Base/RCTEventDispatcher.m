@@ -209,7 +209,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSMutableArray *arguments = [NSMutableArray new];
+  NSMutableArray<id /* any JSON value */> *arguments = [NSMutableArray new];
 
   if (event.viewTag) {
     [arguments addObject:event.viewTag];
@@ -221,8 +221,7 @@ RCT_EXPORT_MODULE()
     [arguments addObject:event.body];
   }
 
-  [_bridge enqueueJSCall:[[event class] moduleDotMethod]
-                    args:arguments];
+  [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:arguments];
 }
 
 - (dispatch_queue_t)methodQueue

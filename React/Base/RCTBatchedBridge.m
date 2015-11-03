@@ -11,6 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
 #import "RCTContextExecutor.h"
 #import "RCTFrameUpdate.h"
@@ -18,7 +19,6 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTModuleMap.h"
-#import "RCTBridgeMethod.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTRedBox.h"
@@ -43,7 +43,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldParamss,
 };
 
-RCT_EXTERN NSArray *RCTGetModuleClasses(void);
+RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 @interface RCTBridge ()
 
@@ -64,11 +64,11 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   BOOL _valid;
   BOOL _wasBatchActive;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
-  NSMutableArray *_pendingCalls;
-  NSMutableArray *_moduleDataByID;
+  NSMutableArray<NSArray *> *_pendingCalls;
+  NSMutableArray<RCTModuleData *> *_moduleDataByID;
   RCTModuleMap *_modulesByName;
   CADisplayLink *_jsDisplayLink;
-  NSMutableSet *_frameUpdateObservers;
+  NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
 }
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
@@ -233,7 +233,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [NSMutableDictionary new];
 
-  NSArray *extraModules = nil;
+  NSArray<id<RCTBridgeModule>> *extraModules = nil;
   if (self.delegate) {
     if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
       extraModules = [self.delegate extraModulesForBridge:_parentBridge];
@@ -308,12 +308,11 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
 - (NSString *)moduleConfig
 {
-  NSMutableArray *config = [NSMutableArray new];
+  NSMutableArray<NSArray *> *config = [NSMutableArray new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
     [config addObject:moduleData.config];
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
-
       id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
       __weak typeof(self) weakSelf = self;
       __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
@@ -417,7 +416,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
   _loading = NO;
 
-  NSArray *stack = error.userInfo[@"stack"];
+  NSArray<NSDictionary *> *stack = error.userInfo[@"stack"];
   if (stack) {
     [self.redBox showErrorMessage:error.localizedDescription withStack:stack];
   } else {
@@ -559,7 +558,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  NSArray *ids = [moduleDotMethod componentsSeparatedByString:@"."];
+  NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
@@ -698,57 +697,45 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)handleBuffer:(id)buffer
+- (void)handleBuffer:(NSArray<NSArray *> *)buffer
 {
-  NSArray *requestsArray = [RCTConvert NSArray:buffer];
+  NSArray<NSArray *> *requestsArray = [RCTConvert NSArrayArray:buffer];
 
-#if RCT_DEBUG
-
-  if (![buffer isKindOfClass:[NSArray class]]) {
-    RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
+  if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParamss) {
+    RCTLogError(@"Buffer should contain at least %tu sub-arrays. Only found %tu",
+                RCTBridgeFieldParamss + 1, requestsArray.count);
     return;
   }
 
-  for (NSUInteger fieldIndex = RCTBridgeFieldRequestModuleIDs; fieldIndex <= RCTBridgeFieldParamss; fieldIndex++) {
-    id field = requestsArray[fieldIndex];
-    if (![field isKindOfClass:[NSArray class]]) {
-      RCTLogError(@"Field at index %zd in buffer must be an instance of NSArray, got %@", fieldIndex, NSStringFromClass([field class]));
-      return;
-    }
-  }
+  NSArray<NSNumber *> *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
+  NSArray<NSNumber *> *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
+  NSArray<NSArray *> *paramsArrays = requestsArray[RCTBridgeFieldParamss];
 
-#endif
-
-  NSArray *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
-  NSArray *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
-  NSArray *paramsArrays = requestsArray[RCTBridgeFieldParamss];
-
-  NSUInteger numRequests = moduleIDs.count;
-
-  if (RCT_DEBUG && (numRequests != methodIDs.count || numRequests != paramsArrays.count)) {
-    RCTLogError(@"Invalid data message - all must be length: %zd", numRequests);
+  if (RCT_DEBUG && (moduleIDs.count != methodIDs.count || moduleIDs.count != paramsArrays.count)) {
+    RCTLogError(@"Invalid data message - all must be length: %zd", moduleIDs.count);
     return;
   }
 
   NSMapTable *buckets = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                                   valueOptions:NSPointerFunctionsStrongMemory
                                                       capacity:_moduleDataByID.count];
-  for (NSUInteger i = 0; i < numRequests; i++) {
-    RCTModuleData *moduleData = _moduleDataByID[[moduleIDs[i] integerValue]];
+
+  [moduleIDs enumerateObjectsUsingBlock:^(NSNumber *moduleID, NSUInteger i, __unused BOOL *stop) {
+    RCTModuleData *moduleData = _moduleDataByID[moduleID.integerValue];
     if (RCT_DEBUG) {
       // verify that class has been registered
       (void)_modulesByName[moduleData.name];
     }
-    id queue = [moduleData queue];
-    NSMutableOrderedSet *set = [buckets objectForKey:queue];
+    dispatch_queue_t queue = moduleData.queue;
+    NSMutableOrderedSet<NSNumber *> *set = [buckets objectForKey:queue];
     if (!set) {
       set = [NSMutableOrderedSet new];
       [buckets setObject:set forKey:queue];
     }
     [set addObject:@(i)];
-  }
+  }];
 
-  for (id queue in buckets) {
+  for (dispatch_queue_t queue in buckets) {
     RCTProfileBeginFlowEvent();
 
     dispatch_block_t block = ^{

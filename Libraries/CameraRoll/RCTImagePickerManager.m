@@ -23,9 +23,9 @@
 
 @implementation RCTImagePickerManager
 {
-  NSMutableArray *_pickers;
-  NSMutableArray *_pickerCallbacks;
-  NSMutableArray *_pickerCancelCallbacks;
+  NSMutableArray<UIImagePickerController *> *_pickers;
+  NSMutableArray<RCTResponseSenderBlock> *_pickerCallbacks;
+  NSMutableArray<RCTResponseSenderBlock> *_pickerCancelCallbacks;
 }
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
@@ -42,7 +42,7 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
 
 RCT_EXPORT_METHOD(canRecordVideos:(RCTResponseSenderBlock)callback)
 {
-  NSArray *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+  NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
   callback(@[@([availableMediaTypes containsObject:(NSString *)kUTTypeMovie])]);
 }
 
@@ -59,7 +59,7 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     cancelCallback(@[@"Camera access is unavailable in an app extension"]);
     return;
   }
-  
+
   UIWindow *keyWindow = RCTSharedApplication().keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
 
@@ -86,7 +86,7 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
     cancelCallback(@[@"Image picker is currently unavailable in an app extension"]);
     return;
   }
-  
+
   UIWindow *keyWindow = RCTSharedApplication().keyWindow;
   UIViewController *rootViewController = keyWindow.rootViewController;
 
@@ -94,7 +94,7 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-  NSMutableArray *allowedTypes = [NSMutableArray new];
+  NSMutableArray<NSString *> *allowedTypes = [NSMutableArray new];
   if ([config[@"showImages"] boolValue]) {
     [allowedTypes addObject:(NSString *)kUTTypeImage];
   }

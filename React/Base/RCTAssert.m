@@ -59,7 +59,7 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
 static RCTAssertFunction RCTGetLocalAssertFunction()
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  NSArray<RCTAssertFunction> *functionStack = threadDictionary[RCTAssertFunctionStack];
   RCTAssertFunction assertFunction = functionStack.lastObject;
   if (assertFunction) {
     return assertFunction;
@@ -70,7 +70,7 @@ static RCTAssertFunction RCTGetLocalAssertFunction()
 void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction assertFunction)
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSMutableArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  NSMutableArray<RCTAssertFunction> *functionStack = threadDictionary[RCTAssertFunctionStack];
   if (!functionStack) {
     functionStack = [NSMutableArray new];
     threadDictionary[RCTAssertFunctionStack] = functionStack;

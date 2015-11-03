@@ -17,9 +17,10 @@
 @implementation RCTModuleData
 {
   NSDictionary *_constants;
-  NSArray *_methods;
   NSString *_queueName;
 }
+
+@synthesize methods = _methods;
 
 - (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
                         moduleID:(NSNumber *)moduleID
@@ -46,10 +47,10 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
-- (NSArray *)methods
+- (NSArray<id<RCTBridgeMethod>> *)methods
 {
   if (!_methods) {
-    NSMutableArray *moduleMethods = [NSMutableArray new];
+    NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
 
     if ([_instance respondsToSelector:@selector(methodsToExport)]) {
       [moduleMethods addObjectsFromArray:[_instance methodsToExport]];
@@ -63,11 +64,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       SEL selector = method_getName(method);
       if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
         IMP imp = method_getImplementation(method);
-        NSArray *entries = ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
+        NSArray<NSString *> *entries =
+          ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
         id<RCTBridgeMethod> moduleMethod =
-        [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
-                                           JSMethodName:entries[0]
-                                            moduleClass:_moduleClass];
+          [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
+                                             JSMethodName:entries[0]
+                                              moduleClass:_moduleClass];
 
         [moduleMethods addObject:moduleMethod];
       }
@@ -86,8 +88,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     return (id)kCFNull; // Nothing to export
   }
 
-  NSMutableArray *methods = self.methods.count ? [NSMutableArray new] : nil;
-  NSMutableArray *asyncMethods = nil;
+  NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
+  NSMutableArray<NSNumber *> *asyncMethods = nil;
   for (id<RCTBridgeMethod> method in self.methods) {
     if (method.functionType == RCTFunctionTypePromise) {
       if (!asyncMethods) {

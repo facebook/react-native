@@ -82,7 +82,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
       if ([errorDetails isKindOfClass:[NSDictionary class]] &&
           [errorDetails[@"errors"] isKindOfClass:[NSArray class]]) {
-        NSMutableArray *fakeStack = [NSMutableArray new];
+        NSMutableArray<NSDictionary *> *fakeStack = [NSMutableArray new];
         for (NSDictionary *err in errorDetails[@"errors"]) {
           [fakeStack addObject: @{
             @"methodName": err[@"description"] ?: @"",

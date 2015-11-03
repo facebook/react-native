@@ -424,7 +424,7 @@ RCT_EXPORT_MODULE()
     _remaining = nil;
   }
 
-  NSArray *lines = [log componentsSeparatedByString:@"\n"];
+  NSArray<NSString *> *lines = [log componentsSeparatedByString:@"\n"];
   if (lines.count == 1) { // no newlines
     _remaining = log;
     return;

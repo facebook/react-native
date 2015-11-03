@@ -27,7 +27,7 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 
 - (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTComponent>)subview;
-- (NSArray *)reactSubviews;
+- (NSArray<id<RCTComponent>> *)reactSubviews;
 - (id<RCTComponent>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 

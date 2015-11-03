@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  static NSSet *schemes = nil;
+  static NSSet<NSString *> *schemes = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     // technically, RCTHTTPRequestHandler can handle file:// as well,

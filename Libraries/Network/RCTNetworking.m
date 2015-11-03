@@ -37,7 +37,7 @@ typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSD
 
 @implementation RCTHTTPFormDataHelper
 {
-  NSMutableArray *_parts;
+  NSMutableArray<NSDictionary *> *_parts;
   NSMutableData *_multipartBody;
   RCTHTTPQueryResult _callback;
   NSString *_boundary;
@@ -122,7 +122,7 @@ static NSString *RCTGenerateFormBoundary()
 @implementation RCTNetworking
 {
   NSMutableDictionary *_tasksByRequestID;
-  NSArray *_handlers;
+  NSArray<id<RCTURLRequestHandler>> *_handlers;
 }
 
 @synthesize bridge = _bridge;
@@ -133,10 +133,10 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   // get handlers
-  NSMutableArray *handlers = [NSMutableArray array];
+  NSMutableArray<id<RCTURLRequestHandler>> *handlers = [NSMutableArray array];
   for (id<RCTBridgeModule> module in bridge.modules.allValues) {
     if ([module conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
-      [handlers addObject:module];
+      [handlers addObject:(id<RCTURLRequestHandler>)module];
     }
   }
 

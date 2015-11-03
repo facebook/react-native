@@ -93,7 +93,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 // Private bridge interface to allow middle-batch calls
 @interface RCTBridge (RCTContextExecutor)
 
-- (void)handleBuffer:(NSArray *)buffer batchEnded:(BOOL)hasEnded;
+- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
 
 @end
 
@@ -345,7 +345,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     [strongSelf _addNativeHook:RCTNoop withName:"noop"];
 
     __weak RCTBridge *bridge = strongSelf->_bridge;
-    strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray *calls){
+    strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
       if (!weakSelf.valid || !calls) {
         return;
       }

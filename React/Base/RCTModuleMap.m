@@ -69,7 +69,7 @@ extern BOOL RCTBridgeModuleClassIsRegistered(Class cls);
   return [_modulesByName keyEnumerator];
 }
 
-- (NSArray *)allValues
+- (NSArray<id<RCTBridgeModule>> *)allValues
 {
   // don't perform validation in this case because we only want to error when
   // an invalid module is specifically requested
