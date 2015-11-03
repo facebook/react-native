@@ -54,7 +54,8 @@ function printInstructions(title) {
     '  stack frame to jump to the source file. The packager will launch your ',
     '  editor of choice. It will first look at REACT_EDITOR environment ',
     '  variable, then at EDITOR. To set it up, you can add something like ',
-    '  REACT_EDITOR=atom to your .bashrc.',
+    '  REACT_EDITOR=atom to your ~/.bashrc or export REACT_EDITOR=atom to your',
+    '  ~/.zshrc depending on which shell you use.',
     ''
   ].join('\n'));
 }
