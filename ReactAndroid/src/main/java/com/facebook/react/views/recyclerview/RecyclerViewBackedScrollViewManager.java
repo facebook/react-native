@@ -48,8 +48,8 @@ public class RecyclerViewBackedScrollViewManager extends
   }
 
   @Override
-  public void removeView(RecyclerViewBackedScrollView parent, View child) {
-    parent.removeViewFromAdapter(child);
+  public void removeViewAt(RecyclerViewBackedScrollView parent, int index) {
+    parent.removeViewFromAdapter(index);
   }
 
   /**

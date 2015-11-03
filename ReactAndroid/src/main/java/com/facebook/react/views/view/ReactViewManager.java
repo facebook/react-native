@@ -195,16 +195,16 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   }
 
   @Override
-  public void removeView(ReactViewGroup parent, View child) {
+  public void removeViewAt(ReactViewGroup parent, int index) {
     boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
     if (removeClippedSubviews) {
+      View child = getChildAt(parent, index);
       if (child.getParent() != null) {
         parent.removeView(child);
       }
       parent.removeViewWithSubviewClippingEnabled(child);
     } else {
-      parent.removeView(child);
+      parent.removeViewAt(index);
     }
   }
-
 }
