@@ -178,13 +178,6 @@ function setUpNumber() {
   Number.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -(Math.pow(2, 53) - 1);
 }
 
-function setUpDevTools() {
-  if (__DEV__ && !window.document) {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
-  }
-}
-
 setUpProcessEnv();
 setUpRedBoxErrorHandler();
 setUpTimers();
@@ -197,7 +190,6 @@ setUpWebSockets();
 setUpProfile();
 setUpFlowChecker();
 setUpNumber();
-setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
