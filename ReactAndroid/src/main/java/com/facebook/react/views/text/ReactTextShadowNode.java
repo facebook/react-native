@@ -105,7 +105,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       ((ReactTextShadowNode) child).markUpdateSeen();
     }
     int end = sb.length();
-    if (end > start) {
+    if (end >= start) {
       if (textCSSNode.mIsColorSet) {
         ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textCSSNode.mColor)));
       }
