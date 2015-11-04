@@ -20,6 +20,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.JSTimersExecution;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
@@ -74,6 +75,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
         DeviceEventManagerModule.RCTDeviceEventEmitter.class,
         JSTimersExecution.class,
         RCTEventEmitter.class,
+        RCTNativeAppEventEmitter.class,
         AppRegistry.class,
         ReactNative.class,
         DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
