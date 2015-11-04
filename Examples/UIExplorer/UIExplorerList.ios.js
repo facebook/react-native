@@ -79,23 +79,6 @@ var APIS = [
   require('./ImageEditingExample'),
 ];
 
-// Register suitable examples for snapshot tests
-COMPONENTS.concat(APIS).forEach((Example) => {
-  if (Example.displayName) {
-    var Snapshotter = React.createClass({
-      render: function() {
-        var Renderable = UIExplorerListBase.makeRenderable(Example);
-        return (
-          <SnapshotViewIOS>
-            <Renderable />
-          </SnapshotViewIOS>
-        );
-      },
-    });
-    AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
-  }
-});
-
 type Props = {
   navigator: {
     navigationContext: NavigationContext,
@@ -143,6 +126,25 @@ class UIExplorerList extends React.Component {
 
   onPressRow(example: any) {
     this._openExample(example);
+  }
+
+  // Register suitable examples for snapshot tests
+  static registerComponents() {
+    COMPONENTS.concat(APIS).forEach((Example) => {
+      if (Example.displayName) {
+        var Snapshotter = React.createClass({
+          render: function() {
+            var Renderable = UIExplorerListBase.makeRenderable(Example);
+            return (
+              <SnapshotViewIOS>
+                <Renderable />
+              </SnapshotViewIOS>
+            );
+          },
+        });
+        AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
+      }
+    });
   }
 }
 
