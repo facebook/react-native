@@ -239,7 +239,77 @@ exports.examples = [
             <Text style={{fontSize: 11, color: '#527fe4'}}>
               (and tiny inherited bold blue)
             </Text>
-            )
+          ),
+          </Text>
+          )
+        </Text>
+        <Text style={{backgroundColor:'#ffaaaa'}}>
+          (opacity 1.0 alpha 1.0 back red)
+        </Text>
+        <Text style={{backgroundColor:'#ffaaaa'}}>
+          (back red
+          <Text style={{opacity:0.5}}>
+            (opacity 0.5)
+          </Text>
+          )
+        </Text>
+        <Text style={{backgroundColor:'#ffaaaa'}}>
+          (back red
+          <Text style={{color:'rgba(0,0,0,0.5)', backgroundColor:'rgba(255,170,170,0.5)'}}>
+            (alpha 0.5 back red)
+          </Text>
+          )
+        </Text>
+        <Text style={{opacity:0.5, backgroundColor:'#ffaaaa'}}>
+          (opacity 0.5 back red
+          <Text style={{opacity:0.5}}>
+            (opacity 0.5)
+          </Text>
+          )
+        </Text>
+        <Text style={{color:'rgba(0,0,0,0.5)', backgroundColor:'rgba(255,170,170,0.5)'}}>
+          (alpha 0.5 back red
+          <Text style={{color:'rgba(0,0,0,0.25)', backgroundColor:'rgba(255,170,170,0.25)'}}>
+            (alpha 0.25 back red)
+          </Text>
+          )
+        </Text>
+        <Text style={{opacity:0.5}}>
+          (opacity 0.5
+          <Text style={{opacity:0.5, backgroundColor:'#ffaaaa'}}>
+            (opacity 0.5 back red)
+          </Text>
+          )
+        </Text>
+        <Text style={{opacity:0.5}}>
+          (opacity 0.5
+          <Text style={{backgroundColor:'#ffaaaa'}}>(back red)</Text>
+          <Text style={{opacity:0.5, backgroundColor:'#ffaaaa'}}>
+            (opacity 0.5 back red)
+          </Text>
+          <Text style={{backgroundColor:'#ffaaaa'}}>(back red)</Text>
+          )
+        </Text>
+        <Text style={{opacity:0.5}}>
+          (opacity 0.5
+          <Text style={{backgroundColor:'#ffaaaa'}}>(back red)</Text>
+          <Text style={{color:'rgba(0,0,0,0.5)', backgroundColor:'rgba(255,170,170,0.5)'}}>
+            (alpha 0.5 back red)
+          </Text>
+          <Text style={{backgroundColor:'#ffaaaa'}}>(back red)</Text>
+          )
+        </Text>
+        <Text style={{opacity:0.5, backgroundColor:'#ffaaaa'}}>
+          (opacity 0.5 back red
+          <Text style={{color:'rgba(0,0,0,0.5)', backgroundColor:'rgba(255,170,170,0.5)'}}>
+            (alpha 0.5 back red)
+          </Text>
+          )
+        </Text>
+        <Text style={{opacity:0.5, backgroundColor:'#ffaaaa'}}>
+          (opacity 0.5 back red
+          <Text style={{color:'rgba(0,0,0,0.5)', backgroundColor:'rgba(170,170,255,0.5)'}}>
+            (alpha 0.5 back blue)
           </Text>
           )
         </Text>
