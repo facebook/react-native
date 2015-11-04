@@ -37,6 +37,7 @@ function getArgumentsForLineNumber(editor, fileName, lineNumber) {
       return ['+' + lineNumber, fileName];
     case 'rmate':
     case 'mate':
+    case 'mine':
       return ['--line', lineNumber, fileName];
   }
 
