@@ -155,7 +155,7 @@ static css_dim_t RCTMeasure(void *context, float width)
                                  letterSpacing:nil
                             useBackgroundColor:NO
                                foregroundColor:self.color ?: [UIColor blackColor]
-                               backgroundColor:self.backgroundColor ?: [UIColor whiteColor]
+                               backgroundColor:self.backgroundColor
                                        opacity:self.opacity];
 }
 
@@ -231,7 +231,7 @@ static css_dim_t RCTMeasure(void *context, float width)
   if (_isHighlighted) {
     [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
   }
-  if (useBackgroundColor) {
+  if (useBackgroundColor && backgroundColor) {
     [self _addAttribute:NSBackgroundColorAttributeName
               withValue:[backgroundColor colorWithAlphaComponent:CGColorGetAlpha(backgroundColor.CGColor) * opacity]
      toAttributedString:attributedString];
