@@ -109,6 +109,12 @@ var apps = [
     author: 'beijing qingfengyun Technology Co., Ltd.',
   },
   {
+    name: 'Harmonizome',
+    icon: 'http://is1.mzstatic.com/image/thumb/Purple6/v4/18/a9/bc/18a9bcde-d2d9-7574-2664-e82fff7b7208/pr_source.png/350x350-75.png',
+    link: 'https://itunes.apple.com/us/app/harmonizome/id1046990905?mt=8',
+    author: 'Michael McDermott (@_mgmcdermott)',
+  },
+  {
     name: 'Hashley',
     icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
