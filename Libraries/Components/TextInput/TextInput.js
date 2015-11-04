@@ -529,13 +529,16 @@ var TextInput = React.createClass({
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
     this.setState({mostRecentEventCount: eventCount}, () => {
-      // This is a controlled component, so make sure to force the native value
-      // to match.  Most usage shouldn't need this, but if it does this will be
-      // more correct but might flicker a bit and/or cause the cursor to jump.
-      if (text !== this.props.value && typeof this.props.value === 'string') {
-        this.refs.input.setNativeProps({
-          text: this.props.value,
-        });
+      // NOTE: this doesn't seem to be needed on iOS - keeping for now in case it's required on Android
+      if (Platform.OS === 'android') {
+        // This is a controlled component, so make sure to force the native value
+        // to match.  Most usage shouldn't need this, but if it does this will be
+        // more correct but might flicker a bit and/or cause the cursor to jump.
+        if (text !== this.props.value && typeof this.props.value === 'string') {
+          this.refs.input.setNativeProps({
+            text: this.props.value,
+          });
+        }
       }
     });
   },
