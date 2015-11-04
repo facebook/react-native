@@ -72,14 +72,25 @@ class NavigationContext {
     this._emitCounter = 0;
     this._emitQueue = [];
 
-    this.addListener('willfocus', this._onFocus, this);
-    this.addListener('didfocus', this._onFocus, this);
+    this.addListener('willfocus', this._onFocus);
+    this.addListener('didfocus', this._onFocus);
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
   get parent(): ?NavigationContext {
     var parent = this.__node.getParent();
     return parent ? parent.getValue() : null;
+  }
+
+  /* $FlowFixMe - get/set properties not yet supported */
+  get top(): ?NavigationContext {
+    var result = null;
+    var parentNode = this.__node.getParent();
+    while (parentNode) {
+      result = parentNode.getValue();
+      parentNode = parentNode.getParent();
+    }
+    return result;
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
@@ -94,7 +105,6 @@ class NavigationContext {
   addListener(
     eventType: string,
     listener: Function,
-    context: ?Object,
     useCapture: ?boolean
   ): EventSubscription {
     if (LegacyEventTypes.has(eventType)) {
@@ -106,7 +116,7 @@ class NavigationContext {
       this._bubbleEventEmitter;
 
     if (emitter) {
-      return emitter.addListener(eventType, listener, context);
+      return emitter.addListener(eventType, listener, this);
     } else {
       return {remove: emptyFunction};
     }
