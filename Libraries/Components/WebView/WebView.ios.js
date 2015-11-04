@@ -113,6 +113,7 @@ var WebView = React.createClass({
      * user can change the scale
      */
     scalesPageToFit: PropTypes.bool,
+    shouldStartLoadWithRequest: PropTypes.func,
   },
 
   getInitialState: function() {
@@ -173,6 +174,7 @@ var WebView = React.createClass({
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
       />;
 
@@ -182,6 +184,10 @@ var WebView = React.createClass({
         {otherView}
       </View>
     );
+  },
+
+  startLoadWithResult: function(result, lockIdentifier) {
+    RCTWebViewManager.startLoadWithResult(result, lockIdentifier);
   },
 
   goForward: function() {
@@ -230,6 +236,12 @@ var WebView = React.createClass({
     });
     this.updateNavigationState(event);
   },
+
+  onShouldStartLoadWithRequest: function(event: Event) {
+    if (this.props.shouldStartLoadWithRequest) {
+      this.props.shouldStartLoadWithRequest(event.nativeEvent);
+    }
+  },
 });
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
@@ -237,6 +249,7 @@ var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onShouldStartLoadWithRequest: true
   },
 });
 
