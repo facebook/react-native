@@ -868,9 +868,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainThread();
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    NSString *log = RCTProfileEnd(self);
-    NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
-    callback(logData);
+    RCTProfileEnd(self, ^(NSString *log) {
+      NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
+      callback(logData);
+    });
   }];
 }
 
