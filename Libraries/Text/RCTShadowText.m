@@ -55,6 +55,7 @@ static css_dim_t RCTMeasure(void *context, float width)
     _letterSpacing = NAN;
     _isHighlighted = NO;
     _textDecorationStyle = NSUnderlineStyleSingle;
+    _textShadowOpacity = NAN;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contentSizeMultiplierDidChange:)
                                                  name:RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification
@@ -211,6 +212,22 @@ static css_dim_t RCTMeasure(void *context, float width)
   if (_color) {
     [self _addAttribute:NSForegroundColorAttributeName withValue:_color toAttributedString:attributedString];
   }
+  
+  if (!isnan(_textShadowOpacity)) {
+      NSShadow *shadow = [NSShadow new];
+      
+      if (_textShadowColor) {
+        shadow.shadowColor = [_textShadowColor colorWithAlphaComponent:_textShadowOpacity];
+      }
+      if (!_textShadowOpacity) {
+        shadow.shadowColor = [UIColor clearColor];
+      }
+      shadow.shadowBlurRadius = _textShadowRadius;
+      shadow.shadowOffset = _textShadowOffset;
+      
+      [self _addAttribute:NSShadowAttributeName withValue:shadow toAttributedString:attributedString];
+   }
+  
   if (_isHighlighted) {
     [self _addAttribute:RCTIsHighlightedAttributeName withValue:@YES toAttributedString:attributedString];
   }
@@ -352,6 +369,10 @@ RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
 RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
+RCT_TEXT_PROPERTY(TextShadowOpacity, _textShadowOpacity, CGFloat)
+RCT_TEXT_PROPERTY(TextShadowColor, _textShadowColor, UIColor *)
+RCT_TEXT_PROPERTY(TextShadowOffset, _textShadowOffset, CGSize)
+RCT_TEXT_PROPERTY(TextShadowRadius, _textShadowRadius, CGFloat)
 
 - (void)setAllowFontScaling:(BOOL)allowFontScaling
 {

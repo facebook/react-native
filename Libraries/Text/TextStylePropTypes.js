@@ -62,6 +62,24 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   writingDirection: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
+  /**
+   * @platform ios
+   */
+  textShadowOpacity: ReactPropTypes.number,
+  /**
+   * @platform ios
+   */
+  textShadowColor: ReactPropTypes.string,
+  /**
+   * @platform ios
+   */
+  textShadowOffset: ReactPropTypes.shape(
+     {width: ReactPropTypes.number, height: ReactPropTypes.number}
+   ),
+  /**
+   * @platform ios
+   */
+  textShadowRadius: ReactPropTypes.number,
 });
 
 // Text doesn't support padding correctly (#4841912)
