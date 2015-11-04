@@ -14,13 +14,22 @@
 #import "RCTUIManager.h"
 #import "RCTWebView.h"
 
-@implementation RCTWebViewManager
+@interface RCTWebViewManager () <RCTWebViewDelegate>
+
+@end
+
+@implementation RCTWebViewManager {
+  NSConditionLock *_shouldStartLoadLock;
+  BOOL _shouldStartLoad;
+}
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [RCTWebView new];
+  RCTWebView *webView = [RCTWebView new];
+  webView.delegate = self;
+  return webView;
 }
 
 RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
@@ -34,6 +43,7 @@ RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock);
 
 - (NSDictionary *)constantsToExport
 {
@@ -84,6 +94,40 @@ RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
       [view reload];
     }
   }];
+}
+
+#pragma mark - Exported synchronous methods
+
+- (BOOL)webView:(__unused RCTWebView *)webView
+shouldStartLoadForRequest:(NSMutableDictionary *)request
+   withCallback:(RCTDirectEventBlock)callback
+{
+  _shouldStartLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];
+  _shouldStartLoad = YES;
+  request[@"lockIdentifier"] = @(_shouldStartLoadLock.condition);
+  callback(request);
+
+  // Block the main thread for a maximum of 250ms until the JS thread returns
+  if ([_shouldStartLoadLock lockWhenCondition:0 beforeDate:[NSDate dateWithTimeIntervalSinceNow:.25]]) {
+    BOOL returnValue = _shouldStartLoad;
+    [_shouldStartLoadLock unlock];
+    _shouldStartLoadLock = nil;
+    return returnValue;
+  } else {
+    RCTLogWarn(@"Did not receive response to shouldStartLoad in time, defaulting to YES");
+    return YES;
+  }
+}
+
+RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)lockIdentifier)
+{
+  if ([_shouldStartLoadLock tryLockWhenCondition:lockIdentifier]) {
+    _shouldStartLoad = result;
+    [_shouldStartLoadLock unlockWithCondition:0];
+  } else {
+    RCTLogWarn(@"startLoadWithResult invoked with invalid lockIdentifier: "
+               "got %zd, expected %zd", lockIdentifier, _shouldStartLoadLock.condition);
+  }
 }
 
 @end
