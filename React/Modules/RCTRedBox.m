@@ -193,8 +193,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   cell.textLabel.text = stackFrame[@"methodName"];
-  cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %@:%@",
-    [stackFrame[@"file"] lastPathComponent], stackFrame[@"lineNumber"], stackFrame[@"column"]];
+  if (stackFrame[@"file"]) {
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ @ %zd:%zd",
+                                 [stackFrame[@"file"] lastPathComponent],
+                                 [stackFrame[@"lineNumber"] integerValue],
+                                 [stackFrame[@"column"] integerValue]];
+  } else {
+    cell.detailTextLabel.text = @"";
+  }
   return cell;
 }
 
