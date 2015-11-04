@@ -97,4 +97,9 @@ class WebSocketBase extends EventTarget {
   }
 }
 
+WebSocketBase.CONNECTING = 0;
+WebSocketBase.OPEN = 1;
+WebSocketBase.CLOSING = 2;
+WebSocketBase.CLOSED = 3;
+
 module.exports = WebSocketBase;
