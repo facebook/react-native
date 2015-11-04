@@ -64,7 +64,7 @@ function getAppMiddleware(args, config) {
     cacheVersion: '3',
     transformModulePath: transformerPath,
     assetRoots: args.assetRoots,
-    assetExts: ['png', 'jpeg', 'jpg'],
+    assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
     resetCache: args.resetCache || args['reset-cache'],
     polyfillModuleNames: [
       require.resolve(
