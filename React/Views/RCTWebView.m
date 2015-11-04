@@ -69,6 +69,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _webView.request.URL;
 }
 
+- (NSString *)evaluateJavaScript: (NSString*) script
+{
+  return [_webView stringByEvaluatingJavaScriptFromString: script];
+}
+
 - (void)setURL:(NSURL *)URL
 {
   // Because of the way React works, as pages redirect, we actually end up
