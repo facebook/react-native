@@ -21,7 +21,7 @@ var messageHandlers = {
   'executeJSCall': function(message, sendReply) {
     var returnValue = [[], [], [], [], []];
     try {
-      if (require) {
+      if (typeof require === 'function') {
         returnValue = require(message.moduleName)[message.moduleMethod].apply(null, message.arguments);
       }
     } finally {
