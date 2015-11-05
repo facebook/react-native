@@ -19,7 +19,7 @@ jest.mock('fs');
 
 var Bundler = require('../');
 var JSTransformer = require('../../JSTransformer');
-var DependencyResolver = require('../../DependencyResolver');
+var Resolver = require('../../Resolver');
 var sizeOf = require('image-size');
 var fs = require('fs');
 
@@ -54,7 +54,7 @@ describe('Bundler', function() {
   beforeEach(function() {
     getDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
-    DependencyResolver.mockImpl(function() {
+    Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
         wrapModule: wrapModule,
