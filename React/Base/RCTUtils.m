@@ -400,8 +400,7 @@ BOOL RCTImageHasAlpha(CGImageRef image)
 NSError *RCTErrorWithMessage(NSString *message)
 {
   NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
-  NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-  return error;
+  return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 
 id RCTNullIfNil(id value)
