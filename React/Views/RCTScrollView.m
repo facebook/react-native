@@ -755,28 +755,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
       newOffset.x = MAX(0, newContentSize.width - viewportSize.width);
     }
   }
-    
-  if (self.inverted) {
-    if (newContentSize.height > oldContentSize.height) {
-      CGFloat offsetHeight = oldOffset.y + viewportSize.height;
-      if (self.scrollToEndOnNextContentChange) {
-        self.scrollToEndOnNextContentChange = NO;
-        // scroll to end of list
-        newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-      } else if (offsetHeight > newContentSize.height) {
-        // offset falls outside of bounds, scroll back to end of list
-        newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-      } else if (ABS(oldOffset.y) < FLT_EPSILON) {
-        // HACK offset was most likely previously pinned to zero; scroll back to end of list
-        newOffset.y = MAX(0, newContentSize.height - viewportSize.height);
-      } else {
-        CGSize oldSize = _scrollView.contentSize;
-        CGSize newSize = newContentSize;
-        newOffset.x += (newSize.width - oldSize.width);
-        newOffset.y += (newSize.height - oldSize.height);
-      }
-    }
-  }
 
   // all other cases, offset doesn't change
   return newOffset;
@@ -814,11 +792,6 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
     CGPoint newOffset = [self calculateOffsetForContentSize:contentSize];
     _scrollView.contentSize = contentSize;
     _scrollView.contentOffset = newOffset;
-      
-    [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
-                                     reactTag:self.reactTag
-                                   scrollView:self.scrollView
-                                     userData:nil];
   }
   [_scrollView dockClosestSectionHeader];
 }

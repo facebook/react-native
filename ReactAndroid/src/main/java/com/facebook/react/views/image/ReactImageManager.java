@@ -9,8 +9,6 @@
 
 package com.facebook.react.views.image;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Color;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -19,6 +17,8 @@ import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
+
+import javax.annotation.Nullable;
 
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
 

@@ -9,7 +9,6 @@ var precomputeStyle = require('precomputeStyle');
 var warning = require('warning');
 
 var __LEGACY_FLEX__ = !!global.__LEGACY_FLEX__;
-var __TRANSFORMS_DISABLED__ = !!global.__TRANSFORMS_DISABLED__;
 
 if (__LEGACY_FLEX__) {
     var legacyFlexAlignItemsMap = {
@@ -159,10 +158,6 @@ var styleKeyMap = {
     },
 
     transformMatrix: function(value) {
-        if (__TRANSFORMS_DISABLED__) {
-            warning(false, 'Attempted to use transforms on unsupported device');
-            return;
-        }
         var cssValue = `matrix3d(${value})`;
         return {
             transform: cssValue,
@@ -171,10 +166,6 @@ var styleKeyMap = {
     },
 
     transform: function(value) {
-        if (__TRANSFORMS_DISABLED__) {
-            warning(false, 'Attempted to use transforms on unsupported device');
-            return;
-        }
         var transformMatrix = precomputeStyle({transform: value}).transformMatrix;
         var cssValue = `matrix3d(${transformMatrix})`;
         return {

@@ -113,12 +113,6 @@ var ScrollView = React.createClass({
      */
     centerContent: PropTypes.bool,
     /**
-     * When true, the scroll view will maintain scroll position
-     * assuming new content is added above, not below.
-     */
-    inverted: PropTypes.bool,
-    scrollToEndOnNextContentChange: PropTypes.bool,
-    /**
      * These styles will be applied to the scroll view content container which
      * wraps all of the child views. Example:
      *
@@ -312,12 +306,6 @@ var ScrollView = React.createClass({
     return findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollToEndOnNextContentChange: function() {
-    this.refs[SCROLLVIEW].setNativeProps({
-      scrollToEndOnNextContentChange: true,
-    });
-  },
-
   scrollTo: function(destY?: number, destX?: number) {
     // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
     this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
@@ -449,7 +437,6 @@ var validAttributes = {
   automaticallyAdjustContentInsets: true,
   bounces: true,
   centerContent: true,
-  inverted: true,
   contentInset: {diff: insetsDiffer},
   contentOffset: {diff: pointsDiffer},
   decelerationRate: true,

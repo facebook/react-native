@@ -47,8 +47,6 @@
 @property (nonatomic, assign) int snapToInterval;
 @property (nonatomic, copy) NSString *snapToAlignment;
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
-@property (nonatomic, assign) BOOL inverted;
-@property (nonatomic, assign) BOOL scrollToEndOnNextContentChange;
 
 @end
 

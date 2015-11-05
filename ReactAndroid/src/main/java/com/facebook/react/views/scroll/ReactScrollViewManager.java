@@ -9,16 +9,16 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
+
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactScrollView} components.
@@ -50,6 +50,11 @@ public class ReactScrollViewManager
   @ReactProp(name = "showsHorizontalScrollIndicator")
   public void setShowsHorizontalScrollIndicator(ReactScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
+  }
+
+  @ReactProp(name = "scrollEnabled")
+  public void setScrollEnabled(ReactScrollView view, boolean value) {
+    view.setScrollEnabled(value);
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

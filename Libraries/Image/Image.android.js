@@ -13,6 +13,7 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var NativeModules = require('NativeModules');
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var PropTypes = require('ReactPropTypes');
@@ -54,6 +55,7 @@ var resolveAssetSource = require('resolveAssetSource');
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   resizeMode: true,
+  capInsets: true,
 });
 
 var Image = React.createClass({
@@ -69,8 +71,17 @@ var Image = React.createClass({
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
-    ]).isRequired,
+    ]),
     style: StyleSheetPropType(ImageStylePropTypes),
+    /**
+     * [Even] When the image is resized, the corners of the size specified
+     * by capInsets will stay a fixed size, but the center content and borders
+     * of the image will be stretched.  This is useful for creating resizable
+     * rounded buttons, shadows, and other resizable assets.
+     *
+     * Syntax is borrowed from iOS, but implemented using NinePatchDrawable on Android.
+     */
+    capInsets: EdgeInsetsPropType,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -90,14 +101,14 @@ var Image = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactNativeViewAttributes.RKView
+    validAttributes: ReactNativeViewAttributes.UIView
   },
 
-  _updateViewConfig: function(props) {
+  _updateViewConfig: function(props: Object) {
     if (props.children) {
       this.viewConfig = {
         uiViewClassName: 'RCTView',
-        validAttributes: ReactNativeViewAttributes.RKView,
+        validAttributes: ReactNativeViewAttributes.UIView,
       };
     } else {
       this.viewConfig = {
@@ -111,7 +122,7 @@ var Image = React.createClass({
     this._updateViewConfig(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: Object) {
     this._updateViewConfig(nextProps);
   },
 
@@ -132,7 +143,13 @@ var Image = React.createClass({
       var nativeProps = merge(this.props, {
         style,
         src: source.uri,
+        capInsets: this.props.capInsets,
       });
+
+      var NativeComponent = RKImage;
+      if (this.props.capInsets) {
+        NativeComponent = RCTCapInsetsImageView;
+      }
 
       if (nativeProps.children) {
         // TODO(6033040): Consider implementing this as a separate native component
@@ -142,12 +159,12 @@ var Image = React.createClass({
         });
         return (
           <View style={nativeProps.style}>
-            <RKImage {...imageProps}/>
+            <NativeComponent {...imageProps}/>
             {this.props.children}
           </View>
         );
       } else {
-        return <RKImage {...nativeProps}/>;
+        return <NativeComponent {...nativeProps}/>;
       }
     }
     return null;
@@ -170,6 +187,11 @@ var styles = StyleSheet.create({
 var RKImage = createReactNativeComponentClass({
   validAttributes: ImageViewAttributes,
   uiViewClassName: 'RCTImageView',
+});
+
+var RCTCapInsetsImageView = createReactNativeComponentClass({
+  validAttributes: ImageViewAttributes,
+  uiViewClassName: 'RCTCapInsetsImageView',
 });
 
 module.exports = Image;

@@ -53,6 +53,7 @@ var platformBlacklists = {
   web: [
     '.ios.js',
     '.android.js',
+    '.native.js',
   ],
   ios: [
     '.web.js',

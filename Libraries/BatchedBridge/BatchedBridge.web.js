@@ -64,11 +64,7 @@ var BatchedBridge = {
     AppState: {
 
       getCurrentAppState: function(callback) {
-        if (window.Even_AppState) {
-          return callback(JSON.parse(window.Even_AppState.getCurrentAppState()));
-        } else {
-          return callback('active');
-        }
+        return callback('active');
       },
 
     },
@@ -78,25 +74,13 @@ var BatchedBridge = {
       scheduleLocalNotification: function(details) {},
       setApplicationIconBadgeNumber: function(number) {},
       getApplicationIconBadgeNumber: function(callback) {},
-
-      requestPermissions: function(permissions) {
-        if (window.Even_PushNotifications) {
-          window.Even_PushNotifications.requestPermissions();
-        }
-      },
-
+      requestPermissions: function(permissions) {},
       abandonPermissions: function() {},
 
       checkPermissions: function(callback) {
-        if (window.Even_PushNotifications) {
-          window.setTimeout(function() {
-            callback(JSON.parse(window.Even_PushNotifications.checkPermissions()));
-          }, 0);
-        } else {
-          window.setTimeout(function() {
-            callback({});
-          }, 0);
-        }
+        window.setTimeout(function() {
+          callback({});
+        }, 0);
       },
 
     },
@@ -104,12 +88,7 @@ var BatchedBridge = {
     ActionSheetManager: {
 
       showShareActionSheetWithOptions: function(options, failureCallback, successCallback) {
-        if (window.Even_Sharing) {
-          window.Even_Sharing.share(options.message || options.url);
-          successCallback();
-        } else {
-          console.error('Not supported on this platform');
-        }
+        console.error('Not supported on this platform');
       },
 
       showActionSheetWithOptions: function(options, failureCallback, successCallback) {

@@ -22,7 +22,7 @@ function nativeModulePrefixNormalizer(
         'Module cannot be registered as both RCT and RK: ' + moduleName
       );
     }
-    if (strippedName !== moduleName) {
+    if (strippedName !== moduleName && !modules[strippedName]) {
       modules[strippedName] = modules[moduleName];
       delete modules[moduleName];
     }

@@ -30,7 +30,7 @@ var AsyncStorage = {
   getItem: function(
     key: string,
     callback?: ?(error: ?Error, result: ?string) => void
-  ) {
+  ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet([key], function(error, result) {
         var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
@@ -153,9 +153,9 @@ var AsyncStorage = {
   ): Promise {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet(keys, function(error, result) {
-        callback && callback((error && convertError(error)) || null, result);
+        callback && callback((error && [convertError(error)]) || null, result);
         if (error) {
-          reject(convertError(error));
+          reject([convertError(error)]);
         } else {
           resolve(result);
         }
@@ -222,12 +222,11 @@ var AsyncStorage = {
   },
 };
 
-function convertError(error) {
+function convertError(error?: ?Error): ?Error {
   if (!error) {
     return null;
   }
-  var out = new Error(error.message);
-  return [out];
+  return new Error(error.message);
 }
 
 module.exports = AsyncStorage;

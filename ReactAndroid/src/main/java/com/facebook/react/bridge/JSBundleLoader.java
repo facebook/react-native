@@ -9,6 +9,7 @@
 
 package com.facebook.react.bridge;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 
 /**
@@ -22,18 +23,22 @@ public abstract class JSBundleLoader {
    * should be used. JS bundle will be read from assets directory in native code to save on passing
    * large strings from java to native memory.
    */
-  public static JSBundleLoader createAssetLoader(
-      final AssetManager assetManager,
-      final String assetFileName) {
+  public static JSBundleLoader createFileLoader(
+      final Context context,
+      final String fileName) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromAssets(assetManager, assetFileName);
+        if (fileName.startsWith("assets://")) {
+          bridge.loadScriptFromAssets(context.getAssets(), fileName.replaceFirst("assets://", ""));
+        } else {
+          bridge.loadScriptFromFile(fileName, fileName);
+        }
       }
 
       @Override
       public String getSourceUrl() {
-        return "file:///android_asset/" + assetFileName;
+        return fileName;
       }
     };
   }
@@ -51,7 +56,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromNetworkCached(sourceURL, cachedFileLocation);
+        bridge.loadScriptFromFile(cachedFileLocation, sourceURL);
       }
 
       @Override
@@ -70,7 +75,7 @@ public abstract class JSBundleLoader {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromNetworkCached(sourceURL, null);
+        bridge.loadScriptFromFile(null, sourceURL);
       }
 
       @Override

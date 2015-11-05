@@ -23,7 +23,7 @@ task createNativeDepsDirectories {
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     // Use ZIP version as it's faster this way to selectively extract some parts of the archive
-    src 'https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip'
+    src 'https://s3-us-west-1.amazonaws.com/evenco/tools/boost/boost_1_57_0.zip'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'boost_1_57_0.zip')
@@ -180,6 +180,12 @@ def getNdkBuildFullPath() {
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
     inputs.file('src/main/jni/react')
     outputs.dir("$buildDir/react-ndk/all")
+    def jobs = Runtime.runtime.availableProcessors()
+    if (System.getenv('CIRCLECI') == 'true') {
+        // Circle claims to provide 32 cores which leads us to spin up 32 workers
+        // each consuming 100MB of RAM, which puts us over our 4GB max RAM allotment.
+        jobs = 8
+    }
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
@@ -187,7 +193,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', Runtime.runtime.availableProcessors()
+            '--jobs', jobs
 }
 
 task cleanReactNdkLib(type: Exec) {
