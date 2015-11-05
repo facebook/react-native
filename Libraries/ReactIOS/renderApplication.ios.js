@@ -69,10 +69,6 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-  if (__DEV__ && !window.document) {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
-  }
   React.render(
     <AppContainer rootTag={rootTag}>
       <RootComponent
