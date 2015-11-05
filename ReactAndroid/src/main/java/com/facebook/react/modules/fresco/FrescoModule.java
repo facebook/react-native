@@ -39,8 +39,8 @@ import com.squareup.okhttp.OkHttpClient;
 public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable {
 
-  @Nullable RequestListener mRequestListener;
-  @Nullable DiskCacheConfig mDiskCacheConfig;
+  @Nullable private RequestListener mRequestListener;
+  @Nullable private DiskCacheConfig mDiskCacheConfig;
 
   public FrescoModule(ReactApplicationContext reactContext) {
     super(reactContext);
