@@ -15,6 +15,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.facebook.cache.common.CacheKey;
+import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.internal.AndroidPredicates;
 import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -39,6 +40,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable {
 
   @Nullable RequestListener mRequestListener;
+  @Nullable DiskCacheConfig mDiskCacheConfig;
 
   public FrescoModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -47,6 +49,15 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
   public FrescoModule(ReactApplicationContext reactContext, RequestListener listener) {
     super(reactContext);
     mRequestListener = listener;
+  }
+
+  public FrescoModule(
+      ReactApplicationContext reactContext,
+      RequestListener listener,
+      DiskCacheConfig diskCacheConfig) {
+    super(reactContext);
+    mRequestListener = listener;
+    mDiskCacheConfig = diskCacheConfig;
   }
 
   @Override
@@ -70,11 +81,18 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
 
     Context context = this.getReactApplicationContext().getApplicationContext();
     OkHttpClient okHttpClient = OkHttpClientProvider.getOkHttpClient();
-    ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
-        .newBuilder(context, okHttpClient)
+    ImagePipelineConfig.Builder builder =
+        OkHttpImagePipelineConfigFactory.newBuilder(context, okHttpClient);
+
+    builder
         .setDownsampleEnabled(false)
-        .setRequestListeners(requestListeners)
-        .build();
+        .setRequestListeners(requestListeners);
+
+    if (mDiskCacheConfig != null) {
+      builder.setMainDiskCacheConfig(mDiskCacheConfig);
+    }
+
+    ImagePipelineConfig config = builder.build();
     Fresco.initialize(context, config);
   }
 
