@@ -342,26 +342,35 @@ BOOL RCTRunningInAppExtension(void)
   return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
 }
 
-id RCTSharedApplication(void)
+UIApplication *RCTSharedApplication(void)
 {
   if (RCTRunningInAppExtension()) {
     return nil;
   }
-  
   return [[UIApplication class] performSelector:@selector(sharedApplication)];
 }
 
-id RCTAlertView(NSString *title,
-                NSString *message,
-                id delegate,
-                NSString *cancelButtonTitle,
-                NSArray<NSString *> *otherButtonTitles)
+UIWindow *RCTKeyWindow(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+
+  // TODO: replace with a more robust solution
+  return RCTSharedApplication().keyWindow;
+}
+
+UIAlertView *RCTAlertView(NSString *title,
+                          NSString *message,
+                          id delegate,
+                          NSString *cancelButtonTitle,
+                          NSArray<NSString *> *otherButtonTitles)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
     return nil;
   }
-  
+
   UIAlertView *alertView = [UIAlertView new];
   alertView.title = title;
   alertView.message = message;

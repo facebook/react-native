@@ -66,7 +66,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
-  UIViewController *controller = RCTSharedApplication().delegate.window.rootViewController;
+  UIViewController *controller = RCTKeyWindow().rootViewController;
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -166,7 +166,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-  UIViewController *controller = RCTSharedApplication().delegate.window.rootViewController;
+  UIViewController *controller = RCTKeyWindow().rootViewController;
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
@@ -212,8 +212,6 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   } else {
     RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
   }
-
-  [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 
 @end
