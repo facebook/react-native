@@ -8,12 +8,15 @@
  */
 
 #import "RCTAssert.h"
+#import "RCTLog.h"
 
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
+NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
 RCTAssertFunction RCTCurrentAssertFunction = nil;
+RCTFatalHandler RCTCurrentFatalHandler = nil;
 
 NSException *_RCTNotImplementedException(SEL, Class);
 NSException *_RCTNotImplementedException(SEL cmd, Class cls)
@@ -111,4 +114,45 @@ void _RCTAssertFormat(
 
     assertFunction(@(condition), @(fileName), @(lineNumber), @(function), message);
   }
+}
+
+void RCTFatal(NSError *error)
+{
+  _RCTLogInternal(RCTLogLevelFatal, NULL, 0, @"%@", [error localizedDescription]);
+
+  RCTFatalHandler fatalHandler = RCTGetFatalHandler();
+  if (fatalHandler) {
+    fatalHandler(error);
+  } else {
+    const NSUInteger maxMessageLength = 75;
+    NSString *message = [error localizedDescription];
+    if (message.length > maxMessageLength) {
+      message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
+    }
+
+    NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
+    if ([error.userInfo[RCTJSStackTraceKey] isKindOfClass:[NSArray class]]) {
+      for (NSDictionary *frame in error.userInfo[RCTJSStackTraceKey]) {
+        [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+      }
+    }
+
+#if DEBUG
+    @try {
+#endif
+      [NSException raise:@"RCTFatalException" format:@"%@", message];
+#if DEBUG
+    } @catch (NSException *e) {}
+#endif
+  }
+}
+
+void RCTSetFatalHandler(RCTFatalHandler fatalhandler)
+{
+  RCTCurrentFatalHandler = fatalhandler;
+}
+
+RCTFatalHandler RCTGetFatalHandler(void)
+{
+  return RCTCurrentFatalHandler;
 }
