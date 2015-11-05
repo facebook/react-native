@@ -11,6 +11,7 @@
 
 #import "Layout.h"
 #import "RCTComponent.h"
+#import "RCTRootView.h"
 
 @class RCTSparseArray;
 
@@ -33,6 +34,9 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
  *    perform the last computation, we skip laying out the subtree entirely.
  */
 @interface RCTShadowView : NSObject <RCTComponent>
+
+- (NSArray<RCTShadowView *> *)reactSubviews;
+- (RCTShadowView *)reactSuperview;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
@@ -63,6 +67,12 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
 
 - (void)setTopLeft:(CGPoint)topLeft;
 - (void)setSize:(CGSize)size;
+
+/**
+ * Size flexibility type used to find size constraints.
+ * Default to RCTRootViewSizeFlexibilityNone
+ */
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
 /**
  * Border. Defaults to { 0, 0, 0, 0 }.
@@ -113,28 +123,27 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.
  */
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
+- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                 parentProperties:(NSDictionary *)parentProperties;
 
 /**
  * Process the updated properties and apply them to view. Shadow view classes
  * that add additional propagating properties should override this method.
  */
-- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                           parentProperties:(NSDictionary *)parentProperties NS_REQUIRES_SUPER;
 
 /**
  * Calculate all views whose frame needs updating after layout has been calculated.
  * The viewsWithNewFrame set contains the reactTags of the views that need updating.
  */
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
-                parentConstraint:(CGSize)parentConstraint;
+- (void)collectRootUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame;
 
 /**
  * Recursively apply layout to children.
  */
 - (void)applyLayoutNode:(css_node_t *)node
-      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
 
 /**

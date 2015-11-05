@@ -9,8 +9,8 @@
 
 package com.facebook.react.views.text;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 /**
@@ -33,16 +33,16 @@ public class ReactRawTextManager extends ReactTextViewManager {
   }
 
   @Override
-  public void updateView(ReactTextView view, CatalystStylesDiffMap props) {
-    throw new IllegalStateException("RKRawText doesn't map into a native view");
-  }
-
-  @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
   }
 
   @Override
-  public ReactTextShadowNode createCSSNodeInstance() {
+  public ReactTextShadowNode createShadowNodeInstance() {
     return new ReactTextShadowNode(true);
+  }
+
+  @Override
+  public Class<ReactTextShadowNode> getShadowNodeClass() {
+    return ReactTextShadowNode.class;
   }
 }

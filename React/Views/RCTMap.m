@@ -47,11 +47,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
-- (void)reactSetFrame:(CGRect)frame
-{
-  self.frame = frame;
-}
-
 - (void)layoutSubviews
 {
   [super layoutSubviews];
@@ -114,9 +109,9 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
 - (void)setAnnotations:(RCTPointAnnotationArray *)annotations
 {
-  NSMutableArray *newAnnotationIds = [NSMutableArray new];
-  NSMutableArray *annotationsToDelete = [NSMutableArray new];
-  NSMutableArray *annotationsToAdd = [NSMutableArray new];
+  NSMutableArray<NSString *> *newAnnotationIds = [NSMutableArray new];
+  NSMutableArray<RCTPointAnnotation *> *annotationsToDelete = [NSMutableArray new];
+  NSMutableArray<RCTPointAnnotation *> *annotationsToAdd = [NSMutableArray new];
 
   for (RCTPointAnnotation *annotation in annotations) {
     if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
@@ -143,19 +138,19 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   }
 
   if (annotationsToDelete.count) {
-    [self removeAnnotations:annotationsToDelete];
+    [self removeAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToDelete];
   }
 
   if (annotationsToAdd.count) {
-    [self addAnnotations:annotationsToAdd];
+    [self addAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToAdd];
   }
 
-  NSMutableArray *newIds = [NSMutableArray new];
-  for (RCTPointAnnotation *anno in self.annotations) {
-    if ([anno isKindOfClass:[MKUserLocation class]]) {
+  NSMutableArray<NSString *> *newIds = [NSMutableArray new];
+  for (RCTPointAnnotation *annotation in self.annotations) {
+    if ([annotation isKindOfClass:[MKUserLocation class]]) {
       continue;
     }
-    [newIds addObject:anno.identifier];
+    [newIds addObject:annotation.identifier];
   }
   self.annotationIds = newIds;
 }

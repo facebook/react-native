@@ -19,11 +19,9 @@ import android.widget.TextView;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -88,7 +86,12 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   }
 
   @Override
-  public ReactTextShadowNode createCSSNodeInstance() {
+  public ReactTextShadowNode createShadowNodeInstance() {
     return new ReactTextShadowNode(false);
+  }
+
+  @Override
+  public Class<ReactTextShadowNode> getShadowNodeClass() {
+    return ReactTextShadowNode.class;
   }
 }

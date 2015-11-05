@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 'use strict';
 
 var path = require('path');
@@ -18,16 +26,21 @@ module.exports = yeoman.generators.NamedBase.extend({
       type: Boolean,
       defaults: false
     });
+    this.option('upgrade', {
+      desc: 'Specify an upgrade',
+      type: Boolean,
+      defaults: false
+    });
 
     // this passes command line arguments down to the composed generators
-    var args = arguments[0];
+    var args = {args: arguments[0], options: this.options};
     if (!this.options['skip-ios']) {
-      this.composeWith('react:ios', {args: args}, {
+      this.composeWith('react:ios', args, {
         local: require.resolve(path.resolve(__dirname, '..', 'generator-ios'))
       });
     }
     if (!this.options['skip-android']) {
-      this.composeWith('react:android', {args: args}, {
+      this.composeWith('react:android', args, {
         local: require.resolve(path.resolve(__dirname, '..', 'generator-android'))
       });
     }
@@ -51,6 +64,10 @@ module.exports = yeoman.generators.NamedBase.extend({
   },
 
   writing: function() {
+    if (this.options.upgrade) {
+      // never upgrade index.*.js files
+      return;
+    }
     if (!this.options['skip-ios']) {
       this.fs.copyTpl(
         this.templatePath('index.ios.js'),

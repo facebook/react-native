@@ -39,9 +39,9 @@ NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 @end
 
-static NSMutableArray *RCTModuleClasses;
-NSArray *RCTGetModuleClasses(void);
-NSArray *RCTGetModuleClasses(void)
+static NSMutableArray<Class> *RCTModuleClasses;
+NSArray<Class> *RCTGetModuleClasses(void);
+NSArray<Class> *RCTGetModuleClasses(void)
 {
   return RCTModuleClasses;
 }

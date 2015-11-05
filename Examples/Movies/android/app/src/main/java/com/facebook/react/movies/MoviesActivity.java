@@ -69,7 +69,7 @@ public class MoviesActivity extends Activity implements DefaultHardwareBackBtnHa
     super.onResume();
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onResume(this);
+      mReactInstanceManager.onResume(this, this);
     }
   }
 

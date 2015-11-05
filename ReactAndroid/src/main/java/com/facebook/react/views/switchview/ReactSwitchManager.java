@@ -8,7 +8,7 @@
  */
 
 // switchview because switch is a keyword
-package com.facebook.react.views.switchviewview;
+package com.facebook.react.views.switchview;
 
 import android.os.SystemClock;
 import android.view.View;
@@ -18,6 +18,7 @@ import android.widget.CompoundButton;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -32,7 +33,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
   private static final String REACT_CLASS = "AndroidSwitch";
 
-  private static class ReactSwitchShadowNode extends ReactShadowNode implements
+  private static class ReactSwitchShadowNode extends LayoutShadowNode implements
       CSSNode.MeasureFunction {
 
     private int mWidth;
@@ -82,8 +83,13 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   }
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactSwitchShadowNode();
+  }
+
+  @Override
+  public Class getShadowNodeClass() {
+    return ReactSwitchShadowNode.class;
   }
 
   @Override

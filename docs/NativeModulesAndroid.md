@@ -106,14 +106,17 @@ class AnExampleReactPackage implements ReactPackage {
   }
 ```
 
-The package needs to be provided to the ReactInstanceManager when it is built. See `UIExplorerActivity.java` for an example. The default package when you initialize a new project is `MainReactPackage.java`.
+The package needs to be provided to the **ReactInstanceManager** when it is built. To accomplish this you will need to insert an `.addPackage(new YourPackageName())` call to the `mReactInstanceManager = ReactInstanceManager.builder()` call chain.
+
+Refer to the code below and add the `addPackage` statement to your application's `MainActivity.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainActivity.java`.
+
 
 ```java
 mReactInstanceManager = ReactInstanceManager.builder()
   .setApplication(getApplication())
   .setBundleAssetName("AnExampleApp.android.bundle")
   .setJSMainModuleName("Examples/AnExampleApp/AnExampleApp.android")
-  .addPackage(new AnExampleReactPackage())
+  .addPackage(new AnExampleReactPackage())  // <-- Add this line with your package name.
   .setUseDeveloperSupport(true)
   .setInitialLifecycleState(LifecycleState.RESUMED)
   .build();
@@ -226,7 +229,7 @@ sendEvent(reactContext, "keyboardWillShow", params);
 JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin
 
 ```js
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var { DeviceEventEmitter } = require('react-native');
 ...
 
 var ScrollResponderMixin = {
@@ -235,7 +238,7 @@ var ScrollResponderMixin = {
 
   componentWillMount: function() {
     ...
-    this.addListenerOn(RCTDeviceEventEmitter,
+    this.addListenerOn(DeviceEventEmitter,
                        'keyboardWillShow',
                        this.scrollResponderKeyboardWillShow);
     ...
@@ -244,4 +247,16 @@ var ScrollResponderMixin = {
     this.keyboardWillOpenTo = e;
     this.props.onKeyboardWillShow && this.props.onKeyboardWillShow(e);
   },
+```
+
+You can also directly use the `DeviceEventEmitter` module to listen for events.
+
+```js
+...
+componentWillMount: function() {
+  DeviceEventEmitter.addListener('keyboardWillShow', function(e: Event) {
+    // handle event.
+  });
+}
+...
 ```

@@ -74,8 +74,8 @@ var ActivityIndicatorIOS = React.createClass({
     return (
       <View
         onLayout={onLayout}
-        style={[styles.container, sizeStyle, style]}>
-        <RCTActivityIndicatorView {...props} />
+        style={[styles.container, style]}>
+        <RCTActivityIndicatorView {...props} style={sizeStyle} />
       </View>
     );
   }

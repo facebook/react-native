@@ -42,9 +42,10 @@ static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabl
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
+@property (nonatomic, strong, readonly) JSContext *context;
 @property (nonatomic, assign, readonly) JSGlobalContextRef ctx;
 
-- (instancetype)initWithJSContext:(JSGlobalContextRef)context NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithJSContext:(JSContext *)context NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -53,10 +54,10 @@ static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabl
   RCTJavaScriptContext *_self;
 }
 
-- (instancetype)initWithJSContext:(JSGlobalContextRef)context
+- (instancetype)initWithJSContext:(JSContext *)context
 {
   if ((self = [super init])) {
-    _ctx = context;
+    _context = context;
     _self = self;
   }
   return self;
@@ -64,16 +65,20 @@ static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabl
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
+- (JSGlobalContextRef)ctx
+{
+  return _context.JSGlobalContextRef;
+}
+
 - (BOOL)isValid
 {
-  return _ctx != NULL;
+  return _context != nil;
 }
 
 - (void)invalidate
 {
   if (self.isValid) {
-    JSGlobalContextRelease(_ctx);
-    _ctx = NULL;
+    _context = nil;
     _self = nil;
   }
 }
@@ -82,6 +87,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
 }
+
+@end
+
+// Private bridge interface to allow middle-batch calls
+@interface RCTBridge (RCTContextExecutor)
+
+- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
 
 @end
 
@@ -219,11 +231,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       (__typeof__(nativeProfilerEnd))dlsym(JSCProfiler, "nativeProfilerEnd");
 
     if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-      void (*nativeProfilerEnableByteCode)(void) =
-        (__typeof__(nativeProfilerEnableByteCode))dlsym(JSCProfiler, "nativeProfilerEnableByteCode");
+      void (*nativeProfilerEnableBytecode)(void) =
+        (__typeof__(nativeProfilerEnableBytecode))dlsym(JSCProfiler, "nativeProfilerEnableBytecode");
 
-      if (nativeProfilerEnableByteCode != NULL) {
-        nativeProfilerEnableByteCode();
+      if (nativeProfilerEnableBytecode != NULL) {
+        nativeProfilerEnableBytecode();
       }
 
       static BOOL isProfiling = NO;
@@ -282,11 +294,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
   [javaScriptThread start];
 
-  return [self initWithJavaScriptThread:javaScriptThread globalContextRef:NULL];
+  return [self initWithJavaScriptThread:javaScriptThread context:nil];
 }
 
 - (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
-                        globalContextRef:(JSGlobalContextRef)context
+                                 context:(JSContext *)context
 {
   RCTAssert(javaScriptThread != nil,
             @"Can't initialize RCTContextExecutor without a javaScriptThread");
@@ -301,15 +313,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
         return;
       }
       // Assumes that no other JS tasks are scheduled before.
-      JSGlobalContextRef ctx;
       if (context) {
-        ctx = JSGlobalContextRetain(context);
-        strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
+        strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
       }
     }];
   }
 
   return self;
+}
+
+- (instancetype)initWithJavaScriptThread:(NSThread *)javaScriptThread
+                        globalContextRef:(JSGlobalContextRef)contextRef
+{
+  JSContext *context = contextRef ? [JSContext contextWithJSGlobalContextRef:contextRef] : nil;
+  return [self initWithJavaScriptThread:javaScriptThread context:context];
 }
 
 - (void)setUp
@@ -321,12 +338,30 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
     if (!strongSelf->_context) {
-      JSGlobalContextRef ctx = JSGlobalContextCreate(NULL);
-      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:ctx];
+      JSContext *context = [JSContext new];
+      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
     }
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
     [strongSelf _addNativeHook:RCTNoop withName:"noop"];
+
+    __weak RCTBridge *bridge = strongSelf->_bridge;
+    strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
+      if (!weakSelf.valid || !calls) {
+        return;
+      }
+
+      [bridge handleBuffer:calls batchEnded:NO];
+    };
+
+    strongSelf->_context.context[@"RCTPerformanceNow"] = ^(){
+      return CACurrentMediaTime() * 1000 * 1000;
+    };
+
 #if RCT_DEV
+    if (RCTProfileIsProfiling()) {
+      strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
+    }
+
     [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
     [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
 
@@ -469,7 +504,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
     }
 
-    if (!resultJSRef) {
+    if (errorJSRef) {
       onComplete(nil, RCTNSErrorFromJSError(contextJSRef, errorJSRef));
       return;
     }
@@ -494,7 +529,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }), 0, @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
 }
 
-- (void)executeApplicationScript:(NSString *)script
+- (void)executeApplicationScript:(NSData *)script
                        sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
@@ -509,8 +544,15 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     }
 
     RCTPerformanceLoggerStart(RCTPLScriptExecution);
+
+    // JSStringCreateWithUTF8CString expects a null terminated C string
+    NSMutableData *nullTerminatedScript = [NSMutableData dataWithCapacity:script.length + 1];
+
+    [nullTerminatedScript appendData:script];
+    [nullTerminatedScript appendBytes:"" length:1];
+
     JSValueRef jsError = NULL;
-    JSStringRef execJSString = JSStringCreateWithCFString((__bridge CFStringRef)script);
+    JSStringRef execJSString = JSStringCreateWithUTF8CString(nullTerminatedScript.bytes);
     JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
     JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, &jsError);
     JSStringRelease(jsURL);

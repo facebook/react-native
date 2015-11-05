@@ -81,10 +81,14 @@ describe('Bundle', function() {
       }));
 
       bundle.setMainModuleId('foo');
-      bundle.finalize({runMainModule: true});
+      bundle.finalize({
+        runBeforeMainModule: ['bar'],
+        runMainModule: true,
+      });
       expect(bundle.getSource()).toBe([
         'transformed foo;',
         'transformed bar;',
+        ';require("bar");',
         ';require("foo");',
         '\/\/@ sourceMappingURL=test_url',
       ].join('\n'));
@@ -141,7 +145,10 @@ describe('Bundle', function() {
       }));
 
       p.setMainModuleId('foo');
-      p.finalize({runMainModule: true});
+      p.finalize({
+        runBeforeMainModule: [],
+        runMainModule: true,
+      });
       var s = p.getSourceMap();
       expect(s).toEqual(genSourceMap(p.getModules()));
     });
@@ -171,7 +178,10 @@ describe('Bundle', function() {
       }));
 
       p.setMainModuleId('foo');
-      p.finalize({runMainModule: true});
+      p.finalize({
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        runMainModule: true,
+      });
 
       var s = p.getSourceMap();
       expect(s).toEqual({
@@ -188,7 +198,7 @@ describe('Bundle', function() {
             map: {
               file: 'image.png',
               mappings: 'AAAA;AACA;',
-              names: {},
+              names: [],
               sources: [ 'image.png' ],
               sourcesContent: ['image module;\nimage module;'],
               version: 3,
@@ -200,14 +210,28 @@ describe('Bundle', function() {
               line: 6
             },
             map: {
-              file: 'RunMainModule.js',
+              file: 'require-InitializeJavaScriptAppEngine.js',
               mappings: 'AAAA;',
-              names: {},
-              sources: [ 'RunMainModule.js' ],
+              names: [],
+              sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
+              sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
+              version: 3,
+            }
+          },
+          {
+            offset: {
+              column: 0,
+              line: 7
+            },
+            map: {
+              file: 'require-foo.js',
+              mappings: 'AAAA;',
+              names: [],
+              sources: [ 'require-foo.js' ],
               sourcesContent: [';require("foo");'],
               version: 3,
             }
-          }
+          },
         ],
       });
     });

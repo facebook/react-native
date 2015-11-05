@@ -14,7 +14,7 @@ Note that running on device requires [Apple Developer account](https://developer
 You can iterate quickly on device using development server. To do that, your laptop and your phone have to be on the same wifi network.
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
-2. Change the IP in the URL from `localhost` to your laptop's IP
+2. Change the IP in the URL from `localhost` to your laptop's IP. On Mac, you can find the IP address in System Preferences / Network.
 3. In Xcode select your phone as build target and press "Build and run"
 
 > Hint
@@ -34,6 +34,13 @@ The bundle script supports a couple of flags:
 
 * `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
 * `--minify` - pipe the JS code through UglifyJS.
+
+Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
+
+* API is now `entry-file <path>` based instead of url based.
+* Need to specify which platform you're bundling for `--platform <ios|android>`.
+* Option `--out` has been renamed for `--bundle-output`.
+* Source maps are no longer automatically generated. Need to specify `--sourcemap-output <path>` 
 
 ## Disabling in-app developer menu
 

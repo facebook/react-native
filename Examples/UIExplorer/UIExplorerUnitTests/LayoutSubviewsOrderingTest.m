@@ -20,10 +20,10 @@
 - (void)testLayoutSubviewsOrdering
 {
   // create some Views and ViewControllers
-  UIViewController *parentVC = [[UIViewController alloc] init];
-  UIView *parentView = [[UIView alloc] init];
-  UIViewController *childVC = [[UIViewController alloc] init];
-  UIView *childView = [[UIView alloc] init];
+  UIViewController *parentVC = [UIViewController new];
+  UIView *parentView = [UIView new];
+  UIViewController *childVC = [UIViewController new];
+  UIView *childView = [UIView new];
 
   // The ordering we expect is:
   //   parentView::layoutSubviews

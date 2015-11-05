@@ -14,6 +14,22 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
+@interface RCTUITextView : UITextView
+
+@property (nonatomic, assign) BOOL textWasPasted;
+
+@end
+
+@implementation RCTUITextView
+
+- (void)paste:(id)sender
+{
+  _textWasPasted = YES;
+  [super paste:sender];
+}
+
+@end
+
 @implementation RCTTextView
 {
   RCTEventDispatcher *_eventDispatcher;
@@ -33,7 +49,7 @@
     _eventDispatcher = eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
 
-    _textView = [[UITextView alloc] initWithFrame:self.bounds];
+    _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.scrollsToTop = NO;
     _textView.delegate = self;
@@ -56,15 +72,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // first focused.
   UIEdgeInsets adjustedFrameInset = UIEdgeInsetsZero;
   adjustedFrameInset.left = _contentInset.left - 5;
-  
+
   UIEdgeInsets adjustedTextContainerInset = _contentInset;
   adjustedTextContainerInset.top += 5;
   adjustedTextContainerInset.left = 0;
-  
+
   CGRect frame = UIEdgeInsetsInsetRect(self.bounds, adjustedFrameInset);
   _textView.frame = frame;
   _placeholderView.frame = frame;
-  
+
   _textView.textContainerInset = adjustedTextContainerInset;
   _placeholderView.textContainerInset = adjustedTextContainerInset;
 }
@@ -138,8 +154,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _textView.text;
 }
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+- (BOOL)textView:(RCTUITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+  if (textView.textWasPasted) {
+    textView.textWasPasted = NO;
+  } else {
+    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
+                                   reactTag:self.reactTag
+                                       text:nil
+                                        key:text
+                                 eventCount:_nativeEventCount];
+  }
+
   if (_maxLength == nil) {
     return YES;
   }
@@ -215,6 +241,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
                                      text:textView.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 }
 
@@ -225,6 +252,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
                                      text:textView.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 
 }
@@ -234,6 +262,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeEnd
                                  reactTag:self.reactTag
                                      text:textView.text
+                                      key:nil
                                eventCount:_nativeEventCount];
 }
 
@@ -253,6 +282,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                    reactTag:self.reactTag
                                        text:_textView.text
+                                        key:nil
                                  eventCount:_nativeEventCount];
   }
   return result;
@@ -277,6 +307,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UIColor *)defaultPlaceholderTextColor
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
+}
+
+- (void)performTextUpdate
+{
+  // Not used (yet)
 }
 
 @end

@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebSocketBase
- *
  */
 'use strict';
 
@@ -45,6 +44,7 @@ class WebSocketBase extends EventTarget {
       protocols = [];
     }
 
+    this.readyState = WebSocketBase.CONNECTING;
     this.connectToSocketImpl(url);
   }
 
@@ -58,6 +58,7 @@ class WebSocketBase extends EventTarget {
       this.cancelConnectionImpl();
     }
 
+    this.readyState = WebSocketBase.CLOSING;
     this.closeConnectionImpl();
   }
 
@@ -94,7 +95,6 @@ class WebSocketBase extends EventTarget {
   sendArrayBufferImpl(): void {
     throw new Error('Subclass must define sendArrayBufferImpl method');
   }
-
 }
 
 module.exports = WebSocketBase;

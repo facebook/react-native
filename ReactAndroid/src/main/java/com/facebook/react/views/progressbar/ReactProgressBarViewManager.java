@@ -19,7 +19,6 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 
 /**
  * Manages instances of ProgressBar. ProgressBar is wrapped in a FrameLayout because the style of
@@ -57,8 +56,13 @@ public class ReactProgressBarViewManager extends
   }
 
   @Override
-  public ProgressBarShadowNode createCSSNodeInstance() {
+  public ProgressBarShadowNode createShadowNodeInstance() {
     return new ProgressBarShadowNode();
+  }
+
+  @Override
+  public Class<ProgressBarShadowNode> getShadowNodeClass() {
+    return ProgressBarShadowNode.class;
   }
 
   @Override

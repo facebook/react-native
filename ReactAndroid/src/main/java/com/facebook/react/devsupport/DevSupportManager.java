@@ -367,10 +367,18 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   }
 
   public String getSourceMapUrl() {
+    if (mJSAppBundleName == null) {
+      return "";
+    }
+
     return mDevServerHelper.getSourceMapUrl(Assertions.assertNotNull(mJSAppBundleName));
   }
 
   public String getSourceUrl() {
+    if (mJSAppBundleName == null) {
+      return "";
+    }
+
     return mDevServerHelper.getSourceUrl(Assertions.assertNotNull(mJSAppBundleName));
   }
 
@@ -467,6 +475,8 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   }
 
   public void handleReloadJS() {
+    UiThreadUtil.assertOnUiThread();
+
     // dismiss redbox if exists
     if (mRedBoxDialog != null) {
       mRedBoxDialog.dismiss();
@@ -486,6 +496,10 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
     } else {
       reloadJSFromServer(progressDialog);
     }
+  }
+
+  public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
+    mDevServerHelper.isPackagerRunning(callback);
   }
 
   private void reloadJSInProxyMode(final ProgressDialog progressDialog) {

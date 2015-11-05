@@ -24,7 +24,7 @@
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
-  static NSSet *collectionTypes;
+  static NSSet<Class> *collectionTypes;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     SEL selector = NSSelectorFromString(@"JSONStringWithOptions:error:");
@@ -121,7 +121,7 @@ id RCTJSONParseMutable(NSString *jsonString, NSError **error)
 id RCTJSONClean(id object)
 {
   static dispatch_once_t onceToken;
-  static NSSet *validLeafTypes;
+  static NSSet<Class> *validLeafTypes;
   dispatch_once(&onceToken, ^{
     validLeafTypes = [[NSSet alloc] initWithArray:@[
       [NSString class],
@@ -301,7 +301,7 @@ NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extr
 
 NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData)
 {
-  id error = RCTMakeError(message, toStringify, extraData);
+  NSDictionary *error = RCTMakeError(message, toStringify, extraData);
   RCTLogError(@"\nError: %@", error);
   return error;
 }
@@ -310,9 +310,9 @@ NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary
 NSDictionary *RCTJSErrorFromNSError(NSError *error)
 {
   NSString *errorMessage;
-  NSArray *stackTrace = [NSThread callStackSymbols];
+  NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
   NSMutableDictionary *errorInfo =
-  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+    [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
@@ -342,23 +342,36 @@ BOOL RCTRunningInAppExtension(void)
   return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
 }
 
-id RCTSharedApplication(void)
+UIApplication *RCTSharedApplication(void)
 {
   if (RCTRunningInAppExtension()) {
     return nil;
   }
-  
   return [[UIApplication class] performSelector:@selector(sharedApplication)];
 }
 
-id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+UIWindow *RCTKeyWindow(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+
+  // TODO: replace with a more robust solution
+  return RCTSharedApplication().keyWindow;
+}
+
+UIAlertView *RCTAlertView(NSString *title,
+                          NSString *message,
+                          id delegate,
+                          NSString *cancelButtonTitle,
+                          NSArray<NSString *> *otherButtonTitles)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
     return nil;
   }
-  
-  UIAlertView *alertView = [[UIAlertView alloc] init];
+
+  UIAlertView *alertView = [UIAlertView new];
   alertView.title = title;
   alertView.message = message;
   alertView.delegate = delegate;
@@ -366,8 +379,7 @@ id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cance
     [alertView addButtonWithTitle:cancelButtonTitle];
     alertView.cancelButtonIndex = 0;
   }
-  for (NSString *buttonTitle in otherButtonTitles)
-  {
+  for (NSString *buttonTitle in otherButtonTitles) {
     [alertView addButtonWithTitle:buttonTitle];
   }
   return alertView;
@@ -457,4 +469,39 @@ NSData *RCTGzipData(NSData *input, float level)
   dlclose(libz);
 
   return output;
+}
+
+NSString *RCTBundlePathForURL(NSURL *URL)
+{
+  if (!URL.fileURL) {
+    // Not a file path
+    return nil;
+  }
+  NSString *path = URL.path;
+  NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
+  if (![path hasPrefix:bundlePath]) {
+    // Not a bundle-relative file
+    return nil;
+  }
+  return [path substringFromIndex:bundlePath.length + 1];
+}
+
+BOOL RCTIsXCAssetURL(NSURL *imageURL)
+{
+  NSString *name = RCTBundlePathForURL(imageURL);
+  if (name.pathComponents.count != 1) {
+    // URL is invalid, or is a file path, not an XCAsset identifier
+    return NO;
+  }
+  NSString *extension = [name pathExtension];
+  if (extension.length && ![extension isEqualToString:@"png"]) {
+    // Not a png
+    return NO;
+  }
+  extension = extension.length ? nil : @"png";
+  if ([[NSBundle mainBundle] pathForResource:name ofType:extension]) {
+    // File actually exists in bundle, so is not an XCAsset
+    return NO;
+  }
+  return YES;
 }

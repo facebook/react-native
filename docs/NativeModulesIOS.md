@@ -250,7 +250,7 @@ You must create a class extension of RCTConvert like so:
 @implementation RCTConvert (StatusBarAnimation)
   RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
                                                @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide),
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)},
                       UIStatusBarAnimationNone, integerValue)
 @end
 ```

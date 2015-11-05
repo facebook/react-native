@@ -73,5 +73,6 @@ var styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
+UIExplorerList.registerComponents();
 
 module.exports = UIExplorerApp;

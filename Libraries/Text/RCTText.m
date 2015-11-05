@@ -16,7 +16,7 @@
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
-  NSMutableArray *_reactSubviews;
+  NSMutableArray<UIView *> *_reactSubviews;
   CAShapeLayer *_highlightLayer;
 }
 
@@ -62,7 +62,7 @@
   [_reactSubviews removeObject:subview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   return _reactSubviews;
 }

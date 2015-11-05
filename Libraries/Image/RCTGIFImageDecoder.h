@@ -9,6 +9,6 @@
 
 #import "RCTImageLoader.h"
 
-@interface RCTGIFImageDecoder : NSObject <RCTImageDecoder>
+@interface RCTGIFImageDecoder : NSObject <RCTImageDataDecoder>
 
 @end

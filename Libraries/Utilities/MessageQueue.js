@@ -25,11 +25,11 @@ let stringifySafe = require('stringifySafe');
 let MODULE_IDS = 0;
 let METHOD_IDS = 1;
 let PARAMS = 2;
+let MIN_TIME_BETWEEN_FLUSHES_MS = 5;
 
 let SPY_MODE = false;
 
 let MethodTypes = keyMirror({
-  local: null,
   remote: null,
   remoteAsync: null,
 });
@@ -53,64 +53,55 @@ class MessageQueue {
     this._methodTable = {};
     this._callbacks = [];
     this._callbackID = 0;
+    this._lastFlush = 0;
 
     [
-      'processBatch',
       'invokeCallbackAndReturnFlushedQueue',
       'callFunctionReturnFlushedQueue',
       'flushedQueue',
     ].forEach((fn) => this[fn] = this[fn].bind(this));
 
-    this._genModules(remoteModules);
+    let modulesConfig = this._genModulesConfig(remoteModules);
+    this._genModules(modulesConfig);
     localModules && this._genLookupTables(
-      localModules, this._moduleTable, this._methodTable);
+      this._genModulesConfig(localModules),this._moduleTable, this._methodTable
+    );
 
     this._debugInfo = {};
     this._remoteModuleTable = {};
     this._remoteMethodTable = {};
     this._genLookupTables(
-      remoteModules, this._remoteModuleTable, this._remoteMethodTable);
+      modulesConfig, this._remoteModuleTable, this._remoteMethodTable
+    );
   }
 
   /**
    * Public APIs
    */
-  processBatch(batch) {
+  callFunctionReturnFlushedQueue(module, method, args) {
     guard(() => {
-      ReactUpdates.batchedUpdates(() => {
-        batch.forEach((call) => {
-          let method = call.method === 'callFunctionReturnFlushedQueue' ?
-            '__callFunction' : '__invokeCallback';
-          guard(() => this[method].apply(this, call.args));
-        });
-
-        this.__callImmediates();
-      });
-
-      // batchedUpdates might still trigger setImmediates
-      while (JSTimersExecution.immediates.length) {
-        ReactUpdates.batchedUpdates(() => {
-          this.__callImmediates();
-        });
-      }
+      this.__callFunction(module, method, args);
+      this.__callImmediates();
     });
 
-    return this.__flushedQueue();
-  }
-
-  callFunctionReturnFlushedQueue(module, method, args) {
-    guard(() => this.__callFunction(module, method, args));
     return this.flushedQueue();
   }
 
   invokeCallbackAndReturnFlushedQueue(cbID, args) {
-    guard(() => this.__invokeCallback(cbID, args));
+    guard(() => {
+      this.__invokeCallback(cbID, args);
+      this.__callImmediates();
+    });
+
     return this.flushedQueue();
   }
 
   flushedQueue() {
     this.__callImmediates();
-    return this.__flushedQueue();
+
+    let queue = this._queue;
+    this._queue = [[],[],[]];
+    return queue[0].length ? queue : null;
   }
 
   /**
@@ -123,11 +114,6 @@ class MessageQueue {
     BridgeProfiling.profileEnd();
   }
 
-  __flushedQueue() {
-    let queue = this._queue;
-    this._queue = [[],[],[]];
-    return queue[0].length ? queue : null;
-  }
   __nativeCall(module, method, params, onFail, onSucc) {
     if (onFail || onSucc) {
       // eventually delete old debug info
@@ -143,6 +129,14 @@ class MessageQueue {
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
+
+    var now = new Date().getTime();
+    if (global.nativeFlushQueueImmediate &&
+        now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS) {
+      global.nativeFlushQueueImmediate(this._queue);
+      this._queue = [[],[],[]];
+      this._lastFlush = now;
+    }
     if (__DEV__ && SPY_MODE && isFinite(module)) {
       console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
         this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
@@ -151,6 +145,7 @@ class MessageQueue {
 
   __callFunction(module, method, args) {
     BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
+    this._lastFlush = new Date().getTime();
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
@@ -166,6 +161,7 @@ class MessageQueue {
   __invokeCallback(cbID, args) {
     BridgeProfiling.profile(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
+    this._lastFlush = new Date().getTime();
     let callback = this._callbacks[cbID];
     if (!callback || __DEV__) {
       let debug = this._debugInfo[cbID >> 1];
@@ -188,50 +184,102 @@ class MessageQueue {
   /**
    * Private helper methods
    */
-  _genLookupTables(localModules, moduleTable, methodTable) {
-    let moduleNames = Object.keys(localModules);
-    for (var i = 0, l = moduleNames.length; i < l; i++) {
-      let moduleName = moduleNames[i];
-      let methods = localModules[moduleName].methods;
-      let moduleID = localModules[moduleName].moduleID;
-      moduleTable[moduleID] = moduleName;
-      methodTable[moduleID] = {};
 
-      let methodNames = Object.keys(methods);
-      for (var j = 0, k = methodNames.length; j < k; j++) {
-        let methodName = methodNames[j];
-        let methodConfig = methods[methodName];
-        methodTable[moduleID][methodConfig.methodID] = methodName;
+  /**
+   * Converts the old, object-based module structure to the new
+   * array-based structure. TODO (t8823865) Removed this
+   * function once Android has been updated.
+   */
+  _genModulesConfig(modules /* array or object */) {
+    if (Array.isArray(modules)) {
+      return modules;
+    } else {
+      let moduleArray = [];
+      let moduleNames = Object.keys(modules);
+      for (var i = 0, l = moduleNames.length; i < l; i++) {
+        let moduleName = moduleNames[i];
+        let moduleConfig = modules[moduleName];
+        let module = [moduleName];
+        if (moduleConfig.constants) {
+          module.push(moduleConfig.constants);
+        }
+        let methodsConfig = moduleConfig.methods;
+        if (methodsConfig) {
+          let methods = [];
+          let asyncMethods = [];
+          let methodNames = Object.keys(methodsConfig);
+          for (var j = 0, ll = methodNames.length; j < ll; j++) {
+            let methodName = methodNames[j];
+            let methodConfig = methodsConfig[methodName];
+            methods[methodConfig.methodID] = methodName;
+            if (methodConfig.type === MethodTypes.remoteAsync) {
+              asyncMethods.push(methodConfig.methodID);
+            }
+          }
+          if (methods.length) {
+            module.push(methods);
+            if (asyncMethods.length) {
+              module.push(asyncMethods);
+            }
+          }
+        }
+        moduleArray[moduleConfig.moduleID] = module;
       }
+      return moduleArray;
     }
+  }
+
+  _genLookupTables(modulesConfig, moduleTable, methodTable) {
+    modulesConfig.forEach((module, moduleID) => {
+      if (!module) {
+        return;
+      }
+
+      let moduleName, methods;
+      if (moduleHasConstants(module)) {
+        [moduleName, , methods] = module;
+      } else {
+        [moduleName, methods] = module;
+      }
+
+      moduleTable[moduleID] = moduleName;
+      methodTable[moduleID] = Object.assign({}, methods);
+    });
   }
 
   _genModules(remoteModules) {
-    let moduleNames = Object.keys(remoteModules);
-    for (var i = 0, l = moduleNames.length; i < l; i++) {
-      let moduleName = moduleNames[i];
-      let moduleConfig = remoteModules[moduleName];
+    remoteModules.forEach((module, moduleID) => {
+      if (!module) {
+        return;
+      }
+
+      let moduleName, constants, methods, asyncMethods;
+      if (moduleHasConstants(module)) {
+        [moduleName, constants, methods, asyncMethods] = module;
+      } else {
+        [moduleName, methods, asyncMethods] = module;
+      }
+
+      const moduleConfig = {moduleID, constants, methods, asyncMethods};
       this.RemoteModules[moduleName] = this._genModule({}, moduleConfig);
-    }
+    });
   }
 
   _genModule(module, moduleConfig) {
-    let methodNames = Object.keys(moduleConfig.methods);
-    for (var i = 0, l = methodNames.length; i < l; i++) {
-      let methodName = methodNames[i];
-      let methodConfig = moduleConfig.methods[methodName];
-      module[methodName] = this._genMethod(
-        moduleConfig.moduleID, methodConfig.methodID, methodConfig.type);
-    }
-    Object.assign(module, moduleConfig.constants);
+    const {moduleID, constants, methods = [], asyncMethods = []} = moduleConfig;
+
+    methods.forEach((methodName, methodID) => {
+      const methodType =
+        arrayContains(asyncMethods, methodID) ?
+          MethodTypes.remoteAsync : MethodTypes.remote;
+      module[methodName] = this._genMethod(moduleID, methodID, methodType);
+    });
+    Object.assign(module, constants);
+
     return module;
   }
 
   _genMethod(module, method, type) {
-    if (type === MethodTypes.local) {
-      return null;
-    }
-
     let fn = null;
     let self = this;
     if (type === MethodTypes.remoteAsync) {
@@ -266,7 +314,15 @@ class MessageQueue {
 
 }
 
-function createErrorFromErrorData(errorData: ErrorData): Error {
+function moduleHasConstants(moduleArray: Array<Object|Array<>>): boolean {
+  return !Array.isArray(moduleArray[1]);
+}
+
+function arrayContains<T>(array: Array<T>, value: T): boolean {
+  return array.indexOf(value) !== -1;
+}
+
+function createErrorFromErrorData(errorData: {message: string}): Error {
   var {
     message,
     ...extraErrorInfo,

@@ -17,6 +17,8 @@ var sharedBlacklist = [
   'node_modules/react-tools/src/renderers/shared/event/EventPropagators.js',
   'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
   'node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js',
+  'node_modules/react-tools/docs/js/react.js',
+  'node_modules/react-tools/src/package.json',  
 
   // Those conflicts with the ones in react-tools/. We need to blacklist the
   // internal version otherwise they won't work in open source.

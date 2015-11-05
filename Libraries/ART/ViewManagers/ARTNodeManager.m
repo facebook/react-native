@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (ARTNode *)node
 {
-  return [[ARTNode alloc] init];
+  return [ARTNode new];
 }
 
 - (UIView *)view

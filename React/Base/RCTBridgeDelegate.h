@@ -7,9 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-typedef void (^RCTSourceLoadBlock)(NSError *error, NSString *source);
+typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source);
 
 @class RCTBridge;
+@protocol RCTBridgeModule;
 
 @protocol RCTBridgeDelegate <NSObject>
 
@@ -17,7 +18,7 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSString *source);
 
 @optional
 
-- (NSArray *)extraModulesForBridge:(RCTBridge *)bridge;
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
 - (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback;
 
 @end

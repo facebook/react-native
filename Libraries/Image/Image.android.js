@@ -58,14 +58,18 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 
 var Image = React.createClass({
   propTypes: {
-    source: PropTypes.shape({
-      /**
-       * A string representing the resource identifier for the image, which
-       * could be an http address, a local file path, or the name of a static image
-       * resource (which should be wrapped in the `ix` function).
-       */
-      uri: PropTypes.string,
-    }).isRequired,
+    /**
+     * `uri` is a string representing the resource identifier for the image, which
+     * could be an http address, a local file path, or the name of a static image
+     * resource (which should be wrapped in the `require('image!name')` function).
+     */
+    source: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]).isRequired,
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * Used to locate this view in end-to-end tests.
@@ -122,12 +126,6 @@ var Image = React.createClass({
     }
 
     if (source && source.uri) {
-      var isNetwork = source.uri.match(/^https?:/);
-      invariant(
-        !(isNetwork && source.isStatic),
-        'Static image URIs cannot start with "http": "' + source.uri + '"'
-      );
-
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
 

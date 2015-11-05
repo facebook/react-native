@@ -125,7 +125,10 @@ var ViewPagerAndroid = React.createClass({
         }],
         collapsable: false,
       };
-      if (child.type && child.type.displayName && (child.type.displayName !== 'View')) {
+      if (child.type &&
+          child.type.displayName &&
+          (child.type.displayName !== 'RCTView') &&
+          (child.type.displayName !== 'View')) {
         console.warn('Each ViewPager child must be a <View>. Was ' + child.type.displayName);
       }
       return ReactElement.createElement(child.type, newProps);

@@ -30,4 +30,6 @@
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
+- (void)performTextUpdate;
+
 @end

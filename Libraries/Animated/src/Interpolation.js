@@ -24,7 +24,6 @@ var invariant = function(condition, message) {
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
-// $FlowFixMe D2163827
 export type InterpolationConfigType = {
   inputRange: Array<number>;
   outputRange: (Array<number> | Array<string>);
@@ -203,13 +202,22 @@ function createInterpolationFromStringOutputRange(
   //   [200, 250],
   //   [0, 0.5],
   // ]
+  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
+   * guard against this possibility.
+   */
   var outputRanges = outputRange[0].match(stringShapeRegex).map(() => []);
   outputRange.forEach(value => {
+    /* $FlowFixMe(>=0.18.0): `value.match()` can return `null`. Need to guard
+     * against this possibility.
+     */
     value.match(stringShapeRegex).forEach((number, i) => {
       outputRanges[i].push(+number);
     });
   });
 
+  /* $FlowFixMe(>=0.18.0): `outputRange[0].match()` can return `null`. Need to
+   * guard against this possibility.
+   */
   var interpolations = outputRange[0].match(stringShapeRegex).map((value, i) => {
     return Interpolation.create({
       ...config,

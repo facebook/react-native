@@ -22,10 +22,6 @@
 /* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-// Just to make sure the JS gets packaged up.
-require('RCTDebugComponentOwnership');
-require('RCTDeviceEventEmitter');
-require('PerformanceLogger');
 require('regenerator/runtime');
 
 if (typeof GLOBAL === 'undefined') {
@@ -42,6 +38,38 @@ function handleError(e, isFatal) {
   } catch(ee) {
     console.log('Failed to print error: ', ee.message);
   }
+}
+
+/**
+ * Assigns a new global property, replacing the existing one if there is one.
+ *
+ * Existing properties are preserved as `originalPropertyName`. Both properties
+ * will maintain the same enumerability & configurability.
+ *
+ * This allows you to undo the more aggressive polyfills, should you need to.
+ * For example, if you want to route network requests through DevTools (to trace
+ * them):
+ *
+ *     global.XMLHttpRequest = global.originalXMLHttpRequest;
+ *
+ * For more info on that particular case, see:
+ * https://github.com/facebook/react-native/issues/934
+ */
+function polyfillGlobal(name, newValue, scope=GLOBAL) {
+  var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
+    // jest for some bad reasons runs the polyfill code multiple times. In jest
+    // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
+    // returns undefined and defineProperty default for writable is false.
+    // Therefore, the second time it runs, defineProperty will fatal :(
+    writable: true,
+  };
+
+  if (scope[name] !== undefined) {
+    var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
+    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
+  }
+
+  Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
 function setUpRedBoxErrorHandler() {
@@ -111,28 +139,26 @@ function setUpPromise() {
 function setUpXHR() {
   // The native XMLHttpRequest in Chrome dev tools is CORS aware and won't
   // let you fetch anything from the internet
-  GLOBAL.XMLHttpRequest = require('XMLHttpRequest');
-  GLOBAL.FormData = require('FormData');
+  polyfillGlobal('XMLHttpRequest', require('XMLHttpRequest'));
+  polyfillGlobal('FormData', require('FormData'));
 
   var fetchPolyfill = require('fetch');
-  GLOBAL.fetch = fetchPolyfill.fetch;
-  GLOBAL.Headers = fetchPolyfill.Headers;
-  GLOBAL.Request = fetchPolyfill.Request;
-  GLOBAL.Response = fetchPolyfill.Response;
+  polyfillGlobal('fetch', fetchPolyfill.fetch);
+  polyfillGlobal('Headers', fetchPolyfill.Headers);
+  polyfillGlobal('Request', fetchPolyfill.Request);
+  polyfillGlobal('Response', fetchPolyfill.Response);
 }
 
 function setUpGeolocation() {
   GLOBAL.navigator = GLOBAL.navigator || {};
-  GLOBAL.navigator.geolocation = require('Geolocation');
+  polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
 }
 
 function setUpWebSockets() {
-  GLOBAL.WebSocket = require('WebSocket');
+  polyfillGlobal('WebSocket', require('WebSocket'));
 }
 
 function setUpProfile() {
-  console.profile = console.profile || GLOBAL.nativeTraceBeginSection || function () {};
-  console.profileEnd = console.profileEnd || GLOBAL.nativeTraceEndSection || function () {};
   if (__DEV__) {
     require('BridgeProfiling').swizzleReactPerf();
   }
@@ -152,6 +178,7 @@ function setUpNumber() {
   Number.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -(Math.pow(2, 53) - 1);
 }
 
+setUpProcessEnv();
 setUpRedBoxErrorHandler();
 setUpTimers();
 setUpAlert();
@@ -161,6 +188,11 @@ setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
 setUpProfile();
-setUpProcessEnv();
 setUpFlowChecker();
 setUpNumber();
+
+// Just to make sure the JS gets packaged up. Wait until the JS environment has
+// been initialized before requiring them.
+require('RCTDebugComponentOwnership');
+require('RCTDeviceEventEmitter');
+require('PerformanceLogger');
