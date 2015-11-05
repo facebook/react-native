@@ -58,6 +58,10 @@ RCT_EXTERN BOOL RCTRunningInAppExtension(void);
 // Returns the shared UIApplication instance, or nil if running in an App Extension
 RCT_EXTERN UIApplication *RCTSharedApplication(void);
 
+// Returns the current main window, useful if you need to access the root view
+// or view controller, e.g. to present a modal view controller or alert.
+RCT_EXTERN UIWindow *RCTKeyWindow(void);
+
 // Return a UIAlertView initialized with the given values
 // or nil if running in an app extension
 RCT_EXTERN UIAlertView *RCTAlertView(NSString *title,
