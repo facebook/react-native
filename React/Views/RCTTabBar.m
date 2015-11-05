@@ -50,6 +50,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)dealloc
 {
   _tabController.delegate = nil;
+  [_tabController removeFromParentViewController];
 }
 
 - (NSArray<RCTTabBarItem *> *)reactSubviews
