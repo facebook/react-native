@@ -13,6 +13,7 @@
 
 var StyleSheetRegistry = require('StyleSheetRegistry');
 var StyleSheetValidation = require('StyleSheetValidation');
+var flattenStyle = require('flattenStyle');
 
 /**
  * A StyleSheet is an abstraction similar to CSS StyleSheets
@@ -59,6 +60,8 @@ var StyleSheetValidation = require('StyleSheetValidation');
  * subsequent uses are going to refer an id (not implemented yet).
  */
 class StyleSheet {
+  static flatten: typeof flattenStyle;
+
   static create(obj: {[key: string]: any}): {[key: string]: number} {
     var result = {};
     for (var key in obj) {
@@ -68,5 +71,8 @@ class StyleSheet {
     return result;
   }
 }
+
+/* TODO(brentvatne) docs are needed for this */
+StyleSheet.flatten = flattenStyle;
 
 module.exports = StyleSheet;

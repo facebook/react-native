@@ -20,6 +20,7 @@
 var ReactNative = Object.assign(Object.create(require('React')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  ART: require('ReactNativeART'),
   DatePickerIOS: require('DatePickerIOS'),
   DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
   Image: require('Image'),
@@ -43,6 +44,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   TextInput: require('TextInput'),
   ToastAndroid: require('ToastAndroid'),
   ToolbarAndroid: require('ToolbarAndroid'),
+  Touchable: require('Touchable'),
   TouchableHighlight: require('TouchableHighlight'),
   TouchableNativeFeedback: require('TouchableNativeFeedback'),
   TouchableOpacity: require('TouchableOpacity'),
