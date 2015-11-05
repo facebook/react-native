@@ -16,7 +16,7 @@ const ProgressBar = require('progress');
 const BundlesLayout = require('../BundlesLayout');
 const Cache = require('../Cache');
 const Transformer = require('../JSTransformer');
-const DependencyResolver = require('../DependencyResolver');
+const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
@@ -94,7 +94,7 @@ class Bundler {
       transformModulePath: opts.transformModulePath,
     });
 
-    this._resolver = new DependencyResolver({
+    this._resolver = new Resolver({
       projectRoots: opts.projectRoots,
       blacklistRE: opts.blacklistRE,
       polyfillModuleNames: opts.polyfillModuleNames,

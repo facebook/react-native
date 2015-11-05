@@ -55,7 +55,7 @@
       mod.isInitialized = true;
 
       // keep args in sync with with defineModuleCode in
-      // packager/react-packager/src/DependencyResolver/index.js
+      // packager/react-packager/src/Resolver/index.js
       mod.factory.call(global, global, require, mod.module, mod.module.exports);
     } catch (e) {
       mod.hasError = true;
