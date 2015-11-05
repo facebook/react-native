@@ -13,31 +13,29 @@ This is an initial release of React Native Android and therefore not all of the 
 
 Our provisional plan for common views and modules includes:
 
-#### Views
+Views            | iOS | Android
+---------------- | --- | -------
+Swipe Refresh    | ✔ | ✔
+Spinner          | ✔ | ✘
+ART              | ✔ | ✘
+Maps             | ✔ | ✔
+Modal            | ✔ | ✔
+Webview          | ✔ | ✘
 
-```
-Swipe Refresh
-Spinner
-ART
-Maps
-Modal
-Webview
-```
 
-#### Modules
+Modules            | iOS | Android
+------------------ | --- | -------
+Geo Location       | ✔ | ✘
+Net Info           | ✔ | ✔
+Camera Roll        | ✔ | ✘
+App State          | ✔ | ✔
+Dialog             | ✔ | ✘
+Intent             | ✔ | ✔
+Media              | ✔ | ✘
+Pasteboard         | ✔ | ✘
+PushNotification   | ✔ | ✘
+Alert              | ✔ | ✘
 
-```
-Geo Location
-Net Info
-Camera Roll
-App State
-Dialog
-Intent
-Media
-Pasteboard
-PushNotificationIOS
-Alert
-```
 
 ### Some props are only supported on one platform
 
