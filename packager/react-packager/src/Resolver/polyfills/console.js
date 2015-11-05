@@ -360,10 +360,9 @@
   var OBJECT_COLUMN_NAME = '(index)';
   var LOG_LEVELS = {
     trace: 0,
-    log: 1,
-    info: 2,
-    warn: 3,
-    error: 4
+    info: 1,
+    warn: 2,
+    error: 3
   };
 
   function setupConsole(global) {
@@ -407,7 +406,7 @@
         }
       }
       if (rows.length === 0) {
-        global.nativeLoggingHook('', LOG_LEVELS.log);
+        global.nativeLoggingHook('', LOG_LEVELS.info);
         return;
       }
 
@@ -453,13 +452,13 @@
       // Native logging hook adds "RCTLog >" at the front of every
       // logged string, which would shift the header and screw up
       // the table
-      global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.log);
+      global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.info);
     }
 
     global.console = {
       error: getNativeLogFunction(LOG_LEVELS.error),
       info: getNativeLogFunction(LOG_LEVELS.info),
-      log: getNativeLogFunction(LOG_LEVELS.log),
+      log: getNativeLogFunction(LOG_LEVELS.info),
       warn: getNativeLogFunction(LOG_LEVELS.warn),
       trace: getNativeLogFunction(LOG_LEVELS.trace),
       table: consoleTablePolyfill
