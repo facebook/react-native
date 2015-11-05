@@ -26,7 +26,7 @@ var PixelRatio = require('PixelRatio');
 var Platform = require('Platform');
 var SourceCode = require('NativeModules').SourceCode;
 
-var _serverURL;
+var _serverURL, _offlinePath;
 
 function getDevServerURL() {
   if (_serverURL === undefined) {
@@ -44,6 +44,20 @@ function getDevServerURL() {
   return _serverURL;
 }
 
+function getOfflinePath() {
+  if (_offlinePath === undefined) {
+    var scriptURL = SourceCode.scriptURL;
+    var match = scriptURL && scriptURL.match(/^file:\/\/(\/.*\/)/);
+    if (match) {
+      _offlinePath = match[1];
+    } else {
+      _offlinePath = '';
+    }
+  }
+
+  return _offlinePath;
+}
+
 /**
  * Returns the path at which the asset can be found in the archive
  */
@@ -59,7 +73,7 @@ function getPathInArchive(asset) {
       .replace(/^assets_/, '');      // Remove "assets_" prefix
   } else {
     // E.g. 'assets/AwesomeModule/icon@2x.png'
-    return getScaledAssetPath(asset);
+    return getOfflinePath() + getScaledAssetPath(asset);
   }
 }
 
