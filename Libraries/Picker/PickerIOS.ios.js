@@ -23,8 +23,6 @@ var View = require('View');
 var requireNativeComponent = require('requireNativeComponent');
 var merge = require('merge');
 
-var PICKER = 'picker';
-
 var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
@@ -58,7 +56,7 @@ var PickerIOS = React.createClass({
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={PICKER}
+          ref={ picker => this._picker = picker }
           style={styles.pickerIOS}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
@@ -82,8 +80,8 @@ var PickerIOS = React.createClass({
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.state.selectedIndex !== event.nativeEvent.newIndex) {
-      this.refs[PICKER].setNativeProps({
+    if (this._picker && this.state.selectedIndex !== event.nativeEvent.newIndex) {
+      this._picker.setNativeProps({
         selectedIndex: this.state.selectedIndex
       });
     }
