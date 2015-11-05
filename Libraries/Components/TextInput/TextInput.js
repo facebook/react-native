@@ -86,6 +86,11 @@ type Event = Object;
  * ```
  */
 var TextInput = React.createClass({
+  statics: {
+    /* TODO(brentvatne) docs are needed for this */
+    State: TextInputState,
+  },
+
   propTypes: {
     /**
      * Can tell TextInput to automatically capitalize certain characters.

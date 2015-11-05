@@ -7,6 +7,11 @@
       "from": "absolute-path@0.0.0",
       "resolved": "https://registry.npmjs.org/absolute-path/-/absolute-path-0.0.0.tgz"
     },
+    "art": {
+      "version": "0.10.0",
+      "from": "art@0.10.0",
+      "resolved": "https://registry.npmjs.org/art/-/art-0.10.0.tgz"
+    },
     "babel": {
       "version": "5.8.23",
       "from": "babel@5.8.23",
