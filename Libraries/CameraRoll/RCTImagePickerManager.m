@@ -60,8 +60,7 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     return;
   }
 
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
@@ -87,8 +86,7 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
     return;
   }
 
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
@@ -121,8 +119,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
   callback(@[[info[UIImagePickerControllerReferenceURL] absoluteString]]);
@@ -137,8 +134,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
   callback(@[]);
