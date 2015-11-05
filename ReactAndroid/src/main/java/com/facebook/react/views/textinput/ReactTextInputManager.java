@@ -202,7 +202,10 @@ public class ReactTextInputManager extends
 
   @ReactProp(name = "maxLength")
   public void setMaxLength(ReactEditText view, @Nullable Integer maxLength) {
-    if(maxLength != null) {
+    if (maxLength == null) {
+      InputFilter[] filterArray = new InputFilter[0];
+      view.setFilters(filterArray);
+    } else {
       InputFilter[] filterArray = new InputFilter[1];
       filterArray[0] = new InputFilter.LengthFilter(maxLength);
       view.setFilters(filterArray);
