@@ -123,12 +123,12 @@ static dispatch_queue_t RCTGetMethodQueue()
 }
 
 static BOOL RCTHasCreatedStorageDirectory = NO;
-static NSError *RCTDeleteStorageDirectory()
+static NSDictionary *RCTDeleteStorageDirectory()
 {
   NSError *error;
   [[NSFileManager defaultManager] removeItemAtPath:RCTGetStorageDirectory() error:&error];
   RCTHasCreatedStorageDirectory = NO;
-  return error;
+  return error ? RCTMakeError(@"Failed to delete storage directory.", error, nil) : nil;
 }
 
 #pragma mark - RCTAsyncLocalStorage
@@ -378,7 +378,7 @@ RCT_EXPORT_METHOD(multiRemove:(NSStringArray *)keys
 RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
 {
   _manifest = [NSMutableDictionary new];
-  NSError *error = RCTDeleteStorageDirectory();
+  NSDictionary *error = RCTDeleteStorageDirectory();
   callback(@[RCTNullIfNil(error)]);
 }
 
