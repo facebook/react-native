@@ -60,14 +60,14 @@ public class ReactScrollViewCommandHelper {
     Assertions.assertNotNull(args);
     switch (commandType) {
       case COMMAND_SCROLL_TO: {
-        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getInt(0)));
-        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getInt(1)));
+        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
+        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
         viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY));
         return;
       }
       case COMMAND_SCROLL_WITHOUT_ANIMATION_TO: {
-        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getInt(0)));
-        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getInt(1)));
+        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
+        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
         viewManager.scrollWithoutAnimationTo(scrollView, new ScrollToCommandData(destX, destY));
         return;
       }
