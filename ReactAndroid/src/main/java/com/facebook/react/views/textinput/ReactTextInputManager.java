@@ -54,6 +54,7 @@ public class ReactTextInputManager extends
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
+  private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
 
   @Override
   public String getName() {
@@ -203,8 +204,7 @@ public class ReactTextInputManager extends
   @ReactProp(name = "maxLength")
   public void setMaxLength(ReactEditText view, @Nullable Integer maxLength) {
     if (maxLength == null) {
-      InputFilter[] filterArray = new InputFilter[0];
-      view.setFilters(filterArray);
+      view.setFilters(EMPTY_FILTERS);
     } else {
       InputFilter[] filterArray = new InputFilter[1];
       filterArray[0] = new InputFilter.LengthFilter(maxLength);
