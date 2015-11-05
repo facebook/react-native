@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -22,6 +23,7 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -55,6 +57,7 @@ public class ReactEditText extends EditText {
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
+  private boolean mManualInput;
 
   public ReactEditText(Context context) {
     super(context);
@@ -115,7 +118,9 @@ public class ReactEditText extends EditText {
     }
     setFocusableInTouchMode(true);
     boolean focused = super.requestFocus(direction, previouslyFocusedRect);
-    showSoftKeyboard();
+    if (!mManualInput) {
+      showSoftKeyboard();
+    }
     return focused;
   }
 
@@ -267,6 +272,25 @@ public class ReactEditText extends EditText {
       gravityVertical = mDefaultGravityVertical;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
+  }
+
+  /* package */ void setManualInput(boolean manualInput) {
+    mManualInput = manualInput;
+    if (manualInput) {
+      setFocusable(false);
+      this.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          hideSoftKeyboard();
+        }
+      });
+      this.setOnLongClickListener(new OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+          return true;
+        }
+      });
+    }
   }
 
   /**

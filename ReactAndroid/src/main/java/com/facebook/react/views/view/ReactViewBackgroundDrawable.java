@@ -68,9 +68,27 @@ import com.facebook.csslayout.Spacing;
     }
   };
 
+  public static final class BorderRadius {
+    public static final int ALL = 0;
+    public static final int TOP_LEFT = 1;
+    public static final int TOP_RIGHT = 2;
+    public static final int BOTTOM_LEFT = 3;
+    public static final int BOTTOM_RIGHT = 4;
+
+    public static final int[] CORNERS = new int[]{
+      ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
+    };
+
+    public float topLeft;
+    public float topRight;
+    public float bottomLeft;
+    public float bottomRight;
+  }
+
   /* Value at Spacing.ALL index used for rounded borders, whole array used by rectangular borders */
   private @Nullable Spacing mBorderWidth;
   private @Nullable Spacing mBorderColor;
+  private @Nullable BorderRadius mBorderRadius;
   private @Nullable BorderStyle mBorderStyle;
 
   /* Used for rounded border and rounded background */
@@ -78,7 +96,6 @@ import com.facebook.csslayout.Spacing;
   private @Nullable Path mPathForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadius;
   private boolean mNeedUpdatePathForBorderRadius = false;
-  private float mBorderRadius = CSSConstants.UNDEFINED;
 
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -87,7 +104,11 @@ import com.facebook.csslayout.Spacing;
 
   @Override
   public void draw(Canvas canvas) {
-    if (!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+    if (mBorderRadius != null &&
+            (mBorderRadius.topLeft > 0 ||
+            mBorderRadius.topRight > 0 ||
+            mBorderRadius.bottomLeft > 0 ||
+            mBorderRadius.bottomRight > 0)) {
       drawRoundedBackgroundWithBorders(canvas);
     } else {
       drawRectangularBackgroundWithBorders(canvas);
@@ -161,10 +182,48 @@ import com.facebook.csslayout.Spacing;
     }
   }
 
-  public void setRadius(float radius) {
-    if (mBorderRadius != radius) {
-      mBorderRadius = radius;
-      invalidateSelf();
+  public void setRadius(int corner, float radius) {
+    if (mBorderRadius == null) {
+      mBorderRadius = new BorderRadius();
+    }
+
+    switch (corner) {
+      case BorderRadius.ALL:
+        if (!FloatUtil.floatsEqual(mBorderRadius.topLeft, radius) ||
+                !FloatUtil.floatsEqual(mBorderRadius.topRight, radius) ||
+                !FloatUtil.floatsEqual(mBorderRadius.bottomLeft, radius) ||
+                !FloatUtil.floatsEqual(mBorderRadius.bottomRight, radius)) {
+          mBorderRadius.topLeft = radius;
+          mBorderRadius.topRight = radius;
+          mBorderRadius.bottomLeft = radius;
+          mBorderRadius.bottomRight = radius;
+          invalidateSelf();
+        }
+        break;
+      case BorderRadius.TOP_LEFT:
+        if (!FloatUtil.floatsEqual(mBorderRadius.topLeft, radius)) {
+          mBorderRadius.topLeft = radius;
+          invalidateSelf();
+        }
+        break;
+      case BorderRadius.TOP_RIGHT:
+        if (!FloatUtil.floatsEqual(mBorderRadius.topRight, radius)) {
+          mBorderRadius.topRight = radius;
+          invalidateSelf();
+        }
+        break;
+      case BorderRadius.BOTTOM_LEFT:
+        if (!FloatUtil.floatsEqual(mBorderRadius.bottomLeft, radius)) {
+          mBorderRadius.bottomLeft = radius;
+          invalidateSelf();
+        }
+        break;
+      case BorderRadius.BOTTOM_RIGHT:
+        if (!FloatUtil.floatsEqual(mBorderRadius.bottomRight, radius)) {
+          mBorderRadius.bottomRight = radius;
+          invalidateSelf();
+        }
+        break;
     }
   }
 
@@ -213,10 +272,21 @@ import com.facebook.csslayout.Spacing;
     if (fullBorderWidth > 0) {
       mTempRectForBorderRadius.inset(fullBorderWidth * 0.5f, fullBorderWidth * 0.5f);
     }
+
+    float[] radii = new float[]{
+            mBorderRadius.topLeft,
+            mBorderRadius.topLeft,
+            mBorderRadius.topRight,
+            mBorderRadius.topRight,
+            mBorderRadius.bottomRight,
+            mBorderRadius.bottomRight,
+            mBorderRadius.bottomLeft,
+            mBorderRadius.bottomLeft
+    };
+
     mPathForBorderRadius.addRoundRect(
         mTempRectForBorderRadius,
-        mBorderRadius,
-        mBorderRadius,
+        radii,
         Path.Direction.CW);
 
     mPathEffectForBorderStyle = mBorderStyle != null

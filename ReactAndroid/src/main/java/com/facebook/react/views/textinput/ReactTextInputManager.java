@@ -13,11 +13,13 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -261,6 +263,11 @@ public class ReactTextInputManager extends
         view,
         InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
         flagsToSet);
+  }
+
+  @ReactProp(name = "manualInput", defaultBoolean = false)
+  public void setManualInput(ReactEditText view, boolean manualInput) {
+      view.setManualInput(manualInput);
   }
 
   @Override

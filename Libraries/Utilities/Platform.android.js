@@ -17,6 +17,7 @@ var AndroidConstants = require('NativeModules').AndroidConstants;
 var Platform = {
   OS: 'android',
   Version: AndroidConstants.Version,
+  isFast: true,
 };
 
 module.exports = Platform;

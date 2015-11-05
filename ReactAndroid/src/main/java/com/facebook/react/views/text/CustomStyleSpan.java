@@ -111,4 +111,8 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     sTypefaceCache.put(family, typeface);
     return typeface;
   }
+
+  public static void addCustomTypeface(String family, Typeface typeface) {
+    sTypefaceCache.put(family, typeface);
+  }
 }

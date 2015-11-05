@@ -22,7 +22,7 @@ var invariant = function(condition, message) {
   }
 };
 
-type ExtrapolateType = 'extend' | 'identity' | 'clamp';
+export type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
 export type InterpolationConfigType = {
   inputRange: Array<number>;

@@ -15,6 +15,13 @@ var AsyncStorage = {
         callback(null);
     },
 
+    clear: function(callback) {
+        localStorage.clear();
+        if (callback) {
+            callback(null);
+        }
+    },
+
 };
 
 module.exports = AsyncStorage;

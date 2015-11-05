@@ -54,9 +54,18 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactProp(name = "borderRadius")
-  public void setBorderRadius(ReactViewGroup view, float borderRadius) {
-    view.setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
+  @ReactPropGroup(names = {
+    "borderRadius",
+    "borderTopLeftRadius",
+    "borderTopRightRadius",
+    "borderBottomLeftRadius",
+    "borderBottomRightRadius",
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
+    if (!CSSConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
+    view.setBorderRadius(ReactViewBackgroundDrawable.BorderRadius.CORNERS[index], borderRadius);
   }
 
   @ReactProp(name = "borderStyle")

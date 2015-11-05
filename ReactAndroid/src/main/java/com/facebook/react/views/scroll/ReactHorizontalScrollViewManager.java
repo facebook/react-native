@@ -12,6 +12,7 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 
@@ -35,6 +36,21 @@ public class ReactHorizontalScrollViewManager
   @Override
   public ReactHorizontalScrollView createViewInstance(ThemedReactContext context) {
     return new ReactHorizontalScrollView(context);
+  }
+
+  @ReactProp(name = "scrollEnabled")
+  public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
+    view.setScrollEnabled(value);
+  }
+
+  @ReactProp(name = "showsHorizontalScrollIndicator")
+  public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
+    view.setHorizontalScrollBarEnabled(value);
+  }
+
+  @ReactProp(name = "snapToInterval")
+  public void setSnapToInterval(ReactHorizontalScrollView view, int interval) {
+    view.setSnapToInterval(interval);
   }
 
   @Override

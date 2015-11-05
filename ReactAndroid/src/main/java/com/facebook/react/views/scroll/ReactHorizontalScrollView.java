@@ -19,12 +19,17 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
-public class ReactHorizontalScrollView extends HorizontalScrollView {
+public class ReactHorizontalScrollView extends PagingHorizontalScrollView {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+  private boolean mScrollEnabled = true;
 
   public ReactHorizontalScrollView(Context context) {
     super(context);
+  }
+
+  public void setScrollEnabled(boolean scrollEnabled) {
+    mScrollEnabled = scrollEnabled;
   }
 
   @Override
@@ -53,6 +58,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (!mScrollEnabled) {
+      return false;
+    }
     if (super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       return true;
@@ -60,4 +68,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
 
     return false;
   }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        if (mScrollEnabled) {
+          return super.onTouchEvent(ev);
+        }
+        return mScrollEnabled;
+      default:
+        return super.onTouchEvent(ev);
+    }
+  }
+
 }

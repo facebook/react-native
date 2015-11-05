@@ -291,8 +291,8 @@ var TextInput = React.createClass({
      */
     underlineColorAndroid: PropTypes.string,
     /*
-     * If true, an empty inputView is assigned to the text field
-    */
+     * [Even] If true, the text field will not be editable
+     */
     manualInput: PropTypes.bool,
   },
 
@@ -492,6 +492,7 @@ var TextInput = React.createClass({
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
         editable={this.props.editable}
+        manualInput={this.props.manualInput}
       />;
 
     return (
@@ -504,7 +505,6 @@ var TextInput = React.createClass({
   },
 
   _onFocus: function(event: Event) {
-    TextInputState.focusTextInput(findNodeHandle(this));
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -531,7 +531,8 @@ var TextInput = React.createClass({
       // This is a controlled component, so make sure to force the native value
       // to match.  Most usage shouldn't need this, but if it does this will be
       // more correct but might flicker a bit and/or cause the cursor to jump.
-      if (text !== this.props.value && typeof this.props.value === 'string') {
+      if (text !== this.props.value &&
+          typeof this.props.value === 'string') {
         this.refs.input.setNativeProps({
           text: this.props.value,
         });

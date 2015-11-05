@@ -9,19 +9,19 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ScrollView;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactClippingViewGroup;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
-import com.facebook.infer.annotation.Assertions;
+
+import javax.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
@@ -36,6 +36,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private boolean mRemoveClippedSubviews;
   private @Nullable Rect mClippingRect;
+  private boolean mScrollEnabled = true;
 
   public ReactScrollView(Context context) {
     super(context);
@@ -50,15 +51,14 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         MeasureSpec.getSize(heightMeasureSpec));
   }
 
-  @Override
-  protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    // Call with the present values in order to re-layout if necessary
-    scrollTo(getScrollX(), getScrollY());
+  public void setScrollEnabled(boolean scrollEnabled) {
+    mScrollEnabled = scrollEnabled;
   }
 
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
+
     if (mRemoveClippedSubviews) {
       updateClippingRect();
     }
@@ -75,16 +75,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
       ReactScrollViewHelper.emitScrollEvent(this, x, y);
     }
-  }
-
-  @Override
-  public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (super.onInterceptTouchEvent(ev)) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      return true;
-    }
-
-    return false;
   }
 
   @Override
@@ -119,5 +109,31 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
+  }
+
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (!mScrollEnabled) {
+      return false;
+    }
+    if (super.onInterceptTouchEvent(ev)) {
+      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+      return true;
+    }
+
+    return false;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    switch (ev.getAction()) {
+      case MotionEvent.ACTION_DOWN:
+        if (mScrollEnabled) {
+          return super.onTouchEvent(ev);
+        }
+        return false;
+      default:
+        return super.onTouchEvent(ev);
+    }
   }
 }
