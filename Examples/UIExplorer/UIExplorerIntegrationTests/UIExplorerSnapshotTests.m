@@ -53,7 +53,7 @@ RCT_TEST(LayoutExample)
 RCT_TEST(TextExample)
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
-RCT_TEST(TabBarExample)
+//RCT_TEST(TabBarExample) // Disabled: #8985988
 
 - (void)testZZZNotInRecordMode
 {
