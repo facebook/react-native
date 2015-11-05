@@ -81,5 +81,5 @@ env:
 
 branches:
   only:
+    - 0.14-stable
     - master
-    - /^.*-stable$/
