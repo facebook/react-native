@@ -124,22 +124,10 @@ void RCTFatal(NSError *error)
   if (fatalHandler) {
     fatalHandler(error);
   } else {
-    const NSUInteger maxMessageLength = 75;
-    NSString *message = [error localizedDescription];
-    if (message.length > maxMessageLength) {
-      message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
-    }
-
-    NSMutableString *prettyStack = [NSMutableString stringWithString:@"\n"];
-    if ([error.userInfo[RCTJSStackTraceKey] isKindOfClass:[NSArray class]]) {
-      for (NSDictionary *frame in error.userInfo[RCTJSStackTraceKey]) {
-        [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
-      }
-    }
-
 #if DEBUG
     @try {
 #endif
+      NSString *message = RCTFormatError([error localizedDescription], error.userInfo[RCTJSStackTraceKey], 75);
       [NSException raise:@"RCTFatalException" format:@"%@", message];
 #if DEBUG
     } @catch (NSException *e) {}
@@ -155,4 +143,21 @@ void RCTSetFatalHandler(RCTFatalHandler fatalhandler)
 RCTFatalHandler RCTGetFatalHandler(void)
 {
   return RCTCurrentFatalHandler;
+}
+
+NSString *RCTFormatError(NSString *message, NSArray *stackTrace, NSUInteger maxMessageLength)
+{
+  if (maxMessageLength > 0 && message.length > maxMessageLength) {
+    message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
+  }
+
+  NSMutableString *prettyStack = [NSMutableString string];
+  if (stackTrace) {
+    [prettyStack appendString:@", stack:\n"];
+    for (NSDictionary *frame in stackTrace) {
+      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+    }
+  }
+
+  return [NSString stringWithFormat:@"Message: %@%@", message, prettyStack];
 }
