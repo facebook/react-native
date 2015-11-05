@@ -63,7 +63,7 @@ RCTLogFunction RCTDefaultLogFunction = ^(
   fprintf(stderr, "%s\n", log.UTF8String);
   fflush(stderr);
 
-  int aslLevel = ASL_LEVEL_ERR;
+  int aslLevel;
   switch(level) {
     case RCTLogLevelInfo:
       aslLevel = ASL_LEVEL_NOTICE;
@@ -74,11 +74,9 @@ RCTLogFunction RCTDefaultLogFunction = ^(
     case RCTLogLevelError:
       aslLevel = ASL_LEVEL_ERR;
       break;
-    case RCTLogLevelMustFix:
-      aslLevel = ASL_LEVEL_EMERG;
+    case RCTLogLevelFatal:
+      aslLevel = ASL_LEVEL_CRIT;
       break;
-    default:
-      aslLevel = ASL_LEVEL_DEBUG;
   }
   asl_log(NULL, NULL, aslLevel, "%s", message.UTF8String);
 };

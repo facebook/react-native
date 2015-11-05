@@ -284,8 +284,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 #define RCT_INNER_BRIDGE_ONLY(...) \
 - (void)__VA_ARGS__ \
 { \
-  RCTLogMustFix(@"Called method \"%@\" on top level bridge. This method should \
-              only be called from bridge instance in a bridge module", @(__func__)); \
+  NSString *errorMessage = [NSString stringWithFormat:@"Called method \"%@\" on top level bridge. \
+    This method should oly be called from bridge instance in a bridge module", @(__func__)]; \
+  RCTFatal(RCTErrorWithMessage(errorMessage)); \
 }
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args

@@ -647,8 +647,9 @@ RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containe
     }
   }
   if (removedChildren.count != atIndices.count) {
-    RCTLogMustFix(@"removedChildren count (%tu) was not what we expected (%tu)",
-                  removedChildren.count, atIndices.count);
+    NSString *message = [NSString stringWithFormat:@"removedChildren count (%tu) was not what we expected (%tu)",
+                         removedChildren.count, atIndices.count];
+    RCTFatal(RCTErrorWithMessage(message));
   }
   return removedChildren;
 }

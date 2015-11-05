@@ -21,7 +21,6 @@
 #import "RCTModuleMap.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 #import "RCTSparseArray.h"
 #import "RCTUtils.h"
@@ -416,18 +415,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   _loading = NO;
 
-  NSArray<NSDictionary *> *stack = error.userInfo[@"stack"];
-  if (stack) {
-    [self.redBox showErrorMessage:error.localizedDescription withStack:stack];
-  } else {
-    [self.redBox showError:error];
-  }
-  RCTLogError(@"Error while loading: %@", error.localizedDescription);
-
-  NSDictionary *userInfo = @{@"bridge": self, @"error": error};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                       object:_parentBridge
-                                                    userInfo:userInfo];
+                                                    userInfo:@{@"bridge": self, @"error": error}];
+  RCTFatal(error);
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
@@ -661,7 +652,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
-      [self.redBox showError:error];
+      RCTFatal(error);
     }
 
     if (!self.isValid) {
@@ -810,17 +801,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
   @catch (NSException *exception) {
-    RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, moduleData.name, params, exception);
-    if (!RCT_DEBUG && [exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+    // Pass on JS exceptions
+    if ([exception.name rangeOfString:@"Unhandled JS Exception"].location == 0) {
       @throw exception;
     }
+
+    NSString *message = [NSString stringWithFormat:
+                         @"Exception thrown while invoking %@ on target %@ with params %@: %@",
+                         method.JSMethodName, moduleData.name, params, exception];
+    RCTFatal(RCTErrorWithMessage(message));
   }
 
-  NSMutableDictionary *args = [method.profileArgs mutableCopy];
-  [args setValue:method.JSMethodName forKey:@"method"];
-  [args setValue:RCTJSONStringify(RCTNullIfNil(params), NULL) forKey:@"args"];
-
-  RCTProfileEndEvent(0, @"objc_call", args);
+  if (RCTProfileIsProfiling()) {
+    NSMutableDictionary *args = [method.profileArgs mutableCopy];
+    args[@"method"] = method.JSMethodName;
+    args[@"args"] = RCTJSONStringify(RCTNullIfNil(params), NULL);
+    RCTProfileEndEvent(0, @"objc_call", args);
+  }
 
   return YES;
 }
