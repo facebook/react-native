@@ -29,6 +29,7 @@
  * own code.
  */
 #define RCTLog(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
+#define RCTLogTrace(...) _RCTLog(RCTLogLevelTrace, __VA_ARGS__)
 #define RCTLogInfo(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
 #define RCTLogWarn(...) _RCTLog(RCTLogLevelWarning, __VA_ARGS__)
 #define RCTLogError(...) _RCTLog(RCTLogLevelError, __VA_ARGS__)
@@ -37,6 +38,7 @@
  * An enum representing the severity of the log message.
  */
 typedef NS_ENUM(NSInteger, RCTLogLevel) {
+  RCTLogLevelTrace = 0,
   RCTLogLevelInfo = 1,
   RCTLogLevelWarning = 2,
   RCTLogLevelError = 3,
