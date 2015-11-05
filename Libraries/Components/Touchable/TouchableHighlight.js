@@ -32,7 +32,7 @@ type Event = Object;
 
 var DEFAULT_PROPS = {
   activeOpacity: 0.8,
-  underlayColor: 'black',
+  underlayColor: 'transparent',
 };
 
 /**
