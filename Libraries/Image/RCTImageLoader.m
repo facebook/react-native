@@ -224,7 +224,16 @@ RCT_EXPORT_MODULE()
     __weak RCTImageLoader *weakSelf = self;
     __block RCTImageLoaderCancellationBlock decodeCancel = nil;
     RCTURLRequestCompletionBlock processResponse =
-    ^(NSURLResponse *response, NSData *data, __unused NSError *error) {
+    ^(NSURLResponse *response, NSData *data, NSError *error) {
+
+      // Check for system errors
+      if (error) {
+        completionHandler(error, nil);
+        return;
+      } else if (!data) {
+        completionHandler(RCTErrorWithMessage(@"Unknown image download error"), nil);
+        return;
+      }
 
       // Check for http errors
       if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
