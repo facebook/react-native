@@ -32,12 +32,10 @@ if (typeof window === 'undefined') {
   window = GLOBAL;
 }
 
-function handleError(e, isFatal) {
-  try {
-    require('ExceptionsManager').handleException(e, isFatal);
-  } catch(ee) {
-    console.log('Failed to print error: ', ee.message);
-  }
+function setUpConsole() {
+  // ExceptionsManager transitively requires Promise so we install it after
+  var ExceptionsManager = require('ExceptionsManager');
+  ExceptionsManager.installConsoleErrorReporter();
 }
 
 /**
@@ -72,19 +70,17 @@ function polyfillGlobal(name, newValue, scope=GLOBAL) {
   Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
-function setUpRedBoxErrorHandler() {
+function setUpErrorHandler() {
+  function handleError(e, isFatal) {
+    try {
+      require('ExceptionsManager').handleException(e, isFatal);
+    } catch(ee) {
+      console.log('Failed to print error: ', ee.message);
+    }
+  }
+
   var ErrorUtils = require('ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
-}
-
-function setUpRedBoxConsoleErrorHandler() {
-  // ExceptionsManager transitively requires Promise so we install it after
-  var ExceptionsManager = require('ExceptionsManager');
-  var Platform = require('Platform');
-  // TODO (#6925182): Enable console.error redbox on Android
-  if (__DEV__ && Platform.OS === 'ios') {
-    ExceptionsManager.installConsoleErrorReporter();
-  }
 }
 
 function setUpFlowChecker() {
@@ -187,12 +183,12 @@ function setUpDevTools() {
 }
 
 setUpProcessEnv();
-setUpRedBoxErrorHandler();
+setUpConsole();
 setUpTimers();
 setUpAlert();
 setUpPromise();
+setUpErrorHandler();
 setUpXHR();
-setUpRedBoxConsoleErrorHandler();
 setUpGeolocation();
 setUpWebSockets();
 setUpProfile();
