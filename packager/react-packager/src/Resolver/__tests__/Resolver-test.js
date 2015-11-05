@@ -10,19 +10,20 @@
 
 jest.dontMock('../')
   .dontMock('underscore')
-  .dontMock('../replacePatterns');
+  .dontMock('../../DependencyResolver/replacePatterns');
 
 jest.mock('path');
 
 var Promise = require('promise');
-var HasteDependencyResolver = require('../');
-var Module = require('../Module');
-var Polyfill = require('../Polyfill');
+var Resolver = require('../');
+var Module = require('../../DependencyResolver/Module');
+var Polyfill = require('../../DependencyResolver/Polyfill');
+var DependencyGraph = require('../../DependencyResolver/DependencyGraph');
 
 var path = require('path');
 var _ = require('underscore');
 
-describe('HasteDependencyResolver', function() {
+describe('Resolver', function() {
   beforeEach(function() {
     Polyfill.mockClear();
 
@@ -60,13 +61,11 @@ describe('HasteDependencyResolver', function() {
       var module = createModule('index');
       var deps = [module];
 
-      var depResolver = new HasteDependencyResolver({
+      var depResolver = new Resolver({
         projectRoot: '/root',
       });
 
-      // Is there a better way? How can I mock the prototype instead?
-      var depGraph = depResolver._depGraph;
-      depGraph.getDependencies.mockImpl(function() {
+      DependencyGraph.prototype.getDependencies.mockImpl(function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
@@ -144,12 +143,11 @@ describe('HasteDependencyResolver', function() {
       var module = createModule('index');
       var deps = [module];
 
-      var depResolver = new HasteDependencyResolver({
+      var depResolver = new Resolver({
         projectRoot: '/root',
       });
 
-      var depGraph = depResolver._depGraph;
-      depGraph.getDependencies.mockImpl(function() {
+      DependencyGraph.prototype.getDependencies.mockImpl(function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
@@ -160,7 +158,7 @@ describe('HasteDependencyResolver', function() {
       return depResolver.getDependencies('/root/index.js', { dev: true })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
-          expect(depGraph.getDependencies).toBeCalledWith('/root/index.js', undefined);
+          expect(DependencyGraph.mock.instances[0].getDependencies).toBeCalledWith('/root/index.js', undefined);
           expect(result.dependencies[0]).toBe(Polyfill.mock.instances[0]);
           expect(result.dependencies[result.dependencies.length - 1])
               .toBe(module);
@@ -171,13 +169,12 @@ describe('HasteDependencyResolver', function() {
       var module = createModule('index');
       var deps = [module];
 
-      var depResolver = new HasteDependencyResolver({
+      var depResolver = new Resolver({
         projectRoot: '/root',
         polyfillModuleNames: ['some module'],
       });
 
-      var depGraph = depResolver._depGraph;
-      depGraph.getDependencies.mockImpl(function() {
+      DependencyGraph.prototype.getDependencies.mockImpl(function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
@@ -209,11 +206,10 @@ describe('HasteDependencyResolver', function() {
 
   describe('wrapModule', function() {
     pit('should resolve modules', function() {
-      var depResolver = new HasteDependencyResolver({
+      var depResolver = new Resolver({
         projectRoot: '/root',
       });
 
-      var depGraph = depResolver._depGraph;
       var dependencies = ['x', 'y', 'z', 'a', 'b'];
 
       /*eslint-disable */
