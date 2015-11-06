@@ -9,8 +9,12 @@
 
 package com.facebook.systrace;
 
+import android.os.Build;
+import android.os.Trace;
+
 /**
- * Systrace stub.
+ * Systrace stub that mostly does nothing but delegates to Trace for beginning/ending sections.
+ * The internal version of this file has not been opensourced yet.
  */
 public class Systrace {
 
@@ -50,9 +54,15 @@ public class Systrace {
   }
 
   public static void beginSection(long tag, final String sectionName) {
+    if (Build.VERSION.SDK_INT >= 18) {
+      Trace.beginSection(sectionName);
+    }
   }
 
   public static void endSection(long tag) {
+    if (Build.VERSION.SDK_INT >= 18) {
+      Trace.endSection();
+    }
   }
 
   public static void beginAsyncSection(
