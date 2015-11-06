@@ -78,15 +78,25 @@ class RewriteExample extends React.Component {
     this.state = {text: ''};
   }
   render() {
+    var limit = 20;
+    var remainder = limit - this.state.text.length;
+    var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
-      <TextInput
-        onChangeText={(text) => {
-          text = text.replace(/ /g, '_');
-          this.setState({text});
-        }}
-        style={styles.singleLine}
-        value={this.state.text}
-      />
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          maxLength={limit}
+          onChangeText={(text) => {
+            text = text.replace(/ /g, '_');
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+        <Text style={[styles.remainder, {color: remainderColor}]}>
+          {remainder}
+        </Text>
+      </View>
     );
   }
 }
