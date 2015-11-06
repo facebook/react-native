@@ -20,8 +20,9 @@ var _notifHandlers = new Map();
 var _initialNotification = RCTPushNotificationManager &&
   RCTPushNotificationManager.initialNotification;
 
-var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
-var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+var REMOTE_NOTIF_RECEIVED_EVENT = 'remoteNotificationReceived';
+var REMOTE_NOTIF_REG_EVENT = 'remoteNotificationsRegistered';
+var LOCAL_NOTIF_RECEIVED_EVENT = 'localNotificationReceived';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -117,27 +118,36 @@ class PushNotificationIOS {
    *
    * Valid events are:
    *
-   * - `notification` : Fired when a remote notification is received. The
+   * - `remoteNotification` : Fired when a remote notification is received. The
    *   handler will be invoked with an instance of `PushNotificationIOS`.
-   * - `register`: Fired when the user registers for remote notifications. The
+   * - `remoteRegistration`: Fired when the user registers for remote notifications. The
    *   handler will be invoked with a hex string representing the deviceToken.
+   * - `localNotification` : Fired when a local notification is received. The
+   *   handler will be invoked with notification identifier.
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'remoteNotification' || type === 'remoteRegistration' || type === 'localNotification',
+      'PushNotificationIOS only supports `remoteNotification`, `remoteRegistration` and `localNotification` events'
     );
     var listener;
-    if (type === 'notification') {
+    if (type === 'remoteNotification') {
       listener =  RCTDeviceEventEmitter.addListener(
-        DEVICE_NOTIF_EVENT,
+        REMOTE_NOTIF_RECEIVED_EVENT,
         (notifData) => {
           handler(new PushNotificationIOS(notifData));
         }
       );
-    } else if (type === 'register') {
+    } else if (type === 'localNotification') {
+      listener =  RCTDeviceEventEmitter.addListener(
+        LOCAL_NOTIF_RECEIVED_EVENT,
+        (notifData) => {
+          handler(notifData.identifier);
+        }
+      );
+    } else if (type === 'remoteRegistration') {
       listener = RCTDeviceEventEmitter.addListener(
-        NOTIF_REGISTER_EVENT,
+        REMOTE_NOTIF_REG_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
         }
