@@ -29,11 +29,17 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     dest new File(downloadsDir, 'boost_1_57_0.zip')
 }
 
-task prepareBoost(dependsOn: downloadBoost, type: Copy) {
-    from zipTree(downloadBoost.dest)
-    from 'src/main/jni/third-party/boost/Android.mk'
-    include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
-    into "$thirdPartyNdkDir/boost"
+task prepareBoost(dependsOn: downloadBoost) {
+    inputs.files downloadBoost.dest, 'src/main/jni/third-party/boost/Android.mk'
+    outputs.dir "$thirdPartyNdkDir/boost"
+    doLast {
+        copy {
+            from { zipTree(downloadBoost.dest) }
+            from 'src/main/jni/third-party/boost/Android.mk'
+            include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+            into "$thirdPartyNdkDir/boost"
+        }
+    }
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
