@@ -27,6 +27,8 @@ public class ReactProgressBarViewManager extends
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode> {
 
   /* package */ static final String PROP_STYLE = "styleAttr";
+  /* package */ static final String PROP_INDETERMINATE = "indeterminate";
+  /* package */ static final String PROP_PROGRESS = "progress";
 
   /* package */ static final String REACT_CLASS = "AndroidProgressBar";
   /* package */ static final String DEFAULT_STYLE = "Large";
@@ -49,6 +51,16 @@ public class ReactProgressBarViewManager extends
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(ProgressBarContainerView view, @Nullable Integer color) {
     view.setColor(color);
+  }
+
+  @ReactProp(name = PROP_INDETERMINATE)
+  public void setIndeterminate(ProgressBarContainerView view, boolean indeterminate) {
+    view.setIndeterminate(indeterminate);
+  }
+
+  @ReactProp(name = PROP_PROGRESS)
+  public void setProgress(ProgressBarContainerView view, double progress) {
+    view.setProgress(progress);
   }
 
   @Override
