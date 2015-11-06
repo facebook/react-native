@@ -181,7 +181,6 @@ var TextInput = React.createClass({
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
-     * @platform ios
      */
     maxLength: PropTypes.number,
     /**
@@ -501,6 +500,7 @@ var TextInput = React.createClass({
         mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
         numberOfLines={this.props.numberOfLines}
+        maxLength={this.props.maxLength}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}

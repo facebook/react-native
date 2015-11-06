@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import android.text.InputFilter;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
@@ -53,6 +54,7 @@ public class ReactTextInputManager extends
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
+  private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
 
   @Override
   public String getName() {
@@ -197,6 +199,17 @@ public class ReactTextInputManager extends
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = 1)
   public void setNumLines(ReactEditText view, int numLines) {
     view.setLines(numLines);
+  }
+
+  @ReactProp(name = "maxLength")
+  public void setMaxLength(ReactEditText view, @Nullable Integer maxLength) {
+    if (maxLength == null) {
+      view.setFilters(EMPTY_FILTERS);
+    } else {
+      InputFilter[] filterArray = new InputFilter[1];
+      filterArray[0] = new InputFilter.LengthFilter(maxLength);
+      view.setFilters(filterArray);
+    }
   }
 
   @ReactProp(name = "autoCorrect")
