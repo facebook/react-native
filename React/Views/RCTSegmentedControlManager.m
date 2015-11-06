@@ -29,6 +29,14 @@ RCT_EXPORT_VIEW_PROPERTY(momentary, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
+RCT_CUSTOM_VIEW_PROPERTY(layerCornerRadius, CGFloat, RCTSegmentedControl) {
+  if (json) {
+    view.layer.cornerRadius = [RCTConvert CGFloat:json];
+  } else {
+    view.layer.cornerRadius = defaultView.layer.cornerRadius;
+  }
+}
+
 - (NSDictionary *)constantsToExport
 {
   RCTSegmentedControl *view = [RCTSegmentedControl new];

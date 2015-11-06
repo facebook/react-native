@@ -69,6 +69,11 @@ var SegmentedControlIOS = React.createClass({
     tintColor: PropTypes.string,
 
     /**
+     * Corner radius of the control's layer. Useful when setting the control's background color.
+     */
+    layerCornerRadius: PropTypes.number,
+
+    /**
      * If true, then selecting a segment won't persist visually.
      * The `onValueChange` callback will still work as expected.
      */
