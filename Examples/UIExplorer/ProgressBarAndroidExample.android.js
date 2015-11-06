@@ -20,6 +20,31 @@ var React = require('React');
 var UIExplorerBlock = require('UIExplorerBlock');
 var UIExplorerPage = require('UIExplorerPage');
 
+var TimerMixin = require('react-timer-mixin');
+
+var MovingBar = React.createClass({
+  mixins: [TimerMixin],
+
+  getInitialState: function() {
+    return {
+      progress: 0
+    };
+  },
+
+  componentDidMount: function() {
+    this.setInterval(
+      () => {
+        var progress = (this.state.progress + 0.02) % 1;
+        this.setState({progress: progress});
+      }, 50
+    );
+  },
+
+  render: function() {
+    return <ProgressBar progress={this.state.progress} {...this.props} />;
+  },
+});
+
 var ProgressBarAndroidExample = React.createClass({
 
   statics: {
@@ -55,8 +80,24 @@ var ProgressBarAndroidExample = React.createClass({
           <ProgressBar styleAttr="LargeInverse" />
         </UIExplorerBlock>
 
+        <UIExplorerBlock title="Horizontal Indeterminate ProgressBar">
+          <ProgressBar styleAttr="Horizontal" />
+        </UIExplorerBlock>
+
+        <UIExplorerBlock title="Horizontal ProgressBar">
+          <MovingBar styleAttr="Horizontal" indeterminate={false} />
+        </UIExplorerBlock>
+
         <UIExplorerBlock title="Large Red ProgressBar">
           <ProgressBar styleAttr="Large" color="red" />
+        </UIExplorerBlock>
+
+        <UIExplorerBlock title="Horizontal Black Indeterminate ProgressBar">
+          <ProgressBar styleAttr="Horizontal" color="black" />
+        </UIExplorerBlock>
+
+        <UIExplorerBlock title="Horizontal Blue ProgressBar">
+          <MovingBar styleAttr="Horizontal" indeterminate={false} color="blue" />
         </UIExplorerBlock>
       </UIExplorerPage>
     );
