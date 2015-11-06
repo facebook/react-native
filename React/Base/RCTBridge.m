@@ -11,6 +11,7 @@
 
 #import <objc/runtime.h>
 
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -250,6 +251,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTAssertMainThread();
 
   _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
+
+  // Sanitize the bundle URL
+  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
   _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
