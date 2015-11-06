@@ -101,6 +101,12 @@
   _rightButtonItem = nil;
 }
 
+- (void)setRightButtonSystemItem:(UIBarButtonSystemItem)rightButtonSystemItem
+{
+  _rightButtonSystemItem = rightButtonSystemItem;
+  _rightButtonItem = nil;
+}
+
 - (UIBarButtonItem *)rightButtonItem
 {
   if (!_rightButtonItem) {
@@ -115,6 +121,11 @@
       _rightButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
                                        style:UIBarButtonItemStylePlain
+                                      target:self
+                                      action:@selector(handleRightButtonPress)];
+    } else if (_rightButtonSystemItem >= 0) {
+      _rightButtonItem =
+      [[UIBarButtonItem alloc] initWithBarButtonSystemItem:_rightButtonSystemItem
                                       target:self
                                       action:@selector(handleRightButtonPress)];
     } else {
