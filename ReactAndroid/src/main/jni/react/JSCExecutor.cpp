@@ -8,6 +8,7 @@
 #include <fb/log.h>
 #include <folly/json.h>
 #include <folly/String.h>
+#include <jni/fbjni/Exceptions.h>
 #include "Value.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
@@ -23,6 +24,8 @@ using fbsystrace::FbSystraceSection;
 
 // Add native performance markers support
 #include <react/JSCPerfLogging.h>
+
+using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
@@ -53,6 +56,17 @@ static JSValueRef evaluateScriptWithJSC(
     JSValueProtect(ctx, exn);
     std::string exceptionText = Value(ctx, exn).toString().str();
     FBLOGE("Got JS Exception: %s", exceptionText.c_str());
+    auto line = Value(ctx, JSObjectGetProperty(ctx,
+      JSValueToObject(ctx, exn, nullptr),
+      JSStringCreateWithUTF8CString("line"), nullptr
+    ));
+    std::ostringstream lineInfo;
+    if (line != nullptr && line.isNumber()) {
+      lineInfo << " (line " << line.asInteger() << " in the generated bundle)";
+    } else {
+      lineInfo << " (no line info)";
+    }
+    throwNewJavaException("com/facebook/react/bridge/JSExecutionException", (exceptionText + lineInfo.str()).c_str());
   }
   return result;
 }
