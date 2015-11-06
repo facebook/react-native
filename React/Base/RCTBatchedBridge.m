@@ -627,7 +627,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   __weak RCTBatchedBridge *weakSelf = self;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     RCTProfileEndFlowEvent();
-    RCTProfileBeginEvent(0, @"enqueue_call", nil);
 
     RCTBatchedBridge *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.valid) {
@@ -731,7 +730,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      RCTProfileBeginEvent(0, RCTCurrentThreadName(), nil);
+      NSString *threadName = RCTCurrentThreadName();
+      RCTProfileBeginEvent(0, threadName, nil);
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
       @autoreleasepool {
