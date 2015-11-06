@@ -202,9 +202,7 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
 {
   if (argumentCount > 0) {
     double tag = JSValueToNumber(context, arguments[0], exception);
-    if (exception == NULL) {
-      RCTProfileEndEvent((uint64_t)tag, @"console", nil);
-    }
+    RCTProfileEndEvent((uint64_t)tag, @"console", nil);
   }
 
   return JSValueMakeUndefined(context);
