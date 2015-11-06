@@ -54,6 +54,10 @@ var ProgressBarAndroidExample = React.createClass({
         <UIExplorerBlock title="Large Inverse ProgressBar">
           <ProgressBar styleAttr="LargeInverse" />
         </UIExplorerBlock>
+
+        <UIExplorerBlock title="Large Red ProgressBar">
+          <ProgressBar styleAttr="Large" color="red" />
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   },

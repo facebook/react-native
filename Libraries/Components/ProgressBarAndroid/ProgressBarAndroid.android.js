@@ -15,7 +15,7 @@ var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
   'Horizontal',
@@ -63,6 +63,10 @@ var ProgressBarAndroid = React.createClass({
      */
     styleAttr: ReactPropTypes.oneOf(STYLE_ATTRIBUTES),
     /**
+     * Color of the progress bar.
+     */
+    color: ReactPropTypes.string,
+    /**
      * Used to locate this view in end-to-end tests.
      */
     testID: ReactPropTypes.string,
@@ -81,12 +85,6 @@ var ProgressBarAndroid = React.createClass({
   },
 });
 
-var AndroidProgressBar = createReactNativeComponentClass({
-  validAttributes: {
-    ...ReactNativeViewAttributes.UIView,
-    styleAttr: true,
-  },
-  uiViewClassName: 'AndroidProgressBar',
-});
+var AndroidProgressBar = requireNativeComponent('AndroidProgressBar', ProgressBarAndroid);
 
 module.exports = ProgressBarAndroid;
