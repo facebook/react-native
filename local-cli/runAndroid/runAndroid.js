@@ -124,7 +124,7 @@ function buildAndRun(args, reject) {
 
 function startServerInNewWindow() {
   const launchPackagerScript = path.resolve(
-    __dirname, '..', '..', '..', 'packager', 'launchPackager.command'
+    __dirname, '..', '..', 'packager', 'launchPackager.command'
   );
 
   if (process.platform === 'darwin') {
