@@ -134,7 +134,11 @@ public class CatalystInstance {
 
               incrementPendingJSCalls();
 
-              mJSBundleLoader.loadScript(mBridge);
+              try {
+                mJSBundleLoader.loadScript(mBridge);
+              } catch (JSExecutionException e) {
+                mNativeModuleCallExceptionHandler.handleException(e);
+              }
 
               initLatch.countDown();
             }
