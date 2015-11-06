@@ -730,8 +730,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      NSString *threadName = RCTCurrentThreadName();
-      RCTProfileBeginEvent(0, threadName, nil);
+      
+#if RCT_DEV
+      NSString *_threadName = RCTCurrentThreadName();
+      RCTProfileBeginEvent(0, _threadName, nil);
+#endif
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
       @autoreleasepool {
