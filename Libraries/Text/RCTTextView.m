@@ -11,6 +11,7 @@
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
+#import "RCTText.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
@@ -38,6 +39,10 @@
   UITextView *_placeholderView;
   UITextView *_textView;
   NSInteger _nativeEventCount;
+  RCTText *_richTextView;
+  NSAttributedString *_pendingAttributedText;
+  NSMutableArray<UIView<RCTComponent> *> *_subviews;
+  BOOL _blockTextShouldChange;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -53,6 +58,8 @@
     _textView.backgroundColor = [UIColor clearColor];
     _textView.scrollsToTop = NO;
     _textView.delegate = self;
+
+    _subviews = [NSMutableArray new];
     [self addSubview:_textView];
   }
   return self;
@@ -60,6 +67,90 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (NSArray<UIView<RCTComponent> *> *)reactSubviews
+{
+  return _subviews;
+}
+
+- (void)insertReactSubview:(UIView<RCTComponent> *)subview atIndex:(NSInteger)index
+{
+  if ([subview isKindOfClass:[RCTText class]]) {
+    if (_richTextView) {
+      RCTLogError(@"Tried to insert a second <Text> into <TextInput> - there can only be one.");
+    }
+    _richTextView = (RCTText *)subview;
+    [_subviews insertObject:_richTextView atIndex:index];
+  } else {
+    [_subviews insertObject:subview atIndex:index];
+    [self insertSubview:subview atIndex:index];
+  }
+}
+
+- (void)removeReactSubview:(UIView<RCTComponent> *)subview
+{
+  if (_richTextView == subview) {
+    [_subviews removeObject:_richTextView];
+    _richTextView = nil;
+  } else {
+    [_subviews removeObject:subview];
+    [subview removeFromSuperview];
+  }
+}
+
+- (void)setMostRecentEventCount:(NSInteger)mostRecentEventCount
+{
+  _mostRecentEventCount = mostRecentEventCount;
+
+  // Props are set after uiBlockToAmendWithShadowViewRegistry, which means that
+  // at the time performTextUpdate is called, _mostRecentEventCount will be
+  // behind _eventCount, with the result that performPendingTextUpdate will do
+  // nothing. For that reason we call it again here after mostRecentEventCount
+  // has been set.
+  [self performPendingTextUpdate];
+}
+
+- (void)performTextUpdate
+{
+  if (_richTextView) {
+    _pendingAttributedText = _richTextView.textStorage;
+    [self performPendingTextUpdate];
+  } else if (!self.text) {
+    _textView.attributedText = nil;
+  }
+}
+
+- (void)performPendingTextUpdate
+{
+  if (!_pendingAttributedText || _mostRecentEventCount < _nativeEventCount) {
+    return;
+  }
+
+  if ([_textView.attributedText isEqualToAttributedString:_pendingAttributedText]) {
+    _pendingAttributedText = nil; // Don't try again.
+    return;
+  }
+
+  // When we update the attributed text, there might be pending autocorrections
+  // that will get accepted by default. In order for this to not garble our text,
+  // we temporarily block all textShouldChange events so they are not applied.
+  _blockTextShouldChange = YES;
+
+  // We compute the new selectedRange manually to make sure the cursor is at the
+  // end of the newly inserted/deleted text after update.
+  NSRange range = _textView.selectedRange;
+  CGPoint contentOffset = _textView.contentOffset;
+
+  _textView.attributedText = _pendingAttributedText;
+  _pendingAttributedText = nil;
+  _textView.selectedRange = range;
+  [_textView layoutIfNeeded];
+  _textView.contentOffset = contentOffset;
+
+  [self _setPlaceholderVisibility];
+
+  _blockTextShouldChange = NO;
+}
 
 - (void)updateFrames
 {
@@ -156,6 +247,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (BOOL)textView:(RCTUITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+  if (_blockTextShouldChange) {
+    return NO;
+  }
+
   if (textView.textWasPasted) {
     textView.textWasPasted = NO;
   } else {
@@ -307,11 +402,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UIColor *)defaultPlaceholderTextColor
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
-}
-
-- (void)performTextUpdate
-{
-  // Not used (yet)
 }
 
 @end
