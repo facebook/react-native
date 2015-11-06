@@ -648,6 +648,9 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
   executeApplicationScript(bridge, script, assetNameStr);
+  if (env->ExceptionCheck()) {
+    return;
+  }
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_done"));
 }
 
@@ -666,6 +669,9 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
   #endif
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_read"));
   executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
+  if (env->ExceptionCheck()) {
+    return;
+  }
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_exec"));
 }
 
