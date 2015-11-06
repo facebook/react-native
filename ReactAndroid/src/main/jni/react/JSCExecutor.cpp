@@ -194,7 +194,7 @@ static JSValueRef nativeLoggingHook(
     // The lowest log level we get from JS is 0. We shift and cap it to be
     // in the range the Android logging method expects.
     logLevel = std::min(
-        static_cast<android_LogPriority>(level + ANDROID_LOG_VERBOSE),
+        static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
         ANDROID_LOG_FATAL);
   }
   if (argumentCount > 0) {
