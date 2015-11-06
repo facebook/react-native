@@ -226,8 +226,8 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'remoteNotification' || type === 'remoteRegistration' || type === 'localNotification',
+      'PushNotificationIOS only supports `remoteNotification`, `remoteRegistration` and `localNotification` events'
     );
     var listener = _notifHandlers.get(handler);
     if (!listener) {
