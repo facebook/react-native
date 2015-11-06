@@ -73,13 +73,21 @@ class PushNotificationIOS {
    * Schedules the localNotification for future presentation.
    *
    * details is an object containing:
-   *
    * - `fireDate` : The date and time when the system should deliver the notification.
    * - `alertBody` : The message displayed in the notification alert.
    *
+   * optional callback will be invoked with a uuid identifying the notification.
    */
-  static scheduleLocalNotification(details: Object) {
-    RCTPushNotificationManager.scheduleLocalNotification(details);
+  static scheduleLocalNotification(details: Object, successCallback?: Function) {
+    successCallback = successCallback ? successCallback : function() {};
+    RCTPushNotificationManager.scheduleLocalNotification(details, successCallback);
+  }
+
+  /**
+   * Cancels the scheduled notification specified by identifier.
+   */
+  static cancelLocalNotification(identifier) {
+    RCTPushNotificationManager.cancelLocalNotification(identifier);
   }
 
   /**
