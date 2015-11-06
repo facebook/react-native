@@ -25,6 +25,8 @@ var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 
+var keyMirror = require('keyMirror');
+
 var TRANSITIONER_REF = 'transitionerRef';
 
 var PropTypes = React.PropTypes;
@@ -50,6 +52,36 @@ class NavigatorTransitionerIOS extends React.Component {
   }
 }
 
+var SystemItemsLabels = {
+  done: true,
+  cancel: true,
+  edit: true,
+  save: true,
+  add: true,
+  'flexible-space': true,
+  'fixed-space': true,
+  compose: true,
+  reply: true,
+  action: true,
+  organize: true,
+  bookmarks: true,
+  search: true,
+  refresh: true,
+  stop: true,
+  camera: true,
+  trash: true,
+  play: true,
+  pause: true,
+  rewind: true,
+  'fast-forward': true,
+  undo: true,
+  redo: true,
+  'page-curl': true,
+}
+var SystemItems = keyMirror(SystemItemsLabels);
+
+type BarButtonSystemItem = $Enum<typeof SystemItemsLabels>;
+
 type Route = {
   component: Function,
   title: string,
@@ -59,9 +91,11 @@ type Route = {
   backButtonIcon?: Object,
   leftButtonTitle?: string,
   leftButtonIcon?: Object,
+  leftButtonSystemItem?: BarButtonSystemItem;
   onLeftButtonPress?: Function,
   rightButtonTitle?: string,
   rightButtonIcon?: Object,
+  rightButtonSystemItem?: BarButtonSystemItem;
   onRightButtonPress?: Function,
   wrapperStyle?: any,
 };
@@ -354,8 +388,12 @@ var NavigatorIOS = React.createClass({
       rightButtonTitle: PropTypes.string,
 
       /**
-       * This function will be invoked when the right navigation bar item is
-       * pressed.
+       * If set, the right header button will appear with this system icon
+       */
+      rightButtonSystemIcon: PropTypes.oneOf(Object.keys(SystemItems)),
+
+      /**
+       * Called when the right header button is pressed
        */
       onRightButtonPress: PropTypes.func,
 

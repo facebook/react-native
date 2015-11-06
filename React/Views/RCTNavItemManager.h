@@ -1,4 +1,4 @@
-/**
+g/**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -9,7 +9,14 @@
 
 #import "RCTViewManager.h"
 
-@interface RCTNavItemManager : RCTViewManager
+#import "RCTConvert.h"
+
+@interface RCTConvert (BarButtonSystemItem)
+
++ (UIBarButtonSystemItem)UIBarButtonSystemItem:(id)json;
 
 @end
 
+@interface RCTNavItemManager : RCTViewManager
+
+@end
