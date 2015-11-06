@@ -77,11 +77,11 @@ class PushNotificationIOS {
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
    * - `alertBody` : The message displayed in the notification alert.
-   * - `successCallback` : Optional. Invoked with a uuid identifying the notification.
+   * - `callback` : Optional. Invoked with a uuid identifying the notification.
    */
-  static scheduleLocalNotification(details: Object, successCallback?: Function) {
-    successCallback = successCallback ? successCallback : function() {};
-    RCTPushNotificationManager.scheduleLocalNotification(details, successCallback);
+  static scheduleLocalNotification(details: Object, callback?: Function) {
+    callback = callback ? callback : function() {};
+    RCTPushNotificationManager.scheduleLocalNotification(details, callback);
   }
 
   /**

@@ -261,7 +261,7 @@ RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
   [RCTSharedApplication() presentLocalNotificationNow:notification];
 }
 
-RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification successCallback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification callback:(RCTResponseSenderBlock)callback)
 {
   [RCTSharedApplication() scheduleLocalNotification:notification];
 
