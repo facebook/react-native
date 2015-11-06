@@ -44,26 +44,26 @@ class WebSocketBase extends EventTarget {
       protocols = [];
     }
 
-    this.readyState = WebSocketBase.CONNECTING;
+    this.readyState = this.CONNECTING;
     this.connectToSocketImpl(url);
   }
 
   close(): void {
-    if (this.readyState === WebSocketBase.CLOSING ||
-        this.readyState === WebSocketBase.CLOSED) {
+    if (this.readyState === this.CLOSING ||
+        this.readyState === this.CLOSED) {
       return;
     }
 
-    if (this.readyState === WebSocketBase.CONNECTING) {
+    if (this.readyState === this.CONNECTING) {
       this.cancelConnectionImpl();
     }
 
-    this.readyState = WebSocketBase.CLOSING;
+    this.readyState = this.CLOSING;
     this.closeConnectionImpl();
   }
 
   send(data: any): void {
-    if (this.readyState === WebSocketBase.CONNECTING) {
+    if (this.readyState === this.CONNECTING) {
       throw new Error('INVALID_STATE_ERR');
     }
 
@@ -96,5 +96,10 @@ class WebSocketBase extends EventTarget {
     throw new Error('Subclass must define sendArrayBufferImpl method');
   }
 }
+
+WebSocketBase.CONNECTING = 0;
+WebSocketBase.OPEN = 1;
+WebSocketBase.CLOSING = 2;
+WebSocketBase.CLOSED = 3;
 
 module.exports = WebSocketBase;
