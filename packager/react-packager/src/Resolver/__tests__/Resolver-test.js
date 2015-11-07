@@ -135,6 +135,19 @@ describe('Resolver', function() {
                 'polyfills/String.prototype.es6.js',
               ],
             },
+            { id: 'polyfills/Array.es6.js',
+              isPolyfill: true,
+              path: 'polyfills/Array.es6.js',
+              dependencies: [
+                'polyfills/prelude.js',
+                'polyfills/require.js',
+                'polyfills/polyfills.js',
+                'polyfills/console.js',
+                'polyfills/error-guard.js',
+                'polyfills/String.prototype.es6.js',
+                'polyfills/Array.prototype.es6.js',
+              ],
+            }
           ]);
         });
     });
@@ -196,7 +209,8 @@ describe('Resolver', function() {
                 'polyfills/console.js',
                 'polyfills/error-guard.js',
                 'polyfills/String.prototype.es6.js',
-                'polyfills/Array.prototype.es6.js'
+                'polyfills/Array.prototype.es6.js',
+                'polyfills/Array.es6.js',
               ]
             },
           ]);
