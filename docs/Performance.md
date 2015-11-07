@@ -294,7 +294,7 @@ inside of your `onPress` handler in `requestAnimationFrame`:
 handleOnPress() {
   // Always use TimerMixin with requestAnimationFrame, setTimeout and
   // setInterval
-  this.requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
     this.doExpensiveAction();
   });
 }
