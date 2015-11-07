@@ -49,7 +49,8 @@ const validateOpts = declareOpts({
   providesModuleNodeModules: {
     type: 'array',
     default: [
-      'react-tools',
+      'fbjs-haste',
+      'react-haste',
       'react-native',
       // Parse requires AsyncStorage. They will
       // change that to require('react-native') which
