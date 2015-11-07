@@ -17,6 +17,9 @@
       "^image![a-zA-Z0-9$_-]+$": "GlobalImageStub",
       "^[./a-zA-Z0-9$_-]+\\.png$": "RelativeImageStub"
     },
+    "modulePathIgnorePatterns": [
+      "node_modules/react-haste/renderers/dom/ReactDOM.js"
+    ],
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],
