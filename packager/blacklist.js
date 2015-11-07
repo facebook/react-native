@@ -15,6 +15,7 @@ var path = require('path');
 var sharedBlacklist = [
   'node_modules/react-haste/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
   'node_modules/react-haste/React.js',
+  'node_modules/react-haste/renderers/dom/ReactDOM.js',
 
   // For each of these fbjs files (especially the non-forks/stubs), we should
   // consider deleting the conflicting copy and just using the fbjs version.
