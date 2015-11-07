@@ -38,7 +38,10 @@ NSString *const RCTProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
 
+// This is actually a BOOL - but has to be compatible with OSAtomic
 static volatile uint32_t RCTProfileProfiling;
+
+static BOOL RCTProfileHookedModules;
 static NSDictionary *RCTProfileInfo;
 static NSMutableDictionary *RCTProfileOngoingEvents;
 static NSTimeInterval RCTProfileStartTime;
@@ -200,10 +203,12 @@ void RCTProfileHookModules(RCTBridge *bridge)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
-  if (RCTProfileTrampoline == NULL) {
+  if (RCTProfileTrampoline == NULL || RCTProfileHookedModules) {
     return;
   }
 #pragma clang diagnostic pop
+
+  RCTProfileHookedModules = YES;
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     [moduleData dispatchBlock:^{
@@ -243,6 +248,12 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
+  if (!RCTProfileHookedModules) {
+    return;
+  }
+
+  RCTProfileHookedModules = NO;
+
   dispatch_group_enter(RCTProfileGetUnhookGroup());
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
