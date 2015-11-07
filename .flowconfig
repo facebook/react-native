@@ -18,6 +18,7 @@
 .*/node_modules/fbjs-haste/crypto/crc32.js
 .*/node_modules/fbjs-haste/stubs/ErrorUtils.js
 .*/node_modules/react-haste/React.js
+.*/node_modules/react-haste/renderers/dom/ReactDOM.js
 .*/node_modules/react-haste/renderers/shared/event/eventPlugins/ResponderEventPlugin.js
 
 # Ignore commoner tests
