@@ -20,6 +20,11 @@ function BoundingDimensions(width, height) {
   this.height = height;
 }
 
+BoundingDimensions.prototype.destructor = function() {
+  this.width = null;
+  this.height = null;
+};
+
 /**
  * @param {HTMLElement} element Element to return `BoundingDimensions` for.
  * @return {BoundingDimensions} Bounding dimensions of `element`.
