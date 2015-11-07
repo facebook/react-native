@@ -105,6 +105,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/error-guard.js'),
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
+      path.join(__dirname, 'polyfills/Array.es6.js'),
     ].concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
