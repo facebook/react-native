@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.text.InputFilter;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.views.text.TypefaceProvider;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -56,6 +57,12 @@ public class ReactTextInputManager extends
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
 
+  private final TypefaceProvider mTypefaceProvider;
+
+  public ReactTextInputManager(TypefaceProvider typefaceProvider) {
+    mTypefaceProvider = typefaceProvider;
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -75,7 +82,7 @@ public class ReactTextInputManager extends
 
   @Override
   public ReactTextInputShadowNode createShadowNodeInstance() {
-    return new ReactTextInputShadowNode();
+    return new ReactTextInputShadowNode(mTypefaceProvider);
   }
 
   @Override

@@ -22,6 +22,10 @@ public class ReactRawTextManager extends ReactTextViewManager {
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTRawText";
 
+  public ReactRawTextManager(TypefaceProvider typefaceProvider) {
+    super(typefaceProvider);
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -38,7 +42,7 @@ public class ReactRawTextManager extends ReactTextViewManager {
 
   @Override
   public ReactTextShadowNode createShadowNodeInstance() {
-    return new ReactTextShadowNode(true);
+    return new ReactTextShadowNode(true, mTypefaceProvider);
   }
 
   @Override

@@ -21,6 +21,7 @@ import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.views.text.TypefaceProvider;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
@@ -41,8 +42,8 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   private @Nullable float[] mComputedPadding;
   private int mJsEventCount = UNSET;
 
-  public ReactTextInputShadowNode() {
-    super(false);
+  public ReactTextInputShadowNode(TypefaceProvider typefaceProvider) {
+    super(false, typefaceProvider);
     setMeasureFunction(this);
   }
 

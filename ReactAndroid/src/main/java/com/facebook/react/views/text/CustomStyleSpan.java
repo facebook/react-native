@@ -11,30 +11,19 @@ package com.facebook.react.views.text;
 
 import javax.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
 public class CustomStyleSpan extends MetricAffectingSpan {
-
-  // Typeface caching is a bit weird: once a Typeface is created, it cannot be changed, so we need
-  // to cache each font family and each style that they have. Typeface does cache this already in
-  // Typeface.create(Typeface, style) post API 16, but for that you already need a Typeface.
-  // Therefore, here we cache one style for each font family, and let Typeface cache all styles for
-  // that font family. Of course this is not ideal, and especially after adding Typeface loading
-  // from assets, we will need to have our own caching mechanism for all Typeface creation types.
-  // TODO: t6866343 add better Typeface caching
-  private static final Map<String, Typeface> sTypefaceCache = new HashMap<String, Typeface>();
-
+  private final TypefaceProvider mTypefaceProvider;
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
 
-  public CustomStyleSpan(int fontStyle, int fontWeight, @Nullable String fontFamily) {
+  public CustomStyleSpan(TypefaceProvider typefaceProvider, int fontStyle, int fontWeight, @Nullable String fontFamily) {
+    mTypefaceProvider = typefaceProvider;
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
@@ -42,12 +31,12 @@ public class CustomStyleSpan extends MetricAffectingSpan {
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily);
+    apply(ds, mStyle, mWeight, mFontFamily, mTypefaceProvider);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily);
+    apply(paint, mStyle, mWeight, mFontFamily, mTypefaceProvider);
   }
 
   /**
@@ -71,7 +60,7 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     return mFontFamily;
   }
 
-  private static void apply(Paint paint, int style, int weight, @Nullable String family) {
+  private static void apply(Paint paint, int style, int weight, @Nullable String family, TypefaceProvider typefaceProvider) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
     if (typeface == null) {
@@ -92,7 +81,7 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     }
 
     if (family != null) {
-      typeface = getOrCreateTypeface(family, want);
+      typeface = typefaceProvider.getOrCreateTypeface(family, want);
     }
 
     if (typeface != null) {
@@ -100,15 +89,5 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     } else {
       paint.setTypeface(Typeface.defaultFromStyle(want));
     }
-  }
-
-  private static Typeface getOrCreateTypeface(String family, int style) {
-    if (sTypefaceCache.get(family) != null) {
-      return sTypefaceCache.get(family);
-    }
-
-    Typeface typeface = Typeface.create(family, style);
-    sTypefaceCache.put(family, typeface);
-    return typeface;
   }
 }

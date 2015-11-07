@@ -23,6 +23,9 @@ import android.view.LayoutInflater;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.views.text.TypefaceProvider;
+import com.facebook.react.views.text.TypefaceProviderImpl;
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * Abstract ContextWrapper for Android applicaiton or activity {@link Context} and
@@ -42,9 +45,24 @@ public class ReactContext extends ContextWrapper {
   private @Nullable MessageQueueThread mJSMessageQueueThread;
   private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
   private @Nullable Activity mCurrentActivity;
+  private @Nullable TypefaceProvider mTypefaceProvider;
 
   public ReactContext(Context base) {
     super(base);
+  }
+
+  /**
+   * Set typeface provider for this Context.  This should be called exactly once.
+   */
+  public void initializeTypefaceProvider(TypefaceProvider typefaceProvider) {
+    if (mTypefaceProvider != null) {
+      throw new IllegalStateException("ReactContext has been already initialized");
+    }
+    if (typefaceProvider == null) {
+      // Create a default typeface provider; no custom typefaces will be available
+      typefaceProvider = new TypefaceProviderImpl();
+    }
+    mTypefaceProvider = typefaceProvider;
   }
 
   /**
@@ -128,6 +146,11 @@ public class ReactContext extends ContextWrapper {
 
   public void removeActivityEventListener(ActivityEventListener listener) {
     mActivityEventListeners.remove(listener);
+  }
+
+  public TypefaceProvider getTypefaceProvider() {
+    Assertions.assertNotNull(mTypefaceProvider, "Typeface provider must be initialized");
+    return mTypefaceProvider;
   }
 
   /**

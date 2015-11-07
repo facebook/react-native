@@ -15,6 +15,7 @@
 package com.facebook.react.uiapp;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
@@ -40,6 +41,7 @@ public class UIExplorerActivity extends Activity implements DefaultHardwareBackB
         .addPackage(new MainReactPackage())
         .setUseDeveloperSupport(true)
         .setInitialLifecycleState(LifecycleState.RESUMED)
+        .addTypeFace("DancingScript", Typeface.createFromAsset(getAssets(), "DancingScript-Regular.ttf"))
         .build();
 
     ((ReactRootView) findViewById(R.id.react_root_view))
