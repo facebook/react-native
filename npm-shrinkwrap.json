@@ -2081,6 +2081,11 @@
       "from": "event-target-shim@*",
       "resolved": "https://registry.npmjs.org/event-target-shim/-/event-target-shim-1.0.5.tgz"
     },
+    "fbjs-haste": {
+      "version": "0.3.2",
+      "from": "fbjs-haste@0.3.2",
+      "resolved": "https://registry.npmjs.org/fbjs-haste/-/fbjs-haste-0.3.2.tgz"
+    },
     "fbjs-scripts": {
       "version": "0.3.0",
       "from": "fbjs-scripts@0.3.0",
@@ -4020,136 +4025,15 @@
         }
       }
     },
+    "react-haste": {
+      "version": "0.14.0",
+      "from": "react-haste@0.14.0",
+      "resolved": "https://registry.npmjs.org/react-haste/-/react-haste-0.14.0.tgz"
+    },
     "react-timer-mixin": {
       "version": "0.13.2",
       "from": "react-timer-mixin@>=0.13.1 <0.14.0",
       "resolved": "https://registry.npmjs.org/react-timer-mixin/-/react-timer-mixin-0.13.2.tgz"
-    },
-    "react-tools": {
-      "version": "0.14.0-beta1",
-      "from": "git://github.com/facebook/react.git#b4e74e38e43ac53af8acd62c78c9213be0194245",
-      "resolved": "git://github.com/facebook/react.git#b4e74e38e43ac53af8acd62c78c9213be0194245",
-      "dependencies": {
-        "commoner": {
-          "version": "0.10.3",
-          "from": "commoner@>=0.10.0 <0.11.0",
-          "resolved": "https://registry.npmjs.org/commoner/-/commoner-0.10.3.tgz",
-          "dependencies": {
-            "q": {
-              "version": "1.1.2",
-              "from": "q@>=1.1.2 <1.2.0",
-              "resolved": "https://registry.npmjs.org/q/-/q-1.1.2.tgz"
-            },
-            "recast": {
-              "version": "0.10.32",
-              "from": "recast@>=0.10.0 <0.11.0",
-              "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.32.tgz",
-              "dependencies": {
-                "esprima-fb": {
-                  "version": "15001.1001.0-dev-harmony-fb",
-                  "from": "esprima-fb@>=15001.1001.0-dev-harmony-fb <15001.1002.0",
-                  "resolved": "https://registry.npmjs.org/esprima-fb/-/esprima-fb-15001.1001.0-dev-harmony-fb.tgz"
-                },
-                "ast-types": {
-                  "version": "0.8.11",
-                  "from": "ast-types@0.8.11",
-                  "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.8.11.tgz"
-                }
-              }
-            },
-            "commander": {
-              "version": "2.5.1",
-              "from": "commander@>=2.5.0 <2.6.0",
-              "resolved": "https://registry.npmjs.org/commander/-/commander-2.5.1.tgz"
-            },
-            "graceful-fs": {
-              "version": "3.0.8",
-              "from": "graceful-fs@>=3.0.4 <3.1.0",
-              "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.8.tgz"
-            },
-            "glob": {
-              "version": "4.2.2",
-              "from": "glob@>=4.2.1 <4.3.0",
-              "resolved": "https://registry.npmjs.org/glob/-/glob-4.2.2.tgz",
-              "dependencies": {
-                "inflight": {
-                  "version": "1.0.4",
-                  "from": "inflight@>=1.0.4 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.4.tgz",
-                  "dependencies": {
-                    "wrappy": {
-                      "version": "1.0.1",
-                      "from": "wrappy@>=1.0.0 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.1.tgz"
-                    }
-                  }
-                },
-                "inherits": {
-                  "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <3.0.0",
-                  "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
-                },
-                "minimatch": {
-                  "version": "1.0.0",
-                  "from": "minimatch@>=1.0.0 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-1.0.0.tgz",
-                  "dependencies": {
-                    "lru-cache": {
-                      "version": "2.6.5",
-                      "from": "lru-cache@>=2.0.0 <3.0.0",
-                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
-                    },
-                    "sigmund": {
-                      "version": "1.0.1",
-                      "from": "sigmund@>=1.0.0 <1.1.0",
-                      "resolved": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.1.tgz"
-                    }
-                  }
-                },
-                "once": {
-                  "version": "1.3.2",
-                  "from": "once@>=1.3.0 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/once/-/once-1.3.2.tgz",
-                  "dependencies": {
-                    "wrappy": {
-                      "version": "1.0.1",
-                      "from": "wrappy@>=1.0.0 <2.0.0",
-                      "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.1.tgz"
-                    }
-                  }
-                }
-              }
-            },
-            "mkdirp": {
-              "version": "0.5.1",
-              "from": "mkdirp@>=0.5.0 <0.6.0",
-              "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.1.tgz",
-              "dependencies": {
-                "minimist": {
-                  "version": "0.0.8",
-                  "from": "minimist@0.0.8",
-                  "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz"
-                }
-              }
-            },
-            "private": {
-              "version": "0.1.6",
-              "from": "private@>=0.1.6 <0.2.0",
-              "resolved": "https://registry.npmjs.org/private/-/private-0.1.6.tgz"
-            },
-            "install": {
-              "version": "0.1.8",
-              "from": "install@>=0.1.7 <0.2.0",
-              "resolved": "https://registry.npmjs.org/install/-/install-0.1.8.tgz"
-            },
-            "iconv-lite": {
-              "version": "0.4.11",
-              "from": "iconv-lite@>=0.4.5 <0.5.0",
-              "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.11.tgz"
-            }
-          }
-        }
-      }
     },
     "rebound": {
       "version": "0.0.13",
