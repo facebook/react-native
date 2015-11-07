@@ -13,15 +13,20 @@ import java.util.Map;
 
 import android.view.View;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 
+import javax.annotation.Nullable;
+
 /**
  * Instance of {@link ViewManager} that provides native {@link ViewPager} view.
  */
-public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
+public class ReactViewPagerManager
+    extends ViewGroupManager<ReactViewPager>
+    implements ReactViewPagerCommandHelper.PagerCommandHandler<ReactViewPager> {
 
   private static final String REACT_CLASS = "AndroidViewPager";
 
@@ -35,15 +40,37 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
     return new ReactViewPager(reactContext);
   }
 
-  @ReactProp(name = "selectedPage")
-  public void setSelectedPage(ReactViewPager view, int page) {
-    // TODO(8496821): Handle selectedPage property cleanup correctly, now defaults to 0
-    view.setCurrentItemFromJs(page);
-  }
-
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
+  }
+
+
+  @Override
+  public @Nullable Map<String, Integer> getCommandsMap() {
+    return ReactViewPagerCommandHelper.getCommandsMap();
+  }
+
+  @Override
+  public void receiveCommand(
+      ReactViewPager viewPager,
+      int commandId,
+      @Nullable ReadableArray args) {
+    ReactViewPagerCommandHelper.receiveCommand(this, viewPager, commandId, args);
+  }
+
+  @Override
+  public void setPage(
+      ReactViewPager viewPager,
+      int page) {
+    viewPager.setCurrentItemFromJs(page, true);
+  }
+
+  @Override
+  public void setPageWithoutAnimation(
+      ReactViewPager viewPager,
+      int page) {
+    viewPager.setCurrentItemFromJs(page, false);
   }
 
   @Override

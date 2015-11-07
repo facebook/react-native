@@ -5,20 +5,19 @@
  */
 'use strict';
 
+var NativeModules = require('NativeModules');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactElement = require('ReactElement');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 
+var RCTUIManager = NativeModules.UIManager;
+
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var dismissKeyboard = require('dismissKeyboard');
 
 var VIEWPAGER_REF = 'viewPager';
-
-var ViewPagerValidAttributes = {
-  selectedPage: true,
-};
 
 /**
  * Container that allows to flip left and right between child views. Each
@@ -152,16 +151,24 @@ var ViewPagerAndroid = React.createClass({
     }
   },
   setPage: function(selectedPage) {
-    this.setState({
-      selectedPage,
-    });
+    RCTUIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this),
+      RCTUIManager.AndroidViewPager.Commands.setPage,
+      [selectedPage],
+    );
+  },
+  setPageWithoutAnimation: function(selectedPage) {
+    RCTUIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this),
+      RCTUIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
+      [selectedPage],
+    );
   },
   render: function() {
     return (
       <NativeAndroidViewPager
         ref={VIEWPAGER_REF}
         style={this.props.style}
-        selectedPage={this.state.selectedPage}
         onPageScroll={this._onPageScroll}
         onPageSelected={this._onPageSelected}
         children={this._childrenWithOverridenStyle()}
@@ -171,10 +178,7 @@ var ViewPagerAndroid = React.createClass({
 });
 
 var NativeAndroidViewPager = createReactNativeComponentClass({
-  validAttributes: {
-    ...ReactNativeViewAttributes.UIView,
-    ...ViewPagerValidAttributes,
-  },
+  validAttributes: ReactNativeViewAttributes.UIView,
   uiViewClassName: 'AndroidViewPager',
 });
 
