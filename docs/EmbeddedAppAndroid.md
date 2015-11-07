@@ -167,3 +167,7 @@ To run your app, you need to first start the development server. To do this, sim
 Now build and run your Android app as normal (e.g. `./gradlew installDebug`). Once you reach your React-powered activity inside the app, it should load the JavaScript code from the development server and display:
 
 ![Screenshot](/react-native/img/EmbeddedAppAndroid.png)
+
+## Sharing a ReactInstance across multiple Activities / Fragments in your app
+
+You can have multiple Activities or Fragments that use the same `ReactInstanceManager`. You'll want to make your own "ReactFragment" or "ReactActivity" and have a singleton "holder" that holds a `ReactInstanceManager`. When you need the `ReactInstanceManager` / hook up the `ReactInstanceManager` to the lifecycle of those Activities or Fragments, use the one provided by the singleton.
