@@ -73,15 +73,10 @@ var apps = [
     author: 'Facebook',
   },
   {
-    name: 'Facebook Adverts Manager - Android',
-    icon: 'https://lh3.googleusercontent.com/ODKlFYm7BaNiLMEEDO2b4DOCU-hmS1-Fg3_x_lLUaJZ0ssFsxciSoX1dYERaWDJuEs8=w300',
-    link: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
-    author: 'Facebook',
-  },
-  {
-    name: 'Facebook Ads Manager - iOS',
+    name: 'Facebook Ads Manager',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
-    link: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
     author: 'Facebook',
   },
   {
@@ -135,7 +130,8 @@ var apps = [
   {
     name: 'Kakapo',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
     author: 'Daniel Levitt',
   },
   {
@@ -254,15 +250,9 @@ var apps = [
   },
   {
     name: 'RN Playground',
-    name: 'RN Playground - Android',
-    icon: 'https://lh3.googleusercontent.com/CulnTs4lfjHWzK-MJHXZbEQuw_kCwBU0fHYTOZC0FejcPK1B58Qmxyvu8xSzs6iUWhg=w300',
-    link: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
-    author: 'Joshua Sierles',
-  },
-  {
-    name: 'RN Playground - iOS',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
-    link: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
     author: 'Joshua Sierles',
   },
   {
@@ -340,6 +330,11 @@ var apps = [
 ];
 
 var showcase = React.createClass({
+  renderLinks: function(app) {
+    return (
+      <p><a href={app.linkAppStore} target="blank">iOS</a> - <a href={app.linkPlayStore} target="blank">Android</a></p>
+    );
+  },
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
@@ -353,13 +348,18 @@ var showcase = React.createClass({
           </div>
           {
             apps.map((app, i) => {
-              return (
-                <a href={app.link} className="showcase" key={i} target="blank">
+              var inner = (
+                <div>
                   <img src={app.icon} alt={app.name} />
                   <h3>{app.name}</h3>
+                  {app.linkAppStore && app.linkPlayStore ? this.renderLinks(app) : null}
                   <p>By {app.author}</p>
-                </a>
+                </div>
               );
+              if (app.linkAppStore && app.linkPlayStore) {
+                return (<div className="showcase" key={i}>{inner}</div>);
+              }
+              return (<a href={app.link} className="showcase" key={i} target="blank">{inner}</a>);
             })
           }
         </section>
