@@ -21,6 +21,11 @@ function Position(left, top) {
   this.top = top;
 }
 
+Position.prototype.destructor = function() {
+  this.left = null;
+  this.top = null;
+};
+
 PooledClass.addPoolingTo(Position, twoArgumentPooler);
 
 module.exports = Position;

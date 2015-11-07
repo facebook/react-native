@@ -34,6 +34,10 @@ function instanceNumberToChildRootID(rootNodeID, instanceNumber) {
  * here.
  */
 var TopLevelWrapper = function() {};
+TopLevelWrapper.prototype.isReactComponent = {};
+if (__DEV__) {
+  TopLevelWrapper.displayName = 'TopLevelWrapper';
+}
 TopLevelWrapper.prototype.render = function() {
   // this.props is actually a ReactElement
   return this.props;
@@ -108,6 +112,8 @@ var ReactNativeMount = {
   ): ?ReactComponent {
     var nextWrappedElement = new ReactElement(
       TopLevelWrapper,
+      null,
+      null,
       null,
       null,
       null,
