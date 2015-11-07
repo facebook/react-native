@@ -43,16 +43,16 @@ import com.facebook.react.uimanager.ViewProps;
 
 /**
  * {@link ReactShadowNode} class for spannable text view.
- *
+ * <p/>
  * This node calculates {@link Spannable} based on subnodes of the same type and passes the
- * resulting object down to textview's shadowview and actual native {@link TextView} instance.
- * It is important to keep in mind that {@link Spannable} is calculated only on layout step, so if
- * there are any text properties that may/should affect the result of {@link Spannable} they should
- * be set in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then
- * then passed as "computedDataFromMeasure" down to shadow and native view.
- *
- * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used
- * solely for layouting
+ * resulting object down to textview's shadowview and actual native {@link TextView} instance. It is
+ * important to keep in mind that {@link Spannable} is calculated only on layout step, so if there
+ * are any text properties that may/should affect the result of {@link Spannable} they should be set
+ * in a corresponding {@link ReactTextShadowNode}. Resulting {@link Spannable} object is then then
+ * passed as "computedDataFromMeasure" down to shadow and native view.
+ * <p/>
+ * TODO(7255858): Rename *CSSNode to *ShadowView (or sth similar) as it's no longer is used solely
+ * for layouting
  */
 public class ReactTextShadowNode extends LayoutShadowNode {
 
@@ -100,7 +100,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         buildSpannedFromTextCSSNode((ReactTextShadowNode) child, sb, ops);
       } else {
         throw new IllegalViewOperationException("Unexpected view type nested under text node: "
-            + child.getClass());
+                + child.getClass());
       }
       ((ReactTextShadowNode) child).markUpdateSeen();
     }
@@ -128,7 +128,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 new CustomStyleSpan(
                     textCSSNode.mFontStyle,
                     textCSSNode.mFontWeight,
-                    textCSSNode.mFontFamily)));
+                    textCSSNode.mFontFamily,
+                    textCSSNode.getThemedContext().getAssets())));
       }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textCSSNode.getReactTag())));
     }
@@ -197,7 +198,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 0,
                 boring,
                 true);
-          } else  {
+          } else {
             // Is used for multiline, boring text and the width is known.
             layout = new StaticLayout(
                 text,
