@@ -98,9 +98,9 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
 /**
  * Collects the initial event information for the event and returns a reference ID
  */
-RCT_EXTERN int RCTProfileBeginAsyncEvent(uint64_t tag,
-                                         NSString *name,
-                                         NSDictionary *args);
+RCT_EXTERN NSUInteger RCTProfileBeginAsyncEvent(uint64_t tag,
+                                                NSString *name,
+                                                NSDictionary *args);
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
@@ -109,7 +109,7 @@ RCT_EXTERN int RCTProfileBeginAsyncEvent(uint64_t tag,
  */
 RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
                                         NSString *category,
-                                        int cookie,
+                                        NSUInteger cookie,
                                         NSString *name,
                                         NSDictionary *args);
 
