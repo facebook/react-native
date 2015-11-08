@@ -7,6 +7,12 @@ permalink: docs/known-issues.html
 next: performance
 ---
 
+### Devtools "React" Tab Does Not Work
+
+It's [currently not possible](https://github.com/facebook/react-devtools/issues/229) to use the "React" tab in the devtools to inspect app widgets. This is due to a change in how the application scripts are evaluated in the devtools plugin; they are now run inside a Web Worker, and the plugin is unaware of this and so unable to communicate properly with React Native.
+
+However, you can still use the Console feature of the devtools, and debugging JavaScript with breakpoints works too. To use the console, make sure to select the `⚙debuggerWorker.js` entry in the devtools dropdown that by default is set to `<top frame>`.
+
 ### Missing Modules and Native Views
 
 This is an initial release of React Native Android and therefore not all of the views present on iOS are released on Android. We are very much interested in the communities' feedback on the next set of modules and views for Open Source. Not all native views between iOS and Android have a 100% equivalent representation, here it will be necessary to use a counterpart eg using ProgressBar on Android in place of ActivityIndicator on iOS.
