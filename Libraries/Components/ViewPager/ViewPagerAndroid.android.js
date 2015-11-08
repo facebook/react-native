@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule ViewPagerAndroid
+ * @flow
  */
 'use strict';
 
@@ -96,17 +97,17 @@ var ViewPagerAndroid = React.createClass({
     ]),
   },
 
-  getInitialState: function() {
-    return {
-      selectedPage: this.props.initialPage,
-    };
+  componentDidMount: function() {
+    if (this.props.initialPage) {
+      this.setPageWithoutAnimation(this.props.initialPage);
+    }
   },
 
-  getInnerViewNode: function() {
+  getInnerViewNode: function(): ReactComponent {
     return this.refs[VIEWPAGER_REF].getInnerViewNode();
   },
 
-  _childrenWithOverridenStyle: function() {
+  _childrenWithOverridenStyle: function(): Array {
     // Override styles so that each page will fill the parent. Native component
     // will handle positioning of elements, so it's not important to offset
     // them correctly.
@@ -133,37 +134,46 @@ var ViewPagerAndroid = React.createClass({
       return ReactElement.createElement(child.type, newProps);
     });
   },
-  _onPageScroll: function(event) {
+
+  _onPageScroll: function(e: Event) {
     if (this.props.onPageScroll) {
-      this.props.onPageScroll(event);
+      this.props.onPageScroll(e);
     }
     if (this.props.keyboardDismissMode === 'on-drag') {
       dismissKeyboard();
     }
   },
-  _onPageSelected: function(event) {
-    var selectedPage = event.nativeEvent.position;
-    this.setState({
-      selectedPage,
-    });
+
+  _onPageSelected: function(e: Event) {
     if (this.props.onPageSelected) {
-      this.props.onPageSelected(event);
+      this.props.onPageSelected(e);
     }
   },
-  setPage: function(selectedPage) {
+
+  /**
+   * A helper function to scroll to a specific page in the ViewPager.
+   * The transition between pages will be animated.
+   */
+  setPage: function(selectedPage: number) {
     RCTUIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
       RCTUIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
   },
-  setPageWithoutAnimation: function(selectedPage) {
+
+  /**
+   * A helper function to scroll to a specific page in the ViewPager.
+   * The transition between pages will be *not* be animated.
+   */
+  setPageWithoutAnimation: function(selectedPage: number) {
     RCTUIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
       RCTUIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );
   },
+
   render: function() {
     return (
       <NativeAndroidViewPager
