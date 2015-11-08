@@ -175,7 +175,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
 {
   RCTPerformanceLoggerStart(RCTPLScriptDownload);
-  int cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
+  NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
 
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source) {
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);

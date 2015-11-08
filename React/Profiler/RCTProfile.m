@@ -420,20 +420,20 @@ void _RCTProfileEndEvent(
   );
 }
 
-int RCTProfileBeginAsyncEvent(
+NSUInteger RCTProfileBeginAsyncEvent(
   uint64_t tag,
   NSString *name,
   NSDictionary *args
 ) {
   CHECK(0);
 
-  static int eventID = 0;
+  static NSUInteger eventID = 0;
 
   NSTimeInterval time = CACurrentMediaTime();
-  int currentEventID = ++eventID;
+  NSUInteger currentEventID = ++eventID;
 
   if (callbacks != NULL) {
-    callbacks->begin_async_section(tag, name.UTF8String, eventID, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->begin_async_section(tag, name.UTF8String, (int)(currentEventID % INT_MAX), args.count, RCTProfileSystraceArgsFromNSDictionary(args));
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       RCTProfileOngoingEvents[@(currentEventID)] = @[
@@ -450,14 +450,14 @@ int RCTProfileBeginAsyncEvent(
 void RCTProfileEndAsyncEvent(
   uint64_t tag,
   NSString *category,
-  int cookie,
+  NSUInteger cookie,
   NSString *name,
   NSDictionary *args
 ) {
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_section(tag, name.UTF8String, cookie, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->end_async_section(tag, name.UTF8String, (int)(cookie % INT_MAX), args.count, RCTProfileSystraceArgsFromNSDictionary(args));
     return;
   }
 
