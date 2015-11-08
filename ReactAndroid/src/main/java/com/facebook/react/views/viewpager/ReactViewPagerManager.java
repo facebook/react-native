@@ -13,9 +13,9 @@ import java.util.Map;
 
 import android.view.View;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 
@@ -24,11 +24,12 @@ import javax.annotation.Nullable;
 /**
  * Instance of {@link ViewManager} that provides native {@link ViewPager} view.
  */
-public class ReactViewPagerManager
-    extends ViewGroupManager<ReactViewPager>
-    implements ReactViewPagerCommandHelper.PagerCommandHandler<ReactViewPager> {
+public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
 
   private static final String REACT_CLASS = "AndroidViewPager";
+
+  public static final int COMMAND_SET_PAGE = 1;
+  public static final int COMMAND_SET_PAGE_WITHOUT_ANIMATION = 2;
 
   @Override
   public String getName() {
@@ -45,40 +46,45 @@ public class ReactViewPagerManager
     return true;
   }
 
-
-  @Override
-  public @Nullable Map<String, Integer> getCommandsMap() {
-    return ReactViewPagerCommandHelper.getCommandsMap();
-  }
-
-  @Override
-  public void receiveCommand(
-      ReactViewPager viewPager,
-      int commandId,
-      @Nullable ReadableArray args) {
-    ReactViewPagerCommandHelper.receiveCommand(this, viewPager, commandId, args);
-  }
-
-  @Override
-  public void setPage(
-      ReactViewPager viewPager,
-      int page) {
-    viewPager.setCurrentItemFromJs(page, true);
-  }
-
-  @Override
-  public void setPageWithoutAnimation(
-      ReactViewPager viewPager,
-      int page) {
-    viewPager.setCurrentItemFromJs(page, false);
-  }
-
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
         PageScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScroll"),
         PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected")
     );
+  }
+
+  @Override
+  public Map<String,Integer> getCommandsMap() {
+    return MapBuilder.of(
+        "setPage",
+        COMMAND_SET_PAGE,
+        "setPageWithoutAnimation",
+        COMMAND_SET_PAGE_WITHOUT_ANIMATION);
+  }
+
+  @Override
+  public void receiveCommand(
+      ReactViewPager viewPager,
+      int commandType,
+      @Nullable ReadableArray args) {
+    Assertions.assertNotNull(viewPager);
+    Assertions.assertNotNull(args);
+    switch (commandType) {
+      case COMMAND_SET_PAGE: {
+        viewPager.setCurrentItemFromJs(args.getInt(0), true);
+        return;
+      }
+      case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
+        viewPager.setCurrentItemFromJs(args.getInt(0), false);
+        return;
+      }
+      default:
+        throw new IllegalArgumentException(String.format(
+            "Unsupported command %d received by %s.",
+            commandType,
+            getClass().getSimpleName()));
+    }
   }
 
   @Override
