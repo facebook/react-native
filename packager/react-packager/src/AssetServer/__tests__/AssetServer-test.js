@@ -1,8 +1,8 @@
 'use strict';
 
 jest
-  .dontMock('../../lib/getPlatformExtension')
-  .dontMock('../../lib/getAssetDataFromName')
+  .dontMock('../../DependencyResolver/lib/getPlatformExtension')
+  .dontMock('../../DependencyResolver/lib/getAssetDataFromName')
   .dontMock('../');
 
 jest
