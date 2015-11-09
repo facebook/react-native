@@ -66,7 +66,7 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
                                       uint64_t tag,
                                       NSString *name,
                                       NSDictionary *args);
-#define RCTProfileBeginEvent(...) { \
+#define RCT_PROFILE_BEGIN_EVENT(...) { \
   NSThread *calleeThread = [NSThread currentThread]; \
   NSTimeInterval time = CACurrentMediaTime(); \
   dispatch_async(RCTProfileGetQueue(), ^{ \
@@ -86,7 +86,7 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
                                     NSString *category,
                                     NSDictionary *args);
 
-#define RCTProfileEndEvent(...) { \
+#define RCT_PROFILE_END_EVENT(...) { \
   NSThread *calleeThread = [NSThread currentThread]; \
   NSString *threadName = RCTCurrentThreadName(); \
   NSTimeInterval time = CACurrentMediaTime(); \
@@ -128,9 +128,9 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
  */
 #define RCTProfileBlock(block, tag, category, arguments) \
 ^{ \
-  RCTProfileBeginEvent(tag, @(__PRETTY_FUNCTION__), nil); \
+  RCT_PROFILE_BEGIN_EVENT(tag, @(__PRETTY_FUNCTION__), nil); \
   block(); \
-  RCTProfileEndEvent(tag, category, arguments); \
+  RCT_PROFILE_END_EVENT(tag, category, arguments); \
 }
 
 /**
@@ -189,8 +189,11 @@ RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 #define RCTProfileInit(...)
 #define RCTProfileEnd(...) @""
 
-#define RCTProfileBeginEvent(...)
-#define RCTProfileEndEvent(...)
+#define _RCTProfileBeginEvent(...)
+#define _RCTProfileEndEvent(...)
+
+#define RCT_PROFILE_BEGIN_EVENT(...)
+#define RCT_PROFILE_END_EVENT(...)
 
 #define RCTProfileBeginAsyncEvent(...) 0
 #define RCTProfileEndAsyncEvent(...)
