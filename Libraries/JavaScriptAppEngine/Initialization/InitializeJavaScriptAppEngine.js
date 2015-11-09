@@ -71,6 +71,10 @@ function polyfillGlobal(name, newValue, scope=GLOBAL) {
 }
 
 function setUpErrorHandler() {
+  if (global.__fbDisableExceptionsManager) {
+    return;
+  }
+
   function handleError(e, isFatal) {
     try {
       require('ExceptionsManager').handleException(e, isFatal);
