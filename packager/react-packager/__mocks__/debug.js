@@ -8,6 +8,4 @@
  */
 'use strict';
 
-module.exports = function() {
-  return function() {};
-};
+module.exports = () => () => {};
