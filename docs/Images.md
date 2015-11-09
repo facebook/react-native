@@ -60,7 +60,7 @@ var icon = this.props.active ? require('./my-icon-active.png') : require('./my-i
 <Image source={icon} />
 ```
 
-NOTE: This system relies on build hooks for [Xcode](https://github.com/facebook/react-native/pull/3523) and [Gradle](https://github.com/facebook/react-native/commit/9dc036d2b99e6233297c55a3490bfc308e34e75f) that are included in new projects generated with `react-native init`. If you generated your projects before that, you'll have to manually add them to your projects to use the new images asset system.
+**Available React Native 0.14+**. If you've generated your project with 0.13 or earlier, read this. The new asset system relies on build hooks for [Xcode](https://github.com/facebook/react-native/pull/3523) and [Gradle](https://github.com/facebook/react-native/commit/9dc036d2b99e6233297c55a3490bfc308e34e75f) that are included in new projects generated with `react-native init`. If you generated your projects before that, you'll have to manually add them to your projects to use the new images asset system. See [Upgrading](/react-native/docs/upgrading.html) for instructions on how to do this.
 
 ## Images From Hybrid App's Resources
 

@@ -43,3 +43,29 @@ This will check your files against the latest template and perform the following
 * If a file is different in your project than the template, you will be prompted; you have options
   to view a diff between your file and the template file, keep your file or overwrite it with the
   template version. If you are unsure, press `h` to get a list of possible commands.
+
+
+# Manual Upgrades
+
+Xcode project format is pretty complex and sometimes it's tricky to upgrade and merge new changes.
+
+### From 0.13 to 0.14
+
+The major change in this version happened to the CLI ([see changelog](https://github.com/facebook/react-native/releases/tag/v0.14.0-rc)) and static images ([see docs](http://facebook.github.io/react-native/docs/images.html)). To use the new asset system in existing Xcode project, do the following:
+
+Add new "Run Script" step to your project's build phases:
+
+![](https://cloud.githubusercontent.com/assets/192222/11050044/871bf926-86f7-11e5-8908-736106457bcb.png)
+
+Set the script to
+```sh
+../node_modules/react-native/packager/react-native-xcode.sh
+```
+
+![](https://cloud.githubusercontent.com/assets/192222/11050052/8f098252-86f7-11e5-994a-364aabbaa7d1.png)
+
+Move main.jsbundle to Trash (it will be generated automatically by Xcode using the script above)
+
+![](https://cloud.githubusercontent.com/assets/192222/11050104/f3d025e2-86f7-11e5-9101-a4622236338d.png)
+
+If you installed Node via nvm, you might experience "react-native: command not found". See [issues/3974](https://github.com/facebook/react-native/issues/3974) for workaround and [pull/4015](https://github.com/facebook/react-native/pull/4015) for the fix.
