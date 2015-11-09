@@ -142,7 +142,7 @@ class Fastfs extends EventEmitter {
   }
 
   matches(dir, pattern) {
-    let dirFile = this._getFile(dir);
+    const dirFile = this._getFile(dir);
     if (!dirFile.isDir) {
       throw new Error(`Expected file ${dirFile.path} to be a directory`);
     }
@@ -154,7 +154,7 @@ class Fastfs extends EventEmitter {
 
   _getRoot(filePath) {
     for (let i = 0; i < this._roots.length; i++) {
-      let possibleRoot = this._roots[i];
+      const possibleRoot = this._roots[i];
       if (isDescendant(possibleRoot.path, filePath)) {
         return possibleRoot;
       }
@@ -264,7 +264,7 @@ class File {
     /*eslint consistent-this:0*/
     let file = this;
     for (let i = 0; i < parts.length; i++) {
-      let fileName = parts[i];
+      const fileName = parts[i];
       if (!fileName) {
         continue;
       }

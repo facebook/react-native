@@ -145,7 +145,7 @@ class Module {
  */
 const blockCommentRe = /\/\*(.|\n)*?\*\//g;
 const lineCommentRe = /\/\/.+(\n|$)/g;
-function extractRequires(code /*: string*/) /*: Array<string>*/ {
+function extractRequires(code) {
   var deps = {
     sync: [],
     async: [],

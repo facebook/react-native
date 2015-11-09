@@ -51,7 +51,7 @@ class ResolutionResponse {
     this.dependencies.unshift(module);
   }
 
-  pushAsyncDependency(dependency){
+  pushAsyncDependency(dependency) {
     this._assertNotFinalized();
     this.asyncDependencies.push(dependency);
   }

@@ -8,8 +8,6 @@
  */
 'use strict';
 
-const path = require('path');
-
 const SUPPORTED_PLATFORM_EXTS = ['android', 'ios', 'web'];
 
 const re = new RegExp(
