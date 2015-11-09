@@ -25,12 +25,12 @@ class HasteMap {
     this._map = Object.create(null);
 
     let promises = this._fastfs.findFilesByExt('js', {
-      ignore: (file) => this._helpers.isNodeModulesDir(file)
+      ignore: (file) => this._helpers.isNodeModulesDir(file),
     }).map(file => this._processHasteModule(file));
 
     promises = promises.concat(
       this._fastfs.findFilesByName('package.json', {
-        ignore: (file) => this._helpers.isNodeModulesDir(file)
+        ignore: (file) => this._helpers.isNodeModulesDir(file),
       }).map(file => this._processHastePackage(file))
     );
 
@@ -41,9 +41,9 @@ class HasteMap {
     return Promise.resolve().then(() => {
       /*eslint no-labels: 0 */
       if (type === 'delete' || type === 'change') {
-        loop: for (let name in this._map) {
+        loop: for (const name in this._map) {
           const modulesMap = this._map[name];
-          for (let platform in modulesMap) {
+          for (const platform in modulesMap) {
             const module = modulesMap[platform];
             if (module.path === absPath) {
               delete modulesMap[platform];
@@ -53,7 +53,7 @@ class HasteMap {
         }
 
         if (type === 'delete') {
-          return;
+          return null;
         }
       }
 
