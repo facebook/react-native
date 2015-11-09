@@ -7,9 +7,20 @@ permalink: docs/running-on-device-android.html
 next: embedded-app-android
 ---
 
-## USB Debugging
+## Prerequisite: USB Debugging
 
-The easiest way to develop on a device is by USB debugging. First, make sure you have [USB debugging enabled on your device](https://www.google.com/search?q=android+Enable+USB+debugging). Once debugging is enabled on the device you can use `react-native run-android` in the same way as with emulator to install and launch your React Native app on the connected device.
+You'll need this in order to install your app on your device. First, make sure you have [USB debugging enabled on your device](https://www.google.com/search?q=android+Enable+USB+debugging).
+
+Check that your device has been **successfully connected** by running `adb devices`:
+
+    $ adb devices
+    List of devices attached
+    emulator-5554 offline   # Google emulator
+    14ed2fcc device         # Physical device
+
+Seeing **device** in the right column means the device is connected. Android - go figure :) You must have **only one device connected**.
+
+Now you can use `react-native run-android` to install and lauch your app on the device.
 
 ## Accessing development server from device
 
@@ -17,7 +28,7 @@ You can also iterate quickly on device using the development server. Follow one 
 
 > Hint
 >
-> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (reload, debug, etc.)
+> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (to reload, debug, etc.)
 
 ### Using adb reverse
 
@@ -28,11 +39,13 @@ Have your device connected via USB with debugging enabled (see paragraph above o
 1. Run `adb reverse tcp:8081 tcp:8081`
 2. You can use `Reload JS` and other development options with no extra configuration
 
-### Configure device to connect to the dev server via Wi-Fi
+### Configure your app to connect to the local dev server via Wi-Fi
 
-To do that, your laptop and your phone have to be on the same wifi network.
-
-1. Open rage shake menu (shake the device) or run `adb shell input keyevent 82`
-2. Go to `Dev Settings`
-3. Go to `Debug server host for device`
-4. Type in your machine's IP address and the port of the packager and `Reload JS`
+1. Make sure your laptop and your phone are on the **same Wi-Fi network**.
+2. Open your React Native app on your device. You can do this the same way you'd open any other app.
+3. You'll see a red screen with an error. This is OK. The following steps will fix that.
+4. Open the **Developer menu** by shaking the device or running `adb shell input keyevent 82` from the command line.
+5. Go to `Dev Settings`.
+6. Go to `Debug server host for device`.
+7. Type in your machine's IP address and the port of the local dev server (e.g. 10.0.1.1:8081). **On Mac**, you can find the IP address in System Preferences / Network. **On Windows**, open the command prompt and type `ipconfig` to find your machine's IP address ([more info](http://windows.microsoft.com/en-us/windows/using-command-line-tools-networking-information)).
+8. Go back to the **Developer menu** and select `Reload JS`.

@@ -73,16 +73,17 @@ var apps = [
     author: 'Facebook',
   },
   {
-    name: 'Facebook Adverts Manager - Android',
-    icon: 'https://lh3.googleusercontent.com/ODKlFYm7BaNiLMEEDO2b4DOCU-hmS1-Fg3_x_lLUaJZ0ssFsxciSoX1dYERaWDJuEs8=w300',
-    link: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
+    name: 'Facebook Ads Manager',
+    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
     author: 'Facebook',
   },
   {
-    name: 'Facebook Ads Manager - iOS',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
-    link: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
-    author: 'Facebook',
+    name: 'Fan of it',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
+    link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
+    author: 'Fan of it (Pty) Ltd',
   },
   {
     name: 'FastPaper',
@@ -97,10 +98,28 @@ var apps = [
     author: 'Foodstand, Inc.',
   },
   {
+    name: 'Go Fire',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/gou-huo/id1001476888?ls=1&mt=8',
+    author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
+    name: 'Harmonizome',
+    icon: 'http://is1.mzstatic.com/image/thumb/Purple6/v4/18/a9/bc/18a9bcde-d2d9-7574-2664-e82fff7b7208/pr_source.png/350x350-75.png',
+    link: 'https://itunes.apple.com/us/app/harmonizome/id1046990905?mt=8',
+    author: 'Michael McDermott (@_mgmcdermott)',
+  },
+  {
     name: 'Hashley',
     icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
     author: 'Elephant, LLC',
+  },
+  {
+    name: 'Hey, Neighbor!',
+    icon: 'https://raw.githubusercontent.com/scrollback/io.scrollback.neighborhoods/master/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
+    link: 'https://play.google.com/store/apps/details?id=io.scrollback.neighborhoods',
+    author: 'Scrollback',
   },
   {
     name: 'HSK Level 1 Chinese Flashcards',
@@ -111,7 +130,8 @@ var apps = [
   {
     name: 'Kakapo',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
     author: 'Daniel Levitt',
   },
   {
@@ -139,6 +159,24 @@ var apps = [
     author: 'Joshua Habdas',
   },
   {
+    name: 'Makerist Mediathek',
+    icon: 'http://a5.mzstatic.com/eu/r30/Purple3/v4/fa/5f/4c/fa5f4ce8-5aaa-5a4b-ddcc-a0c6f681d08a/icon175x175.png',
+    link: 'https://itunes.apple.com/de/app/makerist-mediathek/id1019504544',
+    author: 'Railslove',
+  },
+  {
+    name: 'MaxReward - Android',
+    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.bitstrek.maxreward&hl=en',
+    author: 'Neil Ma',
+  },
+  {
+    name: 'MaxReward - iOS',
+    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
+    link: 'https://itunes.apple.com/us/app/maxreward/id1050479192?ls=1&mt=8',
+    author: 'Neil Ma',
+  },
+  {
     name: 'MinTrain',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/51/51/68/51516875-1323-3100-31a8-cd1853d9a2c0/mzl.gozwmstp.png',
     link: 'https://itunes.apple.com/us/app/mintrain/id1015739031?mt=8',
@@ -163,10 +201,22 @@ var apps = [
     author: 'NBC News Digital, LLC',
   },
   {
+    name: 'Noodler',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/noodler-noodle-soup-oracle/id1013183002?mt=8',
+    author: 'Michele Humes & Joshua Sierles',
+  },
+  {
     name: 'Night Light',
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
     link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
     author: 'Tian Yuan',
+  },
+  {
+    name: 'Okanagan News',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/aa/93/17/aa93171e-d0ed-7e07-54a1-be27490e210c/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/okanagan-news-reader-for-viewing/id1049147148?mt=8',
+    author: 'Levi Cabral',
   },
   {
     name: 'Posyt - Tinder for ideas',
@@ -187,6 +237,12 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'RenovationFind',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
+    link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
+    author: 'Christopher Lord'
+  },
+  {
     name: 'RepairShopr',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/fa/96/ee/fa96ee57-c5f0-0c6f-1a34-64c9d3266b86/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/repairshopr-payments-lite/id1023262888?mt=8',
@@ -195,8 +251,21 @@ var apps = [
   {
     name: 'RN Playground',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
-    link: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
     author: 'Joshua Sierles',
+  },
+  {
+    name: 'Rota Employer - Hire On Demand',
+    link: 'https://itunes.apple.com/us/app/rota-employer-hire-on-demand/id1042270305?mt=8',
+    icon: 'https://avatars2.githubusercontent.com/u/15051833?v=3&s=200',
+    author: 'Rota',
+  },
+  {
+    name: 'Rota Worker - Shifts On Demand',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/51/ca/49/51ca4924-61c8-be1d-ab6d-afa510b1d393/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/rota-worker-shifts-on-demand/id1042111289?mt=8',
+    author: 'Rota',
   },
   {
     name: 'SG Toto 4d',
@@ -252,9 +321,20 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.ziliunapp',
     author: 'Sonny Lazuardi',
   },
+  {
+    name: 'YazBoz',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/80/4f/43/804f431d-2828-05aa-2593-99cfb0475351/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
+    author: 'Melih Mucuk',
+  },
 ];
 
 var showcase = React.createClass({
+  renderLinks: function(app) {
+    return (
+      <p><a href={app.linkAppStore} target="blank">iOS</a> - <a href={app.linkPlayStore} target="blank">Android</a></p>
+    );
+  },
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
@@ -268,13 +348,18 @@ var showcase = React.createClass({
           </div>
           {
             apps.map((app, i) => {
-              return (
-                <a href={app.link} className="showcase" key={i} target="blank">
+              var inner = (
+                <div>
                   <img src={app.icon} alt={app.name} />
                   <h3>{app.name}</h3>
+                  {app.linkAppStore && app.linkPlayStore ? this.renderLinks(app) : null}
                   <p>By {app.author}</p>
-                </a>
+                </div>
               );
+              if (app.linkAppStore && app.linkPlayStore) {
+                return (<div className="showcase" key={i}>{inner}</div>);
+              }
+              return (<a href={app.link} className="showcase" key={i} target="blank">{inner}</a>);
             })
           }
         </section>

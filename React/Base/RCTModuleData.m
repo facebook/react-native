@@ -12,13 +12,15 @@
 #import "RCTBridge.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 @implementation RCTModuleData
 {
   NSDictionary *_constants;
-  NSArray *_methods;
   NSString *_queueName;
 }
+
+@synthesize methods = _methods;
 
 - (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
                         moduleID:(NSNumber *)moduleID
@@ -45,10 +47,10 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
-- (NSArray *)methods
+- (NSArray<id<RCTBridgeMethod>> *)methods
 {
   if (!_methods) {
-    NSMutableArray *moduleMethods = [NSMutableArray new];
+    NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
 
     if ([_instance respondsToSelector:@selector(methodsToExport)]) {
       [moduleMethods addObjectsFromArray:[_instance methodsToExport]];
@@ -62,11 +64,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       SEL selector = method_getName(method);
       if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
         IMP imp = method_getImplementation(method);
-        NSArray *entries = ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
+        NSArray<NSString *> *entries =
+          ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
         id<RCTBridgeMethod> moduleMethod =
-        [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
-                                           JSMethodName:entries[0]
-                                            moduleClass:_moduleClass];
+          [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
+                                             JSMethodName:entries[0]
+                                              moduleClass:_moduleClass];
 
         [moduleMethods addObject:moduleMethod];
       }
@@ -79,25 +82,36 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return _methods;
 }
 
-- (NSDictionary *)config
+- (NSArray *)config
 {
-  NSMutableDictionary *config = [NSMutableDictionary new];
-  config[@"moduleID"] = _moduleID;
-
-  if (_constants) {
-    config[@"constants"] = _constants;
+  if (_constants.count == 0 && self.methods.count == 0) {
+    return (id)kCFNull; // Nothing to export
   }
 
-  NSMutableDictionary *methodconfig = [NSMutableDictionary new];
-  [self.methods enumerateObjectsUsingBlock:^(id<RCTBridgeMethod> method, NSUInteger idx, __unused BOOL *stop) {
-    methodconfig[method.JSMethodName] = @{
-      @"methodID": @(idx),
-      @"type": method.functionType == RCTFunctionTypePromise ? @"remoteAsync" : @"remote",
-    };
-  }];
-  config[@"methods"] = [methodconfig copy];
+  NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
+  NSMutableArray<NSNumber *> *asyncMethods = nil;
+  for (id<RCTBridgeMethod> method in self.methods) {
+    if (method.functionType == RCTFunctionTypePromise) {
+      if (!asyncMethods) {
+        asyncMethods = [NSMutableArray new];
+      }
+      [asyncMethods addObject:@(methods.count)];
+    }
+    [methods addObject:method.JSMethodName];
+  }
 
-  return [config copy];
+  NSMutableArray *config = [NSMutableArray new];
+  [config addObject:_name];
+  if (_constants.count) {
+    [config addObject:_constants];
+  }
+  if (methods) {
+    [config addObject:methods];
+    if (asyncMethods) {
+      [config addObject:asyncMethods];
+    }
+  }
+  return config;
 }
 
 - (dispatch_queue_t)queue

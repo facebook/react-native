@@ -9,6 +9,7 @@
 
 #import "RCTImageLoader.h"
 
+#import <libkern/OSAtomic.h>
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
@@ -17,17 +18,6 @@
 #import "RCTLog.h"
 #import "RCTNetworking.h"
 #import "RCTUtils.h"
-
-static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSError *error, UIImage *image)
-{
-  if ([NSThread isMainThread]) {
-    callback(error, image);
-  } else {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      callback(error, image);
-    });
-  }
-}
 
 @implementation UIImage (React)
 
@@ -45,8 +35,8 @@ static void RCTDispatchCallbackOnMainQueue(void (^callback)(NSError *, id), NSEr
 
 @implementation RCTImageLoader
 {
-  NSArray *_loaders;
-  NSArray *_decoders;
+  NSArray<id<RCTImageURLLoader>> *_loaders;
+  NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSURLCache *_cache;
 }
 
@@ -57,14 +47,14 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   // Get image loaders and decoders
-  NSMutableArray *loaders = [NSMutableArray array];
-  NSMutableArray *decoders = [NSMutableArray array];
+  NSMutableArray<id<RCTImageURLLoader>> *loaders = [NSMutableArray array];
+  NSMutableArray<id<RCTImageDataDecoder>> *decoders = [NSMutableArray array];
   for (id<RCTBridgeModule> module in bridge.modules.allValues) {
     if ([module conformsToProtocol:@protocol(RCTImageURLLoader)]) {
-      [loaders addObject:module];
+      [loaders addObject:(id<RCTImageURLLoader>)module];
     }
     if ([module conformsToProtocol:@protocol(RCTImageDataDecoder)]) {
-      [decoders addObject:module];
+      [decoders addObject:(id<RCTImageDataDecoder>)module];
     }
   }
 
@@ -184,7 +174,7 @@ RCT_EXPORT_MODULE()
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(UIViewContentMode)resizeMode
-                                      progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                      progressBlock:(RCTImageLoaderProgressBlock)progressHandler
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
   if (imageTag.length == 0) {
@@ -192,23 +182,20 @@ RCT_EXPORT_MODULE()
     return ^{};
   }
 
-  // Ensure progress is dispatched on main thread
-  RCTImageLoaderProgressBlock progressHandler = nil;
-  if (progressBlock) {
-    progressHandler = ^(int64_t progress, int64_t total) {
-      if ([NSThread isMainThread]) {
-        progressBlock(progress, total);
-      } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          progressBlock(progress, total);
-        });
-      }
-    };
-  }
-
-  // Ensure completion is dispatched on main thread
+  __block volatile uint32_t cancelled = 0;
   RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *image) {
-    RCTDispatchCallbackOnMainQueue(completionBlock, error, image);
+    if ([NSThread isMainThread]) {
+
+      // Most loaders do not return on the main thread, so caller is probably not
+      // expecting it, and may do expensive post-processing in the callback
+      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (!cancelled) {
+          completionBlock(error, image);
+        }
+      });
+    } else if (!cancelled) {
+      completionBlock(error, image);
+    }
   };
 
   // Find suitable image URL loader
@@ -220,7 +207,7 @@ RCT_EXPORT_MODULE()
                                   scale:scale
                              resizeMode:resizeMode
                         progressHandler:progressHandler
-                      completionHandler:completionHandler];
+                      completionHandler:completionHandler] ?: ^{};
   }
 
   // Check if networking module is available
@@ -237,7 +224,16 @@ RCT_EXPORT_MODULE()
     __weak RCTImageLoader *weakSelf = self;
     __block RCTImageLoaderCancellationBlock decodeCancel = nil;
     RCTURLRequestCompletionBlock processResponse =
-    ^(NSURLResponse *response, NSData *data, __unused NSError *error) {
+    ^(NSURLResponse *response, NSData *data, NSError *error) {
+
+      // Check for system errors
+      if (error) {
+        completionHandler(error, nil);
+        return;
+      } else if (!data) {
+        completionHandler(RCTErrorWithMessage(@"Unknown image download error"), nil);
+        return;
+      }
 
       // Check for http errors
       if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
@@ -296,9 +292,7 @@ RCT_EXPORT_MODULE()
       processResponse(response, data, nil);
 
     }];
-    if (progressBlock) {
-      task.downloadProgressBlock = progressBlock;
-    }
+    task.downloadProgressBlock = progressHandler;
     [task start];
 
     return ^{
@@ -306,6 +300,7 @@ RCT_EXPORT_MODULE()
       if (decodeCancel) {
         decodeCancel();
       }
+      OSAtomicOr32Barrier(1, &cancelled);
     };
   }
 
@@ -317,27 +312,36 @@ RCT_EXPORT_MODULE()
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
                                         resizeMode:(UIViewContentMode)resizeMode
-                                   completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
+                                   completionBlock:(RCTImageLoaderCompletionBlock)completionHandler
 {
   id<RCTImageDataDecoder> imageDecoder = [self imageDataDecoderForData:data];
   if (imageDecoder) {
+
     return [imageDecoder decodeImageData:data
                                     size:size
                                    scale:scale
                               resizeMode:resizeMode
-                       completionHandler:completionBlock];
+                       completionHandler:completionHandler];
   } else {
+
+    __block volatile uint32_t cancelled = 0;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      if (cancelled) {
+        return;
+      }
       UIImage *image = [UIImage imageWithData:data scale:scale];
       if (image) {
-        completionBlock(nil, image);
+        completionHandler(nil, image);
       } else {
         NSString *errorMessage = [NSString stringWithFormat:@"Error decoding image data <NSData %p; %tu bytes>", data, data.length];
         NSError *finalError = RCTErrorWithMessage(errorMessage);
-        completionBlock(finalError, nil);
+        completionHandler(finalError, nil);
       }
     });
-    return ^{};
+
+    return ^{
+      OSAtomicOr32Barrier(1, &cancelled);
+    };
   }
 }
 

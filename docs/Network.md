@@ -37,7 +37,34 @@ As a developer, you're probably not going to use XMLHttpRequest directly as its 
 
 ## Fetch
 
-[fetch](https://fetch.spec.whatwg.org/) is a better networking API being worked on by the standard committee and is already available in Chrome. It is available in React Native by default.
+[fetch](https://fetch.spec.whatwg.org/) is a better networking API being worked on by the standards committee and is already available in Chrome. It is available in React Native by default.
+
+#### Usage
+
+```javascript
+fetch('https://mywebsite.com/endpoint/')
+```
+
+Include a request object as the optional second argument to customize the HTTP request:
+
+```javascript
+fetch('https://mywebsite.com/endpoint/', {
+  method: 'POST',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    firstParam: 'yourValue',
+    secondParam: 'yourOtherValue',
+  })
+})
+```
+
+#### Async
+`fetch` returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) that can be processed in two ways:
+
+1.  Using `then` and `catch` in synchronous code:
 
 ```javascript
 fetch('https://mywebsite.com/endpoint.php')
@@ -49,6 +76,22 @@ fetch('https://mywebsite.com/endpoint.php')
     console.warn(error);
   });
 ```
+
+2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
+
+```javascript
+async getUsersFromApi() {
+  try {
+    let response = await fetch('https://mywebsite.com/endpoint/');
+    return response.users;
+  } catch(error) {
+    throw error;
+  }
+}
+```
+
+- Note: Errors thrown by rejected Promises need to be caught, or they will be swallowed silently
+
 
 ## WebSocket
 

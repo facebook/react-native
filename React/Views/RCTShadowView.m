@@ -36,7 +36,7 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   RCTUpdateLifecycle _propagationLifecycle;
   RCTUpdateLifecycle _textLifecycle;
   NSDictionary *_lastParentProperties;
-  NSMutableArray *_reactSubviews;
+  NSMutableArray<RCTShadowView *> *_reactSubviews;
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
   BOOL _recomputeBorder;
@@ -123,7 +123,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 // You'll notice that this is the same width we calculated for the parent view because we've taken its position into account.
 
 - (void)applyLayoutNode:(css_node_t *)node
-      viewsWithNewFrame:(NSMutableSet *)viewsWithNewFrame
+      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
        absolutePosition:(CGPoint)absolutePosition
 {
   if (!node->layout.should_update) {
@@ -171,7 +171,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (NSDictionary *)processUpdatedProperties:(NSMutableSet *)applierBlocks
+- (NSDictionary *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                           parentProperties:(NSDictionary *)parentProperties
 {
   // TODO: we always refresh all propagated properties when propagation is
@@ -201,7 +201,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   return parentProperties;
 }
 
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks
+- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
                 parentProperties:(NSDictionary *)parentProperties
 {
   if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
@@ -215,9 +215,32 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame
-                parentConstraint:(__unused CGSize)parentConstraint
+
+- (void)applySizeConstraints
 {
+  switch (_sizeFlexibility) {
+    case RCTRootViewSizeFlexibilityNone:
+      break;
+    case RCTRootViewSizeFlexibilityWidth:
+      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
+      break;
+    case RCTRootViewSizeFlexibilityHeight:
+      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
+      break;
+    case RCTRootViewSizeFlexibilityWidthAndHeight:
+      _cssNode->style.dimensions[CSS_WIDTH] = CSS_UNDEFINED;
+      _cssNode->style.dimensions[CSS_HEIGHT] = CSS_UNDEFINED;
+      break;
+  }
+}
+
+- (void)collectRootUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+{
+  RCTAssert(RCTIsReactRootView(self.reactTag),
+            @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
+
+  [self applySizeConstraints];
+
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
@@ -245,6 +268,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   if ((self = [super init])) {
 
     _frame = CGRectMake(0, 0, CSS_UNDEFINED, CSS_UNDEFINED);
+    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     for (unsigned int ii = 0; ii < META_PROP_COUNT; ii++) {
       _paddingMetaProps[ii] = CSS_UNDEFINED;
@@ -343,7 +367,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   _cssNode->children_count = (int)_reactSubviews.count;
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<RCTShadowView *> *)reactSubviews
 {
   return _reactSubviews;
 }

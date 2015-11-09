@@ -27,7 +27,7 @@
 - (id)objectForKeyedSubscript:(NSNumber *)key;
 
 @property (readonly, nonatomic) NSUInteger count;
-@property (readonly, nonatomic, copy) NSArray *allIndexes;
+@property (readonly, nonatomic, copy) NSArray<NSNumber *> *allIndexes;
 @property (readonly, nonatomic, copy) NSArray *allObjects;
 
 - (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSNumber *idx, BOOL *stop))block;

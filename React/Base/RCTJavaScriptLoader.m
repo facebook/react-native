@@ -13,6 +13,7 @@
 #import "RCTConvert.h"
 #import "RCTSourceCode.h"
 #import "RCTUtils.h"
+#import "RCTPerformanceLogger.h"
 
 @implementation RCTJavaScriptLoader
 
@@ -39,6 +40,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       NSData *source = [NSData dataWithContentsOfFile:filePath
                                               options:NSDataReadingMappedIfSafe
                                                 error:&error];
+      RCTPerformanceLoggerSet(RCTPLBundleSize, source.length);
       onComplete(error, source);
     });
     return;
@@ -73,7 +75,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
       }
     }
-
     // Handle HTTP errors
     if ([response isKindOfClass:[NSHTTPURLResponse class]] && ((NSHTTPURLResponse *)response).statusCode != 200) {
       NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
@@ -81,7 +82,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
       if ([errorDetails isKindOfClass:[NSDictionary class]] &&
           [errorDetails[@"errors"] isKindOfClass:[NSArray class]]) {
-        NSMutableArray *fakeStack = [NSMutableArray new];
+        NSMutableArray<NSDictionary *> *fakeStack = [NSMutableArray new];
         for (NSDictionary *err in errorDetails[@"errors"]) {
           [fakeStack addObject: @{
             @"methodName": err[@"description"] ?: @"",
@@ -103,6 +104,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       onComplete(error, nil);
       return;
     }
+    RCTPerformanceLoggerSet(RCTPLBundleSize, data.length);
     onComplete(nil, data);
   }];
 

@@ -11,6 +11,8 @@
 
 #import "RCTJavaScriptExecutor.h"
 
+@protocol RCTBridgeMethod;
+
 @interface RCTModuleData : NSObject
 
 @property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
@@ -19,8 +21,8 @@
 
 @property (nonatomic, strong, readonly) Class moduleClass;
 @property (nonatomic, copy, readonly) NSString *name;
-@property (nonatomic, copy, readonly) NSArray *methods;
-@property (nonatomic, copy, readonly) NSDictionary *config;
+@property (nonatomic, copy, readonly) NSArray<id<RCTBridgeMethod>> *methods;
+@property (nonatomic, copy, readonly) NSArray *config;
 
 @property (nonatomic, strong) dispatch_queue_t queue;
 

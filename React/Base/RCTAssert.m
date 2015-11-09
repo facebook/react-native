@@ -8,12 +8,15 @@
  */
 
 #import "RCTAssert.h"
+#import "RCTLog.h"
 
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
+NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
 RCTAssertFunction RCTCurrentAssertFunction = nil;
+RCTFatalHandler RCTCurrentFatalHandler = nil;
 
 NSException *_RCTNotImplementedException(SEL, Class);
 NSException *_RCTNotImplementedException(SEL cmd, Class cls)
@@ -59,7 +62,7 @@ void RCTAddAssertFunction(RCTAssertFunction assertFunction)
 static RCTAssertFunction RCTGetLocalAssertFunction()
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  NSArray<RCTAssertFunction> *functionStack = threadDictionary[RCTAssertFunctionStack];
   RCTAssertFunction assertFunction = functionStack.lastObject;
   if (assertFunction) {
     return assertFunction;
@@ -70,7 +73,7 @@ static RCTAssertFunction RCTGetLocalAssertFunction()
 void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction assertFunction)
 {
   NSMutableDictionary *threadDictionary = [NSThread currentThread].threadDictionary;
-  NSMutableArray *functionStack = threadDictionary[RCTAssertFunctionStack];
+  NSMutableArray<RCTAssertFunction> *functionStack = threadDictionary[RCTAssertFunctionStack];
   if (!functionStack) {
     functionStack = [NSMutableArray new];
     threadDictionary[RCTAssertFunctionStack] = functionStack;
@@ -111,4 +114,50 @@ void _RCTAssertFormat(
 
     assertFunction(@(condition), @(fileName), @(lineNumber), @(function), message);
   }
+}
+
+void RCTFatal(NSError *error)
+{
+  _RCTLogInternal(RCTLogLevelFatal, NULL, 0, @"%@", [error localizedDescription]);
+
+  RCTFatalHandler fatalHandler = RCTGetFatalHandler();
+  if (fatalHandler) {
+    fatalHandler(error);
+  } else {
+#if DEBUG
+    @try {
+#endif
+      NSString *message = RCTFormatError([error localizedDescription], error.userInfo[RCTJSStackTraceKey], 75);
+      [NSException raise:@"RCTFatalException" format:@"%@", message];
+#if DEBUG
+    } @catch (NSException *e) {}
+#endif
+  }
+}
+
+void RCTSetFatalHandler(RCTFatalHandler fatalhandler)
+{
+  RCTCurrentFatalHandler = fatalhandler;
+}
+
+RCTFatalHandler RCTGetFatalHandler(void)
+{
+  return RCTCurrentFatalHandler;
+}
+
+NSString *RCTFormatError(NSString *message, NSArray *stackTrace, NSUInteger maxMessageLength)
+{
+  if (maxMessageLength > 0 && message.length > maxMessageLength) {
+    message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
+  }
+
+  NSMutableString *prettyStack = [NSMutableString string];
+  if (stackTrace) {
+    [prettyStack appendString:@", stack:\n"];
+    for (NSDictionary *frame in stackTrace) {
+      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+    }
+  }
+
+  return [NSString stringWithFormat:@"Message: %@%@", message, prettyStack];
 }

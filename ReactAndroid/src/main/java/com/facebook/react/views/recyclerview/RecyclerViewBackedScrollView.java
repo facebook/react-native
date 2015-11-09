@@ -169,8 +169,10 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       notifyDataSetChanged();
     }
 
-    public void removeView(View child) {
-      if (mViews.remove(child)) {
+    public void removeViewAt(int index) {
+      View child = mViews.get(index);
+      if (child != null) {
+        mViews.remove(index);
         mTopOffsetsFromLayout.remove(child);
         child.removeOnLayoutChangeListener(mChildLayoutChangeListener);
         mTotalChildrenHeight -= child.getMeasuredHeight();
@@ -223,30 +225,40 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     }
   }
 
-  @Override
-  protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-    super.onScrollChanged(l, t, oldl, oldt);
-
-    ReactListAdapter adapter = (ReactListAdapter) getAdapter();
-
+  private int calculateAbsoluteOffset() {
     int offsetY = 0;
     if (getChildCount() > 0) {
       View recyclerViewChild = getChildAt(0);
       int childPosition = getChildAdapterPosition(recyclerViewChild);
-      offsetY = adapter.getTopOffsetForItem(childPosition) - recyclerViewChild.getTop();
+      offsetY = ((ReactListAdapter) getAdapter()).getTopOffsetForItem(childPosition) -
+          recyclerViewChild.getTop();
     }
+    return offsetY;
+  }
 
-    ScrollEvent event = new ScrollEvent(
-        getId(),
-        SystemClock.uptimeMillis(),
-        0, /* offsetX = 0, horizontal scrolling only */
-        offsetY,
-        getWidth(),
-        adapter.getTotalChildrenHeight(),
-        getWidth(),
-        getHeight());
+  /*package*/ void scrollTo(int scrollX, int scrollY, boolean animated) {
+    int deltaY = scrollY - calculateAbsoluteOffset();
+    if (animated) {
+      smoothScrollBy(0, deltaY);
+    } else {
+      scrollBy(0, deltaY);
+    }
+  }
+
+  @Override
+  protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+    super.onScrollChanged(l, t, oldl, oldt);
+
     ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
-        .dispatchEvent(event);
+        .dispatchEvent(ScrollEvent.obtain(
+                getId(),
+                SystemClock.uptimeMillis(),
+                0, /* offsetX = 0, horizontal scrolling only */
+                calculateAbsoluteOffset(),
+                getWidth(),
+                ((ReactListAdapter) getAdapter()).getTotalChildrenHeight(),
+                getWidth(),
+                getHeight()));
   }
 
   public RecyclerViewBackedScrollView(Context context) {
@@ -261,8 +273,8 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     ((ReactListAdapter) getAdapter()).addView(child, index);
   }
 
-  /*package*/ void removeViewFromAdapter(View child) {
-    ((ReactListAdapter) getAdapter()).removeView(child);
+  /*package*/ void removeViewFromAdapter(int index) {
+    ((ReactListAdapter) getAdapter()).removeViewAt(index);
   }
 
   /*package*/ View getChildAtFromAdapter(int index) {

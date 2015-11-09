@@ -2,16 +2,21 @@
 
 package com.facebook.react.views.recyclerview;
 
+import javax.annotation.Nullable;
+
 import android.view.View;
 
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.views.scroll.ReactScrollViewCommandHelper;
 
 /**
  * View manager for {@link RecyclerViewBackedScrollView}.
  */
 public class RecyclerViewBackedScrollViewManager extends
-    ViewGroupManager<RecyclerViewBackedScrollView> {
+    ViewGroupManager<RecyclerViewBackedScrollView>
+    implements ReactScrollViewCommandHelper.ScrollCommandHandler<RecyclerViewBackedScrollView> {
 
   private static final String REACT_CLASS = "AndroidRecyclerViewBackedScrollView";
 
@@ -43,7 +48,32 @@ public class RecyclerViewBackedScrollViewManager extends
   }
 
   @Override
-  public void removeView(RecyclerViewBackedScrollView parent, View child) {
-    parent.removeViewFromAdapter(child);
+  public void removeViewAt(RecyclerViewBackedScrollView parent, int index) {
+    parent.removeViewFromAdapter(index);
+  }
+
+  /**
+   * Provides implementation of commands supported by {@link ReactScrollViewManager}
+   */
+  @Override
+  public void receiveCommand(
+      RecyclerViewBackedScrollView view,
+      int commandId,
+      @Nullable ReadableArray args) {
+    ReactScrollViewCommandHelper.receiveCommand(this, view, commandId, args);
+  }
+
+  @Override
+  public void scrollTo(
+      RecyclerViewBackedScrollView view,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    view.scrollTo(data.mDestX, data.mDestY, true);
+  }
+
+  @Override
+  public void scrollWithoutAnimationTo(
+      RecyclerViewBackedScrollView view,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    view.scrollTo(data.mDestX, data.mDestY, false);
   }
 }

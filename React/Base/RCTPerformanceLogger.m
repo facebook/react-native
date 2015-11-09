@@ -30,7 +30,13 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
   }
 }
 
-NSArray *RCTPerformanceLoggerOutput(void)
+void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
+{
+  RCTPLData[tag][0] = 0;
+  RCTPLData[tag][1] = value;
+}
+
+NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
   return @[
     @(RCTPLData[RCTPLScriptDownload][0]),
@@ -45,6 +51,21 @@ NSArray *RCTPerformanceLoggerOutput(void)
     @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
     @(RCTPLData[RCTPLTTI][0]),
     @(RCTPLData[RCTPLTTI][1]),
+    @(RCTPLData[RCTPLBundleSize][0]),
+    @(RCTPLData[RCTPLBundleSize][1]),
+  ];
+}
+
+NSArray *RCTPerformanceLoggerLabels(void)
+{
+  return @[
+    @"ScriptDownload",
+    @"ScriptExecution",
+    @"NativeModuleInit",
+    @"NativeModulePrepareConfig",
+    @"NativeModuleInjectConfig",
+    @"TTI",
+    @"BundleSize",
   ];
 }
 
@@ -80,14 +101,7 @@ RCT_EXPORT_MODULE()
 
   [_bridge enqueueJSCall:@"PerformanceLogger.addTimespans" args:@[
     RCTPerformanceLoggerOutput(),
-    @[
-      @"ScriptDownload",
-      @"ScriptExecution",
-      @"NativeModuleInit",
-      @"NativeModulePrepareConfig",
-      @"NativeModuleInjectConfig",
-      @"TTI",
-    ],
+    RCTPerformanceLoggerLabels(),
   ]];
 }
 

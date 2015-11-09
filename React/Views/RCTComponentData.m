@@ -100,7 +100,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     SEL selector = NSSelectorFromString([NSString stringWithFormat:@"propConfig%@_%@", shadowView ? @"Shadow" : @"", name]);
     Class managerClass = [_manager class];
     if ([managerClass respondsToSelector:selector]) {
-      NSArray *typeAndKeyPath = ((NSArray *(*)(id, SEL))objc_msgSend)(managerClass, selector);
+      NSArray<NSString *> *typeAndKeyPath =
+        ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(managerClass, selector);
       type = NSSelectorFromString([typeAndKeyPath[0] stringByAppendingString:@":"]);
       keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
     } else {
@@ -125,7 +126,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
       // Disect keypath
       NSString *key = name;
-      NSArray *parts = [keyPath componentsSeparatedByString:@"."];
+      NSArray<NSString *> *parts = [keyPath componentsSeparatedByString:@"."];
       if (parts) {
         key = parts.lastObject;
         parts = [parts subarrayWithRange:(NSRange){0, parts.count - 1}];
@@ -312,9 +313,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   Class managerClass = [_manager class];
 
-  NSMutableArray *directEvents = [NSMutableArray new];
+  NSMutableArray<NSString *> *directEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(managerClass, @selector(customDirectEventTypes))) {
-    NSArray *events = [_manager customDirectEventTypes];
+    NSArray<NSString *> *events = [_manager customDirectEventTypes];
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],
         @"customDirectEventTypes must return an array, but %@ returned %@",
@@ -325,9 +326,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
   }
 
-  NSMutableArray *bubblingEvents = [NSMutableArray new];
+  NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   if (RCTClassOverridesInstanceMethod(managerClass, @selector(customBubblingEventTypes))) {
-        NSArray *events = [_manager customBubblingEventTypes];
+    NSArray<NSString *> *events = [_manager customBubblingEventTypes];
     if (RCT_DEBUG) {
       RCTAssert(!events || [events isKindOfClass:[NSArray class]],
         @"customBubblingEventTypes must return an array, but %@ returned %@",
@@ -349,7 +350,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       NSRange nameRange = [methodName rangeOfString:@"_"];
       if (nameRange.length) {
         NSString *name = [methodName substringFromIndex:nameRange.location + 1];
-        NSString *type = ((NSArray *(*)(id, SEL))objc_msgSend)(managerClass, selector)[0];
+        NSString *type = ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(managerClass, selector)[0];
         if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
           RCTLogError(@"Property '%@' of component '%@' redefined from '%@' "
                       "to '%@'", name, _name, propTypes[name], type);

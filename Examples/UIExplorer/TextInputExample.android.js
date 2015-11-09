@@ -78,15 +78,79 @@ class RewriteExample extends React.Component {
     this.state = {text: ''};
   }
   render() {
+    var limit = 20;
+    var remainder = limit - this.state.text.length;
+    var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
-      <TextInput
-        onChangeText={(text) => {
-          text = text.replace(/ /g, '_');
-          this.setState({text});
-        }}
-        style={styles.singleLine}
-        value={this.state.text}
-      />
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          maxLength={limit}
+          onChangeText={(text) => {
+            text = text.replace(/ /g, '_');
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+        <Text style={[styles.remainder, {color: remainderColor}]}>
+          {remainder}
+        </Text>
+      </View>
+    );
+  }
+}
+
+class TokenizedTextExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Hello #World'};
+  }
+  render() {
+
+    //define delimiter
+    let delimiter = /\s+/;
+
+    //split string
+    let _text = this.state.text;
+    let token, index, parts = [];
+    while (_text) {
+      delimiter.lastIndex = 0;
+      token = delimiter.exec(_text);
+      if (token === null) {
+        break;
+      }
+      index = token.index;
+      if (token[0].length === 0) {
+        index = 1;
+      }
+      parts.push(_text.substr(0, index));
+      parts.push(token[0]);
+      index = index + token[0].length;
+      _text = _text.slice(index);
+    }
+    parts.push(_text);
+
+    //highlight hashtags
+    parts = parts.map((text) => {
+      if (/^#/.test(text)) {
+        return <Text key={text} style={styles.hashtag}>{text}</Text>;
+      } else {
+        return text;
+      }
+    });
+
+    return (
+      <View>
+        <TextInput
+          multiline={true}
+          style={styles.multiline}
+          onChangeText={(text) => {
+            this.setState({text});
+          }}>
+          <Text>{parts}</Text>
+        </TextInput>
+      </View>
     );
   }
 }
@@ -108,6 +172,10 @@ var styles = StyleSheet.create({
   },
   singleLineWithHeightTextInput: {
     height: 30,
+  },
+  hashtag: {
+    color: 'blue',
+    fontWeight: 'bold',
   },
 });
 
@@ -320,6 +388,12 @@ exports.examples = [
           />
         </View>
       );
+    }
+  },
+  {
+    title: 'Attributed text',
+    render: function() {
+      return <TokenizedTextExample />;
     }
   },
 ];

@@ -33,7 +33,7 @@
 #if RCT_JSC_PROFILER
 #include <dlfcn.h>
 
-static NSString * const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
+static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
 #ifndef RCT_JSC_PROFILER_DYLIB
 #define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"RCTJSCProfiler"] UTF8String]
@@ -93,7 +93,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 // Private bridge interface to allow middle-batch calls
 @interface RCTBridge (RCTContextExecutor)
 
-- (void)handleBuffer:(NSArray *)buffer batchEnded:(BOOL)hasEnded;
+- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
 
 @end
 
@@ -119,26 +119,14 @@ RCT_EXPORT_MODULE()
 static JSValueRef RCTNativeLoggingHook(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
 {
   if (argumentCount > 0) {
-    JSStringRef messageRef = JSValueToStringCopy(context, arguments[0], exception);
-    if (!messageRef) {
-      return JSValueMakeUndefined(context);
-    }
-    NSString *message = (__bridge_transfer NSString *)JSStringCopyCFString(kCFAllocatorDefault, messageRef);
-    JSStringRelease(messageRef);
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:
-                                  @"( stack: )?([_a-z0-9]*)@?(http://|file:///)[a-z.0-9:/_-]+/([a-z0-9_]+).bundle(:[0-9]+:[0-9]+)"
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:NULL];
-    message = [regex stringByReplacingMatchesInString:message
-                                              options:0
-                                                range:(NSRange){0, message.length}
-                                         withTemplate:@"[$4$5]  \t$2"];
+    NSString *message = RCTJSValueToNSString(context, arguments[0], exception);
 
     RCTLogLevel level = RCTLogLevelInfo;
     if (argumentCount > 1) {
-      level = MAX(level, JSValueToNumber(context, arguments[1], exception) - 1);
+      level = MAX(level, JSValueToNumber(context, arguments[1], exception));
     }
-    RCTGetLogFunction()(level, nil, nil, message);
+
+    _RCTLog(level, @"%@", message);
   }
 
   return JSValueMakeUndefined(context);
@@ -152,18 +140,22 @@ static JSValueRef RCTNoop(JSContextRef context, __unused JSObjectRef object, __u
   return JSValueMakeUndefined(context);
 }
 
-static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value)
+static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value, JSValueRef *exception)
 {
-  JSStringRef JSString = JSValueToStringCopy(context, value, NULL);
+  JSStringRef JSString = JSValueToStringCopy(context, value, exception);
+  if (!JSString) {
+    return nil;
+  }
+
   CFStringRef string = JSStringCopyCFString(kCFAllocatorDefault, JSString);
   JSStringRelease(JSString);
 
   return (__bridge_transfer NSString *)string;
 }
 
-static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, unsigned indent)
+static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, JSValueRef *exception, unsigned indent)
 {
-  JSStringRef JSString = JSValueCreateJSONString(context, value, indent, NULL);
+  JSStringRef JSString = JSValueCreateJSONString(context, value, indent, exception);
   CFStringRef string = JSStringCopyCFString(kCFAllocatorDefault, JSString);
   JSStringRelease(JSString);
 
@@ -172,14 +164,14 @@ static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, 
 
 static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
-  NSString *errorMessage = jsError ? RCTJSValueToNSString(context, jsError) : @"unknown JS error";
-  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, 2) : @"no details";
+  NSString *errorMessage = jsError ? RCTJSValueToNSString(context, jsError, NULL) : @"unknown JS error";
+  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, NULL, 2) : @"no details";
   return [NSError errorWithDomain:@"JS" code:1 userInfo:@{NSLocalizedDescriptionKey: errorMessage, NSLocalizedFailureReasonErrorKey: details}];
 }
 
 #if RCT_DEV
 
-static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], __unused JSValueRef *exception)
+static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
 {
   static int profileCounter = 1;
   NSString *profileName;
@@ -189,14 +181,14 @@ static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSOb
     if (JSValueIsNumber(context, arguments[0])) {
       tag = JSValueToNumber(context, arguments[0], NULL);
     } else {
-      profileName = RCTJSValueToNSString(context, arguments[0]);
+      profileName = RCTJSValueToNSString(context, arguments[0], exception);
     }
   } else {
     profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
   }
 
   if (argumentCount > 1 && JSValueIsString(context, arguments[1])) {
-    profileName = RCTJSValueToNSString(context, arguments[1]);
+    profileName = RCTJSValueToNSString(context, arguments[1], exception);
   }
 
   if (profileName) {
@@ -206,15 +198,11 @@ static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSOb
   return JSValueMakeUndefined(context);
 }
 
-static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], __unused JSValueRef *exception)
+static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], JSValueRef *exception)
 {
   if (argumentCount > 0) {
-    JSValueRef *error = NULL;
-    double tag = JSValueToNumber(context, arguments[0], error);
-
-    if (error == NULL) {
-      RCTProfileEndEvent((uint64_t)tag, @"console", nil);
-    }
+    double tag = JSValueToNumber(context, arguments[0], exception);
+    RCTProfileEndEvent((uint64_t)tag, @"console", nil);
   }
 
   return JSValueMakeUndefined(context);
@@ -231,11 +219,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       (__typeof__(nativeProfilerEnd))dlsym(JSCProfiler, "nativeProfilerEnd");
 
     if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-      void (*nativeProfilerEnableByteCode)(void) =
-        (__typeof__(nativeProfilerEnableByteCode))dlsym(JSCProfiler, "nativeProfilerEnableByteCode");
+      void (*nativeProfilerEnableBytecode)(void) =
+        (__typeof__(nativeProfilerEnableBytecode))dlsym(JSCProfiler, "nativeProfilerEnableBytecode");
 
-      if (nativeProfilerEnableByteCode != NULL) {
-        nativeProfilerEnableByteCode();
+      if (nativeProfilerEnableBytecode != NULL) {
+        nativeProfilerEnableBytecode();
       }
 
       static BOOL isProfiling = NO;
@@ -338,14 +326,14 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
     if (!strongSelf->_context) {
-      JSContext *context = [[JSContext alloc] init];
+      JSContext *context = [JSContext new];
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
     }
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
     [strongSelf _addNativeHook:RCTNoop withName:"noop"];
 
     __weak RCTBridge *bridge = strongSelf->_bridge;
-    strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray *calls){
+    strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
       if (!weakSelf.valid || !calls) {
         return;
       }
@@ -353,7 +341,15 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       [bridge handleBuffer:calls batchEnded:NO];
     };
 
+    strongSelf->_context.context[@"RCTPerformanceNow"] = ^(){
+      return CACurrentMediaTime() * 1000 * 1000;
+    };
+
 #if RCT_DEV
+    if (RCTProfileIsProfiling()) {
+      strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
+    }
+
     [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
     [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
 
@@ -535,13 +531,14 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
+    RCTPerformanceLoggerStart(RCTPLScriptExecution);
+
     // JSStringCreateWithUTF8CString expects a null terminated C string
     NSMutableData *nullTerminatedScript = [NSMutableData dataWithCapacity:script.length + 1];
 
     [nullTerminatedScript appendData:script];
     [nullTerminatedScript appendBytes:"" length:1];
 
-    RCTPerformanceLoggerStart(RCTPLScriptExecution);
     JSValueRef jsError = NULL;
     JSStringRef execJSString = JSStringCreateWithUTF8CString(nullTerminatedScript.bytes);
     JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);

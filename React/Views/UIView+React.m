@@ -51,12 +51,12 @@
   [subview removeFromSuperview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView<RCTComponent> *> *)reactSubviews
 {
   return self.subviews;
 }
 
-- (UIView *)reactSuperview
+- (UIView<RCTComponent> *)reactSuperview
 {
   return self.superview;
 }
@@ -78,8 +78,8 @@
     return;
   }
 
-  self.layer.position = position;
-  self.layer.bounds = bounds;
+  self.center = position;
+  self.bounds = bounds;
 }
 
 - (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor

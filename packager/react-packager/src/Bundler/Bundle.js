@@ -12,6 +12,7 @@ const _ = require('underscore');
 const base64VLQ = require('./base64-vlq');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
+const Activity = require('../Activity');
 
 const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
 
@@ -53,13 +54,8 @@ class Bundle {
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
-      const runCode = ';require("' + this._mainModuleId + '");';
-      this.addModule(new ModuleTransport({
-        code: runCode,
-        virtual: true,
-        sourceCode: runCode,
-        sourcePath: 'RunMainModule.js'
-      }));
+      options.runBeforeMainModule.forEach(this._addRequireCall, this);
+      this._addRequireCall(this._mainModuleId);
     }
 
     Object.freeze(this._modules);
@@ -67,6 +63,18 @@ class Bundle {
     Object.freeze(this._assets);
     Object.seal(this._assets);
     this._finalized = true;
+  }
+
+  _addRequireCall(moduleId) {
+    const code = ';require("' + moduleId + '");';
+    const name = 'require-' + moduleId;
+    this.addModule(new ModuleTransport({
+      name,
+      code,
+      virtual: true,
+      sourceCode: code,
+      sourcePath: name + '.js',
+    }));
   }
 
   _assertFinalized() {
@@ -121,11 +129,14 @@ class Bundle {
 
     const source = this._getSource();
     try {
+      const minifyActivity = Activity.startEvent('minify');
       this._minifiedSourceAndMap = UglifyJS.minify(source, {
         fromString: true,
         outSourceMap: 'bundle.js',
         inSourceMap: this.getSourceMap(),
+        output: {ascii_only: true},
       });
+      Activity.endEvent(minifyActivity);
       return this._minifiedSourceAndMap;
     } catch(e) {
       // Sometimes, when somebody is using a new syntax feature that we

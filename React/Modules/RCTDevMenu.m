@@ -15,7 +15,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
-#import "RCTPerfStats.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
@@ -139,8 +138,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
-  NSArray *_presentedItems;
-  NSMutableArray *_extraMenuItems;
+  NSArray<RCTDevMenuItem *> *_presentedItems;
+  NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
+  NSString *_webSocketExecutorName;
+  NSString *_executorOverride;
 }
 
 @synthesize bridge = _bridge;
@@ -182,22 +183,6 @@ RCT_EXPORT_MODULE()
 
     __weak RCTDevMenu *weakSelf = self;
 
-    [_extraMenuItems addObject:[RCTDevMenuItem toggleItemWithKey:@"showFPS"
-                                               title:@"Show FPS Monitor"
-                                       selectedTitle:@"Hide FPS Monitor"
-                                             handler:^(BOOL showFPS)
-    {
-      RCTDevMenu *strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf->_showFPS = showFPS;
-        if (showFPS) {
-          [strongSelf.bridge.perfStats show];
-        } else {
-          [strongSelf.bridge.perfStats hide];
-        }
-      }
-    }]];
-
     [_extraMenuItems addObject:[RCTDevMenuItem toggleItemWithKey:@"showInspector"
                                                  title:@"Show Inspector"
                                          selectedTitle:@"Hide Inspector"
@@ -205,6 +190,13 @@ RCT_EXPORT_MODULE()
     {
       [weakSelf.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
     }]];
+
+    _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"Chrome";
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      _executorOverride = [_defaults objectForKey:@"executor-override"];
+    });
 
     // Delay setup until after Bridge init
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -283,7 +275,7 @@ RCT_EXPORT_MODULE()
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
   self.showFPS = [_settings[@"showFPS"] ?: @NO boolValue];
-  self.executorClass = NSClassFromString(_settings[@"executorClass"]);
+  self.executorClass = NSClassFromString(_executorOverride ?: _settings[@"executorClass"]);
 }
 
 /**
@@ -392,9 +384,9 @@ RCT_EXPORT_MODULE()
   [self settingsDidChange];
 }
 
-- (NSArray *)menuItems
+- (NSArray<RCTDevMenuItem *> *)menuItems
 {
-  NSMutableArray *items = [NSMutableArray new];
+  NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
 
@@ -406,13 +398,18 @@ RCT_EXPORT_MODULE()
 
   Class chromeExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
   if (!chromeExecutorClass) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Chrome Debugger Unavailable" handler:^{
-      UIAlertView *alert = RCTAlertView(@"Chrome Debugger Unavailable", @"You need to include the RCTWebSocket library to enable Chrome debugging", nil, @"OK", nil);
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName] handler:^{
+      UIAlertView *alert = RCTAlertView(
+        [NSString stringWithFormat:@"%@ Debugger Unavailable", _webSocketExecutorName],
+        [NSString stringWithFormat:@"You need to include the RCTWebSocket library to enable %@ debugging", _webSocketExecutorName],
+        nil,
+        @"OK",
+        nil);
       [alert show];
     }]];
   } else {
     BOOL isDebuggingInChrome = _executorClass && _executorClass == chromeExecutorClass;
-    NSString *debugTitleChrome = isDebuggingInChrome ? @"Disable Chrome Debugging" : @"Debug in Chrome";
+    NSString *debugTitleChrome = isDebuggingInChrome ? [NSString stringWithFormat:@"Disable %@ Debugging", _webSocketExecutorName] : [NSString stringWithFormat:@"Debug in %@", _webSocketExecutorName];
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleChrome handler:^{
       weakSelf.executorClass = isDebuggingInChrome ? Nil : chromeExecutorClass;
     }]];
@@ -452,7 +449,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.title = @"React Native: Development";
   actionSheet.delegate = self;
 
-  NSArray *items = [self menuItems];
+  NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
     switch (item.type) {
       case RCTDevMenuTypeButton: {
@@ -471,7 +468,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.cancelButtonIndex = actionSheet.numberOfButtons - 1;
 
   actionSheet.actionSheetStyle = UIBarStyleBlack;
-  [actionSheet showInView:RCTSharedApplication().keyWindow.rootViewController.view];
+  [actionSheet showInView:RCTKeyWindow().rootViewController.view];
   _actionSheet = actionSheet;
   _presentedItems = items;
 }
@@ -544,6 +541,7 @@ RCT_EXPORT_METHOD(reload)
 {
   if (_executorClass != executorClass) {
     _executorClass = executorClass;
+    _executorOverride = nil;
     [self updateSetting:@"executorClass" value:NSStringFromClass(executorClass)];
   }
 

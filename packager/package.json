@@ -24,7 +24,7 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
-    "start": "./packager/packager.sh"
+    "start": "./packager.sh"
   },
   "dependencies": {
     "wordwrap": "^1.0.0"

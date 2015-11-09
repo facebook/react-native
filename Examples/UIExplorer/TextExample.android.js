@@ -160,6 +160,22 @@ var TextExample = React.createClass({
             </View>
           </View>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Custom Fonts">
+          <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
+            <View style={{flex: 1}}>
+              <Text style={{fontFamily: 'notoserif'}}>
+                NotoSerif Regular
+              </Text>
+              <Text style={{fontFamily: 'notoserif', fontStyle: 'italic', fontWeight: 'bold'}}>
+                NotoSerif Bold Italic
+              </Text>
+              <Text style={{fontFamily: 'notoserif', fontStyle: 'italic'}}>
+                NotoSerif Italic (Missing Font file)
+              </Text>
+            </View>
+          </View>
+        </UIExplorerBlock>
+
         <UIExplorerBlock title="Font Size">
           <Text style={{fontSize: 23}}>
             Size 23
