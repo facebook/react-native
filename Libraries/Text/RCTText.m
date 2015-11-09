@@ -16,7 +16,6 @@
 
 static CGFloat const RCTTextAutoSizeDefaultMinimumFontScale       = 0.5f;
 static CGFloat const RCTTextAutoSizeWidthErrorMargin              = 0.05f;
-static CGFloat const RCTTextAutoSizeHeightErrorMargin             = 0.15f;
 static CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
 
 static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDescendants)
