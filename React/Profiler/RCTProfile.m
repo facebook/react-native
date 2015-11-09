@@ -190,13 +190,13 @@ RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
 void RCTProfileTrampolineStart(id self, SEL cmd)
 {
   NSString *name = [NSString stringWithFormat:@"-[%s %s]", class_getName([self class]), sel_getName(cmd)];
-  RCTProfileBeginEvent(0, name, nil);
+  RCT_PROFILE_BEGIN_EVENT(0, name, nil);
 }
 
 RCT_EXTERN void RCTProfileTrampolineEnd(void);
 void RCTProfileTrampolineEnd(void)
 {
-  RCTProfileEndEvent(0, @"objc_call,modules,auto", nil);
+  RCT_PROFILE_END_EVENT(0, @"objc_call,modules,auto", nil);
 }
 
 void RCTProfileHookModules(RCTBridge *bridge)

@@ -192,7 +192,7 @@ static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSOb
   }
 
   if (profileName) {
-    RCTProfileBeginEvent(tag, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag, profileName, nil);
   }
 
   return JSValueMakeUndefined(context);
@@ -202,7 +202,7 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
 {
   if (argumentCount > 0) {
     double tag = JSValueToNumber(context, arguments[0], exception);
-    RCTProfileEndEvent((uint64_t)tag, @"console", nil);
+    RCT_PROFILE_END_EVENT((uint64_t)tag, @"console", nil);
   }
 
   return JSValueMakeUndefined(context);
