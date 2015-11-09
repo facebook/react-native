@@ -17,7 +17,7 @@
 static CGFloat const RCTTextAutoSizeDefaultMinimumFontScale       = 0.5f;
 static CGFloat const RCTTextAutoSizeWidthErrorMargin              = 0.05f;
 static CGFloat const RCTTextAutoSizeHeightErrorMargin             = 0.15f;
-static CGFloat const RCTTextAutoSizeGranularity                   = 0.01f;
+static CGFloat const RCTTextAutoSizeGranularity                   = 0.001f;
 
 static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDescendants)
 {
@@ -294,8 +294,7 @@ static void collectNonTextDescendants(RCTText *view, NSMutableArray *nonTextDesc
                                    textContainer.maximumNumberOfLines == 0;
 
   if (fitLines && fitSize) {
-    if ((requiredSize.height + (CGRectGetHeight(frame) * RCTTextAutoSizeHeightErrorMargin)) > CGRectGetHeight(frame) &&
-        (requiredSize.width + (CGRectGetWidth(frame) * RCTTextAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame))
+    if ((requiredSize.width + (CGRectGetWidth(frame) * RCTTextAutoSizeWidthErrorMargin)) > CGRectGetWidth(frame))
     {
       return RCTSizeWithinRange;
     } else {
