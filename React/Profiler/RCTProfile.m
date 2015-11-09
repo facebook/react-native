@@ -189,8 +189,7 @@ IMP RCTProfileGetImplementation(id obj, SEL cmd)
 RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
 void RCTProfileTrampolineStart(id self, SEL cmd)
 {
-  NSString *name = [NSString stringWithFormat:@"-[%s %s]", class_getName([self class]), sel_getName(cmd)];
-  RCT_PROFILE_BEGIN_EVENT(0, name, nil);
+  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"-[%s %s]", class_getName([self class]), sel_getName(cmd)], nil);
 }
 
 RCT_EXTERN void RCTProfileTrampolineEnd(void);
