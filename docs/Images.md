@@ -101,7 +101,7 @@ iOS saves multiple sizes for the same image in your Camera Roll, it is very impo
 
 *In React Native* this behavior is intentionally not implemented. It is more work for the developer to know the dimensions (or aspect ratio) of the remote image in advance, but we believe that it leads to a better user experience. Static images loaded from the app bundle via the `require('./my-icon.png')` syntax *can be automatically sized* because their dimensions are available immediately at the time of mounting.
 
-For example, the result of `require('./my-icon.png')` from the above screenshot:
+For example, the result of `require('./my-icon.png')` might be:
 
 ```javascript
 {"__packager_asset":true,"path":"/Users/react/HelloWorld/my-icon.png","uri":"my-icon.png","width":591,"height":573}
