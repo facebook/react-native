@@ -13,7 +13,7 @@ const ModuleCache = require('../ModuleCache');
 const Promise = require('promise');
 const crawl = require('../crawlers');
 const declareOpts = require('../../lib/declareOpts');
-const getPontentialPlatformExt = require('../../lib/getPlatformExtension');
+const getPlatformExtension = require('../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 const util = require('util');
@@ -173,7 +173,7 @@ class DependencyGraph {
 
   _getRequestPlatform(entryPath, platform) {
     if (platform == null) {
-      platform = getPontentialPlatformExt(entryPath);
+      platform = getPlatformExtension(entryPath);
       if (platform == null || this._opts.platforms.indexOf(platform) === -1) {
         platform = null;
       }

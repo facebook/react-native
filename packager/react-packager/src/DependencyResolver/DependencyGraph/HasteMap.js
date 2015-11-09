@@ -9,7 +9,7 @@
 'use strict';
 
 const path = require('path');
-const getPlatformExtension = require('../../lib/getPlatformExtension');
+const getPlatformExtension = require('../lib/getPlatformExtension');
 const Promise = require('promise');
 
 const GENERIC_PLATFORM = 'generic';
