@@ -24,6 +24,14 @@
   }
 }
 
+-(id)init
+{
+  if (self = [super init]) {
+    _rightButtonSystemItem = -1;
+  }
+  return self;
+}
+
 - (void)setBackButtonTitle:(NSString *)backButtonTitle
 {
   _backButtonTitle = backButtonTitle;
