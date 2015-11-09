@@ -272,6 +272,13 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
+RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
+  @"default": @(UIKeyboardAppearanceDefault),
+  @"light": @(UIKeyboardAppearanceLight),
+  @"alert": @(UIKeyboardAppearanceAlert),
+  @"dark": @(UIKeyboardAppearanceDark),
+}), UIKeyboardAppearanceDefault, integerValue)
+
 RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
   @"default": @(UIReturnKeyDefault),
   @"go": @(UIReturnKeyGo),
