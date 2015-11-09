@@ -13,11 +13,8 @@ jest.autoMockOff();
 const Promise = require('promise');
 
 jest
-  .mock('fs')
-  .mock('../../../Cache')
-  .mock('../../../Activity');
+  .mock('fs');
 
-var Cache = require('../../../Cache');
 var DependencyGraph = require('../index');
 var fs = require('fs');
 
@@ -50,6 +47,13 @@ describe('DependencyGraph', function() {
       },
       isWatchman: () => Promise.resolve(false),
     };
+
+    const Cache = jest.genMockFn();
+    Cache.prototype.get = jest.genMockFn().mockImplementation(
+      (filepath, field, cb) => cb(filepath)
+    );
+    Cache.prototype.invalidate = jest.genMockFn();
+    Cache.prototype.end = jest.genMockFn();
 
     defaults = {
       assetExts: ['png', 'jpg'],

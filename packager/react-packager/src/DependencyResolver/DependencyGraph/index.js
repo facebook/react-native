@@ -42,7 +42,7 @@ class DependencyGraph {
     this._opts = {
       activity: activity || defaultActivity,
       roots,
-      ignoreFilePath: ignoreFilePath || () => {},
+      ignoreFilePath: ignoreFilePath || (() => {}),
       fileWatcher,
       assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
       assetExts,
