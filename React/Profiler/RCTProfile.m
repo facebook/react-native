@@ -189,14 +189,13 @@ IMP RCTProfileGetImplementation(id obj, SEL cmd)
 RCT_EXTERN void RCTProfileTrampolineStart(id, SEL);
 void RCTProfileTrampolineStart(id self, SEL cmd)
 {
-  NSString *name = [NSString stringWithFormat:@"-[%s %s]", class_getName([self class]), sel_getName(cmd)];
-  RCTProfileBeginEvent(0, name, nil);
+  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"-[%s %s]", class_getName([self class]), sel_getName(cmd)], nil);
 }
 
 RCT_EXTERN void RCTProfileTrampolineEnd(void);
 void RCTProfileTrampolineEnd(void)
 {
-  RCTProfileEndEvent(0, @"objc_call,modules,auto", nil);
+  RCT_PROFILE_END_EVENT(0, @"objc_call,modules,auto", nil);
 }
 
 void RCTProfileHookModules(RCTBridge *bridge)
@@ -282,14 +281,18 @@ dispatch_queue_t RCTProfileGetQueue(void)
 
 BOOL RCTProfileIsProfiling(void)
 {
-  return (BOOL)OSAtomicAnd32(1, &RCTProfileProfiling);
+  return (BOOL)RCTProfileProfiling;
 }
 
 void RCTProfileInit(RCTBridge *bridge)
 {
   // TODO: enable assert JS thread from any file (and assert here)
 
-  OSAtomicOr32(1, &RCTProfileProfiling);
+  if (RCTProfileIsProfiling()) {
+    return;
+  }
+
+  OSAtomicOr32Barrier(1, &RCTProfileProfiling);
 
   if (callbacks != NULL) {
     size_t buffer_size = 1 << 22;
@@ -321,7 +324,7 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
     return;
   }
 
-  OSAtomicAnd32(0, &RCTProfileProfiling);
+  OSAtomicAnd32Barrier(0, &RCTProfileProfiling);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:nil];
@@ -420,20 +423,20 @@ void _RCTProfileEndEvent(
   );
 }
 
-int RCTProfileBeginAsyncEvent(
+NSUInteger RCTProfileBeginAsyncEvent(
   uint64_t tag,
   NSString *name,
   NSDictionary *args
 ) {
   CHECK(0);
 
-  static int eventID = 0;
+  static NSUInteger eventID = 0;
 
   NSTimeInterval time = CACurrentMediaTime();
-  int currentEventID = ++eventID;
+  NSUInteger currentEventID = ++eventID;
 
   if (callbacks != NULL) {
-    callbacks->begin_async_section(tag, name.UTF8String, eventID, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->begin_async_section(tag, name.UTF8String, (int)(currentEventID % INT_MAX), args.count, RCTProfileSystraceArgsFromNSDictionary(args));
   } else {
     dispatch_async(RCTProfileGetQueue(), ^{
       RCTProfileOngoingEvents[@(currentEventID)] = @[
@@ -450,14 +453,14 @@ int RCTProfileBeginAsyncEvent(
 void RCTProfileEndAsyncEvent(
   uint64_t tag,
   NSString *category,
-  int cookie,
+  NSUInteger cookie,
   NSString *name,
   NSDictionary *args
 ) {
   CHECK();
 
   if (callbacks != NULL) {
-    callbacks->end_async_section(tag, name.UTF8String, cookie, args.count, RCTProfileSystraceArgsFromNSDictionary(args));
+    callbacks->end_async_section(tag, name.UTF8String, (int)(cookie % INT_MAX), args.count, RCTProfileSystraceArgsFromNSDictionary(args));
     return;
   }
 
