@@ -227,10 +227,14 @@ public class ReactContext extends ContextWrapper {
 
   /**
    * Same as {@link Activity#startActivityForResult(Intent, int)}, this just redirects the call to
-   * the current activity.
+   * the current activity. Returns whether the activity was started, as this might fail if this
+   * was called before the context is in the right state.
    */
-  public void startActivityForResult(Intent intent, int code, Bundle bundle) {
-    Assertions.assertNotNull(mCurrentActivity);
+  public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
+    if (mCurrentActivity == null) {
+      return false;
+    }
     mCurrentActivity.startActivityForResult(intent, code, bundle);
+    return true;
   }
 }
