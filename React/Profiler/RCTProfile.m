@@ -282,14 +282,18 @@ dispatch_queue_t RCTProfileGetQueue(void)
 
 BOOL RCTProfileIsProfiling(void)
 {
-  return (BOOL)OSAtomicAnd32(1, &RCTProfileProfiling);
+  return (BOOL)RCTProfileProfiling;
 }
 
 void RCTProfileInit(RCTBridge *bridge)
 {
   // TODO: enable assert JS thread from any file (and assert here)
 
-  OSAtomicOr32(1, &RCTProfileProfiling);
+  if (RCTProfileIsProfiling()) {
+    return;
+  }
+
+  OSAtomicOr32Barrier(1, &RCTProfileProfiling);
 
   if (callbacks != NULL) {
     size_t buffer_size = 1 << 22;
@@ -321,7 +325,7 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
     return;
   }
 
-  OSAtomicAnd32(0, &RCTProfileProfiling);
+  OSAtomicAnd32Barrier(0, &RCTProfileProfiling);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:nil];
