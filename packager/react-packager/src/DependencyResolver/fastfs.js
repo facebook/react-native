@@ -1,6 +1,5 @@
 'use strict';
 
-const Activity = require('../Activity');
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
@@ -15,7 +14,7 @@ const hasOwn = Object.prototype.hasOwnProperty;
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
 class Fastfs extends EventEmitter {
-  constructor(name, roots, fileWatcher, {ignore, crawling}) {
+  constructor(name, roots, fileWatcher, {ignore, crawling, activity}) {
     super();
     this._name = name;
     this._fileWatcher = fileWatcher;
@@ -23,6 +22,7 @@ class Fastfs extends EventEmitter {
     this._roots = roots.map(root => new File(root, { isDir: true }));
     this._fastPaths = Object.create(null);
     this._crawling = crawling;
+    this._activity = activity;
   }
 
   build() {
@@ -31,7 +31,11 @@ class Fastfs extends EventEmitter {
     );
 
     return this._crawling.then(files => {
-      const fastfsActivity = Activity.startEvent('Building in-memory fs for ' + this._name);
+      let fastfsActivity;
+      const activity = this._activity;
+      if (activity) {
+        fastfsActivity = activity.startEvent('Building in-memory fs for ' + this._name);
+      }
       files.forEach(filePath => {
         if (filePath.match(rootsPattern)) {
           const newFile = new File(filePath, { isDir: false });
@@ -48,7 +52,9 @@ class Fastfs extends EventEmitter {
           }
         }
       });
-      Activity.endEvent(fastfsActivity);
+      if (activity) {
+        activity.endEvent(fastfsActivity);
+      }
       this._fileWatcher.on('all', this._processFileChange.bind(this));
     });
   }

@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Activity = require('../../Activity');
 const Fastfs = require('../fastfs');
 const ModuleCache = require('../ModuleCache');
 const Promise = require('promise');
@@ -25,14 +24,20 @@ const HasteMap = require('./HasteMap');
 const DeprecatedAssetMap = require('./DeprecatedAssetMap');
 
 const validateOpts = declareOpts({
+  activity: {
+    type: 'object',
+    default: {
+      startEvent: () => {},
+      endEvent: () => {},
+    },
+  },
   roots: {
     type: 'array',
     required: true,
   },
   ignoreFilePath: {
     type: 'function',
-
-    default: function(){}
+    default: () => {}
   },
   fileWatcher: {
     type: 'object',
@@ -86,15 +91,16 @@ class DependencyGraph {
       return this._loading;
     }
 
-    const depGraphActivity = Activity.startEvent('Building Dependency Graph');
-    const crawlActivity = Activity.startEvent('Crawling File System');
+    const {activity} = this._opts;
+    const depGraphActivity = activity.startEvent('Building Dependency Graph');
+    const crawlActivity = activity.startEvent('Crawling File System');
     const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
     this._crawling = crawl(allRoots, {
       ignore: this._opts.ignoreFilePath,
       exts: ['js', 'json'].concat(this._opts.assetExts),
       fileWatcher: this._opts.fileWatcher,
     });
-    this._crawling.then((files) => Activity.endEvent(crawlActivity));
+    this._crawling.then((files) => activity.endEvent(crawlActivity));
 
     this._fastfs = new Fastfs(
       'JavaScript',
@@ -103,6 +109,7 @@ class DependencyGraph {
       {
         ignore: this._opts.ignoreFilePath,
         crawling: this._crawling,
+        activity: activity,
       }
     );
 
@@ -124,17 +131,18 @@ class DependencyGraph {
       fileWatcher: this._opts.fileWatcher,
       ignoreFilePath: this._opts.ignoreFilePath,
       assetExts: this._opts.assetExts,
+      activity: this._opts.activity,
     });
 
     this._loading = Promise.all([
       this._fastfs.build()
         .then(() => {
-          const hasteActivity = Activity.startEvent('Building Haste Map');
-          return this._hasteMap.build().then(() => Activity.endEvent(hasteActivity));
+          const hasteActivity = activity.startEvent('Building Haste Map');
+          return this._hasteMap.build().then(() => activity.endEvent(hasteActivity));
         }),
       this._deprecatedAssetMap.build(),
     ]).then(() =>
-      Activity.endEvent(depGraphActivity)
+      activity.endEvent(depGraphActivity)
     );
 
     return this._loading;
