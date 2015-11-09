@@ -82,7 +82,7 @@ var styles = StyleSheet.create({
   },
   border7: {
     borderWidth: 10,
-    borderColor: 'rgba(255,0,0,0.5)',
+    borderColor: '#f007',
     borderRadius: 30,
     overflow: 'hidden',
   },
