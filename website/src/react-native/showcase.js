@@ -27,7 +27,8 @@ var apps = [
   {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
+    linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.canddi',
     author: 'CANDDi LTD.',
   },
   {
