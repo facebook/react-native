@@ -30,7 +30,7 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  *
  * #### Handling deep links
  *
- * If your app was launched from a external url registered to your app you can
+ * If your app was launched from an external url registered to your app you can
  * access and handle it from any component you want with
  *
  * ```
@@ -127,8 +127,11 @@ class LinkingIOS {
   }
 
   /**
-   * Determine wether or not the an installed app can handle a given `url`
+   * Determine whether or not an installed app can handle a given `url`
    * The callback function will be called with `bool supported` as the only argument
+   *
+   * NOTE: As of iOS 9, your app needs to provide a `LSApplicationQueriesSchemes` key 
+   * inside `Info.plist`.
    */
   static canOpenURL(url: string, callback: Function) {
     invariant(

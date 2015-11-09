@@ -10,6 +10,13 @@
 #import <CoreGraphics/CoreGraphics.h>
 
 /**
+ * These block types can be used for mapping input event handlers from JS to view
+ * properties. Unlike JS method callbacks, these can be called multiple times.
+ */
+typedef void (^RCTDirectEventBlock)(NSDictionary *body);
+typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
+
+/**
  * Logical node in a tree of application components. Both `ShadowView` and
  * `UIView` conforms to this. Allows us to write utilities that reason about
  * trees generally.
@@ -20,7 +27,7 @@
 
 - (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex;
 - (void)removeReactSubview:(id<RCTComponent>)subview;
-- (NSArray *)reactSubviews;
+- (NSArray<id<RCTComponent>> *)reactSubviews;
 - (id<RCTComponent>)reactSuperview;
 - (NSNumber *)reactTagAtPoint:(CGPoint)point;
 

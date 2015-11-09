@@ -1,8 +1,8 @@
 ---
 id: native-modules-ios
-title: Native Modules (iOS)
+title: Native Modules
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/native-modules-ios.html
 next: native-components-ios
 ---
@@ -250,7 +250,7 @@ You must create a class extension of RCTConvert like so:
 @implementation RCTConvert (StatusBarAnimation)
   RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
                                                @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide),
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)},
                       UIStatusBarAnimationNone, integerValue)
 @end
 ```
@@ -264,7 +264,7 @@ You can then define methods and export your enum constants like this:
             @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
             @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide) }
 };
-    
+
 RCT_EXPORT_METHOD(updateStatusBarAnimation:(UIStatusBarAnimation)animation
                                 completion:(RCTResponseSenderBlock)callback)
 ```

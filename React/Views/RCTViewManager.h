@@ -11,10 +11,12 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTConvert.h"
+#import "RCTComponent.h"
+#import "RCTDefines.h"
+#import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 
 @class RCTBridge;
-@class RCTEventDispatcher;
 @class RCTShadowView;
 @class RCTSparseArray;
 @class RCTUIManager;
@@ -37,7 +39,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * return a fresh instance each time. The view module MUST NOT cache the returned
  * view and return the same instance for subsequent calls.
  */
-- (UIView *)view;
+- (UIView<RCTComponent> *)view;
 
 /**
  * This method instantiates a native view using the props passed into the component.
@@ -57,6 +59,8 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
 - (RCTShadowView *)shadowView;
 
 /**
+ * DEPRECATED: declare properties of type RCTBubblingEventBlock instead
+ *
  * Returns an array of names of events that can be sent by native views. This
  * should return bubbling, directly-dispatched event types. The event name
  * should not include a prefix such as 'on' or 'top', as this will be applied
@@ -66,9 +70,11 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSArray *)customBubblingEventTypes;
+- (NSArray<NSString *> *)customBubblingEventTypes;
 
 /**
+ * DEPRECATED: declare properties of type RCTDirectEventBlock instead
+ *
  * Returns an array of names of events that can be sent by native views. This
  * should return non-bubbling, directly-dispatched event types. The event name
  * should not include a prefix such as 'on' or 'top', as this will be applied
@@ -77,7 +83,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-- (NSArray *)customDirectEventTypes;
+- (NSArray<NSString *> *)customDirectEventTypes;
 
 /**
  * Called to notify manager that layout has finished, in case any calculated
@@ -97,13 +103,13 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * This handles the simple case, where JS and native property names match.
  */
 #define RCT_EXPORT_VIEW_PROPERTY(name, type) \
-+ (NSArray *)propConfig_##name { return @[@#type]; }
++ (NSArray<NSString *> *)propConfig_##name { return @[@#type]; }
 
 /**
  * This macro maps a named property to an arbitrary key path in the view.
  */
 #define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type) \
-+ (NSArray *)propConfig_##name { return @[@#type, @#keyPath]; }
++ (NSArray<NSString *> *)propConfig_##name { return @[@#type, @#keyPath]; }
 
 /**
  * This macro can be used when you need to provide custom logic for setting
@@ -118,6 +124,6 @@ RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
  * This macro is used to map properties to the shadow view, instead of the view.
  */
 #define RCT_EXPORT_SHADOW_PROPERTY(name, type) \
-+ (NSArray *)propConfigShadow_##name { return @[@#type]; }
++ (NSArray<NSString *> *)propConfigShadow_##name { return @[@#type]; }
 
 @end

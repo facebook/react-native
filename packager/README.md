@@ -19,8 +19,8 @@ namely the node module format. We want to even go further, and let you
 choose your own packager and asset pipeline or even integrate into
 your existing infrastructure.
 
-React Native users need not understand how the packager works.
-However, this documentation might be useful for advanced users and
+React Native users need not to understand how the packager work,
+however, this documentation might be useful for advanced users and
 people who want to fix bugs or add features to the packager (patches
 welcome!).
 
@@ -123,6 +123,16 @@ the same options that is passed to `ReactPackager.middleware`
 Given an entry point module. Recursively collect all the dependent
 modules and return it as an array. `options` is the same options that
 is passed to `ReactPackager.middleware`
+
+## Debugging
+
+To get verbose output when running the packager, define an environment variable:
+
+    export DEBUG=ReactNativePackager:*
+    
+You can combine this with other values, e.g. `DEBUG=babel,ReactNativePackager:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
+    
+The `/debug` endpoint discussed above is also useful.
 
 ## FAQ
 

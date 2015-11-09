@@ -37,7 +37,6 @@ var NavigatorNavigationBar = require('NavigatorNavigationBar');
 var NavigatorSceneConfigs = require('NavigatorSceneConfigs');
 var PanResponder = require('PanResponder');
 var React = require('React');
-var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var TimerMixin = require('react-timer-mixin');
@@ -178,7 +177,7 @@ var GESTURE_ACTIONS = [
  *  - `replacePrevious(route)` - Replace the previous scene
  *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
  *     array of routes
- *  - `popToRoute(route)` - Pop to a particular scene, as specified by it's
+ *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
  *     route. All scenes after it will be unmounted
  *  - `popToTop()` - Pop to the first scene in the stack, unmounting every
  *     other scene
@@ -274,6 +273,8 @@ var Navigator = React.createClass({
   },
 
   getInitialState: function() {
+    this._navigationBarNavigator = this.props.navigationBarNavigator || this;
+
     this._renderedSceneMap = new Map();
 
     var routeStack = this.props.initialRouteStack || [this.props.initialRoute];
@@ -347,6 +348,12 @@ var Navigator = React.createClass({
       this._navigationContext.dispose();
       this._navigationContext = null;
     }
+
+    this.spring.destroy();
+
+    if (this._interactionHandle) {
+      this.clearInteractionHandle(this._interactionHandle);
+    }
   },
 
   /**
@@ -412,6 +419,9 @@ var Navigator = React.createClass({
    * happening, we only set values for the transition and the gesture will catch up later
    */
   _handleSpringUpdate: function() {
+    if (!this.isMounted()) {
+      return;
+    }
     // Prioritize handling transition in progress over a gesture:
     if (this.state.transitionFromIndex != null) {
       this._transitionBetween(
@@ -433,6 +443,10 @@ var Navigator = React.createClass({
    * This happens at the end of a transition started by transitionTo, and when the spring catches up to a pending gesture
    */
   _completeTransition: function() {
+    if (!this.isMounted()) {
+      return;
+    }
+
     if (this.spring.getCurrentValue() !== 1 && this.spring.getCurrentValue() !== 0) {
       // The spring has finished catching up to a gesture in progress. Remove the pending progress
       // and we will be in a normal activeGesture state
@@ -558,8 +572,8 @@ var Navigator = React.createClass({
     } else if (this.state.activeGesture) {
       toIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
     }
-    this._setRenderSceneToHarwareTextureAndroid(fromIndex, true);
-    this._setRenderSceneToHarwareTextureAndroid(toIndex, true);
+    this._setRenderSceneToHardwareTextureAndroid(fromIndex, true);
+    this._setRenderSceneToHardwareTextureAndroid(toIndex, true);
     var navBar = this._navBar;
     if (navBar && navBar.onAnimationStart) {
       navBar.onAnimationStart(fromIndex, toIndex);
@@ -569,7 +583,7 @@ var Navigator = React.createClass({
   _onAnimationEnd: function() {
     var max = this.state.routeStack.length - 1;
     for (var index = 0; index <= max; index++) {
-      this._setRenderSceneToHarwareTextureAndroid(index, false);
+      this._setRenderSceneToHardwareTextureAndroid(index, false);
     }
 
     var navBar = this._navBar;
@@ -578,7 +592,7 @@ var Navigator = React.createClass({
     }
   },
 
-  _setRenderSceneToHarwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
+  _setRenderSceneToHardwareTextureAndroid: function(sceneIndex, shouldRenderToHardwareTexture) {
     var viewAtIndex = this.refs['scene_' + sceneIndex];
     if (viewAtIndex === null || viewAtIndex === undefined) {
       return;
@@ -592,8 +606,11 @@ var Navigator = React.createClass({
 
   _handleMoveShouldSetPanResponder: function(e, gestureState) {
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
+    if (!sceneConfig) {
+      return false;
+    }
     this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
-    return !! this._expectingGestureGrant;
+    return !!this._expectingGestureGrant;
   },
 
   _doesGestureOverswipe: function(gestureName) {
@@ -690,6 +707,9 @@ var Navigator = React.createClass({
   },
 
   _handlePanResponderTerminate: function(e, gestureState) {
+    if (this.state.activeGesture == null) {
+      return;
+    }
     var destIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
     this._detachGesture();
     var transitionBackToPresentedIndex = this.state.presentedIndex;
@@ -1068,7 +1088,7 @@ var Navigator = React.createClass({
     }
     return React.cloneElement(this.props.navigationBar, {
       ref: (navBar) => { this._navBar = navBar; },
-      navigator: this,
+      navigator: this._navigationBarNavigator,
       navState: this.state,
     });
   },

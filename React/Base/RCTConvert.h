@@ -56,6 +56,7 @@ typedef NSURL RCTFileURL;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
++ (NSLineBreakMode)NSLineBreakMode:(id)json;
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
@@ -95,25 +96,28 @@ typedef NSURL RCTFileURL;
    scaleMultiplier:(CGFloat)scaleMultiplier;
 
 typedef NSArray NSArrayArray;
-+ (NSArrayArray *)NSArrayArray:(id)json;
++ (NSArray<NSArray *> *)NSArrayArray:(id)json;
 
 typedef NSArray NSStringArray;
-+ (NSStringArray *)NSStringArray:(id)json;
++ (NSArray<NSString *> *)NSStringArray:(id)json;
+
+typedef NSArray NSStringArrayArray;
++ (NSArray<NSArray<NSString *> *> *)NSStringArrayArray:(id)json;
 
 typedef NSArray NSDictionaryArray;
-+ (NSDictionaryArray *)NSDictionaryArray:(id)json;
++ (NSArray<NSDictionary *> *)NSDictionaryArray:(id)json;
 
 typedef NSArray NSURLArray;
-+ (NSURLArray *)NSURLArray:(id)json;
++ (NSArray<NSURL *> *)NSURLArray:(id)json;
 
 typedef NSArray RCTFileURLArray;
-+ (RCTFileURLArray *)RCTFileURLArray:(id)json;
++ (NSArray<NSURL *> *)RCTFileURLArray:(id)json;
 
 typedef NSArray NSNumberArray;
-+ (NSNumberArray *)NSNumberArray:(id)json;
++ (NSArray<NSNumber *> *)NSNumberArray:(id)json;
 
 typedef NSArray UIColorArray;
-+ (UIColorArray *)UIColorArray:(id)json;
++ (NSArray<UIColor *> *)UIColorArray:(id)json;
 
 typedef NSArray CGColorArray;
 + (CGColorArray *)CGColorArray:(id)json;
@@ -222,7 +226,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray *)type##Array:(id)json                      \
++ (NSArray<type *> *)type##Array:(id)json                      \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

@@ -18,27 +18,34 @@
 
 var React = require('react-native');
 var {
+  AppRegistry,
+  BackAndroid,
   Dimensions,
+  DrawerLayoutAndroid,
   StyleSheet,
+  ToolbarAndroid,
   View,
 } = React;
-var UIExplorerList = require('./UIExplorerList');
-
-// TODO: these should be exposed by the 'react-native' module.
-var DrawerLayoutAndroid = require('DrawerLayoutAndroid');
-var ToolbarAndroid = require('ToolbarAndroid');
+var UIExplorerList = require('./UIExplorerList.android');
 
 var DRAWER_WIDTH_LEFT = 56;
 
 var UIExplorerApp = React.createClass({
-
   getInitialState: function() {
     return {
-      example: {
-        title: 'UIExplorer',
-        component: this._renderHome(),
-      },
+      example: this._getUIExplorerHome(),
     };
+  },
+
+  _getUIExplorerHome: function() {
+    return {
+      title: 'UIExplorer',
+      component: this._renderHome(),
+    };
+  },
+
+  componentWillMount: function() {
+    BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
   },
 
   render: function() {
@@ -46,6 +53,7 @@ var UIExplorerApp = React.createClass({
       <DrawerLayoutAndroid
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         drawerWidth={Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
+        keyboardDismissMode="on-drag"
         ref={(drawer) => { this.drawer = drawer; }}
         renderNavigationView={this._renderNavigationView}>
         {this._renderNavigation()}
@@ -64,14 +72,11 @@ var UIExplorerApp = React.createClass({
 
   onSelectExample: function(example) {
     this.drawer.closeDrawer();
-    if (example.title === 'UIExplorer') {
-      example.component = this._renderHome();
+    if (example.title === this._getUIExplorerHome().title) {
+      example = this._getUIExplorerHome();
     }
     this.setState({
-      example: {
-        title: example.title,
-        component: example.component,
-      },
+      example: example,
     });
   },
 
@@ -105,16 +110,16 @@ var UIExplorerApp = React.createClass({
     );
   },
 
+  _handleBackButtonPress: function() {
+    if (this.state.example.title !== this._getUIExplorerHome().title) {
+      this.onSelectExample(this._getUIExplorerHome());
+      return true;
+    }
+    return false;
+  },
 });
 
 var styles = StyleSheet.create({
-  messageText: {
-    fontSize: 17,
-    fontWeight: '500',
-    padding: 15,
-    marginTop: 50,
-    marginLeft: 15,
-  },
   container: {
     flex: 1,
   },
@@ -123,5 +128,7 @@ var styles = StyleSheet.create({
     height: 56,
   },
 });
+
+AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 
 module.exports = UIExplorerApp;

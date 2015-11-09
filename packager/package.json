@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "jest": {
     "setupEnvScriptFile": "jestSupport/env.js",
     "testPathIgnorePatterns": [
@@ -21,7 +24,7 @@
   "scripts": {
     "test": "jest",
     "lint": "node linter.js Examples/",
-    "start": "./packager/packager.sh"
+    "start": "./packager.sh"
   },
   "dependencies": {
     "wordwrap": "^1.0.0"

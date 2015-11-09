@@ -12,6 +12,7 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
+#import "RCTUtils.h"
 
 static NSString *RCTCurrentAppBackgroundState()
 {
@@ -25,7 +26,11 @@ static NSString *RCTCurrentAppBackgroundState()
     };
   });
 
-  return states[@([UIApplication sharedApplication].applicationState)] ?: @"unknown";
+  if (RCTRunningInAppExtension()) {
+    return @"extension";
+  }
+
+  return states[@(RCTSharedApplication().applicationState)] ?: @"unknown";
 }
 
 @implementation RCTAppState
@@ -94,15 +99,6 @@ RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
   callback(@[@{@"app_state": _lastKnownState}]);
-}
-
-#pragma mark - RCTBridgeModule
-
-- (NSDictionary *)constantsToExport
-{
-  return @{
-     @"initialAppState" : RCTCurrentAppBackgroundState()
-   };
 }
 
 @end

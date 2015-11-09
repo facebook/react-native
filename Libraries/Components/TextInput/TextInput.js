@@ -40,31 +40,16 @@ var notMultiline = {
   onSubmitEditing: true,
 };
 
-var AndroidTextInputAttributes = {
-  autoCapitalize: true,
-  autoCorrect: true,
-  autoFocus: true,
-  textAlign: true,
-  textAlignVertical: true,
-  keyboardType: true,
-  mostRecentEventCount: true,
-  multiline: true,
-  password: true,
-  placeholder: true,
-  placeholderTextColor: true,
-  text: true,
-  testID: true,
-  underlineColorAndroid: true,
-  editable : true,
-};
+if (Platform.OS === 'android') {
+  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
+} else if (Platform.OS === 'ios') {
+  var RCTTextView = requireNativeComponent('RCTTextView', null);
+  var RCTTextField = requireNativeComponent('RCTTextField', null);
+}
 
-var viewConfigAndroid = {
-  uiViewClassName: 'AndroidTextInput',
-  validAttributes: AndroidTextInputAttributes,
+type DefaultProps = {
+  blurOnSubmit: boolean;
 };
-
-var RCTTextView = requireNativeComponent('RCTTextView', null);
-var RCTTextField = requireNativeComponent('RCTTextField', null);
 
 type Event = Object;
 
@@ -87,8 +72,8 @@ type Event = Object;
  *   />
  * ```
  *
- * Note that some props are only available with multiline={true/false}:
- *
+ * Note that some props are only available with `multiline={true/false}`:
+ * ```
  *   var onlyMultiline = {
  *     onSelectionChange: true, // not supported in Open Source yet
  *     onTextInput: true, // not supported in Open Source yet
@@ -98,8 +83,14 @@ type Event = Object;
  *   var notMultiline = {
  *     onSubmitEditing: true,
  *   };
+ * ```
  */
 var TextInput = React.createClass({
+  statics: {
+    /* TODO(brentvatne) docs are needed for this */
+    State: TextInputState,
+  },
+
   propTypes: {
     /**
      * Can tell TextInput to automatically capitalize certain characters.
@@ -126,7 +117,7 @@ var TextInput = React.createClass({
     autoFocus: PropTypes.bool,
     /**
      * Set the position of the cursor from where editing will begin.
-     * @platorm android
+     * @platform android
      */
     textAlign: PropTypes.oneOf([
       'start',
@@ -190,9 +181,14 @@ var TextInput = React.createClass({
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
-     * @platform ios
      */
     maxLength: PropTypes.number,
+    /**
+     * Sets the number of lines for a TextInput. Use it with multiline set to
+     * true to be able to fill the lines.
+     * @platform android
+     */
+    numberOfLines: PropTypes.number,
     /**
      * If true, the keyboard disables the return key when there is no text and
      * automatically enables it when there is text. The default value is false.
@@ -229,6 +225,13 @@ var TextInput = React.createClass({
      * Callback that is called when the text input's submit button is pressed.
      */
     onSubmitEditing: PropTypes.func,
+    /**
+     * Callback that is called when a key is pressed.
+     * Pressed key value is passed as an argument to the callback handler.
+     * Fires before onChange callbacks.
+     * @platform ios
+     */
+    onKeyPress: PropTypes.func,
     /**
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
@@ -289,6 +292,12 @@ var TextInput = React.createClass({
      */
     selectTextOnFocus: PropTypes.bool,
     /**
+     * If true, the text field will blur when submitted.
+     * The default value is true.
+     * @platform ios
+     */
+    blurOnSubmit: PropTypes.bool,
+    /**
      * Styles
      */
     style: Text.propTypes.style,
@@ -303,6 +312,12 @@ var TextInput = React.createClass({
     underlineColorAndroid: PropTypes.string,
   },
 
+  getDefaultProps: function(): DefaultProps {
+    return {
+      blurOnSubmit: true,
+    };
+  },
+
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
@@ -310,7 +325,7 @@ var TextInput = React.createClass({
   mixins: [NativeMethodsMixin, TimerMixin],
 
   viewConfig: ((Platform.OS === 'ios' ? RCTTextField.viewConfig :
-    (Platform.OS === 'android' ? viewConfigAndroid : {})) : Object),
+    (Platform.OS === 'android' ? AndroidTextInput.viewConfig : {})) : Object),
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
@@ -484,6 +499,8 @@ var TextInput = React.createClass({
         keyboardType={this.props.keyboardType}
         mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
+        numberOfLines={this.props.numberOfLines}
+        maxLength={this.props.maxLength}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
@@ -533,13 +550,16 @@ var TextInput = React.createClass({
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
     this.setState({mostRecentEventCount: eventCount}, () => {
-      // This is a controlled component, so make sure to force the native value
-      // to match.  Most usage shouldn't need this, but if it does this will be
-      // more correct but might flicker a bit and/or cause the cursor to jump.
-      if (text !== this.props.value && typeof this.props.value === 'string') {
-        this.refs.input.setNativeProps({
-          text: this.props.value,
-        });
+      // NOTE: this doesn't seem to be needed on iOS - keeping for now in case it's required on Android
+      if (Platform.OS === 'android') {
+        // This is a controlled component, so make sure to force the native value
+        // to match.  Most usage shouldn't need this, but if it does this will be
+        // more correct but might flicker a bit and/or cause the cursor to jump.
+        if (text !== this.props.value && typeof this.props.value === 'string') {
+          this.refs.input.setNativeProps({
+            text: this.props.value,
+          });
+        }
       }
     });
   },
@@ -568,11 +588,6 @@ var styles = StyleSheet.create({
   input: {
     alignSelf: 'stretch',
   },
-});
-
-var AndroidTextInput = createReactNativeComponentClass({
-  validAttributes: AndroidTextInputAttributes,
-  uiViewClassName: 'AndroidTextInput',
 });
 
 module.exports = TextInput;

@@ -4,7 +4,6 @@ const Activity = require('../Activity');
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
-const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
 
@@ -12,6 +11,8 @@ const readFile = Promise.denodeify(fs.readFile);
 const stat = Promise.denodeify(fs.stat);
 
 const hasOwn = Object.prototype.hasOwnProperty;
+
+const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
 class Fastfs extends EventEmitter {
   constructor(name, roots, fileWatcher, {ignore, crawling}) {
@@ -60,10 +61,8 @@ class Fastfs extends EventEmitter {
   }
 
   getAllFiles() {
-    return _.chain(this._roots)
-      .map(root => root.getFiles())
-      .flatten()
-      .value();
+    // one-level-deep flatten of files
+    return [].concat(...this._roots.map(root => root.getFiles()));
   }
 
   findFilesByExt(ext, { ignore }) {
@@ -90,7 +89,11 @@ class Fastfs extends EventEmitter {
   }
 
   readFile(filePath) {
-    return this._getFile(filePath).read();
+    const file = this._getFile(filePath);
+    if (!file) {
+      throw new Error(`Unable to find file with path: ${file}`);
+    }
+    return file.read();
   }
 
   closest(filePath, name) {
@@ -105,12 +108,30 @@ class Fastfs extends EventEmitter {
   }
 
   fileExists(filePath) {
-    const file = this._getFile(filePath);
+    let file;
+    try {
+      file = this._getFile(filePath);
+    } catch (e) {
+      if (e.type === NOT_FOUND_IN_ROOTS) {
+        return false;
+      }
+      throw e;
+    }
+
     return file && !file.isDir;
   }
 
   dirExists(filePath) {
-    const file = this._getFile(filePath);
+    let file;
+    try {
+      file = this._getFile(filePath);
+    } catch (e) {
+      if (e.type === NOT_FOUND_IN_ROOTS) {
+        return false;
+      }
+      throw e;
+    }
+
     return file && file.isDir;
   }
 
@@ -138,7 +159,9 @@ class Fastfs extends EventEmitter {
   _getAndAssertRoot(filePath) {
     const root = this._getRoot(filePath);
     if (!root) {
-      throw new Error(`File ${filePath} not found in any of the roots`);
+      const error = new Error(`File ${filePath} not found in any of the roots`);
+      error.type = NOT_FOUND_IN_ROOTS;
+      throw error;
     }
     return root;
   }
@@ -252,13 +275,16 @@ class File {
   }
 
   getFiles() {
-    return _.flatten(_.values(this.children).map(file => {
+    const files = [];
+    Object.keys(this.children).forEach(key => {
+      const file = this.children[key];
       if (file.isDir) {
-        return file.getFiles();
+        files.push(...file.getFiles());
       } else {
-        return file;
+        files.push(file);
       }
-    }));
+    });
+    return files;
   }
 
   ext() {

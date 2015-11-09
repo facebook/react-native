@@ -14,15 +14,18 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../')
-    .setMock('chalk', { dim: function(s) { return s; } });
+    .dontMock('../');
 
 const Promise = require('promise');
 
+var Bundler = require('../../Bundler');
+var FileWatcher = require('../../FileWatcher');
+var Server = require('../');
+var Server = require('../../Server');
+var AssetServer = require('../../AssetServer');
+
 describe('processRequest', () => {
   var server;
-  var Bundler;
-  var FileWatcher;
 
   const options = {
      projectRoots: ['root'],
@@ -48,9 +51,6 @@ describe('processRequest', () => {
   var triggerFileChange;
 
   beforeEach(() => {
-    Bundler = require('../../Bundler');
-    FileWatcher = require('../../FileWatcher');
-
     Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
@@ -69,7 +69,6 @@ describe('processRequest', () => {
 
     Bundler.prototype.invalidateFile = invalidatorFunc;
 
-    const Server = require('../');
     server = new Server(options);
     requestHandler = server.processRequest.bind(server);
   });
@@ -97,7 +96,7 @@ describe('processRequest', () => {
       requestHandler,
       'mybundle.map?runModule=true'
     ).then(response =>
-      expect(response).toEqual('"this is the source map"')
+      expect(response).toEqual('this is the source map')
     );
   });
 
@@ -107,13 +106,16 @@ describe('processRequest', () => {
       'index.ios.includeRequire.bundle'
     ).then(response => {
       expect(response).toEqual('this is the source');
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'index.ios.js',
-        true,
-        'index.ios.includeRequire.map',
-        true,
-        undefined
-      );
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.ios.js',
+        inlineSourceMap: false,
+        minify: false,
+        runModule: true,
+        sourceMapUrl: 'index.ios.includeRequire.map',
+        dev: true,
+        platform: undefined,
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+      });
     });
   });
 
@@ -123,13 +125,16 @@ describe('processRequest', () => {
       'index.bundle?platform=ios'
     ).then(function(response) {
       expect(response).toEqual('this is the source');
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'index.js',
-        true,
-        'index.map',
-        true,
-        'ios',
-      );
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.js',
+        inlineSourceMap: false,
+        minify: false,
+        runModule: true,
+        sourceMapUrl: 'index.map?platform=ios',
+        dev: true,
+        platform: 'ios',
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+      });
     });
   });
 
@@ -155,7 +160,7 @@ describe('processRequest', () => {
       });
     });
 
-    pit('rebuilds the bundles that contain a file when that file is changed', () => {
+    it('rebuilds the bundles that contain a file when that file is changed', () => {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
@@ -173,26 +178,29 @@ describe('processRequest', () => {
 
       Bundler.prototype.bundle = bundleFunc;
 
-      const Server = require('../../Server');
       server = new Server(options);
 
       requestHandler = server.processRequest.bind(server);
 
-      return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .then(response => {
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+        .done(response => {
           expect(response).toEqual('this is the first source');
           expect(bundleFunc.mock.calls.length).toBe(1);
-          triggerFileChange('all','path/file.js', options.projectRoots[0]);
-          jest.runAllTimers();
-          jest.runAllTimers();
-        })
-        .then(() => {
-          expect(bundleFunc.mock.calls.length).toBe(2);
-          return makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-            .then(response =>
-              expect(response).toEqual('this is the rebuilt source')
-            );
         });
+
+      jest.runAllTicks();
+
+      triggerFileChange('all','path/file.js', options.projectRoots[0]);
+      jest.runAllTimers();
+      jest.runAllTicks();
+
+      expect(bundleFunc.mock.calls.length).toBe(2);
+
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+        .done(response =>
+          expect(response).toEqual('this is the rebuilt source')
+        );
+      jest.runAllTicks();
     });
   });
 
@@ -229,11 +237,6 @@ describe('processRequest', () => {
   });
 
   describe('/assets endpoint', () => {
-    var AssetServer;
-    beforeEach(() => {
-      AssetServer = require('../../AssetServer');
-    });
-
     it('should serve simple case', () => {
       const req = {url: '/assets/imgs/a.png'};
       const res = {end: jest.genMockFn()};
@@ -245,36 +248,52 @@ describe('processRequest', () => {
       expect(res.end).toBeCalledWith('i am image');
     });
 
-    it('should return 404', () => {
+    it('should parse the platform option', () => {
+      const req = {url: '/assets/imgs/a.png?platform=ios'};
+      const res = {end: jest.genMockFn()};
 
+      AssetServer.prototype.get.mockImpl(() => Promise.resolve('i am image'));
+
+      server.processRequest(req, res);
+      jest.runAllTimers();
+      expect(AssetServer.prototype.get).toBeCalledWith('imgs/a.png', 'ios');
+      expect(res.end).toBeCalledWith('i am image');
     });
   });
 
   describe('buildbundle(options)', () => {
-    it('Calls the bundler with the correct args', () => {
-      server.buildBundle({
+    pit('Calls the bundler with the correct args', () => {
+      return server.buildBundle({
         entryFile: 'foo file'
-      });
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'foo file',
-        true,
-        undefined,
-        true,
-        undefined
+      }).then(() =>
+        expect(Bundler.prototype.bundle).toBeCalledWith({
+          entryFile: 'foo file',
+          inlineSourceMap: false,
+          minify: false,
+          runModule: true,
+          dev: true,
+          platform: undefined,
+          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        })
       );
     });
   });
 
   describe('buildBundleFromUrl(options)', () => {
-    it('Calls the bundler with the correct args', () => {
-      server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false');
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'path/to/foo.js',
-        false,
-        '/path/to/foo.map',
-        false,
-        undefined
-      );
+    pit('Calls the bundler with the correct args', () => {
+      return server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false')
+        .then(() =>
+          expect(Bundler.prototype.bundle).toBeCalledWith({
+            entryFile: 'path/to/foo.js',
+            inlineSourceMap: false,
+            minify: false,
+            runModule: false,
+            sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',
+            dev: false,
+            platform: undefined,
+            runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          })
+        );
     });
   });
 });

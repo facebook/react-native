@@ -20,7 +20,9 @@
 var ReactNative = Object.assign(Object.create(require('React')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  ART: require('ReactNativeART'),
   DatePickerIOS: require('DatePickerIOS'),
+  DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
   Image: require('Image'),
   ListView: require('ListView'),
   MapView: require('MapView'),
@@ -28,18 +30,27 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Navigator: require('Navigator'),
   NavigatorIOS: require('NavigatorIOS'),
   PickerIOS: require('PickerIOS'),
+  ProgressBarAndroid: require('ProgressBarAndroid'),
   ProgressViewIOS: require('ProgressViewIOS'),
   ScrollView: require('ScrollView'),
   SegmentedControlIOS: require('SegmentedControlIOS'),
   SliderIOS: require('SliderIOS'),
+  SnapshotViewIOS: require('SnapshotViewIOS'),
+  Switch: require('Switch'),
+  SwitchAndroid: require('SwitchAndroid'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
   Text: require('Text'),
   TextInput: require('TextInput'),
+  ToastAndroid: require('ToastAndroid'),
+  ToolbarAndroid: require('ToolbarAndroid'),
+  Touchable: require('Touchable'),
   TouchableHighlight: require('TouchableHighlight'),
+  TouchableNativeFeedback: require('TouchableNativeFeedback'),
   TouchableOpacity: require('TouchableOpacity'),
   TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
   View: require('View'),
+  ViewPagerAndroid: require('ViewPagerAndroid'),
   WebView: require('WebView'),
 
   // APIs
@@ -50,6 +61,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   AppRegistry: require('AppRegistry'),
   AppStateIOS: require('AppStateIOS'),
   AsyncStorage: require('AsyncStorage'),
+  BackAndroid: require('BackAndroid'),
   CameraRoll: require('CameraRoll'),
   Dimensions: require('Dimensions'),
   Easing: require('Easing'),
@@ -71,12 +83,14 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   NativeAppEventEmitter: require('RCTNativeAppEventEmitter'),
   NativeModules: require('NativeModules'),
   Platform: require('Platform'),
+  processColor: require('processColor'),
   requireNativeComponent: require('requireNativeComponent'),
 
   // Prop Types
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
 
+  // See http://facebook.github.io/react/docs/addons.html
   addons: {
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,

@@ -92,7 +92,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  * ### Working Example
  *
  * To see it in action, try the
- * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/ResponderExample.js)
+ * [PanResponder example in UIExplorer](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/PanResponderExample.js)
  */
 
 var PanResponder = {

@@ -157,6 +157,16 @@ var MatrixMath = {
     return mat;
   },
 
+  reuseSkewXCommand: function(matrixCommand, radians) {
+    matrixCommand[4] = Math.sin(radians);
+    matrixCommand[5] = Math.cos(radians);
+  },
+
+  reuseSkewYCommand: function(matrixCommand, radians) {
+    matrixCommand[0] = Math.cos(radians);
+    matrixCommand[1] = Math.sin(radians);
+  },
+
   multiplyInto: function(out, a, b) {
     var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
       a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],

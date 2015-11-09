@@ -1,10 +1,10 @@
 ---
 id: linking-libraries-ios
-title: Linking Libraries (iOS)
+title: Linking Libraries
 layout: docs
-category: Guides
+category: Guides (iOS)
 permalink: docs/linking-libraries-ios.html
-next: debugging
+next: running-on-device-ios
 ---
 
 Not every app uses all the native capabilities, and including the code to support
@@ -28,7 +28,7 @@ error as soon as you try to use the library._
 
 If the library has native code, there must be a `.xcodeproj` file inside it's
 folder.
-Drag this file to your project on Xcode (usually under the `Libaries` group
+Drag this file to your project on Xcode (usually under the `Libraries` group
 on Xcode);
 
 ![](/react-native/img/AddToLibraries.png)
@@ -59,7 +59,7 @@ received.
 
 For that we need to know the library's headers. To achieve that you have to go
 to your project's file, select `Build Settings` and search for `Header Search
-Paths`. There you should include the path to you library (if it has relevant
+Paths`. There you should include the path to your library (if it has relevant
 files on subdirectories remember to make it `recursive`, like `React` on the
 example).
 

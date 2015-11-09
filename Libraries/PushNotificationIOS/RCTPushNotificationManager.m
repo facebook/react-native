@@ -122,7 +122,7 @@ RCT_EXPORT_MODULE()
  */
 RCT_EXPORT_METHOD(setApplicationIconBadgeNumber:(NSInteger)number)
 {
-  [UIApplication sharedApplication].applicationIconBadgeNumber = number;
+  RCTSharedApplication().applicationIconBadgeNumber = number;
 }
 
 /**
@@ -131,12 +131,16 @@ RCT_EXPORT_METHOD(setApplicationIconBadgeNumber:(NSInteger)number)
 RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback)
 {
   callback(@[
-    @([UIApplication sharedApplication].applicationIconBadgeNumber)
+    @(RCTSharedApplication().applicationIconBadgeNumber)
   ]);
 }
 
 RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
 {
+  if (RCTRunningInAppExtension()) {
+    return;
+  }
+
   UIUserNotificationType types = UIUserNotificationTypeNone;
   if (permissions) {
     if ([permissions[@"alert"] boolValue]) {
@@ -152,35 +156,37 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
     types = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
   }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_8_0
-
-  id notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-  [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
-  [[UIApplication sharedApplication] registerForRemoteNotifications];
-
-#else
-
-  [[UIApplication sharedApplication] registerForRemoteNotificationTypes:types];
-
-#endif
-
+  UIApplication *app = RCTSharedApplication();
+  if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:(NSUInteger)types categories:nil];
+    [app registerUserNotificationSettings:notificationSettings];
+    [app registerForRemoteNotifications];
+  } else {
+    [app registerForRemoteNotificationTypes:(NSUInteger)types];
+  }
 }
 
 RCT_EXPORT_METHOD(abandonPermissions)
 {
-  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+  [RCTSharedApplication() unregisterForRemoteNotifications];
 }
 
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
+  if (RCTRunningInAppExtension()) {
+    NSDictionary *permissions = @{@"alert": @(NO), @"badge": @(NO), @"sound": @(NO)};
+    callback(@[permissions]);
+    return;
+  }
+
   NSUInteger types = 0;
   if ([UIApplication instancesRespondToSelector:@selector(currentUserNotificationSettings)]) {
-    types = [[UIApplication sharedApplication] currentUserNotificationSettings].types;
+    types = [RCTSharedApplication() currentUserNotificationSettings].types;
   } else {
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
-    types = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
+    types = [RCTSharedApplication() enabledRemoteNotificationTypes];
 
 #endif
 
@@ -203,13 +209,17 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
 {
-  [[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+  [RCTSharedApplication() presentLocalNotificationNow:notification];
 }
-
 
 RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification)
 {
-  [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+  [RCTSharedApplication() scheduleLocalNotification:notification];
+}
+
+RCT_EXPORT_METHOD(cancelAllLocalNotifications)
+{
+  [RCTSharedApplication() cancelAllLocalNotifications];
 }
 
 @end

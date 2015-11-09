@@ -25,22 +25,8 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(requestedTopOfStack, NSInteger)
-
-- (NSArray *)customBubblingEventTypes
-{
-  return @[
-    @"navigationComplete",
-    @"navLeftButtonTap",
-    @"navRightButtonTap",
-  ];
-}
-
-- (NSArray *)customDirectEventTypes
-{
-  return @[
-    @"navigationProgress",
-  ];
-}
+RCT_EXPORT_VIEW_PROPERTY(onNavigationProgress, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onNavigationComplete, RCTBubblingEventBlock)
 
 // TODO: remove error callbacks
 RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reactTag

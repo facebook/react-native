@@ -10,7 +10,8 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridgeModule.h"
+#import "RCTInvalidating.h"
 
-@interface RCTAlertManager : NSObject <RCTBridgeModule>
+@interface RCTAlertManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 @end

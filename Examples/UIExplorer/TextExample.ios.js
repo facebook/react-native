@@ -17,6 +17,7 @@
 
 var React = require('react-native');
 var {
+  Image,
   StyleSheet,
   Text,
   View,
@@ -242,6 +243,21 @@ exports.examples = [
           </Text>
           )
         </Text>
+        <Text style={{opacity:0.7}}>
+          (opacity
+            <Text>
+              (is inherited
+                <Text style={{opacity:0.7}}>
+                  (and accumulated
+                    <Text style={{backgroundColor:'#ffaaaa'}}>
+                      (and also applies to the background)
+                    </Text>
+                  )
+                </Text>
+              )
+            </Text>
+          )
+        </Text>
         <Text style={{fontSize: 12}}>
           <Entity>Entity Name</Entity>
         </Text>
@@ -393,6 +409,17 @@ exports.examples = [
         </Text>
         <Text allowFontScaling={false} style={{marginTop: 20}}>
           This text will not scale.
+        </Text>
+      </View>
+    );
+  },
+}, {
+  title: 'Inline images',
+  render: function() {
+    return (
+      <View>
+        <Text>
+          This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
         </Text>
       </View>
     );

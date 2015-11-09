@@ -75,6 +75,12 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   </View>
 );
 
+/**
+ * Renders a native WebView.
+ *
+ * Note that WebView is only supported on iOS for now,
+ * see https://facebook.github.io/react-native/docs/known-issues.html
+ */
 var WebView = React.createClass({
   statics: {
     JSNavigationScheme: JSNavigationScheme,
@@ -107,6 +113,12 @@ var WebView = React.createClass({
      * user can change the scale
      */
     scalesPageToFit: PropTypes.bool,
+
+    /**
+     * Allows custom handling of any webview requests by a JS handler. Return true
+     * or false from this method to continue loading the request.
+     */
+    onShouldStartLoadWithRequest: PropTypes.func,
   },
 
   getInitialState: function() {
@@ -152,6 +164,12 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
+    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
+      var shouldStart = this.props.onShouldStartLoadWithRequest &&
+        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+      RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
+    });
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -167,6 +185,7 @@ var WebView = React.createClass({
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
       />;
 
@@ -210,7 +229,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
-    console.error('Encountered an error loading page', event.nativeEvent);
+    console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
@@ -226,7 +245,13 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = requireNativeComponent('RCTWebView', WebView);
+var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
+  nativeOnly: {
+    onLoadingStart: true,
+    onLoadingError: true,
+    onLoadingFinish: true,
+  },
+});
 
 var styles = StyleSheet.create({
   container: {

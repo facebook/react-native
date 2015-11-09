@@ -277,6 +277,7 @@ var ListView = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
+      this._sentEndForContentLength = null;
       this.setState((state, props) => {
         var rowsToRender = Math.min(
           state.curRenderedRowsCount + props.pageSize,
@@ -387,6 +388,9 @@ var ListView = React.createClass({
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
+    if (props.removeClippedSubviews === undefined) {
+      props.removeClippedSubviews = true;
+    }
     Object.assign(props, {
       onScroll: this._onScroll,
       stickyHeaderIndices: sectionHeaderIndices,
@@ -452,10 +456,23 @@ var ListView = React.createClass({
     this._updateVisibleRows(childFrames);
   },
 
+  _maybeCallOnEndReached: function(event) {
+    if (this.props.onEndReached &&
+        this.scrollProperties.contentLength !== this._sentEndForContentLength &&
+        this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold &&
+        this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
+      this._sentEndForContentLength = this.scrollProperties.contentLength;
+      this.props.onEndReached(event);
+      return true;
+    }
+    return false;
+  },
+
   _renderMoreRowsIfNeeded: function() {
     if (this.scrollProperties.contentLength === null ||
       this.scrollProperties.visibleLength === null ||
       this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
+      this._maybeCallOnEndReached();
       return;
     }
 
@@ -484,9 +501,11 @@ var ListView = React.createClass({
   },
 
   _getDistanceFromEnd: function(scrollProperties) {
-    return scrollProperties.contentLength -
-      scrollProperties.visibleLength -
-      scrollProperties.offset;
+    var maxLength = Math.max(
+      scrollProperties.contentLength,
+      scrollProperties.visibleLength
+    );
+    return maxLength - scrollProperties.visibleLength - scrollProperties.offset;
   },
 
   _updateVisibleRows: function(updatedFrames) {
@@ -570,15 +589,14 @@ var ListView = React.createClass({
       isVertical ? 'y' : 'x'
     ];
     this._updateVisibleRows(e.nativeEvent.updatedChildFrames);
-    var nearEnd = this._getDistanceFromEnd(this.scrollProperties) < this.props.onEndReachedThreshold;
-    if (nearEnd &&
-        this.props.onEndReached &&
-        this.scrollProperties.contentLength !== this._sentEndForContentLength &&
-        this.state.curRenderedRowsCount === this.props.dataSource.getRowCount()) {
-      this._sentEndForContentLength = this.scrollProperties.contentLength;
-      this.props.onEndReached(e);
-    } else {
+    if (!this._maybeCallOnEndReached(e)) {
       this._renderMoreRowsIfNeeded();
+    }
+
+    if (this.props.onEndReached &&
+        this._getDistanceFromEnd(this.scrollProperties) > this.props.onEndReachedThreshold) {
+      // Scrolled out of the end zone, so it should be able to trigger again.
+      this._sentEndForContentLength = null;
     }
 
     this.props.onScroll && this.props.onScroll(e);

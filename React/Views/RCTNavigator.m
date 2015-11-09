@@ -193,12 +193,15 @@ NSInteger kNeverProgressed = -10000;
 
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
 
+@property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
+@property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
+
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
 
 // Previous views are only mainted in order to detect incorrect
 // addition/removal of views below the `requestedTopOfStack`
-@property (nonatomic, copy, readwrite) NSArray *previousViews;
-@property (nonatomic, readwrite, strong) NSMutableArray *currentViews;
+@property (nonatomic, copy, readwrite) NSArray<RCTNavItem *> *previousViews;
+@property (nonatomic, readwrite, strong) NSMutableArray<RCTNavItem *> *currentViews;
 @property (nonatomic, readwrite, strong) RCTNavigationController *navigationController;
 /**
  * Display link is used to get high frequency sample rate during
@@ -266,6 +269,7 @@ NSInteger kNeverProgressed = -10000;
 }
 
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -308,18 +312,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_bridge.eventDispatcher sendInputEventWithName:@"navigationProgress" body:@{
-      @"fromIndex": @(_currentlyTransitioningFrom),
-      @"toIndex": @(_currentlyTransitioningTo),
-      @"progress": @(nextProgress),
-      @"target": self.reactTag
-    }];
+    if (_onNavigationProgress) {
+      _onNavigationProgress(@{
+        @"fromIndex": @(_currentlyTransitioningFrom),
+        @"toIndex": @(_currentlyTransitioningTo),
+        @"progress": @(nextProgress),
+      });
+    }
+  }
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
   }
 }
 
 - (void)dealloc
 {
   _navigationController.delegate = nil;
+  [_navigationController removeFromParentViewController];
 }
 
 - (UIViewController *)reactViewController
@@ -351,14 +367,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
-    _paused = NO;
+    self.paused = NO;
   }
   completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
     _dummyView.frame = CGRectZero;
-    _paused = YES;
+    self.paused = YES;
     // Reset the parallel position tracker
   }];
 }
@@ -384,7 +400,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
  * `requestedTopOfStack` changes, there had better be enough subviews present
  * to satisfy the push/pop.
  */
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTNavItem *)view atIndex:(NSInteger)atIndex
 {
   RCTAssert([view isKindOfClass:[RCTNavItem class]], @"RCTNavigator only accepts RCTNavItem subviews");
   RCTAssert(
@@ -394,7 +410,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_currentViews insertObject:view atIndex:atIndex];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<RCTNavItem *> *)reactSubviews
 {
   return _currentViews;
 }
@@ -402,10 +418,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_navigationController];
   _navigationController.view.frame = self.bounds;
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTNavItem *)subview
 {
   if (_currentViews.count <= 0 || subview == _currentViews[0]) {
     RCTLogError(@"Attempting to remove invalid RCT subview of RCTNavigator");
@@ -416,10 +433,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)handleTopOfStackChanged
 {
-  [_bridge.eventDispatcher sendInputEventWithName:@"navigationComplete" body:@{
-    @"target":self.reactTag,
-    @"stackLength":@(_navigationController.viewControllers.count)
-  }];
+  if (_onNavigationComplete) {
+    _onNavigationComplete(@{
+      @"stackLength":@(_navigationController.viewControllers.count)
+    });
+  }
 }
 
 - (void)dispatchFakeScrollEvent
@@ -502,7 +520,7 @@ BOOL jsGettingtooSlow =
   if (jsGettingAhead) {
     if (reactPushOne) {
       UIView *lastView = _currentViews.lastObject;
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_bridge.eventDispatcher];
+      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];

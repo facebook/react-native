@@ -10,12 +10,21 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTBridge.h"
-#import "RCTDownloadTask.h"
+#import "RCTNetworkTask.h"
 
 @interface RCTNetworking : NSObject <RCTBridgeModule>
 
-- (RCTDownloadTask *)downloadTaskWithRequest:(NSURLRequest *)request
-                             completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
+/**
+ * Does a handler exist for the specified request?
+ */
+- (BOOL)canHandleRequest:(NSURLRequest *)request;
+
+/**
+ * Return an RCTNetworkTask for the specified request. This is useful for
+ * invoking the React Native networking stack from within native code.
+ */
+- (RCTNetworkTask *)networkTaskWithRequest:(NSURLRequest *)request
+                           completionBlock:(RCTURLRequestCompletionBlock)completionBlock;
 
 @end
 

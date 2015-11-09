@@ -13,45 +13,63 @@ jest
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../')
-  .setMock('chalk', { dim: function(s) { return s; } });
+  .dontMock('../');
 
 jest.mock('fs');
 
-var Promise = require('promise');
+var Bundler = require('../');
+var JSTransformer = require('../../JSTransformer');
+var Resolver = require('../../Resolver');
+var sizeOf = require('image-size');
+var fs = require('fs');
 
 describe('Bundler', function() {
+
+  function createModule({
+    path,
+    id,
+    dependencies,
+    isAsset,
+    isAsset_DEPRECATED,
+    isJSON,
+    resolution,
+  }) {
+    return {
+      path,
+      resolution,
+      getDependencies() { return Promise.resolve(dependencies); },
+      getName() { return Promise.resolve(id); },
+      isJSON() { return isJSON; },
+      isAsset() { return isAsset; },
+      isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+    };
+  }
+
   var getDependencies;
   var wrapModule;
-  var Bundler;
   var bundler;
   var assetServer;
   var modules;
-  var ProgressBar;
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
-    require('../../DependencyResolver').mockImpl(function() {
+    Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
         wrapModule: wrapModule,
       };
     });
 
-    Bundler = require('../');
-
-    require('fs').statSync.mockImpl(function() {
+    fs.statSync.mockImpl(function() {
       return {
         isDirectory: () => true
       };
     });
 
-    require('fs').readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImpl(function(file, callback) {
       callback(null, '{"json":true}');
     });
-
-    ProgressBar = require('progress');
 
     assetServer = {
       getAssetData: jest.genMockFn(),
@@ -61,27 +79,6 @@ describe('Bundler', function() {
       projectRoots: ['/root'],
       assetServer: assetServer,
     });
-
-
-    function createModule({
-      path,
-      id,
-      dependencies,
-      isAsset,
-      isAsset_DEPRECATED,
-      isJSON,
-      resolution,
-    }) {
-      return {
-        path,
-        resolution,
-        getDependencies() { return Promise.resolve(dependencies); },
-        getName() { return Promise.resolve(id); },
-        isJSON() { return isJSON; },
-        isAsset() { return isAsset; },
-        isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
-      };
-    }
 
     modules = [
       createModule({id: 'foo', path: '/root/foo.js', dependencies: []}),
@@ -115,7 +112,7 @@ describe('Bundler', function() {
       });
     });
 
-    require('../../JSTransformer').prototype.loadFileAndTransform
+    JSTransformer.prototype.loadFileAndTransform
       .mockImpl(function(path) {
         return Promise.resolve({
           code: 'transformed ' + path,
@@ -125,27 +122,36 @@ describe('Bundler', function() {
         });
       });
 
-    wrapModule.mockImpl(function(module, code) {
+    wrapModule.mockImpl(function(response, module, code) {
       return Promise.resolve('lol ' + code + ' lol');
     });
 
-    require('image-size').mockImpl(function(path, cb) {
+    sizeOf.mockImpl(function(path, cb) {
       cb(null, { width: 50, height: 100 });
     });
+  });
 
-    assetServer.getAssetData.mockImpl(function() {
+  pit('create a bundle', function() {
+    assetServer.getAssetData.mockImpl(() => {
       return {
         scales: [1,2,3],
+        files: [
+          '/root/img/img.png',
+          '/root/img/img@2x.png',
+          '/root/img/img@3x.png',
+        ],
         hash: 'i am a hash',
         name: 'img',
         type: 'png',
       };
     });
-  });
 
-  pit('create a bundle', function() {
-    return bundler.bundle('/root/foo.js', true, 'source_map_url')
-      .then(function(p) {
+    return bundler.bundle({
+      entryFile: '/root/foo.js',
+      runBeforeMainModule: [],
+      runModule: true,
+      sourceMapUrl: 'source_map_url',
+    }).then(function(p) {
         expect(p.addModule.mock.calls[0][0]).toEqual({
           code: 'lol transformed /root/foo.js lol',
           map: 'sourcemap /root/foo.js',
@@ -162,7 +168,6 @@ describe('Bundler', function() {
 
         var imgModule_DEPRECATED = {
           __packager_asset: true,
-          isStatic: true,
           path: '/root/img/img.png',
           uri: 'img',
           width: 25,
@@ -189,6 +194,11 @@ describe('Bundler', function() {
           width: 25,
           height: 50,
           scales: [1, 2, 3],
+          files: [
+            '/root/img/img.png',
+            '/root/img/img@2x.png',
+            '/root/img/img@3x.png',
+          ],
           hash: 'i am a hash',
           name: 'img',
           type: 'png',
@@ -215,7 +225,7 @@ describe('Bundler', function() {
         });
 
         expect(p.finalize.mock.calls[0]).toEqual([
-          {runMainModule: true}
+          {runMainModule: true, runBeforeMainModule: []}
         ]);
 
         expect(p.addAsset.mock.calls).toContain([
@@ -237,5 +247,65 @@ describe('Bundler', function() {
         () => expect(getDependencies)
                 .toBeCalledWith('/root/foo.js', { dev: true })
       );
+  });
+
+  describe('getOrderedDependencyPaths', () => {
+    beforeEach(() => {
+      assetServer.getAssetData.mockImpl(function(relPath) {
+        if (relPath === 'img/new_image.png') {
+          return {
+            scales: [1,2,3],
+            files: [
+              '/root/img/new_image.png',
+              '/root/img/new_image@2x.png',
+              '/root/img/new_image@3x.png',
+            ],
+            hash: 'i am a hash',
+            name: 'img',
+            type: 'png',
+          };
+        } else if (relPath === 'img/new_image2.png') {
+          return {
+            scales: [1,2,3],
+            files: [
+              '/root/img/new_image2.png',
+              '/root/img/new_image2@2x.png',
+              '/root/img/new_image2@3x.png',
+            ],
+            hash: 'i am a hash',
+            name: 'img',
+            type: 'png',
+          };
+        }
+
+        throw new Error('unknown image ' + relPath);
+      });
+    });
+
+    pit('should get the concrete list of all dependency files', () => {
+      modules.push(
+        createModule({
+          id: 'new_image2.png',
+          path: '/root/img/new_image2.png',
+          isAsset: true,
+          resolution: 2,
+          dependencies: []
+        }),
+      );
+
+      return bundler.getOrderedDependencyPaths('/root/foo.js', true)
+        .then((paths) => expect(paths).toEqual([
+          '/root/foo.js',
+          '/root/bar.js',
+          '/root/img/img.png',
+          '/root/img/new_image.png',
+          '/root/img/new_image@2x.png',
+          '/root/img/new_image@3x.png',
+          '/root/file.json',
+          '/root/img/new_image2.png',
+          '/root/img/new_image2@2x.png',
+          '/root/img/new_image2@3x.png',
+        ]));
+    });
   });
 });

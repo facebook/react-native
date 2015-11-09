@@ -186,7 +186,7 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
   dispatch_queue_t _delegateDispatchQueue;
 
   dispatch_queue_t _workQueue;
-  NSMutableArray *_consumers;
+  NSMutableArray<RCTSRIOConsumer *> *_consumers;
 
   NSInputStream *_inputStream;
   NSOutputStream *_outputStream;
@@ -228,12 +228,12 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
 
   BOOL _isPumping;
 
-  NSMutableSet *_scheduledRunloops;
+  NSMutableSet<NSArray *> *_scheduledRunloops;
 
   // We use this to retain ourselves.
   __strong RCTSRWebSocket *_selfRetain;
 
-  NSArray *_requestedProtocols;
+  NSArray<NSString *> *_requestedProtocols;
   RCTSRIOConsumerPool *_consumerPool;
 }
 
@@ -244,7 +244,7 @@ static __strong NSData *CRLFCRLF;
   CRLFCRLF = [[NSData alloc] initWithBytes:"\r\n\r\n" length:4];
 }
 
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray *)protocols;
+- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols;
 {
   RCTAssertParam(request);
 
@@ -271,7 +271,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self initWithURL:URL protocols:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray *)protocols;
+- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols;
 {
   NSURLRequest *request = URL ? [NSURLRequest requestWithURL:URL] : nil;
   return [self initWithURLRequest:request protocols:protocols];
@@ -1381,20 +1381,22 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
         if (aStream.streamError) {
           [self _failWithError:aStream.streamError];
         } else {
-          if (self.readyState != RCTSR_CLOSED) {
-            self.readyState = RCTSR_CLOSED;
-            _selfRetain = nil;
-          }
+          dispatch_async(_workQueue, ^{
+            if (self.readyState != RCTSR_CLOSED) {
+              self.readyState = RCTSR_CLOSED;
+              _selfRetain = nil;
+            }
 
-          if (!_sentClose && !_failed) {
-            _sentClose = YES;
-            // If we get closed in this state it's probably not clean because we should be sending this when we send messages
-            [self _performDelegateBlock:^{
-              if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
-                [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
-              }
-            }];
-          }
+            if (!_sentClose && !_failed) {
+              _sentClose = YES;
+              // If we get closed in this state it's probably not clean because we should be sending this when we send messages
+              [self _performDelegateBlock:^{
+                if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
+                  [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
+                }
+              }];
+            }
+          });
         }
 
         break;
@@ -1454,7 +1456,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 @implementation RCTSRIOConsumerPool
 {
   NSUInteger _poolSize;
-  NSMutableArray *_bufferedConsumers;
+  NSMutableArray<RCTSRIOConsumer *> *_bufferedConsumers;
 }
 
 - (instancetype)initWithBufferCapacity:(NSUInteger)poolSize;

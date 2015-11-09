@@ -10,25 +10,37 @@
  */
 'use strict';
 
-var babel = require('babel-core');
+const babel = require('babel-core');
+const inlineRequires = require('fbjs-scripts/babel/inline-requires');
 
-function transform(srcTxt, filename, options) {
-  var plugins = [];
+function transform(src, filename, options) {
+  options = options || {};
+  const plugins = [];
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins = plugins.concat(['node-env-inline', 'dunderscore-dev-inline']);
+  if (
+    options.inlineRequires &&
+    // (TODO: balpert, cpojer): Remove this once react is updated to 0.14
+    !filename.endsWith('performanceNow.js')
+  ) {
+    plugins.push({
+      position: 'after',
+      transformer: inlineRequires,
+    });
   }
 
-  var result = babel.transform(srcTxt, {
+  const result = babel.transform(src, {
     retainLines: true,
     compact: true,
     comments: false,
-    filename: filename,
+    filename,
     whitelist: [
+      // Keep in sync with packager/react-packager/.babelrc
       'es6.arrowFunctions',
       'es6.blockScoping',
       'es6.classes',
+      'es6.constants',
       'es6.destructuring',
+      'es6.modules',
       'es6.parameters',
       'es6.properties.computed',
       'es6.properties.shorthand',
@@ -39,26 +51,24 @@ function transform(srcTxt, filename, options) {
       'es7.objectRestSpread',
       'flow',
       'react',
+      'react.displayName',
       'regenerator',
     ],
-    plugins: plugins,
+    plugins,
     sourceFileName: filename,
     sourceMaps: false,
     extra: options || {},
   });
 
   return {
-    code: result.code,
+    code: result.code
   };
 }
 
 module.exports = function(data, callback) {
-  var result;
+  let result;
   try {
-    result = transform(
-      data.sourceCode,
-      data.filename
-    );
+    result = transform(data.sourceCode, data.filename, data.options);
   } catch (e) {
     callback(e);
     return;

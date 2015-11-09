@@ -167,7 +167,7 @@ Input | Output
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
-class including quadradic, exponential, and bezier curves as well as functions
+class including quadratic, exponential, and bezier curves as well as functions
 like step and bounce.  `interpolation` also has configurable behavior for
 extrapolation, the default being `'extend'`, but `'clamp'` is also very useful
 to prevent the output value from exceeding `outputRange`.
@@ -242,11 +242,11 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/AnimationExample).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
-### LayoutAnimation
+### LayoutAnimation (iOS only)
 
 `LayoutAnimation` allows you to globally configure `create` and `update`
 animations that will be used for all views in the next render/layout cycle.
@@ -298,7 +298,7 @@ var App = React.createClass({
 [Run this example](https://rnplay.org/apps/uaQrGQ)
 
 This example uses a preset value, you can customize the animations as
-you need, see [LayoutAnimation.js](https://github.com/facebook/react-native/blob/master/Libraries/Animation/LayoutAnimation.js)
+you need, see [LayoutAnimation.js](https://github.com/facebook/react-native/blob/master/Libraries/LayoutAnimation/LayoutAnimation.js)
 for more information.
 
 ### requestAnimationFrame
@@ -458,7 +458,7 @@ use this.
 
 ![](/react-native/img/Rebound.gif) Screenshot from
 [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view).
-You can run a simlar example [here](https://rnplay.org/apps/qHU_5w).
+You can run a similar example [here](https://rnplay.org/apps/qHU_5w).
 
 #### A sidenote about setNativeProps
 
@@ -542,7 +542,7 @@ var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
 });
 
 var CustomSceneConfig = Object.assign({}, BaseConfig, {
-  // A very tighly wound spring will make this transition fast
+  // A very tightly wound spring will make this transition fast
   springTension: 100,
   springFriction: 1,
 

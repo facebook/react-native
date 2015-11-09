@@ -81,8 +81,15 @@ var MapView = React.createClass({
     showsUserLocation: React.PropTypes.bool,
 
     /**
+     * If `false` points of interest won't be displayed on the map.
+     * Default value is `true`.
+     * @platform ios
+     */
+    showsPointsOfInterest: React.PropTypes.bool,
+
+    /**
      * If `false` the user won't be able to pinch/zoom the map.
-     * Default `value` is true.
+     * Default value is `true`.
      */
     zoomEnabled: React.PropTypes.bool,
 
@@ -211,7 +218,7 @@ var MapView = React.createClass({
     onRegionChangeComplete: React.PropTypes.func,
 
     /**
-     * Callback that is called once, when the user is clicked on a annotation.
+     * Callback that is called once, when the user taps an annotation.
      */
     onAnnotationPress: React.PropTypes.func,
   },
@@ -277,7 +284,9 @@ if (Platform.OS === 'android') {
     uiViewClassName: 'RCTMap',
   });
 } else {
-  var RCTMap = requireNativeComponent('RCTMap', MapView);
+  var RCTMap = requireNativeComponent('RCTMap', MapView, {
+    nativeOnly: {onChange: true, onPress: true}
+  });
 }
 
 module.exports = MapView;

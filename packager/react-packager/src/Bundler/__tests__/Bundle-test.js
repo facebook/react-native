@@ -12,14 +12,14 @@ jest.autoMockOff();
 
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
+var Bundle = require('../Bundle');
+var ModuleTransport = require('../../lib/ModuleTransport');
+var UglifyJS = require('uglify-js');
+
 describe('Bundle', function() {
-  var ModuleTransport;
-  var Bundle;
   var bundle;
 
   beforeEach(function() {
-    Bundle = require('../Bundle');
-    ModuleTransport = require('../../lib/ModuleTransport');
     bundle = new Bundle('test_url');
     bundle.getSourceMap = jest.genMockFn().mockImpl(function() {
       return 'test-source-map';
@@ -81,10 +81,14 @@ describe('Bundle', function() {
       }));
 
       bundle.setMainModuleId('foo');
-      bundle.finalize({runMainModule: true});
+      bundle.finalize({
+        runBeforeMainModule: ['bar'],
+        runMainModule: true,
+      });
       expect(bundle.getSource()).toBe([
         'transformed foo;',
         'transformed bar;',
+        ';require("bar");',
         ';require("foo");',
         '\/\/@ sourceMappingURL=test_url',
       ].join('\n'));
@@ -96,7 +100,7 @@ describe('Bundle', function() {
         map: 'map',
       };
 
-      require('uglify-js').minify = function() {
+      UglifyJS.minify = function() {
         return minified;
       };
 
@@ -141,7 +145,10 @@ describe('Bundle', function() {
       }));
 
       p.setMainModuleId('foo');
-      p.finalize({runMainModule: true});
+      p.finalize({
+        runBeforeMainModule: [],
+        runMainModule: true,
+      });
       var s = p.getSourceMap();
       expect(s).toEqual(genSourceMap(p.getModules()));
     });
@@ -171,7 +178,10 @@ describe('Bundle', function() {
       }));
 
       p.setMainModuleId('foo');
-      p.finalize({runMainModule: true});
+      p.finalize({
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        runMainModule: true,
+      });
 
       var s = p.getSourceMap();
       expect(s).toEqual({
@@ -188,7 +198,7 @@ describe('Bundle', function() {
             map: {
               file: 'image.png',
               mappings: 'AAAA;AACA;',
-              names: {},
+              names: [],
               sources: [ 'image.png' ],
               sourcesContent: ['image module;\nimage module;'],
               version: 3,
@@ -200,14 +210,28 @@ describe('Bundle', function() {
               line: 6
             },
             map: {
-              file: 'RunMainModule.js',
+              file: 'require-InitializeJavaScriptAppEngine.js',
               mappings: 'AAAA;',
-              names: {},
-              sources: [ 'RunMainModule.js' ],
+              names: [],
+              sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
+              sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
+              version: 3,
+            }
+          },
+          {
+            offset: {
+              column: 0,
+              line: 7
+            },
+            map: {
+              file: 'require-foo.js',
+              mappings: 'AAAA;',
+              names: [],
+              sources: [ 'require-foo.js' ],
               sourcesContent: [';require("foo");'],
               version: 3,
             }
-          }
+          },
         ],
       });
     });
@@ -246,35 +270,35 @@ describe('Bundle', function() {
 });
 
 
- function genSourceMap(modules) {
-   var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});
-   var bundleLineNo = 0;
-   for (var i = 0; i < modules.length; i++) {
-     var module = modules[i];
-     var transformedCode = module.code;
-     var sourcePath = module.sourcePath;
-     var sourceCode = module.sourceCode;
-     var transformedLineCount = 0;
-     var lastCharNewLine = false;
-     for (var t = 0; t < transformedCode.length; t++) {
-       if (t === 0 || lastCharNewLine) {
-         sourceMapGen.addMapping({
-           generated: {line: bundleLineNo + 1, column: 0},
-           original: {line: transformedLineCount + 1, column: 0},
-           source: sourcePath
-         });
-       }
-       lastCharNewLine = transformedCode[t] === '\n';
-       if (lastCharNewLine) {
-         transformedLineCount++;
-         bundleLineNo++;
-       }
-     }
-     bundleLineNo++;
-     sourceMapGen.setSourceContent(
-       sourcePath,
-       sourceCode
-     );
-   }
-   return sourceMapGen.toJSON();
- }
+function genSourceMap(modules) {
+  var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});
+  var bundleLineNo = 0;
+  for (var i = 0; i < modules.length; i++) {
+    var module = modules[i];
+    var transformedCode = module.code;
+    var sourcePath = module.sourcePath;
+    var sourceCode = module.sourceCode;
+    var transformedLineCount = 0;
+    var lastCharNewLine = false;
+    for (var t = 0; t < transformedCode.length; t++) {
+      if (t === 0 || lastCharNewLine) {
+        sourceMapGen.addMapping({
+          generated: {line: bundleLineNo + 1, column: 0},
+          original: {line: transformedLineCount + 1, column: 0},
+          source: sourcePath
+        });
+      }
+      lastCharNewLine = transformedCode[t] === '\n';
+      if (lastCharNewLine) {
+        transformedLineCount++;
+        bundleLineNo++;
+      }
+    }
+    bundleLineNo++;
+    sourceMapGen.setSourceContent(
+      sourcePath,
+      sourceCode
+    );
+  }
+  return sourceMapGen.toJSON();
+}

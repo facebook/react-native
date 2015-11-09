@@ -142,7 +142,7 @@ class ListViewDataSource {
   /**
    * Clones this `ListViewDataSource` with the specified `dataBlob` and
    * `rowIdentities`. The `dataBlob` is just an aribitrary blob of data. At
-   * construction an extractor to get the interesting informatoin was defined
+   * construction an extractor to get the interesting information was defined
    * (or the default was used).
    *
    * The `rowIdentities` is is a 2D array of identifiers for rows.

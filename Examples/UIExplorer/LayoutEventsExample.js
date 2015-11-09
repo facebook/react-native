@@ -85,8 +85,7 @@ var LayoutEventExample = React.createClass({
     return (
       <View style={this.state.containerStyle}>
         <Text>
-          onLayout events are called on mount and whenever layout is updated,
-          including after layout animations complete.{'  '}
+          layout events are called on mount and whenever layout is recalculated. Note that the layout event will typically be received <Text style={styles.italicText}>before</Text> the layout has updated on screen, especially when using layout animations.{'  '}
           <Text style={styles.pressText} onPress={this.animateViewLayout}>
             Press here to change layout.
           </Text>
@@ -136,10 +135,14 @@ var styles = StyleSheet.create({
   pressText: {
     fontWeight: 'bold',
   },
+  italicText: {
+    fontStyle: 'italic',
+  },
 });
 
 exports.title = 'Layout Events';
-exports.description = 'Layout events can be used to measure view size and position.';
+exports.description = 'Examples that show how Layout events can be used to ' +
+  'measure view size and position.';
 exports.examples = [
 {
   title: 'LayoutEventExample',

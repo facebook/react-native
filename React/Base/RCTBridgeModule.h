@@ -12,6 +12,7 @@
 #import "RCTDefines.h"
 
 @class RCTBridge;
+@protocol RCTBridgeMethod;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -208,17 +209,24 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  + (NSArray *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+  + (NSArray<NSString *> *)RCT_CONCAT(__rct_export__, \
+    RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
     return @[@#js_name, @#method]; \
-  } \
+  }
+
+/**
+ * Injects methods into JS.  Entries in this array are used in addition to any
+ * methods defined using the macros above.  This method is called only once,
+ * before registration.
+ */
+- (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
 
 /**
  * Injects constants into JS. These constants are made accessible via
- * NativeModules.ModuleName.X. This method is called when the module is
- * registered by the bridge. It is only called once for the lifetime of the
- * bridge, so it is not suitable for returning dynamic values, but may be
- * used for long-lived values such as session keys, that are regenerated only
- * as part of a reload of the entire React application.
+ * NativeModules.ModuleName.X.  It is only called once for the lifetime of the
+ * bridge, so it is not suitable for returning dynamic values, but may be used
+ * for long-lived values such as session keys, that are regenerated only as
+ * part of a reload of the entire React application.
  */
 - (NSDictionary *)constantsToExport;
 

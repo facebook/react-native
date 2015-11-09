@@ -14,6 +14,7 @@ const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
 const util = require('util');
 const workerFarm = require('worker-farm');
+const debug = require('debug')('ReactNativePackager:JStransformer');
 
 const readFile = Promise.denodeify(fs.readFile);
 
@@ -23,7 +24,10 @@ const readFile = Promise.denodeify(fs.readFile);
 const MAX_CALLS_PER_WORKER = 600;
 
 // Worker will timeout if one of the callers timeout.
-const DEFAULT_MAX_CALL_TIME = 60000;
+const DEFAULT_MAX_CALL_TIME = 120000;
+
+// How may times can we tolerate failures from the worker.
+const MAX_RETRIES = 3;
 
 const validateOpts = declareOpts({
   projectRoots: {
@@ -63,6 +67,7 @@ class Transformer {
         maxConcurrentCallsPerWorker: 1,
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
+        maxRetries: MAX_RETRIES,
       }, opts.transformModulePath);
 
       this._transform = Promise.denodeify(this._workers);
@@ -81,6 +86,8 @@ class Transformer {
     if (this._transform == null) {
       return Promise.reject(new Error('No transfrom module'));
     }
+
+    debug('transforming file', filePath);
 
     return this._cache.get(
       filePath,
@@ -103,6 +110,8 @@ class Transformer {
               throw formatError(res.error, filePath);
             }
 
+            debug('done transforming file', filePath);
+
             return new ModuleTransport({
               code: res.code,
               map: res.map,
@@ -118,6 +127,13 @@ class Transformer {
               );
               timeoutErr.type = 'TimeoutError';
               throw timeoutErr;
+            } else if (err.type === 'ProcessTerminatedError') {
+              const uncaughtError = new Error(
+                'Uncaught error in the transformer worker: ' +
+                this._opts.transformModulePath
+              );
+              uncaughtError.type = 'ProcessTerminatedError';
+              throw uncaughtError;
             }
 
             throw formatError(err, filePath);

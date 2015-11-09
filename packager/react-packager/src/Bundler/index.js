@@ -13,9 +13,10 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
+const BundlesLayout = require('../BundlesLayout');
 const Cache = require('../Cache');
 const Transformer = require('../JSTransformer');
-const DependencyResolver = require('../DependencyResolver');
+const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
@@ -93,7 +94,7 @@ class Bundler {
       transformModulePath: opts.transformModulePath,
     });
 
-    this._resolver = new DependencyResolver({
+    this._resolver = new Resolver({
       projectRoots: opts.projectRoots,
       blacklistRE: opts.blacklistRE,
       polyfillModuleNames: opts.polyfillModuleNames,
@@ -102,6 +103,13 @@ class Bundler {
       fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
       cache: this._cache,
+    });
+
+    this._bundlesLayout = new BundlesLayout({
+      dependencyResolver: this._resolver,
+      resetCache: opts.resetCache,
+      cacheVersion: opts.cacheVersion,
+      projectRoots: opts.projectRoots,
     });
 
     this._transformer = new Transformer({
@@ -120,12 +128,23 @@ class Bundler {
     return this._cache.end();
   }
 
-  bundle(main, runModule, sourceMapUrl, isDev, platform) {
+  getLayout(main, isDev) {
+    return this._bundlesLayout.generateLayout(main, isDev);
+  }
+
+  bundle({
+    entryFile,
+    runModule: runMainModule,
+    runBeforeMainModule,
+    sourceMapUrl,
+    dev: isDev,
+    platform,
+  }) {
     const bundle = new Bundle(sourceMapUrl);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    return this.getDependencies(main, isDev, platform).then((result) => {
+    return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
 
@@ -135,14 +154,19 @@ class Bundler {
           complete: '=',
           incomplete: ' ',
           width: 40,
-          total: result.dependencies.length,
+          total: response.dependencies.length,
         });
       }
 
-      bundle.setMainModuleId(result.mainModuleId);
+      bundle.setMainModuleId(response.mainModuleId);
       return Promise.all(
-        result.dependencies.map(
-          module => this._transformModule(bundle, module).then(transformed => {
+        response.dependencies.map(
+          module => this._transformModule(
+            bundle,
+            response,
+            module,
+            platform
+          ).then(transformed => {
             if (bar) {
               bar.tick();
             }
@@ -157,7 +181,7 @@ class Bundler {
         bundle.addModule(moduleTransport);
       });
 
-      bundle.finalize({ runMainModule: runModule });
+      bundle.finalize({runBeforeMainModule, runMainModule});
       return bundle;
     });
   }
@@ -170,13 +194,45 @@ class Bundler {
     return this._resolver.getDependencies(main, { dev: isDev, platform });
   }
 
-  _transformModule(bundle, module) {
+  getOrderedDependencyPaths({ entryFile, dev, platform }) {
+    return this.getDependencies(entryFile, dev, platform).then(
+      ({ dependencies }) => {
+        const ret = [];
+        const promises = [];
+        const placeHolder = {};
+        dependencies.forEach(dep => {
+          if (dep.isAsset()) {
+            const relPath = getPathRelativeToRoot(
+              this._projectRoots,
+              dep.path
+            );
+            promises.push(
+              this._assetServer.getAssetData(relPath, platform)
+            );
+            ret.push(placeHolder);
+          } else {
+            ret.push(dep.path);
+          }
+        });
+
+        return Promise.all(promises).then(assetsData => {
+          assetsData.forEach(({ files }) => {
+            const index = ret.indexOf(placeHolder);
+            ret.splice(index, 1, ...files);
+          });
+          return ret;
+        });
+      }
+    );
+  }
+
+  _transformModule(bundle, response, module, platform = null) {
     let transform;
 
     if (module.isAsset_DEPRECATED()) {
       transform = this.generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
-      transform = this.generateAssetModule(bundle, module);
+      transform = this.generateAssetModule(bundle, module, platform);
     } else if (module.isJSON()) {
       transform = generateJSONModule(module);
     } else {
@@ -187,7 +243,11 @@ class Bundler {
 
     const resolver = this._resolver;
     return transform.then(
-      transformed => resolver.wrapModule(module, transformed.code).then(
+      transformed => resolver.wrapModule(
+        response,
+        module,
+        transformed.code
+      ).then(
         code => new ModuleTransport({
           code: code,
           map: transformed.map,
@@ -210,7 +270,6 @@ class Bundler {
     ]).then(([dimensions, id]) => {
       const img = {
         __packager_asset: true,
-        isStatic: true,
         path: module.path,
         uri: id.replace(/^[^!]+!/, ''),
         width: dimensions.width / module.resolution,
@@ -231,12 +290,12 @@ class Bundler {
     });
   }
 
-  generateAssetModule(bundle, module) {
+  generateAssetModule(bundle, module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
 
     return Promise.all([
       sizeOf(module.path),
-      this._assetServer.getAssetData(relPath),
+      this._assetServer.getAssetData(relPath, platform),
     ]).then(function(res) {
       const dimensions = res[0];
       const assetData = res[1];
@@ -247,6 +306,7 @@ class Bundler {
         width: dimensions.width / module.resolution,
         height: dimensions.height / module.resolution,
         scales: assetData.scales,
+        files: assetData.files,
         hash: assetData.hash,
         name: assetData.name,
         type: assetData.type,

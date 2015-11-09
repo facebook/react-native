@@ -71,6 +71,7 @@
 
 @synthesize bridge = _bridge;
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 RCT_EXPORT_MODULE()
 
@@ -120,7 +121,7 @@ RCT_EXPORT_MODULE()
 
 - (void)stopTimers
 {
-  _paused = YES;
+  self.paused = YES;
 }
 
 - (void)startTimers
@@ -129,12 +130,22 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  _paused = NO;
+  self.paused = NO;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
 }
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSMutableArray *timersToCall = [NSMutableArray new];
+  NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
   for (RCTTimer *timer in _timers.allObjects) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];

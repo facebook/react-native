@@ -9,6 +9,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTComponent.h"
+
 @interface RCTSlider : UISlider
+
+@property (nonatomic, copy) RCTBubblingEventBlock onValueChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onSlidingComplete;
+
+@property (nonatomic, assign) float step;
+@property (nonatomic, assign) float lastValue;
 
 @end

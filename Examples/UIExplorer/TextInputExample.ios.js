@@ -42,6 +42,7 @@ var TextEventsExample = React.createClass({
       curText: '<No Event>',
       prevText: '<No Event>',
       prev2Text: '<No Event>',
+      prev3Text: '<No Event>',
     };
   },
 
@@ -51,6 +52,7 @@ var TextEventsExample = React.createClass({
         curText: text,
         prevText: state.curText,
         prev2Text: state.prevText,
+        prev3Text: state.prev2Text,
       };
     });
   },
@@ -73,12 +75,16 @@ var TextEventsExample = React.createClass({
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onKeyPress={(event) => {
+            this.updateText('onKeyPress key: ' + event.nativeEvent.key);
+          }}
           style={styles.default}
         />
         <Text style={styles.eventLabel}>
           {this.state.curText}{'\n'}
           (prev: {this.state.prevText}){'\n'}
-          (prev2: {this.state.prev2Text})
+          (prev2: {this.state.prev2Text}){'\n'}
+          (prev3: {this.state.prev3Text})
         </Text>
       </View>
     );
@@ -113,6 +119,114 @@ class RewriteExample extends React.Component {
     );
   }
 }
+
+class TokenizedTextExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Hello #World'};
+  }
+  render() {
+
+    //define delimiter
+    let delimiter = /\s+/;
+
+    //split string
+    let _text = this.state.text;
+    let token, index, parts = [];
+    while (_text) {
+      delimiter.lastIndex = 0;
+      token = delimiter.exec(_text);
+      if (token === null) {
+        break;
+      }
+      index = token.index;
+      if (token[0].length === 0) {
+        index = 1;
+      }
+      parts.push(_text.substr(0, index));
+      parts.push(token[0]);
+      index = index + token[0].length;
+      _text = _text.slice(index);
+    }
+    parts.push(_text);
+
+    //highlight hashtags
+    parts = parts.map((text) => {
+      if (/^#/.test(text)) {
+        return <Text style={styles.hashtag}>{text}</Text>;
+      } else {
+        return text;
+      }
+    });
+
+    return (
+      <View>
+        <TextInput
+          multiline={true}
+          style={styles.multiline}
+          onChangeText={(text) => {
+            this.setState({text});
+          }}>
+          <Text>{parts}</Text>
+        </TextInput>
+      </View>
+    );
+  }
+}
+
+var BlurOnSubmitExample = React.createClass({
+  focusNextField(nextField) {
+    this.refs[nextField].focus()
+  },
+
+  render: function() {
+    return (
+      <View>
+        <TextInput
+          ref='1'
+          style={styles.default}
+          placeholder='blurOnSubmit = false'
+          returnKeyType='next'
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('2')}
+        />
+        <TextInput
+          ref='2'
+          style={styles.default}
+          keyboardType='email-address'
+          placeholder='blurOnSubmit = false'
+          returnKeyType='next'
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('3')}
+        />
+        <TextInput
+          ref='3'
+          style={styles.default}
+          keyboardType='url'
+          placeholder='blurOnSubmit = false'
+          returnKeyType='next'
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('4')}
+        />
+        <TextInput
+          ref='4'
+          style={styles.default}
+          keyboardType='numeric'
+          placeholder='blurOnSubmit = false'
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('5')}
+        />
+        <TextInput
+          ref='5'
+          style={styles.default}
+          keyboardType='numbers-and-punctuation'
+          placeholder='blurOnSubmit = true'
+          returnKeyType='done'
+        />
+      </View>
+    );
+  }
+});
 
 var styles = StyleSheet.create({
   page: {
@@ -171,6 +285,10 @@ var styles = StyleSheet.create({
   remainder: {
     textAlign: 'right',
     width: 24,
+  },
+  hashtag: {
+    color: 'blue',
+    fontWeight: 'bold',
   },
 });
 
@@ -437,5 +555,15 @@ exports.examples = [
         </View>
       );
     }
-  }
+  },
+  {
+    title: 'Attributed text',
+    render: function() {
+      return <TokenizedTextExample />;
+    }
+  },
+  {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+  },
 ];

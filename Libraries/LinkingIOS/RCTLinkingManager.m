@@ -58,14 +58,20 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
   // Doesn't really matter what thread we call this on since it exits the app
-  [[UIApplication sharedApplication] openURL:URL];
+  [RCTSharedApplication() openURL:URL];
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
                   callback:(RCTResponseSenderBlock)callback)
 {
+  if (RCTRunningInAppExtension()) {
+    // Technically Today widgets can open urls, but supporting that would require
+    // a reference to the NSExtensionContext
+    callback(@[@(NO)]);
+  }
+
   // This can be expensive, so we deliberately don't call on main thread
-  BOOL canOpen = [[UIApplication sharedApplication] canOpenURL:URL];
+  BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
   callback(@[@(canOpen)]);
 }
 

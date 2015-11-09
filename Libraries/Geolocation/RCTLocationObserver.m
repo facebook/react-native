@@ -100,7 +100,7 @@ static NSDictionary *RCTPositionError(RCTPositionErrorCode code, NSString *msg /
 {
   CLLocationManager *_locationManager;
   NSDictionary *_lastLocationEvent;
-  NSMutableArray *_pendingRequests;
+  NSMutableArray<RCTLocationRequest *> *_pendingRequests;
   BOOL _observingLocation;
   RCTLocationOptions _observerOptions;
 }
@@ -249,7 +249,8 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray<CLLocation *> *)locations
 {
   // Create event
   CLLocation *location = locations.lastObject;
@@ -284,8 +285,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
     [_locationManager stopUpdatingLocation];
   }
 
-  // Reset location accuracy
-  _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  // Reset location accuracy if desiredAccuracy is changed.
+  // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
+  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
+    _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
@@ -318,8 +322,11 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
   [_pendingRequests removeAllObjects];
 
-  // Reset location accuracy
-  _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  // Reset location accuracy if desiredAccuracy is changed.
+  // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
+  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
+    _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
+  }
 }
 
 - (void)checkLocationConfig

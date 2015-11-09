@@ -16,7 +16,7 @@
 
 @interface RCTScrollView (Private)
 
-- (NSArray *)calculateChildFramesData;
+- (NSArray<NSDictionary *> *)calculateChildFramesData;
 
 @end
 
@@ -63,6 +63,8 @@ RCT_EXPORT_VIEW_PROPERTY(scrollEventThrottle, NSTimeInterval)
 RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(snapToInterval, int)
+RCT_EXPORT_VIEW_PROPERTY(snapToAlignment, NSString)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 
 - (NSDictionary *)constantsToExport
@@ -81,13 +83,13 @@ RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
-    UIView *view = viewRegistry[reactTag];
-    if (!view) {
-      RCTLogError(@"Cannot find view with tag #%@", reactTag);
+    RCTScrollView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
+      RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
       return;
     }
 
-    CGSize size = ((RCTScrollView *)view).scrollView.contentSize;
+    CGSize size = view.scrollView.contentSize;
     callback(@[@{
       @"width" : @(size.width),
       @"height" : @(size.height)
@@ -100,20 +102,20 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
 
-    UIView *view = viewRegistry[reactTag];
-    if (!view) {
-      RCTLogError(@"Cannot find view with tag #%@", reactTag);
+    RCTScrollView *view = viewRegistry[reactTag];
+    if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
+      RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
       return;
     }
 
-    NSArray *childFrames = [((RCTScrollView *)view) calculateChildFramesData];
+    NSArray<NSDictionary *> *childFrames = [view calculateChildFramesData];
     if (childFrames) {
       callback(@[childFrames]);
     }
   }];
 }
 
-- (NSArray *)customDirectEventTypes
+- (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[
     @"scrollBeginDrag",

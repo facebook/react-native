@@ -14,6 +14,7 @@
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
+var View = require('View');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 
@@ -36,15 +37,28 @@ var TouchableWithoutFeedback = React.createClass({
   mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
+    accessible: React.PropTypes.bool,
+    accessibilityComponentType: React.PropTypes.oneOf(View.AccessibilityComponentType),
+    accessibilityTraits: React.PropTypes.oneOfType([
+      React.PropTypes.oneOf(View.AccessibilityTraits),
+      React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
+    ]),
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
      */
-    accessible: React.PropTypes.bool,
     onPress: React.PropTypes.func,
     onPressIn: React.PropTypes.func,
     onPressOut: React.PropTypes.func,
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   `{nativeEvent: {layout: {x, y, width, height}}}`
+     */
+    onLayout: React.PropTypes.func,
+
     onLongPress: React.PropTypes.func,
+
     /**
      * Delay in ms, from the start of the touch, before onPressIn is called.
      */
@@ -112,7 +126,10 @@ var TouchableWithoutFeedback = React.createClass({
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: this.props.accessible !== false,
+      accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
+      onLayout: this.props.onLayout,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

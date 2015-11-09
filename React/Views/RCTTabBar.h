@@ -9,14 +9,10 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTEventDispatcher;
-
 @interface RCTTabBar : UIView
 
 @property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, assign) BOOL translucent;
-
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
 @end
