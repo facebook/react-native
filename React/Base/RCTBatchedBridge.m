@@ -592,13 +592,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       return;
     }
 
-    RCTProfileBeginEvent(0, @"FetchApplicationScriptCallbacks", nil);
+    RCT_PROFILE_BEGIN_EVENT(0, @"FetchApplicationScriptCallbacks", nil);
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
                               callback:^(id json, NSError *error)
      {
-       RCTProfileEndEvent(0, @"js_call,init", @{
+       RCT_PROFILE_END_EVENT(0, @"js_call,init", @{
          @"json": RCTNullIfNil(json),
          @"error": RCTNullIfNil(error),
        });
@@ -733,7 +733,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       
 #if RCT_DEV
       NSString *_threadName = RCTCurrentThreadName();
-      RCTProfileBeginEvent(0, _threadName, nil);
+      RCT_PROFILE_BEGIN_EVENT(0, _threadName, nil);
 #endif
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
@@ -747,7 +747,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         }
       }
 
-      RCTProfileEndEvent(0, @"objc_call,dispatch_async", @{
+      RCT_PROFILE_END_EVENT(0, @"objc_call,dispatch_async", @{
         @"calls": @(calls.count),
       });
     };
@@ -798,7 +798,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
-  RCTProfileBeginEvent(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
+  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
 
   @try {
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
@@ -819,7 +819,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     NSMutableDictionary *args = [method.profileArgs mutableCopy];
     args[@"method"] = method.JSMethodName;
     args[@"args"] = RCTJSONStringify(RCTNullIfNil(params), NULL);
-    RCTProfileEndEvent(0, @"objc_call", args);
+    RCT_PROFILE_END_EVENT(0, @"objc_call", args);
   }
 
   return YES;
@@ -828,7 +828,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)_jsThreadUpdate:(CADisplayLink *)displayLink
 {
   RCTAssertJSThread();
-  RCTProfileBeginEvent(0, @"DispatchFrameUpdate", nil);
+  RCT_PROFILE_BEGIN_EVENT(0, @"DispatchFrameUpdate", nil);
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
@@ -839,9 +839,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
       [moduleData dispatchBlock:^{
         RCTProfileEndFlowEvent();
-        RCTProfileBeginEvent(0, name, nil);
+        RCT_PROFILE_BEGIN_EVENT(0, name, nil);
         [observer didUpdateFrame:frameUpdate];
-        RCTProfileEndEvent(0, @"objc_call,fps", nil);
+        RCT_PROFILE_END_EVENT(0, @"objc_call,fps", nil);
       }];
     }
   }
@@ -851,7 +851,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   RCTProfileImmediateEvent(0, @"JS Thread Tick", 'g');
 
-  RCTProfileEndEvent(0, @"objc_call", nil);
+  RCT_PROFILE_END_EVENT(0, @"objc_call", nil);
 }
 
 - (void)startProfiling
