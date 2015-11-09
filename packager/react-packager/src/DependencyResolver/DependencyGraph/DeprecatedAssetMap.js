@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Activity = require('../../Activity');
 const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const Fastfs = require('../fastfs');
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
@@ -16,7 +15,15 @@ const path = require('path');
 const Promise = require('promise');
 
 class DeprecatedAssetMap {
-  constructor({ fsCrawl, roots, assetExts, fileWatcher, ignoreFilePath, helpers }) {
+  constructor({
+    fsCrawl,
+    roots,
+    assetExts,
+    fileWatcher,
+    ignoreFilePath,
+    helpers,
+    activity
+  }) {
     if (roots == null || roots.length === 0) {
       this._disabled = true;
       return;
@@ -29,8 +36,9 @@ class DeprecatedAssetMap {
       'Assets',
       roots,
       fileWatcher,
-      { ignore: ignoreFilePath, crawling: fsCrawl }
+      { ignore: ignoreFilePath, crawling: fsCrawl, activity }
     );
+    this._activity = activity;
 
     this._fastfs.on('change', this._processFileChange.bind(this));
   }
@@ -42,15 +50,21 @@ class DeprecatedAssetMap {
 
     return this._fastfs.build().then(
       () => {
-        const processAsset_DEPRECATEDActivity = Activity.startEvent(
-          'Building (deprecated) Asset Map',
-        );
+        const activity = this._activity;
+        let processAsset_DEPRECATEDActivity;
+        if (activity) {
+          processAsset_DEPRECATEDActivity = activity.startEvent(
+            'Building (deprecated) Asset Map',
+          );
+        }
 
         this._fastfs.findFilesByExts(this._assetExts).forEach(
           file => this._processAsset(file)
         );
 
-        Activity.endEvent(processAsset_DEPRECATEDActivity);
+        if (activity) {
+          activity.endEvent(processAsset_DEPRECATEDActivity);
+        }
       }
     );
   }

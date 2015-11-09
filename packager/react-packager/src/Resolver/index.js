@@ -8,14 +8,16 @@
  */
 'use strict';
 
-var path = require('path');
-var DependencyGraph = require('../DependencyResolver/DependencyGraph');
-var replacePatterns = require('../DependencyResolver/replacePatterns');
-var Polyfill = require('../DependencyResolver/Polyfill');
-var declareOpts = require('../lib/declareOpts');
-var Promise = require('promise');
 
-var validateOpts = declareOpts({
+const path = require('path');
+const Activity = require('../Activity');
+const DependencyGraph = require('../DependencyResolver/DependencyGraph');
+const replacePatterns = require('../DependencyResolver/replacePatterns');
+const Polyfill = require('../DependencyResolver/Polyfill');
+const declareOpts = require('../lib/declareOpts');
+const Promise = require('promise');
+
+const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
     required: true,
@@ -49,7 +51,7 @@ var validateOpts = declareOpts({
   },
 });
 
-var getDependenciesValidateOpts = declareOpts({
+const getDependenciesValidateOpts = declareOpts({
   dev: {
     type: 'boolean',
     default: true,
@@ -63,9 +65,10 @@ var getDependenciesValidateOpts = declareOpts({
 class Resolver {
 
   constructor(options) {
-    var opts = validateOpts(options);
+    const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
+      activity: Activity,
       roots: opts.projectRoots,
       assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
@@ -81,7 +84,7 @@ class Resolver {
   }
 
   getDependencies(main, options) {
-    var opts = getDependenciesValidateOpts(options);
+    const opts = getDependenciesValidateOpts(options);
 
     return this._depGraph.getDependencies(main, opts.platform).then(
       resolutionResponse => {
@@ -95,7 +98,7 @@ class Resolver {
   }
 
   _getPolyfillDependencies(isDev) {
-    var polyfillModuleNames = [
+    const polyfillModuleNames = [
      isDev
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js'),
