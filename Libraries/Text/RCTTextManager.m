@@ -59,6 +59,8 @@ RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(textDecorationLine, RCTTextDecorationLineType)
 RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
 RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(adjustsFontSizeToFit, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(minimumFontScale, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(opacity, CGFloat)
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
