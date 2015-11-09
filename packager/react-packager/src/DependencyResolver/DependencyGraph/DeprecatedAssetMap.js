@@ -22,7 +22,7 @@ class DeprecatedAssetMap {
     fileWatcher,
     ignoreFilePath,
     helpers,
-    activity
+    activity,
   }) {
     if (roots == null || roots.length === 0) {
       this._disabled = true;
@@ -85,9 +85,9 @@ class DeprecatedAssetMap {
   }
 
   _processAsset(file) {
-    let ext = this._helpers.extname(file);
+    const ext = this._helpers.extname(file);
     if (this._assetExts.indexOf(ext) !== -1) {
-      let name = assetName(file, ext);
+      const name = assetName(file, ext);
       if (this._map[name] != null) {
         debug('Conflcting assets', name);
       }
