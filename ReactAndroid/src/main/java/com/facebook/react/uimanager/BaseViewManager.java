@@ -113,13 +113,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Deprecated
-  @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 1f)
+  @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 0f)
   public void setTranslateX(T view, float translateX) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
   }
 
   @Deprecated
-  @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 1f)
+  @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 0f)
   public void setTranslateY(T view, float translateY) {
     view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
   }
