@@ -76,6 +76,17 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
+      providesModuleNodeModules: [
+        'fbjs-haste',
+        'react-haste',
+        'react-native',
+        // Parse requires AsyncStorage. They will
+        // change that to require('react-native') which
+        // should work after this release and we can
+        // remove it from here.
+        'parse',
+      ],
+      platforms: ['ios', 'android'],
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
     });

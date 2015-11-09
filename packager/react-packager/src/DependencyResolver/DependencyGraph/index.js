@@ -12,7 +12,6 @@ const Fastfs = require('../fastfs');
 const ModuleCache = require('../ModuleCache');
 const Promise = require('promise');
 const crawl = require('../crawlers');
-const declareOpts = require('../../lib/declareOpts');
 const getPlatformExtension = require('../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
@@ -23,60 +22,34 @@ const ResolutionResponse = require('./ResolutionResponse');
 const HasteMap = require('./HasteMap');
 const DeprecatedAssetMap = require('./DeprecatedAssetMap');
 
-const validateOpts = declareOpts({
-  activity: {
-    type: 'object',
-    default: {
-      startEvent: () => {},
-      endEvent: () => {},
-    },
-  },
-  roots: {
-    type: 'array',
-    required: true,
-  },
-  ignoreFilePath: {
-    type: 'function',
-    default: () => {}
-  },
-  fileWatcher: {
-    type: 'object',
-    required: true,
-  },
-  assetRoots_DEPRECATED: {
-    type: 'array',
-    default: [],
-  },
-  assetExts: {
-    type: 'array',
-    required: true,
-  },
-  providesModuleNodeModules: {
-    type: 'array',
-    default: [
-      'fbjs-haste',
-      'react-haste',
-      'react-native',
-      // Parse requires AsyncStorage. They will
-      // change that to require('react-native') which
-      // should work after this release and we can
-      // remove it from here.
-      'parse',
-    ],
-  },
-  platforms: {
-    type: 'array',
-    default: ['ios', 'android'],
-  },
-  cache: {
-    type: 'object',
-    required: true,
-  },
-});
+const defaultActivity = {
+  startEvent: () => {},
+  endEvent: () => {},
+};
 
 class DependencyGraph {
-  constructor(options) {
-    this._opts = validateOpts(options);
+  constructor({
+    activity,
+    roots,
+    ignoreFilePath,
+    fileWatcher,
+    assetRoots_DEPRECATED,
+    assetExts,
+    providesModuleNodeModules,
+    platforms,
+    cache,
+  }) {
+    this._opts = {
+      activity: activity || defaultActivity,
+      roots,
+      ignoreFilePath: ignoreFilePath || () => {},
+      fileWatcher,
+      assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
+      assetExts,
+      providesModuleNodeModules,
+      platforms,
+      cache,
+    };
     this._cache = this._opts.cache;
     this._helpers = new Helpers(this._opts);
     this.load().catch((err) => {
