@@ -70,7 +70,7 @@ class ResolutionRequest {
         throw error;
       }
 
-      console.warn(
+      debug(
         'Unable to resolve module %s from %s',
         toModuleName,
         fromModule.path
