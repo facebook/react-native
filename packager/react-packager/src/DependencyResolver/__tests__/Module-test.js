@@ -13,7 +13,6 @@ jest
   .dontMock('../fastfs')
   .dontMock('../replacePatterns')
   .dontMock('../DependencyGraph/docblock')
-  .dontMock('../../FileWatcher')
   .dontMock('../Module');
 
 jest
@@ -24,10 +23,12 @@ var Module = require('../Module');
 var ModuleCache = require('../ModuleCache');
 var Promise = require('promise');
 var fs = require('fs');
-var FileWatcher = require('../../FileWatcher');
 
 describe('Module', () => {
-  const fileWatcher = new FileWatcher(['/root']);
+  const fileWatcher = {
+    on: () =>  this,
+    isWatchman: () => Promise.resolve(false),
+  };
 
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
@@ -51,7 +52,7 @@ describe('Module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': 'System.import("dep1")',
-        }
+        },
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
@@ -61,7 +62,7 @@ describe('Module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': 'System.import(\'dep1\')',
-        }
+        },
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
@@ -74,7 +75,7 @@ describe('Module', () => {
             'System.import("dep1")',
             'System.import("dep2")',
           ].join('\n'),
-        }
+        },
       });
 
       return expectAsyncDependenciesToEqual([
@@ -87,7 +88,7 @@ describe('Module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': 'System.import(\n"dep1"\n)',
-        }
+        },
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
