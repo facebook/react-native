@@ -45,9 +45,9 @@ class DependencyGraph {
       ignoreFilePath: ignoreFilePath || (() => {}),
       fileWatcher,
       assetRoots_DEPRECATED: assetRoots_DEPRECATED || [],
-      assetExts,
+      assetExts: assetExts || [],
       providesModuleNodeModules,
-      platforms,
+      platforms: platforms || [],
       cache,
     };
     this._cache = this._opts.cache;
