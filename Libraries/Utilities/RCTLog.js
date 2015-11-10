@@ -18,7 +18,7 @@ var levelsMap = {
   info: 'info',
   warn: 'warn',
   error: 'error',
-  mustfix: 'error',
+  fatal: 'error',
 };
 
 class RCTLog {
