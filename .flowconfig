@@ -7,6 +7,11 @@
 # Some modules have their own node_modules with overlap
 .*/node_modules/node-haste/.*
 
+# Ugh
+.*/node_modules/babel.*
+.*/node_modules/babylon.*
+.*/node_modules/invariant.*
+
 # Ignore react and fbjs where there are overlaps, but don't ignore
 # anything that react-native relies on
 .*/node_modules/fbjs-haste/.*/__tests__/.*
