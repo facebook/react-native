@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var bezier = require('bezier');
+var _bezier = require('bezier');
 
 /**
  * This class implements common easing functions. The math is pretty obscure,
@@ -114,7 +114,7 @@ class Easing {
       epsilon = (1000 / 60 / duration) / 4;
     }
 
-    return bezier(x1, y1, x2, y2, epsilon);
+    return _bezier(x1, y1, x2, y2, epsilon);
   }
 
   static in(
