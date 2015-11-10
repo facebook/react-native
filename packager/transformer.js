@@ -17,11 +17,7 @@ function transform(src, filename, options) {
   options = options || {};
   const plugins = [];
 
-  if (
-    options.inlineRequires &&
-    // (TODO: balpert, cpojer): Remove this once react is updated to 0.14
-    !filename.endsWith('performanceNow.js')
-  ) {
+  if (options.inlineRequires) {
     plugins.push({
       position: 'after',
       transformer: inlineRequires,
