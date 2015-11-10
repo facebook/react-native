@@ -23,7 +23,7 @@ Systrace is a standard Android marker-based profiling tool (and is installed whe
 
 > NOTE:
 >
-> Systrace support was added in react-native `v0.14.1`. You will need to build with that version to collect a trace.
+> Systrace support was added in react-native `v0.15`. You will need to build with that version to collect a trace.
 
 First, connect a device that exhibits the stuttering you want to investigate to your computer via USB and get it to the point right before the navigation/animation you want to profile. Run systrace as follows
 
