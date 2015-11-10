@@ -73,13 +73,14 @@ var InteractionManager = {
   /**
    * Schedule a function to run after all interactions have completed.
    */
-  runAfterInteractions(callback: Function) {
-    invariant(
-      typeof callback === 'function',
-      'Must specify a function to schedule.'
-    );
-    scheduleUpdate();
-    _queue.push(callback);
+  runAfterInteractions(callback: ?Function): Promise {
+    return new Promise(resolve => {
+      scheduleUpdate();
+      if (callback) {
+        _queue.push(callback);
+      }
+      _queue.push(resolve);
+    });
   },
 
   /**
