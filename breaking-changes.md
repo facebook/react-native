@@ -2,7 +2,6 @@
 
 ## 0.15
 
-None so far.
 - React Native now uses [React 0.14](http://facebook.github.io/react/blog/2015/10/07/react-v0.14.html); see the linked blog post for a changelog (at this time, the package split has not been made in RN (i.e., please continue to use `require('react-native')`) and refs to native components have not changed)
 
 ## 0.14
