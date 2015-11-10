@@ -12,6 +12,7 @@
 
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
 NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
+NSString *const RCTFatalExceptionName = @"RCTFatalException";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
@@ -128,7 +129,7 @@ void RCTFatal(NSError *error)
     @try {
 #endif
       NSString *message = RCTFormatError([error localizedDescription], error.userInfo[RCTJSStackTraceKey], 75);
-      [NSException raise:@"RCTFatalException" format:@"%@", message];
+      [NSException raise:RCTFatalExceptionName format:@"%@", message];
 #if DEBUG
     } @catch (NSException *e) {}
 #endif

@@ -805,7 +805,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
   @catch (NSException *exception) {
     // Pass on JS exceptions
-    if ([exception.name rangeOfString:@"Unhandled JS Exception"].location == 0) {
+    if ([exception.name isEqualToString:RCTFatalExceptionName]) {
       @throw exception;
     }
 
