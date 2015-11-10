@@ -20,7 +20,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -161,8 +160,8 @@ public class DevServerHelper {
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private String createBundleURL(String host, String jsModulePath, boolean devMode) {
-    return String.format(BUNDLE_URL_FORMAT, host, jsModulePath, devMode);
+  private static String createBundleURL(String host, String jsModulePath, boolean devMode) {
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode);
   }
 
   public void downloadBundleFromURL(
@@ -209,7 +208,7 @@ public class DevServerHelper {
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
-    String statusURL = createPacakgerStatusURL(getDebugServerHost());
+    String statusURL = createPackagerStatusURL(getDebugServerHost());
     Request request = new Request.Builder()
         .url(statusURL)
         .build();
@@ -218,14 +217,14 @@ public class DevServerHelper {
         new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {
-            Log.e(ReactConstants.TAG, "IOException requesting status from packager", e);
+            FLog.e(ReactConstants.TAG, "IOException requesting status from packager", e);
             callback.onPackagerStatusFetched(false);
           }
 
           @Override
           public void onResponse(Response response) throws IOException {
             if (!response.isSuccessful()) {
-              Log.e(
+              FLog.e(
                   ReactConstants.TAG,
                   "Got non-success http code from packager when requesting status: " +
                       response.code());
@@ -234,14 +233,14 @@ public class DevServerHelper {
             }
             ResponseBody body = response.body();
             if (body == null) {
-              Log.e(
+              FLog.e(
                   ReactConstants.TAG,
                   "Got null body response from packager when requesting status");
               callback.onPackagerStatusFetched(false);
               return;
             }
             if (!PACKAGER_OK_STATUS.equals(body.string())) {
-              Log.e(
+              FLog.e(
                   ReactConstants.TAG,
                   "Got unexpected response from packager when requesting status: " + body.string());
               callback.onPackagerStatusFetched(false);
@@ -252,8 +251,8 @@ public class DevServerHelper {
         });
   }
 
-  private String createPacakgerStatusURL(String host) {
-    return String.format(PACKAGER_STATUS_URL_FORMAT, host);
+  private static String createPackagerStatusURL(String host) {
+    return String.format(Locale.US, PACKAGER_STATUS_URL_FORMAT, host);
   }
 
   public void stopPollingOnChangeEndpoint() {
