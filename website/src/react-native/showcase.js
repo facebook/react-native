@@ -25,6 +25,12 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'Bionic eStore',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
+    author: 'Digidemon',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
