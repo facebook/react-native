@@ -63,6 +63,7 @@ type Route = {
   rightButtonIcon?: Object;
   onRightButtonPress?: Function;
   wrapperStyle?: any;
+  skipUpdate?: boolean;
 };
 
 type State = {
@@ -146,6 +147,7 @@ type Event = Object;
  *  - `replacePrevious(route)` - Replace the route/view for the previous page
  *  - `replacePreviousAndPop(route)` - Replaces the previous route/view and
  *    transitions back to it
+ *  - `update(route)` - Update the route for the current page with the provided fields
  *  - `resetTo(route)` - Replaces the top item and popToTop
  *  - `popToRoute(route)` - Go back to the item for a particular route object
  *  - `popToTop()` - Go back to the top item
@@ -241,6 +243,11 @@ var NavigatorIOS = React.createClass({
        * Styles for the navigation item containing the component
        */
       wrapperStyle: View.propTypes.style,
+      
+      /**
+       * Whether to update the component on render.
+       */
+      skipUpdate: PropTypes.bool
 
     }).isRequired,
 
@@ -295,6 +302,7 @@ var NavigatorIOS = React.createClass({
       replace: this.replace,
       replacePrevious: this.replacePrevious,
       replacePreviousAndPop: this.replacePreviousAndPop,
+      update: this.update,
       resetTo: this.resetTo,
       popToRoute: this.popToRoute,
       popToTop: this.popToTop,
@@ -540,6 +548,15 @@ var NavigatorIOS = React.createClass({
   replacePrevious: function(route: Route) {
     this.replaceAtIndex(route, -2);
   },
+  
+  /**
+   * Update the current route in the navigation stack.
+   */
+  update: function(route: Route) {
+    var routeStack = this.state.routeStack;
+    route.component || route.passProps || (route.skipUpdate = true);
+    this.replace(Object.assign(routeStack[routeStack.length - 1], route));
+  },
 
   popToTop: function() {
     this.popToRoute(this.state.routeStack[0]);
@@ -592,8 +609,10 @@ var NavigatorIOS = React.createClass({
 
   _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
-    var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
-      this.state.updatingAllIndicesAtOrBeyond >= i;
+    var shouldUpdateChild = (
+      this.state.updatingAllIndicesAtOrBeyond !== null &&
+      this.state.updatingAllIndicesAtOrBeyond >= i
+    );
 
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
@@ -618,11 +637,13 @@ var NavigatorIOS = React.createClass({
           barTintColor={this.props.barTintColor}
           translucent={this.props.translucent !== false}
           titleTextColor={this.props.titleTextColor}>
-          <Component
-            navigator={this.navigator}
-            route={route}
-            {...route.passProps}
-          />
+          <StaticContainer shouldUpdate={!route.skipUpdate}>
+            <Component
+              navigator={this.navigator}
+              route={route}
+              {...route.passProps}
+            />
+          </StaticContainer>
         </RCTNavigatorItem>
       </StaticContainer>
     );
