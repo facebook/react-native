@@ -415,13 +415,6 @@ RCT_EXPORT_MODULE()
     }]];
   }
 
-  Class safariExecutorClass = NSClassFromString(@"RCTWebViewExecutor");
-  BOOL isDebuggingInSafari = _executorClass && _executorClass == safariExecutorClass;
-  NSString *debugTitleSafari = isDebuggingInSafari ? @"Disable Safari Debugging" : @"Debug in Safari";
-  [items addObject:[RCTDevMenuItem buttonItemWithTitle:debugTitleSafari handler:^{
-    weakSelf.executorClass = isDebuggingInSafari ? Nil : safariExecutorClass;
-  }]];
-
   if (_liveReloadURL) {
     NSString *liveReloadTitle = _liveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:liveReloadTitle handler:^{
@@ -552,8 +545,7 @@ RCT_EXPORT_METHOD(reload)
     // needed to prevent overriding a custom executor with the default if a
     // custom executor has been set directly on the bridge
     if (executorClass == Nil &&
-        (_bridge.executorClass != NSClassFromString(@"RCTWebSocketExecutor") &&
-         _bridge.executorClass != NSClassFromString(@"RCTWebViewExecutor"))) {
+        _bridge.executorClass != NSClassFromString(@"RCTWebSocketExecutor")) {
       return;
     }
 
