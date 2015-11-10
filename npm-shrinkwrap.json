@@ -87,68 +87,6 @@
       "from": "async-each@>=0.1.5 <0.2.0",
       "resolved": "https://registry.npmjs.org/async-each/-/async-each-0.1.6.tgz"
     },
-    "babel": {
-      "version": "5.8.29",
-      "from": "babel@>=5.4.7 <6.0.0",
-      "resolved": "https://registry.npmjs.org/babel/-/babel-5.8.29.tgz",
-      "dependencies": {
-        "ast-types": {
-          "version": "0.8.12",
-          "from": "ast-types@0.8.12",
-          "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.8.12.tgz"
-        },
-        "babel-core": {
-          "version": "5.8.33",
-          "from": "babel-core@>=5.6.21 <6.0.0",
-          "resolved": "https://registry.npmjs.org/babel-core/-/babel-core-5.8.33.tgz"
-        },
-        "babylon": {
-          "version": "5.8.29",
-          "from": "babylon@>=5.8.29 <6.0.0",
-          "resolved": "https://registry.npmjs.org/babylon/-/babylon-5.8.29.tgz"
-        },
-        "commander": {
-          "version": "2.9.0",
-          "from": "commander@>=2.6.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz"
-        },
-        "esprima-fb": {
-          "version": "15001.1001.0-dev-harmony-fb",
-          "from": "esprima-fb@>=15001.1001.0-dev-harmony-fb <15001.1002.0",
-          "resolved": "https://registry.npmjs.org/esprima-fb/-/esprima-fb-15001.1001.0-dev-harmony-fb.tgz"
-        },
-        "glob": {
-          "version": "5.0.15",
-          "from": "glob@>=5.0.5 <6.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.15.tgz"
-        },
-        "globals": {
-          "version": "6.4.1",
-          "from": "globals@>=6.4.0 <7.0.0",
-          "resolved": "https://registry.npmjs.org/globals/-/globals-6.4.1.tgz"
-        },
-        "js-tokens": {
-          "version": "1.0.1",
-          "from": "js-tokens@1.0.1",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-1.0.1.tgz"
-        },
-        "recast": {
-          "version": "0.10.33",
-          "from": "recast@0.10.33",
-          "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.33.tgz"
-        },
-        "regenerator": {
-          "version": "0.8.40",
-          "from": "regenerator@0.8.40",
-          "resolved": "https://registry.npmjs.org/regenerator/-/regenerator-0.8.40.tgz"
-        },
-        "source-map": {
-          "version": "0.5.3",
-          "from": "source-map@>=0.5.0 <0.6.0",
-          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.3.tgz"
-        }
-      }
-    },
     "babel-code-frame": {
       "version": "6.0.15",
       "from": "babel-code-frame@>=6.0.15 <7.0.0",
