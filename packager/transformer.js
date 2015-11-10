@@ -47,6 +47,7 @@ function transform(src, filename, options) {
       'transform-flow-strip-types',
       'transform-object-assign',
       'transform-object-rest-spread',
+      'transform-object-assign',
       'transform-react-display-name',
       'transform-react-jsx',
       'transform-regenerator',
