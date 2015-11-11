@@ -27,7 +27,7 @@ class XHRExampleHeaders extends React.Component {
   xhr: XMLHttpRequest;
   cancelled: boolean;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.cancelled = false;
     this.state = {
