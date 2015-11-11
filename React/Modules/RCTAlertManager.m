@@ -95,6 +95,12 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     return;
   }
 
+  // Walk the chain up to get the topmost modal view controller. If modals are presented,
+  // the root view controller's view might not be in the window hierarchy, and presenting from it will fail.
+  while (presentingController.presentedViewController) {
+    presentingController = presentingController.presentedViewController;
+  }
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
   if ([UIAlertController class] == nil) {
