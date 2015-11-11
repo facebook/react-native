@@ -223,6 +223,7 @@ var TextInput = React.createClass({
     onEndEditing: PropTypes.func,
     /**
      * Callback that is called when the text input's submit button is pressed.
+     * Invalid if multiline={true} is specified.
      */
     onSubmitEditing: PropTypes.func,
     /**
