@@ -45,6 +45,7 @@ NSString *const RCTLocalNotificationReceived = @"LocalNotificationReceived";
 {
   NSDictionary *_initialNotification;
   NSMutableDictionary *_scheduledLocalNotifications;
+  NSUInteger _currentLocalNotificationIdentifier;
 }
 
 RCT_EXPORT_MODULE()
@@ -141,10 +142,10 @@ RCT_EXPORT_MODULE()
 
 - (void)handleLocalNotificationReceived:(NSNotification *)notification
 {
-  UILocalNotification *local = [notification.userInfo objectForKey:@"notification"];
+  UILocalNotification *local = notification.userInfo[@"notification"];
   NSArray *keys = [_scheduledLocalNotifications allKeysForObject:local];
-  NSString *identifier = [keys objectAtIndex:0];
-
+  
+  NSString *identifier = keys.firstObject;
   [_scheduledLocalNotifications removeObjectForKey:identifier];
 
   NSDictionary *userInfo = @{@"identifier": identifier};
@@ -158,9 +159,9 @@ RCT_EXPORT_MODULE()
  */
 - (void)handleApplicationDidBecomeActiveNotification:(__unused NSNotification *)notification
 {
-  for (NSString *identifier in [_scheduledLocalNotifications allKeys]) {
-    UILocalNotification *note = [_scheduledLocalNotifications objectForKey:identifier];
-    if([note.fireDate timeIntervalSinceReferenceDate] < [[NSDate date] timeIntervalSinceReferenceDate]) {
+  for (NSString *identifier in _scheduledLocalNotifications.allKeys) {
+    UILocalNotification *note = _scheduledLocalNotifications[identifier];
+    if (note.fireDate.timeIntervalSinceNow < 0) {
       [_scheduledLocalNotifications removeObjectForKey:identifier];
     }
   }
@@ -264,17 +265,19 @@ RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)
 RCT_EXPORT_METHOD(scheduleLocalNotification:(UILocalNotification *)notification callback:(RCTResponseSenderBlock)callback)
 {
   [RCTSharedApplication() scheduleLocalNotification:notification];
-
-  NSString *identifier = [[NSUUID UUID] UUIDString];
-  [_scheduledLocalNotifications setValue:notification forKey:identifier];
+  
+  NSNumber *identifier = [NSNumber numberWithUnsignedInteger:_currentLocalNotificationIdentifier++];
+  _scheduledLocalNotifications[identifier] = notification;
+  
   callback(@[identifier]);
 }
 
-RCT_EXPORT_METHOD(cancelLocalNotification:(NSString *)identifier)
+RCT_EXPORT_METHOD(cancelLocalNotification:(NSUInteger)identifier)
 {
-  UILocalNotification *notification = [_scheduledLocalNotifications objectForKey:identifier];
+  NSNumber *noteIdentifier = [NSNumber numberWithUnsignedInteger:identifier];
+  UILocalNotification *notification = _scheduledLocalNotifications[noteIdentifier];
   if (notification != nil) {
-    [_scheduledLocalNotifications removeObjectForKey:identifier];
+    [_scheduledLocalNotifications removeObjectForKey:noteIdentifier];
     [RCTSharedApplication() cancelLocalNotification:notification];
   }
 }
