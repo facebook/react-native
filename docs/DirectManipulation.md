@@ -161,37 +161,6 @@ that call back to the `TouchableOpacity` component.
 `TouchableHighlight`, in contrast, is backed by a native view and only
 requires that we implement `setNativeProps`.
 
-## setNativeProps to clear TextInput value
-
-Another very common use case of `setNativeProps` is to clear the value
-of a TextInput. The `controlled` prop of TextInput can sometimes drop
-characters when the `bufferDelay` is low and the user types very
-quickly. Some developers prefer to skip this prop entirely and instead
-use `setNativeProps` to directly manipulate the TextInput value when
-necessary. For example, the following code demonstrates clearing the
-input when you tap a button:
-
-```javascript
-var App = React.createClass({
-  clearText() {
-    this._textInput.setNativeProps({text: ''});
-  },
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <TextInput ref={component => this._textInput = component}
-                   style={styles.textInput} />
-        <TouchableOpacity onPress={this.clearText}>
-          <Text>Clear text</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-});
-```
-[Run this example](https://rnplay.org/plays/pOI9bA)
-
 ## Avoiding conflicts with the render function
 
 If you update a property that is also managed by the render function,
