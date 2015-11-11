@@ -461,10 +461,6 @@ var ScrollResponderMixin = {
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardWillHide', this.scrollResponderKeyboardWillHide);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidShow', this.scrollResponderKeyboardDidShow);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidHide', this.scrollResponderKeyboardDidHide);
-    warning(this.getInnerViewNode, 'You need to implement getInnerViewNode in '
-       + this.constructor.displayName + ' to get full'
-       + 'functionality from ScrollResponder mixin. See example of ListView and'
-       + ' ScrollView.');
   },
 
   /**
