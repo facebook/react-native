@@ -84,31 +84,31 @@ static NSString *RCTGetManifestFilePath()
 }
 
 // Only merges objects - all other types are just clobbered (including arrays)
-static void RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
+static BOOL RCTMergeRecursive(NSMutableDictionary *destination, NSDictionary *source)
 {
+  BOOL modified = NO;
   for (NSString *key in source) {
     id sourceValue = source[key];
+    id destinationValue = destination[key];
     if ([sourceValue isKindOfClass:[NSDictionary class]]) {
-      id destinationValue = destination[key];
-      NSMutableDictionary *nestedDestination;
-      if ([destinationValue classForCoder] == [NSMutableDictionary class]) {
-        nestedDestination = destinationValue;
-      } else {
-        if ([destinationValue isKindOfClass:[NSDictionary class]]) {
-          // Ideally we wouldn't eagerly copy here...
-          nestedDestination = [destinationValue mutableCopy];
-        } else {
-          destination[key] = [sourceValue copy];
+      if ([destinationValue isKindOfClass:[NSDictionary class]]) {
+        if ([destinationValue classForCoder] != [NSMutableDictionary class]) {
+          destinationValue = [destinationValue mutableCopy];
         }
+        if (RCTMergeRecursive(destinationValue, sourceValue)) {
+          destination[key] = destinationValue;
+          modified = YES;
+        }
+      } else {
+        destination[key] = [sourceValue copy];
+        modified = YES;
       }
-      if (nestedDestination) {
-        RCTMergeRecursive(nestedDestination, sourceValue);
-        destination[key] = nestedDestination;
-      }
-    } else {
-      destination[key] = sourceValue;
+    } else if (![source isEqual:destinationValue]) {
+      destination[key] = [sourceValue copy];
+      modified = YES;
     }
   }
+  return modified;
 }
 
 static dispatch_queue_t RCTGetMethodQueue()
@@ -337,8 +337,9 @@ RCT_EXPORT_METHOD(multiMerge:(NSStringArrayArray *)kvPairs
       if (value) {
         NSError *jsonError;
         NSMutableDictionary *mergedVal = RCTJSONParseMutable(value, &jsonError);
-        RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &jsonError));
-        entry = @[entry[0], RCTNullIfNil(RCTJSONStringify(mergedVal, NULL))];
+        if (RCTMergeRecursive(mergedVal, RCTJSONParse(entry[1], &jsonError))) {
+          entry = @[entry[0], RCTNullIfNil(RCTJSONStringify(mergedVal, NULL))];
+        }
         if (jsonError) {
           keyError = RCTJSErrorFromNSError(jsonError);
         }
