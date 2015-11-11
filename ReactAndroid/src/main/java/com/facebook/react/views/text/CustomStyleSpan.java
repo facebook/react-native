@@ -11,9 +11,6 @@ package com.facebook.react.views.text;
 
 import javax.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -109,6 +106,9 @@ public class CustomStyleSpan extends MetricAffectingSpan {
 
     if (family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
+    } else if (typeface != null) {
+      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
+      typeface = Typeface.create(typeface, want);
     }
 
     if (typeface != null) {
