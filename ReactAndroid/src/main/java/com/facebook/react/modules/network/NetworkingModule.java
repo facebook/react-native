@@ -48,9 +48,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
 
   private final OkHttpClient mClient;
+  private final CookieManager mCookieManager;
   private final @Nullable String mDefaultUserAgent;
   private boolean mShuttingDown;
-  private final CookieManager mCookieManager;
 
   /* package */ NetworkingModule(
       ReactApplicationContext reactContext,
@@ -61,7 +61,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
     mCookieManager = new CookieManager();
-    mCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER);
     mClient.setCookieHandler(mCookieManager);
   }
 
