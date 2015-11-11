@@ -387,6 +387,27 @@ exports.examples = [
     }
   },
   {
+    title: 'Keyboard appearance',
+    render: function() {
+      var keyboardAppearance = [
+        'default',
+        'light',
+        'dark',
+      ];
+      var examples = keyboardAppearance.map((type) => {
+        return (
+          <WithLabel key={type} label={type}>
+            <TextInput
+              keyboardAppearance={type}
+              style={styles.default}
+            />
+          </WithLabel>
+        );
+      });
+      return <View>{examples}</View>;
+    }
+  },
+  {
     title: 'Return key types',
     render: function() {
       var returnKeyTypes = [
