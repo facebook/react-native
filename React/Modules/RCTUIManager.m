@@ -35,9 +35,12 @@
 
 static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
-  if (view.reactTag) block(view);
-  for (id<RCTComponent> subview in view.reactSubviews) {
-    RCTTraverseViewNodes(subview, block);
+  if (view.reactTag) {
+    block(view);
+
+    for (id<RCTComponent> subview in view.reactSubviews) {
+      RCTTraverseViewNodes(subview, block);
+    }
   }
 }
 
