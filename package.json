@@ -88,7 +88,7 @@
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
     "fbjs-haste": "^0.3.2",
-    "fbjs-scripts": "^0.3.0",
+    "fbjs-scripts": "^0.4.0",
     "graceful-fs": "^4.1.2",
     "image-size": "^0.3.5",
     "immutable": "^3.7.5",
