@@ -87,7 +87,7 @@ class PushNotificationIOS {
   /**
    * Cancels the scheduled notification specified by identifier.
    */
-  static cancelLocalNotification(identifier: number) {
+  static cancelLocalNotification(identifier) {
     RCTPushNotificationManager.cancelLocalNotification(identifier);
   }
 
