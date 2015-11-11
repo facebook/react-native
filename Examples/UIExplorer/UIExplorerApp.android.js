@@ -99,8 +99,8 @@ var UIExplorerApp = React.createClass({
     return (
       <View style={styles.container}>
         <ToolbarAndroid
-          logo={require('image!launcher_icon')}
-          navIcon={require('image!ic_menu_black_24dp')}
+          logo={require('./img/launcher_icon')}
+          navIcon={require('./img/ic_menu_black_24dp')}
           onIconClicked={() => this.drawer.openDrawer()}
           style={styles.toolbar}
           title={this.state.example.title}

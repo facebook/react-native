@@ -48,9 +48,9 @@ var optionalImageSource = ReactPropTypes.oneOfType([
  * render: function() {
  *   return (
  *     <ToolbarAndroid
- *       logo={require('image!app_logo')}
+ *       logo={require('./img/app_logo')}
  *       title="AwesomeApp"
- *       actions={[{title: 'Settings', icon: require('image!icon_settings'), show: 'always'}]}
+ *       actions={[{title: 'Settings', icon: require('./img/icon_settings'), show: 'always'}]}
  *       onActionSelected={this.onActionSelected} />
  *   )
  * },
@@ -75,7 +75,7 @@ var ToolbarAndroid = React.createClass({
      * This property takes an array of objects, where each object has the following keys:
      *
      * * `title`: **required**, the title of this action
-     * * `icon`: the icon for this action, e.g. `require('image!some_icon')`
+     * * `icon`: the icon for this action, e.g. `require('./img/some_icon.png')`
      * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
      * `ifRoom` or `never`
      * * `showWithText`: boolean, whether to show text alongside the icon or not

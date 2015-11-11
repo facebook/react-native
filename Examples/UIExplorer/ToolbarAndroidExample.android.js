@@ -48,7 +48,7 @@ var ToolbarAndroidExample = React.createClass({
         <UIExplorerBlock title="Toolbar with title/subtitle and actions">
           <ToolbarAndroid
             actions={toolbarActions}
-            navIcon={require('image!ic_menu_black_24dp')}
+            navIcon={require('./img/ic_menu_black_24dp.png')}
             onActionSelected={this._onActionSelected}
             onIconClicked={() => this.setState({actionText: 'Icon clicked'})}
             style={styles.toolbar}
@@ -58,7 +58,7 @@ var ToolbarAndroidExample = React.createClass({
         </UIExplorerBlock>
         <UIExplorerBlock title="Toolbar with logo & custom title view (a View with Switch+Text)">
           <ToolbarAndroid
-            logo={require('image!launcher_icon')}
+            logo={require('./img/launcher_icon.png')}
             style={styles.toolbar}>
             <View style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
               <SwitchAndroid
@@ -77,13 +77,13 @@ var ToolbarAndroidExample = React.createClass({
         <UIExplorerBlock title="Toolbar with navIcon & logo, no title">
           <ToolbarAndroid
             actions={toolbarActions}
-            logo={require('image!launcher_icon')}
-            navIcon={require('image!ic_menu_black_24dp')}
+            logo={require('./img/launcher_icon.png')}
+            navIcon={require('./img/ic_menu_black_24dp')}
             style={styles.toolbar} />
         </UIExplorerBlock>
         <UIExplorerBlock title="Toolbar with custom title colors">
           <ToolbarAndroid
-            navIcon={require('image!ic_menu_black_24dp')}
+            navIcon={require('./img/ic_menu_black_24dp.png')}
             onIconClicked={() => this.setState({colorProps: {}})}
             title="Wow, such toolbar"
             style={styles.toolbar}
@@ -118,9 +118,9 @@ var ToolbarAndroidExample = React.createClass({
 });
 
 var toolbarActions = [
-  {title: 'Create', icon: require('image!ic_create_black_48dp'), show: 'always'},
+  {title: 'Create', icon: require('./img/ic_create_black_48dp.png'), show: 'always'},
   {title: 'Filter'},
-  {title: 'Settings', icon: require('image!ic_settings_black_48dp'), show: 'always'},
+  {title: 'Settings', icon: require('./img/ic_settings_black_48dp.png'), show: 'always'},
 ];
 
 var styles = StyleSheet.create({

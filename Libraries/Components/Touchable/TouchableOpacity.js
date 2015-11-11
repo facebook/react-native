@@ -39,7 +39,7 @@ type Event = Object;
  *     <TouchableOpacity onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./img/myButton.png')}
  *       />
  *     </TouchableOpacity>
  *   );

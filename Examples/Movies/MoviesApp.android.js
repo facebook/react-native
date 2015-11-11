@@ -49,7 +49,7 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
       <View style={{flex: 1}}>
         <ToolbarAndroid
           actions={[]}
-          navIcon={require('image!android_back_white')}
+          navIcon={require('./img/android_back_white.png')}
           onIconClicked={navigationOperations.pop}
           style={styles.toolbar}
           titleColor="white"
