@@ -99,7 +99,7 @@ var NavigatorIOSExample = React.createClass({
               component: EmptyPage,
               leftButtonTitle: 'Custom Left',
               onLeftButtonPress: () => this.props.navigator.pop(),
-              rightButtonIcon: require('image!NavBarButtonPlus'),
+              rightButtonIcon: require('./img/NavBarButtonPlus.png'),
               onRightButtonPress: () => {
                 AlertIOS.alert(
                   'Bar Button Action',

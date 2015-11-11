@@ -30,8 +30,8 @@ var ImageSnapshotTest = React.createClass({
   render() {
     return (
       <Image
-        source={require('image!blue_square')}
-        defaultSource={require('image!red_square')}
+        source={require('./img/blue_square.png')}
+        defaultSource={require('./img/red_square.png')}
         onLoad={() => TestModule.verifySnapshot(this.done)} />
     );
   }

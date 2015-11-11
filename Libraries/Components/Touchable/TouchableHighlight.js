@@ -51,7 +51,7 @@ var DEFAULT_PROPS = {
  *     <TouchableHighlight onPress={this._onPressButton}>
  *       <Image
  *         style={styles.button}
- *         source={require('image!myButton')}
+ *         source={require('./img/myButton.png')}
  *       />
  *     </TouchableHighlight>
  *   );
