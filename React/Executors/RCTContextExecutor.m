@@ -126,7 +126,7 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, __unused JSObjectRe
       level = MAX(level, JSValueToNumber(context, arguments[1], exception));
     }
 
-    _RCTLog(level, @"%@", message);
+    _RCTLogJavaScriptInternal(level, message);
   }
 
   return JSValueMakeUndefined(context);
