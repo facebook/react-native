@@ -230,7 +230,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   _appProperties = [appProperties copy];
 
-  if (_bridge.valid && !_bridge.loading) {
+  if (_contentView && _bridge.valid && !_bridge.loading) {
     [self runApplication:_bridge.batchedBridge];
   }
 }
