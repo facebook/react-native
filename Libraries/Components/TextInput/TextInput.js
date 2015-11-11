@@ -162,6 +162,15 @@ var TextInput = React.createClass({
       'web-search',
     ]),
     /**
+     * Determines the color of the keyboard.
+     * @platform ios
+     */
+    keyboardAppearance: PropTypes.oneOf([
+      'default',
+      'light',
+      'dark',
+    ]),
+    /**
      * Determines how the return key should look.
      * @platform ios
      */
