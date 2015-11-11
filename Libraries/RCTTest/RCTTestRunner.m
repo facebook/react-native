@@ -86,7 +86,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   @autoreleasepool {
     __block NSString *error = nil;
-    RCTSetLogFunction(^(RCTLogLevel level, NSString *fileName, NSNumber *lineNumber, NSString *message) {
+    RCTSetLogFunction(^(RCTLogLevel level, RCTLogSource source, NSString *fileName, NSNumber *lineNumber, NSString *message) {
       if (level >= RCTLogLevelError) {
         error = message;
       }
