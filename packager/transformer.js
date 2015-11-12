@@ -28,6 +28,7 @@ function transform(src, filename, options) {
     filename,
     plugins: plugins.concat([
       // Keep in sync with packager/react-packager/.babelrc
+      'external-helpers-2',
       'syntax-async-functions',
       'syntax-class-properties',
       'syntax-jsx',
