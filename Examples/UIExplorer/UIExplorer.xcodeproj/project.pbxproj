@@ -50,6 +50,7 @@
 		14D6D7281B2222EF001FB087 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
 		14D6D7291B2222EF001FB087 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
+		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; settings = {ASSET_TAGS = (); }; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
 		3D36915B1BDA8CBB007B22D8 /* uie_thumb_big.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D36915A1BDA8CBB007B22D8 /* uie_thumb_big.png */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
@@ -222,6 +223,8 @@
 		14D6D7101B220EB3001FB087 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = ../../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj; sourceTree = "<group>"; };
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
+		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = UIExplorer/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
+		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UpdatePropertiesExampleView.m; path = UIExplorer/NativeExampleViews/UpdatePropertiesExampleView.m; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		3D36915A1BDA8CBB007B22D8 /* uie_thumb_big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = uie_thumb_big.png; path = UIExplorer/Images.xcassets/uie_thumb_big.imageset/uie_thumb_big.png; sourceTree = SOURCE_ROOT; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
@@ -365,6 +368,7 @@
 		13B07FAE1A68108700A75B9A /* UIExplorer */ = {
 			isa = PBXGroup;
 			children = (
+				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -489,6 +493,15 @@
 				14DC67F11AB71876001358AB /* libRCTPushNotification.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		272E6B3A1BEA846C001FCF37 /* NativeExampleViews */ = {
+			isa = PBXGroup;
+			children = (
+				272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */,
+				272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */,
+			);
+			name = NativeExampleViews;
 			sourceTree = "<group>";
 		};
 		357858F91B28D2C400341EDB /* Products */ = {
@@ -854,6 +867,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
