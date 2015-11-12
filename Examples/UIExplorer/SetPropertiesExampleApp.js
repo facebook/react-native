@@ -10,15 +10,34 @@
  * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @flow
  */
 
-#import <UIKit/UIKit.h>
+'use strict';
 
-@class RCTBridge;
+var React = require('React');
+var Text = require('Text');
+var View = require('View');
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+var SetPropertiesExampleApp = React.createClass({
 
-@property (nonatomic, strong) UIWindow *window;
-@property (nonatomic, readonly) RCTBridge *bridge;
+  render: function() {
+    var wrapperStyle = {
+      backgroundColor: this.props.color,
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    };
 
-@end
+    return (
+      <View style={wrapperStyle}>
+        <Text>
+          Embedded React Native view
+        </Text>
+      </View>
+    );
+  },
+});
+
+module.exports = SetPropertiesExampleApp;
