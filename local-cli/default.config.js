@@ -35,10 +35,11 @@ var config = {
 
 function getRoots() {
   if (__dirname.match(/node_modules[\/\\]react-native[\/\\]local-cli$/)) {
-    // packager is running from node_modules of another project
+    // Packager is running from node_modules.
+    // This is the default case for all projects created using 'react-native init'.
     return [path.resolve(__dirname, '../../..')];
   } else if (__dirname.match(/Pods[\/\\]React[\/\\]packager$/)) {
-    // packager is running from node_modules of another project
+     // React Native was installed using CocoaPods.
     return [path.resolve(__dirname, '../../..')];
   } else {
     return [path.resolve(__dirname, '..')];
