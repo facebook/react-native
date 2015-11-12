@@ -23,7 +23,7 @@ var _initialURL = RCTLinkingManager &&
 var DEVICE_NOTIF_EVENT = 'openURL';
 
 /**
- * `LinkingIOS` gives you a general interface to interact with both, incoming
+ * `LinkingIOS` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
  * ### Basic Usage
@@ -65,13 +65,13 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  *
  * #### Triggering App links
  *
- * To trigger an app link (browser, email or custom schemas) you call
+ * To trigger an app link (browser, email or custom schemas), call
  *
  * ```
  * LinkingIOS.openURL(url)
  * ```
  *
- * If you want to check if any installed app can handle a given url beforehand you can call
+ * If you want to check if any installed app can handle a given URL beforehand you can call
  * ```
  * LinkingIOS.canOpenURL(url, (supported) => {
  *   if (!supported) {
@@ -127,7 +127,7 @@ class LinkingIOS {
   }
 
   /**
-   * Determine whether or not an installed app can handle a given `url`
+   * Determine whether or not an installed app can handle a given URL.
    * The callback function will be called with `bool supported` as the only argument
    *
    * NOTE: As of iOS 9, your app needs to provide a `LSApplicationQueriesSchemes` key 
