@@ -11,7 +11,7 @@
 'use strict';
 
 const babel = require('babel-core');
-const inlineRequires = require('fbjs-scripts/babel/inline-requires');
+const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
 
 function transform(src, filename, options) {
   options = options || {};
