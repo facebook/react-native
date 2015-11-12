@@ -219,8 +219,15 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 - (instancetype)init
 {
   if ((self = [super init])) {
+    const char *queueName = "com.facebook.React.ShadowQueue";
 
-    _shadowQueue = dispatch_queue_create("com.facebook.React.ShadowQueue", DISPATCH_QUEUE_SERIAL);
+    if ([NSOperation instancesRespondToSelector:@selector(qualityOfService)]) {
+      dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
+      _shadowQueue = dispatch_queue_create(queueName, attr);
+    } else {
+      _shadowQueue = dispatch_queue_create(queueName, DISPATCH_QUEUE_SERIAL);
+      dispatch_set_target_queue(_shadowQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
+    }
 
     _shadowViewRegistry = [RCTSparseArray new];
     _viewRegistry = [RCTSparseArray new];
