@@ -72,6 +72,7 @@ var APIS = [
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./PushNotificationIOSExample'),
+  require('./RCTRootViewIOSExample'),
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
   require('./VibrationIOSExample'),
