@@ -26,10 +26,10 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self
-                                            launchOptions:launchOptions];
+  _bridge = [[RCTBridge alloc] initWithDelegate:self
+                                  launchOptions:launchOptions];
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
                                                    moduleName:@"UIExplorerApp"
                                             initialProperties:nil];
 

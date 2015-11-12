@@ -22,6 +22,8 @@ var {
   AppRegistry,
   NavigatorIOS,
   StyleSheet,
+  Text,
+  View
 } = React;
 
 var UIExplorerApp = React.createClass({
@@ -72,6 +74,27 @@ var styles = StyleSheet.create({
   },
 });
 
+var SetPropertiesExampleApp = React.createClass({
+
+  render: function() {
+    var wrapperStyle = {
+      backgroundColor: this.props.color,
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    };
+
+    return (
+      <View style={wrapperStyle}>
+        <Text>
+          Embedded React Native view
+        </Text>
+      </View>
+    );
+  },
+});
+
+AppRegistry.registerComponent('SetPropertiesExampleApp', () => SetPropertiesExampleApp);
 AppRegistry.registerComponent('UIExplorerApp', () => UIExplorerApp);
 UIExplorerList.registerComponents();
 
