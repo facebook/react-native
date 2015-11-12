@@ -15,6 +15,7 @@ const getAssetDestPathIOS = require('./getAssetDestPathIOS');
 const log = require('../util/log').out('bundle');
 const path = require('path');
 const sign = require('./sign');
+const mkdirp = require('mkdirp')
 
 function saveBundleAndMap(
   codeWithMap,
@@ -84,13 +85,14 @@ function copyAll(filesToCopy) {
 
 function copy(src, dest, callback) {
   const destDir = path.dirname(dest);
-  execFile('mkdir', ['-p', destDir], err => {
+
+  mkdirp(destDir, err => {
     if (err) {
       return callback(err);
     }
     fs.createReadStream(src)
-      .pipe(fs.createWriteStream(dest))
-      .on('finish', callback);
+        .pipe(fs.createWriteStream(dest))
+        .on('finish', callback);
   });
 }
 
