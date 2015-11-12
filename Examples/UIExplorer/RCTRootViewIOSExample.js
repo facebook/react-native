@@ -24,6 +24,7 @@ var {
 
 var requireNativeComponent = require('requireNativeComponent');
 var UpdatePropertiesExampleView = requireNativeComponent('UpdatePropertiesExampleView');
+var FlexibleSizeExampleView = requireNativeComponent('FlexibleSizeExampleView');
 
 class AppPropertiesUpdateExample extends React.Component {
   render() {
@@ -37,6 +38,23 @@ class AppPropertiesUpdateExample extends React.Component {
             Error: This demo is accessible only from UIExplorer app
           </Text>
         </UpdatePropertiesExampleView>
+      </View>
+    );
+  }
+}
+
+class RootViewSizeFlexibilityExample extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>
+          Press the button to resize it. On resize, RCTRootViewDelegate is notified. You can use it to handle content size updates.
+        </Text>
+        <FlexibleSizeExampleView style={styles.nativeView}>
+          <Text style={styles.text}>
+            Error: This demo is accessible only from UIExplorer app
+          </Text>
+        </FlexibleSizeExampleView>
       </View>
     );
   }
@@ -63,7 +81,15 @@ exports.examples = [
   title: 'Updating app properties in runtime',
   render(): React.Component {
     return (
-      <AppPropertiesUpdateExample />
+      <AppPropertiesUpdateExample/>
+    );
+  },
+},
+{
+  title: 'RCTRootView\'s size flexibility',
+  render(): React.Component {
+    return (
+      <RootViewSizeFlexibilityExample/>
     );
   },
 }];
