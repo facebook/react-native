@@ -60,7 +60,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
     CookieManager cookieManager = new CookieManager();
-    cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+    cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER);
     mClient.setCookieHandler(cookieManager);
   }
 
