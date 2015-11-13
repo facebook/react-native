@@ -96,7 +96,7 @@ You need to run `adb reverse tcp:8081 tcp:8081` to forward requests from the dev
 
 #### Module that uses `WebSocket` throws exception
 
-React Native implements a polyfill for WebSockets. These polyfills are initialized as part of the react-native module that you include in your application through `require('react-native')`. If you load another module that requires WebSockets, be sure to load/require is after react-native.
+React Native implements a polyfill for WebSockets. These polyfills are initialized as part of the react-native module that you include in your application through `require('react-native')`. If you load another module that requires WebSockets, be sure to load/require it after react-native.
 
 So:
 ```
@@ -104,4 +104,4 @@ var React = require('react-native');
 var Firebase = require('firebase');
 ```
 
-In the case of Firebase requiring firebase *before* react-native will result in a: 'No transports available' redscreen.
+In the case of Firebase requiring firebase *before* react-native will result in a: 'No transports available' redbox.
