@@ -473,16 +473,13 @@ might be helpful if the component that we are updating is deeply nested
 and hasn't been optimized with `shouldComponentUpdate`.
 
 ```javascript
-// Outside of our React component
-var precomputeStyle = require('precomputeStyle');
-
 // Back inside of the App component, replace the scrollSpring listener
 // in componentWillMount with this:
 this._scrollSpring.addListener({
   onSpringUpdate: () => {
     if (!this._photo) { return }
     var v = this._scrollSpring.getCurrentValue();
-    var newProps = precomputeStyle({transform: [{scaleX: v}, {scaleY: v}]});
+    var newProps = {style: {transform: [{scaleX: v}, {scaleY: v}]}};
     this._photo.setNativeProps(newProps);
   },
 });
