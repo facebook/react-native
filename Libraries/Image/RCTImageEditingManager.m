@@ -73,7 +73,7 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
       croppedImage = [self scaleImage:croppedImage targetSize:targetSize resizeMode:resizeMode];
     }
 
-    [_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
+    [_bridge.imageStoreManager storeImage:UIImagePNGRepresentation(croppedImage) withBlock:^(NSString *croppedImageTag) {
       if (!croppedImageTag) {
         NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
         RCTLogWarn(@"%@", errorMessage);
