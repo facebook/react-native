@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.CookieManager;
+import java.net.CookiePolicy;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -58,7 +59,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mClient = client;
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
-    mClient.setCookieHandler(new CookieManager());
+    CookieManager cookieManager = new CookieManager();
+    cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+    mClient.setCookieHandler(cookieManager);
   }
 
   /**
