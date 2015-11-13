@@ -9,6 +9,7 @@
 
 package com.facebook.react.modules.network;
 
+import java.net.CookieManager;
 import java.util.concurrent.TimeUnit;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -30,6 +31,8 @@ public class OkHttpClientProvider {
       sClient.setConnectTimeout(0, TimeUnit.MILLISECONDS);
       sClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
       sClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+      // Null by default
+      sClient.setCookieHandler(new CookieManager());
     }
     return sClient;
   }
