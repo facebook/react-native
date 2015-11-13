@@ -338,7 +338,7 @@ var ListView = React.createClass({
 
       for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         var rowID = rowIDs[rowIdx];
-        var comboID = sectionID + rowID;
+        var comboID = sectionID + '_' + rowID;
         var shouldUpdateRow = rowCount >= this.state.prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
         var row =
