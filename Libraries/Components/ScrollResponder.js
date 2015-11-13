@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var Dimensions = require('Dimensions');
 var NativeModules = require('NativeModules');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
@@ -426,20 +427,21 @@ var ScrollResponderMixin = {
    * @param {number} height Height of the text input.
    */
   scrollResponderInputMeasureAndScrollToKeyboard: function(left: number, top: number, width: number, height: number) {
+    var keyboardScreenY = Dimensions.get('window').height;
     if (this.keyboardWillOpenTo) {
-      var scrollOffsetY =
-        top - this.keyboardWillOpenTo.endCoordinates.screenY + height +
-        this.additionalScrollOffset;
-
-      // By default, this can scroll with negative offset, pulling the content
-      // down so that the target component's bottom meets the keyboard's top.
-      // If requested otherwise, cap the offset at 0 minimum to avoid content
-      // shifting down.
-      if (this.preventNegativeScrollOffset) {
-        scrollOffsetY = Math.max(0, scrollOffsetY);
-      }
-      this.scrollResponderScrollTo(0, scrollOffsetY);
+      keyboardScreenY = this.keyboardWillOpenTo.endCoordinates.screenY;
     }
+    var scrollOffsetY = top - keyboardScreenY + height + this.additionalScrollOffset;
+
+    // By default, this can scroll with negative offset, pulling the content
+    // down so that the target component's bottom meets the keyboard's top.
+    // If requested otherwise, cap the offset at 0 minimum to avoid content
+    // shifting down.
+    if (this.preventNegativeScrollOffset) {
+      scrollOffsetY = Math.max(0, scrollOffsetY);
+    }
+    this.scrollResponderScrollTo(0, scrollOffsetY);
+
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;
   },
@@ -510,9 +512,9 @@ var ScrollResponderMixin = {
     this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
   },
 
-  scrollResponderKeyboardDidHide: function() {
+  scrollResponderKeyboardDidHide: function(e: Event) {
     this.keyboardWillOpenTo = null;
-    this.props.onKeyboardDidHide && this.props.onKeyboardDidHide();
+    this.props.onKeyboardDidHide && this.props.onKeyboardDidHide(e);
   }
 
 };
