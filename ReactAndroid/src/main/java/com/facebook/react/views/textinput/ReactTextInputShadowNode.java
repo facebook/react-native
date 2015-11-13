@@ -11,7 +11,7 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
-import android.text.Spanned;
+import android.text.Spannable;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +28,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.text.ReactTextShadowNode;
+import com.facebook.react.views.text.ReactTextUpdate;
 
 @VisibleForTesting
 public class ReactTextInputShadowNode extends ReactTextShadowNode implements
@@ -111,8 +112,9 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
     }
 
     if (mJsEventCount != UNSET) {
-      Spanned preparedSpannedText = fromTextCSSNode(this);
-      ReactTextUpdate reactTextUpdate = new ReactTextUpdate(preparedSpannedText, mJsEventCount);
+      Spannable preparedSpannableText = fromTextCSSNode(this);
+      ReactTextUpdate reactTextUpdate =
+          new ReactTextUpdate(preparedSpannableText, mJsEventCount, mContainsImages);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

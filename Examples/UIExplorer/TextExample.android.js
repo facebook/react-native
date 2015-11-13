@@ -17,6 +17,7 @@
 
 var React = require('react-native');
 var {
+  Image,
   StyleSheet,
   Text,
   View,
@@ -357,6 +358,11 @@ var TextExample = React.createClass({
           </Text>
           <Text style={{marginTop: 20}}>
             No maximum lines specified no matter now much I write here. If I keep writing it{"'"}ll just keep going and going
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Inline images">
+          <Text>
+            This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
           </Text>
         </UIExplorerBlock>
       </UIExplorerPage>
