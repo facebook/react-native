@@ -21,7 +21,6 @@ var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 
-var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('keyOf');
@@ -224,7 +223,7 @@ var TouchableHighlight = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
         testID={this.props.testID}>
-        {cloneWithProps(
+        {React.cloneElement(
           onlyChild(this.props.children),
           {
             ref: CHILD_REF,

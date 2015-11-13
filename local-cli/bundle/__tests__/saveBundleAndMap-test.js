@@ -8,12 +8,10 @@
  */
 'use strict';
 
-jest
-  .dontMock('../saveBundleAndMap')
-  .dontMock('os-tmpdir')
-  .dontMock('temp');
+jest.autoMockOff();
 
 jest.mock('fs');
+jest.mock('../sign');
 
 const saveBundleAndMap = require('../saveBundleAndMap');
 const fs = require('fs');

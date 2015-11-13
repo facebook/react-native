@@ -12,7 +12,7 @@ const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const util = require('util');
 const path = require('path');
 const isAbsolutePath = require('absolute-path');
-const getAssetDataFromName = require('../../lib/getAssetDataFromName');
+const getAssetDataFromName = require('../lib/getAssetDataFromName');
 const Promise = require('promise');
 
 class ResolutionRequest {
@@ -70,7 +70,7 @@ class ResolutionRequest {
         throw error;
       }
 
-      console.warn(
+      debug(
         'Unable to resolve module %s from %s',
         toModuleName,
         fromModule.path

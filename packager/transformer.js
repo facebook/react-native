@@ -11,21 +11,14 @@
 'use strict';
 
 const babel = require('babel-core');
-const inlineRequires = require('fbjs-scripts/babel/inline-requires');
+const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
 
 function transform(src, filename, options) {
   options = options || {};
   const plugins = [];
 
-  if (
-    options.inlineRequires &&
-    // (TODO: balpert, cpojer): Remove this once react is updated to 0.14
-    !filename.endsWith('performanceNow.js')
-  ) {
-    plugins.push({
-      position: 'after',
-      transformer: inlineRequires,
-    });
+  if (options.inlineRequires) {
+    plugins.push([inlineRequires]);
   }
 
   const result = babel.transform(src, {
@@ -33,31 +26,35 @@ function transform(src, filename, options) {
     compact: true,
     comments: false,
     filename,
-    whitelist: [
+    plugins: plugins.concat([
       // Keep in sync with packager/react-packager/.babelrc
-      'es6.arrowFunctions',
-      'es6.blockScoping',
-      'es6.classes',
-      'es6.constants',
-      'es6.destructuring',
-      'es6.modules',
-      'es6.parameters',
-      'es6.properties.computed',
-      'es6.properties.shorthand',
-      'es6.spread',
-      'es6.templateLiterals',
-      'es7.asyncFunctions',
-      'es7.trailingFunctionCommas',
-      'es7.objectRestSpread',
-      'flow',
-      'react',
-      'react.displayName',
-      'regenerator',
-    ],
-    plugins,
+      'external-helpers-2',
+      'syntax-async-functions',
+      'syntax-class-properties',
+      'syntax-jsx',
+      'syntax-trailing-function-commas',
+      'transform-class-properties',
+      'transform-es2015-arrow-functions',
+      'transform-es2015-block-scoping',
+      'transform-es2015-classes',
+      'transform-es2015-computed-properties',
+      'transform-es2015-constants',
+      'transform-es2015-destructuring',
+      ['transform-es2015-modules-commonjs', {strict: false, allowTopLevelThis: true}],
+      'transform-es2015-parameters',
+      'transform-es2015-shorthand-properties',
+      'transform-es2015-spread',
+      'transform-es2015-template-literals',
+      'transform-flow-strip-types',
+      'transform-object-assign',
+      'transform-object-rest-spread',
+      'transform-object-assign',
+      'transform-react-display-name',
+      'transform-react-jsx',
+      'transform-regenerator',
+    ]),
     sourceFileName: filename,
     sourceMaps: false,
-    extra: options || {},
   });
 
   return {

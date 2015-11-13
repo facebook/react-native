@@ -81,7 +81,7 @@ fs.stat.mockImpl(function(filepath, callback) {
   var mtime = {
     getTime: function() {
       return Math.ceil(Math.random() * 10000000);
-    }
+    },
   };
 
   if (node.SYMLINK) {

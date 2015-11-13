@@ -96,6 +96,7 @@ var WebViewExample = React.createClass({
           url={this.state.url}
           javaScriptEnabledAndroid={true}
           onNavigationStateChange={this.onNavigationStateChange}
+          onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
           startInLoadingState={true}
           scalesPageToFit={this.state.scalesPageToFit}
         />
@@ -116,6 +117,11 @@ var WebViewExample = React.createClass({
 
   reload: function() {
     this.refs[WEBVIEW_REF].reload();
+  },
+
+  onShouldStartLoadWithRequest: function(event) {
+    // Implement any custom loading logic here, don't forget to return!
+    return true;
   },
 
   onNavigationStateChange: function(navState) {

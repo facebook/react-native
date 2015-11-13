@@ -47,6 +47,10 @@ if (Platform.OS === 'android') {
   var RCTTextField = requireNativeComponent('RCTTextField', null);
 }
 
+type DefaultProps = {
+  blurOnSubmit: boolean;
+};
+
 type Event = Object;
 
 /**
@@ -82,6 +86,11 @@ type Event = Object;
  * ```
  */
 var TextInput = React.createClass({
+  statics: {
+    /* TODO(brentvatne) docs are needed for this */
+    State: TextInputState,
+  },
+
   propTypes: {
     /**
      * Can tell TextInput to automatically capitalize certain characters.
@@ -153,6 +162,15 @@ var TextInput = React.createClass({
       'web-search',
     ]),
     /**
+     * Determines the color of the keyboard.
+     * @platform ios
+     */
+    keyboardAppearance: PropTypes.oneOf([
+      'default',
+      'light',
+      'dark',
+    ]),
+    /**
      * Determines how the return key should look.
      * @platform ios
      */
@@ -172,7 +190,6 @@ var TextInput = React.createClass({
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
-     * @platform ios
      */
     maxLength: PropTypes.number,
     /**
@@ -215,8 +232,16 @@ var TextInput = React.createClass({
     onEndEditing: PropTypes.func,
     /**
      * Callback that is called when the text input's submit button is pressed.
+     * Invalid if multiline={true} is specified.
      */
     onSubmitEditing: PropTypes.func,
+    /**
+     * Callback that is called when a key is pressed.
+     * Pressed key value is passed as an argument to the callback handler.
+     * Fires before onChange callbacks.
+     * @platform ios
+     */
+    onKeyPress: PropTypes.func,
     /**
      * Invoked on mount and layout changes with `{x, y, width, height}`.
      */
@@ -277,6 +302,12 @@ var TextInput = React.createClass({
      */
     selectTextOnFocus: PropTypes.bool,
     /**
+     * If true, the text field will blur when submitted.
+     * The default value is true.
+     * @platform ios
+     */
+    blurOnSubmit: PropTypes.bool,
+    /**
      * Styles
      */
     style: Text.propTypes.style,
@@ -289,6 +320,12 @@ var TextInput = React.createClass({
      * @platform android
      */
     underlineColorAndroid: PropTypes.string,
+  },
+
+  getDefaultProps: function(): DefaultProps {
+    return {
+      blurOnSubmit: true,
+    };
   },
 
   /**
@@ -473,6 +510,7 @@ var TextInput = React.createClass({
         mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
         numberOfLines={this.props.numberOfLines}
+        maxLength={this.props.maxLength}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
@@ -522,13 +560,16 @@ var TextInput = React.createClass({
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
     this.setState({mostRecentEventCount: eventCount}, () => {
-      // This is a controlled component, so make sure to force the native value
-      // to match.  Most usage shouldn't need this, but if it does this will be
-      // more correct but might flicker a bit and/or cause the cursor to jump.
-      if (text !== this.props.value && typeof this.props.value === 'string') {
-        this.refs.input.setNativeProps({
-          text: this.props.value,
-        });
+      // NOTE: this doesn't seem to be needed on iOS - keeping for now in case it's required on Android
+      if (Platform.OS === 'android') {
+        // This is a controlled component, so make sure to force the native value
+        // to match.  Most usage shouldn't need this, but if it does this will be
+        // more correct but might flicker a bit and/or cause the cursor to jump.
+        if (text !== this.props.value && typeof this.props.value === 'string') {
+          this.refs.input.setNativeProps({
+            text: this.props.value,
+          });
+        }
       }
     });
   },

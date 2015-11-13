@@ -16,7 +16,7 @@ const ProgressBar = require('progress');
 const BundlesLayout = require('../BundlesLayout');
 const Cache = require('../Cache');
 const Transformer = require('../JSTransformer');
-const DependencyResolver = require('../DependencyResolver');
+const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
 const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
@@ -94,7 +94,7 @@ class Bundler {
       transformModulePath: opts.transformModulePath,
     });
 
-    this._resolver = new DependencyResolver({
+    this._resolver = new Resolver({
       projectRoots: opts.projectRoots,
       blacklistRE: opts.blacklistRE,
       polyfillModuleNames: opts.polyfillModuleNames,
@@ -140,7 +140,8 @@ class Bundler {
     dev: isDev,
     platform,
   }) {
-    const bundle = new Bundle(sourceMapUrl);
+    // Const cannot have the same name as the method (babel/babel#2834)
+    const bbundle = new Bundle(sourceMapUrl);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
@@ -158,11 +159,11 @@ class Bundler {
         });
       }
 
-      bundle.setMainModuleId(response.mainModuleId);
+      bbundle.setMainModuleId(response.mainModuleId);
       return Promise.all(
         response.dependencies.map(
           module => this._transformModule(
-            bundle,
+            bbundle,
             response,
             module,
             platform
@@ -178,11 +179,11 @@ class Bundler {
       Activity.endEvent(transformEventId);
 
       transformedModules.forEach(function(moduleTransport) {
-        bundle.addModule(moduleTransport);
+        bbundle.addModule(moduleTransport);
       });
 
-      bundle.finalize({runBeforeMainModule, runMainModule});
-      return bundle;
+      bbundle.finalize({runBeforeMainModule, runMainModule});
+      return bbundle;
     });
   }
 

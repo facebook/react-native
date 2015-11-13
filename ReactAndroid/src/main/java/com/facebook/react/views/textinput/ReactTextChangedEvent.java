@@ -16,8 +16,9 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
  * Event emitted by EditText native view when text changes.
+ * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-/* package */ class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
+public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
 
   public static final String EVENT_NAME = "topChange";
 

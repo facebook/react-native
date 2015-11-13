@@ -38,6 +38,7 @@ var COMPONENTS = [
 var APIS = [
   require('./AccessibilityAndroidExample.android'),
   require('./BorderExample'),
+  require('./IntentAndroidExample.android'),
   require('./LayoutEventsExample'),
   require('./LayoutExample'),
   require('./PanResponderExample'),

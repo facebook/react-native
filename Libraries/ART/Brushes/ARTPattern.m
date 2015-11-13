@@ -18,7 +18,7 @@
   CGRect _rect;
 }
 
-- (instancetype)initWithArray:(NSArray *)array
+- (instancetype)initWithArray:(NSArray<id /* imagesource + numbers */> *)array
 {
   if ((self = [super initWithArray:array])) {
     if (array.count < 6) {

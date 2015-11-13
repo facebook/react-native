@@ -1091,11 +1091,26 @@ div[data-twttr-id] iframe {
 
 .showcase {
   margin: 30px auto;
-  width: 25%;
+  width: 100%;
   display: inline-block;
   text-align: center;
   vertical-align: top;
   transition: 0.2s opacity ease-in;
+}
+
+@media only screen
+  and (min-device-width: 768px)
+  and (max-device-width: 1024px) {
+  .showcase {
+    width: 50%;
+  }
+}
+
+@media only screen
+  and (min-device-width: 1024px) {
+  .showcase {
+    width: 25%;
+  }
 }
 
 .showcase:hover {
@@ -1115,6 +1130,10 @@ div[data-twttr-id] iframe {
   margin-top: 5px;
 }
 
+.showcase a {
+  font-weight: bold;
+}
+
 .showcase h3, .showcase p {
   color: rgb(72, 72, 72);
 }
@@ -1124,7 +1143,8 @@ div[data-twttr-id] iframe {
   border-radius: 20px;
 }
 
-@media only screen and (max-device-width : 1024px) {
+@media only screen
+  and (max-device-width: 1024px) {
   #content {
     display: inline;
   }
