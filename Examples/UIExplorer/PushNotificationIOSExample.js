@@ -42,11 +42,11 @@ var Button = React.createClass({
 
 class NotificationExample extends React.Component {
   componentWillMount() {
-    PushNotificationIOS.addEventListener('notification', this._onNotification);
+    PushNotificationIOS.addEventListener('remoteNotification', this._onNotification);
   }
 
   componentWillUnmount() {
-    PushNotificationIOS.removeEventListener('notification', this._onNotification);
+    PushNotificationIOS.removeEventListener('remoteNotification', this._onNotification);
   }
 
   render() {
