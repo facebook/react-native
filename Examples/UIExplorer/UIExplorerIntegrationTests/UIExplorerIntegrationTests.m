@@ -47,7 +47,7 @@
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
       initialProps:@{@"waitOneFrame": @YES}
-  expectErrorBlock:nil];
+configurationBlock:nil];
 }
 
 - (void)testTheTester_ExpectError
@@ -55,6 +55,7 @@
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
       initialProps:@{@"shouldThrow": @YES}
+configurationBlock:nil
   expectErrorRegex:@"because shouldThrow"];
 }
 
