@@ -13,17 +13,20 @@ import javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.MultipartBuilder;
@@ -31,6 +34,9 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
+
+import static java.lang.Math.min;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.
@@ -43,6 +49,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String REQUEST_BODY_KEY_URI = "uri";
   private static final String REQUEST_BODY_KEY_FORMDATA = "formData";
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
+
+  private static final int MIN_BUFFER_SIZE = 8 * 1024; // 8kb
+  private static final int MAX_BUFFER_SIZE = 512 * 1024; // 512kb
+
+  private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
 
   private final OkHttpClient mClient;
   private final @Nullable String mDefaultUserAgent;
@@ -93,15 +104,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public void sendRequest(
       String method,
       String url,
-      int requestId,
+      final int requestId,
       ReadableArray headers,
       ReadableMap data,
-      final Callback callback) {
-    // We need to call the callback to avoid leaking memory on JS even when input for sending
-    // request is erroneous or insufficient. For non-http based failures we use code 0, which is
-    // interpreted as a transport error.
-    // Callback accepts following arguments: responseCode, headersString, responseBody
-
+      final boolean useIncrementalUpdates) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
@@ -110,7 +116,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
-      callback.invoke(0, null, "Unrecognized headers format");
+      onRequestError(requestId, "Unrecognized headers format");
       return;
     }
     String contentType = requestHeaders.get(CONTENT_TYPE_HEADER_NAME);
@@ -121,7 +127,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, null);
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
-        callback.invoke(0, null, "Payload is set but no content-type header specified");
+        onRequestError(requestId, "Payload is set but no content-type header specified");
         return;
       }
       String body = data.getString(REQUEST_BODY_KEY_STRING);
@@ -129,7 +135,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (RequestBodyUtil.isGzipEncoding(contentEncoding)) {
         RequestBody requestBody = RequestBodyUtil.createGzip(contentMediaType, body);
         if (requestBody == null) {
-          callback.invoke(0, null, "Failed to gzip request body");
+          onRequestError(requestId, "Failed to gzip request body");
           return;
         }
         requestBuilder.method(method, requestBody);
@@ -138,14 +144,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
-        callback.invoke(0, null, "Payload is set but no content-type header specified");
+        onRequestError(requestId, "Payload is set but no content-type header specified");
         return;
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
       InputStream fileInputStream =
           RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
-        callback.invoke(0, null, "Could not retrieve file for uri " + uri);
+        onRequestError(requestId, "Could not retrieve file for uri " + uri);
         return;
       }
       requestBuilder.method(
@@ -156,7 +162,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         contentType = "multipart/form-data";
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
-      MultipartBuilder multipartBuilder = constructMultipartBody(parts, contentType, callback);
+      MultipartBuilder multipartBuilder = constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
       }
@@ -168,16 +174,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     mClient.newCall(requestBuilder.build()).enqueue(
-        new com.squareup.okhttp.Callback() {
+        new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {
             if (mShuttingDown) {
               return;
             }
-            // We need to call the callback to avoid leaking memory on JS even when input for
-            // sending request is erronous or insufficient. For non-http based failures we use
-            // code 0, which is interpreted as a transport error
-            callback.invoke(0, null, e.getMessage());
+            onRequestError(requestId, e.getMessage());
           }
 
           @Override
@@ -185,32 +188,113 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             if (mShuttingDown) {
               return;
             }
-            String responseBody;
+
+            // Before we touch the body send headers to JS
+            onResponseReceived(requestId, response);
+
+            ResponseBody responseBody = response.body();
             try {
-              responseBody = response.body().string();
-            } catch (IOException e) {
-              // The stream has been cancelled or closed, nothing we can do
-              callback.invoke(0, null, e.getMessage());
-              return;
-            }
-
-            WritableMap responseHeaders = Arguments.createMap();
-            Headers headers = response.headers();
-            for (int i = 0; i < headers.size(); i++) {
-              String headerName = headers.name(i);
-              // multiple values for the same header
-              if (responseHeaders.hasKey(headerName)) {
-                responseHeaders.putString(
-                  headerName,
-                  responseHeaders.getString(headerName) + ", " + headers.value(i));
+              if (useIncrementalUpdates) {
+                readWithProgress(requestId, responseBody);
+                onRequestSuccess(requestId);
               } else {
-                responseHeaders.putString(headerName, headers.value(i));
+                onDataReceived(requestId, responseBody.string());
+                onRequestSuccess(requestId);
               }
+            } catch (IOException e) {
+              onRequestError(requestId, e.getMessage());
             }
-
-            callback.invoke(response.code(), responseHeaders, responseBody);
           }
         });
+  }
+
+  private void readWithProgress(int requestId, ResponseBody responseBody) throws IOException {
+    Reader reader = responseBody.charStream();
+    try {
+      StringBuilder sb = new StringBuilder(getBufferSize(responseBody));
+      char[] buffer = new char[MIN_BUFFER_SIZE];
+      int read;
+      long last = System.nanoTime();
+      while ((read = reader.read(buffer)) != -1) {
+        sb.append(buffer, 0, read);
+        long now = System.nanoTime();
+        if (shouldDispatch(now, last)) {
+          onDataReceived(requestId, sb.toString());
+          sb.setLength(0);
+          last = now;
+        }
+      }
+
+      if (sb.length() > 0) {
+        onDataReceived(requestId, sb.toString());
+      }
+    } finally {
+      reader.close();
+    }
+  }
+
+  private static boolean shouldDispatch(long now, long last) {
+    return last + CHUNK_TIMEOUT_NS < now;
+  }
+
+  private static int getBufferSize(ResponseBody responseBody) throws IOException {
+    long length = responseBody.contentLength();
+    if (length == -1) {
+      return MIN_BUFFER_SIZE;
+    } else {
+      return (int) min(length, MAX_BUFFER_SIZE);
+    }
+  }
+
+  private void onDataReceived(int requestId, String data) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushString(data);
+
+    getEventEmitter().emit("didReceiveNetworkData", args);
+  }
+
+  private void onRequestError(int requestId, String error) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushString(error);
+
+    getEventEmitter().emit("didCompleteNetworkResponse", args);
+  }
+
+  private void onRequestSuccess(int requestId) {
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushNull();
+
+    getEventEmitter().emit("didCompleteNetworkResponse", args);
+  }
+
+  private void onResponseReceived(int requestId, Response response) {
+    WritableMap headers = translateHeaders(response.headers());
+
+    WritableArray args = Arguments.createArray();
+    args.pushInt(requestId);
+    args.pushInt(response.code());
+    args.pushMap(headers);
+
+    getEventEmitter().emit("didReceiveNetworkResponse", args);
+  }
+
+  private static WritableMap translateHeaders(Headers headers) {
+    WritableMap responseHeaders = Arguments.createMap();
+    for (int i = 0; i < headers.size(); i++) {
+      String headerName = headers.name(i);
+      // multiple values for the same header
+      if (responseHeaders.hasKey(headerName)) {
+        responseHeaders.putString(
+            headerName,
+            responseHeaders.getString(headerName) + ", " + headers.value(i));
+      } else {
+        responseHeaders.putString(headerName, headers.value(i));
+      }
+    }
+    return responseHeaders;
   }
 
   @ReactMethod
@@ -228,7 +312,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private @Nullable MultipartBuilder constructMultipartBody(
       ReadableArray body,
       String contentType,
-      Callback callback) {
+      int requestId) {
     MultipartBuilder multipartBuilder = new MultipartBuilder();
     multipartBuilder.type(MediaType.parse(contentType));
 
@@ -239,7 +323,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       ReadableArray headersArray = bodyPart.getArray("headers");
       Headers headers = extractHeaders(headersArray, null);
       if (headers == null) {
-        callback.invoke(0, null, "Missing or invalid header format for FormData part.");
+        onRequestError(requestId, "Missing or invalid header format for FormData part.");
         return null;
       }
       MediaType partContentType = null;
@@ -256,19 +340,19 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         multipartBuilder.addPart(headers, RequestBody.create(partContentType, bodyValue));
       } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI)) {
         if (partContentType == null) {
-          callback.invoke(0, null, "Binary FormData part needs a content-type header.");
+          onRequestError(requestId, "Binary FormData part needs a content-type header.");
           return null;
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
         InputStream fileInputStream =
             RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
         if (fileInputStream == null) {
-          callback.invoke(0, null, "Could not retrieve file for uri " + fileContentUriStr);
+          onRequestError(requestId, "Could not retrieve file for uri " + fileContentUriStr);
           return null;
         }
         multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream));
       } else {
-        callback.invoke(0, null, "Unrecognized FormData part.");
+        onRequestError(requestId, "Unrecognized FormData part.");
       }
     }
     return multipartBuilder;
@@ -304,5 +388,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     return headersBuilder.build();
+  }
+
+  private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
+    return getReactApplicationContext()
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
   }
 }
