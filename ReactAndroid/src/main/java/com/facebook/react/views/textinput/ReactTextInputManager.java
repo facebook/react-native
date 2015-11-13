@@ -17,6 +17,7 @@ import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Spannable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -40,6 +41,8 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
  * Manages instances of TextInput.
@@ -147,7 +150,12 @@ public class ReactTextInputManager extends
           (int) Math.ceil(padding[2]),
           (int) Math.ceil(padding[3]));
     } else if (extraData instanceof ReactTextUpdate) {
-      view.maybeSetText((ReactTextUpdate) extraData);
+      ReactTextUpdate update = (ReactTextUpdate) extraData;
+      if (update.containsImages()) {
+        Spannable spannable = update.getText();
+        TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
+      }
+      view.maybeSetText(update);
     }
   }
 
