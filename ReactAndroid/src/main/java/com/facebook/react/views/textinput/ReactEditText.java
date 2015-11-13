@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -31,6 +32,8 @@ import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
+import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -60,6 +63,7 @@ public class ReactEditText extends EditText {
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
+  private boolean mContainsImages;
 
   public ReactEditText(Context context) {
     super(context);
@@ -195,6 +199,7 @@ public class ReactEditText extends EditText {
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
     manageSpans(spannableStringBuilder);
+    mContainsImages = reactTextUpdate.containsImages();
     mIsSettingTextFromJS = true;
     getText().replace(0, length(), spannableStringBuilder);
     mIsSettingTextFromJS = false;
@@ -281,6 +286,82 @@ public class ReactEditText extends EditText {
       gravityVertical = mDefaultGravityVertical;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
+  }
+
+  @Override
+  protected boolean verifyDrawable(Drawable drawable) {
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        if (span.getDrawable() == drawable) {
+          return true;
+        }
+      }
+    }
+    return super.verifyDrawable(drawable);
+  }
+
+  @Override
+  public void invalidateDrawable(Drawable drawable) {
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        if (span.getDrawable() == drawable) {
+          invalidate();
+        }
+      }
+    }
+    super.invalidateDrawable(drawable);
+  }
+
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onDetachedFromWindow();
+      }
+    }
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onStartTemporaryDetach();
+      }
+    }
+  }
+
+  @Override
+  public void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onAttachedToWindow();
+      }
+    }
+  }
+
+  @Override
+  public void onFinishTemporaryDetach() {
+    super.onFinishTemporaryDetach();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onFinishTemporaryDetach();
+      }
+    }
   }
 
   /**

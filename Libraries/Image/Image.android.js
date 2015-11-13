@@ -115,6 +115,10 @@ var Image = React.createClass({
     this._updateViewConfig(nextProps);
   },
 
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     var source = resolveAssetSource(this.props.source);
 
@@ -147,7 +151,11 @@ var Image = React.createClass({
           </View>
         );
       } else {
-        return <RKImage {...nativeProps}/>;
+        if (this.context.isInAParentText) {
+          return <RCTTextInlineImage {...nativeProps}/>;
+        } else {
+          return <RKImage {...nativeProps}/>;
+        }
       }
     }
     return null;
@@ -170,6 +178,10 @@ var styles = StyleSheet.create({
 var RKImage = createReactNativeComponentClass({
   validAttributes: ImageViewAttributes,
   uiViewClassName: 'RCTImageView',
+});
+var RCTTextInlineImage = createReactNativeComponentClass({
+  validAttributes: ImageViewAttributes,
+  uiViewClassName: 'RCTTextInlineImage',
 });
 
 module.exports = Image;

@@ -7,29 +7,36 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.textinput;
+package com.facebook.react.views.text;
 
-import android.text.Spanned;
+import android.text.Spannable;
 
 /**
- * Class that contains the data needed for a Text Input text update.
+ * Class that contains the data needed for a text update.
+ * Used by both <Text/> and <TextInput/>
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
 public class ReactTextUpdate {
 
-  private final Spanned mText;
+  private final Spannable mText;
   private final int mJsEventCounter;
+  private final boolean mContainsImages;
 
-  public ReactTextUpdate(Spanned text, int jsEventCounter) {
+  public ReactTextUpdate(Spannable text, int jsEventCounter, boolean containsImages) {
     mText = text;
     mJsEventCounter = jsEventCounter;
+    mContainsImages = containsImages;
   }
 
-  public Spanned getText() {
+  public Spannable getText() {
     return mText;
   }
 
   public int getJsEventCounter() {
     return mJsEventCounter;
+  }
+
+  public boolean containsImages() {
+    return mContainsImages;
   }
 }
