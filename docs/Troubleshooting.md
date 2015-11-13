@@ -93,3 +93,15 @@ Ensure that you are on the same WiFi network as your computer. If you're using a
 
 ##### Android
 You need to run `adb reverse tcp:8081 tcp:8081` to forward requests from the device to your computer. This works only on Android 5.0 and newer.
+
+#### Module that uses `WebSocket` throws exception
+
+React Native implements a polyfill for WebSockets. These polyfills are initialized as part of the react-native module that you include in your application through `require('react-native')`. If you load another module that requires WebSockets, be sure to load/require is after react-native.
+
+So:
+```
+var React = require('react-native');
+var Firebase = require('firebase');
+```
+
+In the case of Firebase requiring firebase *before* react-native will result in a: 'No transports available' redscreen.
