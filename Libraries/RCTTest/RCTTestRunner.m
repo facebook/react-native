@@ -68,19 +68,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)runTest:(SEL)test module:(NSString *)moduleName
 {
-  [self runTest:test module:moduleName initialProps:nil expectErrorBlock:nil];
+  [self runTest:test module:moduleName initialProps:nil configurationBlock:nil expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName
-   initialProps:(NSDictionary *)initialProps expectErrorRegex:(NSString *)errorRegex
+- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
 {
-  [self runTest:test module:moduleName initialProps:initialProps expectErrorBlock:^BOOL(NSString *error){
-    return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
-  }];
+  [self runTest:test module:moduleName initialProps:initialProps configurationBlock:configurationBlock expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName
-   initialProps:(NSDictionary *)initialProps expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
+- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock expectErrorRegex:(NSString *)errorRegex
+{
+  BOOL(^expectErrorBlock)(NSString *error)  = ^BOOL(NSString *error){
+    return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
+  };
+
+  [self runTest:test module:moduleName initialProps:initialProps configurationBlock:configurationBlock expectErrorBlock:expectErrorBlock];
+}
+
+- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   __weak id weakJSContext;
 
@@ -109,6 +114,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
     vc.view = [UIView new];
     [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+
+    if (configurationBlock) {
+      configurationBlock(rootView);
+    }
 
     NSDate *date = [NSDate dateWithTimeIntervalSinceNow:kTestTimeoutSeconds];
     while (date.timeIntervalSinceNow > 0 && testModule.status == RCTTestStatusPending && error == nil) {
