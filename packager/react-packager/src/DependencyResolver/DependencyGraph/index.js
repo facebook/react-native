@@ -54,7 +54,7 @@ class DependencyGraph {
     this._helpers = new Helpers(this._opts);
     this.load().catch((err) => {
       // This only happens at initialization. Live errors are easier to recover from.
-      console.error('Error building DepdendencyGraph:\n', err.stack);
+      console.error('Error building DependencyGraph:\n', err.stack);
       process.exit(1);
     });
   }
