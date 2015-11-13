@@ -277,7 +277,6 @@ var ListView = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
-      this._sentEndForContentLength = null;
       this.setState((state, props) => {
         var rowsToRender = Math.min(
           state.curRenderedRowsCount + props.pageSize,
