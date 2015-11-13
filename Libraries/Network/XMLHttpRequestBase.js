@@ -11,6 +11,9 @@
  */
 'use strict';
 
+var RCTNetworking = require('RCTNetworking');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
@@ -29,6 +32,13 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   status: number;
+
+  upload: ?{
+    onprogress?: (event: Object) => void;
+  };
+
+  _requestId: ?number;
+  _subscriptions: [any];
 
   _method: ?string;
   _url: ?string;
@@ -60,9 +70,81 @@ class XMLHttpRequestBase {
     this.responseText = '';
     this.status = 0;
 
+    this._requestId = null;
+
     this._headers = {};
     this._sent = false;
     this._lowerCaseResponseHeaders = {};
+
+    this._clearSubscriptions();
+  }
+
+  didCreateRequest(requestId: number): void {
+    this._requestId = requestId;
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didSendNetworkData',
+      (args) => this._didUploadProgress.call(this, ...args)
+    ));
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didReceiveNetworkResponse',
+      (args) => this._didReceiveResponse.call(this, ...args)
+    ));
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didReceiveNetworkData',
+      (args) =>  this._didReceiveData.call(this, ...args)
+    ));
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didCompleteNetworkResponse',
+      (args) => this._didCompleteResponse.call(this, ...args)
+    ));
+  }
+
+  _didUploadProgress(requestId: number, progress: number, total: number): void {
+    if (requestId === this._requestId && this.upload && this.upload.onprogress) {
+      var event = {
+        lengthComputable: true,
+        loaded: progress,
+        total,
+      };
+      this.upload.onprogress(event);
+    }
+  }
+
+  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object): void {
+    if (requestId === this._requestId) {
+      this.status = status;
+      this.setResponseHeaders(responseHeaders);
+      this.setReadyState(this.HEADERS_RECEIVED);
+    }
+  }
+
+  _didReceiveData(requestId: number, responseText: string): void {
+    if (requestId === this._requestId) {
+      if (!this.responseText) {
+        this.responseText = responseText;
+      } else {
+        this.responseText += responseText;
+      }
+      this.setReadyState(this.LOADING);
+    }
+  }
+
+  _didCompleteResponse(requestId: number, error: string): void {
+    if (requestId === this._requestId) {
+      if (error) {
+        this.responseText = error;
+      }
+      this._clearSubscriptions();
+      this._requestId = null;
+      this.setReadyState(this.DONE);
+    }
+  }
+
+  _clearSubscriptions(): void {
+    (this._subscriptions || []).forEach(sub => {
+      sub.remove();
+    });
+    this._subscriptions = [];
   }
 
   getAllResponseHeaders(): ?string {
@@ -108,10 +190,6 @@ class XMLHttpRequestBase {
     throw new Error('Subclass must define sendImpl method');
   }
 
-  abortImpl(): void {
-    throw new Error('Subclass must define abortImpl method');
-  }
-
   send(data: any): void {
     if (this.readyState !== this.OPENED) {
       throw new Error('Request has not been opened');
@@ -125,7 +203,10 @@ class XMLHttpRequestBase {
 
   abort(): void {
     this._aborted = true;
-    this.abortImpl();
+    if (this._requestId) {
+      console.log('calling abort', this._requestId);
+      RCTNetworking.abortRequest(this._requestId);
+    }
     // only call onreadystatechange if there is something to abort,
     // below logic is per spec
     if (!(this.readyState === this.UNSENT ||
@@ -136,16 +217,6 @@ class XMLHttpRequestBase {
     }
     // Reset again after, in case modified in handler
     this._reset();
-  }
-
-  callback(status: number, responseHeaders: ?Object, responseText: string): void {
-    if (this._aborted) {
-      return;
-    }
-    this.status = status;
-    this.setResponseHeaders(responseHeaders || {});
-    this.responseText = responseText;
-    this.setReadyState(this.DONE);
   }
 
   setResponseHeaders(responseHeaders: ?Object): void {
