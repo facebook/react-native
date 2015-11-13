@@ -281,7 +281,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   javaScriptThread.name = @"com.facebook.React.JavaScript";
 
   if ([javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
-    [(id)javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
+    [javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
   } else {
     javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
   }
