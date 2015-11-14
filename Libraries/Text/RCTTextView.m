@@ -43,6 +43,7 @@
   NSAttributedString *_pendingAttributedText;
   NSMutableArray<UIView<RCTComponent> *> *_subviews;
   BOOL _blockTextShouldChange;
+  UITextRange *_previousSelectionRange;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -58,6 +59,8 @@
     _textView.backgroundColor = [UIColor clearColor];
     _textView.scrollsToTop = NO;
     _textView.delegate = self;
+
+    _previousSelectionRange = _textView.selectedTextRange;
 
     _subviews = [NSMutableArray new];
     [self addSubview:_textView];
@@ -281,6 +284,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return NO;
   } else {
     return YES;
+  }
+}
+
+- (void)textViewDidChangeSelection:(RCTUITextView *)textView
+{
+  if (_onSelectionChange &&
+      textView.selectedTextRange != _previousSelectionRange &&
+      ![textView.selectedTextRange isEqual:_previousSelectionRange]) {
+
+    _previousSelectionRange = textView.selectedTextRange;
+
+    UITextRange *selection = textView.selectedTextRange;
+    NSInteger start = [textView offsetFromPosition:[textView beginningOfDocument] toPosition:selection.start];
+    NSInteger end = [textView offsetFromPosition:[textView beginningOfDocument] toPosition:selection.end];
+    _onSelectionChange(@{
+      @"selection": @{
+        @"start": @(start),
+        @"end": @(end),
+      },
+    });
+  }
+
+  if (textView.editable && [textView isFirstResponder]) {
+    [textView scrollRangeToVisible:textView.selectedRange];
   }
 }
 
