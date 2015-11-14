@@ -431,6 +431,8 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
   UIImage *image;
   NSString *path;
+  UIImageRenderingMode renderingMode = UIImageRenderingModeAutomatic;
+
   CGFloat scale = 0.0;
   BOOL isPackagerAsset = NO;
   if ([json isKindOfClass:[NSString class]]) {
@@ -441,6 +443,11 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
     scale = [self CGFloat:json[@"scale"]];
     isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
+    if ([renderingModeStr isEqual: @"alwaysOriginal"]) {
+      renderingMode = UIImageRenderingModeAlwaysOriginal;
+    } else if ([renderingModeStr isEqual:@"alwaysTemplate"]) {
+      renderingMode = UIImageRenderingModeAlwaysTemplate;
+    }
   } else {
     RCTLogConvertError(json, @"an image");
     return nil;
@@ -476,7 +483,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
                                 scale:scale
                           orientation:image.imageOrientation];
   }
-  return image;
+  return [image imageWithRenderingMode:renderingMode];
 }
 
 + (CGImageRef)CGImage:(id)json
