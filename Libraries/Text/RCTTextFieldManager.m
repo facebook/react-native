@@ -11,7 +11,6 @@
 
 #import "RCTBridge.h"
 #import "RCTShadowView.h"
-#import "RCTSparseArray.h"
 #import "RCTTextField.h"
 
 @interface RCTTextFieldManager() <UITextFieldDelegate>
@@ -117,8 +116,8 @@ RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
-  return ^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    ((RCTTextField *)viewRegistry[reactTag]).contentInset = padding;
+  return ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextField *> *viewRegistry) {
+    viewRegistry[reactTag].contentInset = padding;
   };
 }
 
