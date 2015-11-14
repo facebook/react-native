@@ -41,7 +41,7 @@
   NSInteger _nativeEventCount;
   RCTText *_richTextView;
   NSAttributedString *_pendingAttributedText;
-  NSMutableArray<UIView<RCTComponent> *> *_subviews;
+  NSMutableArray<UIView *> *_subviews;
   BOOL _blockTextShouldChange;
   UITextRange *_previousSelectionRange;
 }
@@ -71,12 +71,12 @@
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
-- (NSArray<UIView<RCTComponent> *> *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   return _subviews;
 }
 
-- (void)insertReactSubview:(UIView<RCTComponent> *)subview atIndex:(NSInteger)index
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)index
 {
   if ([subview isKindOfClass:[RCTText class]]) {
     if (_richTextView) {
@@ -90,7 +90,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
-- (void)removeReactSubview:(UIView<RCTComponent> *)subview
+- (void)removeReactSubview:(UIView *)subview
 {
   if (_richTextView == subview) {
     [_subviews removeObject:_richTextView];

@@ -22,7 +22,6 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTSourceCode.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
 #define RCTAssertJSThread() \
@@ -730,7 +729,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      
+
 #if RCT_DEV
       NSString *_threadName = RCTCurrentThreadName();
       RCT_PROFILE_BEGIN_EVENT(0, _threadName, nil);

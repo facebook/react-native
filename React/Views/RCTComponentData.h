@@ -14,6 +14,7 @@
 
 @class RCTShadowView;
 @class RCTViewManager;
+@class UIView;
 
 @interface RCTComponentData : NSObject
 
@@ -22,11 +23,11 @@
 
 - (instancetype)initWithManager:(RCTViewManager *)manager NS_DESIGNATED_INITIALIZER;
 
-- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag props:(NSDictionary *)props;
+- (UIView *)createViewWithTag:(NSNumber *)tag props:(NSDictionary<NSString *, id> *)props;
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
-- (void)setProps:(NSDictionary *)props forView:(id<RCTComponent>)view;
-- (void)setProps:(NSDictionary *)props forShadowView:(RCTShadowView *)shadowView;
+- (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
+- (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
 
-- (NSDictionary *)viewConfig;
+- (NSDictionary<NSString *, id> *)viewConfig;
 
 @end

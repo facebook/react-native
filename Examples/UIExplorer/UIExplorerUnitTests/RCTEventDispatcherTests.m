@@ -26,7 +26,7 @@
 
 @implementation RCTTestEvent
 
-- (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary *)body
+- (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary<NSString *, id> *)body
 {
   if (self = [super initWithViewTag:viewTag eventName:eventName body:body]) {
     self.canCoalesce = YES;
@@ -50,7 +50,7 @@
   RCTEventDispatcher *_eventDispatcher;
 
   NSString *_eventName;
-  NSDictionary *_body;
+  NSDictionary<NSString *, id> *_body;
   RCTTestEvent *_testEvent;
   NSString *_JSMethod;
 }

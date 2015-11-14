@@ -146,7 +146,7 @@ RCTFatalHandler RCTGetFatalHandler(void)
   return RCTCurrentFatalHandler;
 }
 
-NSString *RCTFormatError(NSString *message, NSArray *stackTrace, NSUInteger maxMessageLength)
+NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stackTrace, NSUInteger maxMessageLength)
 {
   if (maxMessageLength > 0 && message.length > maxMessageLength) {
     message = [[message substringToIndex:maxMessageLength] stringByAppendingString:@"..."];
@@ -155,7 +155,7 @@ NSString *RCTFormatError(NSString *message, NSArray *stackTrace, NSUInteger maxM
   NSMutableString *prettyStack = [NSMutableString string];
   if (stackTrace) {
     [prettyStack appendString:@", stack:\n"];
-    for (NSDictionary *frame in stackTrace) {
+    for (NSDictionary<NSString *, id> *frame in stackTrace) {
       [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
     }
   }

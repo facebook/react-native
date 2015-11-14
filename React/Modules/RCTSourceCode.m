@@ -36,7 +36,7 @@ RCT_EXPORT_METHOD(getScriptText:(RCTResponseSenderBlock)successCallback
   }
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   NSString *URL = self.bridge.bundleURL.absoluteString ?: @"";
   return @{@"scriptURL": URL};

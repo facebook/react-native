@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE()
     // Get content length
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager new];
-    NSDictionary *fileAttributes = [fileManager attributesOfItemAtPath:request.URL.path error:&error];
+    NSDictionary<NSString *, id> *fileAttributes = [fileManager attributesOfItemAtPath:request.URL.path error:&error];
     if (error) {
       [delegate URLRequest:weakOp didCompleteWithError:error];
       return;

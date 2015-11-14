@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
-#import "RCTSparseArray.h"
 #import "RCTTextView.h"
 
 @implementation RCTTextViewManager
@@ -61,8 +60,8 @@ RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
-  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    ((RCTTextView *)viewRegistry[reactTag]).contentInset = padding;
+  return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
+    viewRegistry[reactTag].contentInset = padding;
   };
 }
 

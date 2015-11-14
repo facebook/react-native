@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
-- (UIView *)viewWithProps:(__unused NSDictionary *)props
+- (UIView *)viewWithProps:(__unused NSDictionary<NSString *, id> *)props
 {
   return [self view];
 }
@@ -95,7 +95,7 @@ RCT_EXPORT_MODULE()
   return @[];
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   return nil;
 }
@@ -105,7 +105,7 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused RCTSparseArray *)shadowViewRegistry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
 {
   return nil;
 }

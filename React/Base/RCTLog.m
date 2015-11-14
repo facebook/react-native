@@ -53,7 +53,7 @@ void RCTSetLogThreshold(RCTLogLevel threshold) {
 
 RCTLogFunction RCTDefaultLogFunction = ^(
   RCTLogLevel level,
-  RCTLogSource source,
+  __unused RCTLogSource source,
   NSString *fileName,
   NSNumber *lineNumber,
   NSString *message

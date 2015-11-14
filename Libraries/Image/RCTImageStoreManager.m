@@ -14,7 +14,7 @@
 
 @implementation RCTImageStoreManager
 {
-  NSMutableDictionary *_store;
+  NSMutableDictionary<NSString *, UIImage *> *_store;
 }
 
 @synthesize methodQueue = _methodQueue;

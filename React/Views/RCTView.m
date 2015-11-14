@@ -92,7 +92,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 @implementation RCTView
 {
-  NSMutableArray<UIView<RCTComponent> *> *_reactSubviews;
+  NSMutableArray<UIView *> *_reactSubviews;
   UIColor *_backgroundColor;
 }
 
@@ -413,7 +413,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   [subview removeFromSuperview];
 }
 
-- (NSArray<UIView<RCTComponent> *> *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   // The _reactSubviews array is only used when we have hidden
   // offscreen views. If _reactSubviews is nil, we can assume

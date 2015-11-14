@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
   RCTUpdateLifecycleDirtied,
 };
 
-typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
+typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry);
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.
@@ -124,14 +124,14 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *viewRegistry);
  * on the main thread in order to update the view.
  */
 - (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                parentProperties:(NSDictionary *)parentProperties;
+                parentProperties:(NSDictionary<NSString *, id> *)parentProperties;
 
 /**
  * Process the updated properties and apply them to view. Shadow view classes
  * that add additional propagating properties should override this method.
  */
-- (NSDictionary *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                          parentProperties:(NSDictionary *)parentProperties NS_REQUIRES_SUPER;
+- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
+                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
 
 /**
  * Calculate all views whose frame needs updating after layout has been calculated.

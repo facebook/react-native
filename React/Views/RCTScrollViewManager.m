@@ -11,7 +11,6 @@
 
 #import "RCTBridge.h"
 #import "RCTScrollView.h"
-#import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 
 @interface RCTScrollView (Private)
@@ -67,7 +66,7 @@ RCT_EXPORT_VIEW_PROPERTY(snapToInterval, int)
 RCT_EXPORT_VIEW_PROPERTY(snapToAlignment, NSString)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
     // TODO: unused - remove these?
@@ -81,7 +80,7 @@ RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
 
     RCTScrollView *view = viewRegistry[reactTag];
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
@@ -100,7 +99,7 @@ RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
 RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
                     callback:(RCTResponseSenderBlock)callback)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
 
     RCTScrollView *view = viewRegistry[reactTag];
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {

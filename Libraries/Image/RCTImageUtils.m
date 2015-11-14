@@ -237,7 +237,7 @@ RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
   CGFloat maxPixelSize = fmax(fmin(sourceSize.width, targetPixelSize.width),
                               fmin(sourceSize.height, targetPixelSize.height));
 
-  NSDictionary *options = @{
+  NSDictionary<NSString *, NSNumber *> *options = @{
     (id)kCGImageSourceShouldAllowFloat: @YES,
     (id)kCGImageSourceCreateThumbnailWithTransform: @YES,
     (id)kCGImageSourceCreateThumbnailFromImageAlways: @YES,

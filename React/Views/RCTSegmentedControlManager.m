@@ -29,7 +29,7 @@ RCT_EXPORT_VIEW_PROPERTY(momentary, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   RCTSegmentedControl *view = [RCTSegmentedControl new];
   return @{

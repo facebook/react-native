@@ -15,6 +15,7 @@
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 #import "RCTViewManager.h"
+#import "UIView+React.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
@@ -41,8 +42,8 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 {
   id<RCTComponent> _defaultView;
   RCTShadowView *_defaultShadowView;
-  NSMutableDictionary *_viewPropBlocks;
-  NSMutableDictionary *_shadowPropBlocks;
+  NSMutableDictionary<NSString *, RCTPropBlock> *_viewPropBlocks;
+  NSMutableDictionary<NSString *, RCTPropBlock> *_shadowPropBlocks;
 }
 
 - (instancetype)initWithManager:(RCTViewManager *)manager
@@ -63,17 +64,15 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (id<RCTComponent>)createViewWithTag:(NSNumber *)tag props:(NSDictionary *)props
+- (UIView *)createViewWithTag:(NSNumber *)tag props:(NSDictionary<NSString *, id> *)props
 {
   RCTAssertMainThread();
 
-  id<RCTComponent> view = (id<RCTComponent>)(props ? [_manager viewWithProps:props] : [_manager view]);
+  UIView *view = (UIView *)(props ? [_manager viewWithProps:props] : [_manager view]);
   view.reactTag = tag;
-  if ([view isKindOfClass:[UIView class]]) {
-    ((UIView *)view).multipleTouchEnabled = YES;
-    ((UIView *)view).userInteractionEnabled = YES; // required for touch handling
-    ((UIView *)view).layer.allowsGroupOpacity = YES; // required for touch handling
-  }
+  view.multipleTouchEnabled = YES;
+  view.userInteractionEnabled = YES; // required for touch handling
+  view.layer.allowsGroupOpacity = YES; // required for touch handling
   return view;
 }
 
@@ -88,7 +87,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (RCTPropBlock)propBlockForKey:(NSString *)name defaultView:(id)defaultView
 {
   BOOL shadowView = [defaultView isKindOfClass:[RCTShadowView class]];
-  NSMutableDictionary *propBlocks = shadowView ? _shadowPropBlocks : _viewPropBlocks;
+  NSMutableDictionary<NSString *, RCTPropBlock> *propBlocks = shadowView ? _shadowPropBlocks : _viewPropBlocks;
   RCTPropBlock propBlock = propBlocks[name];
   if (!propBlock) {
 
@@ -277,7 +276,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return propBlock;
 }
 
-- (void)setProps:(NSDictionary *)props forView:(id<RCTComponent>)view
+- (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view
 {
   if (!view) {
     return;
@@ -292,7 +291,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }];
 }
 
-- (void)setProps:(NSDictionary *)props forShadowView:(RCTShadowView *)shadowView
+- (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
 {
   if (!shadowView) {
     return;
@@ -309,7 +308,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [shadowView updateLayout];
 }
 
-- (NSDictionary *)viewConfig
+- (NSDictionary<NSString *, id> *)viewConfig
 {
   Class managerClass = [_manager class];
 
