@@ -34,6 +34,8 @@ var onlyMultiline = {
   onSelectionChange: true, // not supported in Open Source yet
   onTextInput: true, // not supported in Open Source yet
   children: true,
+  autoGrow: true,
+  maxHeight: true,
 };
 
 var notMultiline = {
@@ -110,6 +112,16 @@ var TextInput = React.createClass({
      * If false, disables auto-correct. The default value is true.
      */
     autoCorrect: PropTypes.bool,
+    /**
+     * If true, and the input is multiline, the input's height will grow automatically. The default value is false.
+     * @platorm ios
+     */
+    autoGrow: PropTypes.bool,
+    /**
+     * The maximum height the input should grow to when autoGrow is true.
+     * @platorm ios
+     */
+    maxHeight: PropTypes.number,
     /**
      * If true, focuses the input on componentDidMount.
      * The default value is false.

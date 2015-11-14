@@ -21,10 +21,12 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RCTTextView alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
+  return [[RCTTextView alloc] initWithBridge:self.bridge];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(autoGrow, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(maxHeight, float)
 RCT_REMAP_VIEW_PROPERTY(editable, textView.editable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(placeholderTextColor, UIColor)

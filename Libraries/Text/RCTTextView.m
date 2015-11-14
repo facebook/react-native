@@ -13,6 +13,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
+#import "RCTUIManager.h"
 #import "UIView+React.h"
 
 @interface RCTUITextView : UITextView
@@ -33,8 +34,12 @@
 
 @implementation RCTTextView
 {
+  RCTBridge *_bridge;
   RCTEventDispatcher *_eventDispatcher;
   BOOL _jsRequestingFirstResponder;
+  BOOL _autoGrow;
+  float _origHeight;
+  float _maxHeight;
   NSString *_placeholder;
   UITextView *_placeholderView;
   UITextView *_textView;
@@ -45,13 +50,15 @@
   BOOL _blockTextShouldChange;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  RCTAssertParam(eventDispatcher);
+  RCTAssertParam(bridge);
 
   if ((self = [super initWithFrame:CGRectZero])) {
+    _bridge = bridge;
+    _autoGrow = false;
     _contentInset = UIEdgeInsetsZero;
-    _eventDispatcher = eventDispatcher;
+    _eventDispatcher = _bridge.eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
 
     _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
@@ -174,6 +181,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   _textView.textContainerInset = adjustedTextContainerInset;
   _placeholderView.textContainerInset = adjustedTextContainerInset;
+  
+  if (! _origHeight) {
+    _origHeight = self.frame.size.height;
+  }
 }
 
 - (void)updatePlaceholder
@@ -197,6 +208,40 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)updateTextViewFrame
+{
+  if (self.superview == nil) {
+    return;
+  }
+
+  if (_autoGrow) {
+    if (CGRectIsEmpty(self.frame)) {
+      return;
+    }
+
+    float currentHeight = _textView.frame.size.height;
+    float newHeight;
+
+    [_textView sizeToFit];
+
+    if (_textView.frame.size.height >= _origHeight) {
+      newHeight = _textView.frame.size.height;
+    } else {
+      newHeight = _origHeight;
+    }
+
+    if (_maxHeight > _origHeight) {
+      newHeight = fminf(newHeight, _maxHeight);
+    }
+    
+    if (newHeight != currentHeight) {
+      CGRect newFrame = CGRectMake(0, 0, self.frame.size.width, newHeight);
+      [_bridge.uiManager setFrame:newFrame
+                          forView:self];
+    }
+  }
+}
+
 - (UIFont *)font
 {
   return _textView.font;
@@ -206,6 +251,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _textView.font = font;
   [self updatePlaceholder];
+  [self updateTextViewFrame];
 }
 
 - (UIColor *)textColor
@@ -291,6 +337,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     UITextRange *selection = _textView.selectedTextRange;
     _textView.text = text;
     [self _setPlaceholderVisibility];
+    [self updateTextViewFrame];
     _textView.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
@@ -314,6 +361,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)autoCorrect
 {
   return _textView.autocorrectionType == UITextAutocorrectionTypeYes;
+}
+
+- (void)setAutoGrow:(BOOL)autoGrow
+{
+  _autoGrow = autoGrow;
+}
+
+- (void)setMaxHeight:(float)maxHeight
+{
+  _maxHeight = maxHeight;
 }
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
@@ -343,6 +400,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)textViewDidChange:(UITextView *)textView
 {
   [self _setPlaceholderVisibility];
+  [self updateTextViewFrame];
+
   _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
