@@ -70,7 +70,7 @@
     return obj;
   };
 
-  babelHelpers._extends = Object.assign || function (target) {
+  babelHelpers._extends = babelHelpers.extends = Object.assign || function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 
