@@ -11,51 +11,33 @@
 'use strict';
 
 const babel = require('babel-core');
+const fs = require('fs');
 const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
+const json5 = require('json5');
+const path = require('path');
+
+const babelRC =
+  json5.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, 'react-packager', '.babelrc')));
 
 function transform(src, filename, options) {
   options = options || {};
-  const plugins = [];
+
+  const extraPlugins = ['external-helpers-2'];
+  const extraConfig = {
+    filename,
+    sourceFileName: filename,
+  };
+
+  const config = Object.assign({}, babelRC, extraConfig);
 
   if (options.inlineRequires) {
-    plugins.push([inlineRequires]);
+    extraPlugins.push(inlineRequires);
   }
+  config.plugins = extraPlugins.concat(config.plugins);
 
-  const result = babel.transform(src, {
-    retainLines: true,
-    compact: true,
-    comments: false,
-    filename,
-    plugins: plugins.concat([
-      // Keep in sync with packager/react-packager/.babelrc
-      'external-helpers-2',
-      'syntax-async-functions',
-      'syntax-class-properties',
-      'syntax-jsx',
-      'syntax-trailing-function-commas',
-      'transform-class-properties',
-      'transform-es2015-arrow-functions',
-      'transform-es2015-block-scoping',
-      'transform-es2015-classes',
-      'transform-es2015-computed-properties',
-      'transform-es2015-constants',
-      'transform-es2015-destructuring',
-      ['transform-es2015-modules-commonjs', {strict: false, allowTopLevelThis: true}],
-      'transform-es2015-parameters',
-      'transform-es2015-shorthand-properties',
-      'transform-es2015-spread',
-      'transform-es2015-template-literals',
-      'transform-flow-strip-types',
-      'transform-object-assign',
-      'transform-object-rest-spread',
-      'transform-object-assign',
-      'transform-react-display-name',
-      'transform-react-jsx',
-      'transform-regenerator',
-    ]),
-    sourceFileName: filename,
-    sourceMaps: false,
-  });
+  const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {
     code: result.code
