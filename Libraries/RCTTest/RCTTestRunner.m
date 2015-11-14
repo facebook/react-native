@@ -71,12 +71,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self runTest:test module:moduleName initialProps:nil configurationBlock:nil expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
 {
   [self runTest:test module:moduleName initialProps:initialProps configurationBlock:configurationBlock expectErrorBlock:nil];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock expectErrorRegex:(NSString *)errorRegex
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+expectErrorRegex:(NSString *)errorRegex
 {
   BOOL(^expectErrorBlock)(NSString *error)  = ^BOOL(NSString *error){
     return [error rangeOfString:errorRegex options:NSRegularExpressionSearch].location != NSNotFound;
@@ -85,7 +90,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self runTest:test module:moduleName initialProps:initialProps configurationBlock:configurationBlock expectErrorBlock:expectErrorBlock];
 }
 
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 {
   __weak id weakJSContext;
 
