@@ -92,3 +92,12 @@ Try running `react-native init` with `--verbose` and see [#2797](https://github.
 ### Text Input Border
 
 The text input has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting underlineColor to transparent.
+
+### Firebase throws 'No transports available'
+
+Make sure you require React Native before requiring Firebase. This way React Native has a chance to set up the `WebSocket` polyfill:
+
+    var React = require('react-native')
+    var Firebase = require('firebase');
+    
+Discovered thanks to issue [#3645](https://github.com/facebook/react-native/issues/3645). If you're curious, the polyfills are set up in [InitializeJavaScriptAppEngine.js](https://github.com/facebook/react-native/blob/master/Libraries/JavaScriptAppEngine/Initialization/InitializeJavaScriptAppEngine.js).
