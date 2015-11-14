@@ -31,7 +31,7 @@
 
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 
-@property (nonatomic, readonly, copy) NSMutableDictionary *injectedStuff;
+@property (nonatomic, readonly, copy) NSMutableDictionary<NSString *, id> *injectedStuff;
 
 @end
 
@@ -137,7 +137,7 @@ _Pragma("clang diagnostic pop")
   RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
 
   __block NSNumber *testModuleID = nil;
-  __block NSDictionary *testConstants = nil;
+  __block NSDictionary<NSString *, id> *testConstants = nil;
   __block NSNumber *testMethodID = nil;
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
@@ -165,7 +165,7 @@ _Pragma("clang diagnostic pop")
   RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
 
   __block NSNumber *testModuleID = nil;
-  __block NSDictionary *testConstants = nil;
+  __block NSDictionary<NSString *, id> *testConstants = nil;
   __block NSNumber *testMethodID = nil;
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
@@ -211,7 +211,7 @@ RCT_EXPORT_METHOD(testMethod:(NSInteger)integer
   XCTAssertNotNil(callback);
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{@"eleventyMillion": @42};
 }

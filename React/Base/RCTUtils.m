@@ -137,7 +137,7 @@ id RCTJSONClean(id object)
 
   if ([object isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
-    NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
+    NSMutableDictionary<NSString *, id> *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
     [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       values[key] = value;
@@ -288,30 +288,30 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
+NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData)
 {
   if (toStringify) {
     message = [message stringByAppendingString:[toStringify description]];
   }
 
-  NSMutableDictionary *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  NSMutableDictionary<NSString *, id> *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
   error[@"message"] = message;
   return error;
 }
 
-NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData)
+NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData)
 {
-  NSDictionary *error = RCTMakeError(message, toStringify, extraData);
+  NSDictionary<NSString *, id> *error = RCTMakeError(message, toStringify, extraData);
   RCTLogError(@"\nError: %@", error);
   return error;
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary *RCTJSErrorFromNSError(NSError *error)
+NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
-  NSMutableDictionary *errorInfo =
+  NSMutableDictionary<NSString *, id> *errorInfo =
     [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
@@ -399,7 +399,7 @@ BOOL RCTImageHasAlpha(CGImageRef image)
 
 NSError *RCTErrorWithMessage(NSString *message)
 {
-  NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
+  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 

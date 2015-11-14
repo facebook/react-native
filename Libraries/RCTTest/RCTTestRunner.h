@@ -69,8 +69,9 @@
  * @param initialProps props that are passed into the component when rendered.
  * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its creation.
  */
-
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock;
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock;
 
 /**
  * Same as runTest:, but allows for passing initialProps for providing mock data
@@ -83,7 +84,10 @@
  * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its creation.
  * @param expectErrorRegex A regex that must match the error thrown.  If no error is thrown, the test fails.
  */
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock expectErrorRegex:(NSString *)expectErrorRegex;
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+expectErrorRegex:(NSString *)expectErrorRegex;
 
 /**
  * Same as runTest:, but allows for passing initialProps for providing mock data
@@ -97,6 +101,9 @@
  * @param configurationBlock A block that takes the hosting root view and performs arbitrary manipulation after its creation.
  * @param expectErrorBlock A block that takes the error message and returns NO to fail the test.
  */
-- (void)runTest:(SEL)test module:(NSString *)moduleName initialProps:(NSDictionary *)initialProps configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock;
+- (void)runTest:(SEL)test module:(NSString *)moduleName
+   initialProps:(NSDictionary<NSString *, id> *)initialProps
+configurationBlock:(void(^)(RCTRootView *rootView))configurationBlock
+expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock;
 
 @end

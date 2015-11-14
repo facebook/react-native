@@ -506,7 +506,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 
   if (_secure) {
-    NSMutableDictionary *SSLOptions = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, id> *SSLOptions = [NSMutableDictionary new];
 
     [_outputStream setProperty:(__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL forKey:(__bridge id)kCFStreamPropertySocketSecurityLevel];
 

@@ -45,9 +45,9 @@ RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
 // Creates a standardized error object
-RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
-RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
-RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error);
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);

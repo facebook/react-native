@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-  NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
+  NSDictionary<NSString *, id> *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
   NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
 
   UIImage *image = nil;
@@ -51,8 +51,8 @@ RCT_EXPORT_MODULE()
         image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       }
 
-      NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-      NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
+      NSDictionary<NSString *, id> *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
+      NSDictionary<NSString *, id> *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
 
       const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
       NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];

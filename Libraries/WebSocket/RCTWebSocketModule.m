@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTSRWebSocket.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -35,7 +34,7 @@
 
 @implementation RCTWebSocketModule
 {
-    RCTSparseArray *_sockets;
+    NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
 }
 
 RCT_EXPORT_MODULE()
@@ -45,14 +44,14 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if ((self = [super init])) {
-    _sockets = [RCTSparseArray new];
+    _sockets = [NSMutableDictionary new];
   }
   return self;
 }
 
 - (void)dealloc
 {
-  for (RCTSRWebSocket *socket in _sockets.allObjects) {
+  for (RCTSRWebSocket *socket in _sockets.allValues) {
     socket.delegate = nil;
     [socket close];
   }
@@ -75,7 +74,7 @@ RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID
 RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 {
   [_sockets[socketID] close];
-  _sockets[socketID] = nil;
+  [_sockets removeObjectForKey:socketID];
 }
 
 #pragma mark - RCTSRWebSocketDelegate methods

@@ -22,7 +22,7 @@ extern NSString *const RCTJSNavigationScheme;
 @protocol RCTWebViewDelegate <NSObject>
 
 - (BOOL)webView:(RCTWebView *)webView
-shouldStartLoadForRequest:(NSMutableDictionary *)request
+shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
    withCallback:(RCTDirectEventBlock)callback;
 
 @end

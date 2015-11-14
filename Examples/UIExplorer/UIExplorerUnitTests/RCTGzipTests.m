@@ -20,7 +20,7 @@ extern BOOL RCTIsGzippedData(NSData *data);
 
 @interface RCTNetworking (Private)
 
-- (void)buildRequest:(NSDictionary *)query
+- (void)buildRequest:(NSDictionary<NSString *, id> *)query
      completionBlock:(void (^)(NSURLRequest *request))block;
 
 @end

@@ -115,7 +115,7 @@ RCT_EXTERN NSString *RCTCurrentThreadName(void);
 /**
  * Helper to get generate exception message from NSError
  */
-RCT_EXTERN NSString *RCTFormatError(NSString *message, NSArray *stacktrace, NSUInteger maxMessageLength);
+RCT_EXTERN NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id> *> *stacktrace, NSUInteger maxMessageLength);
 
 /**
  * Convenience macro to assert which thread is currently running (DEBUG mode only)

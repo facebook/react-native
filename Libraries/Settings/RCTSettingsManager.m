@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE()
    body:RCTJSONClean([_defaults dictionaryRepresentation])];
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
     @"settings": RCTJSONClean([_defaults dictionaryRepresentation])

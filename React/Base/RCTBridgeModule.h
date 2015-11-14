@@ -228,7 +228,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * for long-lived values such as session keys, that are regenerated only as
  * part of a reload of the entire React application.
  */
-- (NSDictionary *)constantsToExport;
+- (NSDictionary<NSString *, id> *)constantsToExport;
 
 /**
  * Notifies the module that a batch of JS method invocations has just completed.
