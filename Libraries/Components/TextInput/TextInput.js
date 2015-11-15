@@ -31,7 +31,6 @@ var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
-  onSelectionChange: true, // not supported in Open Source yet
   onTextInput: true, // not supported in Open Source yet
   children: true,
 };
@@ -162,6 +161,15 @@ var TextInput = React.createClass({
       'web-search',
     ]),
     /**
+     * Determines the color of the keyboard.
+     * @platform ios
+     */
+    keyboardAppearance: PropTypes.oneOf([
+      'default',
+      'light',
+      'dark',
+    ]),
+    /**
      * Determines how the return key should look.
      * @platform ios
      */
@@ -223,6 +231,7 @@ var TextInput = React.createClass({
     onEndEditing: PropTypes.func,
     /**
      * Callback that is called when the text input's submit button is pressed.
+     * Invalid if multiline={true} is specified.
      */
     onSubmitEditing: PropTypes.func,
     /**
@@ -403,6 +412,17 @@ var TextInput = React.createClass({
   _renderIOS: function() {
     var textContainer;
 
+    var onSelectionChange;
+    if (this.props.selectionState || this.props.onSelectionChange) {
+      onSelectionChange = function(event: Event) {
+        if (this.props.selectionState) {
+          var selection = event.nativeEvent.selection;
+          this.props.selectionState.update(selection.start, selection.end);
+        }
+        this.props.onSelectionChange && this.props.onSelectionChange(event);
+      };
+    }
+
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
     if (!props.multiline) {
@@ -420,7 +440,8 @@ var TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChangeShouldSetResponder={() => true}
+          onSelectionChange={onSelectionChange}
+          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           mostRecentEventCount={this.state.mostRecentEventCount}
         />;
@@ -455,7 +476,7 @@ var TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChange={this._onSelectionChange}
+          onSelectionChange={onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
@@ -569,14 +590,6 @@ var TextInput = React.createClass({
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
-  },
-
-  _onSelectionChange: function(event: Event) {
-    if (this.props.selectionState) {
-      var selection = event.nativeEvent.selection;
-      this.props.selectionState.update(selection.start, selection.end);
-    }
-    this.props.onSelectionChange && this.props.onSelectionChange(event);
   },
 
   _onTextInput: function(event: Event) {

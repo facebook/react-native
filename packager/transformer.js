@@ -11,50 +11,33 @@
 'use strict';
 
 const babel = require('babel-core');
-const inlineRequires = require('fbjs-scripts/babel/inline-requires');
+const fs = require('fs');
+const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
+const json5 = require('json5');
+const path = require('path');
+
+const babelRC =
+  json5.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, 'react-packager', '.babelrc')));
 
 function transform(src, filename, options) {
   options = options || {};
-  const plugins = [];
+
+  const extraPlugins = ['external-helpers-2'];
+  const extraConfig = {
+    filename,
+    sourceFileName: filename,
+  };
+
+  const config = Object.assign({}, babelRC, extraConfig);
 
   if (options.inlineRequires) {
-    plugins.push({
-      position: 'after',
-      transformer: inlineRequires,
-    });
+    extraPlugins.push(inlineRequires);
   }
+  config.plugins = extraPlugins.concat(config.plugins);
 
-  const result = babel.transform(src, {
-    retainLines: true,
-    compact: true,
-    comments: false,
-    filename,
-    whitelist: [
-      // Keep in sync with packager/react-packager/.babelrc
-      'es6.arrowFunctions',
-      'es6.blockScoping',
-      'es6.classes',
-      'es6.constants',
-      'es6.destructuring',
-      'es6.modules',
-      'es6.parameters',
-      'es6.properties.computed',
-      'es6.properties.shorthand',
-      'es6.spread',
-      'es6.templateLiterals',
-      'es7.asyncFunctions',
-      'es7.trailingFunctionCommas',
-      'es7.objectRestSpread',
-      'flow',
-      'react',
-      'react.displayName',
-      'regenerator',
-    ],
-    plugins,
-    sourceFileName: filename,
-    sourceMaps: false,
-    extra: options || {},
-  });
+  const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {
     code: result.code

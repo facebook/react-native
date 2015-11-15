@@ -12,7 +12,6 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTShadowView.h"
-#import "RCTSparseArray.h"
 #import "RCTTextView.h"
 
 @implementation RCTTextViewManager
@@ -33,6 +32,8 @@ RCT_EXPORT_VIEW_PROPERTY(maxLength, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selectTextOnFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(keyboardType, textView.keyboardType, UIKeyboardType)
+RCT_REMAP_VIEW_PROPERTY(keyboardAppearance, textView.keyboardAppearance, UIKeyboardAppearance)
+RCT_EXPORT_VIEW_PROPERTY(onSelectionChange, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(returnKeyType, textView.returnKeyType, UIReturnKeyType)
 RCT_REMAP_VIEW_PROPERTY(enablesReturnKeyAutomatically, textView.enablesReturnKeyAutomatically, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textColor, UIColor)
@@ -59,8 +60,8 @@ RCT_EXPORT_VIEW_PROPERTY(mostRecentEventCount, NSInteger)
 {
   NSNumber *reactTag = shadowView.reactTag;
   UIEdgeInsets padding = shadowView.paddingAsInsets;
-  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    ((RCTTextView *)viewRegistry[reactTag]).contentInset = padding;
+  return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
+    viewRegistry[reactTag].contentInset = padding;
   };
 }
 

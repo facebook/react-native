@@ -21,7 +21,6 @@
 #import "RCTUtils.h"
 
 static dispatch_queue_t RCTAssetsLibraryImageLoaderQueue(void);
-static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation, CGSize size, CGFloat scale, UIViewContentMode resizeMode, NSError **error);
 
 @implementation RCTAssetsLibraryImageLoader
 {
@@ -99,14 +98,30 @@ RCT_EXPORT_MODULE()
 
 #endif
 
-          UIImage *image;
+          UIImage *image = nil;
           NSError *error = nil;
           if (useMaximumSize) {
+
             image = [UIImage imageWithCGImage:representation.fullResolutionImage
                                         scale:scale
                                   orientation:(UIImageOrientation)representation.orientation];
           } else {
-            image = RCTScaledImageForAsset(representation, size, scale, resizeMode, &error);
+
+            NSUInteger length = (NSUInteger)representation.size;
+            uint8_t *buffer = (uint8_t *)malloc((size_t)length);
+            if ([representation getBytes:buffer
+                                fromOffset:0
+                                    length:length
+                                      error:&error]) {
+
+              NSData *data = [[NSData alloc] initWithBytesNoCopy:buffer
+                                                          length:length
+                                                    freeWhenDone:YES];
+
+              image = RCTDecodeImageWithData(data, size, scale, resizeMode);
+            } else {
+              free(buffer);
+            }
           }
 
           completionHandler(error, image);
@@ -150,49 +165,4 @@ static dispatch_queue_t RCTAssetsLibraryImageLoaderQueue(void)
   });
 
   return queue;
-}
-
-// Why use a custom scaling method? Greater efficiency, reduced memory overhead:
-// http://www.mindsea.com/2012/12/downscaling-huge-alassets-without-fear-of-sigkill
-
-static UIImage *RCTScaledImageForAsset(ALAssetRepresentation *representation,
-                                       CGSize size,
-                                       CGFloat scale,
-                                       UIViewContentMode resizeMode,
-                                       NSError **error)
-{
-  NSUInteger length = (NSUInteger)representation.size;
-  NSMutableData *data = [NSMutableData dataWithLength:length];
-  if (![representation getBytes:data.mutableBytes
-                     fromOffset:0
-                         length:length
-                          error:error]) {
-    return nil;
-  }
-
-  CGSize sourceSize = representation.dimensions;
-  CGSize targetSize = RCTTargetSize(sourceSize, representation.scale,
-                                    size, scale, resizeMode, NO);
-
-  NSDictionary *options = @{
-    (id)kCGImageSourceShouldAllowFloat: @YES,
-    (id)kCGImageSourceCreateThumbnailWithTransform: @YES,
-    (id)kCGImageSourceCreateThumbnailFromImageAlways: @YES,
-    (id)kCGImageSourceThumbnailMaxPixelSize: @(MAX(targetSize.width, targetSize.height) * scale)
-  };
-
-  CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, nil);
-  CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
-  if (sourceRef) {
-    CFRelease(sourceRef);
-  }
-
-  if (imageRef) {
-    UIImage *image = [UIImage imageWithCGImage:imageRef scale:scale
-                                   orientation:UIImageOrientationUp];
-    CGImageRelease(imageRef);
-    return image;
-  }
-
-  return nil;
 }

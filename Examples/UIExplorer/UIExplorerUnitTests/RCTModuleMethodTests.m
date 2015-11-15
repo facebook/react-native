@@ -23,6 +23,7 @@ static BOOL RCTLogsError(void (^block)(void))
 {
   __block BOOL loggedError = NO;
   RCTPerformBlockWithLogFunction(block, ^(RCTLogLevel level,
+                                          __unused RCTLogSource source,
                                           __unused NSString *fileName,
                                           __unused NSNumber *lineNumber,
                                           __unused NSString *message) {

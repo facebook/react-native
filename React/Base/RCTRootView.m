@@ -24,7 +24,6 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTWebViewExecutor.h"
 #import "UIView+React.h"
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
@@ -231,17 +230,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   _appProperties = [appProperties copy];
 
-  if (_bridge.valid && !_bridge.loading) {
+  if (_contentView && _bridge.valid && !_bridge.loading) {
     [self runApplication:_bridge.batchedBridge];
   }
 }
 
 - (void)setIntrinsicSize:(CGSize)intrinsicSize
 {
-  if (!CGSizeEqualToSize(_intrinsicSize, intrinsicSize)) {
-    _intrinsicSize = intrinsicSize;
-    [_delegate rootViewDidChangeIntrinsicSize:self];
+  BOOL oldSizeHasAZeroDimension = _intrinsicSize.height == 0 || _intrinsicSize.width == 0;
+  BOOL newSizeHasAZeroDimension = intrinsicSize.height == 0 || intrinsicSize.width == 0;
+  BOOL bothSizesHaveAZeroDimension = oldSizeHasAZeroDimension && newSizeHasAZeroDimension;
+
+  BOOL sizesAreEqual = CGSizeEqualToSize(_intrinsicSize, intrinsicSize);
+
+  _intrinsicSize = intrinsicSize;
+
+  // Don't notify the delegate if the content remains invisible or its size has not changed
+  if (bothSizesHaveAZeroDimension || sizesAreEqual) {
+    return;
   }
+
+  [_delegate rootViewDidChangeIntrinsicSize:self];
 }
 
 - (NSNumber *)reactTag
