@@ -27,7 +27,9 @@ extern const CGFloat RCTMapZoomBoundBuffer;
 @property (nonatomic, assign) UIEdgeInsets legalLabelInsets;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 @property (nonatomic, strong) NSMutableArray *annotationIds;
+@property (nonatomic, strong) NSMutableArray *polylineIds;
 
 - (void)setAnnotations:(RCTPointAnnotationArray *)annotations;
+- (void)setPolylines:(RCTPolylineArray *)polylines;
 
 @end

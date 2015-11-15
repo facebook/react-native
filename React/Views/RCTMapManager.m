@@ -46,6 +46,7 @@ RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(annotations, RCTPointAnnotationArray)
+RCT_EXPORT_VIEW_PROPERTY(polylines, RCTPolylineArray)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
@@ -76,6 +77,20 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
                             };
 
     [self.bridge.eventDispatcher sendInputEventWithName:@"topTap" body:event];
+  }
+}
+
+
+- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView rendererForOverlay:(id)overlay {
+  if ([overlay isKindOfClass:[RCTPolyline class]]) {
+    RCTPolyline *polyline = overlay;
+    MKPolylineRenderer *polylineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:polyline];
+    polylineRenderer.strokeColor = polyline.strokeColor;
+    polylineRenderer.lineWidth = polyline.lineWidth;
+    polylineRenderer.alpha = polyline.alpha;
+    return polylineRenderer;
+  } else {
+    return nil;
   }
 }
 
