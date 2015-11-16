@@ -795,8 +795,10 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   // Register shadow view
   RCTShadowView *shadowView = [componentData createShadowViewWithTag:reactTag];
-  [componentData setProps:props forShadowView:shadowView];
-  _shadowViewRegistry[reactTag] = shadowView;
+  if (shadowView) {
+    [componentData setProps:props forShadowView:shadowView];
+    _shadowViewRegistry[reactTag] = shadowView;
+  }
 
   // Shadow view is the source of truth for background color this is a little
   // bit counter-intuitive if people try to set background color when setting up
@@ -805,14 +807,16 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
 
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
     UIView *view = [componentData createViewWithTag:reactTag props:props];
-    if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
-      ((UIView *)view).backgroundColor = backgroundColor;
+    if (view) {
+      if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
+        ((UIView *)view).backgroundColor = backgroundColor;
+      }
+      [componentData setProps:props forView:view];
+      if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
+        [uiManager->_bridgeTransactionListeners addObject:view];
+      }
+      ((NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry)[reactTag] = view;
     }
-    [componentData setProps:props forView:view];
-    if ([view respondsToSelector:@selector(reactBridgeDidFinishTransaction)]) {
-      [uiManager->_bridgeTransactionListeners addObject:view];
-    }
-    ((NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry)[reactTag] = view;
   }];
 }
 
