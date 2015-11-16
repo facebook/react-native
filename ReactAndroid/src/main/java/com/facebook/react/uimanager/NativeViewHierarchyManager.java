@@ -393,12 +393,13 @@ import com.facebook.react.touch.JSResponderHandler;
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
       ViewGroup viewGroup = (ViewGroup) view;
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
-      for (int i = 0; i < viewGroupManager.getChildCount(viewGroup); i++) {
+      for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
         if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }
+      viewGroupManager.removeAllViews(viewGroup);
     }
     mTagsToViews.remove(view.getId());
     mTagsToViewManagers.remove(view.getId());

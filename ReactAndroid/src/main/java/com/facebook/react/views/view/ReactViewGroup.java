@@ -403,6 +403,16 @@ public class ReactViewGroup extends ViewGroup implements
     removeFromArray(index);
   }
 
+  /*package*/ void removeAllViewsWithSubviewClippingEnabled() {
+    Assertions.assertCondition(mRemoveClippedSubviews);
+    Assertions.assertNotNull(mAllChildren);
+    for (int i = 0; i < mAllChildrenCount; i++) {
+      mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+    }
+    removeAllViewsInLayout();
+    mAllChildrenCount = 0;
+  }
+
   private int indexOfChildInAllChildren(View child) {
     final int count = mAllChildrenCount;
     final View[] children = Assertions.assertNotNull(mAllChildren);
