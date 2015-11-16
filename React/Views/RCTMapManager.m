@@ -49,6 +49,7 @@ RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(annotations, RCTPointAnnotationArray)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onAnnotationDragChange, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
@@ -74,6 +75,27 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+- (void) mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState fromOldState:(MKAnnotationViewDragState)oldState
+{
+  if ([view.annotation isKindOfClass:[RCTPointAnnotation class]]) {
+    
+    RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+    
+    if (mapView.onAnnotationDragChange) {
+      mapView.onAnnotationDragChange(@{
+        @"state": @(newState),
+        @"annotation": @{
+          @"id": annotation.identifier,
+          @"title": annotation.title ?: @"",
+          @"subtitle": annotation.subtitle ?: @"",
+          @"latitude": @(annotation.coordinate.latitude),
+          @"longitude": @(annotation.coordinate.longitude)
+        }
+      });
+    }
+  }
+}
+
 - (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
 {
   if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
@@ -84,6 +106,7 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
   annotationView.canShowCallout = true;
   annotationView.animatesDrop = annotation.animateDrop;
+  annotationView.draggable = annotation.draggable;
 
   annotationView.leftCalloutAccessoryView = nil;
   if (annotation.hasLeftCallout) {
