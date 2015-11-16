@@ -443,6 +443,7 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     }
     scale = [self CGFloat:json[@"scale"]];
     isPackagerAsset = [self BOOL:json[@"__packager_asset"]];
+    NSString *renderingModeStr = [self NSString:json[@"renderingMode"]];
     if ([renderingModeStr isEqual: @"alwaysOriginal"]) {
       renderingMode = UIImageRenderingModeAlwaysOriginal;
     } else if ([renderingModeStr isEqual:@"alwaysTemplate"]) {
