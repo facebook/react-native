@@ -55,7 +55,7 @@
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
-    "babel-core": "^6.1.2",
+    "babel-core": "^6.1.20",
     "babel-plugin-external-helpers-2": "^6.1.4",
     "babel-plugin-syntax-async-functions": "^6.0.14",
     "babel-plugin-syntax-class-properties": "^6.0.14",
