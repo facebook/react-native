@@ -42,6 +42,11 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(canRecordVideos:(RCTResponseSenderBlock)callback)
 {
   NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
