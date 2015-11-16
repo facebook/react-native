@@ -53,7 +53,6 @@ There are properties that work on one platform only, either because they can inh
 
 There are known cases where the APIs could be made more consistent across iOS and Android:
 
-- `<SwitchAndroid>` and `<SwitchIOS>` are very similar and should be unified to a single `<Switch>` component.
 - `<AndroidViewPager>` (to be open sourced soon) and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
 - `alert()` needs Android support (once the Dialogs module is open sourced)
 - It might be possible to bring `LinkingIOS` and `IntentAndroid` (to be open sourced) closer together.
