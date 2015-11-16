@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -11,22 +12,18 @@
  */
 'use strict';
 
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var View = require('View');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+var invariant = require('invariant');
 var onlyChild = require('onlyChild');
 
 type Event = Object;
 
-/**
- * When the scroll view is disabled, this defines how far your touch may move
- * off of the button, before deactivating the button. Once deactivated, try
- * moving it back and you'll see that the button is once again reactivated!
- * Move it back and forth several times while the scroll view is disabled.
- */
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * Do not use unless you have a very good reason. All the elements that
@@ -71,6 +68,14 @@ var TouchableWithoutFeedback = React.createClass({
      * Delay in ms, from onPressIn, before onLongPress is called.
      */
     delayLongPress: React.PropTypes.number,
+    /**
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
   },
 
   getInitialState: function() {
@@ -105,8 +110,8 @@ var TouchableWithoutFeedback = React.createClass({
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
-  touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+  touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
   touchableGetHighlightDelayMS: function(): number {
