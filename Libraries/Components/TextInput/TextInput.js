@@ -414,7 +414,7 @@ var TextInput = React.createClass({
 
     var onSelectionChange;
     if (this.props.selectionState || this.props.onSelectionChange) {
-      onSelectionChange = function(event: Event) {
+      onSelectionChange = (event: Event) => {
         if (this.props.selectionState) {
           var selection = event.nativeEvent.selection;
           this.props.selectionState.update(selection.start, selection.end);
