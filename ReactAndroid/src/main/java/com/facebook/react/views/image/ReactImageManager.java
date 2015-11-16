@@ -92,6 +92,16 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
+  @ReactProp(name = "progressiveRenderingEnabled")
+  public void setProgressiveRenderingEnabled(ReactImageView view, boolean enabled) {
+    view.setProgressiveRenderingEnabled(enabled);
+  }
+
+  @ReactProp(name = "fadeDuration")
+  public void setFadeDuration(ReactImageView view, int durationMs) {
+    view.setFadeDuration(durationMs);
+  }
+
   @Override
   protected void onAfterUpdateTransaction(ReactImageView view) {
     super.onAfterUpdateTransaction(view);

@@ -45,7 +45,6 @@ import com.facebook.react.uimanager.PixelUtil;
 public class ReactImageView extends GenericDraweeView {
 
   private static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
-  public static final String TAG = ReactImageView.class.getSimpleName();
 
   /*
    * Implementation note re rounded corners:
@@ -107,7 +106,8 @@ public class ReactImageView extends GenericDraweeView {
   private final RoundedCornerPostprocessor mRoundedCornerPostprocessor;
   private final @Nullable Object mCallerContext;
   private @Nullable ControllerListener mControllerListener;
-  private int mImageFadeDuration = -1;
+  private int mFadeDurationMs = -1;
+  private boolean mProgressiveRenderingEnabled;
 
   // We can't specify rounding in XML, so have to do so here
   private static GenericDraweeHierarchy buildHierarchy(Context context) {
@@ -169,6 +169,16 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
+  public void setProgressiveRenderingEnabled(boolean enabled) {
+    mProgressiveRenderingEnabled = enabled;
+    // no worth marking as dirty if it already rendered..
+  }
+
+  public void setFadeDuration(int durationMs) {
+    mFadeDurationMs = durationMs;
+    // no worth marking as dirty if it already rendered..
+  }
+
   public void maybeUpdateView() {
     if (!mIsDirty) {
       return;
@@ -192,8 +202,9 @@ public class ReactImageView extends GenericDraweeView {
     roundingParams.setCornersRadius(hierarchyRadius);
     roundingParams.setBorder(mBorderColor, mBorderWidth);
     hierarchy.setRoundingParams(roundingParams);
-    hierarchy.setFadeDuration(mImageFadeDuration >= 0
-            ? mImageFadeDuration
+    hierarchy.setFadeDuration(
+        mFadeDurationMs >= 0
+            ? mFadeDurationMs
             : mIsLocalImage ? 0 : REMOTE_IMAGE_FADE_DURATION_MS);
 
     Postprocessor postprocessor = usePostprocessorScaling ? mRoundedCornerPostprocessor : null;
@@ -203,6 +214,7 @@ public class ReactImageView extends GenericDraweeView {
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
         .setPostprocessor(postprocessor)
         .setResizeOptions(resizeOptions)
+        .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 
     DraweeController draweeController = mDraweeControllerBuilder
@@ -220,13 +232,6 @@ public class ReactImageView extends GenericDraweeView {
   // VisibleForTesting
   public void setControllerListener(ControllerListener controllerListener) {
     mControllerListener = controllerListener;
-    mIsDirty = true;
-    maybeUpdateView();
-  }
-
-  // VisibleForTesting
-  public void setImageFadeDuration(int imageFadeDuration) {
-    mImageFadeDuration = imageFadeDuration;
     mIsDirty = true;
     maybeUpdateView();
   }
