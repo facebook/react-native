@@ -227,6 +227,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
 
       static BOOL isProfiling = NO;
+
+      if (isProfiling) {
+        nativeProfilerStart(context, "profile");
+      }
+
       [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
 
         if (shouldStart == isProfiling) {
