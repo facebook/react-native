@@ -122,16 +122,7 @@ public class ReactShadowNode extends CSSNode {
     int increase = node.mIsLayoutOnly ? node.mTotalNativeChildren : 1;
     mTotalNativeChildren += increase;
 
-    if (mIsLayoutOnly) {
-      ReactShadowNode parent = getParent();
-      while (parent != null) {
-        parent.mTotalNativeChildren += increase;
-        if (!parent.mIsLayoutOnly) {
-          break;
-        }
-        parent = parent.getParent();
-      }
-    }
+    updateNativeChildrenCountInParent(increase);
   }
 
   @Override
@@ -141,17 +132,31 @@ public class ReactShadowNode extends CSSNode {
 
     int decrease = removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
     mTotalNativeChildren -= decrease;
+    updateNativeChildrenCountInParent(-decrease);
+    return removed;
+  }
+
+  public void removeAllChildren() {
+    for (int i = getChildCount() - 1; i >= 0; i--) {
+      super.removeChildAt(i);
+    }
+    markUpdated();
+
+    updateNativeChildrenCountInParent(-mTotalNativeChildren);
+    mTotalNativeChildren = 0;
+  }
+
+  private void updateNativeChildrenCountInParent(int delta) {
     if (mIsLayoutOnly) {
       ReactShadowNode parent = getParent();
       while (parent != null) {
-        parent.mTotalNativeChildren -= decrease;
+        parent.mTotalNativeChildren -= delta;
         if (!parent.mIsLayoutOnly) {
           break;
         }
         parent = parent.getParent();
       }
     }
-    return removed;
   }
 
   /**

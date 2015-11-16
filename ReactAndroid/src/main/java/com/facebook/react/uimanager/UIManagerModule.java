@@ -406,9 +406,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private void removeCSSNode(int tag) {
     ReactShadowNode node = mShadowNodeRegistry.getNode(tag);
     mShadowNodeRegistry.removeNode(tag);
-    for (int i = 0;i < node.getChildCount(); i++) {
+    for (int i = node.getChildCount() - 1; i >= 0; i--) {
       removeCSSNode(node.getChildAt(i).getReactTag());
     }
+    node.removeAllChildren();
   }
 
   /**
