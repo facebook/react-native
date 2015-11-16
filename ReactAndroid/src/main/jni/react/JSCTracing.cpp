@@ -42,6 +42,7 @@ static size_t copyTruncatedAsciiChars(
   // rather than the beginning.
   size_t toWrite = min(stringLen, min(bufLen, maxLen));
 
+  const char *startBuf = buf;
   const JSChar* chars = JSStringGetCharactersPtr(jsString);
   while (toWrite-- > 0) {
     *(buf++) = (char)*(chars++);
@@ -49,8 +50,8 @@ static size_t copyTruncatedAsciiChars(
 
   JSStringRelease(jsString);
 
-  // Return the full length to match snprintf semantics.
-  return stringLen;
+  // Return the number of bytes written
+  return buf - startBuf;
 }
 
 static size_t copyArgsToBuffer(
