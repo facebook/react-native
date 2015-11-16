@@ -13,13 +13,7 @@ As React Native on iOS requires a Mac and most of the engineers at Facebook and 
 
 Therefore, Linux and Windows support for the development environment is an ongoing community responsibility. This can mean filing issues and submitting PRs, and we'll help review and merge them. We are looking forward to your contributions and appreciate your patience.
 
-As of **version 0.13** (currently in rc) Android development with React native is mostly possible on Linux and Windows. You'll need to install [Node.js](https://nodejs.org/) 4.0 or newer. On Linux we recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
-
-## What's missing on Linux
-
-The basic Android development workflow should be working.
-
-Opening the Chrome debugger when you select Menu -> Debug JS is not supported yet. There is the [PR #3394](https://github.com/facebook/react-native/pull/3394) for this (merged in 0.14.0-rc).
+As of **version 0.14** Android development with React native is mostly possible on Linux and Windows. You'll need to install [Node.js](https://nodejs.org/) 4.0 or newer. On Linux we recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
 
 ## What's missing on Windows
 
@@ -27,5 +21,3 @@ On Windows the packager won't be started automatically when you run `react-nativ
     
     cd MyAwesomeApp
     node node_modules/react-native/packager/packager.js
-
-Opening the Chrome debugger when you select Menu -> Debug JS is not supported yet. There is the [PR #3394](https://github.com/facebook/react-native/pull/3394) for this (merged in 0.14.0-rc).
