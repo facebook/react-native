@@ -183,18 +183,18 @@ RCT_EXPORT_MODULE()
   }
 
   __block volatile uint32_t cancelled = 0;
-  RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *image) {
+  RCTImageLoaderCompletionBlock completionHandler = ^(NSError *error, UIImage *image, NSValue *dimensions) {
     if ([NSThread isMainThread]) {
 
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (!cancelled) {
-          completionBlock(error, image);
+          completionBlock(error, image, dimensions);
         }
       });
     } else if (!cancelled) {
-      completionBlock(error, image);
+      completionBlock(error, image, dimensions);
     }
   };
 
@@ -241,7 +241,7 @@ RCT_EXPORT_MODULE()
         if (statusCode != 200) {
           completionHandler([[NSError alloc] initWithDomain:NSURLErrorDomain
                                                        code:statusCode
-                                                   userInfo:nil], nil);
+                                                   userInfo:nil], nil, nil);
           return;
         }
       }
@@ -273,7 +273,7 @@ RCT_EXPORT_MODULE()
     RCTNetworkTask *task = [_bridge.networking networkTaskWithRequest:request completionBlock:
                             ^(NSURLResponse *response, NSData *data, NSError *error) {
       if (error) {
-        completionHandler(error, nil);
+        completionHandler(error, nil, nil);
         return;
       }
 
@@ -330,12 +330,13 @@ RCT_EXPORT_MODULE()
         return;
       }
       UIImage *image = [UIImage imageWithData:data scale:scale];
+      NSValue *intrinsicSize = [NSValue valueWithCGSize:image.size];
       if (image) {
-        completionHandler(nil, image);
+        completionHandler(nil, image, intrinsicSize);
       } else {
         NSString *errorMessage = [NSString stringWithFormat:@"Error decoding image data <NSData %p; %tu bytes>", data, data.length];
         NSError *finalError = RCTErrorWithMessage(errorMessage);
-        completionHandler(finalError, nil);
+        completionHandler(finalError, nil, nil);
       }
     });
 
@@ -362,7 +363,7 @@ RCT_EXPORT_MODULE()
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   __block RCTImageLoaderCancellationBlock requestToken;
-  requestToken = [self loadImageWithTag:request.URL.absoluteString callback:^(NSError *error, UIImage *image) {
+  requestToken = [self loadImageWithTag:request.URL.absoluteString callback:^(NSError *error, UIImage *image, NSValue *dimensions) {
     if (error) {
       [delegate URLRequest:requestToken didCompleteWithError:error];
       return;

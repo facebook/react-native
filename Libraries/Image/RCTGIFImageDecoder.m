@@ -104,7 +104,7 @@ RCT_EXPORT_MODULE()
     CFRelease(imageSource);
   }
 
-  completionHandler(nil, image);
+  completionHandler(nil, image, nil);
   return ^{};
 }
 

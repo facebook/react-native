@@ -127,7 +127,8 @@ var Image = React.createClass({
      */
     onError: PropTypes.func,
     /**
-     * Invoked when load completes successfully
+     * Invoked when load completes successfully. Network images
+     * will return with `{nativeEvent: {size}}`.
      * @platform ios
      */
     onLoad: PropTypes.func,

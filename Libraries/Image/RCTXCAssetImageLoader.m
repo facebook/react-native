@@ -41,10 +41,10 @@ RCT_EXPORT_MODULE()
       if (progressHandler) {
         progressHandler(1, 1);
       }
-      completionHandler(nil, image);
+      completionHandler(nil, image, nil);
     } else {
       NSString *message = [NSString stringWithFormat:@"Could not find image named %@", imageName];
-      completionHandler(RCTErrorWithMessage(message), nil);
+      completionHandler(RCTErrorWithMessage(message), nil, nil);
     }
   });
 

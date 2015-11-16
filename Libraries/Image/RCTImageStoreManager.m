@@ -109,11 +109,11 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   NSString *imageTag = imageURL.absoluteString;
   [self getImageForTag:imageTag withBlock:^(UIImage *image) {
     if (image) {
-      completionHandler(nil, image);
+      completionHandler(nil, image, nil);
     } else {
       NSString *errorMessage = [NSString stringWithFormat:@"Unable to load image from image store: %@", imageTag];
       NSError *error = RCTErrorWithMessage(errorMessage);
-      completionHandler(error, nil);
+      completionHandler(error, nil, nil);
     }
   }];
 
