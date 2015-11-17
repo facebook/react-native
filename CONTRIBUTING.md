@@ -75,6 +75,11 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 * *Try* to keep it around 80 characters line length (sometimes it's just not possible...)
 * `*` operator goes with the variable name (e.g. `NSObject *variableName;`)
 
+#### Java
+
+* In method calls spanning multiple lines, closing bracket is on the same line as the last argument.
+* 100 character line length
+
 ### Documentation
 
 * Do not wrap lines at 80 characters - configure your editor to soft-wrap when editing documentation.
