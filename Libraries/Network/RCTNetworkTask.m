@@ -61,8 +61,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)cancel
 {
-  if ([_handler respondsToSelector:@selector(cancelRequest:)]) {
-    [_handler cancelRequest:_requestToken];
+  __strong id strongToken = _requestToken;
+  if (strongToken && [_handler respondsToSelector:@selector(cancelRequest:)]) {
+    [_handler cancelRequest:strongToken];
   }
   [self invalidate];
 }
