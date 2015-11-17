@@ -80,6 +80,12 @@ typedef void (^RCTFatalHandler)(NSError *error);
   @"This function must be called on the main thread")
 
 /**
+ * Convenience macro for asserting that we're running off the main thread.
+ */
+#define RCTAssertNotMainThread() RCTAssert(![NSThread isMainThread], \
+@"This function must not be called on the main thread")
+
+/**
  * These methods get and set the current assert function called by the RCTAssert
  * macros. You can use these to replace the standard behavior with custom assert
  * functionality.
