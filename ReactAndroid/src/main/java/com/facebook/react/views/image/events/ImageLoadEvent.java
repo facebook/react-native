@@ -64,6 +64,8 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
 
   @Override
   public short getCoalescingKey() {
+    // Intentionally casting mEventType because it is guaranteed to be small
+    // enough to fit into short.
     return (short)mEventType;
   }
 
