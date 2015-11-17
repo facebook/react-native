@@ -106,7 +106,14 @@ class Bundle {
     options = options || {};
 
     if (options.minify) {
-      return this.getMinifiedSourceAndMap().code;
+      let minifiedSourceAndMap = this.getMinifiedSourceAndMap();
+      var minifiedSource = minifiedSourceAndMap.code;
+      if (options.inlineSourceMap) {
+        const encoded = new Buffer(minifiedSourceAndMap.map).toString('base64');
+        const inlineSourceMap = 'data:application/json;base64,' + encoded;
+        minifiedSource += SOURCEMAPPING_URL + inlineSourceMap;
+      }
+      return minifiedSource;
     }
 
     let source = this._getSource();
