@@ -57,3 +57,12 @@ RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
                                            CGSize destSize,
                                            CGFloat destScale,
                                            UIViewContentMode resizeMode);
+
+/**
+ * Convert an image back into data. Images with an alpha channel will be
+ * converted to lossless PNG data. Images without alpha will be converted to
+ * JPEG. The `quality` argument controls the compression ratio of the JPEG
+ * conversion, with 1.0 being maximum quality. It has no effect for images
+ * using PNG compression.
+ */
+RCT_EXTERN NSData *RCTGetImageData(CGImageRef image, float quality);

@@ -10,9 +10,11 @@
 #import "RCTImageUtils.h"
 
 #import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/UTCoreTypes.h>
 #import <tgmath.h>
 
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 static CGFloat RCTCeilValue(CGFloat value, CGFloat scale)
 {
@@ -197,7 +199,7 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
   }
 }
 
-RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
+CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
 {
   return (CGSize){
     ceil(pointSize.width * scale),
@@ -205,10 +207,10 @@ RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
   };
 }
 
-RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
-                                           CGSize destSize,
-                                           CGFloat destScale,
-                                           UIViewContentMode resizeMode)
+UIImage *RCTDecodeImageWithData(NSData *data,
+                                CGSize destSize,
+                                CGFloat destScale,
+                                UIViewContentMode resizeMode)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
   if (!sourceRef) {
@@ -251,14 +253,36 @@ RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
     return nil;
   }
 
-  //adjust scale
+  // adjust scale
   size_t actualWidth = CGImageGetWidth(imageRef);
   CGFloat scale = actualWidth / targetSize.width;
-
   // return image
   UIImage *image = [UIImage imageWithCGImage:imageRef
                                        scale:scale
                                  orientation:UIImageOrientationUp];
   CGImageRelease(imageRef);
   return image;
+}
+
+NSData *RCTGetImageData(CGImageRef image, float quality)
+{
+  NSDictionary *properties;
+  CGImageDestinationRef destination;
+  CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
+  if (RCTImageHasAlpha(image)) {
+    // get png data
+    destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
+  } else {
+    // get jpeg data
+    destination = CGImageDestinationCreateWithData(imageData, kUTTypeJPEG, 1, NULL);
+    properties = @{(NSString *)kCGImageDestinationLossyCompressionQuality: @(quality)};
+  }
+  CGImageDestinationAddImage(destination, image, (__bridge CFDictionaryRef)properties);
+  if (!CGImageDestinationFinalize(destination))
+  {
+    CFRelease(imageData);
+    imageData = NULL;
+  }
+  CFRelease(destination);
+  return (__bridge_transfer NSData *)imageData;
 }
