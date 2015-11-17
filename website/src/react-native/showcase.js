@@ -305,6 +305,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'WOOP',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
+    author: 'Moritz Schwörer (@mosch)',
+  },
+  {
     name: 'WPV',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/f1/ae/51/f1ae516b-d8e9-1b6d-acfe-755623a88327/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
