@@ -15,7 +15,8 @@ const Promise = require('promise');
 const GENERIC_PLATFORM = 'generic';
 
 class HasteMap {
-  constructor({ fastfs, moduleCache, helpers }) {
+  constructor({ extensions, fastfs, moduleCache, helpers }) {
+    this._extensions = extensions;
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._helpers = helpers;
@@ -24,7 +25,7 @@ class HasteMap {
   build() {
     this._map = Object.create(null);
 
-    let promises = this._fastfs.findFilesByExt('js', {
+    let promises = this._fastfs.findFilesByExts(this._extensions, {
       ignore: (file) => this._helpers.isNodeModulesDir(file),
     }).map(file => this._processHasteModule(file));
 
@@ -57,8 +58,7 @@ class HasteMap {
         }
       }
 
-      if (this._helpers.extname(absPath) === 'js' ||
-          this._helpers.extname(absPath) === 'json') {
+      if (this._extensions.indexOf(this._helpers.extname(absPath)) !== -1) {
         if (path.basename(absPath) === 'package.json') {
           return this._processHastePackage(absPath);
         } else {
