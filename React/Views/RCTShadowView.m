@@ -494,19 +494,23 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 // Dimensions
 
-#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp) \
-- (void)set##setProp:(CGFloat)value                        \
-{                                                          \
-  _cssNode->style.dimensions[CSS_##cssProp] = value;       \
-  [self dirtyLayout];                                      \
-}                                                          \
-- (CGFloat)getProp                                         \
-{                                                          \
-  return _cssNode->style.dimensions[CSS_##cssProp];        \
+#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp, dimensions) \
+- (void)set##setProp:(CGFloat)value                                    \
+{                                                                      \
+  _cssNode->style.dimensions[CSS_##cssProp] = value;                   \
+  [self dirtyLayout];                                                  \
+}                                                                      \
+- (CGFloat)getProp                                                     \
+{                                                                      \
+  return _cssNode->style.dimensions[CSS_##cssProp];                    \
 }
 
-RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH)
-RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT)
+RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH, dimensions)
+RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT, dimensions)
+RCT_DIMENSIONS_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
+RCT_DIMENSIONS_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
+RCT_DIMENSIONS_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
+RCT_DIMENSIONS_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 
