@@ -103,4 +103,13 @@ describe('dead-module-elimination', () => {
       require('bar');`
     );
   });
+
+  it('should replace falsy ternaries with alternate expression', () => {
+    compare(
+      `__DEV__ = false;
+      __DEV__ ? foo() : bar();
+      `,
+      `bar();`
+    );
+  });
 });

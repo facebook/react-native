@@ -33,6 +33,28 @@ function CallExpression(path) {
   }
 }
 
+function IfStatement(path) {
+    const { node } = path;
+
+    if (node.test.type === 'Identifier' && node.test.name in globals) {
+      if (globals[node.test.name]) {
+        if (node.consequent.type === 'BlockStatement') {
+          path.replaceWithMultiple(node.consequent.body);
+        } else {
+          path.replaceWith(node.consequent);
+        }
+      } else if (node.alternate) {
+        if (node.alternate.type === 'BlockStatement') {
+          path.replaceWithMultiple(node.alternate.body);
+        } else {
+          path.replaceWith(node.alternate);
+        }
+      } else {
+        path.remove();
+      }
+    }
+  }
+
 module.exports = function () {
   var firstPass = {
     AssignmentExpression(path) {
@@ -60,19 +82,8 @@ module.exports = function () {
         //scope.removeBinding(node.left.name);
       }
     },
-    IfStatement(path) {
-      const { node } = path;
-
-      if (node.test.type === 'Identifier' && node.test.name in globals) {
-        if (globals[node.test.name]) {
-          path.replaceWithMultiple(node.consequent.body);
-        } else if (node.alternate) {
-          path.replaceWithMultiple(node.alternate.body);
-        } else {
-          path.remove();
-        }
-      }
-    },
+    IfStatement,
+    ConditionalExpression: IfStatement,
     Identifier(path) {
       const { node } = path;
 
