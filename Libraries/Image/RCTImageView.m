@@ -183,24 +183,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                                                resizeMode:self.contentMode
                                                             progressBlock:progressHandler
                                                           completionBlock:^(NSError *error, UIImage *image) {
+      if (error) {
+        if (_onError) {
+          _onError(@{ @"error": error.localizedDescription });
+        }
+      } else {
+        if (_onLoad) {
+          _onLoad(nil);
+        }
+      }
+      if (_onLoadEnd) {
+         _onLoadEnd(nil);
+      }
+
       dispatch_async(dispatch_get_main_queue(), ^{
         if (image.reactKeyframeAnimation) {
           [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
         } else {
           [self.layer removeAnimationForKey:@"contents"];
           self.image = image;
-        }
-        if (error) {
-          if (_onError) {
-            _onError(@{ @"error": error.localizedDescription });
-          }
-        } else {
-          if (_onLoad) {
-            _onLoad(nil);
-          }
-        }
-        if (_onLoadEnd) {
-           _onLoadEnd(nil);
         }
       });
     }];
