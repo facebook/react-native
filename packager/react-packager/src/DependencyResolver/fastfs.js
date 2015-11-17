@@ -79,26 +79,30 @@ class Fastfs extends EventEmitter {
     return [].concat(...this._roots.map(root => root.getFiles()));
   }
 
-  findFilesByExt(ext, { ignore }) {
+  findFilesByExt(ext, { ignore } = {}) {
+    return this.findFilesByExts([ext], {ignore});
+  }
+
+  findFilesByExts(exts, { ignore } = {}) {
     return this.getAllFiles()
-      .filter(
-        file => file.ext() === ext && (!ignore || !ignore(file.path))
-      )
+      .filter(file => (
+        exts.indexOf(file.ext()) !== -1 && (!ignore || !ignore(file.path))
+      ))
       .map(file => file.path);
   }
 
-  findFilesByExts(exts) {
-    return this.getAllFiles()
-      .filter(file => exts.indexOf(file.ext()) !== -1)
-      .map(file => file.path);
-  }
-
-  findFilesByName(name, { ignore }) {
+  findFilesByName(name, { ignore } = {}) {
     return this.getAllFiles()
       .filter(
         file => path.basename(file.path) === name &&
           (!ignore || !ignore(file.path))
       )
+      .map(file => file.path);
+  }
+
+  matchFilesByPattern(pattern) {
+    return this.getAllFiles()
+      .filter(file => file.path.match(pattern))
       .map(file => file.path);
   }
 

@@ -10,7 +10,8 @@
 
 jest.dontMock('../')
   .dontMock('underscore')
-  .dontMock('../../DependencyResolver/replacePatterns');
+  .dontMock('../../DependencyResolver/lib/extractRequires')
+  .dontMock('../../DependencyResolver/lib/replacePatterns');
 
 jest.mock('path');
 

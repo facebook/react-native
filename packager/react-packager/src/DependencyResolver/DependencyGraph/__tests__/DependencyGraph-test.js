@@ -3676,4 +3676,184 @@ describe('DependencyGraph', function() {
         });
     });
   });
+
+  describe('Extensions', () => {
+    pit('supports custom file extensions', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.jsx': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("a")',
+          ].join('\n'),
+          'a.coffee': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+          ].join('\n'),
+          'X.js': '',
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+        extensions: ['jsx', 'coffee'],
+      });
+
+      return dgraph.matchFilesByPattern('.*')
+        .then(files => {
+          expect(files).toEqual([
+            '/root/index.jsx', '/root/a.coffee',
+          ]);
+        })
+        .then(() => getOrderedDependenciesAsJSON(dgraph, '/root/index.jsx'))
+        .then(deps => {
+          expect(deps).toEqual([
+            {
+              dependencies: ['a'],
+              id: 'index',
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              path: '/root/index.jsx',
+              resolution: undefined,
+            },
+            {
+              dependencies: [],
+              id: 'a',
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              path: '/root/a.coffee',
+              resolution: undefined,
+            },
+          ]);
+        });
+    });
+  });
+
+  describe('Mocks', () => {
+    pit('resolves to null if mocksPattern is not specified', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          '__mocks': {
+            'A.js': '',
+          },
+          'index.js': '',
+        },
+      });
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+
+      return dgraph.getDependencies('/root/index.js')
+        .then(response => response.finalize())
+        .then(response => {
+          expect(response.mocks).toBe(null);
+        });
+    });
+
+    pit('retrieves a list of all mocks in the system', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          '__mocks__': {
+            'A.js': '',
+            'b.js': '',
+          },
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
+          ].join('\n'),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+        mocksPattern: /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/,
+      });
+
+      return dgraph.getDependencies('/root/b.js')
+        .then(response => response.finalize())
+        .then(response => {
+          expect(response.mocks).toEqual({
+            A: '/root/__mocks__/A.js',
+            b: '/root/__mocks__/b.js',
+          });
+        });
+    });
+
+    pit('adds mocks as a dependency of their actual module', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          '__mocks__': {
+            'A.js': [
+              'require("b");',
+            ].join('\n'),
+            'b.js': '',
+          },
+          'A.js': [
+            '/**',
+            ' * @providesModule A',
+            ' */',
+            'require("foo");',
+          ].join('\n'),
+          'foo.js': [
+            '/**',
+            ' * @providesModule foo',
+            ' */',
+          ].join('\n'),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+        mocksPattern: /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/,
+      });
+
+      return getOrderedDependenciesAsJSON(dgraph, '/root/A.js')
+        .then(deps => {
+          expect(deps).toEqual([
+            {
+              path: '/root/A.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: 'A',
+              dependencies: ['foo', 'A'],
+            },
+            {
+              path: '/root/foo.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: 'foo',
+              dependencies: [],
+            },
+            {
+              path: '/root/__mocks__/A.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: '/root/__mocks__/A.js',
+              dependencies: ['b'],
+            },
+          ]);
+        });
+    });
+  });
 });

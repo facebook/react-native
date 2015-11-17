@@ -11,18 +11,19 @@
 jest
   .dontMock('absolute-path')
   .dontMock('../fastfs')
-  .dontMock('../replacePatterns')
+  .dontMock('../lib/extractRequires')
+  .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
   .dontMock('../Module');
 
 jest
   .mock('fs');
 
-var Fastfs = require('../fastfs');
-var Module = require('../Module');
-var ModuleCache = require('../ModuleCache');
-var Promise = require('promise');
-var fs = require('fs');
+const Fastfs = require('../fastfs');
+const Module = require('../Module');
+const ModuleCache = require('../ModuleCache');
+const Promise = require('promise');
+const fs = require('fs');
 
 describe('Module', () => {
   const fileWatcher = {
@@ -30,17 +31,31 @@ describe('Module', () => {
     isWatchman: () => Promise.resolve(false),
   };
 
+  const Cache = jest.genMockFn();
+  Cache.prototype.get = jest.genMockFn().mockImplementation(
+    (filepath, field, cb) => cb(filepath)
+  );
+  Cache.prototype.invalidate = jest.genMockFn();
+  Cache.prototype.end = jest.genMockFn();
+
+
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
-      var fastfs = new Fastfs(
+      const fastfs = new Fastfs(
         'test',
         ['/root'],
         fileWatcher,
         {crawling: Promise.resolve(['/root/index.js']), ignore: []},
       );
+      const cache = new Cache();
 
       return fastfs.build().then(() => {
-        var module = new Module('/root/index.js', fastfs, new ModuleCache(fastfs));
+        const module = new Module(
+          '/root/index.js',
+          fastfs,
+          new ModuleCache(fastfs, cache),
+          cache
+        );
 
         return module.getAsyncDependencies().then(actual =>
           expect(actual).toEqual(expected)
@@ -92,6 +107,45 @@ describe('Module', () => {
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
+    });
+  });
+
+  describe('Extrators', () => {
+
+    function createModuleWithExtractor(extractor) {
+      const fastfs = new Fastfs(
+        'test',
+        ['/root'],
+        fileWatcher,
+        {crawling: Promise.resolve(['/root/index.js']), ignore: []},
+      );
+      const cache = new Cache();
+
+      return fastfs.build().then(() => {
+        return new Module(
+          '/root/index.js',
+          fastfs,
+          new ModuleCache(fastfs, cache),
+          cache,
+          extractor
+        );
+      });
+    }
+
+    pit('uses custom require extractors if specified', () => {
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': '',
+        },
+      });
+
+      return createModuleWithExtractor(
+        code => ({deps: {sync: ['foo', 'bar']}})
+      ).then(module =>
+        module.getDependencies().then(actual =>
+          expect(actual).toEqual(['foo', 'bar'])
+        )
+      );
     });
   });
 });
