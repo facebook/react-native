@@ -38,6 +38,9 @@ class DependencyGraph {
     providesModuleNodeModules,
     platforms,
     cache,
+    extensions,
+    mocksPattern,
+    extractRequires,
   }) {
     this._opts = {
       activity: activity || defaultActivity,
@@ -49,6 +52,9 @@ class DependencyGraph {
       providesModuleNodeModules,
       platforms: platforms || [],
       cache,
+      extensions: extensions || ['js', 'json'],
+      mocksPattern,
+      extractRequires,
     };
     this._cache = this._opts.cache;
     this._helpers = new Helpers(this._opts);
@@ -70,7 +76,7 @@ class DependencyGraph {
     const allRoots = this._opts.roots.concat(this._opts.assetRoots_DEPRECATED);
     this._crawling = crawl(allRoots, {
       ignore: this._opts.ignoreFilePath,
-      exts: ['js', 'json'].concat(this._opts.assetExts),
+      exts: this._opts.extensions.concat(this._opts.assetExts),
       fileWatcher: this._opts.fileWatcher,
     });
     this._crawling.then((files) => activity.endEvent(crawlActivity));
@@ -88,10 +94,15 @@ class DependencyGraph {
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
-    this._moduleCache = new ModuleCache(this._fastfs, this._cache);
+    this._moduleCache = new ModuleCache(
+      this._fastfs,
+      this._cache,
+      this._opts.extractRequires
+    );
 
     this._hasteMap = new HasteMap({
       fastfs: this._fastfs,
+      extensions: this._opts.extensions,
       moduleCache: this._moduleCache,
       assetExts: this._opts.exts,
       helpers: this._helpers,
@@ -138,10 +149,14 @@ class DependencyGraph {
       const response = new ResolutionResponse();
 
       return Promise.all([
-        req.getOrderedDependencies(response),
+        req.getOrderedDependencies(response, this._opts.mocksPattern),
         req.getAsyncDependencies(response),
       ]).then(() => response);
     });
+  }
+
+  matchFilesByPattern(pattern) {
+    return this.load().then(() => this._fastfs.matchFilesByPattern(pattern));
   }
 
   _getRequestPlatform(entryPath, platform) {
@@ -208,6 +223,7 @@ class DependencyGraph {
       return this._loading;
     });
   }
+
 }
 
 function NotFoundError() {
