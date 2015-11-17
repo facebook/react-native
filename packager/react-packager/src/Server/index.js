@@ -240,6 +240,7 @@ class Server {
           p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           return p;
         });
@@ -366,6 +367,7 @@ class Server {
           var bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
           res.end(bundleSource);
@@ -373,6 +375,7 @@ class Server {
         } else if (requestType === 'map') {
           var sourceMap = p.getSourceMap({
             minify: options.minify,
+            dev: options.dev,
           });
 
           if (typeof sourceMap !== 'string') {
