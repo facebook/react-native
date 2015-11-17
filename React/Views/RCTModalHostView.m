@@ -18,7 +18,7 @@
 
 @implementation RCTModalHostView
 {
-  RCTBridge *_bridge;
+  __weak RCTBridge *_bridge;
   BOOL _isPresented;
   RCTModalHostViewController *_modalViewController;
   RCTTouchHandler *_touchHandler;
