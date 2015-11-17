@@ -383,10 +383,11 @@ public class UIViewOperationQueue {
       final float containerX = (float) mMeasureBuffer[0];
       final float containerY = (float) mMeasureBuffer[1];
 
-      final int touchTargetReactTag = mNativeViewHierarchyManager.findTargetTagForTouch(
-          mReactTag,
-          mTargetX,
-          mTargetY);
+      final int touchTargetReactTag = mUIManagerModule.getNonVirtualParent(
+          mNativeViewHierarchyManager.findTargetTagForTouch(
+            mReactTag,
+            mTargetX,
+            mTargetY));
 
       try {
         mNativeViewHierarchyManager.measure(

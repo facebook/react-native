@@ -835,4 +835,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
   }
 
+  /**
+   * Get the first non-virtual (i.e. native) parent view tag of the react view with the passed tag.
+   * If the passed tag represents a non-virtual view, the same tag is returned. If the passed tag
+   * doesn't map to a react view, or a non-virtual parent cannot be found, -1 is returned.
+   */
+  /* package */ int getNonVirtualParent(int reactTag) {
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    while (node != null && node.isVirtual()) {
+      node = node.getParent();
+    }
+    return node == null ? -1 : node.getReactTag();
+  }
+
 }
