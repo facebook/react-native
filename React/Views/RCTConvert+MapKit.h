@@ -10,6 +10,7 @@
 #import <MapKit/MapKit.h>
 
 #import "RCTPointAnnotation.h"
+#import "RCTPolyline.h"
 #import "RCTConvert.h"
 
 @interface RCTConvert (MapKit)
@@ -19,11 +20,15 @@
 + (MKShape *)MKShape:(id)json;
 + (MKMapType)MKMapType:(id)json;
 + (RCTPointAnnotation *)RCTPointAnnotation:(id)json;
++ (RCTPolyline *)RCTPolyline:(id)json;
 
 typedef NSArray MKShapeArray;
 + (MKShapeArray *)MKShapeArray:(id)json;
 
 typedef NSArray RCTPointAnnotationArray;
 + (RCTPointAnnotationArray *)RCTPointAnnotationArray:(id)json;
+
+typedef NSArray RCTPolylineArray;
++ (RCTPolylineArray *)RCTPolylineArray:(id)json;
 
 @end

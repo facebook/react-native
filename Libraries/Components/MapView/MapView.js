@@ -192,6 +192,32 @@ var MapView = React.createClass({
     })),
 
     /**
+     * Map polylines
+     */
+    polylines: React.PropTypes.arrayOf(React.PropTypes.shape({
+      /**
+       * Coordinates of polyline
+       */
+
+      locations: React.PropTypes.arrayOf(React.PropTypes.shape({
+        lat: React.PropTypes.number.isRequired,
+        lon: React.PropTypes.number.isRequired
+      })),
+
+      /**
+       * Polyline presentation attributes
+       */
+      alpha: React.PropTypes.number,
+      lineWidth: React.PropTypes.number,
+      strokeColor: React.PropTypes.string,
+
+      /**
+       * Polyline id
+       */
+      id: React.PropTypes.string
+    })),
+
+    /**
      * Maximum size of area that can be displayed.
      */
     maxDelta: React.PropTypes.number,

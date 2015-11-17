@@ -98,6 +98,19 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   return annotationView;
 }
 
+- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView rendererForOverlay:(id)overlay {
+  if ([overlay isKindOfClass:[RCTPolyline class]]) {
+    RCTPolyline *polyline = overlay;
+    MKPolylineRenderer *polylineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:polyline];
+    polylineRenderer.strokeColor = polyline.strokeColor;
+    polylineRenderer.lineWidth = polyline.lineWidth;
+    polylineRenderer.alpha = polyline.alpha;
+    return polylineRenderer;
+  } else {
+    return nil;
+  }
+}
+
 - (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
   if (mapView.onPress) {

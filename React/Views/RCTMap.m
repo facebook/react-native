@@ -11,6 +11,7 @@
 
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTPolyline.h"
 #import "RCTUtils.h"
 
 const CLLocationDegrees RCTMapDefaultSpan = 0.005;
@@ -153,6 +154,47 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
     [newIds addObject:annotation.identifier];
   }
   self.annotationIds = newIds;
+}
+
+- (void)setPolylines:(RCTPolylineArray *)polylines
+{
+  NSMutableArray *newPolylineIds = [NSMutableArray new];
+  NSMutableArray *polylinesToDelete = [NSMutableArray new];
+  NSMutableArray *polylinesToAdd = [NSMutableArray new];
+
+  for (RCTPolyline* polyline in polylines) {
+    if (![polyline isKindOfClass:[RCTPolyline class]]) {
+      continue;
+    }
+
+    [newPolylineIds addObject:polyline.identifier];
+
+    // If the current set does not contain the new annotation, mark it as add
+    if (![self.annotationIds containsObject:polyline.identifier]) {
+      [polylinesToAdd addObject:polyline];
+    }
+  }
+
+  for (RCTPolyline *polyline in self.overlays) {
+    if (![polyline isKindOfClass:[RCTPolyline class]]) {
+      continue;
+    }
+
+    // If the new set does not contain an existing annotation, mark it as delete
+    if (![newPolylineIds containsObject:polyline.identifier]) {
+      [polylinesToDelete addObject:polyline];
+    }
+  }
+
+  if (polylinesToDelete.count) {
+    [self removeOverlays: polylinesToDelete];
+  }
+
+  if (polylinesToAdd.count) {
+    [self addOverlays: polylinesToAdd];
+  }
+
+  self.polylineIds = newPolylineIds;
 }
 
 @end
