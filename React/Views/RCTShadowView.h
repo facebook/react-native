@@ -135,9 +135,9 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 /**
  * Calculate all views whose frame needs updating after layout has been calculated.
- * The viewsWithNewFrame set contains the reactTags of the views that need updating.
+ * Returns a set contains the shadowviews that need updating.
  */
-- (void)collectRootUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame;
+- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames;
 
 /**
  * Recursively apply layout to children.
