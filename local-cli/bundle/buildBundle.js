@@ -44,7 +44,7 @@ function buildBundle(args, config) {
           client.close();
           return outputBundle;
         })
-        .then(outputBundle => processBundle(outputBundle, !args.dev))
+        .then(outputBundle => processBundle(outputBundle, args.dev))
         .then(outputBundle => saveBundleAndMap(
           outputBundle,
           args.platform,

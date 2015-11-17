@@ -40,7 +40,7 @@ describe('Bundle', function() {
       }));
 
       bundle.finalize({});
-      expect(bundle.getSource()).toBe([
+      expect(bundle.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         '\/\/@ sourceMappingURL=test_url'
@@ -61,7 +61,7 @@ describe('Bundle', function() {
       }));
 
       p.finalize({});
-      expect(p.getSource()).toBe([
+      expect(p.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
       ].join('\n'));
@@ -85,7 +85,7 @@ describe('Bundle', function() {
         runBeforeMainModule: ['bar'],
         runMainModule: true,
       });
-      expect(bundle.getSource()).toBe([
+      expect(bundle.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         ';require("bar");',
@@ -110,7 +110,7 @@ describe('Bundle', function() {
         sourcePath: 'foo path'
       }));
       bundle.finalize();
-      expect(bundle.getMinifiedSourceAndMap()).toBe(minified);
+      expect(bundle.getMinifiedSourceAndMap({dev: true})).toBe(minified);
     });
   });
 
@@ -149,7 +149,7 @@ describe('Bundle', function() {
         runBeforeMainModule: [],
         runMainModule: true,
       });
-      var s = p.getSourceMap();
+      var s = p.getSourceMap({dev: true});
       expect(s).toEqual(genSourceMap(p.getModules()));
     });
 
@@ -183,7 +183,7 @@ describe('Bundle', function() {
         runMainModule: true,
       });
 
-      var s = p.getSourceMap();
+      var s = p.getSourceMap({dev: true});
       expect(s).toEqual({
         file: 'bundle.js',
         version: 3,
