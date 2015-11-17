@@ -46,7 +46,7 @@ static BOOL RCTShouldReloadImageForSizeChange(CGSize currentSize, CGSize idealSi
 
 @implementation RCTImageView
 {
-  RCTBridge *_bridge;
+  __weak RCTBridge *_bridge;
   CGSize _targetSize;
 
   /**
