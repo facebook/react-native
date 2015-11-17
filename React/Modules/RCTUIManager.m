@@ -451,14 +451,17 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 {
   RCTAssert(![NSThread isMainThread], @"Should be called on shadow thread");
 
-  NSMutableSet<RCTShadowView *> *viewsWithNewFrames = [NSMutableSet setWithCapacity:1];
-
   // This is nuanced. In the JS thread, we create a new update buffer
   // `frameTags`/`frames` that is created/mutated in the JS thread. We access
   // these structures in the UI-thread block. `NSMutableArray` is not thread
   // safe so we rely on the fact that we never mutate it after it's passed to
   // the main thread.
-  [rootShadowView collectRootUpdatedFrames:viewsWithNewFrames];
+  NSSet<RCTShadowView *> *viewsWithNewFrames = [rootShadowView collectRootUpdatedFrames];
+
+  if (!viewsWithNewFrames.count) {
+    // no frame change results in no UI update block
+    return nil;
+  }
 
   // Parallel arrays are built and then handed off to main thread
   NSMutableArray<NSNumber *> *frameReactTags =
@@ -521,10 +524,6 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     }
   }
 
-  if (!viewsWithNewFrames.count) {
-    // no frame change results in no UI update block
-    return nil;
-  }
   // Perform layout (possibly animated)
   return ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     RCTResponseSenderBlock callback = self->_layoutAnimation.callback;

@@ -233,7 +233,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames
 {
   RCTAssert(RCTIsReactRootView(self.reactTag),
             @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
@@ -242,7 +242,10 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
+
+  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
+  return viewsWithNewFrame;
 }
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
