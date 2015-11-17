@@ -165,8 +165,11 @@ RCT_EXPORT_MODULE()
     float previousPriority = 0;
     id<RCTURLRequestHandler> previousHandler = nil;
     for (id<RCTURLRequestHandler> handler in _handlers) {
+      float priority = [handler respondsToSelector:@selector(handlerPriority)] ? [handler handlerPriority] : 0;
+      if (previousHandler && priority < previousPriority) {
+        return previousHandler;
+      }
       if ([handler canHandleRequest:request]) {
-        float priority = [handler respondsToSelector:@selector(handlerPriority)] ? [handler handlerPriority] : 0;
         if (previousHandler) {
           if (priority == previousPriority) {
             RCTLogError(@"The RCTURLRequestHandlers %@ and %@ both reported that"
@@ -180,6 +183,7 @@ RCT_EXPORT_MODULE()
         }
       }
     }
+    return previousHandler;
   }
 
   // Normal code path
