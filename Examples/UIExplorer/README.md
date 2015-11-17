@@ -6,6 +6,7 @@ The UIExplorer is a sample app that showcases React Native views and modules.
 
 Before running the app, make sure you ran:
 
+    git clone https://github.com/facebook/react-native.git
     cd react-native
     npm install
 

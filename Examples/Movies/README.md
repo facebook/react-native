@@ -6,6 +6,7 @@ The Movies app is a demonstration of basic concepts, such as fetching data, rend
 
 Before running the app, make sure you ran:
 
+    git clone https://github.com/facebook/react-native.git
     cd react-native
     npm install
 
