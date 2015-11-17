@@ -180,30 +180,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
 
-    // Only override the value of __DEV__ if running in debug mode, and if we
-    // haven't explicitly overridden the packager dev setting in the bundleURL
-    BOOL shouldOverrideDev = RCT_DEBUG && ([self.bundleURL isFileURL] ||
-    [self.bundleURL.absoluteString rangeOfString:@"dev="].location == NSNotFound);
-
-    // Force JS __DEV__ value to match RCT_DEBUG
-    if (shouldOverrideDev) {
-      NSString *sourceString = [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
-      NSRange range = [sourceString rangeOfString:@"\\b__DEV__\\s*?=\\s*?(!1|!0|false|true)"
-                                          options:NSRegularExpressionSearch];
-
-      RCTAssert(range.location != NSNotFound, @"It looks like the implementation"
-                "of __DEV__ has changed. Update -[RCTBatchedBridge loadSource:].");
-
-      NSString *valueString = [sourceString substringWithRange:range];
-      if ([valueString rangeOfString:@"!1"].length) {
-        valueString = [valueString stringByReplacingOccurrencesOfString:@"!1" withString:@"!0"];
-      } else if ([valueString rangeOfString:@"false"].length) {
-        valueString = [valueString stringByReplacingOccurrencesOfString:@"false" withString:@"true"];
-      }
-      source = [[sourceString stringByReplacingCharactersInRange:range withString:valueString]
-                dataUsingEncoding:NSUTF8StringEncoding];
-    }
-
     _onSourceLoad(error, source);
   };
 
