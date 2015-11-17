@@ -47,6 +47,13 @@ var ViewStylePropTypes = {
   ),
   shadowOpacity: ReactPropTypes.number,
   shadowRadius: ReactPropTypes.number,
+  /**
+   * (Android-only) Sets the elevation of a view, using Android's underlying 
+   * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).
+   * This adds a drop shadow to the item and affects stack order for overlapping views. Only implemented
+   * on Android 5.0+.
+   */
+  elevation: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;

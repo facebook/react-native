@@ -67,9 +67,9 @@ There is currently no easy way of publishing custom native modules on Android. S
 
 This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks.
 
-### No support for shadows on Android
+### No cross-platform shadows
 
-We don't support shadows on Android currently. These are notoriously hard to implement as they require drawing outside of a view's bounds and Android's invalidation logic has a hard time with that. A possible solution is to use [elevation](https://developer.android.com/training/material/shadows-clipping.html), but more experimentation will be required.
+We currently don't have a cross-platform shadow implementation. The `shadow*` [view styles](/react-native/docs/view.html#style) apply on iOS, while the `elevation` style is available on Android. Setting `elevation` on Android is equivalent to using the [native elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation), and has the same limitations (most significantly, it only works on Android 5.0+). Setting `elevation` also affects the stack order for overlapping views. We're considering different cross-platform shadow solutions but at the moment you'll need to set shadow styles for both iOS and Android separately.
 
 ### Layout-only nodes on Android
 
