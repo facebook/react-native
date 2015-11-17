@@ -14,7 +14,7 @@
 var RCTToastAndroid = require('NativeModules').ToastAndroid;
 
 /**
- * This exposes the native ToastAndroid module as a JS module. This has a function 'showText'
+ * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
  * which takes the following parameters:
  *
  * 1. String message: A string with the text to toast
