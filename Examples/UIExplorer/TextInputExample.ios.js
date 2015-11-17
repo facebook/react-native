@@ -75,6 +75,11 @@ var TextEventsExample = React.createClass({
           onSubmitEditing={(event) => this.updateText(
             'onSubmitEditing text: ' + event.nativeEvent.text
           )}
+          onSelectionChange={(event) => this.updateText(
+            'onSelectionChange range: ' +
+              event.nativeEvent.selection.start + ',' +
+              event.nativeEvent.selection.end
+          )}
           onKeyPress={(event) => {
             this.updateText('onKeyPress key: ' + event.nativeEvent.key);
           }}

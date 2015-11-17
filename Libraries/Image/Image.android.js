@@ -54,6 +54,8 @@ var resolveAssetSource = require('resolveAssetSource');
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   resizeMode: true,
+  progressiveRenderingEnabled: true,
+  fadeDuration: true,
 });
 
 var Image = React.createClass({
@@ -70,6 +72,8 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]).isRequired,
+    progressiveRenderingEnabled: PropTypes.bool,
+    fadeDuration: PropTypes.number,
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * Used to locate this view in end-to-end tests.

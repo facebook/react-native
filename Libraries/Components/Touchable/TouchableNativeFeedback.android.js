@@ -47,7 +47,7 @@ var TouchableView = createReactNativeComponentClass({
   uiViewClassName: 'RCTView',
 });
 
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches (Android only).
@@ -161,7 +161,8 @@ var TouchableNativeFeedback = React.createClass({
   },
 
   touchableGetPressRectOffset: function() {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+    // Always make sure to predeclare a constant!
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
   touchableGetHighlightDelayMS: function() {
