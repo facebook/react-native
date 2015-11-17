@@ -512,8 +512,9 @@ var NavigatorIOS = React.createClass({
     if (index < 0) {
       index += this.state.routeStack.length;
     }
-
-    if (this.state.routeStack.length <= index) {
+    
+    var topIndex = this.state.routeStack.length - 1;
+    if (topIndex < index) {
       return;
     }
 
@@ -524,12 +525,24 @@ var NavigatorIOS = React.createClass({
     nextIDStack[index] = getuid();
     nextRouteStack[index] = route;
 
-    this.setState({
+    var nextState = {
       idStack: nextIDStack,
       routeStack: nextRouteStack,
       makingNavigatorRequest: false,
       updatingAllIndicesAtOrBeyond: index,
-    });
+    };
+    if (index == topIndex) {
+      this.setState(nextState, function() {
+        this._handleNavigatorStackChanged({
+          nativeEvent: {
+            stackLength: nextRouteStack.length
+          }
+        });
+      });
+    }
+    else {
+      this.setState(nextState);
+    }
 
     this._emitWillFocus(route);
     this._emitDidFocus(route);
@@ -611,7 +624,7 @@ var NavigatorIOS = React.createClass({
     var Component = route.component;
     var shouldUpdateChild = (
       this.state.updatingAllIndicesAtOrBeyond !== null &&
-      this.state.updatingAllIndicesAtOrBeyond >= i
+      this.state.updatingAllIndicesAtOrBeyond <= i
     );
 
     return (
