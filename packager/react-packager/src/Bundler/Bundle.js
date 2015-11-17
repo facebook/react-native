@@ -12,6 +12,7 @@ const _ = require('underscore');
 const base64VLQ = require('./base64-vlq');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
+const Activity = require('../Activity');
 
 const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
 
@@ -20,6 +21,7 @@ class Bundle {
     this._finalized = false;
     this._modules = [];
     this._assets = [];
+    this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
   }
@@ -53,13 +55,8 @@ class Bundle {
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
-      const runCode = ';require("' + this._mainModuleId + '");';
-      this.addModule(new ModuleTransport({
-        code: runCode,
-        virtual: true,
-        sourceCode: runCode,
-        sourcePath: 'RunMainModule.js'
-      }));
+      options.runBeforeMainModule.forEach(this._addRequireCall, this);
+      this._addRequireCall(this._mainModuleId);
     }
 
     Object.freeze(this._modules);
@@ -69,22 +66,54 @@ class Bundle {
     this._finalized = true;
   }
 
+  _addRequireCall(moduleId) {
+    const code = ';require("' + moduleId + '");';
+    const name = 'require-' + moduleId;
+    this.addModule(new ModuleTransport({
+      name,
+      code,
+      virtual: true,
+      sourceCode: code,
+      sourcePath: name + '.js',
+    }));
+  }
+
   _assertFinalized() {
     if (!this._finalized) {
       throw new Error('Bundle needs to be finalized before getting any source');
     }
   }
 
-  _getSource() {
-    if (this._source == null) {
-      this._source = _.pluck(this._modules, 'code').join('\n');
+  _getSource(dev) {
+    if (this._source) {
+      return this._source;
     }
+
+    this._source = _.pluck(this._modules, 'code').join('\n');
+
+    if (dev) {
+      return this._source;
+    }
+
+    const wpoActivity = Activity.startEvent('Whole Program Optimisations');
+    const result = require('babel-core').transform(this._source, {
+      retainLines: true,
+      compact: true,
+      plugins: require('../transforms/whole-program-optimisations'),
+      inputSourceMap: this.getSourceMap(),
+    });
+
+    this._source = result.code;
+    this._sourceMap = result.map;
+
+    Activity.endEvent(wpoActivity);
+
     return this._source;
   }
 
-  _getInlineSourceMap() {
+  _getInlineSourceMap(dev) {
     if (this._inlineSourceMap == null) {
-      const sourceMap = this.getSourceMap({excludeSource: true});
+      const sourceMap = this.getSourceMap({excludeSource: true, dev});
       /*eslint-env node*/
       const encoded = new Buffer(JSON.stringify(sourceMap)).toString('base64');
       this._inlineSourceMap = 'data:application/json;base64,' + encoded;
@@ -98,13 +127,13 @@ class Bundle {
     options = options || {};
 
     if (options.minify) {
-      return this.getMinifiedSourceAndMap().code;
+      return this.getMinifiedSourceAndMap(options.dev).code;
     }
 
-    let source = this._getSource();
+    let source = this._getSource(options.dev);
 
     if (options.inlineSourceMap) {
-      source += SOURCEMAPPING_URL + this._getInlineSourceMap();
+      source += SOURCEMAPPING_URL + this._getInlineSourceMap(options.dev);
     } else if (this._sourceMapUrl) {
       source += SOURCEMAPPING_URL + this._sourceMapUrl;
     }
@@ -112,20 +141,23 @@ class Bundle {
     return source;
   }
 
-  getMinifiedSourceAndMap() {
+  getMinifiedSourceAndMap(dev) {
     this._assertFinalized();
 
     if (this._minifiedSourceAndMap) {
       return this._minifiedSourceAndMap;
     }
 
-    const source = this._getSource();
+    const source = this._getSource(dev);
     try {
+      const minifyActivity = Activity.startEvent('minify');
       this._minifiedSourceAndMap = UglifyJS.minify(source, {
         fromString: true,
         outSourceMap: 'bundle.js',
         inSourceMap: this.getSourceMap(),
+        output: {ascii_only: true},
       });
+      Activity.endEvent(minifyActivity);
       return this._minifiedSourceAndMap;
     } catch(e) {
       // Sometimes, when somebody is using a new syntax feature that we
@@ -192,7 +224,7 @@ class Bundle {
     options = options || {};
 
     if (options.minify) {
-      return this.getMinifiedSourceAndMap().map;
+      return this.getMinifiedSourceAndMap(options.dev).map;
     }
 
     if (this._shouldCombineSourceMaps) {
@@ -303,7 +335,6 @@ class Bundle {
       modules: this._modules,
       assets: this._assets,
       sourceMapUrl: this._sourceMapUrl,
-      shouldCombineSourceMaps: this._shouldCombineSourceMaps,
       mainModuleId: this._mainModuleId,
     };
   }

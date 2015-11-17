@@ -1,0 +1,57 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We depend on JSC, support the same platforms
+SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
+
+cxx_library(
+  name = 'react',
+  soname = 'libreactnative.so',
+  header_namespace = 'react',
+  supported_platforms_regex = SUPPORTED_PLATFORMS,
+  force_static = True,
+  srcs = [
+    'Bridge.cpp',
+    'Value.cpp',
+    'MethodCall.cpp',
+    'JSCHelpers.cpp',
+    'JSCExecutor.cpp',
+    'JSCTracing.cpp',
+    'JSCPerfLogging.cpp',
+    'JSCLegacyProfiler.cpp',
+  ],
+  headers = [
+    'JSCTracing.h',
+    'JSCPerfLogging.h',
+    'JSCLegacyProfiler.h',
+  ],
+  exported_headers = [
+    'Bridge.h',
+    'Executor.h',
+    'JSCExecutor.h',
+    'JSCHelpers.h',
+    'MethodCall.h',
+    'Value.h',
+  ],
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNative"',
+    '-DWITH_JSC_EXTRA_TRACING=1',
+    '-DWITH_FBSYSTRACE=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-std=c++11',
+    '-fexceptions',
+    '-fvisibility=hidden',
+  ],
+  visibility = [
+    react_native_target('jni/react/jni:jni'),
+  ],
+  deps = [
+    '//native/fb:fb',
+    '//xplat/fbsystrace:fbsystrace',
+    '//native/jni:jni',
+    '//native/third-party/jsc:jsc',
+    '//native/third-party/jsc:jsc_legacy_profiler',
+    '//xplat/folly:json',
+  ],
+)

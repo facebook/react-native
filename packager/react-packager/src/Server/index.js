@@ -11,7 +11,7 @@
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
 const FileWatcher = require('../FileWatcher');
-const getPlatformExtension = require('../lib/getPlatformExtension');
+const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
@@ -94,7 +94,14 @@ const bundleOpts = declareOpts({
   platform: {
     type: 'string',
     required: true,
-  }
+  },
+  runBeforeMainModule: {
+    type: 'array',
+    default: [
+      // Ensures essential globals are available and are patched correctly.
+      'InitializeJavaScriptAppEngine'
+    ],
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -179,13 +186,7 @@ class Server {
       }
 
       const opts = bundleOpts(options);
-      return this._bundler.bundle(
-        opts.entryFile,
-        opts.runModule,
-        opts.sourceMapUrl,
-        opts.dev,
-        opts.platform
-      );
+      return this._bundler.bundle(opts);
     });
   }
 
@@ -239,6 +240,7 @@ class Server {
           p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           return p;
         });
@@ -365,6 +367,7 @@ class Server {
           var bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
           res.end(bundleSource);
@@ -372,6 +375,7 @@ class Server {
         } else if (requestType === 'map') {
           var sourceMap = p.getSourceMap({
             minify: options.minify,
+            dev: options.dev,
           });
 
           if (typeof sourceMap !== 'string') {

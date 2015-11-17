@@ -9,6 +9,8 @@
  */
 
 #import "RCTImagePickerManager.h"
+
+#import "RCTConvert.h"
 #import "RCTRootView.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -23,9 +25,9 @@
 
 @implementation RCTImagePickerManager
 {
-  NSMutableArray *_pickers;
-  NSMutableArray *_pickerCallbacks;
-  NSMutableArray *_pickerCancelCallbacks;
+  NSMutableArray<UIImagePickerController *> *_pickers;
+  NSMutableArray<RCTResponseSenderBlock> *_pickerCallbacks;
+  NSMutableArray<RCTResponseSenderBlock> *_pickerCancelCallbacks;
 }
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
@@ -40,9 +42,14 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(canRecordVideos:(RCTResponseSenderBlock)callback)
 {
-  NSArray *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+  NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
   callback(@[@([availableMediaTypes containsObject:(NSString *)kUTTypeMovie])]);
 }
 
@@ -59,15 +66,14 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     cancelCallback(@[@"Camera access is unavailable in an app extension"]);
     return;
   }
-  
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
 
-  if ([config[@"videoMode"] boolValue]) {
+  if ([RCTConvert BOOL:config[@"videoMode"]]) {
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
   }
 
@@ -86,19 +92,18 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
     cancelCallback(@[@"Image picker is currently unavailable in an app extension"]);
     return;
   }
-  
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
-  NSMutableArray *allowedTypes = [NSMutableArray new];
-  if ([config[@"showImages"] boolValue]) {
+  NSMutableArray<NSString *> *allowedTypes = [NSMutableArray new];
+  if ([RCTConvert BOOL:config[@"showImages"]]) {
     [allowedTypes addObject:(NSString *)kUTTypeImage];
   }
-  if ([config[@"showVideos"] boolValue]) {
+  if ([RCTConvert BOOL:config[@"showVideos"]]) {
     [allowedTypes addObject:(NSString *)kUTTypeMovie];
   }
 
@@ -112,7 +117,7 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
-didFinishPickingMediaWithInfo:(NSDictionary *)info
+didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
   NSUInteger index = [_pickers indexOfObject:picker];
   RCTResponseSenderBlock callback = _pickerCallbacks[index];
@@ -121,8 +126,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
   callback(@[[info[UIImagePickerControllerReferenceURL] absoluteString]]);
@@ -137,8 +141,7 @@ didFinishPickingMediaWithInfo:(NSDictionary *)info
   [_pickerCallbacks removeObjectAtIndex:index];
   [_pickerCancelCallbacks removeObjectAtIndex:index];
 
-  UIWindow *keyWindow = RCTSharedApplication().keyWindow;
-  UIViewController *rootViewController = keyWindow.rootViewController;
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
   callback(@[]);

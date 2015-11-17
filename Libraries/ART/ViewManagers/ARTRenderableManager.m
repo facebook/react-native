@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (ARTRenderable *)node
 {
-  return [[ARTRenderable alloc] init];
+  return [ARTRenderable new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(strokeWidth, CGFloat)

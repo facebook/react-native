@@ -11,11 +11,11 @@
 const docblock = require('./DependencyGraph/docblock');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
-const replacePatterns = require('./replacePatterns');
+const extractRequires = require('./lib/extractRequires');
 
 class Module {
 
-  constructor(file, fastfs, moduleCache, cache) {
+  constructor(file, fastfs, moduleCache, cache, extractor) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -26,12 +26,11 @@ class Module {
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
+    this._extractor = extractor;
   }
 
   isHaste() {
-    return this._cache.get(this.path, 'haste', () =>
-      this._read().then(data => !!data.id)
-    );
+    return this._read().then(data => !!data.id);
   }
 
   getName() {
@@ -67,17 +66,15 @@ class Module {
   }
 
   getDependencies() {
-    return this._cache.get(this.path, 'dependencies', () =>
-      this._read().then(data => data.dependencies)
-    );
-  }
-
-  invalidate() {
-    this._cache.invalidate(this.path);
+    return this._read().then(data => data.dependencies);
   }
 
   getAsyncDependencies() {
     return this._read().then(data => data.asyncDependencies);
+  }
+
+  invalidate() {
+    this._cache.invalidate(this.path);
   }
 
   _read() {
@@ -96,7 +93,7 @@ class Module {
         if ('extern' in moduleDocBlock) {
           data.dependencies = [];
         } else {
-          var dependencies = extractRequires(content);
+          var dependencies = (this._extractor || extractRequires)(content).deps;
           data.dependencies = dependencies.sync;
           data.asyncDependencies = dependencies.async;
         }
@@ -138,50 +135,6 @@ class Module {
       path: this.path,
     };
   }
-}
-
-/**
- * Extract all required modules from a `code` string.
- */
-const blockCommentRe = /\/\*(.|\n)*?\*\//g;
-const lineCommentRe = /\/\/.+(\n|$)/g;
-function extractRequires(code /*: string*/) /*: Array<string>*/ {
-  var deps = {
-    sync: [],
-    async: [],
-  };
-
-  code
-    .replace(blockCommentRe, '')
-    .replace(lineCommentRe, '')
-    // Parse sync dependencies. See comment below for further detils.
-    .replace(replacePatterns.IMPORT_RE, (match, pre, quot, dep, post) => {
-      deps.sync.push(dep);
-      return match;
-    })
-    .replace(replacePatterns.EXPORT_RE, (match, pre, quot, dep, post) => {
-      deps.sync.push(dep);
-      return match;
-    })
-    // Parse the sync dependencies this module has. When the module is
-    // required, all it's sync dependencies will be loaded into memory.
-    // Sync dependencies can be defined either using `require` or the ES6
-    // `import` or `export` syntaxes:
-    //   var dep1 = require('dep1');
-    .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
-      deps.sync.push(dep);
-    })
-    // Parse async dependencies this module has. As opposed to what happens
-    // with sync dependencies, when the module is required, it's async
-    // dependencies won't be loaded into memory. This is deferred till the
-    // code path gets to the import statement:
-    //   System.import('dep1')
-    .replace(replacePatterns.SYSTEM_IMPORT_RE, (match, pre, quot, dep, post) => {
-      deps.async.push([dep]);
-      return match;
-    });
-
-  return deps;
 }
 
 module.exports = Module;

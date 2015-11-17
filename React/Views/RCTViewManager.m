@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
-- (UIView *)viewWithProps:(__unused NSDictionary *)props
+- (UIView *)viewWithProps:(__unused NSDictionary<NSString *, id> *)props
 {
   return [self view];
 }
@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE()
   return [RCTShadowView new];
 }
 
-- (NSArray *)customBubblingEventTypes
+- (NSArray<NSString *> *)customBubblingEventTypes
 {
   return @[
 
@@ -80,6 +80,7 @@ RCT_EXPORT_MODULE()
     @"blur",
     @"submitEditing",
     @"endEditing",
+    @"keyPress",
 
     // Touch events
     @"touchStart",
@@ -89,12 +90,12 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (NSArray *)customDirectEventTypes
+- (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[];
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   return nil;
 }
@@ -104,7 +105,7 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused RCTSparseArray *)shadowViewRegistry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
 {
   return nil;
 }
@@ -236,6 +237,10 @@ RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 
 RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)

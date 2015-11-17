@@ -47,7 +47,7 @@
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
       initialProps:@{@"waitOneFrame": @YES}
-  expectErrorBlock:nil];
+configurationBlock:nil];
 }
 
 - (void)testTheTester_ExpectError
@@ -55,6 +55,7 @@
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
       initialProps:@{@"shouldThrow": @YES}
+configurationBlock:nil
   expectErrorRegex:@"because shouldThrow"];
 }
 
@@ -63,7 +64,7 @@ RCT_TEST(IntegrationTestHarnessTest)
 RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
-RCT_TEST(ImageSnapshotTest)
+//RCT_TEST(ImageSnapshotTest) // Disabled: #8985988
 RCT_TEST(SimpleSnapshotTest)
 
 // Disable due to flakiness: #8686784

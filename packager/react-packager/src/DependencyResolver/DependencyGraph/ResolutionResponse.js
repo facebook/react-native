@@ -13,6 +13,7 @@ class ResolutionResponse {
     this.dependencies = [];
     this.asyncDependencies = [];
     this.mainModuleId = null;
+    this.mocks = null;
     this._mappings = Object.create(null);
     this._finalized = false;
   }
@@ -51,7 +52,7 @@ class ResolutionResponse {
     this.dependencies.unshift(module);
   }
 
-  pushAsyncDependency(dependency){
+  pushAsyncDependency(dependency) {
     this._assertNotFinalized();
     this.asyncDependencies.push(dependency);
   }
@@ -62,6 +63,10 @@ class ResolutionResponse {
     if (this._mappings[hash] == null) {
       this._mappings[hash] = pairs;
     }
+  }
+
+  setMocks(mocks) {
+    this.mocks = mocks;
   }
 
   getResolvedDependencyPairs(module) {

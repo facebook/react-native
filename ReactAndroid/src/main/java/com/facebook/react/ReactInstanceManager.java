@@ -14,8 +14,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -41,6 +43,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -87,6 +90,7 @@ public class ReactInstanceManager {
   private final Context mApplicationContext;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private String mSourceUrl;
+  private @Nullable Activity mCurrentActivity;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -232,18 +236,42 @@ public class ReactInstanceManager {
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
    * {@link ReactRootView} is available and measured.
+   *
+   * Called from UI thread.
    */
   public void createReactContextInBackground() {
     if (mUseDeveloperSupport && mJSMainModuleName != null) {
       if (mDevSupportManager.hasUpToDateJSBundleInCache()) {
         // If there is a up-to-date bundle downloaded from server, always use that
         onJSBundleLoadedFromServer();
-      } else {
+      } else if (mJSBundleFile == null) {
         mDevSupportManager.handleReloadJS();
+      } else {
+        mDevSupportManager.isPackagerRunning(
+            new DevServerHelper.PackagerStatusCallback() {
+              @Override
+              public void onPackagerStatusFetched(final boolean packagerIsRunning) {
+                UiThreadUtil.runOnUiThread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        if (packagerIsRunning) {
+                          mDevSupportManager.handleReloadJS();
+                        } else {
+                          recreateReactContextInBackgroundFromBundleFile();
+                        }
+                      }
+                    });
+              }
+            });
       }
       return;
     }
 
+    recreateReactContextInBackgroundFromBundleFile();
+  }
+
+  private void recreateReactContextInBackgroundFromBundleFile() {
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor(),
         JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
@@ -292,6 +320,7 @@ public class ReactInstanceManager {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
+    mCurrentActivity = null;
     if (mCurrentReactContext != null) {
       mCurrentReactContext.onPause();
     }
@@ -308,7 +337,7 @@ public class ReactInstanceManager {
    * @param defaultBackButtonImpl a {@link DefaultHardwareBackBtnHandler} from an Activity that owns
    * this instance of {@link ReactInstanceManager}.
    */
-  public void onResume(DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+  public void onResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
 
     mLifecycleState = LifecycleState.RESUMED;
@@ -318,8 +347,9 @@ public class ReactInstanceManager {
       mDevSupportManager.setDevSupportEnabled(true);
     }
 
+    mCurrentActivity = activity;
     if (mCurrentReactContext != null) {
-      mCurrentReactContext.onResume();
+      mCurrentReactContext.onResume(activity);
     }
   }
 
@@ -332,6 +362,12 @@ public class ReactInstanceManager {
 
     if (mCurrentReactContext != null) {
       mCurrentReactContext.onDestroy();
+    }
+  }
+
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (mCurrentReactContext != null) {
+      mCurrentReactContext.onActivityResult(requestCode, resultCode, data);
     }
   }
 
@@ -552,7 +588,7 @@ public class ReactInstanceManager {
 
   private void moveReactContextToCurrentLifecycleState(ReactApplicationContext reactContext) {
     if (mLifecycleState == LifecycleState.RESUMED) {
-      reactContext.onResume();
+      reactContext.onResume(mCurrentActivity);
     }
   }
 
@@ -579,7 +615,7 @@ public class ReactInstanceManager {
      * Example: {@code "index.android.js"}
      */
     public Builder setBundleAssetName(String bundleAssetName) {
-      return this.setJSBundleFile("assets://" + bundleAssetName);
+      return this.setJSBundleFile(bundleAssetName == null ? null : "assets://" + bundleAssetName);
     }
 
     /**

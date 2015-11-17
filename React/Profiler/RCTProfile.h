@@ -36,6 +36,8 @@ _Pragma("clang diagnostic pop")
 #define RCTProfileEndFlowEvent() \
 _RCTProfileEndFlowEvent(__rct_profile_flow_id)
 
+RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void);
+
 RCT_EXTERN NSNumber *_RCTProfileBeginFlowEvent(void);
 RCT_EXTERN void _RCTProfileEndFlowEvent(NSNumber *);
 
@@ -54,30 +56,51 @@ RCT_EXTERN void RCTProfileInit(RCTBridge *);
  * returned is compliant with google's trace event format - the format used
  * as input to trace-viewer
  */
-RCT_EXTERN NSString *RCTProfileEnd(RCTBridge *);
+RCT_EXTERN void RCTProfileEnd(RCTBridge *, void (^)(NSString *));
 
 /**
  * Collects the initial event information for the event and returns a reference ID
  */
-RCT_EXTERN void RCTProfileBeginEvent(uint64_t tag,
-                                     NSString *name,
-                                     NSDictionary *args);
+RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
+                                      NSTimeInterval time,
+                                      uint64_t tag,
+                                      NSString *name,
+                                      NSDictionary *args);
+#define RCT_PROFILE_BEGIN_EVENT(...) { \
+  NSThread *calleeThread = [NSThread currentThread]; \
+  NSTimeInterval time = CACurrentMediaTime(); \
+  dispatch_async(RCTProfileGetQueue(), ^{ \
+    _RCTProfileBeginEvent(calleeThread, time, __VA_ARGS__); \
+  }); \
+}
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
  * rest of the event information. Just at this point the event will actually be
  * registered
  */
-RCT_EXTERN void RCTProfileEndEvent(uint64_t tag,
-                                   NSString *category,
-                                   NSDictionary *args);
+RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
+                                    NSString *threadName,
+                                    NSTimeInterval time,
+                                    uint64_t tag,
+                                    NSString *category,
+                                    NSDictionary *args);
+
+#define RCT_PROFILE_END_EVENT(...) { \
+  NSThread *calleeThread = [NSThread currentThread]; \
+  NSString *threadName = RCTCurrentThreadName(); \
+  NSTimeInterval time = CACurrentMediaTime(); \
+  dispatch_async(RCTProfileGetQueue(), ^{ \
+    _RCTProfileEndEvent(calleeThread, threadName, time, __VA_ARGS__); \
+  }); \
+}
 
 /**
  * Collects the initial event information for the event and returns a reference ID
  */
-RCT_EXTERN int RCTProfileBeginAsyncEvent(uint64_t tag,
-                                         NSString *name,
-                                         NSDictionary *args);
+RCT_EXTERN NSUInteger RCTProfileBeginAsyncEvent(uint64_t tag,
+                                                NSString *name,
+                                                NSDictionary *args);
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
@@ -86,9 +109,10 @@ RCT_EXTERN int RCTProfileBeginAsyncEvent(uint64_t tag,
  */
 RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
                                         NSString *category,
-                                        int cookie,
+                                        NSUInteger cookie,
                                         NSString *name,
                                         NSDictionary *args);
+
 /**
  * An event that doesn't have a duration (i.e. Notification, VSync, etc)
  */
@@ -104,9 +128,9 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
  */
 #define RCTProfileBlock(block, tag, category, arguments) \
 ^{ \
-  RCTProfileBeginEvent(tag, @(__PRETTY_FUNCTION__), nil); \
+  RCT_PROFILE_BEGIN_EVENT(tag, @(__PRETTY_FUNCTION__), nil); \
   block(); \
-  RCTProfileEndEvent(tag, category, arguments); \
+  RCT_PROFILE_END_EVENT(tag, category, arguments); \
 }
 
 /**
@@ -123,7 +147,7 @@ RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
  * Send systrace or cpu profiling information to the packager
  * to present to the user
  */
-RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *profielData);
+RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *profileData);
 
 /**
  * Systrace gluecode
@@ -165,8 +189,11 @@ RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 #define RCTProfileInit(...)
 #define RCTProfileEnd(...) @""
 
-#define RCTProfileBeginEvent(...)
-#define RCTProfileEndEvent(...)
+#define _RCTProfileBeginEvent(...)
+#define _RCTProfileEndEvent(...)
+
+#define RCT_PROFILE_BEGIN_EVENT(...)
+#define RCT_PROFILE_END_EVENT(...)
 
 #define RCTProfileBeginAsyncEvent(...) 0
 #define RCTProfileEndAsyncEvent(...)

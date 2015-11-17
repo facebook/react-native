@@ -35,6 +35,10 @@ function _server(argv, config, resolve, reject) {
     type: 'string',
     description: 'add another root(s) to be used by the packager in this project',
   }, {
+    command: 'projectRoots',
+    type: 'string',
+    description: 'override the root(s) to be used by the packager',
+  },{
     command: 'assetRoots',
     type: 'string',
     description: 'specify the root directories of app assets'
@@ -122,7 +126,7 @@ function _server(argv, config, resolve, reject) {
     }
     console.log('\nSee', chalk.underline('http://facebook.github.io/react-native/docs/troubleshooting.html'));
     console.log('for common problems and solutions.');
-    reject();
+    process.exit(1);
   });
 
   // TODO: remove once we deprecate this arg

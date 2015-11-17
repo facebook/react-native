@@ -10,6 +10,7 @@
 package com.facebook.react.views.text;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
 import android.widget.TextView;
@@ -18,8 +19,15 @@ import com.facebook.react.uimanager.ReactCompoundView;
 
 public class ReactTextView extends TextView implements ReactCompoundView {
 
+  private boolean mContainsImages;
+
   public ReactTextView(Context context) {
     super(context);
+  }
+
+  public void setText(ReactTextUpdate update) {
+    mContainsImages = update.containsImages();
+    setText(update.getText());
   }
 
   @Override
@@ -60,5 +68,81 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
 
     return target;
+  }
+
+  @Override
+  protected boolean verifyDrawable(Drawable drawable) {
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        if (span.getDrawable() == drawable) {
+          return true;
+        }
+      }
+    }
+    return super.verifyDrawable(drawable);
+  }
+
+  @Override
+  public void invalidateDrawable(Drawable drawable) {
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        if (span.getDrawable() == drawable) {
+          invalidate();
+        }
+      }
+    }
+    super.invalidateDrawable(drawable);
+  }
+
+  @Override
+  public void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onDetachedFromWindow();
+      }
+    }
+  }
+
+  @Override
+  public void onStartTemporaryDetach() {
+    super.onStartTemporaryDetach();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onStartTemporaryDetach();
+      }
+    }
+  }
+
+  @Override
+  public void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onAttachedToWindow();
+      }
+    }
+  }
+
+  @Override
+  public void onFinishTemporaryDetach() {
+    super.onFinishTemporaryDetach();
+    if (mContainsImages && getText() instanceof Spanned) {
+      Spanned text = (Spanned) getText();
+      TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
+      for (TextInlineImageSpan span : spans) {
+        span.onFinishTemporaryDetach();
+      }
+    }
   }
 }

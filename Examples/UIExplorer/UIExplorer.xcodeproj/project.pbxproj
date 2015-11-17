@@ -32,7 +32,6 @@
 		1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */; };
 		1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */; };
 		1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */; };
-		1497CFB21B21F5E400C1F8F2 /* RCTSparseArrayTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFAA1B21F5E400C1F8F2 /* RCTSparseArrayTests.m */; };
 		1497CFB31B21F5E400C1F8F2 /* RCTUIManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */; };
 		14AADF051AC3DBB1002390C9 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
 		14B6DA821B276C5900BF4DD1 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58005BEE1ABA80530062E044 /* libRCTTest.a */; };
@@ -50,8 +49,10 @@
 		14D6D7281B2222EF001FB087 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
 		14D6D7291B2222EF001FB087 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
 		14DC67F41AB71881001358AB /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
+		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; settings = {ASSET_TAGS = (); }; };
+		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; settings = {ASSET_TAGS = (); }; };
 		3578590A1B28D2CF00341EDB /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
-		3D36915B1BDA8CBB007B22D8 /* uie_thumb_big.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D36915A1BDA8CBB007B22D8 /* uie_thumb_big.png */; settings = {ASSET_TAGS = (); }; };
+		3D36915B1BDA8CBB007B22D8 /* uie_thumb_big.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D36915A1BDA8CBB007B22D8 /* uie_thumb_big.png */; };
 		3DB99D0C1BA0340600302749 /* UIExplorerIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
@@ -207,7 +208,6 @@
 		1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_NSURLTests.m; sourceTree = "<group>"; };
 		1497CFA81B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTConvert_UIFontTests.m; sourceTree = "<group>"; };
 		1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTEventDispatcherTests.m; sourceTree = "<group>"; };
-		1497CFAA1B21F5E400C1F8F2 /* RCTSparseArrayTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSparseArrayTests.m; sourceTree = "<group>"; };
 		1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerTests.m; sourceTree = "<group>"; };
 		14AADEFF1AC3DB95002390C9 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = ../../React/React.xcodeproj; sourceTree = "<group>"; };
 		14D6D7021B220AE3001FB087 /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
@@ -222,6 +222,10 @@
 		14D6D7101B220EB3001FB087 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = ../../Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj; sourceTree = "<group>"; };
 		14E0EEC81AB118F7000DECC3 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = ../../Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj; sourceTree = "<group>"; };
+		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = UIExplorer/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
+		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UpdatePropertiesExampleView.m; path = UIExplorer/NativeExampleViews/UpdatePropertiesExampleView.m; sourceTree = "<group>"; };
+		27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlexibleSizeExampleView.m; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.m; sourceTree = "<group>"; };
+		27F441EA1BEBE5030039B79C /* FlexibleSizeExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlexibleSizeExampleView.h; path = UIExplorer/NativeExampleViews/FlexibleSizeExampleView.h; sourceTree = "<group>"; };
 		357858F81B28D2C400341EDB /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = ../../Libraries/LinkingIOS/RCTLinking.xcodeproj; sourceTree = "<group>"; };
 		3D36915A1BDA8CBB007B22D8 /* uie_thumb_big.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = uie_thumb_big.png; path = UIExplorer/Images.xcassets/uie_thumb_big.imageset/uie_thumb_big.png; sourceTree = SOURCE_ROOT; };
 		3DB99D0B1BA0340600302749 /* UIExplorerIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIExplorerIntegrationTests.m; sourceTree = "<group>"; };
@@ -365,6 +369,7 @@
 		13B07FAE1A68108700A75B9A /* UIExplorer */ = {
 			isa = PBXGroup;
 			children = (
+				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -393,7 +398,6 @@
 				13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */,
 				1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */,
 				138D6A161B53CD440074A87E /* RCTShadowViewTests.m */,
-				1497CFAA1B21F5E400C1F8F2 /* RCTSparseArrayTests.m */,
 				1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */,
 				143BC57E1B21E18100462512 /* Info.plist */,
 				14D6D7101B220EB3001FB087 /* libOCMock.a */,
@@ -489,6 +493,17 @@
 				14DC67F11AB71876001358AB /* libRCTPushNotification.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		272E6B3A1BEA846C001FCF37 /* NativeExampleViews */ = {
+			isa = PBXGroup;
+			children = (
+				27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */,
+				27F441EA1BEBE5030039B79C /* FlexibleSizeExampleView.h */,
+				272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */,
+				272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */,
+			);
+			name = NativeExampleViews;
 			sourceTree = "<group>";
 		};
 		357858F91B28D2C400341EDB /* Products */ = {
@@ -834,7 +849,6 @@
 				1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */,
 				144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */,
 				1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.m in Sources */,
-				1497CFB21B21F5E400C1F8F2 /* RCTSparseArrayTests.m in Sources */,
 				1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */,
 				1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */,
 				1497CFAE1B21F5E400C1F8F2 /* RCTContextExecutorTests.m in Sources */,
@@ -854,7 +868,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -971,6 +987,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.internal.uiexplorer.local;
 				PRODUCT_NAME = UIExplorer;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = (
+					"-Wextra",
+					"-Wall",
+					"-Wincompatible-pointer-types",
+					"-Wincompatible-pointer-types-discards-qualifiers",
+				);
 			};
 			name = Debug;
 		};
@@ -991,6 +1013,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.internal.uiexplorer.local;
 				PRODUCT_NAME = UIExplorer;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WARNING_CFLAGS = (
+					"-Wextra",
+					"-Wall",
+					"-Wincompatible-pointer-types",
+					"-Wincompatible-pointer-types-discards-qualifiers",
+				);
 			};
 			name = Release;
 		};
@@ -1082,6 +1110,7 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -1109,6 +1138,7 @@
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
+					"-Wincompatible-pointer-types",
 				);
 			};
 			name = Debug;
@@ -1139,6 +1169,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -1166,6 +1197,7 @@
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
+					"-Wincompatible-pointer-types",
 				);
 			};
 			name = Release;

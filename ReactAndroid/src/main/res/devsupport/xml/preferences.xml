@@ -14,12 +14,6 @@
         android:defaultValue="true"
         />
     <CheckBoxPreference
-        android:key="fps_debug"
-        android:title="FPS Debugging"
-        android:summary="Overlay FPS information and print debug FPS info about animations"
-        android:defaultValue="false"
-        />
-    <CheckBoxPreference
         android:key="animations_debug"
         android:title="Animations FPS Summaries"
         android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."
@@ -30,12 +24,6 @@
       android:key="pref_key_catalyst_debug"
       android:title="Debugging"
       >
-    <CheckBoxPreference
-        android:key="reload_on_js_change"
-        android:title="Auto reload on JS change"
-        android:summary="Reload JS automatically when JS changes. It's required for this to work to have dev server connection setup correctly."
-        android:defaultValue="false"
-        />
     <EditTextPreference
         android:key="debug_http_host"
         android:title="Debug server host &amp; port for device"

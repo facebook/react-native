@@ -17,14 +17,9 @@
 #endif
 
 /**
- * Thresholds for logs to raise an assertion, or display redbox, respectively.
- * You can override these values when debugging in order to tweak the default
- * logging behavior.
+ * Thresholds for logs to display a redbox. You can override these values when debugging
+ * in order to tweak the default logging behavior.
  */
-#ifndef RCTLOG_FATAL_LEVEL
-#define RCTLOG_FATAL_LEVEL RCTLogLevelMustFix
-#endif
-
 #ifndef RCTLOG_REDBOX_LEVEL
 #define RCTLOG_REDBOX_LEVEL RCTLogLevelError
 #endif
@@ -34,19 +29,28 @@
  * own code.
  */
 #define RCTLog(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
+#define RCTLogTrace(...) _RCTLog(RCTLogLevelTrace, __VA_ARGS__)
 #define RCTLogInfo(...) _RCTLog(RCTLogLevelInfo, __VA_ARGS__)
 #define RCTLogWarn(...) _RCTLog(RCTLogLevelWarning, __VA_ARGS__)
 #define RCTLogError(...) _RCTLog(RCTLogLevelError, __VA_ARGS__)
-#define RCTLogMustFix(...) _RCTLog(RCTLogLevelMustFix, __VA_ARGS__)
 
 /**
  * An enum representing the severity of the log message.
  */
 typedef NS_ENUM(NSInteger, RCTLogLevel) {
+  RCTLogLevelTrace = 0,
   RCTLogLevelInfo = 1,
   RCTLogLevelWarning = 2,
   RCTLogLevelError = 3,
-  RCTLogLevelMustFix = 4
+  RCTLogLevelFatal = 4
+};
+
+/**
+ * An enum representing the source of a log message.
+ */
+typedef NS_ENUM(NSInteger, RCTLogSource) {
+  RCTLogSourceNative = 1,
+  RCTLogSourceJavaScript = 2
 };
 
 /**
@@ -56,6 +60,7 @@ typedef NS_ENUM(NSInteger, RCTLogLevel) {
  */
 typedef void (^RCTLogFunction)(
   RCTLogLevel level,
+  RCTLogSource source,
   NSString *fileName,
   NSNumber *lineNumber,
   NSString *message
@@ -119,11 +124,10 @@ RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *pref
  * Private logging function - ignore this.
  */
 #if RCTLOG_ENABLED
-#define _RCTLog(lvl, ...) do { \
-if (lvl >= RCTLOG_FATAL_LEVEL) { RCTAssert(NO, __VA_ARGS__); } \
-_RCTLogInternal(lvl, __FILE__, __LINE__, __VA_ARGS__); } while (0)
+#define _RCTLog(lvl, ...) _RCTLogNativeInternal(lvl, __FILE__, __LINE__, __VA_ARGS__);
 #else
 #define _RCTLog(lvl, ...) do { } while (0)
 #endif
 
-RCT_EXTERN void _RCTLogInternal(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
+RCT_EXTERN void _RCTLogNativeInternal(RCTLogLevel, const char *, int, NSString *, ...) NS_FORMAT_FUNCTION(4,5);
+RCT_EXTERN void _RCTLogJavaScriptInternal(RCTLogLevel, NSString *);

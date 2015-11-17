@@ -199,6 +199,7 @@ public class NativeModuleRegistry {
             MethodRegistration method = module.methods.get(i);
             jg.writeObjectFieldStart(method.name);
             jg.writeNumberField("methodID", i);
+            jg.writeStringField("type", method.method.getType());
             jg.writeEndObject();
           }
           jg.writeEndObject();

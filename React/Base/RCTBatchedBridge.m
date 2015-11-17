@@ -11,6 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
 #import "RCTContextExecutor.h"
 #import "RCTFrameUpdate.h"
@@ -18,12 +19,9 @@
 #import "RCTLog.h"
 #import "RCTModuleData.h"
 #import "RCTModuleMap.h"
-#import "RCTBridgeMethod.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
-#import "RCTRedBox.h"
 #import "RCTSourceCode.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
 #define RCTAssertJSThread() \
@@ -43,7 +41,7 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldParamss,
 };
 
-RCT_EXTERN NSArray *RCTGetModuleClasses(void);
+RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 @interface RCTBridge ()
 
@@ -64,11 +62,11 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   BOOL _valid;
   BOOL _wasBatchActive;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
-  NSMutableArray *_pendingCalls;
-  NSMutableArray *_moduleDataByID;
+  NSMutableArray<NSArray *> *_pendingCalls;
+  NSMutableArray<RCTModuleData *> *_moduleDataByID;
   RCTModuleMap *_modulesByName;
   CADisplayLink *_jsDisplayLink;
-  NSMutableSet *_frameUpdateObservers;
+  NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
 }
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
@@ -176,35 +174,11 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
 {
   RCTPerformanceLoggerStart(RCTPLScriptDownload);
-  int cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
+  NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
 
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source) {
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
-
-    // Only override the value of __DEV__ if running in debug mode, and if we
-    // haven't explicitly overridden the packager dev setting in the bundleURL
-    BOOL shouldOverrideDev = RCT_DEBUG && ([self.bundleURL isFileURL] ||
-    [self.bundleURL.absoluteString rangeOfString:@"dev="].location == NSNotFound);
-
-    // Force JS __DEV__ value to match RCT_DEBUG
-    if (shouldOverrideDev) {
-      NSString *sourceString = [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
-      NSRange range = [sourceString rangeOfString:@"\\b__DEV__\\s*?=\\s*?(!1|!0|false|true)"
-                                          options:NSRegularExpressionSearch];
-
-      RCTAssert(range.location != NSNotFound, @"It looks like the implementation"
-                "of __DEV__ has changed. Update -[RCTBatchedBridge loadSource:].");
-
-      NSString *valueString = [sourceString substringWithRange:range];
-      if ([valueString rangeOfString:@"!1"].length) {
-        valueString = [valueString stringByReplacingOccurrencesOfString:@"!1" withString:@"!0"];
-      } else if ([valueString rangeOfString:@"false"].length) {
-        valueString = [valueString stringByReplacingOccurrencesOfString:@"false" withString:@"true"];
-      }
-      source = [[sourceString stringByReplacingCharactersInRange:range withString:valueString]
-                dataUsingEncoding:NSUTF8StringEncoding];
-    }
 
     _onSourceLoad(error, source);
   };
@@ -233,7 +207,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   // Register passed-in module instances
   NSMutableDictionary *preregisteredModules = [NSMutableDictionary new];
 
-  NSArray *extraModules = nil;
+  NSArray<id<RCTBridgeModule>> *extraModules = nil;
   if (self.delegate) {
     if ([self.delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
       extraModules = [self.delegate extraModulesForBridge:_parentBridge];
@@ -250,7 +224,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   _moduleDataByID = [NSMutableArray new];
   NSMutableDictionary *modulesByName = [preregisteredModules mutableCopy];
   for (Class moduleClass in RCTGetModuleClasses()) {
-     NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
 
      // Check if module instance has already been registered for this name
      id<RCTBridgeModule> module = modulesByName[moduleName];
@@ -308,15 +282,11 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
 - (NSString *)moduleConfig
 {
-  NSMutableDictionary *config = [NSMutableDictionary new];
+  NSMutableArray<NSArray *> *config = [NSMutableArray new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    NSDictionary *moduleConfig = moduleData.config;
-    if (moduleConfig) {
-      config[moduleData.name] = moduleConfig;
-    }
+    [config addObject:moduleData.config];
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
-
       id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
       __weak typeof(self) weakSelf = self;
       __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
@@ -420,18 +390,10 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 
   _loading = NO;
 
-  NSArray *stack = error.userInfo[@"stack"];
-  if (stack) {
-    [self.redBox showErrorMessage:error.localizedDescription withStack:stack];
-  } else {
-    [self.redBox showError:error];
-  }
-  RCTLogError(@"Error while loading: %@", error.localizedDescription);
-
-  NSDictionary *userInfo = @{@"bridge": self, @"error": error};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
                                                       object:_parentBridge
-                                                    userInfo:userInfo];
+                                                    userInfo:@{@"bridge": self, @"error": error}];
+  RCTFatal(error);
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleURL
@@ -562,7 +524,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
-  NSArray *ids = [moduleDotMethod componentsSeparatedByString:@"."];
+  NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
   [self _invokeAndProcessModule:@"BatchedBridge"
                          method:@"callFunctionReturnFlushedQueue"
@@ -605,13 +567,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       return;
     }
 
-    RCTProfileBeginEvent(0, @"FetchApplicationScriptCallbacks", nil);
+    RCT_PROFILE_BEGIN_EVENT(0, @"FetchApplicationScriptCallbacks", nil);
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
                               callback:^(id json, NSError *error)
      {
-       RCTProfileEndEvent(0, @"js_call,init", @{
+       RCT_PROFILE_END_EVENT(0, @"js_call,init", @{
          @"json": RCTNullIfNil(json),
          @"error": RCTNullIfNil(error),
        });
@@ -640,7 +602,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   __weak RCTBatchedBridge *weakSelf = self;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
     RCTProfileEndFlowEvent();
-    RCTProfileBeginEvent(0, @"enqueue_call", nil);
 
     RCTBatchedBridge *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.valid) {
@@ -665,7 +626,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
-      [self.redBox showError:error];
+      RCTFatal(error);
     }
 
     if (!self.isValid) {
@@ -701,62 +662,54 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)handleBuffer:(id)buffer
+- (void)handleBuffer:(NSArray<NSArray *> *)buffer
 {
-  NSArray *requestsArray = [RCTConvert NSArray:buffer];
+  NSArray<NSArray *> *requestsArray = [RCTConvert NSArrayArray:buffer];
 
-#if RCT_DEBUG
-
-  if (![buffer isKindOfClass:[NSArray class]]) {
-    RCTLogError(@"Buffer must be an instance of NSArray, got %@", NSStringFromClass([buffer class]));
+  if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParamss) {
+    RCTLogError(@"Buffer should contain at least %tu sub-arrays. Only found %tu",
+                RCTBridgeFieldParamss + 1, requestsArray.count);
     return;
   }
 
-  for (NSUInteger fieldIndex = RCTBridgeFieldRequestModuleIDs; fieldIndex <= RCTBridgeFieldParamss; fieldIndex++) {
-    id field = requestsArray[fieldIndex];
-    if (![field isKindOfClass:[NSArray class]]) {
-      RCTLogError(@"Field at index %zd in buffer must be an instance of NSArray, got %@", fieldIndex, NSStringFromClass([field class]));
-      return;
-    }
-  }
+  NSArray<NSNumber *> *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
+  NSArray<NSNumber *> *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
+  NSArray<NSArray *> *paramsArrays = requestsArray[RCTBridgeFieldParamss];
 
-#endif
-
-  NSArray *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
-  NSArray *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
-  NSArray *paramsArrays = requestsArray[RCTBridgeFieldParamss];
-
-  NSUInteger numRequests = moduleIDs.count;
-
-  if (RCT_DEBUG && (numRequests != methodIDs.count || numRequests != paramsArrays.count)) {
-    RCTLogError(@"Invalid data message - all must be length: %zd", numRequests);
+  if (RCT_DEBUG && (moduleIDs.count != methodIDs.count || moduleIDs.count != paramsArrays.count)) {
+    RCTLogError(@"Invalid data message - all must be length: %zd", moduleIDs.count);
     return;
   }
 
   NSMapTable *buckets = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                                   valueOptions:NSPointerFunctionsStrongMemory
                                                       capacity:_moduleDataByID.count];
-  for (NSUInteger i = 0; i < numRequests; i++) {
-    RCTModuleData *moduleData = _moduleDataByID[[moduleIDs[i] integerValue]];
+
+  [moduleIDs enumerateObjectsUsingBlock:^(NSNumber *moduleID, NSUInteger i, __unused BOOL *stop) {
+    RCTModuleData *moduleData = _moduleDataByID[moduleID.integerValue];
     if (RCT_DEBUG) {
       // verify that class has been registered
       (void)_modulesByName[moduleData.name];
     }
-    id queue = [moduleData queue];
-    NSMutableOrderedSet *set = [buckets objectForKey:queue];
+    dispatch_queue_t queue = moduleData.queue;
+    NSMutableOrderedSet<NSNumber *> *set = [buckets objectForKey:queue];
     if (!set) {
       set = [NSMutableOrderedSet new];
       [buckets setObject:set forKey:queue];
     }
     [set addObject:@(i)];
-  }
+  }];
 
-  for (id queue in buckets) {
+  for (dispatch_queue_t queue in buckets) {
     RCTProfileBeginFlowEvent();
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      RCTProfileBeginEvent(0, RCTCurrentThreadName(), nil);
+
+#if RCT_DEV
+      NSString *_threadName = RCTCurrentThreadName();
+      RCT_PROFILE_BEGIN_EVENT(0, _threadName, nil);
+#endif
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
       @autoreleasepool {
@@ -769,7 +722,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         }
       }
 
-      RCTProfileEndEvent(0, @"objc_call,dispatch_async", @{
+      RCT_PROFILE_END_EVENT(0, @"objc_call,dispatch_async", @{
         @"calls": @(calls.count),
       });
     };
@@ -808,8 +761,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
-  RCTProfileBeginEvent(0, @"Invoke callback", nil);
-
   RCTModuleData *moduleData = _moduleDataByID[moduleID];
   if (RCT_DEBUG && !moduleData) {
     RCTLogError(@"No module found for id '%zd'", moduleID);
@@ -822,21 +773,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
+  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
+
   @try {
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
   @catch (NSException *exception) {
-    RCTLogError(@"Exception thrown while invoking %@ on target %@ with params %@: %@", method.JSMethodName, moduleData.name, params, exception);
-    if (!RCT_DEBUG && [exception.name rangeOfString:@"Unhandled JS Exception"].location != NSNotFound) {
+    // Pass on JS exceptions
+    if ([exception.name isEqualToString:RCTFatalExceptionName]) {
       @throw exception;
     }
+
+    NSString *message = [NSString stringWithFormat:
+                         @"Exception thrown while invoking %@ on target %@ with params %@: %@",
+                         method.JSMethodName, moduleData.name, params, exception];
+    RCTFatal(RCTErrorWithMessage(message));
   }
 
-  NSMutableDictionary *args = [method.profileArgs mutableCopy];
-  [args setValue:method.JSMethodName forKey:@"method"];
-  [args setValue:RCTJSONStringify(RCTNullIfNil(params), NULL) forKey:@"args"];
-
-  RCTProfileEndEvent(0, @"objc_call", args);
+  if (RCTProfileIsProfiling()) {
+    NSMutableDictionary *args = [method.profileArgs mutableCopy];
+    args[@"method"] = method.JSMethodName;
+    args[@"args"] = RCTJSONStringify(RCTNullIfNil(params), NULL);
+    RCT_PROFILE_END_EVENT(0, @"objc_call", args);
+  }
 
   return YES;
 }
@@ -844,7 +803,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)_jsThreadUpdate:(CADisplayLink *)displayLink
 {
   RCTAssertJSThread();
-  RCTProfileBeginEvent(0, @"DispatchFrameUpdate", nil);
+  RCT_PROFILE_BEGIN_EVENT(0, @"DispatchFrameUpdate", nil);
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
@@ -855,9 +814,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
       [moduleData dispatchBlock:^{
         RCTProfileEndFlowEvent();
-        RCTProfileBeginEvent(0, name, nil);
+        RCT_PROFILE_BEGIN_EVENT(0, name, nil);
         [observer didUpdateFrame:frameUpdate];
-        RCTProfileEndEvent(0, @"objc_call,fps", nil);
+        RCT_PROFILE_END_EVENT(0, @"objc_call,fps", nil);
       }];
     }
   }
@@ -867,7 +826,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   RCTProfileImmediateEvent(0, @"JS Thread Tick", 'g');
 
-  RCTProfileEndEvent(0, @"objc_call", nil);
+  RCT_PROFILE_END_EVENT(0, @"objc_call", nil);
 }
 
 - (void)startProfiling
@@ -884,9 +843,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertMainThread();
 
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    NSString *log = RCTProfileEnd(self);
-    NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
-    callback(logData);
+    RCTProfileEnd(self, ^(NSString *log) {
+      NSData *logData = [log dataUsingEncoding:NSUTF8StringEncoding];
+      callback(logData);
+    });
   }];
 }
 

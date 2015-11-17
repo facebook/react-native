@@ -25,6 +25,7 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
+@property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 
 @end
 
@@ -117,9 +118,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return _webView.backgroundColor;
 }
 
-- (NSMutableDictionary *)baseEvent
+- (NSMutableDictionary<NSString *, id> *)baseEvent
 {
-  NSMutableDictionary *event = [[NSMutableDictionary alloc] initWithDictionary: @{
+  NSMutableDictionary<NSString *, id> *event = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"url": _webView.request.URL.absoluteString ?: @"",
     @"loading" : @(_webView.loading),
     @"title": [_webView stringByEvaluatingJavaScriptFromString:@"document.title"],
@@ -142,11 +143,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
+  BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
+
+  // skip this for the JS Navigation handler
+  if (!isJSNavigation && _onShouldStartLoadWithRequest) {
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"url": (request.URL).absoluteString,
+      @"navigationType": @(navigationType)
+    }];
+    if (![self.delegate webView:self
+      shouldStartLoadForRequest:event
+                   withCallback:_onShouldStartLoadWithRequest]) {
+      return NO;
+    }
+  }
+
   if (_onLoadingStart) {
     // We have this check to filter out iframe requests and whatnot
     BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
     if (isTopFrame) {
-      NSMutableDictionary *event = [self baseEvent];
+      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
       [event addEntriesFromDictionary: @{
         @"url": (request.URL).absoluteString,
         @"navigationType": @(navigationType)
@@ -156,13 +173,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   // JS Navigation handler
-  return ![request.URL.scheme isEqualToString:RCTJSNavigationScheme];
+  return !isJSNavigation;
 }
 
 - (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
   if (_onLoadingError) {
-
     if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
       // NSURLErrorCancelled is reported when a page has a redirect OR if you load
       // a new URL in the WebView before the previous one came back. We can just
@@ -171,8 +187,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       return;
     }
 
-    NSMutableDictionary *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary:@{
       @"domain": error.domain,
       @"code": @(error.code),
       @"description": error.localizedDescription,
@@ -185,8 +201,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (_injectedJavaScript != nil) {
     NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
-    NSMutableDictionary *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{@"jsEvaluationValue":jsEvaluationValue}];
+
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    event[@"jsEvaluationValue"] = jsEvaluationValue;
+
     _onLoadingFinish(event);
   }
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.

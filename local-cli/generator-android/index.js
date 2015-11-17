@@ -84,7 +84,7 @@ module.exports = yeoman.generators.NamedBase.extend({
   end: function() {
     var projectPath = this.destinationRoot();
     this.log(chalk.white.bold('To run your app on Android:'));
-    this.log(chalk.white('   Have an Android emulator running, or a device connected'));
+    this.log(chalk.white('   Have an Android emulator running (quickest way to get started), or a device connected'));
     this.log(chalk.white('   cd ' + projectPath));
     this.log(chalk.white('   react-native run-android'));
   }

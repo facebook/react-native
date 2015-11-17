@@ -21,7 +21,6 @@ var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var View = require('View');
 
-var cloneWithProps = require('cloneWithProps');
 var ensureComponentIsNative = require('ensureComponentIsNative');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var keyOf = require('keyOf');
@@ -34,6 +33,8 @@ var DEFAULT_PROPS = {
   activeOpacity: 0.8,
   underlayColor: 'black',
 };
+
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -170,7 +171,7 @@ var TouchableHighlight = React.createClass({
   },
 
   touchableGetPressRectOffset: function() {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
   touchableGetHighlightDelayMS: function() {
@@ -224,7 +225,7 @@ var TouchableHighlight = React.createClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
         testID={this.props.testID}>
-        {cloneWithProps(
+        {React.cloneElement(
           onlyChild(this.props.children),
           {
             ref: CHILD_REF,
@@ -235,7 +236,6 @@ var TouchableHighlight = React.createClass({
   }
 });
 
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 var CHILD_REF = keyOf({childRef: null});
 var UNDERLAY_REF = keyOf({underlayRef: null});
 var INACTIVE_CHILD_PROPS = {

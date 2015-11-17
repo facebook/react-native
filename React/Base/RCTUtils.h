@@ -45,9 +45,9 @@ RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
 // Creates a standardized error object
-RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
-RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
-RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error);
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
@@ -58,9 +58,17 @@ RCT_EXTERN BOOL RCTRunningInAppExtension(void);
 // Returns the shared UIApplication instance, or nil if running in an App Extension
 RCT_EXTERN UIApplication *RCTSharedApplication(void);
 
+// Returns the current main window, useful if you need to access the root view
+// or view controller, e.g. to present a modal view controller or alert.
+RCT_EXTERN UIWindow *RCTKeyWindow(void);
+
 // Return a UIAlertView initialized with the given values
 // or nil if running in an app extension
-RCT_EXTERN UIAlertView *RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles);
+RCT_EXTERN UIAlertView *RCTAlertView(NSString *title,
+                                     NSString *message,
+                                     id delegate,
+                                     NSString *cancelButtonTitle,
+                                     NSArray<NSString *> *otherButtonTitles);
 
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);

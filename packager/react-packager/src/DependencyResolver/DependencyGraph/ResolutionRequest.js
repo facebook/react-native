@@ -12,7 +12,7 @@ const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const util = require('util');
 const path = require('path');
 const isAbsolutePath = require('absolute-path');
-const getAssetDataFromName = require('../../lib/getAssetDataFromName');
+const getAssetDataFromName = require('../lib/getAssetDataFromName');
 const Promise = require('promise');
 
 class ResolutionRequest {
@@ -70,7 +70,7 @@ class ResolutionRequest {
         throw error;
       }
 
-      console.warn(
+      debug(
         'Unable to resolve module %s from %s',
         toModuleName,
         fromModule.path
@@ -97,8 +97,10 @@ class ResolutionRequest {
       );
   }
 
-  getOrderedDependencies(response) {
-    return Promise.resolve().then(() => {
+  getOrderedDependencies(response, mocksPattern) {
+    return this._getAllMocks(mocksPattern).then(mocks => {
+      response.setMocks(mocks);
+
       const entry = this._moduleCache.getModule(this._entryPath);
       const visited = Object.create(null);
       visited[entry.hash()] = true;
@@ -110,8 +112,20 @@ class ResolutionRequest {
             depNames.map(name => this.resolveDependency(mod, name))
           ).then((dependencies) => [depNames, dependencies])
         ).then(([depNames, dependencies]) => {
+          if (mocks) {
+            return mod.getName().then(name => {
+              if (mocks[name]) {
+                const mockModule =
+                  this._moduleCache.getModule(mocks[name]);
+                depNames.push(name);
+                dependencies.push(mockModule);
+              }
+              return [depNames, dependencies];
+            });
+          }
+          return Promise.resolve([depNames, dependencies]);
+        }).then(([depNames, dependencies]) => {
           let p = Promise.resolve();
-
           const filteredPairs = [];
 
           dependencies.forEach((modDep, i) => {
@@ -161,6 +175,20 @@ class ResolutionRequest {
     }).then(asyncDependencies => asyncDependencies.forEach(
       (dependency) => response.pushAsyncDependency(dependency)
     ));
+  }
+
+  _getAllMocks(pattern) {
+    // Take all mocks in all the roots into account. This is necessary
+    // because currently mocks are global: any module can be mocked by
+    // any mock in the system.
+    let mocks = null;
+    if (pattern) {
+      mocks = Object.create(null);
+      this._fastfs.matchFilesByPattern(pattern).forEach(file =>
+        mocks[path.basename(file, path.extname(file))] = file
+      );
+    }
+    return Promise.resolve(mocks);
   }
 
   _resolveHasteDependency(fromModule, toModuleName) {
@@ -349,6 +377,7 @@ class ResolutionRequest {
   _resetResolutionCache() {
     this._immediateResolutionCache = Object.create(null);
   }
+
 }
 
 

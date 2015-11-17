@@ -24,7 +24,7 @@
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
-  static NSSet *collectionTypes;
+  static NSSet<Class> *collectionTypes;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     SEL selector = NSSelectorFromString(@"JSONStringWithOptions:error:");
@@ -121,7 +121,7 @@ id RCTJSONParseMutable(NSString *jsonString, NSError **error)
 id RCTJSONClean(id object)
 {
   static dispatch_once_t onceToken;
-  static NSSet *validLeafTypes;
+  static NSSet<Class> *validLeafTypes;
   dispatch_once(&onceToken, ^{
     validLeafTypes = [[NSSet alloc] initWithArray:@[
       [NSString class],
@@ -137,7 +137,7 @@ id RCTJSONClean(id object)
 
   if ([object isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
-    NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
+    NSMutableDictionary<NSString *, id> *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
     [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       values[key] = value;
@@ -288,31 +288,31 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
+NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData)
 {
   if (toStringify) {
     message = [message stringByAppendingString:[toStringify description]];
   }
 
-  NSMutableDictionary *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  NSMutableDictionary<NSString *, id> *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
   error[@"message"] = message;
   return error;
 }
 
-NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData)
+NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData)
 {
-  id error = RCTMakeError(message, toStringify, extraData);
+  NSDictionary<NSString *, id> *error = RCTMakeError(message, toStringify, extraData);
   RCTLogError(@"\nError: %@", error);
   return error;
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary *RCTJSErrorFromNSError(NSError *error)
+NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
   NSString *errorMessage;
-  NSArray *stackTrace = [NSThread callStackSymbols];
-  NSMutableDictionary *errorInfo =
-  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+  NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary<NSString *, id> *errorInfo =
+    [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
@@ -342,23 +342,36 @@ BOOL RCTRunningInAppExtension(void)
   return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
 }
 
-id RCTSharedApplication(void)
+UIApplication *RCTSharedApplication(void)
 {
   if (RCTRunningInAppExtension()) {
     return nil;
   }
-  
   return [[UIApplication class] performSelector:@selector(sharedApplication)];
 }
 
-id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles)
+UIWindow *RCTKeyWindow(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+
+  // TODO: replace with a more robust solution
+  return RCTSharedApplication().keyWindow;
+}
+
+UIAlertView *RCTAlertView(NSString *title,
+                          NSString *message,
+                          id delegate,
+                          NSString *cancelButtonTitle,
+                          NSArray<NSString *> *otherButtonTitles)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
     return nil;
   }
-  
-  UIAlertView *alertView = [[UIAlertView alloc] init];
+
+  UIAlertView *alertView = [UIAlertView new];
   alertView.title = title;
   alertView.message = message;
   alertView.delegate = delegate;
@@ -366,8 +379,7 @@ id RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cance
     [alertView addButtonWithTitle:cancelButtonTitle];
     alertView.cancelButtonIndex = 0;
   }
-  for (NSString *buttonTitle in otherButtonTitles)
-  {
+  for (NSString *buttonTitle in otherButtonTitles) {
     [alertView addButtonWithTitle:buttonTitle];
   }
   return alertView;
@@ -387,9 +399,8 @@ BOOL RCTImageHasAlpha(CGImageRef image)
 
 NSError *RCTErrorWithMessage(NSString *message)
 {
-  NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
-  NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-  return error;
+  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
+  return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 
 id RCTNullIfNil(id value)

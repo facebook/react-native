@@ -52,7 +52,7 @@ RCT_EXTERN NSString *const RCTDidCreateNativeModules;
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
  */
-typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
+typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleProviderBlock)(void);
 
 /**
  * This function returns the module name for a given class.

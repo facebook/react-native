@@ -54,6 +54,8 @@ var resolveAssetSource = require('resolveAssetSource');
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   resizeMode: true,
+  progressiveRenderingEnabled: true,
+  fadeDuration: true,
 });
 
 var Image = React.createClass({
@@ -70,6 +72,8 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]).isRequired,
+    progressiveRenderingEnabled: PropTypes.bool,
+    fadeDuration: PropTypes.number,
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * Used to locate this view in end-to-end tests.
@@ -115,6 +119,10 @@ var Image = React.createClass({
     this._updateViewConfig(nextProps);
   },
 
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     var source = resolveAssetSource(this.props.source);
 
@@ -147,7 +155,11 @@ var Image = React.createClass({
           </View>
         );
       } else {
-        return <RKImage {...nativeProps}/>;
+        if (this.context.isInAParentText) {
+          return <RCTTextInlineImage {...nativeProps}/>;
+        } else {
+          return <RKImage {...nativeProps}/>;
+        }
       }
     }
     return null;
@@ -170,6 +182,10 @@ var styles = StyleSheet.create({
 var RKImage = createReactNativeComponentClass({
   validAttributes: ImageViewAttributes,
   uiViewClassName: 'RCTImageView',
+});
+var RCTTextInlineImage = createReactNativeComponentClass({
+  validAttributes: ImageViewAttributes,
+  uiViewClassName: 'RCTTextInlineImage',
 });
 
 module.exports = Image;

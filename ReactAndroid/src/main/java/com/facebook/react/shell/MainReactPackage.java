@@ -18,6 +18,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.fresco.FrescoModule;
+import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
@@ -31,6 +32,7 @@ import com.facebook.react.views.scroll.ReactScrollViewManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextViewManager;
+import com.facebook.react.views.text.ReactTextInlineImageViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
@@ -47,6 +49,7 @@ public class MainReactPackage implements ReactPackage {
     return Arrays.<NativeModule>asList(
       new AsyncStorageModule(reactContext),
       new FrescoModule(reactContext),
+      new IntentModule(reactContext),
       new NetworkingModule(reactContext),
       new WebSocketModule(reactContext),
       new ToastModule(reactContext));
@@ -72,6 +75,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactToolbarManager(),
       new ReactViewManager(),
       new ReactViewPagerManager(),
+      new ReactTextInlineImageViewManager(),
       new ReactVirtualTextViewManager());
   }
 }

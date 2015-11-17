@@ -66,7 +66,7 @@ public class CatalystInstance {
   private @Nullable ReactBridge mBridge;
   private boolean mJSBundleHasLoaded;
 
-  private CatalystInstance(
+      private CatalystInstance(
       final CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry registry,
@@ -134,7 +134,11 @@ public class CatalystInstance {
 
               incrementPendingJSCalls();
 
-              mJSBundleLoader.loadScript(mBridge);
+              try {
+                mJSBundleLoader.loadScript(mBridge);
+              } catch (JSExecutionException e) {
+                mNativeModuleCallExceptionHandler.handleException(e);
+              }
 
               initLatch.countDown();
             }
@@ -408,38 +412,12 @@ public class CatalystInstance {
   private class JSProfilerTraceListener implements TraceListener {
     @Override
     public void onTraceStarted() {
-      mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
-          new Runnable() {
-            @Override
-            public void run() {
-              mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
-
-              if (mDestroyed) {
-                return;
-              }
-              Assertions.assertNotNull(mBridge).setGlobalVariable(
-                  "__BridgeProfilingIsProfiling",
-                  "true");
-            }
-          });
+      getJSModule(BridgeProfiling.class).setEnabled(true);
     }
 
     @Override
     public void onTraceStopped() {
-      mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
-          new Runnable() {
-            @Override
-            public void run() {
-              mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
-
-              if (mDestroyed) {
-                return;
-              }
-              Assertions.assertNotNull(mBridge).setGlobalVariable(
-                  "__BridgeProfilingIsProfiling",
-                  "false");
-            }
-          });
+      getJSModule(BridgeProfiling.class).setEnabled(false);
     }
   }
 

@@ -8,12 +8,10 @@
  */
 'use strict';
 
-jest
-  .dontMock('../saveBundleAndMap')
-  .dontMock('os-tmpdir')
-  .dontMock('temp');
+jest.autoMockOff();
 
 jest.mock('fs');
+jest.mock('../sign');
 
 const saveBundleAndMap = require('../saveBundleAndMap');
 const fs = require('fs');
@@ -41,10 +39,11 @@ describe('saveBundleAndMap', () => {
     saveBundleAndMap(
       codeWithMap,
       'ios',
-      bundleOutput
+      bundleOutput,
+      'utf8',
     );
 
-    expect(fs.writeFileSync.mock.calls[0]).toEqual([bundleOutput, code]);
+    expect(fs.writeFileSync.mock.calls[0]).toEqual([bundleOutput, code, 'utf8']);
   });
 
   it('should save sourcemaps if required so', () => {
@@ -55,6 +54,7 @@ describe('saveBundleAndMap', () => {
       codeWithMap,
       'ios',
       bundleOutput,
+      'utf8',
       sourceMapOutput
     );
 

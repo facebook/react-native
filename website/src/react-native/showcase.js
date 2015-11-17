@@ -25,9 +25,16 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'Bionic eStore',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
+    author: 'Digidemon',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
+    linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.canddi',
     author: 'CANDDi LTD.',
   },
   {
@@ -73,15 +80,10 @@ var apps = [
     author: 'Facebook',
   },
   {
-    name: 'Facebook Adverts Manager - Android',
-    icon: 'https://lh3.googleusercontent.com/ODKlFYm7BaNiLMEEDO2b4DOCU-hmS1-Fg3_x_lLUaJZ0ssFsxciSoX1dYERaWDJuEs8=w300',
-    link: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
-    author: 'Facebook',
-  },
-  {
-    name: 'Facebook Ads Manager - iOS',
+    name: 'Facebook Ads Manager',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
-    link: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
     author: 'Facebook',
   },
   {
@@ -109,10 +111,22 @@ var apps = [
     author: 'beijing qingfengyun Technology Co., Ltd.',
   },
   {
+    name: 'Harmonizome',
+    icon: 'http://is1.mzstatic.com/image/thumb/Purple6/v4/18/a9/bc/18a9bcde-d2d9-7574-2664-e82fff7b7208/pr_source.png/350x350-75.png',
+    link: 'https://itunes.apple.com/us/app/harmonizome/id1046990905?mt=8',
+    author: 'Michael McDermott (@_mgmcdermott)',
+  },
+  {
     name: 'Hashley',
     icon: 'http://a2.mzstatic.com/us/r30/Purple4/v4/5f/19/fc/5f19fc13-e7af-cd6b-6749-cedabdaeee7d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/hashtag-by-hashley-ironic/id1022724462?mt=8',
     author: 'Elephant, LLC',
+  },
+  {
+    name: 'Hey, Neighbor!',
+    icon: 'https://raw.githubusercontent.com/scrollback/io.scrollback.neighborhoods/master/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png',
+    link: 'https://play.google.com/store/apps/details?id=io.scrollback.neighborhoods',
+    author: 'Scrollback',
   },
   {
     name: 'HSK Level 1 Chinese Flashcards',
@@ -123,7 +137,8 @@ var apps = [
   {
     name: 'Kakapo',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
     author: 'Daniel Levitt',
   },
   {
@@ -155,6 +170,18 @@ var apps = [
     icon: 'http://a5.mzstatic.com/eu/r30/Purple3/v4/fa/5f/4c/fa5f4ce8-5aaa-5a4b-ddcc-a0c6f681d08a/icon175x175.png',
     link: 'https://itunes.apple.com/de/app/makerist-mediathek/id1019504544',
     author: 'Railslove',
+  },
+  {
+    name: 'MaxReward - Android',
+    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.bitstrek.maxreward&hl=en',
+    author: 'Neil Ma',
+  },
+  {
+    name: 'MaxReward - iOS',
+    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
+    link: 'https://itunes.apple.com/us/app/maxreward/id1050479192?ls=1&mt=8',
+    author: 'Neil Ma',
   },
   {
     name: 'MinTrain',
@@ -230,16 +257,22 @@ var apps = [
   },
   {
     name: 'RN Playground',
-    name: 'RN Playground - Android',
-    icon: 'https://lh3.googleusercontent.com/CulnTs4lfjHWzK-MJHXZbEQuw_kCwBU0fHYTOZC0FejcPK1B58Qmxyvu8xSzs6iUWhg=w300',
-    link: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
+    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
     author: 'Joshua Sierles',
   },
   {
-    name: 'RN Playground - iOS',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
-    link: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
-    author: 'Joshua Sierles',
+    name: 'Rota Employer - Hire On Demand',
+    link: 'https://itunes.apple.com/us/app/rota-employer-hire-on-demand/id1042270305?mt=8',
+    icon: 'https://avatars2.githubusercontent.com/u/15051833?v=3&s=200',
+    author: 'Rota',
+  },
+  {
+    name: 'Rota Worker - Shifts On Demand',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/51/ca/49/51ca4924-61c8-be1d-ab6d-afa510b1d393/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/rota-worker-shifts-on-demand/id1042111289?mt=8',
+    author: 'Rota',
   },
   {
     name: 'SG Toto 4d',
@@ -270,6 +303,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'WOOP',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
+    author: 'Moritz Schwörer (@mosch)',
   },
   {
     name: 'WPV',
@@ -304,6 +343,11 @@ var apps = [
 ];
 
 var showcase = React.createClass({
+  renderLinks: function(app) {
+    return (
+      <p><a href={app.linkAppStore} target="blank">iOS</a> - <a href={app.linkPlayStore} target="blank">Android</a></p>
+    );
+  },
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
@@ -317,13 +361,18 @@ var showcase = React.createClass({
           </div>
           {
             apps.map((app, i) => {
-              return (
-                <a href={app.link} className="showcase" key={i} target="blank">
+              var inner = (
+                <div>
                   <img src={app.icon} alt={app.name} />
                   <h3>{app.name}</h3>
+                  {app.linkAppStore && app.linkPlayStore ? this.renderLinks(app) : null}
                   <p>By {app.author}</p>
-                </a>
+                </div>
               );
+              if (app.linkAppStore && app.linkPlayStore) {
+                return (<div className="showcase" key={i}>{inner}</div>);
+              }
+              return (<a href={app.link} className="showcase" key={i} target="blank">{inner}</a>);
             })
           }
         </section>

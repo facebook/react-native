@@ -19,7 +19,7 @@ jest.mock('fs');
 
 var Bundler = require('../');
 var JSTransformer = require('../../JSTransformer');
-var DependencyResolver = require('../../DependencyResolver');
+var Resolver = require('../../Resolver');
 var sizeOf = require('image-size');
 var fs = require('fs');
 
@@ -54,7 +54,7 @@ describe('Bundler', function() {
   beforeEach(function() {
     getDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
-    DependencyResolver.mockImpl(function() {
+    Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
         wrapModule: wrapModule,
@@ -146,8 +146,12 @@ describe('Bundler', function() {
       };
     });
 
-    return bundler.bundle('/root/foo.js', true, 'source_map_url')
-      .then(function(p) {
+    return bundler.bundle({
+      entryFile: '/root/foo.js',
+      runBeforeMainModule: [],
+      runModule: true,
+      sourceMapUrl: 'source_map_url',
+    }).then(function(p) {
         expect(p.addModule.mock.calls[0][0]).toEqual({
           code: 'lol transformed /root/foo.js lol',
           map: 'sourcemap /root/foo.js',
@@ -221,7 +225,7 @@ describe('Bundler', function() {
         });
 
         expect(p.finalize.mock.calls[0]).toEqual([
-          {runMainModule: true}
+          {runMainModule: true, runBeforeMainModule: []}
         ]);
 
         expect(p.addAsset.mock.calls).toContain([

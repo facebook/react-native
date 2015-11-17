@@ -44,11 +44,12 @@ function buildBundle(args, config) {
           client.close();
           return outputBundle;
         })
-        .then(outputBundle => processBundle(outputBundle, !args.dev))
+        .then(outputBundle => processBundle(outputBundle, args.dev))
         .then(outputBundle => saveBundleAndMap(
           outputBundle,
           args.platform,
           args['bundle-output'],
+          args['bundle-encoding'],
           args['sourcemap-output'],
           args['assets-dest']
         ));
