@@ -399,17 +399,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
 
     for (int i = 0; i < tagsToDelete.length; i++) {
-      removeCSSNode(tagsToDelete[i]);
+      removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
     }
   }
 
-  private void removeCSSNode(int tag) {
-    ReactShadowNode node = mShadowNodeRegistry.getNode(tag);
-    mShadowNodeRegistry.removeNode(tag);
-    for (int i = node.getChildCount() - 1; i >= 0; i--) {
-      removeCSSNode(node.getChildAt(i).getReactTag());
+  private void removeShadowNode(ReactShadowNode nodeToRemove) {
+    mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
+    mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
+    for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
+      removeShadowNode(nodeToRemove.getChildAt(i));
     }
-    node.removeAllChildren();
+    nodeToRemove.removeAllChildren();
   }
 
   /**
