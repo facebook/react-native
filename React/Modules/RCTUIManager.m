@@ -904,6 +904,15 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
     _nextLayoutAnimation = nil;
   }
 
+  [self addUIBlock:^(RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    /**
+     * TODO(tadeu): Remove it once and for all
+     */
+    for (id<RCTComponent> node in uiManager->_bridgeTransactionListeners) {
+      [node reactBridgeDidFinishTransaction];
+    }
+  }];
+
   [self flushUIBlocks];
 }
 
@@ -926,12 +935,6 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
       @try {
         for (dispatch_block_t block in previousPendingUIBlocks) {
           block();
-        }
-        /**
-         * TODO(tadeu): Remove it once and for all
-         */
-        for (id<RCTComponent> node in _bridgeTransactionListeners) {
-          [node reactBridgeDidFinishTransaction];
         }
       }
       @catch (NSException *exception) {
