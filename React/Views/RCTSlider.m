@@ -32,4 +32,19 @@
   super.value = _unclippedValue;
 }
 
+- (void)setTrackImage:(UIImage *)trackImage
+{
+  if (trackImage != _trackImage) {
+    _trackImage = trackImage;
+
+    CGFloat width = trackImage.size.width;
+
+    UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, 0}];
+    UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, width}];
+
+    [super setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
+    [super setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
+  }
+}
+
 @end
