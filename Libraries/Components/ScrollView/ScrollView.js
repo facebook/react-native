@@ -418,11 +418,12 @@ var ScrollView = React.createClass({
       onResponderReject: this.scrollResponderHandleResponderReject,
     };
 
+    var onRefreshStart = this.props.onRefreshStart;
     // this is necessary because if we set it on props, even when empty,
     // it'll trigger the default pull-to-refresh behaviour on native.
-    if (this.props.onRefreshStart) {
-      props.onRefreshStart = () => this.props.onRefreshStart(this.endRefreshing);
-    }
+    props.onRefreshStart = onRefreshStart
+      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }
+      : null;
 
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
