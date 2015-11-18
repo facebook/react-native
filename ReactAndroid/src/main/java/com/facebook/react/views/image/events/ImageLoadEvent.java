@@ -17,7 +17,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-
 public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @IntDef({ON_ERROR, ON_LOAD, ON_LOAD_END, ON_LOAD_START, ON_PROGRESS})
   @Retention(RetentionPolicy.SOURCE)
