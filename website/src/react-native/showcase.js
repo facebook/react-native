@@ -287,16 +287,16 @@ var apps = [
     author: 'Spero.io',
   },
   {
-    name: 'Start - medication manager for depression',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
-    author: 'Iodine Inc.',
-  },
-  {
     name: 'Squad',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/e8/5b/3f/e85b3f52-72f3-f427-a32e-a73efe2e9682/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/squad-snaps-for-groups-friends/id1043626975?mt=8',
     author: 'Tackk Inc.',
+  },
+  {
+    name: 'Start - medication manager for depression',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
+    author: 'Iodine Inc.',
   },
   {
     name: 'Tabtor Parent',
