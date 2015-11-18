@@ -6,15 +6,14 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule PromiseTest
+ * @flow
  */
 'use strict';
 
-var RCTTestModule = require('NativeModules').TestModule;
 var React = require('react-native');
+var { TestModule } = React.NativeModules;
 
 var PromiseTest = React.createClass({
-
   shouldResolve: false,
   shouldReject: false,
   shouldSucceedAsync: false,
@@ -26,45 +25,45 @@ var PromiseTest = React.createClass({
       this.testShouldReject(),
       this.testShouldSucceedAsync(),
       this.testShouldThrowAsync(),
-    ]).then(() => RCTTestModule.markTestPassed(
+    ]).then(() => TestModule.markTestPassed(
       this.shouldResolve && this.shouldReject &&
       this.shouldSucceedAsync && this.shouldThrowAsync
     ));
   },
 
   testShouldResolve() {
-    return RCTTestModule
+    return TestModule
       .shouldResolve()
       .then(() => this.shouldResolve = true)
       .catch(() => this.shouldResolve = false);
   },
 
   testShouldReject() {
-    return RCTTestModule
+    return TestModule
       .shouldReject()
       .then(() => this.shouldReject = false)
       .catch(() => this.shouldReject = true);
   },
 
-  async testShouldSucceedAsync() {
+  async testShouldSucceedAsync() : Promise {
     try {
-      await RCTTestModule.shouldResolve();
+      await TestModule.shouldResolve();
       this.shouldSucceedAsync = true;
     } catch (e) {
       this.shouldSucceedAsync = false;
     }
   },
 
-  async testShouldThrowAsync() {
+  async testShouldThrowAsync() : Promise {
     try {
-      await RCTTestModule.shouldReject();
+      await TestModule.shouldReject();
       this.shouldThrowAsync = false;
     } catch (e) {
       this.shouldThrowAsync = true;
     }
   },
 
-  render() {
+  render() : ReactElement {
     return <React.View />;
   }
 

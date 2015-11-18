@@ -15,12 +15,11 @@ var React = require('react-native');
 var {
   Image,
   LayoutAnimation,
-  NativeModules,
   StyleSheet,
   Text,
   View,
 } = React;
-var TestModule = NativeModules.TestModule;
+var { TestModule } = React.NativeModules;
 
 var deepDiffer = require('deepDiffer');
 
