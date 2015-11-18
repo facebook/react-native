@@ -4,7 +4,7 @@ title: Upgrading
 layout: docs
 category: Guides
 permalink: docs/upgrading.html
-next: native-modules-ios
+next: platform-specific-code
 ---
 
 Upgrading to new versions of React Native will give you access to more APIs, views, developer tools
