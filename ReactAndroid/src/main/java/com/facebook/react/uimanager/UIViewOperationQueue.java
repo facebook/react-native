@@ -186,14 +186,17 @@ public class UIViewOperationQueue {
 
   private final class ChangeJSResponderOperation extends ViewOperation {
 
+    private final int mInitialTag;
     private final boolean mBlockNativeResponder;
     private final boolean mClearResponder;
 
     public ChangeJSResponderOperation(
         int tag,
+        int initialTag,
         boolean clearResponder,
         boolean blockNativeResponder) {
       super(tag);
+      mInitialTag = initialTag;
       mClearResponder = clearResponder;
       mBlockNativeResponder = blockNativeResponder;
     }
@@ -201,7 +204,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       if (!mClearResponder) {
-        mNativeViewHierarchyManager.setJSResponder(mTag, mBlockNativeResponder);
+        mNativeViewHierarchyManager.setJSResponder(mTag, mInitialTag, mBlockNativeResponder);
       } else {
         mNativeViewHierarchyManager.clearJSResponder();
       }
@@ -450,14 +453,21 @@ public class UIViewOperationQueue {
     mOperations.add(new RemoveRootViewOperation(rootViewTag));
   }
 
-  public void enqueueSetJSResponder(int reactTag, boolean blockNativeResponder) {
+  public void enqueueSetJSResponder(
+      int tag,
+      int initialTag,
+      boolean blockNativeResponder) {
     mOperations.add(
-        new ChangeJSResponderOperation(reactTag, false /*clearResponder*/, blockNativeResponder));
+        new ChangeJSResponderOperation(
+            tag,
+            initialTag,
+            false /*clearResponder*/,
+            blockNativeResponder));
   }
 
   public void enqueueClearJSResponder() {
     // Tag is 0 because JSResponderHandler doesn't need one in order to clear the responder.
-    mOperations.add(new ChangeJSResponderOperation(0, true /*clearResponder*/, false));
+    mOperations.add(new ChangeJSResponderOperation(0, 0, true /*clearResponder*/, false));
   }
 
   public void enqueueDispatchCommand(
