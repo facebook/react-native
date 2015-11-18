@@ -5,16 +5,18 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-var RCTTestModule = require('NativeModules').TestModule;
 var React = require('react-native');
 var {
   AsyncStorage,
   Text,
   View,
 } = React;
+var { TestModule } = React.NativeModules;
 
 var deepDiffer = require('deepDiffer');
 
@@ -31,21 +33,21 @@ var VAL_MERGE_EXPECT =
   {'foo': 1, 'bar': {'hoo': 2, 'boo': 1}, 'baz': 2, 'moo': {'a': 3}};
 
 // setup in componentDidMount
-var done;
-var updateMessage;
+var done = (result : ?boolean) => {};
+var updateMessage = (message : string ) => {};
 
-function runTestCase(description, fn) {
+function runTestCase(description : string, fn) {
   updateMessage(description);
   fn();
 }
 
-function expectTrue(condition, message) {
+function expectTrue(condition : boolean, message : string) {
   if (!condition) {
     throw new Error(message);
   }
 }
 
-function expectEqual(lhs, rhs, testname) {
+function expectEqual(lhs, rhs, testname : string) {
   expectTrue(
     !deepDiffer(lhs, rhs),
     'Error in test ' + testname + ': expected\n' + JSON.stringify(rhs) +
@@ -155,7 +157,7 @@ var AsyncStorageTest = React.createClass({
   },
 
   componentDidMount() {
-    done = () => this.setState({done: true}, RCTTestModule.markTestCompleted);
+    done = () => this.setState({done: true}, TestModule.markTestCompleted);
     updateMessage = (msg) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);
