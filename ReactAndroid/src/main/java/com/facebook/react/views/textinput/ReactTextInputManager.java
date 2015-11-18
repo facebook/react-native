@@ -17,6 +17,7 @@ import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Spannable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -40,6 +41,8 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
+import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
  * Manages instances of TextInput.
@@ -147,7 +150,12 @@ public class ReactTextInputManager extends
           (int) Math.ceil(padding[2]),
           (int) Math.ceil(padding[3]));
     } else if (extraData instanceof ReactTextUpdate) {
-      view.maybeSetText((ReactTextUpdate) extraData);
+      ReactTextUpdate update = (ReactTextUpdate) extraData;
+      if (update.containsImages()) {
+        Spannable spannable = update.getText();
+        TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
+      }
+      view.maybeSetText(update);
     }
   }
 
@@ -312,40 +320,47 @@ public class ReactTextInputManager extends
     public void onTextChanged(CharSequence s, int start, int before, int count) {
       // Rearranging the text (i.e. changing between singleline and multiline attributes) can
       // also trigger onTextChanged, call the event in JS only when the text actually changed
-      if (count > 0 || before > 0) {
-        Assertions.assertNotNull(mPreviousText);
-
-        int contentWidth = mEditText.getWidth();
-        int contentHeight = mEditText.getHeight();
-
-        // Use instead size of text content within EditText when available
-        if (mEditText.getLayout() != null) {
-          contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
-              mEditText.getCompoundPaddingRight();
-          contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
-              mEditText.getCompoundPaddingTop();
-        }
-
-        // The event that contains the event counter and updates it must be sent first.
-        // TODO: t7936714 merge these events
-        mEventDispatcher.dispatchEvent(
-            new ReactTextChangedEvent(
-                mEditText.getId(),
-                SystemClock.uptimeMillis(),
-                s.toString(),
-                (int) PixelUtil.toDIPFromPixel(contentWidth),
-                (int) PixelUtil.toDIPFromPixel(contentHeight),
-                mEditText.incrementAndGetEventCounter()));
-
-        mEventDispatcher.dispatchEvent(
-            new ReactTextInputEvent(
-                mEditText.getId(),
-                SystemClock.uptimeMillis(),
-                count > 0 ? s.toString().substring(start, start + count) : "",
-                before > 0 ? mPreviousText.substring(start, start + before) : "",
-                start,
-                count > 0 ? start + count - 1 : start + before));
+      if (count == 0 && before == 0) {
+        return;
       }
+
+      Assertions.assertNotNull(mPreviousText);
+      String newText = s.toString().substring(start, start + count);
+      String oldText = mPreviousText.substring(start, start + before);
+      // Don't send same text changes
+      if (count == before && newText.equals(oldText)) {
+        return;
+      }
+      int contentWidth = mEditText.getWidth();
+      int contentHeight = mEditText.getHeight();
+
+      // Use instead size of text content within EditText when available
+      if (mEditText.getLayout() != null) {
+        contentWidth = mEditText.getCompoundPaddingLeft() + mEditText.getLayout().getWidth() +
+            mEditText.getCompoundPaddingRight();
+        contentHeight = mEditText.getCompoundPaddingTop() + mEditText.getLayout().getHeight() +
+            mEditText.getCompoundPaddingTop();
+      }
+
+      // The event that contains the event counter and updates it must be sent first.
+      // TODO: t7936714 merge these events
+      mEventDispatcher.dispatchEvent(
+          new ReactTextChangedEvent(
+              mEditText.getId(),
+              SystemClock.uptimeMillis(),
+              s.toString(),
+              (int) PixelUtil.toDIPFromPixel(contentWidth),
+              (int) PixelUtil.toDIPFromPixel(contentHeight),
+              mEditText.incrementAndGetEventCounter()));
+
+      mEventDispatcher.dispatchEvent(
+          new ReactTextInputEvent(
+              mEditText.getId(),
+              SystemClock.uptimeMillis(),
+              newText,
+              oldText,
+              start,
+              count > 0 ? start + count - 1 : start + before));
     }
 
     @Override

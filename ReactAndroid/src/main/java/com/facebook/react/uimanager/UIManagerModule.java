@@ -399,16 +399,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
 
     for (int i = 0; i < tagsToDelete.length; i++) {
-      removeCSSNode(tagsToDelete[i]);
+      removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
     }
   }
 
-  private void removeCSSNode(int tag) {
-    ReactShadowNode node = mShadowNodeRegistry.getNode(tag);
-    mShadowNodeRegistry.removeNode(tag);
-    for (int i = 0;i < node.getChildCount(); i++) {
-      removeCSSNode(node.getChildAt(i).getReactTag());
+  private void removeShadowNode(ReactShadowNode nodeToRemove) {
+    mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
+    mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
+    for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
+      removeShadowNode(nodeToRemove.getChildAt(i));
     }
+    nodeToRemove.removeAllChildren();
   }
 
   /**
@@ -832,6 +833,19 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
+  }
+
+  /**
+   * Get the first non-virtual (i.e. native) parent view tag of the react view with the passed tag.
+   * If the passed tag represents a non-virtual view, the same tag is returned. If the passed tag
+   * doesn't map to a react view, or a non-virtual parent cannot be found, -1 is returned.
+   */
+  /* package */ int getNonVirtualParent(int reactTag) {
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    while (node != null && node.isVirtual()) {
+      node = node.getParent();
+    }
+    return node == null ? -1 : node.getReactTag();
   }
 
 }

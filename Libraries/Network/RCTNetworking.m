@@ -18,11 +18,11 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
-typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary *result);
+typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
 @interface RCTNetworking ()
 
-- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary *)data
+- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary<NSString *, id> *)data
                                                  callback:(RCTHTTPQueryResult)callback;
 @end
 
@@ -37,7 +37,7 @@ typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSD
 
 @implementation RCTHTTPFormDataHelper
 {
-  NSMutableArray<NSDictionary *> *_parts;
+  NSMutableArray<NSDictionary<NSString *, id> *> *_parts;
   NSMutableData *_multipartBody;
   RCTHTTPQueryResult _callback;
   NSString *_boundary;
@@ -68,12 +68,12 @@ static NSString *RCTGenerateFormBoundary()
   _multipartBody = [NSMutableData new];
   _boundary = RCTGenerateFormBoundary();
 
-  return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *error, NSDictionary *result) {
+  return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
     return [self handleResult:result error:error];
   }];
 }
 
-- (RCTURLRequestCancellationBlock)handleResult:(NSDictionary *)result
+- (RCTURLRequestCancellationBlock)handleResult:(NSDictionary<NSString *, id> *)result
                                          error:(NSError *)error
 {
   if (error) {
@@ -85,7 +85,7 @@ static NSString *RCTGenerateFormBoundary()
                               dataUsingEncoding:NSUTF8StringEncoding]];
 
   // Print headers.
-  NSMutableDictionary *headers = [_parts[0][@"headers"] mutableCopy];
+  NSMutableDictionary<NSString *, NSString *> *headers = [_parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
   if (partContentType != nil) {
     headers[@"content-type"] = partContentType;
@@ -102,7 +102,7 @@ static NSString *RCTGenerateFormBoundary()
 
   [_parts removeObjectAtIndex:0];
   if (_parts.count) {
-    return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *err, NSDictionary *res) {
+    return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *err, NSDictionary<NSString *, id> *res) {
       return [self handleResult:res error:err];
     }];
   }
@@ -121,7 +121,7 @@ static NSString *RCTGenerateFormBoundary()
  */
 @implementation RCTNetworking
 {
-  NSMutableDictionary *_tasksByRequestID;
+  NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
 }
 
@@ -165,8 +165,11 @@ RCT_EXPORT_MODULE()
     float previousPriority = 0;
     id<RCTURLRequestHandler> previousHandler = nil;
     for (id<RCTURLRequestHandler> handler in _handlers) {
+      float priority = [handler respondsToSelector:@selector(handlerPriority)] ? [handler handlerPriority] : 0;
+      if (previousHandler && priority < previousPriority) {
+        return previousHandler;
+      }
       if ([handler canHandleRequest:request]) {
-        float priority = [handler respondsToSelector:@selector(handlerPriority)] ? [handler handlerPriority] : 0;
         if (previousHandler) {
           if (priority == previousPriority) {
             RCTLogError(@"The RCTURLRequestHandlers %@ and %@ both reported that"
@@ -180,6 +183,7 @@ RCT_EXPORT_MODULE()
         }
       }
     }
+    return previousHandler;
   }
 
   // Normal code path
@@ -191,7 +195,7 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary *)query
+- (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary<NSString *, id> *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
@@ -199,8 +203,8 @@ RCT_EXPORT_MODULE()
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
   request.allHTTPHeaderFields = [RCTConvert NSDictionary:query[@"headers"]];
 
-  NSDictionary *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
-  return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary *result) {
+  NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
+  return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
     if (error) {
       RCTLogError(@"Error processing request body: %@", error);
       // Ideally we'd circle back to JS here and notify an error/abort on the request.
@@ -246,8 +250,8 @@ RCT_EXPORT_MODULE()
  * - @"contentType" (NSString): the content type header of the request
  *
  */
-- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary *)query callback:
-(RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary *result))callback
+- (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary<NSString *, id> *)query callback:
+(RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary<NSString *, id> *result))callback
 {
   if (!query) {
     return callback(nil, nil);
@@ -322,7 +326,7 @@ RCT_EXPORT_MODULE()
     }
   }
 
-  NSArray *responseJSON = @[task.requestID, responseText ?: @""];
+  NSArray<id> *responseJSON = @[task.requestID, responseText ?: @""];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkData"
                                               body:responseJSON];
 }
@@ -342,7 +346,7 @@ RCT_EXPORT_MODULE()
 
   void (^responseBlock)(NSURLResponse *) = ^(NSURLResponse *response) {
     dispatch_async(_methodQueue, ^{
-      NSDictionary *headers;
+      NSDictionary<NSString *, NSString *> *headers;
       NSInteger status;
       if ([response isKindOfClass:[NSHTTPURLResponse class]]) { // Might be a local file request
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
@@ -352,7 +356,7 @@ RCT_EXPORT_MODULE()
         headers = response.MIMEType ? @{@"Content-Type": response.MIMEType} : @{};
         status = 200;
       }
-      NSArray *responseJSON = @[task.requestID, @(status), headers];
+      NSArray<id> *responseJSON = @[task.requestID, @(status), headers];
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
                                                   body:responseJSON];
     });

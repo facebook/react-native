@@ -11,14 +11,13 @@
 
 #import "RCTConvert.h"
 #import "RCTLog.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
-const NSString *const RCTBackgroundColorProp = @"backgroundColor";
+static NSString *const RCTBackgroundColorProp = @"backgroundColor";
 
 typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_LEFT,
@@ -171,8 +170,8 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (NSDictionary *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                          parentProperties:(NSDictionary *)parentProperties
+- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
+                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
   // TODO: we always refresh all propagated properties when propagation is
   // dirtied, but really we should track which properties have changed and
@@ -181,14 +180,14 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
     if (parentBackgroundColor) {
-      [applierBlocks addObject:^(RCTSparseArray *viewRegistry) {
+      [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
         UIView *view = viewRegistry[_reactTag];
         [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }
   } else {
     // Update parent properties for children
-    NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
+    NSMutableDictionary<NSString *, id> *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];
     CGFloat alpha = CGColorGetAlpha(_backgroundColor.CGColor);
     if (alpha < 1.0) {
       // If bg is non-opaque, don't propagate further
@@ -202,14 +201,14 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 }
 
 - (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
-                parentProperties:(NSDictionary *)parentProperties
+                parentProperties:(NSDictionary<NSString *, id> *)parentProperties
 {
   if (_propagationLifecycle == RCTUpdateLifecycleComputed && [parentProperties isEqualToDictionary:_lastParentProperties]) {
     return;
   }
   _propagationLifecycle = RCTUpdateLifecycleComputed;
   _lastParentProperties = parentProperties;
-  NSDictionary *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
+  NSDictionary<NSString *, id> *nextProps = [self processUpdatedProperties:applierBlocks parentProperties:parentProperties];
   for (RCTShadowView *child in _reactSubviews) {
     [child collectUpdatedProperties:applierBlocks parentProperties:nextProps];
   }
@@ -234,7 +233,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames
 {
   RCTAssert(RCTIsReactRootView(self.reactTag),
             @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
@@ -243,7 +242,10 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
 
   [self fillCSSNode:_cssNode];
   layoutNode(_cssNode, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
+
+  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
+  return viewsWithNewFrame;
 }
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
@@ -492,19 +494,23 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 // Dimensions
 
-#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp) \
-- (void)set##setProp:(CGFloat)value                        \
-{                                                          \
-  _cssNode->style.dimensions[CSS_##cssProp] = value;       \
-  [self dirtyLayout];                                      \
-}                                                          \
-- (CGFloat)getProp                                         \
-{                                                          \
-  return _cssNode->style.dimensions[CSS_##cssProp];        \
+#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp, dimensions) \
+- (void)set##setProp:(CGFloat)value                                    \
+{                                                                      \
+  _cssNode->style.dimensions[CSS_##cssProp] = value;                   \
+  [self dirtyLayout];                                                  \
+}                                                                      \
+- (CGFloat)getProp                                                     \
+{                                                                      \
+  return _cssNode->style.dimensions[CSS_##cssProp];                    \
 }
 
-RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH)
-RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT)
+RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH, dimensions)
+RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT, dimensions)
+RCT_DIMENSIONS_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
+RCT_DIMENSIONS_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
+RCT_DIMENSIONS_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
+RCT_DIMENSIONS_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 

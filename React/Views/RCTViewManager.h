@@ -21,7 +21,7 @@
 @class RCTSparseArray;
 @class RCTUIManager;
 
-typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *viewRegistry);
+typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry);
 
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
@@ -39,7 +39,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * return a fresh instance each time. The view module MUST NOT cache the returned
  * view and return the same instance for subsequent calls.
  */
-- (UIView<RCTComponent> *)view;
+- (UIView *)view;
 
 /**
  * This method instantiates a native view using the props passed into the component.
@@ -48,7 +48,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * still be set individually, after the view is created. Like the -view method,
  * -viewWithProps: should return a fresh instance each time it is called.
  */
-- (UIView *)viewWithProps:(NSDictionary *)props;
+- (UIView *)viewWithProps:(NSDictionary<NSString *, id> *)props;
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,
@@ -97,7 +97,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * custo  layout logic or tasks that involve walking the view hierarchy.
  * To be deprecated, hopefully.
  */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry;
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;
 
 /**
  * This handles the simple case, where JS and native property names match.
