@@ -1197,14 +1197,8 @@ RCT_EXPORT_METHOD(clearJSResponder)
      NSMutableDictionary<NSString *, id> *constantsNamespace =
        [NSMutableDictionary dictionaryWithDictionary:allJSConstants[name]];
 
-     // Add custom constants
-     // TODO: should these be inherited?
-     NSDictionary<NSString *, id> *constants = RCTClassOverridesInstanceMethod([manager class], @selector(constantsToExport)) ? [manager constantsToExport] : nil;
-     if (constants.count) {
-       RCTAssert(constantsNamespace[@"Constants"] == nil , @"Cannot redefine Constants in namespace: %@", name);
-       // add an additional 'Constants' namespace for each class
-       constantsNamespace[@"Constants"] = constants;
-     }
+     // Add manager class
+     constantsNamespace[@"Manager"] = RCTBridgeModuleNameForClass([manager class]);
 
      // Add native props
      NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
