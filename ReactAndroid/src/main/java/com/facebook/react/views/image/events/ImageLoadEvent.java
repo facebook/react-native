@@ -23,10 +23,8 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @Retention(RetentionPolicy.SOURCE)
   @interface ImageEventType {}
 
-  /**
-   * Currently ON_ERROR and ON_PROGRESS are not implemented, these can be added
-   * easily once support exists in fresco.
-   */
+  // Currently ON_ERROR and ON_PROGRESS are not implemented, these can be added
+  // easily once support exists in fresco.
   public static final int ON_ERROR = 1;
   public static final int ON_LOAD = 2;
   public static final int ON_LOAD_END = 3;
@@ -73,5 +71,4 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), null);
   }
-
 }

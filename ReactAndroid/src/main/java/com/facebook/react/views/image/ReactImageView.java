@@ -140,17 +140,13 @@ public class ReactImageView extends GenericDraweeView {
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
     if (!shouldNotify) {
       mControllerListener = null;
-      return;
     } else {
       final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).
           getNativeModule(UIManagerModule.class).getEventDispatcher();
 
       mControllerListener = new BaseControllerListener<ImageInfo>() {
         @Override
-        public void onSubmit(
-            String id,
-            Object callerContext
-        ) {
+        public void onSubmit(String id, Object callerContext) {
           mEventDispatcher.dispatchEvent(
               new ImageLoadEvent(getId(), SystemClock.uptimeMillis(), ImageLoadEvent.ON_LOAD_START)
           );
@@ -172,10 +168,7 @@ public class ReactImageView extends GenericDraweeView {
         }
 
         @Override
-        public void onFailure(
-            String id,
-            Throwable throwable
-        ) {
+        public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
               new ImageLoadEvent(getId(), SystemClock.uptimeMillis(), ImageLoadEvent.ON_LOAD_END)
           );
@@ -184,7 +177,6 @@ public class ReactImageView extends GenericDraweeView {
     }
 
     mIsDirty = true;
-    maybeUpdateView();
   }
 
   public void setBorderColor(int borderColor) {
@@ -277,8 +269,10 @@ public class ReactImageView extends GenericDraweeView {
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 
+    // This builder is reused
+    mDraweeControllerBuilder.reset();
+
     mDraweeControllerBuilder
-        .reset()
         .setAutoPlayAnimations(true)
         .setCallerContext(mCallerContext)
         .setOldController(getController())
