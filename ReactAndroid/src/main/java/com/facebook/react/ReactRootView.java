@@ -295,6 +295,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       ReactInstanceManager reactInstanceManager,
       String moduleName,
       @Nullable Bundle launchOptions) {
+    UiThreadUtil.assertOnUiThread();
+
     // TODO(6788889): Use POJO instead of bundle here, apparently we can't just use WritableMap
     // here as it may be deallocated in native after passing via JNI bridge, but we want to reuse
     // it in the case of re-creating the catalyst instance
@@ -306,6 +308,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     mReactInstanceManager = reactInstanceManager;
     mJSModuleName = moduleName;
     mLaunchOptions = launchOptions;
+
+    if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+      mReactInstanceManager.createReactContextInBackground();
+    }
 
     // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
     // mAttachScheduled flag, which will make this view startReactApplication itself to instance
