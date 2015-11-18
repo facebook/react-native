@@ -16,9 +16,9 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
 var RCTUIManager = require('NativeModules').UIManager;
@@ -38,6 +38,7 @@ var WebViewState = keyMirror({
 var WebView = React.createClass({
 
   propTypes: {
+    ...View.propTypes,
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
     url: PropTypes.string,
@@ -187,16 +188,7 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = createReactNativeComponentClass({
-  validAttributes: merge(ReactNativeViewAttributes.UIView, {
-    html: true,
-    injectedJavaScript: true,
-    javaScriptEnabledAndroid: true,
-    url: true,
-    userAgent: true,
-  }),
-  uiViewClassName: 'RCTWebView',
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView);
 
 var styles = StyleSheet.create({
   container: {
