@@ -29,6 +29,7 @@ var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically
   },

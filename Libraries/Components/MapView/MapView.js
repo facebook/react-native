@@ -63,6 +63,7 @@ var MapView = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Used to style and layout the `MapView`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
