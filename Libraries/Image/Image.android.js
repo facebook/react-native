@@ -22,10 +22,10 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
 /**
@@ -60,6 +60,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 
 var Image = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
@@ -179,13 +180,15 @@ var styles = StyleSheet.create({
   }
 });
 
-var RKImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTImageView',
-});
-var RCTTextInlineImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTTextInlineImage',
-});
+var cfg = {
+  nativeOnly: {
+    src: true,
+    defaultImageSrc: true,
+    imageTag: true,
+    progressHandlerRegistered: true,
+  },
+};
+var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
 
 module.exports = Image;

@@ -18,7 +18,6 @@ var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
@@ -228,6 +227,11 @@ var MapView = React.createClass({
      * Callback that is called once, when the user taps an annotation.
      */
     onAnnotationPress: React.PropTypes.func,
+
+    /**
+     * @platform android
+     */
+    active: React.PropTypes.bool,
   },
 
   _onChange: function(event: Event) {
@@ -271,29 +275,8 @@ var MapView = React.createClass({
   },
 });
 
-if (Platform.OS === 'android') {
-  var RCTMap = createReactNativeComponentClass({
-    validAttributes: merge(
-      ReactNativeViewAttributes.UIView, {
-        active: true,
-        showsUserLocation: true,
-        zoomEnabled: true,
-        rotateEnabled: true,
-        pitchEnabled: true,
-        scrollEnabled: true,
-        region: {diff: deepDiffer},
-        annotations: {diff: deepDiffer},
-        maxDelta: true,
-        minDelta: true,
-        legalLabelInsets: {diff: insetsDiffer},
-      }
-    ),
-    uiViewClassName: 'RCTMap',
-  });
-} else {
-  var RCTMap = requireNativeComponent('RCTMap', MapView, {
-    nativeOnly: {onChange: true, onPress: true}
-  });
-}
+var RCTMap = requireNativeComponent('RCTMap', MapView, {
+  nativeOnly: {onChange: true, onPress: true}
+});
 
 module.exports = MapView;
