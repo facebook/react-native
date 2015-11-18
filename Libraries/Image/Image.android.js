@@ -22,10 +22,10 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
 /**
@@ -54,10 +54,13 @@ var resolveAssetSource = require('resolveAssetSource');
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
   resizeMode: true,
+  progressiveRenderingEnabled: true,
+  fadeDuration: true,
 });
 
 var Image = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
@@ -70,6 +73,8 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]).isRequired,
+    progressiveRenderingEnabled: PropTypes.bool,
+    fadeDuration: PropTypes.number,
     style: StyleSheetPropType(ImageStylePropTypes),
     /**
      * Used to locate this view in end-to-end tests.
@@ -115,6 +120,10 @@ var Image = React.createClass({
     this._updateViewConfig(nextProps);
   },
 
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
+
   render: function() {
     var source = resolveAssetSource(this.props.source);
 
@@ -147,7 +156,11 @@ var Image = React.createClass({
           </View>
         );
       } else {
-        return <RKImage {...nativeProps}/>;
+        if (this.context.isInAParentText) {
+          return <RCTTextInlineImage {...nativeProps}/>;
+        } else {
+          return <RKImage {...nativeProps}/>;
+        }
       }
     }
     return null;
@@ -167,9 +180,15 @@ var styles = StyleSheet.create({
   }
 });
 
-var RKImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTImageView',
-});
+var cfg = {
+  nativeOnly: {
+    src: true,
+    defaultImageSrc: true,
+    imageTag: true,
+    progressHandlerRegistered: true,
+  },
+};
+var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
 
 module.exports = Image;

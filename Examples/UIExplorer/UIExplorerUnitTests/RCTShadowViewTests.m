@@ -84,7 +84,7 @@
   [parentView insertReactSubview:footerView atIndex:2];
 
   parentView.reactTag = @1; // must be valid rootView tag
-  [parentView collectRootUpdatedFrames:nil];
+  [parentView collectRootUpdatedFrames];
 
   XCTAssertTrue(CGRectEqualToRect([parentView measureLayoutRelativeToAncestor:parentView], CGRectMake(0, 0, 440, 440)));
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets([parentView paddingAsInsets], UIEdgeInsetsMake(10, 10, 10, 10)));

@@ -13,16 +13,12 @@
 
 'use strict';
 
-var warning = require('warning');
+function emptyFunction() {}
 
-function platformWarn() {
-  warning(false, 'BackAndroid is not supported on this platform.');
-}
-
-var BackAndroid = {
-  exitApp: platformWarn,
-  addEventListener: platformWarn,
-  removeEventListener: platformWarn,
+const BackAndroid = {
+  exitApp: emptyFunction,
+  addEventListener: emptyFunction,
+  removeEventListener: emptyFunction,
 };
 
 module.exports = BackAndroid;

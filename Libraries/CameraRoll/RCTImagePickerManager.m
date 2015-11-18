@@ -9,6 +9,8 @@
  */
 
 #import "RCTImagePickerManager.h"
+
+#import "RCTConvert.h"
 #import "RCTRootView.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -40,6 +42,11 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
   return self;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 RCT_EXPORT_METHOD(canRecordVideos:(RCTResponseSenderBlock)callback)
 {
   NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
@@ -66,7 +73,7 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
 
-  if ([config[@"videoMode"] boolValue]) {
+  if ([RCTConvert BOOL:config[@"videoMode"]]) {
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
   }
 
@@ -93,10 +100,10 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
   imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
   NSMutableArray<NSString *> *allowedTypes = [NSMutableArray new];
-  if ([config[@"showImages"] boolValue]) {
+  if ([RCTConvert BOOL:config[@"showImages"]]) {
     [allowedTypes addObject:(NSString *)kUTTypeImage];
   }
-  if ([config[@"showVideos"] boolValue]) {
+  if ([RCTConvert BOOL:config[@"showVideos"]]) {
     [allowedTypes addObject:(NSString *)kUTTypeMovie];
   }
 
@@ -110,7 +117,7 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
-didFinishPickingMediaWithInfo:(NSDictionary *)info
+didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
   NSUInteger index = [_pickers indexOfObject:picker];
   RCTResponseSenderBlock callback = _pickerCallbacks[index];

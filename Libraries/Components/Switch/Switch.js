@@ -6,10 +6,11 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -23,6 +24,7 @@ type DefaultProps = {
  */
 var Switch = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * The value of the switch.  If true the switch will be turned on.
      * Default value is false.
@@ -115,7 +117,7 @@ var styles = StyleSheet.create({
 });
 
 if (Platform.OS === 'android') {
-  var RCTSwitch = requireNativeComponent('AndroidSwitch', null, {
+  var RCTSwitch = requireNativeComponent('AndroidSwitch', Switch, {
     nativeOnly: { onChange: true, on: true, enabled: true }
   });
 } else {

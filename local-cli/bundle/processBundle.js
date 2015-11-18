@@ -10,15 +10,15 @@
 
 const log = require('../util/log').out('bundle');
 
-function processBundle(input, shouldMinify) {
+function processBundle(input, dev) {
   log('start');
   let bundle;
-  if (shouldMinify) {
-    bundle = input.getMinifiedSourceAndMap();
+  if (!dev) {
+    bundle = input.getMinifiedSourceAndMap(dev);
   } else {
     bundle = {
-      code: input.getSource(),
-      map: JSON.stringify(input.getSourceMap()),
+      code: input.getSource({ dev }),
+      map: JSON.stringify(input.getSourceMap({ dev })),
     };
   }
   bundle.assets = input.getAssets();

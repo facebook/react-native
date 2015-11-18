@@ -180,9 +180,11 @@ function setUpNumber() {
 
 function setUpDevTools() {
   // not when debugging in chrome
-  if (__DEV__ && !window.document && require('Platform').OS === 'ios') {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
+  if (__DEV__) { // TODO(9123099) Strip `__DEV__ &&`
+    if (!window.document && require('Platform').OS === 'ios') {
+      var setupDevtools = require('setupDevtools');
+      setupDevtools();
+    }
   }
 }
 
@@ -202,6 +204,8 @@ setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDebugComponentOwnership');
+if (__DEV__) {
+  require('RCTDebugComponentOwnership');
+}
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');

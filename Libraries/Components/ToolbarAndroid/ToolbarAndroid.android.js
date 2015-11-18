@@ -17,6 +17,7 @@ var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -67,6 +68,7 @@ var ToolbarAndroid = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
      * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
@@ -143,7 +145,7 @@ var ToolbarAndroid = React.createClass({
       nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
     }
     if (this.props.actions) {
-      nativeProps.actions = [];
+      var nativeActions = [];
       for (var i = 0; i < this.props.actions.length; i++) {
         var action = {
           ...this.props.actions[i],
@@ -154,8 +156,9 @@ var ToolbarAndroid = React.createClass({
         if (action.show) {
           action.show = RCTUIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
         }
-        nativeProps.actions.push(action);
+        nativeActions.push(action);
       }
+      nativeProps.nativeActions = nativeActions;
     }
 
     return <NativeToolbar onSelect={this._onSelect} {...nativeProps} />;
@@ -183,6 +186,10 @@ var toolbarAttributes = {
   titleColor: true,
 };
 
-var NativeToolbar = requireNativeComponent('ToolbarAndroid', null);
+var NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
+  nativeOnly: {
+    nativeActions: true,
+  }
+});
 
 module.exports = ToolbarAndroid;

@@ -50,6 +50,10 @@ public class DevInternalSettings implements
     return mPreferences.getBoolean(PREFS_FPS_DEBUG_KEY, false);
   }
 
+  public void setFpsDebugEnabled(boolean enabled) {
+    mPreferences.edit().putBoolean(PREFS_FPS_DEBUG_KEY, enabled).apply();
+  }
+
   @Override
   public boolean isAnimationFpsDebugEnabled() {
     return mPreferences.getBoolean(PREFS_ANIMATIONS_DEBUG_KEY, false);
@@ -74,5 +78,9 @@ public class DevInternalSettings implements
 
   public boolean isReloadOnJSChangeEnabled() {
     return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);
+  }
+
+  public void setReloadOnJSChangeEnabled(boolean enabled) {
+    mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
   }
 }
