@@ -6,14 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule IntegrationTestsApp
+ * @flow
  */
 'use strict';
 
-require('regenerator/runtime');
-
 var React = require('react-native');
-
 var {
   AppRegistry,
   ScrollView,
@@ -23,7 +20,7 @@ var {
   View,
 } = React;
 
-/* Keep this list in sync with UIExplorerIntegrationTests.m */
+// Keep this list in sync with UIExplorerIntegrationTests.m
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
