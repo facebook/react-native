@@ -10,15 +10,16 @@
  */
 'use strict';
 
-var Inspector = require('Inspector');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var View = require('View');
-var WarningBox = require('WarningBox');
 
 var invariant = require('invariant');
+
+var Inspector = __DEV__ ? require('Inspector') : null;
+var WarningBox = __DEV__ ? require('WarningBox') : null;
 
 var AppContainer = React.createClass({
   mixins: [Subscribable.Mixin],
@@ -28,7 +29,7 @@ var AppContainer = React.createClass({
   },
 
   toggleElementInspector: function() {
-    var inspector = this.state.inspector
+    var inspector = !__DEV__ || this.state.inspector
       ? null
       : <Inspector
           rootTag={this.props.rootTag}
