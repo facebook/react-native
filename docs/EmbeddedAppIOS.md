@@ -117,6 +117,8 @@ In a view controller that wants to manage this view, go ahead and add an outlet 
 @end
 ```
 
+> For Swift apps there is no need for that.
+
 Here I disabled **AutoLayout** for simplicity. In real production world, you should turn on AutoLayout and setup constraints by yourself.
 
 ## Add RCTRootView To Container View
@@ -145,6 +147,32 @@ Then add it as a subview of the `ReactView`.
 [self addSubview:rootView];
 rootView.frame = self.bounds;
 ```
+
+> Or for Swift apps, on the ReactView.swift file add the following:
+> 
+> ```
+> import UIKit
+> import React
+> 
+> class ReactView: UIView {
+>     
+>     let rootView: RCTRootView = RCTRootView(bundleURL: NSURL(string: "http://localhost:8081/index.ios.bundle?platform=ios"),
+>                                             moduleName: "SimpleApp", initialProperties: nil, launchOptions: nil)
+>     
+>     override func layoutSubviews() {
+>         super.layoutSubviews()
+>        
+>         loadReact()
+>     }
+>     
+>     func loadReact (){
+>         addSubview(rootView)
+>         rootView.frame = self.bounds
+>     }
+> }
+> ```
+> 
+> And then make sure your view is added in a ViewContainer or story board file.
 
 ## Start Development Server
 
