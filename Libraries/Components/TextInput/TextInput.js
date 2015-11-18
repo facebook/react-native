@@ -14,9 +14,9 @@
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var RCTUIManager = require('NativeModules').UIManager;
 var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
+var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactChildren = require('ReactChildren');
 var StyleSheet = require('StyleSheet');
@@ -24,6 +24,7 @@ var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var View = require('View');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
@@ -91,6 +92,7 @@ var TextInput = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Can tell TextInput to automatically capitalize certain characters.
      *
