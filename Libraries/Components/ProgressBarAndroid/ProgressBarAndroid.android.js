@@ -14,6 +14,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -63,6 +64,7 @@ var indeterminateType = function(props, propName, componentName) {
  */
 var ProgressBarAndroid = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Style of the ProgressBar. One of:
      *

@@ -17,6 +17,7 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -40,6 +41,7 @@ var SwitchIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * The value of the switch, if true the switch will be turned on.
      * Default value is false.

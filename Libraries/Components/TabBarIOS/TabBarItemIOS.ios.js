@@ -21,6 +21,7 @@ var requireNativeComponent = require('requireNativeComponent');
 
 var TabBarItemIOS = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */

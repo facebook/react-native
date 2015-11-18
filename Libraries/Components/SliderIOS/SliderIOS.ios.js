@@ -26,6 +26,7 @@ var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Used to style and layout the `Slider`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
