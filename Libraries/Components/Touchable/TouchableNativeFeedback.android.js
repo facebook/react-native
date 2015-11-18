@@ -17,11 +17,11 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 var processColor = require('processColor');
+var requireNativeComponent = require('requireNativeComponent');
 
 var rippleBackgroundPropType = createStrictShapeTypeChecker({
   type: React.PropTypes.oneOf(['RippleAndroid']),
@@ -39,12 +39,10 @@ var backgroundPropType = PropTypes.oneOfType([
   themeAttributeBackgroundPropType,
 ]);
 
-var TouchableView = createReactNativeComponentClass({
-  validAttributes: {
-    ...ReactNativeViewAttributes.UIView,
+var TouchableView = requireNativeComponent('RCTView', null, {
+  nativeOnly: {
     nativeBackgroundAndroid: backgroundPropType,
-  },
-  uiViewClassName: 'RCTView',
+  }
 });
 
 var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};

@@ -24,7 +24,6 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
@@ -55,6 +54,7 @@ var INNERVIEW = 'InnerScrollView';
  */
 var ScrollView = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Controls whether iOS should automatically adjust the content inset
      * for scroll views that are placed behind a navigation bar or
@@ -459,14 +459,11 @@ var validAttributes = {
 };
 
 if (Platform.OS === 'android') {
-  var AndroidScrollView = createReactNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'RCTScrollView',
-  });
-  var AndroidHorizontalScrollView = createReactNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'AndroidHorizontalScrollView',
-  });
+  var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView);
+  var AndroidHorizontalScrollView = requireNativeComponent(
+    'AndroidHorizontalScrollView',
+    ScrollView
+  );
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }
