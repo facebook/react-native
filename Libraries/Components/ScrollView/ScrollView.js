@@ -283,7 +283,7 @@ var ScrollView = React.createClass({
 
     /**
      * When defined, displays a UIRefreshControl.
-     * Invoked with a function to stop refreshing when then UIRefreshControl is animating.
+     * Invoked with a function to stop refreshing when the UIRefreshControl is animating.
      *
      * ```
      * (endRefreshing) => {
