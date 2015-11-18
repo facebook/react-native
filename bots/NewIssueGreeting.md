@@ -1,4 +1,4 @@
-Hey $author, thanks for reporting this issue!
+Hey {author}, thanks for reporting this issue!
 
 We've started using a new website called **[Product Pains](https://productpains.com/product/react-native/?tab=top)** to help the community **prioritize issues**.
 
