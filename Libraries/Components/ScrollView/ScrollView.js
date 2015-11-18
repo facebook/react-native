@@ -422,7 +422,7 @@ var ScrollView = React.createClass({
     // this is necessary because if we set it on props, even when empty,
     // it'll trigger the default pull-to-refresh behaviour on native.
     props.onRefreshStart = onRefreshStart
-      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }
+      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
       : null;
 
     var ScrollViewClass;
