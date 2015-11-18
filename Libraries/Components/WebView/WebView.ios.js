@@ -88,6 +88,7 @@ var WebView = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     url: PropTypes.string,
     html: PropTypes.string,
     renderError: PropTypes.func, // view to show if there's an error
