@@ -22,7 +22,7 @@ We recommend periodically running `brew update && brew upgrade` to keep your pro
 
 ## iOS Setup
 
-[Xcode](https://developer.apple.com/xcode/downloads/) 6.3 or higher is required. It can be installed from the App Store.
+[Xcode](https://developer.apple.com/xcode/downloads/) 7.0 or higher is required. It can be installed from the App Store.
 
 ## Android Setup
 
