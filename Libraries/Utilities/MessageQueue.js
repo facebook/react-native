@@ -67,6 +67,8 @@ class MessageQueue {
       this._genModulesConfig(localModules),this._moduleTable, this._methodTable
     );
 
+    this._copyNativeComponentConstants(this.RemoteModules);
+
     this._debugInfo = {};
     this._remoteModuleTable = {};
     this._remoteMethodTable = {};
@@ -184,6 +186,30 @@ class MessageQueue {
   /**
    * Private helper methods
    */
+
+  /**
+   * Copies the ViewManager constants into UIManager. This is only
+   * needed for iOS, which puts the constants in the ViewManager
+   * namespace instead of UIManager, unlike Android.
+   */
+  _copyNativeComponentConstants(remoteModules) {
+    let UIManager = remoteModules.RCTUIManager;
+    UIManager && Object.keys(UIManager).forEach(viewName => {
+      let viewConfig = UIManager[viewName];
+      if (viewConfig.Manager) {
+        const viewManager = remoteModules[viewConfig.Manager];
+        viewManager && Object.keys(viewManager).forEach(key => {
+          const value = viewManager[key];
+          if (typeof value !== 'function') {
+            if (!viewConfig.Constants) {
+              viewConfig.Constants = {};
+            }
+            viewConfig.Constants[key] = value;
+          }
+        });
+      }
+    });
+  }
 
   /**
    * Converts the old, object-based module structure to the new
