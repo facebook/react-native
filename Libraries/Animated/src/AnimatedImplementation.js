@@ -547,7 +547,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   /**
    * Directly set the value.  This will stop any animations running on the value
-   * and udpate all the bound properties.
+   * and update all the bound properties.
    */
   setValue(value: number): void {
     if (this._animation) {
