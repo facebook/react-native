@@ -77,7 +77,8 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 #### Java
 
-* In method calls spanning multiple lines, closing bracket is on the same line as the last argument.
+* If a method call spans multiple lines closing bracket is on the same line as the last argument.
+* If a method header doesn't fit on one line each argument goes on a separate line.
 * 100 character line length
 
 ### Documentation
