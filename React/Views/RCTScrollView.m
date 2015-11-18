@@ -355,6 +355,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)setRefreshControl:(UIRefreshControl *)refreshControl
 {
+  if (!refreshControl) {
+    [_refreshControl removeFromSuperview];
+    _refreshControl = nil;
+    return;
+  }
   _refreshControl = refreshControl;
   [self addSubview:_refreshControl];
 }
@@ -853,6 +858,16 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
 
 - (void)setOnRefreshStart:(RCTDirectEventBlock)onRefreshStart
 {
+  if (!onRefreshStart) {
+    _onRefreshStart = nil;
+    _scrollView.refreshControl = nil;
+    return;
+  }
+  
+  if (_scrollView.refreshControl) {
+    return;
+  }
+  
   _onRefreshStart = [onRefreshStart copy];
   UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
   [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
