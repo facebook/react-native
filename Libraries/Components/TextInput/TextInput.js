@@ -14,9 +14,9 @@
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var RCTUIManager = require('NativeModules').UIManager;
 var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
+var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactChildren = require('ReactChildren');
 var StyleSheet = require('StyleSheet');
@@ -24,6 +24,7 @@ var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var View = require('View');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
@@ -31,7 +32,6 @@ var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
-  onSelectionChange: true, // not supported in Open Source yet
   onTextInput: true, // not supported in Open Source yet
   children: true,
 };
@@ -92,6 +92,7 @@ var TextInput = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Can tell TextInput to automatically capitalize certain characters.
      *
@@ -413,6 +414,17 @@ var TextInput = React.createClass({
   _renderIOS: function() {
     var textContainer;
 
+    var onSelectionChange;
+    if (this.props.selectionState || this.props.onSelectionChange) {
+      onSelectionChange = (event: Event) => {
+        if (this.props.selectionState) {
+          var selection = event.nativeEvent.selection;
+          this.props.selectionState.update(selection.start, selection.end);
+        }
+        this.props.onSelectionChange && this.props.onSelectionChange(event);
+      };
+    }
+
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
     if (!props.multiline) {
@@ -430,7 +442,8 @@ var TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChangeShouldSetResponder={() => true}
+          onSelectionChange={onSelectionChange}
+          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
           mostRecentEventCount={this.state.mostRecentEventCount}
         />;
@@ -465,7 +478,7 @@ var TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChange={this._onSelectionChange}
+          onSelectionChange={onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
@@ -579,14 +592,6 @@ var TextInput = React.createClass({
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
-  },
-
-  _onSelectionChange: function(event: Event) {
-    if (this.props.selectionState) {
-      var selection = event.nativeEvent.selection;
-      this.props.selectionState.update(selection.start, selection.end);
-    }
-    this.props.onSelectionChange && this.props.onSelectionChange(event);
   },
 
   _onTextInput: function(event: Event) {

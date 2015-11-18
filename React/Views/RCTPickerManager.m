@@ -26,7 +26,7 @@ RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   UIPickerView *view = [UIPickerView new];
   return @{

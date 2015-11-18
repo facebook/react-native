@@ -122,6 +122,9 @@ var styles = StyleSheet.create({
   },
 });
 
-var NativeAndroidRecyclerView = requireNativeComponent('AndroidRecyclerViewBackedScrollView', null);
+var NativeAndroidRecyclerView = requireNativeComponent(
+  'AndroidRecyclerViewBackedScrollView',
+  RecyclerViewBackedScrollView
+);
 
 module.exports = RecyclerViewBackedScrollView;

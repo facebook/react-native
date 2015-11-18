@@ -12,7 +12,7 @@
 const path = require('path');
 const Activity = require('../Activity');
 const DependencyGraph = require('../DependencyResolver/DependencyGraph');
-const replacePatterns = require('../DependencyResolver/replacePatterns');
+const replacePatterns = require('../DependencyResolver/lib/replacePatterns');
 const Polyfill = require('../DependencyResolver/Polyfill');
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
@@ -120,6 +120,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),
+      path.join(__dirname, 'polyfills/babelHelpers.js'),
     ].concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(

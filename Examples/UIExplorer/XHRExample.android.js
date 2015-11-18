@@ -18,6 +18,7 @@
 var React = require('react-native');
 var {
   PixelRatio,
+  ProgressBarAndroid,
   StyleSheet,
   Text,
   TextInput,
@@ -61,7 +62,6 @@ class Downloader extends React.Component {
         this.setState({
           downloaded: xhr.responseText.length,
         });
-        console.log(xhr.responseText.length);
       } else if (xhr.readyState === xhr.DONE) {
         if (this.cancelled) {
           this.cancelled = false;
@@ -83,6 +83,8 @@ class Downloader extends React.Component {
       }
     };
     xhr.open('GET', 'http://www.gutenberg.org/cache/epub/100/pg100.txt');
+    // Avoid gzip so we can actually show progress
+    xhr.setRequestHeader('Accept-Encoding', '');
     xhr.send();
     this.xhr = xhr;
 
@@ -114,6 +116,8 @@ class Downloader extends React.Component {
     return (
       <View>
         {button}
+        <ProgressBarAndroid progress={(this.state.downloaded / this.state.contentSize)}
+          styleAttr="Horizontal" indeterminate={false} />
         <Text>{this.state.status}</Text>
       </View>
     );
