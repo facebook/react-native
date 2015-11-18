@@ -91,6 +91,7 @@ public class ReactInstanceManager {
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
+  private volatile boolean mHasStartedCreatingInitialContext = false;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -235,11 +236,41 @@ public class ReactInstanceManager {
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
-   * {@link ReactRootView} is available and measured.
+   * {@link ReactRootView} is available and measured. This should only be called the first time the
+   * application is set up, which is enforced to keep developers from accidentally creating their
+   * application multiple times without realizing it.
    *
    * Called from UI thread.
    */
   public void createReactContextInBackground() {
+    Assertions.assertCondition(
+        !mHasStartedCreatingInitialContext,
+        "createReactContextInBackground should only be called when creating the react " +
+            "application for the first time. When reloading JS, e.g. from a new file, explicitly" +
+            "use recreateReactContextInBackground");
+
+    mHasStartedCreatingInitialContext = true;
+    recreateReactContextInBackgroundInner();
+  }
+
+  /**
+   * Recreate the react application and context. This should be called if configuration has
+   * changed or the developer has requested the app to be reloaded. It should only be called after
+   * an initial call to createReactContextInBackground.
+   *
+   * Called from UI thread.
+   */
+  public void recreateReactContextInBackground() {
+    Assertions.assertCondition(
+        mHasStartedCreatingInitialContext,
+        "recreateReactContextInBackground should only be called after the initial " +
+            "createReactContextInBackground call.");
+    recreateReactContextInBackgroundInner();
+  }
+
+  private void recreateReactContextInBackgroundInner() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mUseDeveloperSupport && mJSMainModuleName != null) {
       if (mDevSupportManager.hasUpToDateJSBundleInCache()) {
         // If there is a up-to-date bundle downloaded from server, always use that
@@ -275,6 +306,14 @@ public class ReactInstanceManager {
     recreateReactContextInBackground(
         new JSCJavaScriptExecutor(),
         JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
+  }
+
+  /**
+   * @return whether createReactContextInBackground has been called. Will return false after
+   * onDestroy until a new initial context has been created.
+   */
+  public boolean hasStartedCreatingInitialContext() {
+    return mHasStartedCreatingInitialContext;
   }
 
   /**
@@ -362,6 +401,8 @@ public class ReactInstanceManager {
 
     if (mCurrentReactContext != null) {
       mCurrentReactContext.onDestroy();
+      mCurrentReactContext = null;
+      mHasStartedCreatingInitialContext = false;
     }
   }
 
