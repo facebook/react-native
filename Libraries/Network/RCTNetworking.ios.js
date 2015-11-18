@@ -10,4 +10,21 @@
  */
 'use strict';
 
-module.exports = require('NativeModules').Networking;
+var RCTNetworkingNative = require('NativeModules').Networking;
+
+/**
+ * This class is a wrapper around the native RCTNetworking module.
+ */
+class RCTNetworking {
+
+  static sendRequest(query, callback) {
+    RCTNetworkingNative.sendRequest(query, callback);
+  }
+
+  static abortRequest(requestId) {
+    RCTNetworkingNative.cancelRequest(requestId);
+  }
+
+}
+
+module.exports = RCTNetworking;
