@@ -20,16 +20,14 @@ import java.util.concurrent.TimeUnit;
 import android.util.DisplayMetrics;
 
 import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.debug.NotThreadSafeUiManagerDebugListener;
-import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -37,6 +35,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.uimanager.debug.NotThreadSafeUiManagerDebugListener;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -664,7 +664,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
-    mOperationsQueue.enqueueSetJSResponder(reactTag, blockNativeResponder);
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    while (node.isVirtual() || node.isLayoutOnly()) {
+      node = node.getParent();
+    }
+    mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
   }
 
   @ReactMethod
