@@ -106,7 +106,11 @@ function getScaledAssetPath(asset) {
   var scale = pickScale(asset.scales, PixelRatio.get());
   var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   var assetDir = getBasePath(asset);
-  return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+  var imagePath = assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+  if (imagePath[0] == "/" || imagePath[0] == "\\") {
+	  imagePath = imagePath.substr(1);
+  }
+  return imagePath;
 }
 
 function pickScale(scales: Array<number>, deviceScale: number): number {
