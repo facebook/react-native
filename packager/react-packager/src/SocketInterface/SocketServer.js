@@ -121,6 +121,14 @@ class SocketServer {
         );
         break;
 
+      case 'buildPrepackBundle':
+        this._jobs++;
+        this._packagerServer.buildPrepackBundle(m.data).then(
+          (result) => this._reply(sock, m.id, 'result', result),
+          handleError,
+        );
+        break;
+
       case 'getOrderedDependencyPaths':
         this._jobs++;
         this._packagerServer.getOrderedDependencyPaths(m.data).then(
