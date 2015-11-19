@@ -13,6 +13,11 @@ var center = require('center');
 
 var apps = [
   {
+    name: 'Townske - Stunning City Guides Made By Locals & Traveller',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
+    author: 'Townske PTY LTD',
+  },{
     name: 'AIGA Design Conference 2015: New Orleans',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
