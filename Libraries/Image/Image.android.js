@@ -200,6 +200,7 @@ var cfg = {
     defaultImageSrc: true,
     imageTag: true,
     progressHandlerRegistered: true,
+    shouldNotifyLoadEvents: true,
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);

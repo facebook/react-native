@@ -36,18 +36,20 @@ var NetworkImageCallbackExample = React.createClass({
   },
 
   componentWillMount() {
-    this.mountDate = new Date();
+    this.setState({mountTime: new Date()});
   },
 
   render: function() {
+    var { mountTime } = this.state;
+
     return (
       <View>
         <Image
           source={this.props.source}
           style={[styles.base, {overflow: 'visible'}]}
-          onLoadStart={() => this._loadEventFired(`✔ onLoadStart (+${new Date() - this.mountDate}ms)`)}
-          onLoad={() => this._loadEventFired(`✔ onLoad (+${new Date() - this.mountDate}ms)`)}
-          onLoadEnd={() => this._loadEventFired(`✔ onLoadEnd (+${new Date() - this.mountDate}ms)`)}
+          onLoadStart={() => this._loadEventFired(`✔ onLoadStart (+${new Date() - mountTime}ms)`)}
+          onLoad={() => this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`)}
+          onLoadEnd={() => this._loadEventFired(`✔ onLoadEnd (+${new Date() - mountTime}ms)`)}
         />
 
         <Text style={{marginTop: 20}}>
