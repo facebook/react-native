@@ -438,12 +438,8 @@ public class ReactInstanceManager {
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
-    if (!mIsContextInitAsyncTaskRunning) {
-      if (mCurrentReactContext == null) {
-        createReactContextInBackground();
-      } else {
-        attachMeasuredRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
-      }
+    if (!mIsContextInitAsyncTaskRunning && mCurrentReactContext != null) {
+      attachMeasuredRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
     }
   }
 
