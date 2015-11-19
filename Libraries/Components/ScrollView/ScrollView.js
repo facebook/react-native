@@ -15,6 +15,7 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
+var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
@@ -279,6 +280,21 @@ var ScrollView = React.createClass({
      * @platform ios
      */
     zoomScale: PropTypes.number,
+
+    /**
+     * When defined, displays a UIRefreshControl.
+     * Invoked with a function to stop refreshing when the UIRefreshControl is animating.
+     *
+     * ```
+     * (endRefreshing) => {
+     *      endRefreshing();
+     * }
+     * ```
+     *
+     * @platform ios
+     */
+    onRefreshStart: PropTypes.func,
+
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -289,6 +305,12 @@ var ScrollView = React.createClass({
 
   setNativeProps: function(props: Object) {
     this.refs[SCROLLVIEW].setNativeProps(props);
+  },
+
+  endRefreshing: function() {
+    RCTScrollViewManager.endRefreshing(
+      React.findNodeHandle(this)
+    );
   },
 
   /**
@@ -395,6 +417,13 @@ var ScrollView = React.createClass({
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
     };
+
+    var onRefreshStart = this.props.onRefreshStart;
+    // this is necessary because if we set it on props, even when empty,
+    // it'll trigger the default pull-to-refresh behaviour on native.
+    props.onRefreshStart = onRefreshStart
+      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
+      : null;
 
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
