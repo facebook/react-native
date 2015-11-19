@@ -30,6 +30,20 @@ var ImageStylePropTypes = {
   // It changes the color of all the non-transparent pixels to the tintColor
   tintColor: ReactPropTypes.string,
   opacity: ReactPropTypes.number,
+
+  // Android-Specific styles
+  borderTopLeftRadius: ReactPropTypes.number,
+  borderTopRightRadius: ReactPropTypes.number,
+  borderBottomLeftRadius: ReactPropTypes.number,
+  borderBottomRightRadius: ReactPropTypes.number,
+  borderTopLeftVerticalRadius: ReactPropTypes.number,
+  borderTopLeftHorizontalRadius: ReactPropTypes.number,
+  borderTopRightVerticalRadius: ReactPropTypes.number,
+  borderTopRightHorizontalRadius: ReactPropTypes.number,
+  borderBottomLeftVerticalRadius: ReactPropTypes.number,
+  borderBottomLeftHorizontalRadius: ReactPropTypes.number,
+  borderBottomRightVerticalRadius: ReactPropTypes.number,
+  borderBottomRightHorizontalRadius: ReactPropTypes.number,
 };
 
 module.exports = ImageStylePropTypes;

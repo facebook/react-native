@@ -17,12 +17,15 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
+import com.facebook.csslayout.CSSConstants;
+import com.facebook.csslayout.FloatUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils;
@@ -62,7 +65,7 @@ public class ReactImageView extends GenericDraweeView {
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
-    float getRadius(Bitmap source) {
+    float[] getRadii(Bitmap source) {
         ScalingUtils.getTransform(
             sMatrix,
             new Rect(0, 0, source.getWidth(), source.getHeight()),
@@ -72,33 +75,55 @@ public class ReactImageView extends GenericDraweeView {
             0.0f,
             mScaleType);
         sMatrix.invert(sInverse);
-        return sInverse.mapRadius(mBorderRadius);
+        return new float[]{
+          sInverse.mapRadius(mBorderRadius[0]),
+          sInverse.mapRadius(mBorderRadius[1]),
+          sInverse.mapRadius(mBorderRadius[2]),
+          sInverse.mapRadius(mBorderRadius[3]),
+          sInverse.mapRadius(mBorderRadius[4]),
+          sInverse.mapRadius(mBorderRadius[5]),
+          sInverse.mapRadius(mBorderRadius[6]),
+          sInverse.mapRadius(mBorderRadius[7])
+        };
     }
 
     @Override
     public void process(Bitmap output, Bitmap source) {
       output.setHasAlpha(true);
-      if (mBorderRadius < 0.01f) {
+
+      if (mBorderRadius[0] < 0.01f &&
+          mBorderRadius[1] < 0.01f &&
+          mBorderRadius[2] < 0.01f &&
+          mBorderRadius[3] < 0.01f &&
+          mBorderRadius[4] < 0.01f &&
+          mBorderRadius[5] < 0.01f &&
+          mBorderRadius[6] < 0.01f &&
+          mBorderRadius[7] < 0.01f) {
         super.process(output, source);
         return;
       }
+
       Paint paint = new Paint();
       paint.setAntiAlias(true);
       paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
       Canvas canvas = new Canvas(output);
-      float radius = getRadius(source);
-      canvas.drawRoundRect(
+      float[] radii = getRadii(source);
+
+      Path pathForBorderRadius = new Path();
+
+      pathForBorderRadius.addRoundRect(
           new RectF(0, 0, source.getWidth(), source.getHeight()),
-          radius,
-          radius,
-          paint);
+          radii,
+          Path.Direction.CW);
+
+      canvas.drawPath(pathForBorderRadius, paint);
     }
   }
 
   private @Nullable Uri mUri;
   private int mBorderColor;
   private float mBorderWidth;
-  private float mBorderRadius;
+  private float[] mBorderRadius = new float[8];
   private ScalingUtils.ScaleType mScaleType;
   private boolean mIsDirty;
   private boolean mIsLocalImage;
@@ -137,9 +162,23 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setBorderRadius(float borderRadius) {
-    mBorderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    mIsDirty = true;
+  public void setBorderRadius(int position, int count, float radius) {
+    if (CSSConstants.isUndefined(radius) || radius < 0) {
+      radius = 0f;
+    }
+
+    boolean changed = false;
+
+    for(int i = position; i < (position + count); i++) {
+      if (!FloatUtil.floatsEqual(mBorderRadius[i], radius)) {
+        mBorderRadius[i] = radius;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      mIsDirty = true;
+    }
   }
 
   public void setScaleType(ScalingUtils.ScaleType scaleType) {
@@ -196,11 +235,16 @@ public class ReactImageView extends GenericDraweeView {
     boolean usePostprocessorScaling =
         mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
         mScaleType != ScalingUtils.ScaleType.FOCUS_CROP;
-    float hierarchyRadius = usePostprocessorScaling ? 0 : mBorderRadius;
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
-    roundingParams.setCornersRadius(hierarchyRadius);
     roundingParams.setBorder(mBorderColor, mBorderWidth);
+
+    if (usePostprocessorScaling) {
+      roundingParams.setCornersRadii(new float[8]);
+    } else {
+      roundingParams.setCornersRadii(mBorderRadius);
+    }
+
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(
         mFadeDurationMs >= 0

@@ -146,6 +146,40 @@ exports.examples = [
       );
     },
   }, {
+    title: 'Border Corner Radii',
+    render: function() {
+
+      var additional;
+
+      if (Platform.OS === 'android') {
+        additional = (
+          <View>
+            <Text>
+              Vertical radius: 5px, horizontal radius: 15px
+            </Text>
+            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+              <View style={{borderWidth: 2, borderTopLeftVerticalRadius: 5, borderTopLeftHorizontalRadius: 15, padding: 5, width: 30, height: 30, margin: 10}}/>
+              <View style={{borderWidth: 2, borderTopRightVerticalRadius: 5, borderTopRightHorizontalRadius: 15, padding: 5, width: 30, height: 30, margin: 10}}/>
+              <View style={{borderWidth: 2, borderBottomRightVerticalRadius: 5, borderBottomRightHorizontalRadius: 15, padding: 5, width: 30, height: 30, margin: 10}}/>
+              <View style={{borderWidth: 2, borderBottomLeftVerticalRadius: 5, borderBottomLeftHorizontalRadius: 15, padding: 5, width: 30, height: 30, margin: 10}}/>
+            </View>
+          </View>
+        );
+      }
+
+      return (
+        <View>
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <View style={{borderWidth: 2, borderTopLeftRadius: 10, padding: 5, width: 30, height: 30, margin: 10}}/>
+            <View style={{borderWidth: 2, borderTopRightRadius: 10, padding: 5, width: 30, height: 30, margin: 10}}/>
+            <View style={{borderWidth: 2, borderBottomRightRadius: 10, padding: 5, width: 30, height: 30, margin: 10}}/>
+            <View style={{borderWidth: 2, borderBottomLeftRadius: 10, padding: 5, width: 30, height: 30, margin: 10}}/>
+          </View>
+          {additional}
+        </View>
+      );
+    },
+  }, {
     title: 'Border Style',
     render: function() {
       return <ViewBorderStyleExample />;
