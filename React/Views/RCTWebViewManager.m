@@ -18,7 +18,8 @@
 
 @end
 
-@implementation RCTWebViewManager {
+@implementation RCTWebViewManager
+{
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
 }
@@ -32,18 +33,19 @@ RCT_EXPORT_MODULE()
   return webView;
 }
 
-RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
-RCT_REMAP_VIEW_PROPERTY(html, HTML, NSString);
-RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL);
-RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL);
-RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString);
-RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
-RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock);
+RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL)
+RCT_REMAP_VIEW_PROPERTY(html, HTML, NSString)
+RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
+RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
+RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(allowsInlineMediaPlayback, _webView.allowsInlineMediaPlayback, BOOL)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
