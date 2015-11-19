@@ -311,6 +311,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'Townske - Stunning City Guides Made By Locals & Traveller',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
+    author: 'Townske PTY LTD',
+  },
+  {
     name: 'WOOP',
     icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
