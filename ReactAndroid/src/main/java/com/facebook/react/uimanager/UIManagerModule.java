@@ -768,7 +768,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
       notifyOnBeforeLayoutRecursive(cssRoot);
-      cssRoot.calculateLayout(mLayoutContext);
+
+      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
+          .arg("rootTag", tag)
+          .flush();
+      try {
+        cssRoot.calculateLayout(mLayoutContext);
+      } finally {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
       applyUpdatesRecursive(cssRoot, 0f, 0f);
     }
 
