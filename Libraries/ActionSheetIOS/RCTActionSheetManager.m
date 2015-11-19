@@ -166,6 +166,12 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+
+  NSString *subject = [RCTConvert NSString:options[@"subject"]];
+  if (subject) {
+    [shareController setValue:subject forKey:@"subject"];
+  }
+
   UIViewController *controller = RCTKeyWindow().rootViewController;
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
