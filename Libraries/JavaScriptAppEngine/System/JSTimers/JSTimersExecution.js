@@ -14,6 +14,7 @@ var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var performanceNow = require('performanceNow');
 var warning = require('warning');
+var BridgeProfiling = require('BridgeProfiling');
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -108,14 +109,35 @@ var JSTimersExecution = {
   },
 
   /**
+   * Performs a single pass over the enqueued immediates. Returns whether
+   * more immediates are queued up (can be used as a condition a while loop).
+   */
+  callImmediatesPass: function() {
+    BridgeProfiling.profile('JSTimersExecution.callImmediatesPass()');
+
+    // The main reason to extract a single pass is so that we can track
+    // in the system trace
+    if (JSTimersExecution.immediates.length > 0) {
+      var passImmediates = JSTimersExecution.immediates.slice();
+      JSTimersExecution.immediates = [];
+
+      passImmediates.forEach((timerID) => {
+        JSTimersExecution.callTimer(timerID);
+      });
+    }
+
+    BridgeProfiling.profileEnd();
+
+    return JSTimersExecution.immediates.length > 0;
+  },
+
+  /**
    * This is called after we execute any command we receive from native but
    * before we hand control back to native.
    */
   callImmediates: function() {
     JSTimersExecution.errors = null;
-    while (JSTimersExecution.immediates.length !== 0) {
-      JSTimersExecution.callTimer(JSTimersExecution.immediates.shift());
-    }
+    while (JSTimersExecution.callImmediatesPass()) {}
     if (JSTimersExecution.errors) {
       JSTimersExecution.errors.forEach((error) =>
         require('JSTimers').setTimeout(() => { throw error; }, 0)
