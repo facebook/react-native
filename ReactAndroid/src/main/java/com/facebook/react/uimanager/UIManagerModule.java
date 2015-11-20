@@ -262,6 +262,23 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
+  public void dropViews(ReadableArray viewTags) {
+    int size = viewTags.size(), realViewsCount = 0;
+    int realViewTags[] = new int[size];
+    for (int i = 0; i < size; i++) {
+      int tag = viewTags.getInt(i);
+      ReactShadowNode cssNode = mShadowNodeRegistry.getNode(tag);
+      if (!cssNode.isVirtual()) {
+        realViewTags[realViewsCount++] = tag;
+      }
+      mShadowNodeRegistry.removeNode(tag);
+    }
+    if (realViewsCount > 0) {
+      mNativeViewHierarchyOptimizer.handleDropViews(realViewTags, realViewsCount);
+    }
+  }
+
+  @ReactMethod
   public void updateView(int tag, String className, ReadableMap props) {
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager == null) {
@@ -405,7 +422,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private void removeShadowNode(ReactShadowNode nodeToRemove) {
     mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
-    mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
       removeShadowNode(nodeToRemove.getChildAt(i));
     }

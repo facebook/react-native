@@ -142,6 +142,25 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class DropViewsOperation extends ViewOperation {
+
+    private final int[] mViewTagsToDrop;
+    private final int mArrayLength;
+
+    public DropViewsOperation(int[] viewTagsToDrop, int length) {
+      super(-1);
+      mViewTagsToDrop = viewTagsToDrop;
+      mArrayLength = length;
+    }
+
+    @Override
+    public void execute() {
+      for (int i = 0; i < mArrayLength; i++) {
+        mNativeViewHierarchyManager.dropView(mViewTagsToDrop[i]);
+      }
+    }
+  }
+
   private final class ManageChildrenOperation extends ViewOperation {
 
     private final @Nullable int[] mIndicesToRemove;
@@ -500,6 +519,10 @@ public class UIViewOperationQueue {
             viewReactTag,
             viewClassName,
             initialProps));
+  }
+
+  public void enqueueDropViews(int[] viewTagsToDrop, int length) {
+    mOperations.add(new DropViewsOperation(viewTagsToDrop, length));
   }
 
   public void enqueueUpdateProperties(int reactTag, String className, CatalystStylesDiffMap props) {
