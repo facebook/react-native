@@ -14,8 +14,6 @@ const Promise = require('promise');
 const ReactPackager = require('../../packager/react-packager');
 const saveAssets = require('./saveAssets');
 
-const sign = require('./sign');
-
 function saveBundleAndMap(
   bundle,
   bundleOutput,
@@ -36,7 +34,7 @@ function saveBundleAndMap(
   log('finish');
 
   log('Writing bundle output to:', bundleOutput);
-  fs.writeFileSync(bundleOutput, sign(codeWithMap.code), encoding);
+  fs.writeFileSync(bundleOutput, codeWithMap.code, encoding);
   log('Done writing bundle output');
 
   if (sourcemapOutput) {
@@ -61,78 +59,75 @@ function savePrepackBundleAndMap(
 }
 
 function buildBundle(args, config) {
-  return new Promise((resolve, reject) => {
+  // This is used by a bazillion of npm modules we don't control so we don't
+  // have other choice than defining it as an env variable here.
+  process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-    // This is used by a bazillion of npm modules we don't control so we don't
-    // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
+  const options = {
+    projectRoots: config.getProjectRoots(),
+    assetRoots: config.getAssetRoots(),
+    blacklistRE: config.getBlacklistRE(),
+    transformModulePath: args.transformer,
+    verbose: args.verbose,
+  };
 
-    const options = {
-      projectRoots: config.getProjectRoots(),
-      assetRoots: config.getAssetRoots(),
-      blacklistRE: config.getBlacklistRE(),
-      transformModulePath: args.transformer,
-      verbose: args.verbose,
-    };
+  const requestOpts = {
+    entryFile: args['entry-file'],
+    dev: args.dev,
+    minify: !args.dev,
+    platform: args.platform,
+  };
 
-    const requestOpts = {
-      entryFile: args['entry-file'],
-      dev: args.dev,
-      minify: !args.dev,
-      platform: args.platform,
-    };
+  const prepack = args['prepack'];
 
-    const prepack = args['prepack'];
+  const client = ReactPackager.createClientFor(options);
 
-    const client = ReactPackager.createClientFor(options);
+  client.then(() => log('Created ReactPackager'));
 
-    client.then(() => log('Created ReactPackager'));
+  // Build and save the bundle
+  let bundle;
+  if (prepack) {
+    bundle = client.then(c => c.buildPrepackBundle(requestOpts))
+      .then(outputBundle => {
+        savePrepackBundleAndMap(
+          outputBundle,
+          args['bundle-output'],
+          args['sourcemap-output'],
+          args['bridge-config']
+        );
+        return outputBundle;
+      });
+  } else {
+    bundle = client.then(c => c.buildBundle(requestOpts))
+      .then(outputBundle => {
+        saveBundleAndMap(
+          outputBundle,
+          args['bundle-output'],
+          args['bundle-encoding'],
+          args['sourcemap-output'],
+          args.dev
+        );
+        return outputBundle;
+      });
+  }
 
-    // Build and save the bundle
-    let bundle;
-    if (prepack) {
-      bundle = client.then(c => c.buildPrepackBundle(requestOpts))
-        .then(outputBundle => {
-          savePrepackBundleAndMap(
-            outputBundle,
-            args['bundle-output'],
-            args['sourcemap-output'],
-            args['bridge-config']
-          );
-          return outputBundle;
-        });
-    } else {
-      bundle = client.then(c => c.buildBundle(requestOpts))
-        .then(outputBundle => {
-          saveBundleAndMap(
-            outputBundle,
-            args['bundle-output'],
-            args['bundle-encoding'],
-            args['sourcemap-output'],
-            args.dev
-          );
-          return outputBundle;
-        });
-    }
+  // When we're done bundling, close the client
+  bundle.then(() => client.then(client => {
+    log('Closing client');
+    client.close();
+  }));
 
-    // When we're done bundling, close the client
-    bundle.then(() => client.then(client => {
-      log('Closing client');
-      client.close();
-    }));
+  // Save the assets of the bundle
+  const savingAssets = bundle
+      .then(outputBundle => outputBundle.getAssets())
+      .then(outputAssets => saveAssets(
+        outputAssets,
+        args.platform,
+        args['assets-dest']
+      ));
 
-    // Save the assets of the bundle
-    const assets = bundle
-        .then(outputBundle => outputBundle.getAssets())
-        .then(outputAssets => saveAssets(
-          outputAssets,
-          args.platform,
-          args['assets-dest']
-        ));
-
-    // When we're done saving the assets, we're done.
-    resolve(assets);
-  });
+  // When we're done saving the assets, we're done.
+  return savingAssets;
 }
 
 module.exports = buildBundle;
