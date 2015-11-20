@@ -541,7 +541,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   @Override
                   public void run() {
                     mReactInstanceCommandsHandler.onReloadWithJSDebugger(
-                        new ProxyJavaScriptExecutor(webSocketJSExecutor));
+                        webSocketJSExecutor);
                   }
                 });
           }
