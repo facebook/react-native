@@ -255,7 +255,8 @@ UIImage *RCTDecodeImageWithData(NSData *data,
 
   // adjust scale
   size_t actualWidth = CGImageGetWidth(imageRef);
-  CGFloat scale = actualWidth / targetSize.width;
+  CGFloat scale = actualWidth / targetSize.width * destScale;
+
   // return image
   UIImage *image = [UIImage imageWithCGImage:imageRef
                                        scale:scale

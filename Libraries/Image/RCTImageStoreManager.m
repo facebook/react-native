@@ -213,9 +213,8 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   RCTAssertParam(block);
   dispatch_async(_methodQueue, ^{
     NSData *imageData = _store[imageTag];
-    UIImage *image = [UIImage imageWithData:imageData];
     dispatch_async(dispatch_get_main_queue(), ^{
-      block(image);
+      block([UIImage imageWithData:imageData]);
     });
   });
 }
