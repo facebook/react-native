@@ -28,6 +28,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSCJavaScriptExecutor;
+import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModulesConfig;
@@ -97,8 +98,8 @@ public class ReactInstanceManager {
       new ReactInstanceDevCommandsHandler() {
 
         @Override
-        public void onReloadWithJSDebugger(ProxyJavaScriptExecutor proxyExecutor) {
-          ReactInstanceManager.this.onReloadWithJSDebugger(proxyExecutor);
+        public void onReloadWithJSDebugger(JavaJSExecutor jsExecutor) {
+          ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutor);
         }
 
         @Override
@@ -474,9 +475,9 @@ public class ReactInstanceManager {
     return mCurrentReactContext;
   }
 
-  private void onReloadWithJSDebugger(ProxyJavaScriptExecutor proxyExecutor) {
+  private void onReloadWithJSDebugger(JavaJSExecutor jsExecutor) {
     recreateReactContextInBackground(
-        proxyExecutor,
+        new ProxyJavaScriptExecutor(jsExecutor),
         JSBundleLoader.createRemoteDebuggerBundleLoader(
             mDevSupportManager.getJSBundleURLForRemoteDebugging()));
   }

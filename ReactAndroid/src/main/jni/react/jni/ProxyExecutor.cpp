@@ -10,7 +10,7 @@
 namespace facebook {
 namespace react {
 
-const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/ProxyJavaScriptExecutor$JavaJSExecutor";
+const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/JavaJSExecutor";
 
 std::unique_ptr<JSExecutor> ProxyExecutorOneTimeFactory::createJSExecutor(FlushImmediateCallback ignoredCallback) {
   FBASSERTMSGF(
