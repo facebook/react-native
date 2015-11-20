@@ -65,7 +65,9 @@ There is currently no easy way of publishing custom native modules on Android. S
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android
 
-This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks.
+This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks. 
+
+Another issue with `overflow: 'hidden'` on Android: a view is not clipped by the parent's `borderRadius` even if the parent has `overflow: 'hidden'` enabled – the corners of the inner view will be visible outside of the rounded corners. This is only on Android; it works as expected on iOS. See a [demo of the bug](https://rnplay.org/apps/BlGjdQ) and the [corresponding issue](https://github.com/facebook/react-native/issues/3198).
 
 ### No support for shadows on Android
 
