@@ -285,8 +285,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
     if (mCurrentContext != null &&
         mCurrentContext.getCatalystInstance() != null &&
         !mCurrentContext.getCatalystInstance().isDestroyed() &&
-        mCurrentContext.getCatalystInstance().getBridge() != null &&
-        mCurrentContext.getCatalystInstance().getBridge().supportsProfiling()) {
+        mCurrentContext.getCatalystInstance().supportsProfiling()) {
       options.put(
           mApplicationContext.getString(
               mIsCurrentlyProfiling ? R.string.catalyst_stop_profile :
@@ -302,7 +301,6 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   mProfileIndex++;
                   Debug.stopMethodTracing();
                   mCurrentContext.getCatalystInstance()
-                      .getBridge()
                       .stopProfiler("profile", profileName);
                   Toast.makeText(
                       mCurrentContext,
@@ -310,7 +308,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                       Toast.LENGTH_LONG).show();
                 } else {
                   mIsCurrentlyProfiling = true;
-                  mCurrentContext.getCatalystInstance().getBridge().startProfiler("profile");
+                  mCurrentContext.getCatalystInstance().startProfiler("profile");
                   Debug.startMethodTracingSampling(
                       profileName,
                       JAVA_SAMPLING_PROFILE_MEMORY_BYTES,
@@ -476,7 +474,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
           "/profile_" + mProfileIndex + ".json");
       mProfileIndex++;
       Debug.stopMethodTracing();
-      mCurrentContext.getCatalystInstance().getBridge().stopProfiler("profile", profileName);
+      mCurrentContext.getCatalystInstance().stopProfiler("profile", profileName);
     }
 
     mCurrentContext = reactContext;
