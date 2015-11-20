@@ -82,7 +82,6 @@ public class CatalystInstance {
     mJSBundleLoader = jsBundleLoader;
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mTraceListener = new JSProfilerTraceListener();
-    Systrace.registerListener(mTraceListener);
 
     final CountDownLatch initLatch = new CountDownLatch(1);
     mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
@@ -116,6 +115,8 @@ public class CatalystInstance {
     mBridge.setGlobalVariable(
         "__fbBatchedBridgeConfig",
         buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
+
+    Systrace.registerListener(mTraceListener);
   }
 
   public void runJSBundle() {
@@ -239,7 +240,7 @@ public class CatalystInstance {
       }
     }
 
-    if (mTraceListener != null) {
+    if (mBridge != null) {
       Systrace.unregisterListener(mTraceListener);
     }
 
