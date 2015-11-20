@@ -306,6 +306,27 @@ public class CatalystInstance {
     mBridgeIdleListeners.remove(listener);
   }
 
+  public boolean supportsProfiling() {
+    if (mBridge == null) {
+      return false;
+    }
+    return mBridge.supportsProfiling();
+  }
+
+  public void startProfiler(String title) {
+    if (mBridge == null) {
+      return;
+    }
+    mBridge.startProfiler(title);
+  }
+
+  public void stopProfiler(String title, String filename) {
+    if (mBridge == null) {
+      return;
+    }
+    mBridge.stopProfiler(title, filename);
+  }
+
   private String buildModulesConfigJSONProperty(
       NativeModuleRegistry nativeModuleRegistry,
       JavaScriptModulesConfig jsModulesConfig) {
