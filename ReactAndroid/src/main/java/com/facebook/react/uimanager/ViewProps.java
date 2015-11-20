@@ -84,7 +84,7 @@ public class ViewProps {
       Spacing.BOTTOM
   };
 
-  private static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(
+  /*package*/ static final HashSet<String> LAYOUT_ONLY_PROPS = new HashSet<>(
       Arrays.asList(
             ALIGN_SELF,
             ALIGN_ITEMS,
