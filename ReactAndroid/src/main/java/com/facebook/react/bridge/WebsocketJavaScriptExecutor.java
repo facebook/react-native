@@ -23,7 +23,7 @@ import com.facebook.infer.annotation.Assertions;
 /**
  * Executes JS remotely via the react nodejs server as a proxy to a browser on the host machine.
  */
-public class WebsocketJavaScriptExecutor implements ProxyJavaScriptExecutor.JavaJSExecutor {
+public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
 
   private static final long CONNECT_TIMEOUT_MS = 5000;
   private static final int CONNECT_RETRY_COUNT = 3;
@@ -146,7 +146,7 @@ public class WebsocketJavaScriptExecutor implements ProxyJavaScriptExecutor.Java
 
   @Override
   public void executeApplicationScript(String script, String sourceURL)
-      throws ProxyJavaScriptExecutor.ProxyExecutorException {
+      throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
     Assertions.assertNotNull(mWebSocketClient).executeApplicationScript(
         sourceURL,
@@ -155,13 +155,13 @@ public class WebsocketJavaScriptExecutor implements ProxyJavaScriptExecutor.Java
     try {
       callback.get();
     } catch (Throwable cause) {
-      throw new ProxyJavaScriptExecutor.ProxyExecutorException(cause);
+      throw new ProxyExecutorException(cause);
     }
   }
 
   @Override
   public @Nullable String executeJSCall(String moduleName, String methodName, String jsonArgsArray)
-      throws ProxyJavaScriptExecutor.ProxyExecutorException {
+      throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
     Assertions.assertNotNull(mWebSocketClient).executeJSCall(
         moduleName,
@@ -171,7 +171,7 @@ public class WebsocketJavaScriptExecutor implements ProxyJavaScriptExecutor.Java
     try {
       return callback.get();
     } catch (Throwable cause) {
-      throw new ProxyJavaScriptExecutor.ProxyExecutorException(cause);
+      throw new ProxyExecutorException(cause);
     }
   }
 
