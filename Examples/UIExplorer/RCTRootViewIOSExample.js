@@ -15,19 +15,20 @@
  */
 
 'use strict';
-var React = require('react-native');
-var {
+
+const React = require('react-native');
+const {
   StyleSheet,
   Text,
   View,
 } = React;
 
-var requireNativeComponent = require('requireNativeComponent');
-var UpdatePropertiesExampleView = requireNativeComponent('UpdatePropertiesExampleView');
-var FlexibleSizeExampleView = requireNativeComponent('FlexibleSizeExampleView');
+const requireNativeComponent = require('requireNativeComponent');
 
 class AppPropertiesUpdateExample extends React.Component {
   render() {
+    // Do not require this unless we are actually rendering.
+    const UpdatePropertiesExampleView = requireNativeComponent('UpdatePropertiesExampleView');
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
@@ -45,6 +46,8 @@ class AppPropertiesUpdateExample extends React.Component {
 
 class RootViewSizeFlexibilityExample extends React.Component {
   render() {
+    // Do not require this unless we are actually rendering.
+    const FlexibleSizeExampleView = requireNativeComponent('FlexibleSizeExampleView');
     return (
       <View style={styles.container}>
         <Text style={styles.text}>
@@ -60,7 +63,7 @@ class RootViewSizeFlexibilityExample extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5FCFF',

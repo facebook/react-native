@@ -8,6 +8,7 @@
  *
  * @providesModule renderApplication
  */
+
 'use strict';
 
 var Inspector = require('Inspector');
@@ -19,6 +20,8 @@ var Subscribable = require('Subscribable');
 var View = require('View');
 
 var invariant = require('invariant');
+
+var YellowBox = __DEV__ ? require('YellowBox') : null;
 
 // require BackAndroid so it sets the default handler that exits the app if no listeners respond
 require('BackAndroid');
@@ -89,10 +92,14 @@ var AppContainer = React.createClass({
         <Portal
           onModalVisibilityChanged={this.setRootAccessibility}/>
       </View>;
-
+    let yellowBox = null;
+    if (__DEV__) {
+      yellowBox = <YellowBox />;
+    }
     return this.state.enabled ?
       <View style={styles.appContainer}>
         {appView}
+        {yellowBox}
         {this.renderInspector()}
       </View> :
       appView;
