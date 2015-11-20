@@ -814,18 +814,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
           absoluteX,
           absoluteY,
           mOperationsQueue,
-          mNativeViewHierarchyOptimizer);
-
-      // notify JS about layout event if requested
-      if (cssNode.shouldNotifyOnLayout()) {
-        mEventDispatcher.dispatchEvent(
-            OnLayoutEvent.obtain(
-                tag,
-                cssNode.getScreenX(),
-                cssNode.getScreenY(),
-                cssNode.getScreenWidth(),
-                cssNode.getScreenHeight()));
-      }
+          mNativeViewHierarchyOptimizer,
+          mEventDispatcher);
     }
     cssNode.markUpdateSeen();
   }
