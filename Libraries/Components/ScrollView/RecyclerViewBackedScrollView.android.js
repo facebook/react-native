@@ -71,6 +71,11 @@ var RecyclerViewBackedScrollView = React.createClass({
     this.refs[INNERVIEW].setNativeProps(props);
   },
 
+  _handleContentSizeChange: function(event) {
+    var {width, height} = event.nativeEvent;
+    this.props.onContentSizeChange(width, height);
+  },
+
   render: function() {
     var props = {
       ...this.props,
@@ -91,6 +96,10 @@ var RecyclerViewBackedScrollView = React.createClass({
       style: ([{flex: 1}, this.props.style]: ?Array<any>),
       ref: INNERVIEW,
     };
+
+    if (this.props.onContentSizeChange) {
+      props.onContentSizeChange = this._handleContentSizeChange;
+    }
 
     var wrappedChildren = React.Children.map(this.props.children, (child) => {
       if (!child) {

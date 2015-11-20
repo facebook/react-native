@@ -406,6 +406,8 @@ var ListView = React.createClass({
     // component's original ref instead of clobbering it
     return React.cloneElement(renderScrollComponent(props), {
       ref: SCROLLVIEW_REF,
+      onContentSizeChange: this._onContentSizeChange,
+      onLayout: this._onLayout,
     }, header, bodyComponents, footer);
   },
 
@@ -418,17 +420,6 @@ var ListView = React.createClass({
     if (!scrollComponent || !scrollComponent.getInnerViewNode) {
       return;
     }
-    RCTUIManager.measureLayout(
-      scrollComponent.getInnerViewNode(),
-      React.findNodeHandle(scrollComponent),
-      logError,
-      this._setScrollContentLength
-    );
-    RCTUIManager.measureLayoutRelativeToParent(
-      React.findNodeHandle(scrollComponent),
-      logError,
-      this._setScrollVisibleLength
-    );
 
     // RCTScrollViewManager.calculateChildFrames is not available on
     // every platform
@@ -439,9 +430,19 @@ var ListView = React.createClass({
       );
   },
 
-  _setScrollContentLength: function(left, top, width, height) {
+  _onContentSizeChange: function(width, height) {
     this.scrollProperties.contentLength = !this.props.horizontal ?
       height : width;
+    this._updateVisibleRows();
+    this._renderMoreRowsIfNeeded();
+  },
+
+  _onLayout: function(event) {
+    var {width, height} = event.nativeEvent.layout;
+    this.scrollProperties.visibleLength = !this.props.horizontal ?
+      height : width;
+    this._updateVisibleRows();
+    this._renderMoreRowsIfNeeded();
   },
 
   _setScrollVisibleLength: function(left, top, width, height) {

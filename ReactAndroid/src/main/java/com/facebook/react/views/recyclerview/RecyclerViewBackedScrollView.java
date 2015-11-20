@@ -148,6 +148,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
 
     private final List<View> mViews = new ArrayList<>();
     private final ScrollOffsetTracker mScrollOffsetTracker;
+    private final RecyclerViewBackedScrollView mScrollView;
     private int mTotalChildrenHeight = 0;
 
     // The following `OnLayoutChangeListsner` is attached to the views stored in the adapter
@@ -173,7 +174,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
         int newHeight = (bottom - top);
 
         if (oldHeight != newHeight) {
-          mTotalChildrenHeight = mTotalChildrenHeight - oldHeight + newHeight;
+          updateTotalChildrenHeight(newHeight - oldHeight);
           mScrollOffsetTracker.onHeightChange(mViews.indexOf(v), oldHeight, newHeight);
 
           // Since "wrapper" view position +dimensions are not managed by NativeViewHierarchyManager
@@ -200,7 +201,8 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       }
     };
 
-    public ReactListAdapter() {
+    public ReactListAdapter(RecyclerViewBackedScrollView scrollView) {
+      mScrollView = scrollView;
       mScrollOffsetTracker = new ScrollOffsetTracker(this);
       setHasStableIds(true);
     }
@@ -208,7 +210,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     public void addView(View child, int index) {
       mViews.add(index, child);
 
-      mTotalChildrenHeight += child.getMeasuredHeight();
+      updateTotalChildrenHeight(child.getMeasuredHeight());
       child.addOnLayoutChangeListener(mChildLayoutChangeListener);
 
       notifyItemInserted(index);
@@ -219,9 +221,16 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       if (child != null) {
         mViews.remove(index);
         child.removeOnLayoutChangeListener(mChildLayoutChangeListener);
-        mTotalChildrenHeight -= child.getMeasuredHeight();
+        updateTotalChildrenHeight(-child.getMeasuredHeight());
 
         notifyItemRemoved(index);
+      }
+    }
+
+    private void updateTotalChildrenHeight(int delta) {
+      if (delta != 0) {
+        mTotalChildrenHeight += delta;
+        mScrollView.onTotalChildrenHeightChange(mTotalChildrenHeight);
       }
     }
 
@@ -268,6 +277,12 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     }
   }
 
+  private boolean mSendContentSizeChangeEvents;
+
+  public void setSendContentSizeChangeEvents(boolean sendContentSizeChangeEvents) {
+    mSendContentSizeChangeEvents = sendContentSizeChangeEvents;
+  }
+
   private int calculateAbsoluteOffset() {
     int offsetY = 0;
     if (getChildCount() > 0) {
@@ -304,12 +319,23 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
                 getHeight()));
   }
 
+  private void onTotalChildrenHeightChange(int newTotalChildrenHeight) {
+    if (mSendContentSizeChangeEvents) {
+      ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
+          .dispatchEvent(new ContentSizeChangeEvent(
+                  getId(),
+                  SystemClock.uptimeMillis(),
+                  getWidth(),
+                  newTotalChildrenHeight));
+    }
+  }
+
   public RecyclerViewBackedScrollView(Context context) {
     super(context);
     setHasFixedSize(true);
     setItemAnimator(new NotAnimatedItemAnimator());
     setLayoutManager(new LinearLayoutManager(context));
-    setAdapter(new ReactListAdapter());
+    setAdapter(new ReactListAdapter(this));
   }
 
   /*package*/ void addViewToAdapter(View child, int index) {

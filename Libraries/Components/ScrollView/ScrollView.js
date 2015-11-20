@@ -194,6 +194,12 @@ var ScrollView = React.createClass({
      */
     onScrollAnimationEnd: PropTypes.func,
     /**
+     * Called when scrollable content view of the ScrollView changes. It's
+     * implemented using onLayout handler attached to the content container
+     * which this ScrollView renders.
+     */
+    onContentSizeChange: PropTypes.func,
+    /**
      * When true, the scroll view stops on multiples of the scroll view's size
      * when scrolling. This can be used for horizontal pagination. The default
      * value is false.
@@ -360,6 +366,11 @@ var ScrollView = React.createClass({
     this.scrollResponderHandleScroll(e);
   },
 
+  _handleContentOnLayout: function(event) {
+    var {width, height} = event.nativeEvent.layout;
+    this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
@@ -376,8 +387,16 @@ var ScrollView = React.createClass({
       );
     }
 
+    var contentSizeChangeProps = {};
+    if (this.props.onContentSizeChange) {
+      contentSizeChangeProps = {
+        onLayout: this._handleContentOnLayout,
+      };
+    }
+
     var contentContainer =
       <View
+        {...contentSizeChangeProps}
         ref={INNERVIEW}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
