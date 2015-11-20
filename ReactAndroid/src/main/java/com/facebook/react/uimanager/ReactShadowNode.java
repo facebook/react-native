@@ -18,6 +18,7 @@ import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -202,18 +203,37 @@ public class ReactShadowNode extends CSSNode {
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer,
+      EventDispatcher eventDispatcher) {
     if (mNodeUpdated) {
       onCollectExtraUpdates(uiViewOperationQueue);
     }
 
     if (hasNewLayout()) {
-      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
-      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
-      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+      float absoluteLeft = Math.round(absoluteX + getLayoutX());
+      float absoluteTop = Math.round(absoluteY + getLayoutY());
+      float absoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      float absoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
+      // If the layout didn't change this should calculate exactly same values, it's fine to compare
+      // floats with "==" in this case
+      if (absoluteLeft != mAbsoluteLeft || absoluteTop != mAbsoluteTop ||
+          absoluteRight != mAbsoluteRight || absoluteBottom != mAbsoluteBottom) {
+        mAbsoluteLeft = absoluteLeft;
+        mAbsoluteTop = absoluteTop;
+        mAbsoluteRight = absoluteRight;
+        mAbsoluteBottom = absoluteBottom;
 
-      nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
+        if (mShouldNotifyOnLayout) {
+          eventDispatcher.dispatchEvent(
+              OnLayoutEvent.obtain(
+                  getReactTag(),
+                  getScreenX(),
+                  getScreenY(),
+                  getScreenWidth(),
+                  getScreenHeight()));
+        }
+      }
     }
   }
 
@@ -262,10 +282,6 @@ public class ReactShadowNode extends CSSNode {
 
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
-  }
-
-  /* package */ boolean shouldNotifyOnLayout() {
-    return mShouldNotifyOnLayout;
   }
 
   /**
