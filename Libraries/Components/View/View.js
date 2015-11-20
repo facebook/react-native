@@ -20,7 +20,7 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -316,11 +316,12 @@ var View = React.createClass({
   },
 });
 
-var RCTView = createReactNativeComponentClass({
-  validAttributes: ReactNativeViewAttributes.RCTView,
-  uiViewClassName: 'RCTView',
+var RCTView = requireNativeComponent('RCTView', View, {
+  nativeOnly: {
+    nativeBackgroundAndroid: true,
+  }
 });
-RCTView.propTypes = View.propTypes;
+
 if (__DEV__) {
   var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
   for (var prop in viewConfig.nativeProps) {

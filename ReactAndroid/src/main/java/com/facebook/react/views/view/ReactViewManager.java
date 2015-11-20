@@ -122,6 +122,12 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
         color == null ? CSSConstants.UNDEFINED : (float) color);
   }
 
+  @ReactProp(name = ViewProps.COLLAPSABLE)
+  public void setCollapsable(ReactViewGroup view, boolean collapsable) {
+    // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
+    // handled in NativeViewHierarchyOptimizer
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
