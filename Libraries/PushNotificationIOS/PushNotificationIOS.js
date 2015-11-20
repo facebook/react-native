@@ -22,6 +22,7 @@ var _initialNotification = RCTPushNotificationManager &&
 
 var DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+var DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 /**
  * Handle push notifications for your app, including permission handling and
@@ -104,6 +105,17 @@ class PushNotificationIOS {
   }
 
   /**
+   * Cancel local notifications.
+   *
+   * Optionally restricts the set of canceled notifications to those
+   * notifications whose userInfo fields match the corresponding fields
+   * in details.
+   */
+  static cancelLocalNotifications(details: Object) {
+    RCTPushNotificationManager.cancelLocalNotifications(details);
+  }
+
+  /**
    * Attaches a listener to remote notification events while the app is running
    * in the foreground or the background.
    *
@@ -116,8 +128,8 @@ class PushNotificationIOS {
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notification' || type === 'register' || type === 'local_notification',
+      'PushNotificationIOS only supports `notification`, `register` and `local_notification` events'
     );
     var listener;
     if (type === 'notification') {
@@ -132,6 +144,13 @@ class PushNotificationIOS {
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
+        }
+      );
+    } else if (type === 'local_notification') {
+      _notifHandlers[handler] = RCTDeviceEventEmitter.addListener(
+        DEVICE_LOCAL_NOTIF_EVENT,
+        (notifData) => {
+          handler(new PushNotificationIOS(notifData));
         }
       );
     }
@@ -208,8 +227,8 @@ class PushNotificationIOS {
    */
   static removeEventListener(type: string, handler: Function) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notification' || type === 'register' || type === 'local_notification',
+      'PushNotificationIOS only supports `notification`, `register` and `local_notification` events'
     );
     var listener = _notifHandlers.get(handler);
     if (!listener) {
