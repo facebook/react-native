@@ -346,7 +346,7 @@ var ScrollView = React.createClass({
     );
   },
 
-  handleScroll: function(e: Event) {
+  handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && !this.props.scrollEventThrottle) {
         console.log(
@@ -366,8 +366,8 @@ var ScrollView = React.createClass({
     this.scrollResponderHandleScroll(e);
   },
 
-  _handleContentOnLayout: function(event) {
-    var {width, height} = event.nativeEvent.layout;
+  _handleContentOnLayout: function(e: Object) {
+    var {width, height} = e.nativeEvent.layout;
     this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
   },
 
