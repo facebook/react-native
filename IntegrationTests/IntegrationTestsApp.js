@@ -36,6 +36,9 @@ TESTS.forEach(
   (test) => AppRegistry.registerComponent(test.displayName, () => test)
 );
 
+// Modules required for integration tests
+require('LoggingTestModule');
+
 var IntegrationTestsApp = React.createClass({
   getInitialState: function() {
     return {
