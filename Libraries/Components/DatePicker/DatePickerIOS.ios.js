@@ -108,7 +108,7 @@ var DatePickerIOS = React.createClass({
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
     var propsTimeStamp = this.props.date.getTime();
-    if (nativeTimeStamp !== propsTimeStamp) {
+    if (nativeTimeStamp !== propsTimeStamp && this.refs[DATEPICKER]) {
       this.refs[DATEPICKER].setNativeProps({
         date: propsTimeStamp,
       });

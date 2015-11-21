@@ -83,7 +83,7 @@ var PickerIOS = React.createClass({
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.state.selectedIndex !== event.nativeEvent.newIndex) {
+    if (this.state.selectedIndex !== event.nativeEvent.newIndex && this.refs[PICKER]) {
       this.refs[PICKER].setNativeProps({
         selectedIndex: this.state.selectedIndex
       });
