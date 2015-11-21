@@ -28,6 +28,14 @@ module.exports = [
     description: 'If false, warnings are disabled and the bundle is minified',
     default: true,
   }, {
+    command: 'prepack',
+    description: 'If true, the output bundle will use the Prepack format.',
+    default: false
+  }, {
+    command: 'bridge-config',
+    description: 'File name of a a JSON export of __fbBatchedBridgeConfig. Used by Prepack. Ex. ./bridgeconfig.json',
+    type: 'string'
+  }, {
     command: 'bundle-output',
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
     type: 'string',

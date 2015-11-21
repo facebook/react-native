@@ -14,26 +14,12 @@ const getAssetDestPathAndroid = require('./getAssetDestPathAndroid');
 const getAssetDestPathIOS = require('./getAssetDestPathIOS');
 const log = require('../util/log').out('bundle');
 const path = require('path');
-const sign = require('./sign');
 
-function saveBundleAndMap(
-  codeWithMap,
+function saveAssets(
+  assets,
   platform,
-  bundleOutput,
-  encoding,
-  sourcemapOutput,
   assetsDest
 ) {
-  log('Writing bundle output to:', bundleOutput);
-  fs.writeFileSync(bundleOutput, sign(codeWithMap.code), encoding);
-  log('Done writing bundle output');
-
-  if (sourcemapOutput) {
-    log('Writing sourcemap output to:', sourcemapOutput);
-    fs.writeFileSync(sourcemapOutput, codeWithMap.map);
-    log('Done writing sourcemap output');
-  }
-
   if (!assetsDest) {
     console.warn('Assets destination folder is not set, skipping...');
     return Promise.resolve();
@@ -44,7 +30,7 @@ function saveBundleAndMap(
     : getAssetDestPathIOS;
 
   const filesToCopy = Object.create(null); // Map src -> dest
-  codeWithMap.assets
+  assets
     .filter(asset => !asset.deprecated)
     .forEach(asset =>
       asset.scales.forEach((scale, idx) => {
@@ -94,4 +80,4 @@ function copy(src, dest, callback) {
   });
 }
 
-module.exports = saveBundleAndMap;
+module.exports = saveAssets;
