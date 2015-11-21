@@ -9,6 +9,7 @@
 'use strict';
 
 const Bundle = require('../Bundler/Bundle');
+const PrepackBundle = require('../Bundler/PrepackBundle');
 const Promise = require('promise');
 const bser = require('bser');
 const debug = require('debug')('ReactNativePackager:SocketClient');
@@ -98,6 +99,13 @@ class SocketClient {
       type: 'buildBundle',
       data: options,
     }).then(json => Bundle.fromJSON(json));
+  }
+
+  buildPrepackBundle(options) {
+    return this._send({
+      type: 'buildPrepackBundle',
+      data: options,
+    }).then(json => PrepackBundle.fromJSON(json));
   }
 
   _send(message) {

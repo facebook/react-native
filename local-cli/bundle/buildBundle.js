@@ -8,53 +8,126 @@
  */
 'use strict';
 
+const fs = require('fs');
 const log = require('../util/log').out('bundle');
-const processBundle = require('./processBundle');
 const Promise = require('promise');
 const ReactPackager = require('../../packager/react-packager');
-const saveBundleAndMap = require('./saveBundleAndMap');
+const saveAssets = require('./saveAssets');
+
+function saveBundleAndMap(
+  bundle,
+  bundleOutput,
+  encoding,
+  sourcemapOutput,
+  dev
+) {
+  log('start');
+  let codeWithMap;
+  if (!dev) {
+    codeWithMap = bundle.getMinifiedSourceAndMap(dev);
+  } else {
+    codeWithMap = {
+      code: bundle.getSource(),
+      map: JSON.stringify(bundle.getSourceMap({ dev })),
+    };
+  }
+  log('finish');
+
+  log('Writing bundle output to:', bundleOutput);
+  fs.writeFileSync(bundleOutput, codeWithMap.code, encoding);
+  log('Done writing bundle output');
+
+  if (sourcemapOutput) {
+    log('Writing sourcemap output to:', sourcemapOutput);
+    fs.writeFileSync(sourcemapOutput, codeWithMap.map);
+    log('Done writing sourcemap output');
+  }
+}
+
+function savePrepackBundleAndMap(
+  bundle,
+  bundleOutput,
+  sourcemapOutput,
+  bridgeConfig
+) {
+  log('Writing prepack bundle output to:', bundleOutput);
+  const result = bundle.build({
+    batchedBridgeConfig: bridgeConfig
+  });
+  fs.writeFileSync(bundleOutput, result, 'ucs-2');
+  log('Done writing prepack bundle output');
+}
 
 function buildBundle(args, config) {
-  return new Promise((resolve, reject) => {
+  // This is used by a bazillion of npm modules we don't control so we don't
+  // have other choice than defining it as an env variable here.
+  process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
-    // This is used by a bazillion of npm modules we don't control so we don't
-    // have other choice than defining it as an env variable here.
-    process.env.NODE_ENV = args.dev ? 'development' : 'production';
+  const options = {
+    projectRoots: config.getProjectRoots(),
+    assetRoots: config.getAssetRoots(),
+    blacklistRE: config.getBlacklistRE(),
+    transformModulePath: args.transformer,
+    verbose: args.verbose,
+  };
 
-    const options = {
-      projectRoots: config.getProjectRoots(),
-      assetRoots: config.getAssetRoots(),
-      blacklistRE: config.getBlacklistRE(),
-      transformModulePath: args.transformer,
-      verbose: args.verbose,
-    };
+  const requestOpts = {
+    entryFile: args['entry-file'],
+    dev: args.dev,
+    minify: !args.dev,
+    platform: args.platform,
+  };
 
-    const requestOpts = {
-      entryFile: args['entry-file'],
-      dev: args.dev,
-      minify: !args.dev,
-      platform: args.platform,
-    };
+  const prepack = args['prepack'];
 
-    resolve(ReactPackager.createClientFor(options).then(client => {
-      log('Created ReactPackager');
-      return client.buildBundle(requestOpts)
-        .then(outputBundle => {
-          log('Closing client');
-          client.close();
-          return outputBundle;
-        })
-        .then(outputBundle => processBundle(outputBundle, args.dev))
-        .then(outputBundle => saveBundleAndMap(
+  const client = ReactPackager.createClientFor(options);
+
+  client.then(() => log('Created ReactPackager'));
+
+  // Build and save the bundle
+  let bundle;
+  if (prepack) {
+    bundle = client.then(c => c.buildPrepackBundle(requestOpts))
+      .then(outputBundle => {
+        savePrepackBundleAndMap(
           outputBundle,
-          args.platform,
+          args['bundle-output'],
+          args['sourcemap-output'],
+          args['bridge-config']
+        );
+        return outputBundle;
+      });
+  } else {
+    bundle = client.then(c => c.buildBundle(requestOpts))
+      .then(outputBundle => {
+        saveBundleAndMap(
+          outputBundle,
           args['bundle-output'],
           args['bundle-encoding'],
           args['sourcemap-output'],
-          args['assets-dest']
-        ));
-    }));
-  });
+          args.dev
+        );
+        return outputBundle;
+      });
+  }
+
+  // When we're done bundling, close the client
+  bundle.then(() => client.then(client => {
+    log('Closing client');
+    client.close();
+  }));
+
+  // Save the assets of the bundle
+  const savingAssets = bundle
+      .then(outputBundle => outputBundle.getAssets())
+      .then(outputAssets => saveAssets(
+        outputAssets,
+        args.platform,
+        args['assets-dest']
+      ));
+
+  // When we're done saving the assets, we're done.
+  return savingAssets;
 }
 
 module.exports = buildBundle;
