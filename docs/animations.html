@@ -89,9 +89,11 @@ everything beyond that, you could do:</p><div class="prism language-javascript">
 already implemented in the
 <a href="https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js" target="_blank"><code>Easing</code></a>
 class including quadratic, exponential, and bezier curves as well as functions
-like step and bounce.  <code>interpolation</code> also has configurable behavior for
-extrapolation, the default being <code>&#x27;extend&#x27;</code>, but <code>&#x27;clamp&#x27;</code> is also very useful
-to prevent the output value from exceeding <code>outputRange</code>.</p><h4><a class="anchor" name="tracking-dynamic-values"></a>Tracking Dynamic Values <a class="hash-link" href="#tracking-dynamic-values">#</a></h4><p>Animated values can also track other values.  Just set the <code>toValue</code> of an
+like step and bounce. <code>interpolation</code> also has configurable behavior for
+extrapolating the <code>outputRange</code>. You can set the extrapolation by setting the <code>extrapolate</code>, 
+<code>extrapolateLeft</code> or <code>extrapolateRight</code> options. The default value is 
+<code>extend</code> but you can use <code>clamp</code> to prevent the output value from exceeding 
+<code>outputRange</code>.</p><h4><a class="anchor" name="tracking-dynamic-values"></a>Tracking Dynamic Values <a class="hash-link" href="#tracking-dynamic-values">#</a></h4><p>Animated values can also track other values.  Just set the <code>toValue</code> of an
 animation to another animated value instead of a plain number, for example with
 spring physics for an interaction like &quot;Chat Heads&quot;, or via <code>timing</code> with
 <code>duration: 0</code> for rigid/instant tracking.  They can also be composed with
