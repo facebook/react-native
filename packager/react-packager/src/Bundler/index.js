@@ -18,6 +18,7 @@ const Cache = require('../Cache');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
+const PrepackBundle = require('./PrepackBundle');
 const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
@@ -171,7 +172,7 @@ class Bundler {
             if (bar) {
               bar.tick();
             }
-            return transformed;
+            return this._wrapTransformedModule(response, module, transformed);
           })
         )
       );
@@ -184,6 +185,68 @@ class Bundler {
 
       bbundle.finalize({runBeforeMainModule, runMainModule});
       return bbundle;
+    });
+  }
+
+  prepackBundle({
+    entryFile,
+    runModule: runMainModule,
+    runBeforeMainModule,
+    sourceMapUrl,
+    dev: isDev,
+    platform,
+  }) {
+    const bundle = new PrepackBundle(sourceMapUrl);
+    const findEventId = Activity.startEvent('find dependencies');
+    let transformEventId;
+    let mainModuleId;
+
+    return this.getDependencies(entryFile, isDev, platform).then((response) => {
+      Activity.endEvent(findEventId);
+      transformEventId = Activity.startEvent('transform');
+
+      let bar;
+      if (process.stdout.isTTY) {
+        bar = new ProgressBar('transforming [:bar] :percent :current/:total', {
+          complete: '=',
+          incomplete: ' ',
+          width: 40,
+          total: response.dependencies.length,
+        });
+      }
+
+      mainModuleId = response.mainModuleId;
+
+      return Promise.all(
+        response.dependencies.map(
+          module => this._transformModule(
+            bundle,
+            response,
+            module,
+            platform
+          ).then(transformed => {
+            if (bar) {
+              bar.tick();
+            }
+
+            var deps = Object.create(null);
+            var pairs = response.getResolvedDependencyPairs(module);
+            if (pairs) {
+              pairs.forEach(pair => {
+                deps[pair[0]] = pair[1].path;
+              });
+            }
+
+            return module.getName().then(name => {
+              bundle.addModule(name, transformed, deps, module.isPolyfill());
+            });
+          })
+        )
+      );
+    }).then(() => {
+      Activity.endEvent(transformEventId);
+      bundle.finalize({runBeforeMainModule, runMainModule, mainModuleId });
+      return bundle;
     });
   }
 
@@ -228,35 +291,32 @@ class Bundler {
   }
 
   _transformModule(bundle, response, module, platform = null) {
-    let transform;
-
     if (module.isAsset_DEPRECATED()) {
-      transform = this.generateAssetModule_DEPRECATED(bundle, module);
+      return this.generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
-      transform = this.generateAssetModule(bundle, module, platform);
+      return this.generateAssetModule(bundle, module, platform);
     } else if (module.isJSON()) {
-      transform = generateJSONModule(module);
+      return generateJSONModule(module);
     } else {
-      transform = this._transformer.loadFileAndTransform(
+      return this._transformer.loadFileAndTransform(
         path.resolve(module.path)
       );
     }
+  }
 
-    const resolver = this._resolver;
-    return transform.then(
-      transformed => resolver.wrapModule(
-        response,
-        module,
-        transformed.code
-      ).then(
-        code => new ModuleTransport({
-          code: code,
-          map: transformed.map,
-          sourceCode: transformed.sourceCode,
-          sourcePath: transformed.sourcePath,
-          virtual: transformed.virtual,
-        })
-      )
+  _wrapTransformedModule(response, module, transformed) {
+    return this._resolver.wrapModule(
+      response,
+      module,
+      transformed.code
+    ).then(
+      code => new ModuleTransport({
+        code: code,
+        map: transformed.map,
+        sourceCode: transformed.sourceCode,
+        sourcePath: transformed.sourcePath,
+        virtual: transformed.virtual,
+      })
     );
   }
 
