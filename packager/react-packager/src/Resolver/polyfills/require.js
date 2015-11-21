@@ -54,9 +54,13 @@
       // require cycles inside the factory from causing an infinite require loop.
       mod.isInitialized = true;
 
+      __DEV__ && BridgeProfiling().profile(id);
+
       // keep args in sync with with defineModuleCode in
       // packager/react-packager/src/Resolver/index.js
       mod.factory.call(global, global, require, mod.module, mod.module.exports);
+
+      __DEV__ && BridgeProfiling().profileEnd();
     } catch (e) {
       mod.hasError = true;
       mod.isInitialized = false;
@@ -65,6 +69,16 @@
 
     return mod.module.exports;
   }
+
+  const BridgeProfiling = __DEV__ && (() => {
+    var _BridgeProfiling;
+    try {
+      _BridgeProfiling = require('BridgeProfiling');
+    } catch(e) {}
+
+    return _BridgeProfiling && _BridgeProfiling.profile ?
+      _BridgeProfiling : { profile: () => {}, profileEnd: () => {} };
+  });
 
   global.__d = define;
   global.require = require;
