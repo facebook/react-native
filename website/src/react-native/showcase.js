@@ -352,6 +352,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
   },
+  {
+    name: 'DareU - dare your friends, dare the world',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/10/fb/6a/10fb6a50-57c8-061a-d865-503777bf7f00/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/dareu-dare-your-friends-dare/id1046434563?mt=8',
+    author: 'Rishabh Mehan',
+  },
 ];
 
 var showcase = React.createClass({
