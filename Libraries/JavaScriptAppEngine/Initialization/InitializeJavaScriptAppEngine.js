@@ -143,9 +143,9 @@ function setUpProcessEnv() {
 }
 
 function setUpNumber() {
-  Number.EPSILON = Number.EPSILON || Math.pow(2, -52);
-  Number.MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || Math.pow(2, 53) - 1;
-  Number.MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER || -(Math.pow(2, 53) - 1);
+  if (isNaN(Number.EPSILON)) Number.EPSILON = Math.pow(2, -52);
+  if (isNaN(Number.MAX_SAFE_INTEGER)) Number.MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
+  if (isNaN(Number.MIN_SAFE_INTEGER)) Number.MIN_SAFE_INTEGER = -(Math.pow(2, 53) - 1);
 }
 
 function setUpDevTools() {
