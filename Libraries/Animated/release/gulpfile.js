@@ -105,9 +105,19 @@ var paths = {
   lib: 'lib',
   src: [
     '*src/**/*.js',
+    '*src/../../vendor/tinycolor/tinycolor.js',
+    '*src/../../Components/View/ViewStylePropTypes.js',
+    '*src/../../StyleSheet/LayoutPropTypes.js',
+    '*src/../../StyleSheet/TransformPropTypes.js',
+    '*src/../../../node_modules/react-haste/isomorphic/classic/types/ReactPropTypes.js',
+    '*src/../../../node_modules/react-haste/isomorphic/classic/types/ReactPropTypeLocationNames.js',
+    '*src/../../../node_modules/react-haste/isomorphic/classic/element/ReactElement.js',
+    '*src/../../../node_modules/react-haste/isomorphic/classic/element/ReactCurrentOwner.js',
+    '*src/../../../node_modules/react-haste/shared/utils/getIteratorFn.js',
+    '*src/../../../node_modules/react-haste/shared/stubs/Object.assign.js',
     '!src/**/__tests__/**/*.js',
     '!src/**/__mocks__/**/*.js'
-  ],
+  ]
 };
 
 gulp.task('clean', function(cb) {
