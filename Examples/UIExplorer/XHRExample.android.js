@@ -26,6 +26,7 @@ var {
   View,
 } = React;
 
+var XHRExampleCookies = require('./XHRExampleCookies');
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 
 // TODO t7093728 This is a simlified XHRExample.ios.js.
@@ -37,7 +38,7 @@ class Downloader extends React.Component {
   xhr: XMLHttpRequest;
   cancelled: boolean;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.cancelled = false;
     this.state = {
@@ -279,6 +280,11 @@ exports.examples = [{
   render() {
     return <FormUploader/>;
   }
+}, {
+  title: 'Cookies Test',
+  render() {
+    return <XHRExampleCookies/>;
+  },
 }, {
   title: 'Headers',
   render() {

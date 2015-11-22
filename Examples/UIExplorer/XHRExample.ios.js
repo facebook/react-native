@@ -30,6 +30,7 @@ var {
   View,
 } = React;
 
+var XHRExampleCookies = require('./XHRExampleCookies');
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 
 class Downloader extends React.Component {
@@ -37,7 +38,7 @@ class Downloader extends React.Component {
   xhr: XMLHttpRequest;
   cancelled: boolean;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.cancelled = false;
     this.state = {
@@ -369,6 +370,11 @@ exports.examples = [{
   title: 'fetch test',
   render() {
     return <FetchTest/>;
+  }
+}, {
+  title: 'Cookies Test',
+  render() {
+    return <XHRExampleCookies/>;
   }
 }, {
   title: 'Headers',

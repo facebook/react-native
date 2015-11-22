@@ -11,6 +11,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @flow
  */
 'use strict';
 
@@ -22,7 +23,7 @@ var {
   View,
 } = React;
 
-class XHRExampleHeaders extends React.Component {
+class XHRExampleCookies extends React.Component {
 
   xhr: XMLHttpRequest;
   cancelled: boolean;
@@ -32,8 +33,7 @@ class XHRExampleHeaders extends React.Component {
     this.cancelled = false;
     this.state = {
       status: '',
-      headers: '',
-      contentSize: 1,
+      cookies: '',
       downloaded: 0,
     };
   }
@@ -51,7 +51,7 @@ class XHRExampleHeaders extends React.Component {
         if (xhr.status === 200) {
           this.setState({
             status: 'Download complete!',
-            headers: xhr.getAllResponseHeaders()
+            cookies: xhr.responseText
           });
         } else if (xhr.status !== 0) {
           this.setState({
@@ -64,7 +64,7 @@ class XHRExampleHeaders extends React.Component {
         }
       }
     };
-    xhr.open('GET', 'https://httpbin.org/response-headers?header1=value&header2=value1&header2=value2');
+    xhr.open('GET', 'https://httpbin.org/cookies/set?k2=v2&k1=v1');
     xhr.send();
     this.xhr = xhr;
 
@@ -88,7 +88,7 @@ class XHRExampleHeaders extends React.Component {
         style={styles.wrapper}
         onPress={this.download.bind(this)}>
         <View style={styles.button}>
-         <Text>Get headers</Text>
+         <Text>Get cookies</Text>
         </View>
       </TouchableHighlight>
     );
@@ -96,7 +96,7 @@ class XHRExampleHeaders extends React.Component {
     return (
       <View>
         {button}
-        <Text>{this.state.headers}</Text>
+        <Text>{this.state.cookies}</Text>
       </View>
     );
   }
@@ -113,4 +113,4 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = XHRExampleHeaders;
+module.exports = XHRExampleCookies;
