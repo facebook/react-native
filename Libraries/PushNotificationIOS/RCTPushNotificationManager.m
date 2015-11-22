@@ -105,6 +105,18 @@ RCT_EXPORT_MODULE()
                                                     userInfo:notification];
 }
 
++ (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  NSDictionary *errorInfo = @{
+                              @"error" : @TRUE,
+                              @"description" : [error localizedDescription],
+                              @"reason" : [error localizedFailureReason]
+                              };
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistered
+                                                      object:self
+                                                    userInfo:errorInfo];
+}
+
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
