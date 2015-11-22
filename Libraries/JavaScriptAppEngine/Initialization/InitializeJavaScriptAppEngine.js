@@ -19,55 +19,19 @@
  * @providesModule InitializeJavaScriptAppEngine
  */
 
-/* eslint strict: 0 */
-/* globals GLOBAL: true, window: true */
+/* globals window: true */
+
+'use strict';
 
 require('regenerator/runtime');
 
-if (typeof GLOBAL === 'undefined') {
-  GLOBAL = this;
-}
-
-if (typeof window === 'undefined') {
-  window = GLOBAL;
-}
+var GLOBAL = require('GLOBAL');
+var polyfillGlobal = require('polyfillGlobal');
 
 function setUpConsole() {
   // ExceptionsManager transitively requires Promise so we install it after
   var ExceptionsManager = require('ExceptionsManager');
   ExceptionsManager.installConsoleErrorReporter();
-}
-
-/**
- * Assigns a new global property, replacing the existing one if there is one.
- *
- * Existing properties are preserved as `originalPropertyName`. Both properties
- * will maintain the same enumerability & configurability.
- *
- * This allows you to undo the more aggressive polyfills, should you need to.
- * For example, if you want to route network requests through DevTools (to trace
- * them):
- *
- *     global.XMLHttpRequest = global.originalXMLHttpRequest;
- *
- * For more info on that particular case, see:
- * https://github.com/facebook/react-native/issues/934
- */
-function polyfillGlobal(name, newValue, scope = GLOBAL) {
-  var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
-    // jest for some bad reasons runs the polyfill code multiple times. In jest
-    // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
-    // returns undefined and defineProperty default for writable is false.
-    // Therefore, the second time it runs, defineProperty will fatal :(
-    writable: true,
-  };
-
-  if (scope[name] !== undefined) {
-    var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-    Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
-  }
-
-  Object.defineProperty(scope, name, {...descriptor, value: newValue});
 }
 
 function setUpErrorHandler() {
