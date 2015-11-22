@@ -11,7 +11,12 @@
  */
 'use strict';
 
+var triedCount = 0;
 function setupDevtools() {
+  if (triedCount++ > 3) {
+    return;
+  }
+  
   var messageListeners = [];
   var closeListeners = [];
   var ws = new window.WebSocket('ws://localhost:8097/devtools');
@@ -44,10 +49,17 @@ function setupDevtools() {
 
   function tryToConnect() {
     ws.send('attach:agent');
-    var _interval = setInterval(() => ws.send('attach:agent'), 500);
+    var triedCount = 1;
+    var timeout = setTimeout(function retry() {
+      if (triedCount++ > 3) {
+        return;
+      }
+      timeout = setTimeout(retry, 500);
+      ws.send('attach:agent');
+    }, 500);
     ws.onmessage = evt => {
       if (evt.data.indexOf('eval:') === 0) {
-        clearInterval(_interval);
+        clearTimeout(timeout);
         initialize(evt.data.slice('eval:'.length));
       }
     };
