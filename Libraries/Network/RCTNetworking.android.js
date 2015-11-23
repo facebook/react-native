@@ -40,6 +40,10 @@ class RCTNetworking {
   static abortRequest(requestId) {
     RCTNetworkingNative.abortRequest(requestId);
   }
+
+  static clearCookies(callback) {
+    RCTNetworkingNative.clearCookies(callback);
+  }
 }
 
 module.exports = RCTNetworking;
