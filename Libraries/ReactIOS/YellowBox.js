@@ -59,8 +59,21 @@ if (__DEV__) {
   };
 }
 
+/**
+ * Simple function for formatting strings.
+ *
+ * Replaces placeholders with values passed as extra arguments
+ *
+ * @param {string} format the base string
+ * @param ...args the values to insert
+ * @return {string} the replaced string
+ */
+function sprintf(format, ...args) {
+  var index = 0;
+  return format.replace(/%s/g, match => args[index++]);
+}
+
 function updateWarningMap(format, ...args): void {
-  const sprintf = require('sprintf');
   const stringifySafe = require('stringifySafe');
 
   format = String(format);
