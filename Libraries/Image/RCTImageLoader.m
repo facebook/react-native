@@ -290,6 +290,7 @@ RCT_EXPORT_MODULE()
     NSCachedURLResponse *cachedResponse = [_URLCache cachedResponseForRequest:request];
     if (cachedResponse) {
       processResponse(cachedResponse.response, cachedResponse.data, nil);
+      return;
     }
 
     // Download image
