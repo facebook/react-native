@@ -78,7 +78,56 @@ var BridgeProfiling = {
         };
       });
     } catch(err) {}
-  }
+  },
+
+ /**
+  * Measures multiple methods of a class. For example, you can do:
+  * BridgeProfiling.measureMethods(JSON, 'JSON', ['parse', 'stringify']);
+  *
+  * @param object
+  * @param objectName
+  * @param methodNames Map from method names to method display names.
+  */
+ measureMethods(object: any, objectName: string, methodNames: Array<string>): void {
+   if (!__DEV__) {
+     return;
+   }
+
+   methodNames.forEach(methodName => {
+     object[methodName] = BridgeProfiling.measure(
+       objectName,
+       methodName,
+       object[methodName]
+     );
+   });
+ },
+
+ /**
+  * Returns an profiled version of the input function. For example, you can:
+  * JSON.parse = BridgeProfiling.measure('JSON', 'parse', JSON.parse);
+  *
+  * @param objName
+  * @param fnName
+  * @param {function} func
+  * @return {function} replacement function
+  */
+ measure(objName: string, fnName: string, func: any): any {
+   if (!__DEV__) {
+     return func;
+   }
+
+   var profileName = `${objName}.${fnName}`;
+   return function() {
+     if (!_enabled) {
+       return func.apply(this, arguments);
+     }
+
+     BridgeProfiling.profile(profileName);
+     var ret = func.apply(this, arguments);
+     BridgeProfiling.profileEnd();
+     return ret;
+   };
+ },
 };
 
 BridgeProfiling.setEnabled(global.__RCTProfileIsProfiling || false);
