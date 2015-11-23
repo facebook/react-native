@@ -780,7 +780,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
   @catch (NSException *exception) {
     // Pass on JS exceptions
-    if ([exception.name isEqualToString:RCTFatalExceptionName]) {
+    if ([exception.name hasPrefix:RCTFatalExceptionName]) {
       @throw exception;
     }
 
