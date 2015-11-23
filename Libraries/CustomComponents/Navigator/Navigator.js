@@ -329,7 +329,6 @@ var Navigator = React.createClass({
     });
     this.panGesture = PanResponder.create({
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-      onPanResponderGrant: this._handlePanResponderGrant,
       onPanResponderRelease: this._handlePanResponderRelease,
       onPanResponderMove: this._handlePanResponderMove,
       onPanResponderTerminate: this._handlePanResponderTerminate,
@@ -609,7 +608,8 @@ var Navigator = React.createClass({
     if (!sceneConfig) {
       return false;
     }
-    this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
+    this._expectingGestureGrant =
+      this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
     return !!this._expectingGestureGrant;
   },
 
@@ -619,16 +619,6 @@ var Navigator = React.createClass({
     var wouldOverswipeForward = this.state.presentedIndex >= this.state.routeStack.length - 1 &&
       gestureName === 'jumpForward';
     return wouldOverswipeForward || wouldOverswipeBack;
-  },
-
-  _handlePanResponderGrant: function(e, gestureState) {
-    invariant(
-      this._expectingGestureGrant,
-      'Responder granted unexpectedly.'
-    );
-    this._attachGesture(this._expectingGestureGrant);
-    this._onAnimationStart();
-    this._expectingGestureGrant = null;
   },
 
   _deltaForGestureAction: function(gestureAction) {
@@ -735,6 +725,16 @@ var Navigator = React.createClass({
   },
 
   _handlePanResponderMove: function(e, gestureState) {
+    if (this._isMoveGestureAttached !== undefined) {
+      invariant(
+        this._expectingGestureGrant,
+        'Responder granted unexpectedly.'
+      );
+      this._attachGesture(this._expectingGestureGrant);
+      this._onAnimationStart();
+      this._expectingGestureGrant = undefined;
+    }
+
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     if (this.state.activeGesture) {
       var gesture = sceneConfig.gestures[this.state.activeGesture];
@@ -825,7 +825,7 @@ var Navigator = React.createClass({
         this._eligibleGestures = this._eligibleGestures.slice().splice(gestureIndex, 1);
       }
     });
-    return matchedGesture;
+    return matchedGesture || null;
   },
 
   _transitionSceneStyle: function(fromIndex, toIndex, progress, index) {
