@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReactBridge;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.common.LongArray;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.debug.NotThreadSafeUiManagerDebugListener;
+import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 
 /**
  * Debug object that listens to bridge busy/idle events and UiManagerModule dispatches and uses it
@@ -25,7 +25,7 @@ import com.facebook.react.uimanager.debug.NotThreadSafeUiManagerDebugListener;
  * {@link Choreographer.FrameCallback}.
  */
 public class DidJSUpdateUiDuringFrameDetector implements NotThreadSafeBridgeIdleDebugListener,
-    NotThreadSafeUiManagerDebugListener {
+    NotThreadSafeViewHierarchyUpdateDebugListener {
 
   private final LongArray mTransitionToIdleEvents = LongArray.createWithInitialCapacity(20);
   private final LongArray mTransitionToBusyEvents = LongArray.createWithInitialCapacity(20);

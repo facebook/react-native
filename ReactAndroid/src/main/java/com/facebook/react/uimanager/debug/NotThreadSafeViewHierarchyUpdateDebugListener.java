@@ -12,13 +12,13 @@ package com.facebook.react.uimanager.debug;
 import com.facebook.react.uimanager.UIManagerModule;
 
 /**
- * A listener that is notified about {@link UIManagerModule} events. This listener should only be
+ * A listener that is notified about view hierarchy update events. This listener should only be
  * used for debug purposes and should not affect application state.
  *
  * NB: while onViewHierarchyUpdateFinished will always be called from the UI thread, there are no
  * guarantees what thread onViewHierarchyUpdateEnqueued is called on.
  */
-public interface NotThreadSafeUiManagerDebugListener {
+public interface NotThreadSafeViewHierarchyUpdateDebugListener {
 
   /**
    * Called when {@link UIManagerModule} enqueues a UI batch to be dispatched to the main thread.
