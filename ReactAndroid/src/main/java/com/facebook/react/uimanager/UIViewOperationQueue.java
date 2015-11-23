@@ -20,6 +20,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -405,11 +406,10 @@ public class UIViewOperationQueue {
       final float containerX = (float) mMeasureBuffer[0];
       final float containerY = (float) mMeasureBuffer[1];
 
-      final int touchTargetReactTag = mUIManagerModule.getNonVirtualParent(
-          mNativeViewHierarchyManager.findTargetTagForTouch(
-            mReactTag,
-            mTargetX,
-            mTargetY));
+      final int touchTargetReactTag = mNativeViewHierarchyManager.findTargetTagForTouch(
+          mReactTag,
+          mTargetX,
+          mTargetY);
 
       try {
         mNativeViewHierarchyManager.measure(
@@ -443,7 +443,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  private final UIManagerModule mUIManagerModule;
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final AnimationRegistry mAnimationRegistry;
 
@@ -453,15 +452,20 @@ public class UIViewOperationQueue {
   @GuardedBy("mDispatchRunnablesLock")
   private final ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
 
+  private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
+
   /* package */ UIViewOperationQueue(
       ReactApplicationContext reactContext,
-      UIManagerModule uiManagerModule,
       NativeViewHierarchyManager nativeViewHierarchyManager,
       AnimationRegistry animationRegistry) {
-    mUIManagerModule = uiManagerModule;
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
     mAnimationRegistry = animationRegistry;
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
+  }
+
+  public void setViewHierarchyUpdateDebugListener(
+      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
+    mViewHierarchyUpdateDebugListener = listener;
   }
 
   public boolean isEmpty() {
@@ -592,7 +596,9 @@ public class UIViewOperationQueue {
       mOperations = new ArrayList<>();
     }
 
-    mUIManagerModule.notifyOnViewHierarchyUpdateEnqueued();
+    if (mViewHierarchyUpdateDebugListener != null) {
+      mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
+    }
 
     synchronized (mDispatchRunnablesLock) {
       mDispatchUIRunnables.add(
@@ -608,7 +614,9 @@ public class UIViewOperationQueue {
                      operations.get(i).execute();
                    }
                  }
-                 mUIManagerModule.notifyOnViewHierarchyUpdateFinished();
+                 if (mViewHierarchyUpdateDebugListener != null) {
+                   mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
+                 }
                } finally {
                  Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
                }
