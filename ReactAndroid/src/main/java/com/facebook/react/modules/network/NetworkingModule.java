@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.CookieHandler;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -72,19 +73,19 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   /**
-   * @param reactContext the ReactContext of the application
+   * @param context the ReactContext of the application
    */
-  public NetworkingModule(ReactApplicationContext reactContext) {
-    this(reactContext, null, OkHttpClientProvider.getOkHttpClient());
+  public NetworkingModule(final ReactApplicationContext context) {
+    this(context, null, OkHttpClientProvider.getCookieAwareOkHttpClient(context));
   }
 
   /**
-   * @param reactContext the ReactContext of the application
+   * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
    * caller does not provide one explicitly
    */
-  public NetworkingModule(ReactApplicationContext reactContext, String defaultUserAgent) {
-    this(reactContext, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
+  public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
+    this(context, defaultUserAgent, OkHttpClientProvider.getCookieAwareOkHttpClient(context));
   }
 
   public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
@@ -100,6 +101,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public void onCatalystInstanceDestroy() {
     mShuttingDown = true;
     mClient.cancel(null);
+
+    CookieHandler cookieHandler = mClient.getCookieHandler();
+    if (cookieHandler instanceof ForwardingCookieHandler) {
+      ((ForwardingCookieHandler) cookieHandler).destroy();
+    }
   }
 
   @ReactMethod
@@ -309,6 +315,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         mClient.cancel(requestId);
       }
     }.execute();
+  }
+
+  @ReactMethod
+  public void clearCookies(com.facebook.react.bridge.Callback callback) {
+    CookieHandler cookieHandler = mClient.getCookieHandler();
+    if (cookieHandler instanceof ForwardingCookieHandler) {
+      ((ForwardingCookieHandler) cookieHandler).clearCookies(callback);
+    }
   }
 
   private @Nullable MultipartBuilder constructMultipartBody(
