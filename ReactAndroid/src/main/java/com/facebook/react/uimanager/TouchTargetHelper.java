@@ -39,17 +39,34 @@ public class TouchTargetHelper {
       float eventY,
       float eventX,
       ViewGroup viewGroup) {
+    return findTargetTagAndCoordinatesForTouch(eventY, eventX, viewGroup, mEventCoords);
+  }
+
+  /**
+   * Find touch event target view within the provided container given the coordinates provided
+   * via {@link MotionEvent}.
+   *
+   * @param eventY the Y screen coordinate of the touch location
+   * @param eventX the X screen coordinate of the touch location
+   * @param viewGroup the container view to traverse
+   * @param viewCoords an out parameter that will return the Y,X value in the target view
+   * @return the react tag ID of the child view that should handle the event
+   */
+  public static int findTargetTagAndCoordinatesForTouch(
+      float eventY,
+      float eventX,
+      ViewGroup viewGroup,
+      float[] viewCoords) {
     UiThreadUtil.assertOnUiThread();
     int targetTag = viewGroup.getId();
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
-    float[] eventCoords = mEventCoords;
-    eventCoords[0] = eventY;
-    eventCoords[1] = eventX;
-    View nativeTargetView = findTouchTargetView(eventCoords, viewGroup);
+    viewCoords[0] = eventY;
+    viewCoords[1] = eventX;
+    View nativeTargetView = findTouchTargetView(viewCoords, viewGroup);
     if (nativeTargetView != null) {
       View reactTargetView = findClosestReactAncestor(nativeTargetView);
       if (reactTargetView != null) {
-        targetTag = getTouchTargetForView(reactTargetView, eventCoords[0], eventCoords[1]);
+        targetTag = getTouchTargetForView(reactTargetView, viewCoords[0], viewCoords[1]);
       }
     }
     return targetTag;
