@@ -32,7 +32,7 @@ You can also pack all the JavaScript code within the app itself. This way you ca
 
 The bundle script supports a couple of flags:
 
-* `--dev` - sets the value of `__DEV__` variable to true. When `true` it turns on a bunch of useful development warnings. For production it is recommended to set `__DEV__=false`.
+* `--dev` - a boolean with a default value of `true`. With the `--dev true` flag, the bundled JavaScript code turns on useful development warnings and limits performance optimizations. For production it is recommended to pass `--dev false`. Also for production, be sure to have your native build configuration set to `Release` (e.g., Xcode's Release configuration for iOS and gradle's `assembleRelease` task for Android) in order to disable things like the shake-to-show developer menu.
 * `--minify` - pipe the JS code through UglifyJS.
 
 Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
