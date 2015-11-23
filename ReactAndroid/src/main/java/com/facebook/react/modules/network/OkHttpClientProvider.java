@@ -9,7 +9,12 @@
 
 package com.facebook.react.modules.network;
 
+import javax.annotation.Nullable;
+
 import java.util.concurrent.TimeUnit;
+
+import com.facebook.react.bridge.ReactContext;
+
 import com.squareup.okhttp.OkHttpClient;
 
 /**
@@ -19,18 +24,33 @@ import com.squareup.okhttp.OkHttpClient;
 public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.
-  private static OkHttpClient sClient;
+  private static @Nullable OkHttpClient sClient;
+  private static ForwardingCookieHandler sCookieHandler;
 
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
-      // TODO: #7108751 plug in stetho
-      sClient = new OkHttpClient();
-
-      // No timeouts by default
-      sClient.setConnectTimeout(0, TimeUnit.MILLISECONDS);
-      sClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
-      sClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+      sClient = createClient();
     }
     return sClient;
+  }
+
+  public static OkHttpClient getCookieAwareOkHttpClient(ReactContext context) {
+    if (sCookieHandler == null) {
+      sCookieHandler = new ForwardingCookieHandler(context);
+      getOkHttpClient().setCookieHandler(sCookieHandler);
+    }
+    return getOkHttpClient();
+  }
+
+  private static OkHttpClient createClient() {
+    // TODO: #7108751 plug in stetho
+    OkHttpClient client = new OkHttpClient();
+
+    // No timeouts by default
+    client.setConnectTimeout(0, TimeUnit.MILLISECONDS);
+    client.setReadTimeout(0, TimeUnit.MILLISECONDS);
+    client.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+
+    return client;
   }
 }
