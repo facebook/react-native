@@ -1,5 +1,9 @@
 # Breaking Changes
 
+## 0.16
+
+- Touch events on Android now have coordinates consistent with iOS: https://github.com/facebook/react-native/commit/0c2ee5d480e696f8621252c936a8773e8de9f8b6
+
 ## 0.15
 
 - React Native now uses [React 0.14](http://facebook.github.io/react/blog/2015/10/07/react-v0.14.html); see the linked blog post for a changelog (at this time, the package split has not been made in RN (i.e., please continue to use `require('react-native')`) and refs to native components have not changed)
