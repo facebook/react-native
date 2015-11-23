@@ -135,7 +135,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     mShouldStop = false;
     mReactContext.getCatalystInstance().addBridgeIdleDebugListener(
         mDidJSUpdateUiDuringFrameDetector);
-    mUIManagerModule.setUiManagerDebugListener(mDidJSUpdateUiDuringFrameDetector);
+    mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
     mChoreographer.postFrameCallback(this);
   }
 
@@ -149,7 +149,7 @@ public class FpsDebugFrameCallback implements Choreographer.FrameCallback {
     mShouldStop = true;
     mReactContext.getCatalystInstance().removeBridgeIdleDebugListener(
         mDidJSUpdateUiDuringFrameDetector);
-    mUIManagerModule.setUiManagerDebugListener(null);
+    mUIManagerModule.setViewHierarchyUpdateDebugListener(null);
   }
 
   public double getFPS() {
