@@ -3,6 +3,7 @@
 ## 0.16
 
 - Touch events on Android now have coordinates consistent with iOS: https://github.com/facebook/react-native/commit/0c2ee5d480e696f8621252c936a8773e8de9f8b6
+- YellowBox enabled by default: https://github.com/facebook/react-native/commit/8ab51828ff077ae0ad10c06f62f9f01d58b9bf85
 
 ## 0.15
 
