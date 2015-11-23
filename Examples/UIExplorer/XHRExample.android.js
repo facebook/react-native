@@ -27,6 +27,8 @@ var {
 } = React;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
+var XHRExampleCookies = require('./XHRExampleCookies');
+
 
 // TODO t7093728 This is a simlified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
@@ -283,6 +285,11 @@ exports.examples = [{
   title: 'Headers',
   render() {
     return <XHRExampleHeaders/>;
+  }
+}, {
+  title: 'Cookies',
+  render() {
+    return <XHRExampleCookies/>;
   }
 }];
 
