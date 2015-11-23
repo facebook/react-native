@@ -80,6 +80,15 @@ var BridgeProfiling = {
     } catch(err) {}
   },
 
+  /* This is not called by default due to perf overhead but it's useful
+     if you want to find traces which spend too much time in JSON. */
+  swizzleJSON() {
+    BridgeProfiling.measureMethods(JSON, 'JSON', [
+      'parse',
+      'stringify'
+    ]);
+  },
+
  /**
   * Measures multiple methods of a class. For example, you can do:
   * BridgeProfiling.measureMethods(JSON, 'JSON', ['parse', 'stringify']);
