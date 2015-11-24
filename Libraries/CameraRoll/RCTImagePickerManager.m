@@ -14,8 +14,10 @@
 #import "RCTRootView.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTAssetsLibraryImageLoader.h"
 
 #import <UIKit/UIKit.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #import <MobileCoreServices/UTCoreTypes.h>
 
@@ -31,6 +33,8 @@
 }
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
+
+@synthesize bridge = _bridge;
 
 - (instancetype)init
 {
@@ -121,6 +125,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
   NSUInteger index = [_pickers indexOfObject:picker];
   RCTResponseSenderBlock callback = _pickerCallbacks[index];
+  RCTResponseSenderBlock cancelCallback = _pickerCancelCallbacks[index];
 
   [_pickers removeObjectAtIndex:index];
   [_pickerCallbacks removeObjectAtIndex:index];
@@ -129,7 +134,24 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
-  callback(@[[info[UIImagePickerControllerReferenceURL] absoluteString]]);
+  NSURL *imageUrl = info[UIImagePickerControllerReferenceURL];
+  if (imageUrl) {
+    callback(@[imageUrl.absoluteString]);
+    return;
+  }
+
+  UIImage *image = info[UIImagePickerControllerOriginalImage];
+  NSDictionary *imageMetadata = info[UIImagePickerControllerMediaMetadata];
+  [self.bridge.assetsLibrary writeImageToSavedPhotosAlbum:image.CGImage
+                                                 metadata:imageMetadata
+                                          completionBlock:^(NSURL *assetURL, NSError *error) {
+                                            if (error) {
+                                              cancelCallback(@[@"Image picker failed to save image to album"]);
+                                              return;
+                                            }
+
+                                            callback(@[assetURL.absoluteString]);
+                                          }];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
