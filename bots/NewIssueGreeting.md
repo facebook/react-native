@@ -6,3 +6,4 @@ React Native, as you've probably heard, is getting really popular and truth is w
 
 - If you don't know how to do something, please ask on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) with the tag `react-native` or for more real time interactions, ask on [Discord](https://discord.gg/0ZcbPKXt5bZjGY5n) in the #react-native channel.
 
+- We welcome well-written issues and PRs that are ready for in-depth discussion; thank you for your contributions!
