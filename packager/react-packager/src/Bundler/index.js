@@ -303,7 +303,7 @@ class Bundler {
       const img = {
         __packager_asset: true,
         fileSystemLocation: path.dirname(module.path),
-        httpServerLocation: path.join('/assets', path.dirname(relPath)),
+        httpServerLocation: path.join('/assets', path.dirname(relPath)).replace(/\\/g, "/"),
         width: dimensions.width / module.resolution,
         height: dimensions.height / module.resolution,
         scales: assetData.scales,
