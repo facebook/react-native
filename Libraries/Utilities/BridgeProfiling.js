@@ -11,6 +11,13 @@
  */
 'use strict';
 
+type RelayProfiler = {
+  attachProfileHandler(
+    name: string,
+    handler: (name: string, state?: any) => () => void
+  ): void
+};
+
 var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 
@@ -52,7 +59,7 @@ var BridgeProfiling = {
 
       var name = objName === 'ReactCompositeComponent' && this.getName() || '';
       BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
-      var ret = func.apply(this, arguments);
+    var ret = func.apply(this, arguments);
       BridgeProfiling.profileEnd();
       return ret;
     };
@@ -62,22 +69,13 @@ var BridgeProfiling = {
     ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 
-  attachToRelayProfiler() {
-    // We don't want to create a dependency on `RelayProfiler`, so that's why
-    // we require it indirectly (rather than using a literal string). Since
-    // there's no guarantee that the module will be present, we must wrap
-    // everything in a try-catch block as requiring a non-existing module
-    // will just throw.
-    try {
-      var rpName = 'RelayProfiler';
-      var RelayProfiler = require(rpName);
-      RelayProfiler.attachProfileHandler('*', (name) => {
-        BridgeProfiling.profile(name);
-        return () => {
-          BridgeProfiling.profileEnd();
-        };
-      });
-    } catch(err) {}
+  attachToRelayProfiler(relayProfiler: RelayProfiler) {
+    relayProfiler.attachProfileHandler('*', (name) => {
+      BridgeProfiling.profile(name);
+      return () => {
+        BridgeProfiling.profileEnd();
+      };
+    });
   },
 
   /* This is not called by default due to perf overhead but it's useful
