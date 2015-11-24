@@ -7,7 +7,7 @@ permalink: docs/platform-specific-code.html
 next: native-modules-ios
 ---
 
-When building a cross platform app, the need to write different code for different platforms may arise. This can always be achieved by organizing the various components in different folders: 
+When building a cross-platform app, the need to write different code for different platforms may arise. This can always be achieved by organizing the various components in different folders: 
 
 ```sh
 /common/components/   
@@ -49,19 +49,19 @@ A module is provided by React Native to detect what is the platform in which the
 var {Platform} = React;
 
 var styles = StyleSheet.create({
-    height: (Platform.OS === 'ios') ? 200 : 100
+  height: (Platform.OS === 'ios') ? 200 : 100,
 });
 ```
 
 `Platform.OS` will be `ios` when running in iOS and `android` when running in an Android device or simulator.
 
-###Detecting android version
+###Detecting Android version
 On Android, the Platform module can be also used to detect which is the version of the Android Platform in which the app is running
 
 ```javascript
 var {Platform} = React;
 
 if(Platform.Version === '5.0'){
-   console.log('Running on Lollipop!');
+  console.log('Running on Lollipop!');
 }
 ```
