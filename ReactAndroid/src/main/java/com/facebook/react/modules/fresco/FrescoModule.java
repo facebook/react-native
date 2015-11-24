@@ -65,13 +65,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     super.initialize();
     // Make sure the SoLoaderShim is configured to use our loader for native libraries.
     // This code can be removed if using Fresco from Maven rather than from source
-    SoLoaderShim.setHandler(
-        new SoLoaderShim.Handler() {
-          @Override
-          public void loadLibrary(String libraryName) {
-            SoLoader.loadLibrary(libraryName);
-          }
-        });
+    SoLoaderShim.setHandler(new FrescoHandler());
 
     HashSet<RequestListener> requestListeners = new HashSet<>();
     requestListeners.add(new SystraceRequestListener());
@@ -109,5 +103,12 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     imagePipelineFactory.getEncodedMemoryCache().removeAll(AndroidPredicates.<CacheKey>True());
     imagePipelineFactory.getMainDiskStorageCache().clearAll();
     imagePipelineFactory.getSmallImageDiskStorageCache().clearAll();
+  }
+
+  private static class FrescoHandler implements SoLoaderShim.Handler {
+    @Override
+    public void loadLibrary(String libraryName) {
+      SoLoader.loadLibrary(libraryName);
+    }
   }
 }
