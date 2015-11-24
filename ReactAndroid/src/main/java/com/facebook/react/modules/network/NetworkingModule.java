@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.CookieHandler;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -58,6 +57,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
 
   private final OkHttpClient mClient;
+  private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
   private boolean mShuttingDown;
 
@@ -68,6 +68,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     super(reactContext);
     mClient = client;
     mClient.networkInterceptors().add(new StethoInterceptor());
+    mCookieHandler = new ForwardingCookieHandler(reactContext);
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
   }
@@ -76,7 +77,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.getCookieAwareOkHttpClient(context));
+    this(context, null, OkHttpClientProvider.getOkHttpClient());
   }
 
   /**
@@ -85,11 +86,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.getCookieAwareOkHttpClient(context));
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
   }
 
   public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
     this(reactContext, null, client);
+  }
+
+  @Override
+  public void initialize() {
+    mClient.setCookieHandler(mCookieHandler);
   }
 
   @Override
@@ -102,10 +108,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mShuttingDown = true;
     mClient.cancel(null);
 
-    CookieHandler cookieHandler = mClient.getCookieHandler();
-    if (cookieHandler instanceof ForwardingCookieHandler) {
-      ((ForwardingCookieHandler) cookieHandler).destroy();
-    }
+    mCookieHandler.destroy();
+    mClient.setCookieHandler(null);
   }
 
   @ReactMethod
@@ -319,10 +323,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void clearCookies(com.facebook.react.bridge.Callback callback) {
-    CookieHandler cookieHandler = mClient.getCookieHandler();
-    if (cookieHandler instanceof ForwardingCookieHandler) {
-      ((ForwardingCookieHandler) cookieHandler).clearCookies(callback);
-    }
+    mCookieHandler.clearCookies(callback);
   }
 
   private @Nullable MultipartBuilder constructMultipartBody(
