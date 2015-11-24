@@ -142,10 +142,12 @@ var { NativeModules } = require('react-native');
 module.exports = NativeModules.ToastAndroid;
 ```
 
-Now, from your JavaScript file you can call the method like this:
+Save the above code into a file named "ToastAndroid.js". Now, from your other JavaScript file you can call the method like this:
 
 ```js
-var ToastAndroid = require('ToastAndroid')
+// Suppose this js file is under the same directory as ToastAndroid.js. 
+// Otherwise change the require path.
+var ToastAndroid = require('./ToastAndroid'); 
 ToastAndroid.show('Awesome', ToastAndroid.SHORT);
 
 // Note: We require ToastAndroid without any relative filepath because
