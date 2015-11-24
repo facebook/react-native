@@ -162,7 +162,6 @@ function setUpProfile() {
   if (__DEV__) {
     var BridgeProfiling = require('BridgeProfiling');
     BridgeProfiling.swizzleReactPerf();
-    BridgeProfiling.attachToRelayProfiler();
   }
 }
 
