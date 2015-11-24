@@ -4,5 +4,5 @@ React Native, as you've probably heard, is getting really popular and truth is w
 
 - If this is a feature request or a bug that you would like to be fixed by the team, please report it on [Product Pains](https://productpains.com/product/react-native/). It has a ranking feature that lets us focus on the most important issues the community is experiencing.
 
-- If you don't know how to do something, asking on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) with the tag `react-native` or for more real time interactions, ask on [Discord](https://discord.gg/0ZcbPKXt5bZjGY5n) in the #react-native channel.
+- If you don't know how to do something, please ask on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) with the tag `react-native` or for more real time interactions, ask on [Discord](https://discord.gg/0ZcbPKXt5bZjGY5n) in the #react-native channel.
 
