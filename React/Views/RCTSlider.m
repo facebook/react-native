@@ -47,4 +47,14 @@
   }
 }
 
+- (void)setThumbImage:(UIImage *)thumbImage
+{
+  [self setThumbImage:thumbImage forState:UIControlStateNormal];
+}
+
+- (UIImage *)thumbImage
+{
+  return [self thumbImageForState:UIControlStateNormal];
+}
+
 @end
