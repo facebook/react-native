@@ -217,7 +217,10 @@ public class DevServerHelper {
         new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {
-            FLog.e(ReactConstants.TAG, "IOException requesting status from packager", e);
+            FLog.w(
+                ReactConstants.TAG,
+                "The packager does not seem to be running as we got an IOException requesting " +
+                    "its status: " + e.getMessage());
             callback.onPackagerStatusFetched(false);
           }
 
