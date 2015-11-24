@@ -130,7 +130,7 @@ distance allows us to specify for far beyond the current viewport we
 should continue to render rows.</p><h5><a class="anchor" name="removeclippedsubviews"></a>removeClippedSubviews <a class="hash-link" href="#removeclippedsubviews">#</a></h5><p>&quot;When true, offscreen child views (whose <code>overflow</code> value is <code>hidden</code>)
 are removed from their native backing superview when offscreen.  This
 can improve scrolling performance on long lists. The default value is
-false.&quot;</p><p>This is an extremely important optimization to apply on large ListViews.
+<code>true</code>.&quot;(The default value is <code>false</code> before version 0.14-rc).</p><p>This is an extremely important optimization to apply on large ListViews.
 On Android the <code>overflow</code> value is always <code>hidden</code> so you don&#x27;t need to
 worry about setting it, but on iOS you need to be sure to set <code>overflow:
 hidden</code> on row containers.</p><h4><a class="anchor" name="my-component-renders-too-slowly-and-i-don-t-need-it-all-immediately"></a>My component renders too slowly and I don&#x27;t need it all immediately <a class="hash-link" href="#my-component-renders-too-slowly-and-i-don-t-need-it-all-immediately">#</a></h4><p>It&#x27;s common at first to overlook ListView, but using it properly is
