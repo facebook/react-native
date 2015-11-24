@@ -33,12 +33,10 @@ Webview
 #### Modules
 
 ```
-Geo Location
 Net Info
 Camera Roll
 App State
 Dialog
-Intent
 Media
 Pasteboard
 PushNotificationIOS
