@@ -39,6 +39,7 @@ import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
+import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 
 /**
  * Package defining basic modules and view managers.
@@ -78,6 +79,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactViewManager(),
       new ReactViewPagerManager(),
       new ReactTextInlineImageViewManager(),
-      new ReactVirtualTextViewManager());
+      new ReactVirtualTextViewManager(),
+      new SwipeRefreshLayoutManager());
   }
 }
