@@ -107,7 +107,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if ((self.hidden && shouldShow) || (!self.hidden && [_lastErrorMessage isEqualToString:message])) {
     _lastStackTrace = stack;
-    _lastErrorMessage = message;
+    // message is displayed using UILabel, which is unable to render text of unlimited length, so we truncate it
+    _lastErrorMessage = [message substringToIndex:MIN(10000, message.length)];
 
     [_stackTraceTableView reloadData];
 
