@@ -44,6 +44,7 @@
   NSMutableArray<UIView *> *_subviews;
   BOOL _blockTextShouldChange;
   UITextRange *_previousSelectionRange;
+  UIScrollView *_scrollView;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -55,15 +56,19 @@
     _eventDispatcher = eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
 
-    _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
+    _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.scrollsToTop = NO;
+    _textView.scrollEnabled = NO;
     _textView.delegate = self;
+
+    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    [_scrollView addSubview:_textView];
 
     _previousSelectionRange = _textView.selectedTextRange;
 
     _subviews = [NSMutableArray new];
-    [self addSubview:_textView];
+    [self addSubview:_scrollView];
   }
   return self;
 }
@@ -139,16 +144,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // we temporarily block all textShouldChange events so they are not applied.
   _blockTextShouldChange = YES;
 
-  // We compute the new selectedRange manually to make sure the cursor is at the
-  // end of the newly inserted/deleted text after update.
   NSRange range = _textView.selectedRange;
-  CGPoint contentOffset = _textView.contentOffset;
-
   _textView.attributedText = _pendingAttributedText;
   _pendingAttributedText = nil;
   _textView.selectedRange = range;
   [_textView layoutIfNeeded];
-  _textView.contentOffset = contentOffset;
 
   [self _setPlaceholderVisibility];
 
@@ -174,9 +174,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   CGRect frame = UIEdgeInsetsInsetRect(self.bounds, adjustedFrameInset);
   _textView.frame = frame;
   _placeholderView.frame = frame;
+  _scrollView.frame = frame;
+  [self updateContentSize];
 
   _textView.textContainerInset = adjustedTextContainerInset;
   _placeholderView.textContainerInset = adjustedTextContainerInset;
+}
+
+- (void)updateContentSize
+{
+  _textView.scrollEnabled = YES;
+  _scrollView.contentSize = _textView.contentSize;
+  _textView.frame = (CGRect){CGPointZero, _scrollView.contentSize};
+  _textView.scrollEnabled = NO;
 }
 
 - (void)updatePlaceholder
@@ -186,6 +196,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if (_placeholder) {
     _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
+    _placeholderView.editable = NO;
+    _placeholderView.userInteractionEnabled = NO;
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = false;
     _placeholderView.scrollsToTop = NO;
@@ -209,16 +221,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _textView.font = font;
   [self updatePlaceholder];
-}
-
-- (UIColor *)textColor
-{
-  return _textView.textColor;
-}
-
-- (void)setTextColor:(UIColor *)textColor
-{
-  _textView.textColor = textColor;
 }
 
 - (void)setPlaceholder:(NSString *)placeholder
@@ -305,10 +307,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       },
     });
   }
-
-  if (textView.editable && [textView isFirstResponder]) {
-    [textView scrollRangeToVisible:textView.selectedRange];
-  }
 }
 
 - (void)setText:(NSString *)text
@@ -369,6 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+  [self updateContentSize];
   [self _setPlaceholderVisibility];
   _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
