@@ -21,6 +21,7 @@ import android.text.style.ReplacementSpan;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -42,7 +43,9 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 public class TextInlineImageSpan extends ReplacementSpan {
 
   private @Nullable Drawable mDrawable;
-  private DraweeHolder<GenericDraweeHierarchy> mDraweeHolder;
+  private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private final DraweeHolder<GenericDraweeHierarchy> mDraweeHolder;
+  private final @Nullable Object mCallerContext;
 
   private int mHeight;
   private Uri mUri;
@@ -50,11 +53,19 @@ public class TextInlineImageSpan extends ReplacementSpan {
 
   private @Nullable TextView mTextView;
 
-  public TextInlineImageSpan(Resources resources, int height, int width, @Nullable Uri uri) {
+  public TextInlineImageSpan(
+      Resources resources,
+      int height,
+      int width,
+      @Nullable Uri uri,
+      AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable Object callerContext) {
     mDraweeHolder = new DraweeHolder(
         GenericDraweeHierarchyBuilder.newInstance(resources)
             .build()
     );
+    mDraweeControllerBuilder = draweeControllerBuilder;
+    mCallerContext = callerContext;
 
     mHeight = height;
     mWidth = width;
@@ -116,8 +127,10 @@ public class TextInlineImageSpan extends ReplacementSpan {
       ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
           .build();
 
-      DraweeController draweeController = Fresco.newDraweeControllerBuilder()
+      DraweeController draweeController = mDraweeControllerBuilder
+          .reset()
           .setOldController(mDraweeHolder.getController())
+          .setCallerContext(mCallerContext)
           .setImageRequest(imageRequest)
           .build();
       mDraweeHolder.setController(draweeController);
