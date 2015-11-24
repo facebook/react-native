@@ -271,15 +271,17 @@ public class ReactTextInputManager extends
 
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
+    int flagsToUnset = 0;
     int flagsToSet = 0;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
-      flagsToSet = InputType.TYPE_CLASS_NUMBER;
+      flagsToUnset = InputType.TYPE_MASK_CLASS | InputType.TYPE_MASK_FLAGS;
+      flagsToSet = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
     }
     updateStagedInputTypeFlag(
         view,
-        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+        flagsToUnset,
         flagsToSet);
   }
 
