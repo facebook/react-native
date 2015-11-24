@@ -84,6 +84,11 @@ var SliderIOS = React.createClass({
     trackImage: Image.propTypes.source,
 
     /**
+     * Sets an image for the thumb. It only supports static images.
+     */
+    thumbImage: Image.propTypes.source,
+
+    /**
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,
@@ -114,7 +119,7 @@ var SliderIOS = React.createClass({
     });
 
     let {style, ...props} = this.props;
-    style = [styles.slider, this.props.style];
+    style = [styles.slider, style];
 
     return (
       <RCTSlider

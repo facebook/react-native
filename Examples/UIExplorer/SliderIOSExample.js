@@ -83,5 +83,11 @@ exports.examples = [
     render(): ReactElement {
       return <SliderExample step={0.25} />;
     }
+  },
+  {
+    title: 'Custom thumb image',
+    render(): ReactElement {
+      return <SliderExample thumbImage={require('image!uie_thumb_big')} />;
+    }
   }
 ];
