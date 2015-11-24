@@ -312,6 +312,10 @@ var View = React.createClass({
   },
 
   render: function() {
+    // WARNING: This method will not be used in production mode as in that mode we
+    // replace wrapper component View with generated native wrapper RCTView. Avoid
+    // adding functionality this component that you'd want to be available in both
+    // dev and prod modes.
     return <RCTView {...this.props} />;
   },
 });
