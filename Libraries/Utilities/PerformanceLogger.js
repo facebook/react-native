@@ -65,6 +65,15 @@ var PerformanceLogger = {
       }
       return;
     }
+    if (timespans[key].endTime) {
+      if (__DEV__) {
+        console.log(
+          'PerformanceLogger: Attempting to end a timespan that has already ended ',
+          key
+        );
+      }
+      return;
+    }
 
     timespans[key].endTime = performanceNow();
     timespans[key].totalTime =
