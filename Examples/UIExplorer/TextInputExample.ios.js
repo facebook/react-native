@@ -302,6 +302,50 @@ exports.title = '<TextInput>';
 exports.description = 'Single and multi-line text inputs.';
 exports.examples = [
   {
+    title: 'Multiline',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            placeholder="multiline text input"
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            placeholder="multiline text input with font styles and placeholder"
+            multiline={true}
+            clearTextOnFocus={true}
+            autoCorrect={true}
+            autoCapitalize="words"
+            placeholderTextColor="red"
+            keyboardType="url"
+            style={[styles.multiline, styles.multilineWithFontStyles]}
+          />
+          <TextInput
+            placeholder="uneditable multiline text input"
+            editable={false}
+            multiline={true}
+            style={styles.multiline}
+          />
+          <TextInput
+            placeholder="multiline with children"
+            multiline={true}
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="go"
+            style={styles.multiline}>
+            <View style={styles.multilineChild}/>
+          </TextInput>
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Attributed text',
+    render: function() {
+      return <TokenizedTextExample />;
+    }
+  },
+  {
     title: 'Auto-focus',
     render: function() {
       return <TextInput autoFocus={true} style={styles.default} />;
@@ -542,50 +586,6 @@ exports.examples = [
           </WithLabel>
         </View>
       );
-    }
-  },
-  {
-    title: 'Multiline',
-    render: function() {
-      return (
-        <View>
-          <TextInput
-            placeholder="multiline text input"
-            multiline={true}
-            style={styles.multiline}
-          />
-          <TextInput
-            placeholder="multiline text input with font styles and placeholder"
-            multiline={true}
-            clearTextOnFocus={true}
-            autoCorrect={true}
-            autoCapitalize="words"
-            placeholderTextColor="red"
-            keyboardType="url"
-            style={[styles.multiline, styles.multilineWithFontStyles]}
-          />
-          <TextInput
-            placeholder="uneditable multiline text input"
-            editable={false}
-            multiline={true}
-            style={styles.multiline}
-          />
-          <TextInput
-            placeholder="multiline with children"
-            multiline={true}
-            enablesReturnKeyAutomatically={true}
-            returnKeyType="go"
-            style={styles.multiline}>
-            <View style={styles.multilineChild}/>
-          </TextInput>
-        </View>
-      );
-    }
-  },
-  {
-    title: 'Attributed text',
-    render: function() {
-      return <TokenizedTextExample />;
     }
   },
   {

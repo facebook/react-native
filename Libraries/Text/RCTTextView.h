@@ -22,7 +22,6 @@
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
-@property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
