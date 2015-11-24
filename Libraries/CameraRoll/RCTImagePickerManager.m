@@ -80,8 +80,9 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
   [_pickers addObject:imagePicker];
   [_pickerCallbacks addObject:callback];
   [_pickerCancelCallbacks addObject:cancelCallback];
-
-  [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+  });
 }
 
 RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
@@ -112,8 +113,9 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
   [_pickers addObject:imagePicker];
   [_pickerCallbacks addObject:callback];
   [_pickerCancelCallbacks addObject:cancelCallback];
-
-  [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+  });
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
