@@ -9,8 +9,12 @@
 
 package com.facebook.react.views.text;
 
+import javax.annotation.Nullable;
+
 import android.view.View;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 
@@ -22,6 +26,20 @@ public class ReactTextInlineImageViewManager
     extends ViewManager<View, ReactTextInlineImageShadowNode> {
 
   static final String REACT_CLASS = "RCTTextInlineImage";
+
+  private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private final @Nullable Object mCallerContext;
+
+  public ReactTextInlineImageViewManager() {
+    this(null, null);
+  }
+
+  public ReactTextInlineImageViewManager(
+      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable Object callerContext) {
+    mDraweeControllerBuilder = draweeControllerBuilder;
+    mCallerContext = callerContext;
+  }
 
   @Override
   public String getName() {
@@ -35,7 +53,12 @@ public class ReactTextInlineImageViewManager
 
   @Override
   public ReactTextInlineImageShadowNode createShadowNodeInstance() {
-    return new ReactTextInlineImageShadowNode();
+    return new ReactTextInlineImageShadowNode(
+        (mDraweeControllerBuilder != null) ?
+            mDraweeControllerBuilder :
+            Fresco.newDraweeControllerBuilder(),
+        mCallerContext
+    );
   }
 
   @Override
