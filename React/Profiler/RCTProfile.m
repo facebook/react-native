@@ -175,9 +175,9 @@ IMP RCTProfileGetImplementation(id obj, SEL cmd)
  * state, call the actual function we want to profile and stop the profiler.
  *
  * The implementation can be found in RCTProfileTrampoline-<arch>.s where arch
- * is one of: x86, x86_64, arm, arm64.
+ * is one of: i386, x86_64, arm, arm64.
  */
-#if defined(__x86__) || \
+#if defined(__i386__) || \
     defined(__x86_64__) || \
     defined(__arm__) || \
     defined(__arm64__)

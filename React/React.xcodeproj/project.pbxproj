@@ -56,8 +56,8 @@
 		1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF811BCFF28A00208362 /* RCTProfile.m */; };
 		1450FF871BCFF28A00208362 /* RCTProfileTrampoline-arm.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF821BCFF28A00208362 /* RCTProfileTrampoline-arm.S */; };
 		1450FF881BCFF28A00208362 /* RCTProfileTrampoline-arm64.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF831BCFF28A00208362 /* RCTProfileTrampoline-arm64.S */; };
-		1450FF891BCFF28A00208362 /* RCTProfileTrampoline-x86.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF841BCFF28A00208362 /* RCTProfileTrampoline-x86.S */; };
 		1450FF8A1BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S in Sources */ = {isa = PBXBuildFile; fileRef = 1450FF851BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S */; };
+		14BF71801C04793D00C97D0C /* RCTProfileTrampoline-i386.S in Sources */ = {isa = PBXBuildFile; fileRef = 14BF717F1C04793D00C97D0C /* RCTProfileTrampoline-i386.S */; };
 		14C2CA711B3AC63800E6CBB2 /* RCTModuleMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C2CA701B3AC63800E6CBB2 /* RCTModuleMethod.m */; };
 		14C2CA741B3AC64300E6CBB2 /* RCTModuleData.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C2CA731B3AC64300E6CBB2 /* RCTModuleData.m */; };
 		14C2CA761B3AC64F00E6CBB2 /* RCTFrameUpdate.m in Sources */ = {isa = PBXBuildFile; fileRef = 14C2CA751B3AC64F00E6CBB2 /* RCTFrameUpdate.m */; };
@@ -210,9 +210,10 @@
 		1450FF811BCFF28A00208362 /* RCTProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTProfile.m; sourceTree = "<group>"; };
 		1450FF821BCFF28A00208362 /* RCTProfileTrampoline-arm.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-arm.S"; sourceTree = "<group>"; };
 		1450FF831BCFF28A00208362 /* RCTProfileTrampoline-arm64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-arm64.S"; sourceTree = "<group>"; };
-		1450FF841BCFF28A00208362 /* RCTProfileTrampoline-x86.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-x86.S"; sourceTree = "<group>"; };
 		1450FF851BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-x86_64.S"; sourceTree = "<group>"; };
 		1482F9E61B55B927000ADFF3 /* RCTBridgeDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeDelegate.h; sourceTree = "<group>"; };
+		14BF717F1C04793D00C97D0C /* RCTProfileTrampoline-i386.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = "RCTProfileTrampoline-i386.S"; sourceTree = "<group>"; };
+		14BF71811C04795500C97D0C /* RCTMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMacros.h; sourceTree = "<group>"; };
 		14C2CA6F1B3AC63800E6CBB2 /* RCTModuleMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuleMethod.h; sourceTree = "<group>"; };
 		14C2CA701B3AC63800E6CBB2 /* RCTModuleMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleMethod.m; sourceTree = "<group>"; };
 		14C2CA721B3AC64300E6CBB2 /* RCTModuleData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTModuleData.h; sourceTree = "<group>"; };
@@ -430,6 +431,8 @@
 		1450FF7F1BCFF28A00208362 /* Profiler */ = {
 			isa = PBXGroup;
 			children = (
+				14BF71811C04795500C97D0C /* RCTMacros.h */,
+				14BF717F1C04793D00C97D0C /* RCTProfileTrampoline-i386.S */,
 				14F7A0EB1BDA3B3C003C6C10 /* RCTPerfMonitor.m */,
 				14F7A0EE1BDA714B003C6C10 /* RCTFPSGraph.h */,
 				14F7A0EF1BDA714B003C6C10 /* RCTFPSGraph.m */,
@@ -437,7 +440,6 @@
 				1450FF811BCFF28A00208362 /* RCTProfile.m */,
 				1450FF821BCFF28A00208362 /* RCTProfileTrampoline-arm.S */,
 				1450FF831BCFF28A00208362 /* RCTProfileTrampoline-arm64.S */,
-				1450FF841BCFF28A00208362 /* RCTProfileTrampoline-x86.S */,
 				1450FF851BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S */,
 			);
 			path = Profiler;
@@ -680,8 +682,8 @@
 				13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */,
 				83392EB31B6634E10013B15F /* RCTModalHostViewController.m in Sources */,
 				14435CE51AAC4AE100FC20F4 /* RCTMap.m in Sources */,
-				1450FF891BCFF28A00208362 /* RCTProfileTrampoline-x86.S in Sources */,
 				13B0801C1A69489C00A75B9A /* RCTNavItem.m in Sources */,
+				14BF71801C04793D00C97D0C /* RCTProfileTrampoline-i386.S in Sources */,
 				1385D0341B665AAE000A309B /* RCTModuleMap.m in Sources */,
 				83CBBA691A601EF300E9B192 /* RCTEventDispatcher.m in Sources */,
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,

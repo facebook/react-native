@@ -3,9 +3,6 @@
 
 #if RCT_DEV && defined(__x86_64__)
 
-/**
- * Define both symbols for compatibility with other assemblers
- */
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
 
