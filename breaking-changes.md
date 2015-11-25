@@ -6,6 +6,7 @@
 - YellowBox enabled by default: [8ab518](https://github.com/facebook/react-native/commit/8ab51828ff077ae0ad10c06f62f9f01d58b9bf85)
 - React Native now uses Babel 6 (props to tadeuzagallo for upgrading!). We've been using React Native with Babel 6 at Facebook for quite a while now. Nevertheless, please report any errors related to Babel, such as transforms for some JS features not working as expected and we'll fix them.
 - Decorators won't work until [T2645](https://phabricator.babeljs.io/T2645) lands in Babel.
+- Exporting default class that extends a base class won't work due to Babel's [T2694](https://phabricator.babeljs.io/T2694).
 
 ## 0.15
 
