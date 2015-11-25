@@ -113,7 +113,6 @@ var Image = React.createClass({
     onLayout: PropTypes.func,
     /**
      * Invoked on load start
-     * @platform ios
      */
     onLoadStart: PropTypes.func,
     /**
@@ -128,12 +127,10 @@ var Image = React.createClass({
     onError: PropTypes.func,
     /**
      * Invoked when load completes successfully
-     * @platform ios
      */
     onLoad: PropTypes.func,
     /**
      * Invoked when load either succeeds or fails
-     * @platform ios
      */
     onLoadEnd: PropTypes.func,
   },
