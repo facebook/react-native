@@ -12,17 +12,18 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var NativeModules = require('NativeModules');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
 
-var RCTUIManager = NativeModules.UIManager;
-var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
+var { UIManager, ScrollViewManager } = require('NativeModules');
 
+var invariant = require('invariant');
 var warning = require('warning');
+
+import type ReactComponent from 'ReactComponent';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -115,7 +116,6 @@ type Event = Object;
 
 var ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
-  statics: RCTScrollViewConsts,
   scrollResponderMixinGetInitialState: function(): State {
     return {
       isTouching: false,
@@ -353,16 +353,15 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
     if (Platform.OS === 'android') {
-      RCTUIManager.dispatchViewManagerCommand(
+      UIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),
-        RCTUIManager.RCTScrollView.Commands.scrollTo,
+        UIManager.RCTScrollView.Commands.scrollTo,
         [Math.round(offsetX), Math.round(offsetY)],
       );
     } else {
-      RCTUIManager.scrollTo(
+      ScrollViewManager.scrollTo(
         React.findNodeHandle(this),
-        offsetX,
-        offsetY,
+        { x: offsetX, y: offsetY }
       );
     }
   },
@@ -373,16 +372,15 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
     if (Platform.OS === 'android') {
-      RCTUIManager.dispatchViewManagerCommand(
+      UIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),
-        RCTUIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
+        UIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
         [offsetX, offsetY],
       );
     } else {
-      RCTUIManager.scrollWithoutAnimationTo(
+      ScrollViewManager.scrollWithoutAnimationTo(
         React.findNodeHandle(this),
-        offsetX,
-        offsetY
+        { x: offsetX, y: offsetY }
       );
     }
   },
@@ -392,7 +390,11 @@ var ScrollResponderMixin = {
    * @param {object} rect Should have shape {x, y, width, height}
    */
   scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
-    RCTUIManager.zoomToRect(React.findNodeHandle(this), rect);
+    if (Platform.OS === 'android') {
+      invariant('zoomToRect is not implemented');
+    } else {
+      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect);
+    }
   },
 
   /**
@@ -408,7 +410,7 @@ var ScrollResponderMixin = {
   scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle: any, additionalOffset?: number, preventNegativeScrollOffset?: bool) {
     this.additionalScrollOffset = additionalOffset || 0;
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
-    RCTUIManager.measureLayout(
+    UIManager.measureLayout(
       nodeHandle,
       React.findNodeHandle(this.getInnerViewNode()),
       this.scrollResponderTextInputFocusError,
