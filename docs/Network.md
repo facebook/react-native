@@ -54,10 +54,7 @@ fetch('https://mywebsite.com/endpoint/', {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  body: JSON.stringify({
-    firstParam: 'yourValue',
-    secondParam: 'yourOtherValue',
-  })
+  body: 'firstParam=yourValue&secondParam=yourOtherValue'
 })
 ```
 
