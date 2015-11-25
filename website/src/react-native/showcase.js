@@ -202,6 +202,12 @@ var apps = [
     author: 'Myntra Designs',
   },
   {
+    name: 'Nalathe Kerala',
+    icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
+    author: 'Rhyble',
+  },
+  {
     name: 'Ncredible',
     icon: 'http://a3.mzstatic.com/us/r30/Purple2/v4/a9/00/74/a9007400-7ccf-df10-553b-3b6cb67f3f5f/icon350x350.png',
     link: 'https://itunes.apple.com/ca/app/ncredible/id1019662810?mt=8',
