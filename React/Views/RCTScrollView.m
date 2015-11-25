@@ -375,7 +375,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CGRect _lastClippedToRect;
 }
 
-@synthesize nativeMainScrollDelegate = _nativeMainScrollDelegate;
+@synthesize nativeScrollDelegate = _nativeScrollDelegate;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
@@ -542,14 +542,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)delegateMethod:(UIScrollView *)scrollView           \
 {                                                           \
   [_eventDispatcher sendScrollEventWithType:eventName reactTag:self.reactTag scrollView:scrollView userData:nil]; \
-  if ([_nativeMainScrollDelegate respondsToSelector:_cmd]) { \
-    [_nativeMainScrollDelegate delegateMethod:scrollView]; \
+  if ([_nativeScrollDelegate respondsToSelector:_cmd]) { \
+    [_nativeScrollDelegate delegateMethod:scrollView]; \
   } \
 }
 
 #define RCT_FORWARD_SCROLL_EVENT(call) \
-if ([_nativeMainScrollDelegate respondsToSelector:_cmd]) { \
-  [_nativeMainScrollDelegate call]; \
+if ([_nativeScrollDelegate respondsToSelector:_cmd]) { \
+  [_nativeScrollDelegate call]; \
 }
 
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidEndScrollingAnimation, RCTScrollEventTypeEndDeceleration)
@@ -706,8 +706,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
 {
-  if ([_nativeMainScrollDelegate respondsToSelector:_cmd]) {
-    return [_nativeMainScrollDelegate scrollViewShouldScrollToTop:scrollView];
+  if ([_nativeScrollDelegate respondsToSelector:_cmd]) {
+    return [_nativeScrollDelegate scrollViewShouldScrollToTop:scrollView];
   }
   return YES;
 }

@@ -70,7 +70,6 @@ RCT_EXPORT_VIEW_PROPERTY(onRefreshStart, RCTDirectEventBlock)
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
-    // TODO: unused - remove these?
     @"DecelerationRate": @{
       @"normal": @(UIScrollViewDecelerationRateNormal),
       @"fast": @(UIScrollViewDecelerationRateFast),
@@ -118,7 +117,7 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
 RCT_EXPORT_METHOD(endRefreshing:(nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
-    
+
     RCTScrollView *view = viewRegistry[reactTag];
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
       RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
@@ -126,10 +125,44 @@ RCT_EXPORT_METHOD(endRefreshing:(nonnull NSNumber *)reactTag)
     }
 
     [view endRefreshing];
-    
   }];
 }
 
+RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag withOffset:(CGPoint)offset)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+    UIView *view = viewRegistry[reactTag];
+    if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+      [(id<RCTScrollableProtocol>)view scrollToOffset:offset animated:YES];
+    } else {
+      RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(nonnull NSNumber *)reactTag withOffset:(CGPoint)offset)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+        UIView *view = viewRegistry[reactTag];
+        if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+          [(id<RCTScrollableProtocol>)view scrollToOffset:offset animated:NO];
+        } else {
+          RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag withRect:(CGRect)rect)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+    UIView *view = viewRegistry[reactTag];
+    if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+      [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:YES];
+    } else {
+      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+    }
+  }];
+}
 
 - (NSArray<NSString *> *)customDirectEventTypes
 {
@@ -144,4 +177,3 @@ RCT_EXPORT_METHOD(endRefreshing:(nonnull NSNumber *)reactTag)
 }
 
 @end
-
