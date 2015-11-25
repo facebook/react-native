@@ -138,6 +138,26 @@ var AsyncStorage = {
   },
 
   /**
+   * Erases all keys with a particular prefix. Useful if all your keys have a
+   * specific prefix.
+   */
+  clearPrefix: function(
+    prefix: string,
+    callback?: ?(error: ?Error) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.clearPrefix(prefix, function(error) {
+        callback && callback(convertError(error));
+        if (error && convertError(error)){
+          reject(convertError(error));
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
    * Gets *all* keys known to the app, for all callers, libraries, etc. Returns a `Promise` object.
    */
   getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
@@ -257,6 +277,11 @@ var AsyncStorage = {
 if (!RCTAsyncStorage.multiMerge) {
   delete AsyncStorage.mergeItem;
   delete AsyncStorage.multiMerge;
+}
+
+// clearPrefix() only supported by certain backends
+if (!RCTAsyncStorage.clearPrefix) {
+  delete AsyncStorage.clearPrefix;
 }
 
 function convertErrors(errs) {
