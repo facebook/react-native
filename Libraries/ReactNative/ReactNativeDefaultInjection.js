@@ -86,6 +86,7 @@ function inject() {
     validAttributes: {},
     uiViewClassName: 'RCTView',
   });
+  // TODO #9121531: make this position: absolute; by default, to avoid interfering with flexbox
   ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
 
   EventPluginUtils.injection.injectMount(ReactNativeMount);
