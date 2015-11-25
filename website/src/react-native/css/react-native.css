@@ -1131,6 +1131,7 @@ div[data-twttr-id] iframe {
 
 .showcase p {
   margin-top: 5px;
+  font-weight: normal;
 }
 
 .showcase a {
