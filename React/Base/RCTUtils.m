@@ -183,18 +183,29 @@ NSString *RCTMD5Hash(NSString *string)
   ];
 }
 
+void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else if (sync) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      block();
+    });
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
 CGFloat RCTScreenScale()
 {
   static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (![NSThread isMainThread]) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        scale = [UIScreen mainScreen].scale;
-      });
-    } else {
+    RCTExecuteOnMainThread(^{
       scale = [UIScreen mainScreen].scale;
-    }
+    }, YES);
   });
 
   return scale;
@@ -205,13 +216,9 @@ CGSize RCTScreenSize()
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (![NSThread isMainThread]) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        size = [UIScreen mainScreen].bounds.size;
-      });
-    } else {
+    RCTExecuteOnMainThread(^{
       size = [UIScreen mainScreen].bounds.size;
-    }
+    }, YES);
   });
 
   return size;

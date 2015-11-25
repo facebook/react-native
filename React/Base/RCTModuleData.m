@@ -16,36 +16,74 @@
 
 @implementation RCTModuleData
 {
-  NSDictionary *_constants;
   NSString *_queueName;
+  __weak RCTBridge *_bridge;
 }
 
 @synthesize methods = _methods;
+@synthesize instance = _instance;
+@synthesize methodQueue = _methodQueue;
 
-- (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                        moduleID:(NSNumber *)moduleID
-                        instance:(id<RCTBridgeModule>)instance
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
 {
   if ((self = [super init])) {
-    _javaScriptExecutor = javaScriptExecutor;
-    _moduleID = moduleID;
+    _moduleClass = moduleClass;
+    _bridge = bridge;
+  }
+  return self;
+}
+
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+{
+  if ((self = [super init])) {
     _instance = instance;
     _moduleClass = [instance class];
-    _name = RCTBridgeModuleNameForClass(_moduleClass);
-
-    // Must be done at init time to ensure it's called on main thread
-    RCTAssertMainThread();
-    if ([_instance respondsToSelector:@selector(constantsToExport)]) {
-      _constants = [_instance constantsToExport];
-    }
-
-    // Must be done at init time due to race conditions
-    (void)self.queue;
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init);
+
+- (BOOL)hasInstance
+{
+  return _instance != nil;
+}
+
+- (id<RCTBridgeModule>)instance
+{
+  if (!_instance) {
+    _instance = [_moduleClass new];
+
+    // Bridge must be set before methodQueue is set up, as methodQueue
+    // initialization requires it (View Managers get their queue by calling
+    // self.bridge.uiManager.methodQueue)
+    [self setBridgeForInstance:_bridge];
+
+    // Initialize queue
+    [self methodQueue];
+  }
+  return _instance;
+}
+
+- (void)setBridgeForInstance:(RCTBridge *)bridge
+{
+  if ([_instance respondsToSelector:@selector(bridge)]) {
+    @try {
+      [(id)_instance setValue:bridge forKey:@"bridge"];
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"%@ has no setter or ivar for its bridge, which is not "
+                  "permitted. You must either @synthesize the bridge property, "
+                  "or provide your own setter method.", self.name);
+    }
+  }
+}
+
+- (NSString *)name
+{
+  return RCTBridgeModuleNameForClass(_moduleClass);
+}
 
 - (NSArray<id<RCTBridgeMethod>> *)methods
 {
@@ -84,7 +122,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (NSArray *)config
 {
-  if (_constants.count == 0 && self.methods.count == 0) {
+  __block NSDictionary<NSString *, id> *constants;
+  if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
+    [self instance]; // Initialize instance
+    RCTExecuteOnMainThread(^{
+      constants = [_instance constantsToExport];
+    }, YES);
+  }
+
+  if (constants.count == 0 && self.methods.count == 0) {
     return (id)kCFNull; // Nothing to export
   }
 
@@ -101,9 +147,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 
   NSMutableArray *config = [NSMutableArray new];
-  [config addObject:_name];
-  if (_constants.count) {
-    [config addObject:_constants];
+  [config addObject:self.name];
+  if (constants.count) {
+    [config addObject:constants];
   }
   if (methods) {
     [config addObject:methods];
@@ -114,53 +160,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return config;
 }
 
-- (dispatch_queue_t)queue
+- (dispatch_queue_t)methodQueue
 {
-  if (!_queue) {
-    BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
+  if (!_methodQueue) {
+    BOOL implementsMethodQueue = [self.instance respondsToSelector:@selector(methodQueue)];
     if (implementsMethodQueue) {
-      _queue = _instance.methodQueue;
+      _methodQueue = _instance.methodQueue;
     }
-    if (!_queue) {
+    if (!_methodQueue) {
 
       // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", _name];
-      _queue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
+      _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
       // assign it to the module
       if (implementsMethodQueue) {
         @try {
-          [(id)_instance setValue:_queue forKey:@"methodQueue"];
+          [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
         }
         @catch (NSException *exception) {
           RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
                       "permitted. You must either return a pre-initialized "
                       "queue, or @synthesize the methodQueue to let the bridge "
-                      "create a queue for you.", _name);
+                      "create a queue for you.", self.name);
         }
       }
     }
   }
-  return _queue;
+  return _methodQueue;
 }
 
-- (void)dispatchBlock:(dispatch_block_t)block
+- (void)invalidate
 {
-  [self dispatchBlock:block dispatchGroup:NULL];
-}
-
-- (void)dispatchBlock:(dispatch_block_t)block
-        dispatchGroup:(dispatch_group_t)group
-{
-  if (self.queue == RCTJSThread) {
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-  } else if (self.queue) {
-    if (group != NULL) {
-      dispatch_group_async(group, self.queue, block);
-    } else {
-      dispatch_async(self.queue, block);
-    }
-  }
+  _methodQueue = nil;
 }
 
 @end

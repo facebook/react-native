@@ -95,11 +95,6 @@ RCT_EXPORT_MODULE()
   return @[];
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return nil;
-}
-
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;

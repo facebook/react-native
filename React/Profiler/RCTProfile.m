@@ -30,6 +30,13 @@ NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 #if RCT_DEV
 
+@interface RCTBridge ()
+
+- (void)dispatchBlock:(dispatch_block_t)block
+                queue:(dispatch_queue_t)queue;
+
+@end
+
 #pragma mark - Constants
 
 NSString const *RCTProfileTraceEvents = @"traceEvents";
@@ -211,7 +218,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
   RCTProfileHookedModules = YES;
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
-    [moduleData dispatchBlock:^{
+    [bridge dispatchBlock:^{
       Class moduleClass = moduleData.moduleClass;
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
 
@@ -242,7 +249,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
       objc_registerClassPair(proxyClass);
       object_setClass(moduleData.instance, proxyClass);
-    }];
+    } queue:moduleData.methodQueue];
   }
 }
 

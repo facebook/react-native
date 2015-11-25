@@ -60,6 +60,11 @@ typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleProviderBlock)(void);
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
+ * This function checks if a class has been registered
+ */
+RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
+
+/**
  * Async batched bridge used to communicate with the JavaScript application.
  */
 @interface RCTBridge : NSObject <RCTInvalidating>
@@ -98,10 +103,18 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 
 /**
- * DEPRECATED: Do not use.
+ * Retrieve a bridge module instance by name or class. Note that modules are
+ * lazily instantiated, so calling these methods for the first time with a given
+ * module name/class may cause the class to be sychronously instantiated,
+ * blocking both the calling thread and main thread for a short time.
  */
-#define RCT_IMPORT_METHOD(module, method) \
-  _Pragma("message(\"This macro is no longer required\")")
+- (id)moduleForName:(NSString *)moduleName;
+- (id)moduleForClass:(Class)moduleClass;
+
+/**
+ * All registered bridge module classes.
+ */
+@property (nonatomic, copy, readonly) NSArray<Class> *moduleClasses;
 
 /**
  * URL of the script that was loaded into the bridge.
@@ -131,11 +144,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
 /**
- * A dictionary of all registered RCTBridgeModule instances, keyed by moduleName.
- */
-@property (nonatomic, copy, readonly) NSDictionary *modules;
-
-/**
  * The launch options that were used to initialize the bridge.
  */
 @property (nonatomic, copy, readonly) NSDictionary *launchOptions;
@@ -151,13 +159,18 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
 
 /**
- * The block passed in the constructor with pre-initialized modules
- */
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
-
-/**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reload;
+
+@end
+
+/**
+ * These properties and methods are deprecated and should not be used
+ */
+@interface RCTBridge (Deprecated)
+
+@property (nonatomic, copy, readonly) NSDictionary *modules
+__deprecated_msg("Use moduleClasses and/or moduleForName: instead");
 
 @end
