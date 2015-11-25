@@ -720,11 +720,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
-  public void setMainScrollViewTag(int reactTag) {
-    // TODO(6588266): Implement if required
-  }
-
-  @ReactMethod
   public void configureNextLayoutAnimation(
       ReadableMap config,
       Callback successCallback,
