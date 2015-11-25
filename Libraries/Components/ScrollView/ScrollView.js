@@ -488,7 +488,7 @@ var validAttributes = {
   decelerationRate: true,
   horizontal: true,
   keyboardDismissMode: true,
-  keyboardShouldPersistTaps: true,
+  keyboardShouldPersistTaps: false,
   maximumZoomScale: true,
   minimumZoomScale: true,
   pagingEnabled: true,
