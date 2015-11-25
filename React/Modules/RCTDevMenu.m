@@ -321,7 +321,7 @@ RCT_EXPORT_MODULE()
 
   // Check if live reloading is available
   _liveReloadURL = nil;
-  RCTSourceCode *sourceCodeModule = _bridge.modules[RCTBridgeModuleNameForClass([RCTSourceCode class])];
+  RCTSourceCode *sourceCodeModule = [_bridge moduleForClass:[RCTSourceCode class]];
   if (!sourceCodeModule.scriptURL) {
     if (!sourceCodeModule) {
       RCTLogWarn(@"RCTSourceCode module not found");
@@ -614,7 +614,7 @@ RCT_EXPORT_METHOD(reload)
 - (RCTDevMenu *)devMenu
 {
 #if RCT_DEV
-  return self.modules[RCTBridgeModuleNameForClass([RCTDevMenu class])];
+  return [self moduleForClass:[RCTDevMenu class]];
 #else
   return nil;
 #endif

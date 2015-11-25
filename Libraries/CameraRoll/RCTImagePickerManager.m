@@ -32,16 +32,6 @@
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _pickers = [NSMutableArray new];
-    _pickerCallbacks = [NSMutableArray new];
-    _pickerCancelCallbacks = [NSMutableArray new];
-  }
-  return self;
-}
-
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -67,8 +57,6 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     return;
   }
 
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
-
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
@@ -77,11 +65,9 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
   }
 
-  [_pickers addObject:imagePicker];
-  [_pickerCallbacks addObject:callback];
-  [_pickerCancelCallbacks addObject:cancelCallback];
-
-  [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+  [self _presentPicker:imagePicker
+       successCallback:callback
+        cancelCallback:cancelCallback];
 }
 
 RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
@@ -92,8 +78,6 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
     cancelCallback(@[@"Image picker is currently unavailable in an app extension"]);
     return;
   }
-
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
 
   UIImagePickerController *imagePicker = [UIImagePickerController new];
   imagePicker.delegate = self;
@@ -109,30 +93,43 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
 
   imagePicker.mediaTypes = allowedTypes;
 
-  [_pickers addObject:imagePicker];
-  [_pickerCallbacks addObject:callback];
-  [_pickerCancelCallbacks addObject:cancelCallback];
-
-  [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+  [self _presentPicker:imagePicker
+       successCallback:callback
+        cancelCallback:cancelCallback];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-  NSUInteger index = [_pickers indexOfObject:picker];
-  RCTResponseSenderBlock callback = _pickerCallbacks[index];
-
-  [_pickers removeObjectAtIndex:index];
-  [_pickerCallbacks removeObjectAtIndex:index];
-  [_pickerCancelCallbacks removeObjectAtIndex:index];
-
-  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
-  [rootViewController dismissViewControllerAnimated:YES completion:nil];
-
-  callback(@[[info[UIImagePickerControllerReferenceURL] absoluteString]]);
+  [self _dismissPicker:picker args:@[
+    [info[UIImagePickerControllerReferenceURL] absoluteString]
+  ]];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+  [self _dismissPicker:picker args:nil];
+}
+
+- (void)_presentPicker:(UIImagePickerController *)imagePicker
+       successCallback:(RCTResponseSenderBlock)callback
+        cancelCallback:(RCTResponseSenderBlock)cancelCallback
+{
+  if (!_pickers) {
+    _pickers = [NSMutableArray new];
+    _pickerCallbacks = [NSMutableArray new];
+    _pickerCancelCallbacks = [NSMutableArray new];
+  }
+
+  [_pickers addObject:imagePicker];
+  [_pickerCallbacks addObject:callback];
+  [_pickerCancelCallbacks addObject:cancelCallback];
+
+  UIViewController *rootViewController = RCTKeyWindow().rootViewController;
+  [rootViewController presentViewController:imagePicker animated:YES completion:nil];
+}
+
+- (void)_dismissPicker:(UIImagePickerController *)picker args:(NSArray *)args
 {
   NSUInteger index = [_pickers indexOfObject:picker];
   RCTResponseSenderBlock callback = _pickerCancelCallbacks[index];
@@ -144,7 +141,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
-  callback(@[]);
+  callback(args ?: @[]);
 }
 
 @end

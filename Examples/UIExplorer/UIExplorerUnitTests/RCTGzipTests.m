@@ -16,6 +16,15 @@
 #import "RCTUtils.h"
 #import "RCTNetworking.h"
 
+#define RUN_RUNLOOP_WHILE(CONDITION) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:5]; \
+while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
+} \
+_Pragma("clang diagnostic pop")
+
 extern BOOL RCTIsGzippedData(NSData *data);
 
 @interface RCTNetworking (Private)
@@ -61,17 +70,20 @@ extern BOOL RCTIsGzippedData(NSData *data);
 - (void)testRequestBodyEncoding
 {
   NSDictionary *query = @{
-                          @"url": @"http://example.com",
-                          @"method": @"POST",
-                          @"data": @{@"string": @"Hello World"},
-                          @"headers": @{@"Content-Encoding": @"gzip"},
-                          };
+    @"url": @"http://example.com",
+    @"method": @"POST",
+    @"data": @{@"string": @"Hello World"},
+    @"headers": @{@"Content-Encoding": @"gzip"},
+  };
 
   RCTNetworking *networker = [RCTNetworking new];
+  [networker setValue:dispatch_get_main_queue() forKey:@"methodQueue"];
   __block NSURLRequest *request = nil;
   [networker buildRequest:query completionBlock:^(NSURLRequest *_request) {
     request = _request;
   }];
+
+  RUN_RUNLOOP_WHILE(request == nil);
 
   XCTAssertNotNil(request);
   XCTAssertNotNil(request.HTTPBody);
