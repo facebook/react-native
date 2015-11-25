@@ -435,24 +435,6 @@ RCT_EXPORT_METHOD(clear:(RCTResponseSenderBlock)callback)
   callback(@[RCTNullIfNil(error)]);
 }
 
-RCT_EXPORT_METHOD(clearPrefix:(NSString *)prefix callack:(RCTResponseSenderBlock)callback)
-{
-  NSDictionary *errorOut = [self _ensureSetup];
-  if (errorOut) {
-    callback(@[errorOut]);
-    return;
-  }
-
-  NSMutableArray<NSString *> *keys = [NSMutableArray array];
-  for (NSString *key in _manifest.allKeys) {
-    if ([key hasPrefix:prefix]) {
-      [keys addObject:key];
-    }
-  }
-
-  [self multiRemove:keys callback:callback];
-}
-
 RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
 {
   NSDictionary *errorOut = [self _ensureSetup];
