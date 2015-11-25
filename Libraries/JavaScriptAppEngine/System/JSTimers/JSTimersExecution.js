@@ -121,9 +121,11 @@ var JSTimersExecution = {
       var passImmediates = JSTimersExecution.immediates.slice();
       JSTimersExecution.immediates = [];
 
-      passImmediates.forEach((timerID) => {
-        JSTimersExecution.callTimer(timerID);
-      });
+      // Use for loop rather than forEach as per @vjeux's advice
+      // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
+      for (var i = 0; i < passImmediates.length; ++i) {
+        JSTimersExecution.callTimer(passImmediates[i]);
+      }
     }
 
     BridgeProfiling.profileEnd();
