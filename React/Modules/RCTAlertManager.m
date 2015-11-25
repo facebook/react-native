@@ -28,17 +28,6 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _alerts = [NSMutableArray new];
-    _alertControllers = [NSMutableArray new];
-    _alertCallbacks = [NSMutableArray new];
-    _alertButtonKeys = [NSMutableArray new];
-  }
-  return self;
-}
-
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -118,6 +107,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       index ++;
     }
 
+    if (!_alerts) {
+      _alerts = [NSMutableArray new];
+      _alertCallbacks = [NSMutableArray new];
+      _alertButtonKeys = [NSMutableArray new];
+    }
     [_alerts addObject:alertView];
     [_alertCallbacks addObject:callback ?: ^(__unused id unused) {}];
     [_alertButtonKeys addObject:buttonKeys];
@@ -174,6 +168,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
         }
       }]];
     }
+
+    if (!_alertControllers) {
+      _alertControllers = [NSMutableArray new];
+    }
+    [_alertControllers addObject:alertController];
 
     [presentingController presentViewController:alertController animated:YES completion:nil];
   }
