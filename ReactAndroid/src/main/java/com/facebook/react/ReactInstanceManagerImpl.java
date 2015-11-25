@@ -55,6 +55,7 @@ import com.facebook.react.uimanager.ReactNative;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
+import com.facebook.systrace.Systrace;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
@@ -465,11 +466,16 @@ import com.facebook.soloader.SoLoader;
   @Override
   public List<ViewManager> createAllViewManagers(
       ReactApplicationContext catalystApplicationContext) {
-    List<ViewManager> allViewManagers = new ArrayList<>();
-    for (ReactPackage reactPackage : mPackages) {
-      allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
+    try {
+      List<ViewManager> allViewManagers = new ArrayList<>();
+      for (ReactPackage reactPackage : mPackages) {
+        allViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+      }
+      return allViewManagers;
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-    return allViewManagers;
   }
 
   @VisibleForTesting
@@ -586,30 +592,73 @@ import com.facebook.soloader.SoLoader;
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
 
-    CoreModulesPackage coreModulesPackage =
-        new CoreModulesPackage(this, mBackBtnHandler);
-    processPackage(coreModulesPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "createAndProcessCoreModulesPackage");
+    try {
+      CoreModulesPackage coreModulesPackage =
+          new CoreModulesPackage(this, mBackBtnHandler);
+      processPackage(coreModulesPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
 
     // TODO(6818138): Solve use-case of native/js modules overriding
     for (ReactPackage reactPackage : mPackages) {
-      processPackage(reactPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
+      Systrace.beginSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "createAndProcessCustomReactPackage");
+      try {
+        processPackage(reactPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
+      } finally {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
+    }
+
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
+    NativeModuleRegistry nativeModuleRegistry;
+    try {
+       nativeModuleRegistry = nativeRegistryBuilder.build();
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildJSModuleConfig");
+    JavaScriptModulesConfig javaScriptModulesConfig;
+    try {
+      javaScriptModulesConfig = jsModulesBuilder.build();
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
         .setCatalystQueueConfigurationSpec(CatalystQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
-        .setRegistry(nativeRegistryBuilder.build())
-        .setJSModulesConfig(jsModulesBuilder.build())
+        .setRegistry(nativeModuleRegistry)
+        .setJSModulesConfig(javaScriptModulesConfig)
         .setJSBundleLoader(jsBundleLoader)
         .setNativeModuleCallExceptionHandler(mDevSupportManager);
 
-    CatalystInstance catalystInstance = catalystInstanceBuilder.build();
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
+    CatalystInstance catalystInstance;
+    try {
+      catalystInstance = catalystInstanceBuilder.build();
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
 
     reactContext.initializeWithInstance(catalystInstance);
-    catalystInstance.runJSBundle();
+
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
+    try {
+      catalystInstance.runJSBundle();
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
 
     return reactContext;
   }

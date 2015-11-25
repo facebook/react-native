@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -186,32 +185,38 @@ public class NativeModuleRegistry {
     }
 
     public NativeModuleRegistry build() {
-      JsonFactory jsonFactory = new JsonFactory();
-      StringWriter writer = new StringWriter();
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateJSON");
+      String moduleDefinitionJson;
       try {
-        JsonGenerator jg = jsonFactory.createGenerator(writer);
-        jg.writeStartObject();
-        for (ModuleDefinition module : mModuleDefinitions) {
-          jg.writeObjectFieldStart(module.name);
-          jg.writeNumberField("moduleID", module.id);
-          jg.writeObjectFieldStart("methods");
-          for (int i = 0; i < module.methods.size(); i++) {
-            MethodRegistration method = module.methods.get(i);
-            jg.writeObjectFieldStart(method.name);
-            jg.writeNumberField("methodID", i);
-            jg.writeStringField("type", method.method.getType());
+        JsonFactory jsonFactory = new JsonFactory();
+        StringWriter writer = new StringWriter();
+        try {
+          JsonGenerator jg = jsonFactory.createGenerator(writer);
+          jg.writeStartObject();
+          for (ModuleDefinition module : mModuleDefinitions) {
+            jg.writeObjectFieldStart(module.name);
+            jg.writeNumberField("moduleID", module.id);
+            jg.writeObjectFieldStart("methods");
+            for (int i = 0; i < module.methods.size(); i++) {
+              MethodRegistration method = module.methods.get(i);
+              jg.writeObjectFieldStart(method.name);
+              jg.writeNumberField("methodID", i);
+              jg.writeStringField("type", method.method.getType());
+              jg.writeEndObject();
+            }
+            jg.writeEndObject();
+            module.target.writeConstantsField(jg, "constants");
             jg.writeEndObject();
           }
           jg.writeEndObject();
-          module.target.writeConstantsField(jg, "constants");
-          jg.writeEndObject();
+          jg.close();
+        } catch (IOException ioe) {
+          throw new RuntimeException("Unable to serialize Java module configuration", ioe);
         }
-        jg.writeEndObject();
-        jg.close();
-      } catch (IOException ioe) {
-        throw new RuntimeException("Unable to serialize Java module configuration", ioe);
+        moduleDefinitionJson = writer.getBuffer().toString();
+      } finally {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
-      String moduleDefinitionJson = writer.getBuffer().toString();
       return new NativeModuleRegistry(mModuleDefinitions, mModuleInstances, moduleDefinitionJson);
     }
   }
