@@ -106,10 +106,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
         mShadowNodeRegistry);
     DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
     DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
-
-    mModuleConstants = UIManagerModuleConstantsHelper.createConstants(
-        displayMetrics,
-        viewManagerList);
+    mModuleConstants = createConstants(displayMetrics, viewManagerList);
     reactContext.addLifecycleEventListener(this);
   }
 
@@ -141,6 +138,19 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+  }
+
+  private static Map<String, Object> createConstants(
+      DisplayMetrics displayMetrics,
+      List<ViewManager> viewManagerList) {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
+    try {
+      return UIManagerModuleConstantsHelper.createConstants(
+          displayMetrics,
+          viewManagerList);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   /**

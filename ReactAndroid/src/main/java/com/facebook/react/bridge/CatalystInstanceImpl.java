@@ -88,8 +88,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
         new Runnable() {
           @Override
           public void run() {
-            initializeBridge(jsExecutor, jsModulesConfig);
-            initLatch.countDown();
+            Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeBridge");
+            try {
+              initializeBridge(jsExecutor, jsModulesConfig);
+              initLatch.countDown();
+            } finally {
+              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            }
           }
         });
 
@@ -108,22 +113,31 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
     Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
 
-    mBridge = new ReactBridge(
-        jsExecutor,
-        new NativeModulesReactCallback(),
-        mCatalystQueueConfiguration.getNativeModulesQueueThread());
-    mBridge.setGlobalVariable(
-        "__fbBatchedBridgeConfig",
-        buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
-    Systrace.registerListener(mTraceListener);
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridgeCtor");
+    try {
+      mBridge = new ReactBridge(
+          jsExecutor,
+          new NativeModulesReactCallback(),
+          mCatalystQueueConfiguration.getNativeModulesQueueThread());
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "setBatchedBridgeConfig");
+    try {
+      mBridge.setGlobalVariable(
+          "__fbBatchedBridgeConfig",
+          buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
+      mBridge.setGlobalVariable(
+          "__RCTProfileIsProfiling",
+          Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS) ? "true" : "false");
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   @Override
   public void runJSBundle() {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "CatalystInstance_runJSBundle");
-
     try {
       final CountDownLatch initLatch = new CountDownLatch(1);
       mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
@@ -135,10 +149,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
               incrementPendingJSCalls();
 
+              Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "loadJSScript");
               try {
                 mJSBundleLoader.loadScript(mBridge);
+
+                // This is registered after JS starts since it makes a JS call
+                Systrace.registerListener(mTraceListener);
               } catch (JSExecutionException e) {
                 mNativeModuleCallExceptionHandler.handleException(e);
+              } finally {
+                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
               }
 
               initLatch.countDown();
@@ -149,8 +169,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
           "Timed out loading JS!");
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
-    } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 

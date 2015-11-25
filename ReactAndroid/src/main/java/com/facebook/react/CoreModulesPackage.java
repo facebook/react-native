@@ -32,6 +32,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.systrace.Systrace;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
@@ -53,6 +54,16 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
   @Override
   public List<NativeModule> createNativeModules(
       ReactApplicationContext catalystApplicationContext) {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
+    UIManagerModule uiManagerModule;
+    try {
+      uiManagerModule = new UIManagerModule(
+          catalystApplicationContext,
+          mReactInstanceManager.createAllViewManagers(catalystApplicationContext));
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+
     return Arrays.<NativeModule>asList(
         new AnimationsDebugModule(
             catalystApplicationContext,
@@ -64,9 +75,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
         new SourceCodeModule(
             mReactInstanceManager.getSourceUrl(),
             mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
-        new UIManagerModule(
-            catalystApplicationContext,
-            mReactInstanceManager.createAllViewManagers(catalystApplicationContext)),
+        uiManagerModule,
         new DebugComponentOwnershipModule(catalystApplicationContext));
   }
 
