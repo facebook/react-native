@@ -30,15 +30,6 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _store = [NSMutableDictionary new];
-    _id = 0;
-  }
-  return self;
-}
-
 - (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block
 {
   dispatch_async(_methodQueue, ^{
@@ -52,6 +43,12 @@ RCT_EXPORT_MODULE()
 - (NSString *)_storeImageData:(NSData *)imageData
 {
   RCTAssertThread(_methodQueue, @"Must be called on RCTImageStoreManager thread");
+
+  if (!_store) {
+    _store = [NSMutableDictionary new];
+    _id = 0;
+  }
+
   NSString *imageTag = [NSString stringWithFormat:@"%@://%tu", RCTImageStoreURLScheme, _id++];
   _store[imageTag] = imageData;
   return imageTag;
@@ -225,7 +222,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (RCTImageStoreManager *)imageStoreManager
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTImageStoreManager class])];
+  return [self moduleForClass:[RCTImageStoreManager class]];
 }
 
 @end

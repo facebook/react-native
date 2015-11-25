@@ -36,19 +36,11 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-  NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-  NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
-  return [self initWithURL:[RCTConvert NSURL:URLString]];
-}
-
 - (instancetype)initWithURL:(NSURL *)URL
 {
   RCTAssertParam(URL);
 
-  if ((self = [super init])) {
+  if ((self = [self init])) {
     _url = URL;
   }
   return self;
@@ -56,6 +48,13 @@ RCT_EXPORT_MODULE()
 
 - (void)setUp
 {
+  if (!_url) {
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
+    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
+    _url = [RCTConvert NSURL:URLString];
+  }
+
   _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
@@ -193,11 +192,7 @@ RCT_EXPORT_MODULE()
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_async(dispatch_get_main_queue(), block);
-  }
+  RCTExecuteOnMainThread(block, NO);
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
