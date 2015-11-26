@@ -15,7 +15,6 @@ var RCTUIManager = require('NativeModules').UIManager;
 
 var ReactElement = require('ReactElement');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var ReactNativeViewPool = require('ReactNativeViewPool');
 var ReactPerf = require('ReactPerf');
 var ReactReconciler = require('ReactReconciler');
 var ReactUpdateQueue = require('ReactUpdateQueue');
@@ -217,7 +216,6 @@ var ReactNativeMount = {
     ReactNativeMount.unmountComponentAtNode(containerTag);
     // call back into native to remove all of the subviews from this container
     RCTUIManager.removeRootView(containerTag);
-    ReactNativeViewPool.clearPoolForRootView(containerTag);
   },
 
   /**
