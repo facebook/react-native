@@ -22,25 +22,25 @@ Our provisional plan for common views and modules includes:
 #### Views
 
 ```
-Swipe Refresh
-Spinner
 ART
 Maps
 Modal
+Spinner
+Swipe Refresh
 Webview
 ```
 
 #### Modules
 
 ```
-Net Info
-Camera Roll
+Alert
 App State
+Camera Roll
 Dialog
 Media
+Net Info
 Pasteboard
 PushNotificationIOS
-Alert
 ```
 
 ### Some props are only supported on one platform
