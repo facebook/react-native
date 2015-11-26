@@ -397,6 +397,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
 
 + (UIColor *)UIColor:(id)json
 {
+  if (!json) {
+    return nil;
+  }
   if ([json isKindOfClass:[NSArray class]]) {
     NSArray *components = [self NSNumberArray:json];
     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
@@ -404,13 +407,16 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
                            green:[self CGFloat:components[1]]
                             blue:[self CGFloat:components[2]]
                            alpha:alpha];
-  } else {
+  } else if ([json isKindOfClass:[NSNumber class]]) {
     NSUInteger argb = [self NSUInteger:json];
     CGFloat a = ((argb >> 24) & 0xFF) / 255.0;
     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
     CGFloat b = (argb & 0xFF) / 255.0;
     return [UIColor colorWithRed:r green:g blue:b alpha:a];
+  } else {
+    RCTLogConvertError(json, @"a color");
+    return nil;
   }
 }
 
@@ -460,12 +466,9 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
   NSURL *URL = [self NSURL:path];
   NSString *scheme = URL.scheme.lowercaseString;
   if ([scheme isEqualToString:@"file"]) {
-    if (RCTIsXCAssetURL(URL)) {
-      // Image may reside inside a .car file, in which case we have no choice
-      // but to use +[UIImage imageNamed] - but this method isn't thread safe
-      NSString *assetName = RCTBundlePathForURL(URL);
-      image = [UIImage imageNamed:assetName];
-    } else {
+    NSString *assetName = RCTBundlePathForURL(URL);
+    image = [UIImage imageNamed:assetName];
+    if (!image) {
       // Attempt to load from the file system
       NSString *filePath = URL.path;
       if (filePath.pathExtension.length == 0) {
