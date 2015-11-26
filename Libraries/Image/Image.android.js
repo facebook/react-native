@@ -56,6 +56,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   resizeMode: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
+  shouldNotifyLoadEvents: true,
 });
 
 var Image = React.createClass({
@@ -75,7 +76,18 @@ var Image = React.createClass({
     ]).isRequired,
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
-    style: StyleSheetPropType(ImageStylePropTypes),
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load completes successfully
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -137,9 +149,11 @@ var Image = React.createClass({
     if (source && source.uri) {
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      var {onLoadStart, onLoad, onLoadEnd} = this.props;
 
       var nativeProps = merge(this.props, {
         style,
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
         src: source.uri,
       });
 
@@ -186,6 +200,7 @@ var cfg = {
     defaultImageSrc: true,
     imageTag: true,
     progressHandlerRegistered: true,
+    shouldNotifyLoadEvents: true,
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
