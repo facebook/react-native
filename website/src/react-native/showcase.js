@@ -140,6 +140,9 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
     author: 'The Formations Factory Ltd',
+    blogs: [
+      'https://medium.com/formations-factory/creating-company-name-search-app-with-react-native-36a049b0848d',
+    ],
   },
   {
     name: 'DareU',
