@@ -67,15 +67,17 @@ import com.facebook.react.touch.JSResponderHandler;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager = new RootViewManager();
 
-  public NativeViewHierarchyManager(
-      AnimationRegistry animationRegistry,
-      ViewManagerRegistry viewManagers) {
-    mAnimationRegistry = animationRegistry;
+  public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
+    mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
     mRootViewsContext = new SparseArray<>();
+  }
+
+  public AnimationRegistry getAnimationRegistry() {
+    return mAnimationRegistry;
   }
 
   public void updateProperties(int tag, CatalystStylesDiffMap props) {

@@ -22,7 +22,6 @@ import android.util.DisplayMetrics;
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -78,7 +77,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final EventDispatcher mEventDispatcher;
-  private final AnimationRegistry mAnimationRegistry = new AnimationRegistry();
   private final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final ViewManagerRegistry mViewManagers;
   private final CSSLayoutContext mLayoutContext = new CSSLayoutContext();
@@ -94,13 +92,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     mViewManagers = new ViewManagerRegistry(viewManagerList);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mNativeViewHierarchyManager = new NativeViewHierarchyManager(
-        mAnimationRegistry,
-        mViewManagers);
+    mNativeViewHierarchyManager = new NativeViewHierarchyManager(mViewManagers);
     mOperationsQueue = new UIViewOperationQueue(
         reactContext,
-        mNativeViewHierarchyManager,
-        mAnimationRegistry);
+        mNativeViewHierarchyManager);
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);

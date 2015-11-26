@@ -456,10 +456,9 @@ public class UIViewOperationQueue {
 
   /* package */ UIViewOperationQueue(
       ReactApplicationContext reactContext,
-      NativeViewHierarchyManager nativeViewHierarchyManager,
-      AnimationRegistry animationRegistry) {
+      NativeViewHierarchyManager nativeViewHierarchyManager) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
-    mAnimationRegistry = animationRegistry;
+    mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
   }
 
