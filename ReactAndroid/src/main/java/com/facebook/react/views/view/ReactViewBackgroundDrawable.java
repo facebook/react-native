@@ -17,12 +17,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
+import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.csslayout.CSSConstants;
@@ -121,6 +123,23 @@ import com.facebook.csslayout.Spacing;
   @Override
   public int getOpacity() {
     return ColorUtil.getOpacityFromColor(ColorUtil.multiplyColorAlpha(mColor, mAlpha));
+  }
+
+  /* Android's elevation implementation requires this to be implemented to know where to draw the shadow. */
+  @Override
+  public void getOutline(Outline outline) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      super.getOutline(outline);
+      return;
+    }
+    if(!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+      float extraRadiusFromBorderWidth = (mBorderWidth != null)
+              ? mBorderWidth.get(Spacing.ALL) / 2f
+              : 0;
+      outline.setRoundRect(getBounds(), mBorderRadius + extraRadiusFromBorderWidth);
+    } else {
+      super.getOutline(outline);
+    }
   }
 
   public void setBorderWidth(int position, float width) {
