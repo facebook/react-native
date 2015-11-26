@@ -29,6 +29,7 @@ import android.text.InputFilter;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -189,12 +190,27 @@ public class ReactTextInputManager extends
     }
   }
 
-  @ReactProp(name = "textAlign")
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
+    if ("auto".equals(textAlign)) {
+      view.setGravity(Gravity.NO_GRAVITY);
+    } else if ("left".equals(textAlign)) {
+      view.setGravity(Gravity.LEFT);
+    } else if ("right".equals(textAlign)) {
+      view.setGravity(Gravity.RIGHT);
+    } else if ("center".equals(textAlign)) {
+      view.setGravity(Gravity.CENTER_HORIZONTAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
+  }
+
+  @ReactProp(name = "textAlignAndroid")
   public void setTextAlign(ReactEditText view, int gravity) {
     view.setGravityHorizontal(gravity);
   }
 
-  @ReactProp(name = "textAlignVertical")
+  @ReactProp(name = "textAlignVerticalAndroid")
   public void setTextAlignVertical(ReactEditText view, int gravity) {
     view.setGravityVertical(gravity);
   }
@@ -421,12 +437,12 @@ public class ReactTextInputManager extends
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
-        "TextAlign",
+        "TextAlignAndroid",
         MapBuilder.of(
             "start", Gravity.START,
             "center", Gravity.CENTER_HORIZONTAL,
             "end", Gravity.END),
-        "TextAlignVertical",
+        "TextAlignVerticalAndroid",
         MapBuilder.of(
             "top", Gravity.TOP,
             "center", Gravity.CENTER_VERTICAL,
