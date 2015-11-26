@@ -12,7 +12,9 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var PinColors = require('NativeModules').UIManager.RCTMap.Constants.PinColors;
 var Platform = require('Platform');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -21,6 +23,8 @@ var View = require('View');
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
+var processColor = require('processColor');
+var resolveAssetSource = require('resolveAssetSource');
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
@@ -194,7 +198,21 @@ var MapView = React.createClass({
       /**
        * annotation id
        */
-      id: React.PropTypes.string
+      id: React.PropTypes.string,
+
+      /**
+       * The pin color. This can be any valid color string, or you can use one
+       * of the predefined PinColors constants. Applies to both standard pins
+       * and custom pin images.
+       * @platform ios
+       */
+      tintColor: React.PropTypes.string,
+
+      /**
+       * Custom pin image. This must be a static image resource inside the app.
+       * @platform ios
+       */
+      image: Image.propTypes.source,
 
     })),
 
@@ -235,46 +253,78 @@ var MapView = React.createClass({
     active: React.PropTypes.bool,
   },
 
-  _onChange: function(event: Event) {
-    if (event.nativeEvent.continuous) {
-      this.props.onRegionChange &&
-        this.props.onRegionChange(event.nativeEvent.region);
-    } else {
-      this.props.onRegionChangeComplete &&
-        this.props.onRegionChangeComplete(event.nativeEvent.region);
-    }
-  },
+  render: function() {
 
-  _onPress: function(event: Event) {
-    if (event.nativeEvent.action === 'annotation-click') {
-      this.props.onAnnotationPress && this.props.onAnnotationPress(event.nativeEvent.annotation);
-    }
+    let {annotations} = this.props;
+    annotations = annotations && annotations.map((annotation: Object) => {
+      let {tintColor, image} = annotation;
+      return {
+        ...annotation,
+        tintColor: tintColor && processColor(tintColor),
+        image: image && resolveAssetSource(image),
+      };
+    });
 
-    if (event.nativeEvent.action === 'callout-click') {
-      if (!this.props.annotations) {
-        return;
-      }
-
-      // Find the annotation with the id of what has been pressed
-      for (var i = 0; i < this.props.annotations.length; i++) {
-        var annotation = this.props.annotations[i];
-        if (annotation.id === event.nativeEvent.annotationId) {
-          // Pass the right function
-          if (event.nativeEvent.side === 'left') {
-            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
-          } else if (event.nativeEvent.side === 'right') {
-            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
+    // TODO: these should be separate events, to reduce bridge traffic
+    if (annotations || this.props.onAnnotationPress) {
+      var onPress = (event: Event) => {
+        if (event.nativeEvent.action === 'annotation-click') {
+          this.props.onAnnotationPress &&
+            this.props.onAnnotationPress(event.nativeEvent.annotation);
+        } else if (event.nativeEvent.action === 'callout-click') {
+          // Find the annotation with the id that was pressed
+          for (let i = 0, l = annotations.length; i < l; i++) {
+            let annotation = annotations[i];
+            if (annotation.id === event.nativeEvent.annotationId) {
+              // Pass the right function
+              if (event.nativeEvent.side === 'left') {
+                annotation.onLeftCalloutPress &&
+                  annotation.onLeftCalloutPress(event.nativeEvent);
+              } else if (event.nativeEvent.side === 'right') {
+                annotation.onRightCalloutPress &&
+                  annotation.onRightCalloutPress(event.nativeEvent);
+              }
+              break;
+            }
           }
         }
-      }
-
+      };
     }
-  },
 
-  render: function() {
-    return <RCTMap {...this.props} onPress={this._onPress} onChange={this._onChange} />;
+    // TODO: these should be separate events, to reduce bridge traffic
+    if (this.props.onRegionChange || this.props.onRegionChangeComplete) {
+      var onChange = (event: Event) => {
+        if (event.nativeEvent.continuous) {
+          this.props.onRegionChange &&
+            this.props.onRegionChange(event.nativeEvent.region);
+        } else {
+          this.props.onRegionChangeComplete &&
+            this.props.onRegionChangeComplete(event.nativeEvent.region);
+        }
+      };
+    }
+
+    return (
+      <RCTMap
+        {...this.props}
+        annotations={annotations}
+        onPress={onPress}
+        onChange={onChange}
+      />
+    );
   },
 });
+
+/**
+ * Standard iOS MapView pin color constants, to be used with the
+ * `annotation.tintColor` property. You are not obliged to use these,
+ * but they are useful for matching the standard iOS look and feel.
+ */
+MapView.PinColors = PinColors && {
+  RED: PinColors.RED,
+  GREEN: PinColors.GREEN,
+  PURPLE: PinColors.PURPLE,
+};
 
 var RCTMap = requireNativeComponent('RCTMap', MapView, {
   nativeOnly: {onChange: true, onPress: true}

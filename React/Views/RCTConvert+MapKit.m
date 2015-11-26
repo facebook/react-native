@@ -61,6 +61,11 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   shape.hasLeftCallout = [RCTConvert BOOL:json[@"hasLeftCallout"]];
   shape.hasRightCallout = [RCTConvert BOOL:json[@"hasRightCallout"]];
   shape.animateDrop = [RCTConvert BOOL:json[@"animateDrop"]];
+  shape.tintColor = [RCTConvert UIColor:json[@"tintColor"]];
+  shape.image = [RCTConvert UIImage:json[@"image"]];
+  if (shape.tintColor && shape.image) {
+    shape.image = [shape.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
   return shape;
 }
 
