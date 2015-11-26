@@ -11,7 +11,8 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
-import java.util.Map;
+import java.util.Map; 
+import java.util.HashMap;
 
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
@@ -29,6 +30,7 @@ import android.text.InputFilter;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -58,6 +60,24 @@ public class ReactTextInputManager extends
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
+
+  private static final Map<String, Map<String, Integer>> TEXT_ALIGN_CONSTANTS;
+  static {
+    TEXT_ALIGN_CONSTANTS = MapBuilder.of(
+        ViewProps.TEXT_ALIGN,
+        MapBuilder.of(
+            "left", Gravity.LEFT,
+            "right", Gravity.RIGHT,
+            "auto", Gravity.NO_GRAVITY,
+            "start", Gravity.START,
+            "center", Gravity.CENTER_HORIZONTAL,
+            "end", Gravity.END),
+        "textAlignVertical",
+        MapBuilder.of(
+            "top", Gravity.TOP,
+            "center", Gravity.CENTER_VERTICAL,
+            "bottom", Gravity.BOTTOM));
+  }
 
   @Override
   public String getName() {
@@ -189,13 +209,17 @@ public class ReactTextInputManager extends
     }
   }
 
-  @ReactProp(name = "textAlign")
-  public void setTextAlign(ReactEditText view, int gravity) {
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
+    Map<String, Integer> constants = TEXT_ALIGN_CONSTANTS.get(ViewProps.TEXT_ALIGN);
+    int gravity = constants.get(textAlign);
     view.setGravityHorizontal(gravity);
   }
 
   @ReactProp(name = "textAlignVertical")
-  public void setTextAlignVertical(ReactEditText view, int gravity) {
+  public void setTextAlignVertical(ReactEditText view, @Nullable String textAlignVertical) {
+    Map<String, Integer> constants = TEXT_ALIGN_CONSTANTS.get("textAlignVertical");
+    int gravity = constants.get(textAlignVertical);
     view.setGravityVertical(gravity);
   }
 
@@ -416,20 +440,5 @@ public class ReactTextInputManager extends
             return false;
           }
         });
-  }
-
-  @Override
-  public @Nullable Map getExportedViewConstants() {
-    return MapBuilder.of(
-        "TextAlign",
-        MapBuilder.of(
-            "start", Gravity.START,
-            "center", Gravity.CENTER_HORIZONTAL,
-            "end", Gravity.END),
-        "TextAlignVertical",
-        MapBuilder.of(
-            "top", Gravity.TOP,
-            "center", Gravity.CENTER_VERTICAL,
-            "bottom", Gravity.BOTTOM));
   }
 }
