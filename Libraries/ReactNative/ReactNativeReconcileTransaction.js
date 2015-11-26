@@ -14,7 +14,6 @@
 var CallbackQueue = require('CallbackQueue');
 var PooledClass = require('PooledClass');
 var Transaction = require('Transaction');
-var ReactNativeViewPool = require('ReactNativeViewPool');
 
 /**
  * Provides a `CallbackQueue` queue for collecting `onDOMReady` callbacks during
@@ -36,18 +35,12 @@ var ON_DOM_READY_QUEUEING = {
   }
 };
 
-var RN_VIEW_POOL_WRAPPER = {
-  close: function() {
-    ReactNativeViewPool.onReconcileTransactionClose();
-  },
-};
-
 /**
  * Executed within the scope of the `Transaction` instance. Consider these as
  * being member methods, but with an implied ordering while being isolated from
  * each other.
  */
-var TRANSACTION_WRAPPERS = [ON_DOM_READY_QUEUEING, RN_VIEW_POOL_WRAPPER];
+var TRANSACTION_WRAPPERS = [ON_DOM_READY_QUEUEING];
 
 /**
  * Currently:
