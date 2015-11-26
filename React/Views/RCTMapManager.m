@@ -14,6 +14,7 @@
 #import "RCTConvert+MapKit.h"
 #import "RCTEventDispatcher.h"
 #import "RCTMap.h"
+#import "RCTUtils.h"
 #import "UIView+React.h"
 #import "RCTPointAnnotation.h"
 
@@ -55,6 +56,17 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
 
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return @{
+    @"PinColors": @{
+      @"RED": RCTColorToHexString([MKPinAnnotationView redPinColor].CGColor),
+      @"GREEN": RCTColorToHexString([MKPinAnnotationView greenPinColor].CGColor),
+      @"PURPLE": RCTColorToHexString([MKPinAnnotationView purplePinColor].CGColor),
+    }
+  };
+}
+
 #pragma mark MKMapViewDelegate
 
 - (void)mapView:(RCTMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view
@@ -81,10 +93,41 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     return nil;
   }
 
-  MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"RCTAnnotation"];
+  MKAnnotationView *annotationView;
+  if (annotation.image) {
+    if (annotation.tintColor) {
 
+      NSString *const reuseIdentifier = @"RCTImageViewAnnotation";
+      NSInteger imageViewTag = 99;
+      annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];
+      if (!annotationView) {
+        annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+        UIImageView *imageView = [UIImageView new];
+        imageView.tag = imageViewTag;
+        [annotationView addSubview:imageView];
+      }
+
+      UIImageView *imageView = (UIImageView *)[annotationView viewWithTag:imageViewTag];
+      imageView.image = annotation.image;
+      imageView.tintColor = annotation.tintColor;
+      [imageView sizeToFit];
+      imageView.center = CGPointZero;
+
+    } else {
+
+      NSString *reuseIdentifier = NSStringFromClass([MKAnnotationView class]);
+      annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?: [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+      annotationView.image = annotation.image;
+    }
+
+  } else {
+
+    NSString *reuseIdentifier = NSStringFromClass([MKPinAnnotationView class]);
+    annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?: [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+    ((MKPinAnnotationView *)annotationView).animatesDrop = annotation.animateDrop;
+    ((MKPinAnnotationView *)annotationView).pinTintColor = annotation.tintColor ?: [MKPinAnnotationView redPinColor];
+  }
   annotationView.canShowCallout = true;
-  annotationView.animatesDrop = annotation.animateDrop;
 
   annotationView.leftCalloutAccessoryView = nil;
   if (annotation.hasLeftCallout) {
@@ -172,13 +215,17 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   BOOL needZoom = NO;
   CGFloat newLongitudeDelta = 0.0f;
   MKCoordinateRegion region = mapView.region;
-  // On iOS 7, it's possible that we observe invalid locations during initialization of the map.
-  // Filter those out.
+
+  // On iOS 7, it's possible that we observe invalid locations during
+  // initialization of the map. Filter those out.
   if (!CLLocationCoordinate2DIsValid(region.center)) {
     return;
   }
-  // Calculation on float is not 100% accurate. If user zoom to max/min and then move, it's likely the map will auto zoom to max/min from time to time.
-  // So let's try to make map zoom back to 99% max or 101% min so that there are some buffer that moving the map won't constantly hitting the max/min bound.
+
+  // Calculation on float is not 100% accurate. If user zoom to max/min and then
+  // move, it's likely the map will auto zoom to max/min from time to time.
+  // So let's try to make map zoom back to 99% max or 101% min so that there is
+  // some buffer, and moving the map won't constantly hit the max/min bound.
   if (mapView.maxDelta > FLT_EPSILON && region.span.longitudeDelta > mapView.maxDelta) {
     needZoom = YES;
     newLongitudeDelta = mapView.maxDelta * (1 - RCTMapZoomBoundBuffer);
@@ -204,15 +251,13 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
       return;
     }
 
-  #define FLUSH_NAN(value) (isnan(value) ? 0 : value)
-
     mapView.onChange(@{
       @"continuous": @(continuous),
       @"region": @{
-        @"latitude": @(FLUSH_NAN(region.center.latitude)),
-        @"longitude": @(FLUSH_NAN(region.center.longitude)),
-        @"latitudeDelta": @(FLUSH_NAN(region.span.latitudeDelta)),
-        @"longitudeDelta": @(FLUSH_NAN(region.span.longitudeDelta)),
+        @"latitude": @(RCTZeroIfNaN(region.center.latitude)),
+        @"longitude": @(RCTZeroIfNaN(region.center.longitude)),
+        @"latitudeDelta": @(RCTZeroIfNaN(region.span.latitudeDelta)),
+        @"longitudeDelta": @(RCTZeroIfNaN(region.span.longitudeDelta)),
       }
     });
   }
