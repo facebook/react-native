@@ -146,9 +146,16 @@ class Bundler {
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
+    const moduleSystem = this._resolver.getModuleSystemDependencies(
+      { dev: isDev, platform }
+    );
+
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
+
+      // Prepend the module system polyfill to the top of dependencies
+      var dependencies = moduleSystem.concat(response.dependencies);
 
       let bar;
       if (process.stdout.isTTY) {
@@ -156,13 +163,13 @@ class Bundler {
           complete: '=',
           incomplete: ' ',
           width: 40,
-          total: response.dependencies.length,
+          total: dependencies.length,
         });
       }
 
       bbundle.setMainModuleId(response.mainModuleId);
       return Promise.all(
-        response.dependencies.map(
+        dependencies.map(
           module => this._transformModule(
             bbundle,
             response,
