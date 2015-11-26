@@ -14,8 +14,6 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import android.util.DisplayMetrics;
 
@@ -31,8 +29,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -75,7 +71,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   // increment here is 10
   private static final int ROOT_VIEW_TAG_INCREMENT = 10;
 
-  private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final EventDispatcher mEventDispatcher;
   private final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
   private final ViewManagerRegistry mViewManagers;
@@ -92,10 +87,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     super(reactContext);
     mViewManagers = new ViewManagerRegistry(viewManagerList);
     mEventDispatcher = new EventDispatcher(reactContext);
-    mNativeViewHierarchyManager = new NativeViewHierarchyManager(mViewManagers);
     mOperationsQueue = new UIViewOperationQueue(
         reactContext,
-        mNativeViewHierarchyManager);
+        new NativeViewHierarchyManager(mViewManagers));
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);
@@ -197,26 +191,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
-    if (UiThreadUtil.isOnUiThread()) {
-      mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
-    } else {
-      final Semaphore semaphore = new Semaphore(0);
-      getReactApplicationContext().runOnUiQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
-              semaphore.release();
-            }
-          });
-      try {
-        SoftAssertions.assertCondition(
-            semaphore.tryAcquire(5000, TimeUnit.MILLISECONDS),
-            "Timed out adding root view");
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    // register it within NativeViewHierarchyManager
+    mOperationsQueue.addRootView(tag, rootView, themedRootContext);
 
     return tag;
   }
