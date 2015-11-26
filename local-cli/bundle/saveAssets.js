@@ -78,8 +78,8 @@ function copy(src, dest, callback) {
       return callback(err);
     }
     fs.createReadStream(src)
-        .pipe(fs.createWriteStream(dest))
-        .on('finish', callback);
+      .pipe(fs.createWriteStream(dest))
+      .on('finish', callback);
   });
 }
 
