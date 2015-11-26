@@ -3821,6 +3821,36 @@ describe('DependencyGraph', function() {
         });
       });
     });
+
+    pit('should not error when the watcher reports a known file as added', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'var b = require("b");',
+          ].join('\n'),
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
+            'module.exports = function() {};',
+          ].join('\n'),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function() {
+        triggerFileChange('add', 'index.js', root, mockStat);
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js');
+      });
+    });
   });
 
   describe('getAsyncDependencies', () => {
