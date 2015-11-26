@@ -129,6 +129,18 @@ var ToolbarAndroid = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: ReactPropTypes.string,
+    /**
+     * Used to set the toolbar direction to RTL.
+     * In addition to this property you need to add
+     *
+     *   android:supportsRtl="true"
+     *
+     * to your application AndroidManifest.xml and then
+     * use `setLayoutDirection(1)` on your MainActivity
+     * `onCreate` method.
+     *
+     */
+    rtl: ReactPropTypes.bool,
   },
 
   render: function() {
@@ -184,6 +196,7 @@ var toolbarAttributes = {
   subtitleColor: true,
   title: true,
   titleColor: true,
+  rtl: true,
 };
 
 var NativeToolbar = requireNativeComponent('ToolbarAndroid', ToolbarAndroid, {
