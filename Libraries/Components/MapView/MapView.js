@@ -45,7 +45,6 @@ var MapView = React.createClass({
         // TODO: add a base64 (or similar) encoder here
         annotation.id = encodeURIComponent(JSON.stringify(annotation));
       }
-
       return annotation;
     });
 
@@ -54,15 +53,36 @@ var MapView = React.createClass({
     });
   },
 
+  checkOverlayIds: function (overlays: Array<Object>) {
+
+    var newOverlays = overlays.map(function (overlay) {
+      if (!overlay.id) {
+        // TODO: add a base64 (or similar) encoder here
+        overlay.id = encodeURIComponent(JSON.stringify(overlay));
+      }
+      return overlay;
+    });
+
+    this.setState({
+      overlays: newOverlays
+    });
+  },
+
   componentWillMount: function() {
     if (this.props.annotations) {
       this.checkAnnotationIds(this.props.annotations);
+    }
+    if (this.props.overlays) {
+      this.checkOverlayIds(this.props.overlays);
     }
   },
 
   componentWillReceiveProps: function(nextProps: Object) {
     if (nextProps.annotations) {
       this.checkAnnotationIds(nextProps.annotations);
+    }
+    if (nextProps.overlays) {
+      this.checkOverlayIds(nextProps.overlays);
     }
   },
 
@@ -196,11 +216,6 @@ var MapView = React.createClass({
       onRightCalloutPress: React.PropTypes.func,
 
       /**
-       * annotation id
-       */
-      id: React.PropTypes.string,
-
-      /**
        * The pin color. This can be any valid color string, or you can use one
        * of the predefined PinColors constants. Applies to both standard pins
        * and custom pin images.
@@ -213,7 +228,36 @@ var MapView = React.createClass({
        * @platform ios
        */
       image: Image.propTypes.source,
+      
+      /**
+       * annotation id
+       */
+      id: React.PropTypes.string,
+    })),
 
+    /**
+     * Map overlays
+     */
+    overlays: React.PropTypes.arrayOf(React.PropTypes.shape({
+      /**
+       * Polyline coordinates
+       */
+      coordinates: React.PropTypes.arrayOf(React.PropTypes.shape({
+        latitude: React.PropTypes.number.isRequired,
+        longitude: React.PropTypes.number.isRequired
+      })),
+
+      /**
+       * Line attributes
+       */
+      lineWidth: React.PropTypes.number,
+      strokeColor: React.PropTypes.string,
+      fillColor: React.PropTypes.string,
+
+      /**
+       * Overlay id
+       */
+      id: React.PropTypes.string
     })),
 
     /**
@@ -255,7 +299,7 @@ var MapView = React.createClass({
 
   render: function() {
 
-    let {annotations} = this.props;
+    let {annotations, overlays} = this.props;
     annotations = annotations && annotations.map((annotation: Object) => {
       let {tintColor, image} = annotation;
       return {
@@ -264,10 +308,21 @@ var MapView = React.createClass({
         image: image && resolveAssetSource(image),
       };
     });
+    overlays = overlays && overlays.map((overlay: Object) => {
+      let {strokeColor, fillColor} = overlay;
+      return {
+        ...overlay,
+        strokeColor: strokeColor && processColor(strokeColor),
+        fillColor: fillColor && processColor(fillColor),
+      };
+    });
 
     // TODO: these should be separate events, to reduce bridge traffic
-    if (annotations || this.props.onAnnotationPress) {
+    if (annotations) {
       var onPress = (event: Event) => {
+        if (!annotations) {
+          return;
+        }
         if (event.nativeEvent.action === 'annotation-click') {
           this.props.onAnnotationPress &&
             this.props.onAnnotationPress(event.nativeEvent.annotation);
@@ -308,6 +363,7 @@ var MapView = React.createClass({
       <RCTMap
         {...this.props}
         annotations={annotations}
+        overlays={overlays}
         onPress={onPress}
         onChange={onChange}
       />

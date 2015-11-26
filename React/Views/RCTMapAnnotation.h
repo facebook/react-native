@@ -9,7 +9,7 @@
 
 #import <MapKit/MapKit.h>
 
-@interface RCTPointAnnotation : MKPointAnnotation <MKAnnotation>
+@interface RCTMapAnnotation : MKPointAnnotation <MKAnnotation>
 
 @property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, assign) BOOL hasLeftCallout;

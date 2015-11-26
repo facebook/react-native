@@ -16,7 +16,8 @@
 #import "RCTMap.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
-#import "RCTPointAnnotation.h"
+#import "RCTMapAnnotation.h"
+#import "RCTMapOverlay.h"
 
 #import <MapKit/MapKit.h>
 
@@ -48,7 +49,8 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
-RCT_EXPORT_VIEW_PROPERTY(annotations, RCTPointAnnotationArray)
+RCT_EXPORT_VIEW_PROPERTY(annotations, RCTMapAnnotationArray)
+RCT_EXPORT_VIEW_PROPERTY(overlays, RCTMapOverlayArray)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
@@ -71,9 +73,9 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
 - (void)mapView:(RCTMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-  if (mapView.onPress && [view.annotation isKindOfClass:[RCTPointAnnotation class]]) {
+  if (mapView.onPress && [view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
 
-    RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+    RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
     mapView.onPress(@{
       @"action": @"annotation-click",
       @"annotation": @{
@@ -87,9 +89,9 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTPointAnnotation *)annotation
+- (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTMapAnnotation *)annotation
 {
-  if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+  if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
     return nil;
   }
 
@@ -142,12 +144,24 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   return annotationView;
 }
 
+- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView rendererForOverlay:(RCTMapOverlay *)overlay
+{
+  if ([overlay isKindOfClass:[RCTMapOverlay class]]) {
+    MKPolylineRenderer *polylineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
+    polylineRenderer.strokeColor = overlay.strokeColor;
+    polylineRenderer.lineWidth = overlay.lineWidth;
+    return polylineRenderer;
+  } else {
+    return nil;
+  }
+}
+
 - (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
   if (mapView.onPress) {
 
     // Pass to js
-    RCTPointAnnotation *annotation = (RCTPointAnnotation *)view.annotation;
+    RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
     mapView.onPress(@{
       @"side": (control == view.leftCalloutAccessoryView) ? @"left" : @"right",
       @"action": @"callout-click",

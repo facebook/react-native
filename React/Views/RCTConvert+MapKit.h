@@ -9,21 +9,24 @@
 
 #import <MapKit/MapKit.h>
 
-#import "RCTPointAnnotation.h"
 #import "RCTConvert.h"
+
+@class RCTMapAnnotation;
+@class RCTMapOverlay;
 
 @interface RCTConvert (MapKit)
 
 + (MKCoordinateSpan)MKCoordinateSpan:(id)json;
 + (MKCoordinateRegion)MKCoordinateRegion:(id)json;
-+ (MKShape *)MKShape:(id)json;
 + (MKMapType)MKMapType:(id)json;
-+ (RCTPointAnnotation *)RCTPointAnnotation:(id)json;
 
-typedef NSArray MKShapeArray;
-+ (MKShapeArray *)MKShapeArray:(id)json;
++ (RCTMapAnnotation *)RCTMapAnnotation:(id)json;
++ (RCTMapOverlay *)RCTMapOverlay:(id)json;
 
-typedef NSArray RCTPointAnnotationArray;
-+ (RCTPointAnnotationArray *)RCTPointAnnotationArray:(id)json;
+typedef NSArray RCTMapAnnotationArray;
++ (NSArray<RCTMapAnnotation *> *)RCTMapAnnotationArray:(id)json;
+
+typedef NSArray RCTMapOverlayArray;
++ (NSArray<RCTMapOverlay *> *)RCTMapOverlayArray:(id)json;
 
 @end
