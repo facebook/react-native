@@ -48,7 +48,6 @@ NSString *const RCTProfilePrefix = @"rct_profile_";
 // This is actually a BOOL - but has to be compatible with OSAtomic
 static volatile uint32_t RCTProfileProfiling;
 
-static BOOL RCTProfileHookedModules;
 static NSDictionary *RCTProfileInfo;
 static NSMutableDictionary *RCTProfileOngoingEvents;
 static NSTimeInterval RCTProfileStartTime;
@@ -210,12 +209,10 @@ void RCTProfileHookModules(RCTBridge *bridge)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
-  if (RCTProfileTrampoline == NULL || RCTProfileHookedModules) {
+  if (RCTProfileTrampoline == NULL) {
     return;
   }
 #pragma clang diagnostic pop
-
-  RCTProfileHookedModules = YES;
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     [bridge dispatchBlock:^{
@@ -223,6 +220,10 @@ void RCTProfileHookModules(RCTBridge *bridge)
       Class proxyClass = objc_allocateClassPair(moduleClass, RCTProfileProxyClassName(moduleClass), 0);
 
       if (!proxyClass) {
+        proxyClass = objc_getClass(RCTProfileProxyClassName(moduleClass));
+        if (proxyClass) {
+          object_setClass(moduleData.instance, proxyClass);
+        }
         return;
       }
 
@@ -255,19 +256,12 @@ void RCTProfileHookModules(RCTBridge *bridge)
 
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
-  if (!RCTProfileHookedModules) {
-    return;
-  }
-
-  RCTProfileHookedModules = NO;
-
   dispatch_group_enter(RCTProfileGetUnhookGroup());
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
     Class proxyClass = object_getClass(moduleData.instance);
     if (moduleData.moduleClass != proxyClass) {
       object_setClass(moduleData.instance, moduleData.moduleClass);
-      objc_disposeClassPair(proxyClass);
     }
   }
 
