@@ -14,8 +14,8 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var PinColors = require('NativeModules').UIManager.RCTMap.Constants.PinColors;
 var Platform = require('Platform');
+var RCTMapConstants = require('NativeModules').UIManager.RCTMap.Constants;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
@@ -320,6 +320,7 @@ var MapView = React.createClass({
  * `annotation.tintColor` property. You are not obliged to use these,
  * but they are useful for matching the standard iOS look and feel.
  */
+let PinColors = RCTMapConstants && RCTMapConstants.PinColors;
 MapView.PinColors = PinColors && {
   RED: PinColors.RED,
   GREEN: PinColors.GREEN,
