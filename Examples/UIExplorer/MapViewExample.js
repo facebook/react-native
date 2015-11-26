@@ -313,6 +313,45 @@ var CustomPinImageMapViewExample = React.createClass({
 
 });
 
+var CustomOverlayMapViewExample = React.createClass({
+
+  getInitialState() {
+    return {
+      isFirstLoad: true,
+    };
+  },
+
+  render() {
+    if (this.state.isFirstLoad) {
+      var onRegionChangeComplete = (region) => {
+        this.setState({
+          isFirstLoad: false,
+          overlays: [{
+            coordinates:[
+              {latitude: 32.47, longitude: -107.85},
+              {latitude: 45.13, longitude: -94.48},
+              {latitude: 39.27, longitude: -83.25},
+              {latitude: 32.47, longitude: -107.85},
+            ],
+            strokeColor: '#f007',
+            lineWidth: 3,
+          }],
+        });
+      };
+    }
+
+    return (
+      <MapView
+        style={styles.map}
+        onRegionChangeComplete={onRegionChangeComplete}
+        region={this.state.mapRegion}
+        overlays={this.state.overlays}
+      />
+    );
+  },
+
+});
+
 var styles = StyleSheet.create({
   map: {
     height: 150,
@@ -371,6 +410,12 @@ exports.examples = [
     title: 'Custom pin image',
     render() {
       return  <CustomPinImageMapViewExample style={styles.map} />;
+    }
+  },
+  {
+    title: 'Custom overlay',
+    render() {
+      return  <CustomOverlayMapViewExample style={styles.map} />;
     }
   },
 ];
