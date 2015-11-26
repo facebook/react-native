@@ -64,6 +64,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "elevation")
+  public void setElevation(ReactViewGroup view, float elevation) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setElevation(PixelUtil.toPixelFromDIP(elevation));
+    }
+    // Do nothing on API < 21
+  }
+
   @ReactProp(name = "pointerEvents")
   public void setPointerEvents(ReactViewGroup view, @Nullable String pointerEventsStr) {
     if (pointerEventsStr != null) {
