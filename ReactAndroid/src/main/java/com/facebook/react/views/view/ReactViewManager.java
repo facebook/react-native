@@ -16,6 +16,7 @@ import java.util.Map;
 
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 
 import com.facebook.csslayout.CSSConstants;
@@ -62,6 +63,11 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactViewGroup view, @Nullable String borderStyle) {
     view.setBorderStyle(borderStyle);
+  }
+
+  @ReactProp(name = "elevation")
+  public void setElevation(ReactViewGroup view, float elevation) {
+    ViewCompat.setElevation(view, PixelUtil.toPixelFromDIP(elevation));
   }
 
   @ReactProp(name = "pointerEvents")
