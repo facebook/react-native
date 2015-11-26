@@ -108,10 +108,9 @@ RCT_EXPORT_MODULE()
 + (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
   NSDictionary *errorInfo = @{
-                              @"error" : @TRUE,
-                              @"description" : [error localizedDescription],
-                              @"reason" : [error localizedFailureReason]
-                              };
+    @"error" : @YES,
+    @"info": RCTJSErrorFromNSError(error)
+  };
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistered
                                                       object:self
                                                     userInfo:errorInfo];

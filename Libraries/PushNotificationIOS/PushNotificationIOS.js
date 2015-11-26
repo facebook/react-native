@@ -142,8 +142,7 @@ class PushNotificationIOS {
       listener = RCTDeviceEventEmitter.addListener(
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
-          handler(registrationInfo.error ? registrationInfo : 
-            registrationInfo.deviceToken);
+          handler(registrationInfo.deviceToken || registrationInfo);
         }
       );
     }
