@@ -84,6 +84,14 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     view.setTitle(title);
   }
 
+  @ReactProp(name = "rtl")
+  public void setLayoutDirection(ReactToolbar view, @Nullable Boolean flag) {
+    if (flag.equals(true)) {
+      // 1 = RTL
+      view.setLayoutDirection(1);
+    }
+  }
+
   @ReactProp(name = "titleColor", customType = "Color")
   public void setTitleColor(ReactToolbar view, @Nullable Integer titleColor) {
     int[] defaultColors = getDefaultColors(view.getContext());
