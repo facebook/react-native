@@ -39,18 +39,17 @@ var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
  * And then in your AppDelegate implementation add the following:
  *
  *   ```
- *   // Required to invoke register notifications
- *
- *      - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
- *      {
- *       [RCTPushNotificationManager application:application didRegisterUserNotificationSettings:notificationSettings];
- *      }
- *    // Required for error detection
- *      -(void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error 
- *      {
- *       [RCTPushNotificationManager application:application didFailToRegisterForRemoteNotificationsWithError:error];
- *      }
- *   // Required for the register event.
+ *    // Required to invoke register notifications
+ *    - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+ *    {
+ *     [RCTPushNotificationManager application:application didRegisterUserNotificationSettings:notificationSettings];
+ *    }
+ *    // Required for any errors during the registration
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error 
+ *    {
+ *     [RCTPushNotificationManager application:application didFailToRegisterForRemoteNotificationsWithError:error];
+ *    }
+ *    // Required for the register event.
  *    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
  *    {
  *     [RCTPushNotificationManager application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
