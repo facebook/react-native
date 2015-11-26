@@ -46,6 +46,7 @@ describe('Bundler', function() {
   }
 
   var getDependencies;
+  var getModuleSystemDependencies;
   var wrapModule;
   var bundler;
   var assetServer;
@@ -53,10 +54,12 @@ describe('Bundler', function() {
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
+    getModuleSystemDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
     Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
+        getModuleSystemDependencies: getModuleSystemDependencies,
         wrapModule: wrapModule,
       };
     });
@@ -110,6 +113,10 @@ describe('Bundler', function() {
         mainModuleId: 'foo',
         dependencies: modules
       });
+    });
+
+    getModuleSystemDependencies.mockImpl(function() {
+      return [];
     });
 
     JSTransformer.prototype.loadFileAndTransform

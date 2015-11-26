@@ -99,7 +99,7 @@ class Resolver {
 
     return this._depGraph.getDependencies(main, opts.platform).then(
       resolutionResponse => {
-        this._getPolyfillDependencies(opts.dev).reverse().forEach(
+        this._getPolyfillDependencies().reverse().forEach(
           polyfill => resolutionResponse.prependDependency(polyfill)
         );
 
@@ -108,12 +108,28 @@ class Resolver {
     );
   }
 
-  _getPolyfillDependencies(isDev) {
-    const polyfillModuleNames = [
-     isDev
+  getModuleSystemDependencies(options) {
+    const opts = getDependenciesValidateOpts(options);
+
+    const prelude = opts.dev
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
-        : path.join(__dirname, 'polyfills/prelude.js'),
-      path.join(__dirname, 'polyfills/require.js'),
+        : path.join(__dirname, 'polyfills/prelude.js');
+
+    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
+
+    return [
+      prelude,
+      moduleSystem
+    ].map(moduleName => new Polyfill({
+      path: moduleName,
+      id: moduleName,
+      dependencies: [],
+      isPolyfill: true,
+    }));
+  }
+
+  _getPolyfillDependencies() {
+    const polyfillModuleNames = [
       path.join(__dirname, 'polyfills/polyfills.js'),
       path.join(__dirname, 'polyfills/console.js'),
       path.join(__dirname, 'polyfills/error-guard.js'),
