@@ -494,7 +494,6 @@ var TextInput = React.createClass({
     var textAlign = UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
     var textAlignVertical =
       UIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
-
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);
@@ -512,8 +511,8 @@ var TextInput = React.createClass({
         style={[this.props.style]}
         autoCapitalize={autoCapitalize}
         autoCorrect={this.props.autoCorrect}
-        textAlign={textAlign}
-        textAlignVertical={textAlignVertical}
+        textAlign={this.props.textAlign}
+        textAlignVertical={this.props.textAlignVertical}
         keyboardType={this.props.keyboardType}
         mostRecentEventCount={0}
         multiline={this.props.multiline}

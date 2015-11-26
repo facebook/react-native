@@ -314,6 +314,46 @@ exports.examples = [
     }
   },
   {
+    title: 'Text input, Alignment (Horizontal Demo Only)',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            placeholder="StyleSheet - textAlign: 'auto'"
+            style={[styles.singleLine, {textAlign: 'auto'}]}
+          />
+          <TextInput
+            placeholder="StyleSheet - textAlign: 'left'"
+            style={[styles.singleLine, {textAlign: 'left'}]}
+          />
+          <TextInput
+            placeholder="StyleSheet - textAlign: 'center'"
+            style={[styles.singleLine, {textAlign: 'center'}]}
+          />
+          <TextInput
+            placeholder="StyleSheet - textAlign: 'right'"
+            style={[styles.singleLine, {textAlign: 'right'}]}
+          />
+          <TextInput
+            placeholder="Native - textAlign='start'"
+            textAlign="start"
+            style={[styles.singleLine]}
+          />
+          <TextInput
+            placeholder="Native - textAlign='center'"
+            textAlign="center"
+            style={[styles.singleLine]}
+          />
+          <TextInput
+            placeholder="Native - textAlign='end'"
+            textAlign="end"
+            style={[styles.singleLine]}
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Passwords',
     render: function() {
       return (
