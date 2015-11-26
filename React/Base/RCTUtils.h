@@ -84,6 +84,9 @@ RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 RCT_EXTERN id RCTNilIfNull(id value);
 RCT_EXTERN id RCTNullIfNil(id value);
 
+// Convert NaN or infinite values to zero, as these aren't JSON-safe
+RCT_EXTERN double RCTZeroIfNaN(double value);
+
 // Convert data to a Base64-encoded data URL
 RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
 
@@ -96,3 +99,6 @@ RCT_EXTERN NSString *RCTBundlePathForURL(NSURL *URL);
 
 // Determines if a given image URL actually refers to an XCAsset
 RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *imageURL);
+
+// Converts a CGColor to a hex string
+RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
