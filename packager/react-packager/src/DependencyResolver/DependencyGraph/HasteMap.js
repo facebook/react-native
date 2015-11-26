@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
-
 const path = require('path');
 const getPlatformExtension = require('../lib/getPlatformExtension');
 const Promise = require('promise');
@@ -118,11 +117,12 @@ class HasteMap {
 
     const moduleMap = this._map[name];
     const modulePlatform = getPlatformExtension(mod.path) || GENERIC_PLATFORM;
+    const existingModule = moduleMap[modulePlatform];
 
-    if (moduleMap[modulePlatform]) {
+    if (existingModule && existingModule.path !== mod.path) {
       throw new Error(
         `Naming collision detected: ${mod.path} ` +
-        `collides with ${moduleMap[modulePlatform].path}`
+        `collides with ${existingModule.path}`
       );
     }
 
