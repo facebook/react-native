@@ -351,7 +351,7 @@ import com.facebook.react.touch.JSResponderHandler;
                       viewsToAdd,
                       tagsToDelete));
         }
-        detachView(viewToDestroy);
+        dropView(viewToDestroy);
       }
     }
   }
@@ -380,15 +380,10 @@ import com.facebook.react.touch.JSResponderHandler;
     view.setId(tag);
   }
 
-  public void dropView(int tag) {
-    mTagsToViews.remove(tag);
-    mTagsToViewManagers.remove(tag);
-  }
-
   /**
    * Releases all references to given native View.
    */
-  private void detachView(View view) {
+  private void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
@@ -403,11 +398,13 @@ import com.facebook.react.touch.JSResponderHandler;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
         if (mTagsToViews.get(child.getId()) != null) {
-          detachView(child);
+          dropView(child);
         }
       }
       viewGroupManager.removeAllViews(viewGroup);
     }
+    mTagsToViews.remove(view.getId());
+    mTagsToViewManagers.remove(view.getId());
   }
 
   public void removeRootView(int rootViewTag) {
@@ -417,7 +414,7 @@ import com.facebook.react.touch.JSResponderHandler;
             "View with tag " + rootViewTag + " is not registered as a root view");
     }
     View rootView = mTagsToViews.get(rootViewTag);
-    detachView(rootView);
+    dropView(rootView);
     mRootTags.delete(rootViewTag);
     mRootViewsContext.remove(rootViewTag);
   }

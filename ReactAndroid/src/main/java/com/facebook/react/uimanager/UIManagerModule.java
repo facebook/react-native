@@ -203,11 +203,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
-  public void dropViews(ReadableArray viewTags) {
-    mUIImplementation.dropViews(viewTags);
-  }
-
-  @ReactMethod
   public void updateView(int tag, String className, ReadableMap props) {
     mUIImplementation.updateView(tag, className, props);
   }

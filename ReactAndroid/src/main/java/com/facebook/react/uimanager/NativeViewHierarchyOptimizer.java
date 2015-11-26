@@ -90,10 +90,6 @@ public class NativeViewHierarchyOptimizer {
     }
   }
 
-  public void handleDropViews(int[] viewTagsToDrop, int length) {
-    mUIViewOperationQueue.enqueueDropViews(viewTagsToDrop, length);
-  }
-
   /**
    * Handles native children cleanup when css node is removed from hierarchy
    */

@@ -154,12 +154,4 @@ import com.facebook.react.uimanager.events.TouchEventType;
 
     return constants;
   }
-
-  public static Map<String, Object> getLayoutOnlyPropsConstants() {
-    HashMap<String, Object> constants = new HashMap<>();
-    for (String propName : ViewProps.LAYOUT_ONLY_PROPS) {
-      constants.put(propName, Boolean.TRUE);
-    }
-    return constants;
-  }
 }
