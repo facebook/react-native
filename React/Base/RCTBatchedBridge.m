@@ -871,12 +871,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
     if (!observer.paused) {
-      RCT_IF_DEV(NSString *name = [NSString stringWithFormat:@"[%@ didUpdateFrame:%f]", observer, displayLink.timestamp];)
       RCTProfileBeginFlowEvent();
 
       [self dispatchBlock:^{
         RCTProfileEndFlowEvent();
-        RCT_PROFILE_BEGIN_EVENT(0, name, nil);
+        RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ didUpdateFrame:%f]", observer, displayLink.timestamp], nil);
         [observer didUpdateFrame:frameUpdate];
         RCT_PROFILE_END_EVENT(0, @"objc_call,fps", nil);
       } queue:moduleData.methodQueue];
