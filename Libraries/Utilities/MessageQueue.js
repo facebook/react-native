@@ -146,12 +146,12 @@ class MessageQueue {
   }
 
   __callFunction(module, method, args) {
-    BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
     this._lastFlush = new Date().getTime();
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
     }
+    BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
