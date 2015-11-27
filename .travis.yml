@@ -19,7 +19,7 @@ install:
 #  - npm install
 
 script:
-- ./gradlew test --lifecycle
+- TERM=dumb ./gradlew test --lifecycle
 #  if [ "$TEST_TYPE" = objc ]
 #  then
 #
@@ -71,7 +71,7 @@ script:
 env:
   matrix:
 #    - TEST_TYPE=objc
-    - TEST_TYPE=android TERM=dumb
+    - TEST_TYPE=android
 #    - TEST_TYPE=js
 #    - TEST_TYPE=packager
 #    - TEST_TYPE=cli
