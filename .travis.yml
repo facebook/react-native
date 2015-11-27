@@ -28,6 +28,8 @@ script:
   elif [ "$TEST_TYPE" = android ]
   then
 
+    TERM=dumb ./gradlew testDebugUnitTest
+
   elif [ "$TEST_TYPE" = js ]
   then
 
@@ -69,7 +71,7 @@ script:
 env:
   matrix:
     - TEST_TYPE=objc
-    - TEST_TYPE=android
+#    - TEST_TYPE=android
     - TEST_TYPE=js
     - TEST_TYPE=packager
     - TEST_TYPE=cli
