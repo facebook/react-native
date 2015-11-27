@@ -19,7 +19,7 @@ install:
   - npm install
 
 script:
- |
+- |
   if [ "$TEST_TYPE" = objc ]
   then
 
