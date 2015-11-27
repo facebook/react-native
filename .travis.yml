@@ -69,10 +69,9 @@ script:
 #  fi
 
 env:
-  TERM: dumb
   matrix:
 #    - TEST_TYPE=objc
-    - TEST_TYPE=android
+    - TEST_TYPE=android TERM=dumb
 #    - TEST_TYPE=js
 #    - TEST_TYPE=packager
 #    - TEST_TYPE=cli
