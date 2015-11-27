@@ -10,6 +10,7 @@
 #include <folly/String.h>
 #include <jni/fbjni/Exceptions.h>
 #include "Value.h"
+#include "jni/OnLoad.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include <react/JSCTracing.h>
@@ -96,7 +97,19 @@ JSCExecutor::~JSCExecutor() {
 void JSCExecutor::executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
+  JNIEnv* env = Environment::current();
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+  jmethodID logMarkerMethod = facebook::react::getLogMarkerMethod();
+  jstring startStringMarker = env->NewStringUTF("executeApplicationScript_startStringConvert");
+  jstring endStringMarker = env->NewStringUTF("executeApplicationScript_endStringConvert");
+
+  env->CallStaticVoidMethod(markerClass, logMarkerMethod, startStringMarker);
   String jsScript(script.c_str());
+  env->CallStaticVoidMethod(markerClass, logMarkerMethod, endStringMarker);
+
+  env->DeleteLocalRef(startStringMarker);
+  env->DeleteLocalRef(endStringMarker);
+
   String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
