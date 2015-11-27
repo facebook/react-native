@@ -28,7 +28,7 @@ script:
   elif [ "$TEST_TYPE" = android ]
   then
 
-    ./gradlew test
+    ./gradlew test --info
 
   elif [ "$TEST_TYPE" = js ]
   then
