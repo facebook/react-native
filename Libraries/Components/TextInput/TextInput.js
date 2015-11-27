@@ -14,7 +14,6 @@
 var DocumentSelectionState = require('DocumentSelectionState');
 var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var RCTUIManager = require('NativeModules').UIManager;
 var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
@@ -24,6 +23,8 @@ var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var UIManager = require('UIManager');
+var View = require('View');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var emptyFunction = require('emptyFunction');
@@ -91,6 +92,7 @@ var TextInput = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Can tell TextInput to automatically capitalize certain characters.
      *
@@ -494,11 +496,11 @@ var TextInput = React.createClass({
   },
 
   _renderAndroid: function() {
-    var autoCapitalize = RCTUIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
+    var autoCapitalize = UIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
     var textAlign =
-      RCTUIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
+      UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
     var textAlignVertical =
-      RCTUIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
+      UIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);

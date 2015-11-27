@@ -183,18 +183,29 @@ NSString *RCTMD5Hash(NSString *string)
   ];
 }
 
+void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else if (sync) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      block();
+    });
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
 CGFloat RCTScreenScale()
 {
   static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (![NSThread isMainThread]) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        scale = [UIScreen mainScreen].scale;
-      });
-    } else {
+    RCTExecuteOnMainThread(^{
       scale = [UIScreen mainScreen].scale;
-    }
+    }, YES);
   });
 
   return scale;
@@ -205,13 +216,9 @@ CGSize RCTScreenSize()
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (![NSThread isMainThread]) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        size = [UIScreen mainScreen].bounds.size;
-      });
-    } else {
+    RCTExecuteOnMainThread(^{
       size = [UIScreen mainScreen].bounds.size;
-    }
+    }, YES);
   });
 
   return size;
@@ -413,6 +420,11 @@ id RCTNilIfNull(id value)
   return value == (id)kCFNull ? nil : value;
 }
 
+RCT_EXTERN double RCTZeroIfNaN(double value)
+{
+  return isnan(value) || isinf(value) ? 0 : value;
+}
+
 NSURL *RCTDataURL(NSString *mimeType, NSData *data)
 {
   return [NSURL URLWithString:
@@ -503,4 +515,63 @@ BOOL RCTIsXCAssetURL(NSURL *imageURL)
     return NO;
   }
   return YES;
+}
+
+static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
+{
+  CGColorSpaceModel model = CGColorSpaceGetModel(CGColorGetColorSpace(color));
+  const CGFloat *components = CGColorGetComponents(color);
+  switch (model)
+  {
+    case kCGColorSpaceModelMonochrome:
+    {
+      rgba[0] = components[0];
+      rgba[1] = components[0];
+      rgba[2] = components[0];
+      rgba[3] = components[1];
+      break;
+    }
+    case kCGColorSpaceModelRGB:
+    {
+      rgba[0] = components[0];
+      rgba[1] = components[1];
+      rgba[2] = components[2];
+      rgba[3] = components[3];
+      break;
+    }
+    case kCGColorSpaceModelCMYK:
+    case kCGColorSpaceModelDeviceN:
+    case kCGColorSpaceModelIndexed:
+    case kCGColorSpaceModelLab:
+    case kCGColorSpaceModelPattern:
+    case kCGColorSpaceModelUnknown:
+    {
+
+#ifdef RCT_DEBUG
+      //unsupported format
+      RCTLogError(@"Unsupported color model: %i", model);
+#endif
+
+      rgba[0] = 0.0;
+      rgba[1] = 0.0;
+      rgba[2] = 0.0;
+      rgba[3] = 1.0;
+      break;
+    }
+  }
+}
+
+NSString *RCTColorToHexString(CGColorRef color)
+{
+  CGFloat rgba[4];
+  RCTGetRGBAColorComponents(color, rgba);
+  uint8_t r = rgba[0]*255;
+  uint8_t g = rgba[1]*255;
+  uint8_t b = rgba[2]*255;
+  uint8_t a = rgba[3]*255;
+  if (a < 255) {
+    return [NSString stringWithFormat:@"#%02x%02x%02x%02x", r, g, b, a];
+  } else {
+    return [NSString stringWithFormat:@"#%02x%02x%02x", r, g, b];
+  }
 }

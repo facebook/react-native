@@ -67,15 +67,17 @@ import com.facebook.react.touch.JSResponderHandler;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager = new RootViewManager();
 
-  public NativeViewHierarchyManager(
-      AnimationRegistry animationRegistry,
-      ViewManagerRegistry viewManagers) {
-    mAnimationRegistry = animationRegistry;
+  public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
+    mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
     mRootViewsContext = new SparseArray<>();
+  }
+
+  public AnimationRegistry getAnimationRegistry() {
+    return mAnimationRegistry;
   }
 
   public void updateProperties(int tag, CatalystStylesDiffMap props) {
@@ -442,13 +444,26 @@ import com.facebook.react.touch.JSResponderHandler;
     return TouchTargetHelper.findTargetTagForTouch(touchY, touchX, (ViewGroup) view);
   }
 
-  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
+  public void setJSResponder(int reactTag, int initialReactTag, boolean blockNativeResponder) {
+    if (!blockNativeResponder) {
+      mJSResponderHandler.setJSResponder(initialReactTag, null);
+      return;
+    }
+
+    View view = mTagsToViews.get(reactTag);
+    if (initialReactTag != reactTag && view instanceof ViewParent) {
+      // In this case, initialReactTag corresponds to a virtual/layout-only View, and we already
+      // have a parent of that View in reactTag, so we can use it.
+      mJSResponderHandler.setJSResponder(initialReactTag, (ViewParent) view);
+      return;
+    }
+
     if (mRootTags.get(reactTag)) {
       SoftAssertions.assertUnreachable(
           "Cannot block native responder on " + reactTag + " that is a root view");
     }
-    ViewParent viewParent = blockNativeResponder ? mTagsToViews.get(reactTag).getParent() : null;
-    mJSResponderHandler.setJSResponder(reactTag, viewParent);
+    mJSResponderHandler
+        .setJSResponder(initialReactTag, view.getParent());
   }
 
   public void clearJSResponder() {

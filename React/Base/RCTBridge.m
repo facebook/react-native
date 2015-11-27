@@ -37,6 +37,7 @@ NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 @interface RCTBridge ()
 
 @property (nonatomic, strong) RCTBatchedBridge *batchedBridge;
+@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 @end
 
@@ -87,9 +88,8 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 }
 
 /**
- * Check if class has been registered
+ * This function checks if a class has been registered
  */
-BOOL RCTBridgeModuleClassIsRegistered(Class);
 BOOL RCTBridgeModuleClassIsRegistered(Class cls)
 {
   return [objc_getAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered) ?: @YES boolValue];
@@ -230,9 +230,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 #endif
 }
 
+- (NSArray<Class> *)moduleClasses
+{
+  return _batchedBridge.moduleClasses;
+}
+
+- (id)moduleForName:(NSString *)moduleName
+{
+  return [_batchedBridge moduleForName:moduleName];
+}
+
+- (id)moduleForClass:(Class)moduleClass
+{
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+}
+
 - (RCTEventDispatcher *)eventDispatcher
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTEventDispatcher class])];
+  return [self moduleForClass:[RCTEventDispatcher class]];
 }
 
 - (void)reload
@@ -281,10 +296,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [_batchedBridge logMessage:message level:level];
 }
 
-- (NSDictionary *)modules
-{
-  return _batchedBridge.modules;
-}
 
 #define RCT_INNER_BRIDGE_ONLY(...) \
 - (void)__VA_ARGS__ \
@@ -302,4 +313,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
                       method:(__unused NSString *)method
                       arguments:(__unused NSArray *)args);
+@end
+
+@implementation RCTBridge(Deprecated)
+
+- (NSDictionary *)modules
+{
+  return _batchedBridge.modules;
+}
+
 @end

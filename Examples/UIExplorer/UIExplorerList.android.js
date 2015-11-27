@@ -27,6 +27,7 @@ var COMPONENTS = [
   require('./ProgressBarAndroidExample'),
   require('./ScrollViewSimpleExample'),
   require('./SwitchAndroidExample'),
+  require('./PullToRefreshLayoutAndroidExample.android'),
   require('./TextExample.android'),
   require('./TextInputExample.android'),
   require('./ToolbarAndroidExample'),
@@ -38,6 +39,7 @@ var COMPONENTS = [
 var APIS = [
   require('./AccessibilityAndroidExample.android'),
   require('./BorderExample'),
+  require('./GeolocationExample'),
   require('./IntentAndroidExample.android'),
   require('./LayoutEventsExample'),
   require('./LayoutExample'),

@@ -154,13 +154,19 @@ function setUpGeolocation() {
   polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
 }
 
+function setUpProduct() {
+  Object.defineProperty(GLOBAL.navigator, 'product', {value: 'ReactNative'});
+}
+
+
 function setUpWebSockets() {
   polyfillGlobal('WebSocket', require('WebSocket'));
 }
 
 function setUpProfile() {
   if (__DEV__) {
-    require('BridgeProfiling').swizzleReactPerf();
+    var BridgeProfiling = require('BridgeProfiling');
+    BridgeProfiling.swizzleReactPerf();
   }
 }
 
@@ -180,9 +186,11 @@ function setUpNumber() {
 
 function setUpDevTools() {
   // not when debugging in chrome
-  if (__DEV__ && !window.document && require('Platform').OS === 'ios') {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
+  if (__DEV__) { // TODO(9123099) Strip `__DEV__ &&`
+    if (!window.document && require('Platform').OS === 'ios') {
+      var setupDevtools = require('setupDevtools');
+      setupDevtools();
+    }
   }
 }
 
@@ -194,6 +202,7 @@ setUpPromise();
 setUpErrorHandler();
 setUpXHR();
 setUpGeolocation();
+setUpProduct();
 setUpWebSockets();
 setUpProfile();
 setUpFlowChecker();
@@ -202,6 +211,8 @@ setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDebugComponentOwnership');
+if (__DEV__) {
+  require('RCTDebugComponentOwnership');
+}
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');

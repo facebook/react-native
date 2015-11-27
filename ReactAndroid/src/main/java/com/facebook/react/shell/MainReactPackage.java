@@ -19,6 +19,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
+import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
@@ -38,6 +39,7 @@ import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
+import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 
 /**
  * Package defining basic modules and view managers.
@@ -50,6 +52,7 @@ public class MainReactPackage implements ReactPackage {
       new AsyncStorageModule(reactContext),
       new FrescoModule(reactContext),
       new IntentModule(reactContext),
+      new LocationModule(reactContext),
       new NetworkingModule(reactContext),
       new WebSocketModule(reactContext),
       new ToastModule(reactContext));
@@ -76,6 +79,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactViewManager(),
       new ReactViewPagerManager(),
       new ReactTextInlineImageViewManager(),
-      new ReactVirtualTextViewManager());
+      new ReactVirtualTextViewManager(),
+      new SwipeRefreshLayoutManager());
   }
 }

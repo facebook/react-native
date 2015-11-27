@@ -11,10 +11,13 @@ package com.facebook.react.views.image;
 
 import javax.annotation.Nullable;
 
+import java.util.Map;
+
 import android.graphics.Color;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -29,7 +32,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
-  private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
   public ReactImageManager(
@@ -40,16 +43,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   }
 
   public ReactImageManager() {
+    // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
   }
 
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
+    if (mDraweeControllerBuilder == null) {
+      mDraweeControllerBuilder = Fresco.newDraweeControllerBuilder();
+    }
+
     return new ReactImageView(
         context,
-        mDraweeControllerBuilder == null ?
-            Fresco.newDraweeControllerBuilder() : mDraweeControllerBuilder,
+        mDraweeControllerBuilder,
         mCallerContext);
   }
 
@@ -100,6 +107,23 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @ReactProp(name = "fadeDuration")
   public void setFadeDuration(ReactImageView view, int durationMs) {
     view.setFadeDuration(durationMs);
+  }
+
+  @ReactProp(name = "shouldNotifyLoadEvents")
+  public void setLoadHandlersRegistered(ReactImageView view, boolean shouldNotifyLoadEvents) {
+    view.setShouldNotifyLoadEvents(shouldNotifyLoadEvents);
+  }
+
+  @Override
+  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.of(
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
+        MapBuilder.of("registrationName", "onLoadStart"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
+        MapBuilder.of("registrationName", "onLoad"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
+        MapBuilder.of("registrationName", "onLoadEnd")
+    );
   }
 
   @Override

@@ -42,9 +42,10 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
           VALUE_COLUMN + " TEXT NOT NULL" +
           ")";
 
+  private static @Nullable ReactDatabaseSupplier sReactDatabaseSupplierInstance;
+
   private Context mContext;
   private @Nullable SQLiteDatabase mDb;
-  private static @Nullable ReactDatabaseSupplier mReactDatabaseSupplierInstance;
 
   private ReactDatabaseSupplier(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -52,10 +53,10 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
   }
 
   public static ReactDatabaseSupplier getInstance(Context context) {
-    if (mReactDatabaseSupplierInstance == null) {
-      mReactDatabaseSupplierInstance = new ReactDatabaseSupplier(context);
+    if (sReactDatabaseSupplierInstance == null) {
+      sReactDatabaseSupplierInstance = new ReactDatabaseSupplier(context.getApplicationContext());
     }
-    return mReactDatabaseSupplierInstance;
+    return sReactDatabaseSupplierInstance;
   }
 
   @Override
@@ -150,6 +151,6 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
   // For testing purposes only!
   public static void deleteInstance() {
-    mReactDatabaseSupplierInstance = null;
+    sReactDatabaseSupplierInstance = null;
   }
 }

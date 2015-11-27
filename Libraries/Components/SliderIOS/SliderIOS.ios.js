@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
@@ -25,6 +26,7 @@ var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Used to style and layout the `Slider`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
@@ -76,6 +78,16 @@ var SliderIOS = React.createClass({
      */
     disabled: PropTypes.bool,
 
+   /**
+     * Sets an image for the track. It only supports images that are included as assets
+     */
+    trackImage: Image.propTypes.source,
+
+    /**
+     * Sets an image for the thumb. It only supports static images.
+     */
+    thumbImage: Image.propTypes.source,
+
     /**
      * Callback continuously called while the user is dragging the slider.
      */
@@ -107,7 +119,7 @@ var SliderIOS = React.createClass({
     });
 
     let {style, ...props} = this.props;
-    style = [styles.slider, this.props.style];
+    style = [styles.slider, style];
 
     return (
       <RCTSlider

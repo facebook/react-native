@@ -22,10 +22,10 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
 /**
@@ -56,10 +56,12 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   resizeMode: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
+  shouldNotifyLoadEvents: true,
 });
 
 var Image = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
@@ -74,7 +76,18 @@ var Image = React.createClass({
     ]).isRequired,
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
-    style: StyleSheetPropType(ImageStylePropTypes),
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load completes successfully
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -136,9 +149,11 @@ var Image = React.createClass({
     if (source && source.uri) {
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      var {onLoadStart, onLoad, onLoadEnd} = this.props;
 
       var nativeProps = merge(this.props, {
         style,
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
         src: source.uri,
       });
 
@@ -179,13 +194,16 @@ var styles = StyleSheet.create({
   }
 });
 
-var RKImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTImageView',
-});
-var RCTTextInlineImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTTextInlineImage',
-});
+var cfg = {
+  nativeOnly: {
+    src: true,
+    defaultImageSrc: true,
+    imageTag: true,
+    progressHandlerRegistered: true,
+    shouldNotifyLoadEvents: true,
+  },
+};
+var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
 
 module.exports = Image;

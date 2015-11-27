@@ -148,8 +148,13 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     Resources resources = node.getThemedContext().getResources();
     int height = (int) PixelUtil.toDIPFromPixel(node.getStyleHeight());
     int width = (int) PixelUtil.toDIPFromPixel(node.getStyleWidth());
-    TextInlineImageSpan imageSpan =
-        new TextInlineImageSpan(resources, height, width, node.getUri());
+    TextInlineImageSpan imageSpan = new TextInlineImageSpan(
+        resources,
+        height,
+        width,
+        node.getUri(),
+        node.getDraweeControllerBuilder(),
+        node.getCallerContext());
     // We make the image take up 1 character in the span and put a corresponding character into the
     // text so that the image doesn't run over any following text.
     sb.append(INLINE_IMAGE_PLACEHOLDER);

@@ -75,14 +75,6 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 /**
- * DEPRECATED: access app properties via appProperties property instead
- *
- * The default properties to apply to the view when the script bundle
- * is first loaded. Defaults to nil/empty.
- */
-@property (nonatomic, copy, readonly) NSDictionary *initialProperties DEPRECATED_MSG_ATTRIBUTE ("use appProperties instead");
-
-/**
  * The properties to apply to the view. Use this property to update
  * application properties and rerender the view. Initialized with
  * initialProperties argument of the initializer.

@@ -66,13 +66,16 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
                                       uint64_t tag,
                                       NSString *name,
                                       NSDictionary *args);
-#define RCT_PROFILE_BEGIN_EVENT(...) { \
-  NSThread *calleeThread = [NSThread currentThread]; \
-  NSTimeInterval time = CACurrentMediaTime(); \
-  dispatch_async(RCTProfileGetQueue(), ^{ \
-    _RCTProfileBeginEvent(calleeThread, time, __VA_ARGS__); \
-  }); \
-}
+#define RCT_PROFILE_BEGIN_EVENT(...) \
+  do { \
+    if (RCTProfileIsProfiling()) { \
+      NSThread *calleeThread = [NSThread currentThread]; \
+      NSTimeInterval time = CACurrentMediaTime(); \
+      dispatch_async(RCTProfileGetQueue(), ^{ \
+        _RCTProfileBeginEvent(calleeThread, time, __VA_ARGS__); \
+      }); \
+    } \
+  } while(0)
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
@@ -86,14 +89,17 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
                                     NSString *category,
                                     NSDictionary *args);
 
-#define RCT_PROFILE_END_EVENT(...) { \
-  NSThread *calleeThread = [NSThread currentThread]; \
-  NSString *threadName = RCTCurrentThreadName(); \
-  NSTimeInterval time = CACurrentMediaTime(); \
-  dispatch_async(RCTProfileGetQueue(), ^{ \
-    _RCTProfileEndEvent(calleeThread, threadName, time, __VA_ARGS__); \
-  }); \
-}
+#define RCT_PROFILE_END_EVENT(...) \
+  do { \
+    if (RCTProfileIsProfiling()) { \
+      NSThread *calleeThread = [NSThread currentThread]; \
+      NSString *threadName = RCTCurrentThreadName(); \
+      NSTimeInterval time = CACurrentMediaTime(); \
+      dispatch_async(RCTProfileGetQueue(), ^{ \
+        _RCTProfileEndEvent(calleeThread, threadName, time, __VA_ARGS__); \
+      }); \
+    } \
+  } while(0)
 
 /**
  * Collects the initial event information for the event and returns a reference ID

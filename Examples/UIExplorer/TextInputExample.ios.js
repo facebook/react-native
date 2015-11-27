@@ -545,6 +545,10 @@ exports.examples = [
     }
   },
   {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+  },
+  {
     title: 'Multiline',
     render: function() {
       return (
@@ -587,9 +591,5 @@ exports.examples = [
     render: function() {
       return <TokenizedTextExample />;
     }
-  },
-  {
-    title: 'Blur on submit',
-    render: function(): ReactElement { return <BlurOnSubmitExample />; },
   },
 ];
