@@ -244,7 +244,7 @@ public class NetworkingModuleTest {
     Headers requestHeaders = argumentCaptor.getValue().headers();
     assertThat(requestHeaders.size()).isEqualTo(2);
     assertThat(requestHeaders.get("Accept")).isEqualTo("text/plain");
-    assertThat(requestHeaders.get("User-Agent")).isEqualTo("React test agent/2.0");
+    assertThat(requestHeaders.get("User-Agent")).isEqualTo("React test agent/1.0");
   }
 
   @Test
