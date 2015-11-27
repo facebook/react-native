@@ -198,6 +198,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   RCTPerformanceLoggerStart(RCTPLScriptDownload);
   NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
 
+  // Suppress a warning if RCTProfileBeginAsyncEvent gets compiled out
+  (void)cookie;
+
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source) {
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
