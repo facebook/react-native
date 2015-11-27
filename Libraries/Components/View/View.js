@@ -13,11 +13,11 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
+var UIManager = require('UIManager');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var requireNativeComponent = require('requireNativeComponent');
@@ -327,7 +327,7 @@ var RCTView = requireNativeComponent('RCTView', View, {
 });
 
 if (__DEV__) {
-  var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
+  var viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
   for (var prop in viewConfig.nativeProps) {
     var viewAny: any = View; // Appease flow
     if (!viewAny.propTypes[prop] && !ReactNativeStyleAttributes[prop]) {

@@ -11,10 +11,9 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var RCTUIManager = NativeModules.UIManager;
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
 var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
@@ -78,7 +77,7 @@ var NativeMethodsMixin = {
    * prop](/react-native/docs/view.html#onlayout) instead.
    */
   measure: function(callback: MeasureOnSuccessCallback) {
-    RCTUIManager.measure(
+    UIManager.measure(
       findNodeHandle(this),
       mountSafeCallback(this, callback)
     );
@@ -97,7 +96,7 @@ var NativeMethodsMixin = {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail: () => void /* currently unused */
   ) {
-    RCTUIManager.measureLayout(
+    UIManager.measureLayout(
       findNodeHandle(this),
       relativeToNativeNode,
       mountSafeCallback(this, onFail),
@@ -121,7 +120,7 @@ var NativeMethodsMixin = {
       this.viewConfig.validAttributes
     );
 
-    RCTUIManager.updateView(
+    UIManager.updateView(
       findNodeHandle(this),
       this.viewConfig.uiViewClassName,
       updatePayload

@@ -7,14 +7,12 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var React = require('React');
 var ReactElement = require('ReactElement');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
+var UIManager = require('UIManager');
 var View = require('View');
-
-var RCTUIManager = NativeModules.UIManager;
 
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
@@ -157,9 +155,9 @@ var ViewPagerAndroid = React.createClass({
    * The transition between pages will be animated.
    */
   setPage: function(selectedPage: number) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.AndroidViewPager.Commands.setPage,
+      UIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
   },
@@ -169,9 +167,9 @@ var ViewPagerAndroid = React.createClass({
    * The transition between pages will be *not* be animated.
    */
   setPageWithoutAnimation: function(selectedPage: number) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
+      UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );
   },
