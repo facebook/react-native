@@ -22,6 +22,9 @@
 @end
 
 @implementation RCTUITextView
+{
+  BOOL _jsRequestingFirstResponder;
+}
 
 - (void)paste:(id)sender
 {
@@ -29,12 +32,26 @@
   [super paste:sender];
 }
 
+- (void)reactWillMakeFirstResponder
+{
+  _jsRequestingFirstResponder = YES;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return _jsRequestingFirstResponder;
+}
+
+- (void)reactDidMakeFirstResponder
+{
+  _jsRequestingFirstResponder = NO;
+}
+
 @end
 
 @implementation RCTTextView
 {
   RCTEventDispatcher *_eventDispatcher;
-  BOOL _jsRequestingFirstResponder;
   NSString *_placeholder;
   UITextView *_placeholderView;
   UITextView *_textView;
@@ -360,7 +377,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:textView.text
+                                     text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -385,39 +402,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:textView.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
+                                 reactTag:self.reactTag
+                                     text:nil
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
+- (void)reactWillMakeFirstResponder
+{
+  [_textView reactWillMakeFirstResponder];
 }
 
 - (BOOL)becomeFirstResponder
 {
-  _jsRequestingFirstResponder = YES;
-  BOOL result = [_textView becomeFirstResponder];
-  _jsRequestingFirstResponder = NO;
-  return result;
+  return [_textView becomeFirstResponder];
 }
 
-- (BOOL)resignFirstResponder
+- (void)reactDidMakeFirstResponder
 {
-  [super resignFirstResponder];
-  BOOL result = [_textView resignFirstResponder];
-  if (result) {
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
-                                   reactTag:self.reactTag
-                                       text:_textView.text
-                                        key:nil
-                                 eventCount:_nativeEventCount];
-  }
-  return result;
+  [_textView reactDidMakeFirstResponder];
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   [self updateFrames];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
 }
 
 - (UIFont *)defaultPlaceholderFont
