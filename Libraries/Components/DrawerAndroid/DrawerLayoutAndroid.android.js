@@ -10,14 +10,15 @@
  */
 'use strict';
 
-var DrawerConsts = require('NativeModules').UIManager.AndroidDrawerLayout.Constants;
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var RCTUIManager = require('NativeModules').UIManager;
 var StyleSheet = require('StyleSheet');
+var UIManager = require('UIManager');
 var View = require('View');
+
+var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
 var dismissKeyboard = require('dismissKeyboard');
 var merge = require('merge');
@@ -182,17 +183,17 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   openDrawer: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      RCTUIManager.AndroidDrawerLayout.Commands.openDrawer,
+      UIManager.AndroidDrawerLayout.Commands.openDrawer,
       null
     );
   },
 
   closeDrawer: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      RCTUIManager.AndroidDrawerLayout.Commands.closeDrawer,
+      UIManager.AndroidDrawerLayout.Commands.closeDrawer,
       null
     );
   },
