@@ -40,6 +40,7 @@ import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
+package com.facebook.react.modules.clipboard.ClipboardModule;
 
 /**
  * Package defining basic modules and view managers.
@@ -55,7 +56,8 @@ public class MainReactPackage implements ReactPackage {
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),
       new WebSocketModule(reactContext),
-      new ToastModule(reactContext));
+      new ToastModule(reactContext),
+      new ClipboardModule(reactContext));
   }
 
   @Override

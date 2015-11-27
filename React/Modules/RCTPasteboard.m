@@ -25,4 +25,18 @@ RCT_EXPORT_METHOD(setPasteboardString:(NSString *)string)
   [[UIPasteboard generalPasteboard] setString:string];
 }
 
+RCT_EXPORT_METHOD(get:(RCTResponseSenderBlock)callback)
+{
+  UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
+  callback(@[pasteBoard.string ? pasteBoard.string : @""]);
+}
+
+RCT_EXPORT_METHOD(set:(NSString *)content)
+{
+  if (content) {
+    UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
+    pasteBoard.string = content;
+  }
+}
+
 @end
