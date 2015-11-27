@@ -16,6 +16,7 @@
 #include "JSLoader.h"
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
+#include "OnLoad.h"
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -745,6 +746,10 @@ static void createProxyExecutor(JNIEnv *env, jobject obj, jobject executorInstan
 
 } // namespace executors
 
+}
+
+jmethodID getLogMarkerMethod() {
+  return bridge::gLogMarkerMethod;
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
