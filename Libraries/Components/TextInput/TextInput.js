@@ -120,7 +120,7 @@ var TextInput = React.createClass({
      * Set the position of the cursor from where editing will begin.
      * @platform android
      */
-    textAlign: PropTypes.oneOf([
+    textAlignAndroid: PropTypes.oneOf([
       'start',
       'center',
       'end',
@@ -129,7 +129,7 @@ var TextInput = React.createClass({
      * Aligns text vertically within the TextInput.
      * @platform android
      */
-    textAlignVertical: PropTypes.oneOf([
+    textAlignVerticalAndroid: PropTypes.oneOf([
       'top',
       'center',
       'bottom',
@@ -497,10 +497,10 @@ var TextInput = React.createClass({
 
   _renderAndroid: function() {
     var autoCapitalize = RCTUIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
-    var textAlign =
-      RCTUIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
-    var textAlignVertical =
-      RCTUIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
+    var textAlignAndroid =
+      RCTUIManager.AndroidTextInput.Constants.TextAlignAndroid[this.props.textAlignAndroid];
+    var textAlignVerticalAndroid =
+      RCTUIManager.AndroidTextInput.Constants.TextAlignVerticalAndroid[this.props.textAlignVerticalAndroid];
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);
@@ -517,8 +517,8 @@ var TextInput = React.createClass({
         style={[this.props.style]}
         autoCapitalize={autoCapitalize}
         autoCorrect={this.props.autoCorrect}
-        textAlign={textAlign}
-        textAlignVertical={textAlignVertical}
+        textAlignAndroid={textAlignAndroid}
+        textAlignVerticalAndroid={textAlignVerticalAndroid}
         keyboardType={this.props.keyboardType}
         mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}

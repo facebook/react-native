@@ -84,7 +84,7 @@ import com.facebook.react.bridge.ReadableMap;
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
         throw new JSApplicationIllegalArgumentException("Error while updating property '" +
-            mPropName + "' of a view managed by: " + viewManager.getName(), t);
+            mPropName + "' of a view managed by: " + viewManager.getName() + " | Arguments: " + VIEW_MGR_ARGS[0] + " | " + VIEW_MGR_ARGS[1], t);
       }
     }
 
