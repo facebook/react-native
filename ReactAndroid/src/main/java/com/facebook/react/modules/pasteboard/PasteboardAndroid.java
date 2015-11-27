@@ -8,7 +8,7 @@
  */
 
 
-package com.facebook.react.modules.clipboard;
+package com.facebook.react.modules.pasteboard;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -29,18 +29,18 @@ import java.util.Map;
 /**
  * {@link NativeModule} that allows JS to get content in clipboard.
  */
-public class ClipboardModule extends ReactContextBaseJavaModule {
-    public ClipboardModule(ReactApplicationContext reactContext) {
+public class PasteboardModule extends ReactContextBaseJavaModule {
+    public PasteboardModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 
     @Override
     public String getName() {
-        return "ClipboardAndroid";
+        return "PasteboardAndroid";
     }
 
     @ReactMethod
-    public void get(Callback cb) {
+    public void getPasteboardString(Callback cb) {
         try {
             ReactApplicationContext reactContext = getReactApplicationContext();
 
@@ -65,12 +65,12 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
             }
 
         } catch(Exception e) {
-            Log.w("ClipboardModule", "Error in GET operation: " + e.getMessage());
+            Log.w("PasteboardModule", "Error in GET operation: " + e.getMessage());
         }
     }
 
     @ReactMethod
-    public void set(String data) {
+    public void setPasteboardString(String data) {
         try {
 
             ReactApplicationContext reactContext = getReactApplicationContext();
@@ -82,7 +82,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
             clipboard.setPrimaryClip(clip);
 
         } catch(Exception e) {
-            Log.w("ClipboardModule", "Error in SET operation: " + e.getMessage());
+            Log.w("PasteboardModule", "Error in SET operation: " + e.getMessage());
         }
     }
 

@@ -6,12 +6,18 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Clipboard
+ * @providesModule Pasteboard
  */
 'use strict';
 
 
-var Clipboard = require('./Clipboard.js');
-var NativeClipboard = require('NativeModules').RCTPasteboard;
+var NativePasteboard= require('NativeModules').RCTPasteboard;
 
-module.exports = Clipboard(NativeClipboard);
+module.exports = {
+  getString(callback){
+    NativeClipboard.getPasteboardString(callback);
+  },
+  setString(content){
+    NativeClipboard.setPasteboardString(content);
+  }
+};

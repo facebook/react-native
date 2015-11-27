@@ -20,18 +20,13 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(setPasteboardString:(NSString *)string)
-{
-  [[UIPasteboard generalPasteboard] setString:string];
-}
-
-RCT_EXPORT_METHOD(get:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getPasteboardString:(RCTResponseSenderBlock)callback)
 {
   UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
   callback(@[pasteBoard.string ? pasteBoard.string : @""]);
 }
 
-RCT_EXPORT_METHOD(set:(NSString *)content)
+RCT_EXPORT_METHOD(setPasteboardString:(NSString *)content)
 {
   if (content) {
     UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
