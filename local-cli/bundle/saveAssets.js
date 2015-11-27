@@ -8,11 +8,11 @@
  */
 'use strict';
 
-const execFile = require('child_process').execFile;
 const fs = require('fs');
 const getAssetDestPathAndroid = require('./getAssetDestPathAndroid');
 const getAssetDestPathIOS = require('./getAssetDestPathIOS');
 const log = require('../util/log').out('bundle');
+const mkdirp = require('mkdirp');
 const path = require('path');
 
 function saveAssets(
@@ -70,7 +70,7 @@ function copyAll(filesToCopy) {
 
 function copy(src, dest, callback) {
   const destDir = path.dirname(dest);
-  execFile('mkdir', ['-p', destDir], err => {
+  mkdirp(destDir, err => {
     if (err) {
       return callback(err);
     }
