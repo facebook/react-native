@@ -15,9 +15,9 @@ var NativePasteboard= require('NativeModules').RCTPasteboard;
 
 module.exports = {
   getString(callback){
-    NativeClipboard.getPasteboardString(callback);
+    NativePasteboard.getPasteboardString(callback);
   },
   setString(content){
-    NativeClipboard.setPasteboardString(content);
+    NativePasteboard.setPasteboardString(content);
   }
 };

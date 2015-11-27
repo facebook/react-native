@@ -15,9 +15,9 @@ var NativePasteboard = require('react-native').NativeModules.PasteboardAndroid;
 
 module.exports = {
   getString(callback){
-    NativeClipboard.getPasteboardString(callback);
+    NativePasteboard.getPasteboardString(callback);
   },
   setString(content){
-    NativeClipboard.setPasteboardString(content);
+    NativePasteboard.setPasteboardString(content);
   }
 };
