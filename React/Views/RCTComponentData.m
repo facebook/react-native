@@ -325,7 +325,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
     [shadowView didSetProps:[props allKeys]];
   }
-  [shadowView updateLayout];
 }
 
 - (NSDictionary<NSString *, id> *)viewConfig
