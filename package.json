@@ -96,6 +96,7 @@
     "joi": "^6.6.1",
     "json5": "^0.4.0",
     "jstransform": "^11.0.3",
+    "mkdirp": "^0.5.0",
     "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
     "opn": "^3.0.2",
