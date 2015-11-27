@@ -77,9 +77,9 @@ public class TimingModuleTest {
     PowerMockito.mockStatic(ReactChoreographer.class);
     when(ReactChoreographer.getInstance()).thenReturn(mChoreographerMock);
 
-    CatalystInstance catalystInstance = mock(CatalystInstance.class);
+    CatalystInstance reactInstance = mock(CatalystInstance.class);
     ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
-    when(reactContext.getCatalystInstance()).thenReturn(catalystInstance);
+    when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
 
     mCurrentTimeNs = 0;
     mPostFrameCallbackHandler = new PostFrameCallbackHandler();
@@ -92,7 +92,7 @@ public class TimingModuleTest {
 
     mTiming = new Timing(reactContext);
     mJSTimersMock = mock(JSTimersExecution.class);
-    when(catalystInstance.getJSModule(JSTimersExecution.class)).thenReturn(mJSTimersMock);
+    when(reactInstance.getJSModule(JSTimersExecution.class)).thenReturn(mJSTimersMock);
     mTiming.initialize();
   }
 

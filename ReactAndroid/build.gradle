@@ -256,6 +256,14 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp-ws:2.5.0'
     compile 'com.squareup.okio:okio:1.6.0'
     compile 'org.webkit:android-jsc:r174650'
+
+    testCompile "junit:junit:${JUNIT_VERSION}"
+    testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
+    testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
+    testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
+    testCompile("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 }
 
 apply from: 'release.gradle'
