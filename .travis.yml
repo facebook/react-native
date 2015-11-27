@@ -19,7 +19,7 @@ install:
 #  - npm install
 
 script:
-- ./gradlew cleanTest test
+- ./gradlew test --lifecycle
 #  if [ "$TEST_TYPE" = objc ]
 #  then
 #
