@@ -28,8 +28,6 @@ script:
   elif [ "$TEST_TYPE" = android ]
   then
 
-    TERM=dumb ./gradlew testDebugUnitTest
-
   elif [ "$TEST_TYPE" = js ]
   then
 
