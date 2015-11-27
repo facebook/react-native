@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.os.SystemClock;
 import android.view.MenuItem;
 import android.view.View;
+import android.util.LayoutDirection;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
@@ -85,10 +86,9 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   }
 
   @ReactProp(name = "rtl")
-  public void setLayoutDirection(ReactToolbar view, @Nullable Boolean flag) {
+  public void setLayoutDirection(ReactToolbar view, Boolean flag) {
     if (flag.equals(true)) {
-      // 1 = RTL
-      view.setLayoutDirection(1);
+      view.setLayoutDirection(LayoutDirection.RTL);
     }
   }
 

@@ -136,7 +136,7 @@ var ToolbarAndroid = React.createClass({
      *   android:supportsRtl="true"
      *
      * to your application AndroidManifest.xml and then
-     * use `setLayoutDirection(1)` on your MainActivity
+     * use `setLayoutDirection(LayoutDirection.RTL)` on your MainActivity
      * `onCreate` method.
      *
      */
