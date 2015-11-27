@@ -32,7 +32,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
-  private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
   public ReactImageManager(
@@ -43,16 +43,20 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   }
 
   public ReactImageManager() {
+    // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
   }
 
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
+    if (mDraweeControllerBuilder == null) {
+      mDraweeControllerBuilder = Fresco.newDraweeControllerBuilder();
+    }
+
     return new ReactImageView(
         context,
-        mDraweeControllerBuilder == null ?
-            Fresco.newDraweeControllerBuilder() : mDraweeControllerBuilder,
+        mDraweeControllerBuilder,
         mCallerContext);
   }
 
