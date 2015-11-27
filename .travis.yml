@@ -8,18 +8,18 @@ cache:
         - .nvm
 
 install:
-  - brew reinstall nvm
-  - mkdir -p .nvm
-  - export NVM_DIR="$PWD/.nvm"
-  - source $(brew --prefix nvm)/nvm.sh
-  - nvm install 4
-  - rm -Rf "${TMPDIR}/jest_preprocess_cache"
-  - npm config set spin=false
-  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
-  - npm install
+#  - brew reinstall nvm
+#  - mkdir -p .nvm
+#  - export NVM_DIR="$PWD/.nvm"
+#  - source $(brew --prefix nvm)/nvm.sh
+#  - nvm install 4
+#  - rm -Rf "${TMPDIR}/jest_preprocess_cache"
+#  - npm config set spin=false
+#  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
+#  - npm install
 
 script:
-- TERM=dumb ./gradlew test
+- ./gradlew cleanTest test
 #  if [ "$TEST_TYPE" = objc ]
 #  then
 #
@@ -69,6 +69,7 @@ script:
 #  fi
 
 env:
+  -TERM=dumb
   matrix:
 #    - TEST_TYPE=objc
     - TEST_TYPE=android
