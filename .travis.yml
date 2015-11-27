@@ -28,7 +28,7 @@ script:
   elif [ "$TEST_TYPE" = android ]
   then
 
-    ./gradlew test --info
+    ./gradlew test --lifecycle
 
   elif [ "$TEST_TYPE" = js ]
   then
