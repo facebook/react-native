@@ -25,6 +25,11 @@ script:
 
     ./scripts/objc-test.sh
 
+  elif [ "$TEST_TYPE" = android ]
+  then
+
+    ./gradlew test
+
   elif [ "$TEST_TYPE" = js ]
   then
 
