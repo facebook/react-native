@@ -302,6 +302,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
     [self propBlockForKey:key defaultView:_defaultView](view, json);
   }];
+
+  if ([view respondsToSelector:@selector(didSetProps:)]) {
+    [view didSetProps:[props allKeys]];
+  }
 }
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView
@@ -318,6 +322,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self propBlockForKey:key defaultView:_defaultShadowView](shadowView, json);
   }];
 
+  if ([shadowView respondsToSelector:@selector(didSetProps:)]) {
+    [shadowView didSetProps:[props allKeys]];
+  }
   [shadowView updateLayout];
 }
 

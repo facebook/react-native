@@ -36,6 +36,13 @@ typedef void (^RCTBubblingEventBlock)(NSDictionary *body);
 
 @optional
 
+/**
+ * Called each time props have been set.
+ * Not all props have to be set - React can set only changed ones.
+ * @param changedProps String names of all set props.
+ */
+- (void)didSetProps:(NSArray<NSString *> *)changedProps;
+
 // TODO: Deprecate this
 // This method is called after layout has been performed for all views known
 // to the RCTViewManager. It is only called on UIViews, not shadow views.
