@@ -8,7 +8,7 @@ cache:
         - .nvm
 
 install:
-#  - brew reinstall nvm
+  - brew reinstall nvm
 #  - mkdir -p .nvm
 #  - export NVM_DIR="$PWD/.nvm"
 #  - source $(brew --prefix nvm)/nvm.sh
