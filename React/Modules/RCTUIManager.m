@@ -382,7 +382,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
       rootShadowView.frame = frame;
     }
 
-    [rootShadowView updateLayout];
+    [rootShadowView dirtyLayout];
 
     [self batchDidComplete];
   });
