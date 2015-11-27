@@ -11,7 +11,9 @@ package com.facebook.react.modules.fresco;
 
 import java.util.HashSet;
 
+import android.content.ComponentCallbacks2;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 
 import com.facebook.cache.common.CacheKey;
@@ -37,7 +39,7 @@ import com.squareup.okhttp.OkHttpClient;
  * <p>Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
 public class FrescoModule extends ReactContextBaseJavaModule implements
-    ModuleDataCleaner.Cleanable {
+    ModuleDataCleaner.Cleanable, ComponentCallbacks2 {
 
   @Nullable private RequestListener mRequestListener;
   @Nullable private DiskCacheConfig mDiskCacheConfig;
@@ -88,6 +90,14 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
 
     ImagePipelineConfig config = builder.build();
     Fresco.initialize(context, config);
+
+    getReactApplicationContext().getApplicationContext().registerComponentCallbacks(this);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    getReactApplicationContext().getApplicationContext().unregisterComponentCallbacks(this);
+    clearMemoryCaches();
   }
 
   @Override
@@ -103,6 +113,26 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     imagePipelineFactory.getEncodedMemoryCache().removeAll(AndroidPredicates.<CacheKey>True());
     imagePipelineFactory.getMainDiskStorageCache().clearAll();
     imagePipelineFactory.getSmallImageDiskStorageCache().clearAll();
+  }
+
+  @Override
+  public void onTrimMemory(int level) {
+    if (level >= ComponentCallbacks2.TRIM_MEMORY_COMPLETE ||
+        level == ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
+      clearMemoryCaches();
+    }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+  }
+
+  @Override
+  public void onLowMemory() {
+  }
+
+  private void clearMemoryCaches() {
+    Fresco.getImagePipeline().clearMemoryCaches();
   }
 
   private static class FrescoHandler implements SoLoaderShim.Handler {
