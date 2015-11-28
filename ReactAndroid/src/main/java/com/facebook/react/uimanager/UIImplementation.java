@@ -11,6 +11,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.infer.annotation.Assertions;
@@ -39,11 +40,11 @@ public class UIImplementation {
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
 
-  public UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
+  public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
+    mViewManagers = new ViewManagerRegistry(viewManagers);
     mOperationsQueue = new UIViewOperationQueue(
         reactContext,
-        new NativeViewHierarchyManager(viewManagers));
-    mViewManagers = viewManagers;
+        new NativeViewHierarchyManager(mViewManagers));
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);

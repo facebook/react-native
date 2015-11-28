@@ -1,4 +1,4 @@
-/**
+  /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -78,17 +78,27 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
 
-  public UIManagerModule(ReactApplicationContext reactContext, List<ViewManager> viewManagerList) {
+  /**
+   * This contructor is temporarily here to workaround Sandcastle error.
+   */
+  public UIManagerModule(
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagerList) {
+    this(reactContext, viewManagerList, new UIImplementation(reactContext, viewManagerList));
+  }
+
+  public UIManagerModule(
+      ReactApplicationContext reactContext,
+      List<ViewManager> viewManagerList,
+      UIImplementation uiImplementation) {
     super(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
     DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
     DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
     mModuleConstants = createConstants(displayMetrics, viewManagerList);
-    reactContext.addLifecycleEventListener(this);
+    mUIImplementation = uiImplementation;
 
-    mUIImplementation = new UIImplementation(
-        reactContext,
-        new ViewManagerRegistry(viewManagerList));
+    reactContext.addLifecycleEventListener(this);
   }
 
   @Override
