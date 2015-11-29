@@ -132,7 +132,8 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 - (void)_dismissPicker:(UIImagePickerController *)picker args:(NSArray *)args
 {
   NSUInteger index = [_pickers indexOfObject:picker];
-  RCTResponseSenderBlock callback = _pickerCancelCallbacks[index];
+  RCTResponseSenderBlock successCallback = _pickerCallbacks[index];
+  RCTResponseSenderBlock cancelCallback = _pickerCancelCallbacks[index];
 
   [_pickers removeObjectAtIndex:index];
   [_pickerCallbacks removeObjectAtIndex:index];
@@ -141,7 +142,11 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   UIViewController *rootViewController = RCTKeyWindow().rootViewController;
   [rootViewController dismissViewControllerAnimated:YES completion:nil];
 
-  callback(args ?: @[]);
+  if (args) {
+    successCallback(args);
+  } else {
+    cancelCallback(@[]);
+  }
 }
 
 @end
