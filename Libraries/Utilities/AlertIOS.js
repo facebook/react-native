@@ -54,8 +54,8 @@ class AlertIOS {
   ): void {
     var callbacks = [];
     var buttonsSpec = [];
-    title = title || '';
-    message = message || '';
+    title = (title || '').toString();
+    message = (message || '').toString();
     buttons = buttons || [DEFAULT_BUTTON];
     type = type || '';
 
