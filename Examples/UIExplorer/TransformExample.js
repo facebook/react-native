@@ -179,6 +179,32 @@ var styles = StyleSheet.create({
       {scale: 2},
     ],
   },
+  box6step1: {
+    backgroundColor: 'maroon',
+    height: 50,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 50,
+    transform: [
+      {translate: [100, 100]},
+      {rotateX: '60deg'},
+      {scale: 3},
+    ],
+  },
+  box6step2: {
+    backgroundColor: 'maroon',
+    height: 50,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 50,
+    transform: [
+      {rotateY: '60deg'},
+      {translate: [100, 100]},
+      {scale: 3},
+    ],
+  },
   flipCardContainer: {
     marginVertical: 40,
     flex: 1,
@@ -284,5 +310,27 @@ exports.examples = [
         </View>
       );
     }
-  }
+  },
+  {
+    title: 'Translate, RotateX, Scale',
+    description: "translate: [100, 100], rotateX: '60deg', scale: 3",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={[styles.box6step1]} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Translate, RotateY, Scale',
+    description: "translate: [100, 100], rotateY: '60deg', scale: 3",
+    render() {
+      return (
+        <View style={styles.container}>
+          <View style={[styles.box6step2]} />
+        </View>
+      );
+    }
+  },
 ];
