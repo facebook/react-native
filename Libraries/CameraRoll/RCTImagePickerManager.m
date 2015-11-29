@@ -9,6 +9,7 @@
  */
 
 #import "RCTImagePickerManager.h"
+#import "RCTImageStoreManager.h"
 
 #import "RCTConvert.h"
 #import "RCTRootView.h"
@@ -31,6 +32,8 @@
 }
 
 RCT_EXPORT_MODULE(ImagePickerIOS);
+
+@synthesize bridge = _bridge;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -101,9 +104,26 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-  [self _dismissPicker:picker args:@[
-    [info[UIImagePickerControllerReferenceURL] absoluteString]
-  ]];
+  // Image from PhotoLibrary
+  NSString *imageUri = [info[UIImagePickerControllerReferenceURL] absoluteString];
+  if (imageUri) {
+    [self _dismissPicker:picker args:@[imageUri]];
+
+  } else {
+    // Image from CameraRoll hasn't uri.
+    // We need to save it to the store first.
+    UIImage *originalImage = info[UIImagePickerControllerOriginalImage];
+
+    // WARNING: Using imageStoreManager causes memory leak
+    // because image isn't removed from store once we're done using it
+    [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
+      if (!tempImageTag) {
+        [self _dismissPicker:picker args:nil];
+        return;
+      }
+      [self _dismissPicker:picker args:@[tempImageTag]];
+    }];
+  }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
