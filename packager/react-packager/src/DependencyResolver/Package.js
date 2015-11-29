@@ -5,7 +5,7 @@ const path = require('path');
 
 class Package {
 
-  constructor(file, fastfs, cache) {
+  constructor({ file, fastfs, cache }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this._fastfs = fastfs;
