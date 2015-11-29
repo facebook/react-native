@@ -14,6 +14,10 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+static NSString* RCTAlertTypePlainText = @"plain-text";
+static NSString* RCTAlertTypeSecure = @"secure";
+static NSString* RCTAlertTypeLoginAndPassword = @"login-password";
+
 @interface RCTAlertManager() <UIAlertViewDelegate>
 
 @end
@@ -64,7 +68,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   NSString *message = [RCTConvert NSString:args[@"message"]];
   NSString *type = [RCTConvert NSString:args[@"type"]];
   NSDictionaryArray *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
-  BOOL allowsTextInput = [type isEqual:@"plain-text"];
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
@@ -85,12 +88,18 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
     NSMutableArray<NSString *> *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
 
-    if (allowsTextInput) {
+    if ([type isEqual:RCTAlertTypePlainText]) {
       alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-      [alertView textFieldAtIndex:0].text = message;
-    } else {
-      alertView.message = message;
+    } else if ([type isEqual:RCTAlertTypeSecure]) {
+      alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;
+    } else if ([type isEqual:RCTAlertTypeLoginAndPassword]) {
+      alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    } else if (type.length) {
+      RCTLogError(@"Entered invalid type. Valid types: '%@', '%@', '%@'", RCTAlertTypePlainText, RCTAlertTypeSecure, RCTAlertTypeLoginAndPassword);
+      return;
     }
+
+    alertView.message = message;
 
     NSInteger index = 0;
     for (NSDictionary *button in buttons) {
@@ -140,13 +149,29 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                                         message:nil
                                  preferredStyle:UIAlertControllerStyleAlert];
 
-    if (allowsTextInput) {
+    if ([type isEqual:RCTAlertTypePlainText]) {
       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.text = message;
+        textField.secureTextEntry = NO;
       }];
-    } else {
-      alertController.message = message;
+    } else if ([type isEqual:RCTAlertTypeSecure]) {
+      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"Password";
+        textField.secureTextEntry = YES;
+      }];
+    } else if ([type isEqual: RCTAlertTypeLoginAndPassword]) {
+      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"Login";
+      }];
+      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"Password";
+        textField.secureTextEntry = YES;
+      }];
+    } else if (type.length) {
+      RCTLogError(@"Entered invalid type. Valid types: '%@', '%@', '%@'", RCTAlertTypePlainText, RCTAlertTypeSecure, RCTAlertTypeLoginAndPassword);
+      return;
     }
+
+    alertController.message = message;
 
     for (NSDictionary *button in buttons) {
       if (button.count != 1) {
@@ -155,13 +180,18 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       NSString *buttonKey = button.allKeys.firstObject;
       NSString *buttonTitle = [button[buttonKey] description];
       UIAlertActionStyle buttonStyle = [buttonKey isEqualToString:@"cancel"] ? UIAlertActionStyleCancel : UIAlertActionStyleDefault;
-      UITextField *textField = allowsTextInput ? alertController.textFields.firstObject : nil;
       [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
                                                           style:buttonStyle
                                                         handler:^(__unused UIAlertAction *action) {
         if (callback) {
-          if (allowsTextInput) {
-            callback(@[buttonKey, textField.text]);
+          if ([type isEqual:RCTAlertTypePlainText] || [type isEqual:RCTAlertTypeSecure]) {
+            callback(@[buttonKey, alertController.textFields.firstObject.text]);
+          } else if ([type isEqual:RCTAlertTypeLoginAndPassword]) {
+            NSDictionary *loginCredentials = @{
+                                               @"login": alertController.textFields.firstObject.text,
+                                               @"password": alertController.textFields.lastObject.text
+                                               };
+            callback(@[buttonKey, loginCredentials]);
           } else {
             callback(@[buttonKey]);
           }
@@ -188,8 +218,14 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   RCTResponseSenderBlock callback = _alertCallbacks[index];
   NSArray<NSString *> *buttonKeys = _alertButtonKeys[index];
 
-  if (alertView.alertViewStyle == UIAlertViewStylePlainTextInput) {
+  if (alertView.alertViewStyle == UIAlertViewStylePlainTextInput || alertView.alertViewStyle == UIAlertViewStyleSecureTextInput) {
     callback(@[buttonKeys[buttonIndex], [alertView textFieldAtIndex:0].text]);
+  } else if (alertView.alertViewStyle == UIAlertViewStyleLoginAndPasswordInput) {
+    NSDictionary *loginCredentials = @{
+                                       @"login": [alertView textFieldAtIndex:0].text,
+                                       @"password": [alertView textFieldAtIndex:1].text,
+                                       };
+    callback(@[buttonKeys[buttonIndex], loginCredentials]);
   } else {
     callback(@[buttonKeys[buttonIndex]]);
   }
