@@ -22,6 +22,7 @@ jest
 const Fastfs = require('../fastfs');
 const Module = require('../Module');
 const ModuleCache = require('../ModuleCache');
+const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
 const Promise = require('promise');
 const fs = require('fs');
 
@@ -50,12 +51,13 @@ describe('Module', () => {
       const cache = new Cache();
 
       return fastfs.build().then(() => {
-        const module = new Module(
-          '/root/index.js',
+        const module = new Module({
+          file: '/root/index.js',
           fastfs,
-          new ModuleCache(fastfs, cache),
-          cache
-        );
+          moduleCache: new ModuleCache(fastfs, cache),
+          cache: cache,
+          depGraphHelpers: new DependencyGraphHelpers()
+        });
 
         return module.getAsyncDependencies().then(actual =>
           expect(actual).toEqual(expected)
@@ -122,13 +124,14 @@ describe('Module', () => {
       const cache = new Cache();
 
       return fastfs.build().then(() => {
-        return new Module(
-          '/root/index.js',
+        return new Module({
+          file: '/root/index.js',
           fastfs,
-          new ModuleCache(fastfs, cache),
+          moduleCache: new ModuleCache(fastfs, cache),
           cache,
-          extractor
-        );
+          extractor,
+          depGraphHelpers: new DependencyGraphHelpers()
+        });
       });
     }
 

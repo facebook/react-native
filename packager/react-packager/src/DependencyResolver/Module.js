@@ -15,7 +15,7 @@ const extractRequires = require('./lib/extractRequires');
 
 class Module {
 
-  constructor(file, fastfs, moduleCache, cache, extractor) {
+  constructor({ file, fastfs, moduleCache, cache, extractor, depGraphHelpers }) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -27,6 +27,7 @@ class Module {
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._extractor = extractor;
+    this._depGraphHelpers = depGraphHelpers;
   }
 
   isHaste() {
@@ -81,8 +82,11 @@ class Module {
     if (!this._reading) {
       this._reading = this._fastfs.readFile(this.path).then(content => {
         const data = {};
+
+        // Set an id on the module if it's using @providesModule syntax
         const moduleDocBlock = docblock.parseAsObject(content);
-        if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
+        if (!this._depGraphHelpers.isNodeModulesDir(this.path) &&
+            (moduleDocBlock.providesModule || moduleDocBlock.provides)) {
           data.id = /^(\S*)/.exec(
             moduleDocBlock.providesModule || moduleDocBlock.provides
           )[1];

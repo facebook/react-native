@@ -2463,6 +2463,87 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should not name module using @providesModule name if it\'s selectively ignored in node_modules', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule Index',
+            ' */',
+            'require("packageInsideReactHaste")',
+            'require("npm-module");',
+          ].join('\n'),
+          'node_modules': {
+            'react-haste': {
+              'package.json': JSON.stringify({
+                name: 'react-haste',
+                main: 'main.js',
+              }),
+              'main.js': [
+                '/**',
+                ' * @providesModule packageInsideReactHaste',
+                ' */',
+                'yo()',
+              ].join('\n')
+            },
+            'npm-module': {
+              'package.json': JSON.stringify({
+                name: 'npm-module',
+                main: 'main.js',
+              }),
+              'main.js':[
+                '/**',
+                ' * @providesModule HasteName',
+                ' */',
+                'hi();',
+              ].join('\n')
+            },
+          },
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'Index', // should be the haste name
+              path: '/root/index.js',
+              dependencies: ['packageInsideReactHaste', 'npm-module'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'packageInsideReactHaste', // should be the haste name
+              path: '/root/node_modules/react-haste/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'npm-module/main.js', // shouldn't be the haste name
+              path: '/root/node_modules/npm-module/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
+
     pit('should not be confused by prev occuring whitelisted names', function() {
       var root = '/react-haste';
       fs.__setMockFilesystem({
