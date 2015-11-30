@@ -1,32 +1,17 @@
-language: java
-jdk: oraclejdk7
+language: android
+sudo: false
+
+android:
+  components:
+    - platform-tools
+    - build-tools-23.0.0
+    - android-23
+    - extra-google-m2repository
+    - extra-android-m2repository
 
 before_install:
-  # required libs for android build tools
-  - sudo apt-get update
-  - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch
-  # for gradle output style
-  - export TERM=dumb
-  # newer version of gradle
-  - wget http://services.gradle.org/distributions/gradle-1.10-bin.zip
-  - unzip -qq gradle-1.10-bin.zip
-  - export GRADLE_HOME=$PWD/gradle-1.10
-  - export PATH=$GRADLE_HOME/bin:$PATH
-  - chmod +x gradlew
-  # newest Android SDK 23.0.1
-  - wget http://dl.google.com/android/android-sdk_r23.0.1-linux.tgz
-  - tar -zxf android-sdk_r23.0.1-linux.tgz
-  - export ANDROID_HOME=`pwd`/android-sdk-linux
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-  # newest Android NDK
-  - wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin
-  - chmod a+x ndk.bin
-  - ./ndk.bin -y | grep -v Extracting
-  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r10e
-  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
-  # manually set sdk.dir variable, according to local paths
-  - echo "sdk.dir=$ANDROID_HOME" > local.properties
-  - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-23,build-tools-23.0.1,extra-google-google_play_services,extra-google-m2repository --force --no-ui
+  - git clone https://github.com/urho3d/android-ndk.git $HOME/android-ndk-root
+  - export ANDROID_NDK_HOME=$HOME/android-ndk-root
 
 install:
   - true
