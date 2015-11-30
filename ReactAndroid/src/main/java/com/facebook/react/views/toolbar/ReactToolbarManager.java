@@ -89,6 +89,8 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   public void setLayoutDirection(ReactToolbar view, Boolean flag) {
     if (flag.equals(true)) {
       view.setLayoutDirection(LayoutDirection.RTL);
+    } else {
+      view.setLayoutDirection(LayoutDirection.LTR);
     }
   }
 
