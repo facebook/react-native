@@ -52,6 +52,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.ReactNative;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
@@ -95,6 +96,7 @@ import com.facebook.systrace.Systrace;
   private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
   private volatile boolean mHasStartedCreatingInitialContext = false;
+  private final UIImplementationProvider mUIImplementationProvider;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -189,7 +191,8 @@ import com.facebook.systrace.Systrace;
       List<ReactPackage> packages,
       boolean useDeveloperSupport,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
-      LifecycleState initialLifecycleState) {
+      LifecycleState initialLifecycleState,
+      UIImplementationProvider uiImplementationProvider) {
     initializeSoLoaderIfNecessary(applicationContext);
 
     mApplicationContext = applicationContext;
@@ -208,6 +211,7 @@ import com.facebook.systrace.Systrace;
         useDeveloperSupport);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
+    mUIImplementationProvider = uiImplementationProvider;
   }
 
   @Override
@@ -597,7 +601,7 @@ import com.facebook.systrace.Systrace;
         "createAndProcessCoreModulesPackage");
     try {
       CoreModulesPackage coreModulesPackage =
-          new CoreModulesPackage(this, mBackBtnHandler);
+          new CoreModulesPackage(this, mBackBtnHandler, mUIImplementationProvider);
       processPackage(coreModulesPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

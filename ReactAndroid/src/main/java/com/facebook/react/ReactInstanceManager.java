@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
 
 /**
@@ -140,13 +141,23 @@ public abstract class ReactInstanceManager {
     protected @Nullable Application mApplication;
     protected boolean mUseDeveloperSupport;
     protected @Nullable LifecycleState mInitialLifecycleState;
+    protected @Nullable UIImplementationProvider mUIImplementationProvider;
 
     protected Builder() {
     }
 
     /**
+     * Sets a provider of {@link UIImplementation}.
+     * Uses default provider if null is passed.
+     */
+    public Builder setUIImplementationProvider(
+        @Nullable UIImplementationProvider uiImplementationProvider) {
+      mUIImplementationProvider = uiImplementationProvider;
+      return this;
+    }
+
+    /**
      * Name of the JS bundle file to be loaded from application's raw assets.
-     *
      * Example: {@code "index.android.js"}
      */
     public Builder setBundleAssetName(String bundleAssetName) {
@@ -231,6 +242,11 @@ public abstract class ReactInstanceManager {
           mJSMainModuleName != null || mJSBundleFile != null,
           "Either MainModuleName or JS Bundle File needs to be provided");
 
+      if (mUIImplementationProvider == null) {
+        // create default UIImplementationProvider if the provided one is null.
+        mUIImplementationProvider = new UIImplementationProvider();
+      }
+
       return new ReactInstanceManagerImpl(
           Assertions.assertNotNull(
               mApplication,
@@ -240,7 +256,8 @@ public abstract class ReactInstanceManager {
           mPackages,
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"));
+          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+          mUIImplementationProvider);
     }
   }
 }
