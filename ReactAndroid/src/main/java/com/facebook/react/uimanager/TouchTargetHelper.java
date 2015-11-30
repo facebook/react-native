@@ -11,6 +11,8 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,9 @@ import com.facebook.react.bridge.UiThreadUtil;
 public class TouchTargetHelper {
 
   private static final float[] mEventCoords = new float[2];
+  private static final PointF mTempPoint = new PointF();
+  private static final float[] mMatrixTransformCoords = new float[2];
+  private static final Matrix mInverseMatrix = new Matrix();
 
   /**
    * Find touch event target view within the provided container given the coordinates provided
@@ -94,30 +99,59 @@ public class TouchTargetHelper {
     int childrenCount = viewGroup.getChildCount();
     for (int i = childrenCount - 1; i >= 0; i--) {
       View child = viewGroup.getChildAt(i);
-      if (isTouchPointInView(eventCoords[0], eventCoords[1], viewGroup, child)) {
-        // Apply offset to event coordinates to transform them into the coordinate space of the
-        // child view, taken from {@link ViewGroup#dispatchTransformedTouchEvent()}.
-        eventCoords[0] += viewGroup.getScrollY() - child.getTop();
-        eventCoords[1] += viewGroup.getScrollX() - child.getLeft();
+      PointF childPoint = mTempPoint;
+      if (isTransformedTouchPointInView(eventCoords[0], eventCoords[1], viewGroup, child, childPoint)) {
+        // If it is contained within the child View, the childPoint value will contain the view
+        // coordinates relative to the child
+        // We need to store the existing X,Y for the viewGroup away as it is possible this child
+        // will not actually be the target and so we restore them if not
+        float restoreY = eventCoords[0];
+        float restoreX = eventCoords[1];
+        eventCoords[0] = childPoint.y;
+        eventCoords[1] = childPoint.x;
         View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
         if (targetView != null) {
           return targetView;
         }
-        eventCoords[0] -= viewGroup.getScrollY() - child.getTop();
-        eventCoords[1] -= viewGroup.getScrollX() - child.getLeft();
+        eventCoords[0] = restoreY;
+        eventCoords[1] = restoreX;
       }
     }
     return viewGroup;
 }
 
-  // Taken from {@link ViewGroup#isTransformedTouchPointInView()}
-  private static boolean isTouchPointInView(float y, float x, ViewGroup parent, View child) {
-    float localY = y + parent.getScrollY() - child.getTop();
+  /**
+   * Returns whether the touch point is within the child View
+   * It is transform aware and will invert the transform Matrix to find the true local points
+   * This code is taken from {@link ViewGroup#isTransformedTouchPointInView()}
+   */
+  private static boolean isTransformedTouchPointInView(
+      float y,
+      float x,
+      ViewGroup parent,
+      View child,
+      PointF outLocalPoint) {
     float localX = x + parent.getScrollX() - child.getLeft();
-    // Taken from {@link View#pointInView()}.
-    return localY >= 0 && localY < (child.getBottom() - child.getTop())
-        && localX >= 0 && localX < (child.getRight() - child.getLeft());
+    float localY = y + parent.getScrollY() - child.getTop();
+    Matrix matrix = child.getMatrix();
+    if (!matrix.isIdentity()) {
+      float[] localXY = mMatrixTransformCoords;
+      localXY[0] = localX;
+      localXY[1] = localY;
+      Matrix inverseMatrix = mInverseMatrix;
+      matrix.invert(inverseMatrix);
+      inverseMatrix.mapPoints(localXY);
+      localX = localXY[0];
+      localY = localXY[1];
+    }
+    if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
+        && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
+      outLocalPoint.set(localX, localY);
+      return true;
+    }
+    return false;
   }
+
 
   /**
    * Returns the touch target View of the event given, or null if neither the given View nor any of
