@@ -78,15 +78,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
 
-  /**
-   * This contructor is temporarily here to workaround Sandcastle error.
-   */
-  public UIManagerModule(
-      ReactApplicationContext reactContext,
-      List<ViewManager> viewManagerList) {
-    this(reactContext, viewManagerList, new UIImplementation(reactContext, viewManagerList));
-  }
-
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagerList,
