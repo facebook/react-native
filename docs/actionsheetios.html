@@ -75,6 +75,9 @@
       url<span class="token punctuation">:</span> <span class="token string">&#x27;https://code.facebook.com&#x27;</span><span class="token punctuation">,</span>
       message<span class="token punctuation">:</span> <span class="token string">&#x27;message to go with the shared url&#x27;</span><span class="token punctuation">,</span>
       subject<span class="token punctuation">:</span> <span class="token string">&#x27;a subject to go in the email heading&#x27;</span><span class="token punctuation">,</span>
+      excludedActivityTypes<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+        <span class="token string">&#x27;com.apple.UIKit.activity.PostToTwitter&#x27;</span>
+      <span class="token punctuation">]</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       console<span class="token punctuation">.</span><span class="token function">error<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
