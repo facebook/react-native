@@ -28,7 +28,7 @@ import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.ReactNative;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
@@ -44,12 +44,15 @@ import com.facebook.systrace.Systrace;
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
+  private final UIImplementationProvider mUIImplementationProvider;
 
   CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
-      DefaultHardwareBackBtnHandler hardwareBackBtnHandler) {
+      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+      UIImplementationProvider uiImplementationProvider) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
+    mUIImplementationProvider = uiImplementationProvider;
   }
 
   @Override
@@ -63,7 +66,9 @@ import com.facebook.systrace.Systrace;
       uiManagerModule = new UIManagerModule(
           catalystApplicationContext,
           viewManagersList,
-          new UIImplementation(catalystApplicationContext, viewManagersList));
+          mUIImplementationProvider.createUIImplementation(
+              catalystApplicationContext,
+              viewManagersList));
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
