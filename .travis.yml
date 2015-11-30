@@ -28,7 +28,6 @@ before_install:
   - echo "sdk.dir=$ANDROID_HOME" > local.properties
   - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-23,build-tools-23.0.1,extra-google-google_play_services,extra-google-m2repository --force --no-ui
 
-
 install:
   - true
 
