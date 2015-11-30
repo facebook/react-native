@@ -1,28 +1,34 @@
-language: android
-
-osx_image: xcode7
-
-android:
-  components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    # - platform-tools
-    # - tools
-
-    # The BuildTools version used by your project
-    - build-tools-23.0.1
-
-    # The SDK version used to compile your project
-    - android-23
-
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-23
+language: java
+jdk: oraclejdk7
 
 before_install:
+  # required libs for android build tools
+  - sudo apt-get update
+  - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch
+  # for gradle output style
   - export TERM=dumb
+  # newer version of gradle
+  - wget http://services.gradle.org/distributions/gradle-1.10-bin.zip
+  - unzip -qq gradle-1.10-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-1.10
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  - chmod +x gradlew
+  # newest Android SDK 23.0.1
+  - wget http://dl.google.com/android/android-sdk_r23.0.1-linux.tgz
+  - tar -zxf android-sdk_r23.0.1-linux.tgz
+  - export ANDROID_HOME=`pwd`/android-sdk-linux
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+  # newest Android NDK
+  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r9c-linux-x86_64.tar.bz2 -O ndk.tgz; else wget http://dl.google.com/android/ndk/android-ndk-r9c-linux-x86.tar.bz2 -O ndk.tgz; fi
+  - tar -xf ndk.tgz
+  - export ANDROID_NDK_HOME=`pwd`/android-ndk-r9c
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
+  # manually set sdk.dir variable, according to local paths
+  - echo "sdk.dir=$ANDROID_HOME" > local.properties
+  - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-23,build-tools-23.0.1,extra-google-google_play_services,extra-google-m2repository --force --no-ui
+
+
+
 
 script:
   - gradle cleanTest test
