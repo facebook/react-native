@@ -89,7 +89,7 @@ public class AsyncStorageModuleTest {
        }
      });
 
-    // don't use Robolectric before initializing mocks
+    // Don't use Robolectric before initializing mocks
     mStorage = new AsyncStorageModule(new ReactApplicationContext(
       new FakeFragmentContext(RuntimeEnvironment.application)));
     mEmptyArray = new SimpleArray();
@@ -263,8 +263,8 @@ public class AsyncStorageModuleTest {
   public void testHugeMultiGetMultiGet() {
     // Test with many keys, so that it's above the 999 limit per batch imposed by SQLite.
     final int keyCount = 1001;
-    // don't set keys that divide by this magical number, so that we can check that multiGet works,
-    // and returns null for missing keys
+    // Don't set keys that divide by this magical number, so that we can check that multiGet works
+    // and returns null for missing keys.
     final int magicalNumber = 343;
 
     SimpleArray keyValues = new SimpleArray();
