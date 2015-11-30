@@ -48,6 +48,8 @@ var {
 var LegacyEventTypes = new Set([
   'willfocus',
   'didfocus',
+  'willblur',
+  'didblur',
 ]);
 
 /**

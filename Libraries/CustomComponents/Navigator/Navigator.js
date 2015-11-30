@@ -513,6 +513,16 @@ var Navigator = React.createClass({
     }
   },
 
+  _emitDidBlur: function(route) {
+    this.navigationContext.emit('didblur', {route: route});
+  },
+
+  _emitWillBlur: function(route) {
+    this.navigationContext.emit('willblur', {route: route});
+    // Cache the route for later didblur event to prevent blurred route emitting didblur again
+    this._willBlurRoute = route;
+  },
+
   /**
    * Hides all scenes that we are not currently on, gesturing to, or transitioning from
    */
@@ -528,6 +538,9 @@ var Navigator = React.createClass({
         continue;
       }
       this._disableScene(i);
+      if (this.state.routeStack[i] === this._willBlurRoute) {
+        this._emitDidBlur(this.state.routeStack[i]);
+      }
     }
   },
 
@@ -881,6 +894,7 @@ var Navigator = React.createClass({
 
   _jumpN: function(n) {
     var destIndex = this._getDestIndexWithinBounds(n);
+    this._emitWillBlur(this.state.routeStack[this.state.presentedIndex]);
     this._enableScene(destIndex);
     this._emitWillFocus(this.state.routeStack[destIndex]);
     this._transitionTo(destIndex);
@@ -913,6 +927,7 @@ var Navigator = React.createClass({
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
       this.props.configureScene(route),
     ]);
+    this._emitWillBlur(this.state.routeStack[this.state.presentedIndex]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       routeStack: nextStack,
@@ -932,6 +947,7 @@ var Navigator = React.createClass({
       'Cannot pop below zero'
     );
     var popIndex = this.state.presentedIndex - n;
+    this._emitWillBlur(this.state.routeStack[this.state.presentedIndex]);
     this._enableScene(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
@@ -982,6 +998,7 @@ var Navigator = React.createClass({
     nextAnimationModeStack[index] = this.props.configureScene(route);
 
     if (index === this.state.presentedIndex) {
+      this._emitWillBlur(this.state.routeStack[this.state.presentedIndex]);
       this._emitWillFocus(route);
     }
     this.setState({
