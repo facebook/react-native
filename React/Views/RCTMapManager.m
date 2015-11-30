@@ -23,6 +23,24 @@
 
 static NSString *const RCTMapViewKey = @"MapView";
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0
+
+static NSString *const RCTMapPinRed = @"#ff3b30";
+static NSString *const RCTMapPinGreen = @"#4cd964";
+static NSString *const RCTMapPinPurple = @"#c969e0";
+
+@implementation RCTConvert (MKPinAnnotationColor)
+
+RCT_ENUM_CONVERTER(MKPinAnnotationColor, (@{
+  RCTMapPinRed: @(MKPinAnnotationColorRed),
+  RCTMapPinGreen: @(MKPinAnnotationColorGreen),
+  RCTMapPinPurple: @(MKPinAnnotationColorPurple)
+}), MKPinAnnotationColorRed, unsignedIntegerValue)
+
+@end
+
+#endif
+
 @interface RCTMapManager() <MKMapViewDelegate>
 
 @end
@@ -60,11 +78,29 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  NSString *red, *green, *purple;
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0
+
+  if (![MKPinAnnotationView respondsToSelector:@selector(redPinColor)]) {
+    red = RCTMapPinRed;
+    green = RCTMapPinGreen;
+    purple = RCTMapPinPurple;
+  } else
+
+#endif
+
+  {
+    red = RCTColorToHexString([MKPinAnnotationView redPinColor].CGColor);
+    green = RCTColorToHexString([MKPinAnnotationView greenPinColor].CGColor);
+    purple = RCTColorToHexString([MKPinAnnotationView purplePinColor].CGColor);
+  }
+
   return @{
     @"PinColors": @{
-      @"RED": RCTColorToHexString([MKPinAnnotationView redPinColor].CGColor),
-      @"GREEN": RCTColorToHexString([MKPinAnnotationView greenPinColor].CGColor),
-      @"PURPLE": RCTColorToHexString([MKPinAnnotationView purplePinColor].CGColor),
+      @"RED": red,
+      @"GREEN": green,
+      @"PURPLE": purple,
     }
   };
 }
@@ -127,7 +163,19 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     NSString *reuseIdentifier = NSStringFromClass([MKPinAnnotationView class]);
     annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?: [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
     ((MKPinAnnotationView *)annotationView).animatesDrop = annotation.animateDrop;
-    ((MKPinAnnotationView *)annotationView).pinTintColor = annotation.tintColor ?: [MKPinAnnotationView redPinColor];
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0
+
+    if (![annotationView respondsToSelector:@selector(pinTintColor)]) {
+      NSString *hexColor = annotation.tintColor ? RCTColorToHexString(annotation.tintColor.CGColor) : RCTMapPinRed;
+      ((MKPinAnnotationView *)annotationView).pinColor = [RCTConvert MKPinAnnotationColor:hexColor];
+    } else
+
+#endif
+
+    {
+      ((MKPinAnnotationView *)annotationView).pinTintColor = annotation.tintColor ?: [MKPinAnnotationView redPinColor];
+    }
   }
   annotationView.canShowCallout = true;
 
