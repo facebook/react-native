@@ -21,7 +21,7 @@ before_install:
   # newest Android NDK
   - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin; fi
   - chmod a+x ndk.bin
-  - ./ndk.bin
+  - ./ndk.bin > ndk.extract.log
   - export ANDROID_NDK_HOME=`pwd`/android-ndk-r10e
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
   # manually set sdk.dir variable, according to local paths
