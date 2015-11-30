@@ -29,11 +29,9 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -68,9 +66,6 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
   private final ViewManagerRegistry mViewManagers;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager = new RootViewManager();
-  private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
-
-  private boolean mLayoutAnimationEnabled;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     mAnimationRegistry = new AnimationRegistry();
@@ -83,10 +78,6 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 
   public AnimationRegistry getAnimationRegistry() {
     return mAnimationRegistry;
-  }
-
-  public void setLayoutAnimationEnabled(boolean enabled) {
-    mLayoutAnimationEnabled = enabled;
   }
 
   public void updateProperties(int tag, CatalystStylesDiffMap props) {
@@ -163,17 +154,8 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
       }
       if (parentViewGroupManager != null
           && !parentViewGroupManager.needsCustomLayoutForChildren()) {
-        updateLayout(viewToUpdate, x, y, width, height);
+        viewToUpdate.layout(x, y, x + width, y + height);
       }
-    } else {
-      updateLayout(viewToUpdate, x, y, width, height);
-    }
-  }
-
-  private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
-    if (mLayoutAnimationEnabled &&
-        mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
-      mLayoutAnimator.applyLayoutUpdate(viewToUpdate, x, y, width, height);
     } else {
       viewToUpdate.layout(x, y, x + width, y + height);
     }
@@ -486,14 +468,6 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 
   public void clearJSResponder() {
     mJSResponderHandler.clearJSResponder();
-  }
-
-  void configureLayoutAnimation(final ReadableMap config) {
-    mLayoutAnimator.initializeFromConfig(config);
-  }
-
-  void clearLayoutAnimation() {
-    mLayoutAnimator.reset();
   }
 
   /* package */ void startAnimationForNativeView(
