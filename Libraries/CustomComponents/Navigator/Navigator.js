@@ -675,7 +675,7 @@ var Navigator = React.createClass({
         this.state.presentedIndex = destIndex;
         this._transitionTo(
           transitionBackToPresentedIndex,
-          - transitionVelocity,
+          -transitionVelocity,
           1 - this.spring.getCurrentValue()
         );
       }
@@ -750,7 +750,7 @@ var Navigator = React.createClass({
     var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
     var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
     var distance = isTravelVertical ? gestureState.dy : gestureState.dx;
-    distance = isTravelInverted ? - distance : distance;
+    distance = isTravelInverted ? -distance : distance;
     var gestureDetectMovement = gesture.gestureDetectMovement;
     var nextProgress = (distance - gestureDetectMovement) /
       (gesture.fullDistance - gestureDetectMovement);
