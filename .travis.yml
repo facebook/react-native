@@ -7,6 +7,9 @@ cache:
         - node_modules
         - .nvm
 
+before_install:
+  - export TERM=dumb
+
 install:
   - brew reinstall nvm
   - mkdir -p .nvm
@@ -28,7 +31,7 @@ script:
   elif [ "$TEST_TYPE" = android ]
   then
 
-    TERM=dumb ./gradlew testDebugUnitTest
+    ./gradlew testDebugUnitTest
 
   elif [ "$TEST_TYPE" = js ]
   then
