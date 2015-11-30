@@ -11,12 +11,16 @@
 const buildBundle = require('./buildBundle');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
 const parseCommandLine = require('../util/parseCommandLine');
+const outputBundle = require('./output/bundle');
+const outputPrepack = require('./output/prepack');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
 function bundle(argv, config) {
-  return buildBundle(parseCommandLine(bundleCommandLineArgs, argv), config);
+  const args = parseCommandLine(bundleCommandLineArgs, argv);
+  const output = args.prepack ? outputPrepack : outputBundle;
+  return buildBundle(args, config, output);
 }
 
 module.exports = bundle;
