@@ -351,6 +351,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'TYDY',
+    icon: 'http://d2j2p20zkb3bwp.cloudfront.net/images/appicon76x76_2x.png',
+    link: 'https://itunes.apple.com/us/app/tydy-buy-sell-free-your-local/id1039965583?mt=8',
+    author: '99gamers',
+  },
+  {
     name: 'WOOP',
     icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
