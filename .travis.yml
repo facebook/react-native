@@ -31,7 +31,7 @@ script:
   elif [ "$TEST_TYPE" = android ]
   then
 
-    ./gradlew testDebugUnitTest
+    ./gradlew test
 
   elif [ "$TEST_TYPE" = js ]
   then
