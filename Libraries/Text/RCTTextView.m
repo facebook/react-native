@@ -425,6 +425,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_textView reactDidMakeFirstResponder];
 }
 
+- (BOOL)resignFirstResponder
+{
+  return [_textView resignFirstResponder];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
