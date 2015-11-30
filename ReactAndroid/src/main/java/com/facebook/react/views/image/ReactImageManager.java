@@ -48,16 +48,23 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     mCallerContext = null;
   }
 
-  @Override
-  public ReactImageView createViewInstance(ThemedReactContext context) {
+  public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
     if (mDraweeControllerBuilder == null) {
       mDraweeControllerBuilder = Fresco.newDraweeControllerBuilder();
     }
+    return mDraweeControllerBuilder;
+  }
 
+  public Object getCallerContext() {
+    return mCallerContext;
+  }
+
+  @Override
+  public ReactImageView createViewInstance(ThemedReactContext context) {
     return new ReactImageView(
         context,
-        mDraweeControllerBuilder,
-        mCallerContext);
+        getDraweeControllerBuilder(),
+        getCallerContext());
   }
 
   // In JS this is Image.props.source.uri
