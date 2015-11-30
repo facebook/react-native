@@ -86,20 +86,6 @@ static BOOL RCTFindScrollViewAndRefreshContentInsetInView(UIView *view)
   }
 }
 
-static UIView *RCTFindNavBarShadowViewInView(UIView *view)
-{
-  if ([view isKindOfClass:[UIImageView class]] && view.bounds.size.height <= 1) {
-    return view;
-  }
-  for (UIView *subview in view.subviews) {
-    UIView *shadowView = RCTFindNavBarShadowViewInView(subview);
-    if (shadowView) {
-      return shadowView;
-    }
-  }
-  return nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
@@ -110,22 +96,9 @@ static UIView *RCTFindNavBarShadowViewInView(UIView *view)
     [self.navigationController
      setNavigationBarHidden:_navItem.navigationBarHidden
      animated:animated];
-
-    UINavigationBar *bar = self.navigationController.navigationBar;
-    bar.barTintColor = _navItem.barTintColor;
-    bar.tintColor = _navItem.tintColor;
-    bar.translucent = _navItem.translucent;
-    bar.titleTextAttributes = _navItem.titleTextColor ? @{
-      NSForegroundColorAttributeName: _navItem.titleTextColor
-    } : nil;
-
-    RCTFindNavBarShadowViewInView(bar).hidden = _navItem.shadowHidden;
-
-    UINavigationItem *item = self.navigationItem;
-    item.title = _navItem.title;
-    item.backBarButtonItem = _navItem.backButtonItem;
-    item.leftBarButtonItem = _navItem.leftButtonItem;
-    item.rightBarButtonItem = _navItem.rightButtonItem;
+    
+    _navItem.navigationItem = self.navigationItem;
+    _navItem.navigationBar = self.navigationController.navigationBar;
   }
 }
 
