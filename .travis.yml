@@ -19,7 +19,7 @@ before_install:
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   # newest Android NDK
-  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-10e-linux-x86_64.tar.bz2 -O ndk.tgz; else wget http://dl.google.com/android/ndk/android-ndk-10e-linux-x86.tar.bz2 -O ndk.tgz; fi
+  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.tar.bz2 -O ndk.tgz; else wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.tar.bz2 -O ndk.tgz; fi
   - tar -xf ndk.tgz
   - export ANDROID_NDK_HOME=`pwd`/android-ndk-r10e
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_NDK_HOME}
@@ -28,10 +28,11 @@ before_install:
   - echo yes | android update sdk -a -t tools,platform-tools,extra-android-support,extra-android-m2repository,android-23,build-tools-23.0.1,extra-google-google_play_services,extra-google-m2repository --force --no-ui
 
 
-install: ./gradlew assemble --stacktrace
+install:
+  - true
 
 script:
-  - ./gradlew cleanTest test
+  - ./gradlew cleanTest test -PdisablePreDex
 
 env:
   matrix:
