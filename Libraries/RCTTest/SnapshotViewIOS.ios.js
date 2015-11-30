@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var { TestModule, UIManager } = require('NativeModules');
