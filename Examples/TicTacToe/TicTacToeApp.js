@@ -89,7 +89,6 @@ class Board {
         }
       }
     }
-
     return this.winner() === null;
   }
 }
