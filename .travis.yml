@@ -17,7 +17,7 @@ install:
   - true
 
 script:
-  - ./gradlew cleanTest test -PdisablePreDex
+  - TERM=dumb ./gradlew cleanTest test -PdisablePreDex
 
 env:
   matrix:
