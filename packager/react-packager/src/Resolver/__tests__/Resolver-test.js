@@ -627,7 +627,8 @@ describe('Resolver', function() {
         createModule('test module', ['x', 'y']),
         code
       ).then(processedCode => {
-        expect(processedCode).toEqual([
+        expect(processedCode.name).toEqual('test module');
+        expect(processedCode.code).toEqual([
           '__d(\'test module\',function(global, require,' +
             ' module, exports) {  ' +
             // single line import

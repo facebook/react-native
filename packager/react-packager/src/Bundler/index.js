@@ -140,6 +140,7 @@ class Bundler {
     sourceMapUrl,
     dev: isDev,
     platform,
+    unbundle: isUnbundle,
   }) {
     // Const cannot have the same name as the method (babel/babel#2834)
     const bbundle = new Bundle(sourceMapUrl);
@@ -147,7 +148,7 @@ class Bundler {
     let transformEventId;
 
     const moduleSystem = this._resolver.getModuleSystemDependencies(
-      { dev: isDev, platform }
+      { dev: isDev, platform, isUnbundle }
     );
 
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
@@ -168,6 +169,8 @@ class Bundler {
       }
 
       bbundle.setMainModuleId(response.mainModuleId);
+      bbundle.setNumPrependedModules(
+        response.numPrependedDependencies + moduleSystem.length);
       return Promise.all(
         dependencies.map(
           module => this._transformModule(
@@ -317,8 +320,9 @@ class Bundler {
       module,
       transformed.code
     ).then(
-      code => new ModuleTransport({
-        code: code,
+      ({code, name}) => new ModuleTransport({
+        code,
+        name,
         map: transformed.map,
         sourceCode: transformed.sourceCode,
         sourcePath: transformed.sourcePath,

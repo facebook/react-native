@@ -60,6 +60,10 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'string',
     required: false,
   },
+  isUnbundle: {
+    type: 'boolean',
+    default: false
+  },
 });
 
 class Resolver {
@@ -115,7 +119,9 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = path.join(__dirname, 'polyfills/require.js');
+    const moduleSystem = opts.isUnbundle
+        ? path.join(__dirname, 'polyfills/require-unbundle.js')
+        : path.join(__dirname, 'polyfills/require.js');
 
     return [
       prelude,
@@ -152,7 +158,7 @@ class Resolver {
   wrapModule(resolutionResponse, module, code) {
     return Promise.resolve().then(() => {
       if (module.isPolyfill()) {
-        return Promise.resolve(code);
+        return Promise.resolve({code});
       }
 
       const resolvedDeps = Object.create(null);
@@ -179,14 +185,13 @@ class Resolver {
           }
         };
 
-        return module.getName().then(
-          name => defineModuleCode({
-            code: code.replace(replacePatterns.IMPORT_RE, relativizeCode)
-                      .replace(replacePatterns.EXPORT_RE, relativizeCode)
-                      .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-            moduleName: name,
-          })
-        );
+        code = code
+          .replace(replacePatterns.IMPORT_RE, relativizeCode)
+          .replace(replacePatterns.EXPORT_RE, relativizeCode)
+          .replace(replacePatterns.REQUIRE_RE, relativizeCode);
+
+        return module.getName().then(name =>
+          ({name, code: defineModuleCode(name, code)}));
       });
     });
   }
@@ -197,7 +202,7 @@ class Resolver {
 
 }
 
-function defineModuleCode({moduleName, code}) {
+function defineModuleCode(moduleName, code) {
   return [
     `__d(`,
     `'${moduleName}',`,

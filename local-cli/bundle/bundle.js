@@ -17,10 +17,18 @@ const outputPrepack = require('./output/prepack');
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function bundle(argv, config) {
+function bundleWithOutput(argv, config, output) {
   const args = parseCommandLine(bundleCommandLineArgs, argv);
-  const output = args.prepack ? outputPrepack : outputBundle;
+  if (!output) {
+    output = args.prepack ? outputPrepack : outputBundle;
+  }
   return buildBundle(args, config, output);
+
+}
+
+function bundle(argv, config) {
+  return bundleWithOutput(argv, config);
 }
 
 module.exports = bundle;
+module.exports.withOutput = bundleWithOutput;

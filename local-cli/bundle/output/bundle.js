@@ -33,7 +33,7 @@ function saveBundleAndMap(bundle, options, log) {
     'bundle-encoding': encoding,
     dev,
     'sourcemap-output': sourcemapOutput,
-} = options;
+  } = options;
 
   log('start');
   const codeWithMap = createCodeWithMap(bundle, dev);
