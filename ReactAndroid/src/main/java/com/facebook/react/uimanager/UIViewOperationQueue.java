@@ -440,7 +440,7 @@ public class UIViewOperationQueue {
 
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
 
-  protected UIViewOperationQueue(
+  public UIViewOperationQueue(
       ReactApplicationContext reactContext,
       NativeViewHierarchyManager nativeViewHierarchyManager) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
