@@ -26,6 +26,10 @@ using fbsystrace::FbSystraceSection;
 // Add native performance markers support
 #include <react/JSCPerfLogging.h>
 
+#ifdef WITH_FB_JSC_TUNING
+#include <jsc_config_android.h>
+#endif
+
 using namespace facebook::jni;
 
 namespace facebook {
@@ -82,6 +86,11 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
+
+  #ifdef WITH_FB_JSC_TUNING
+  configureJSCForAndroid();
+  #endif
+
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
   addNativeProfilingHooks(m_context);
