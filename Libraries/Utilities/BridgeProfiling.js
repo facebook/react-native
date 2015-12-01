@@ -22,6 +22,7 @@ var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 
 var _enabled;
+var _asyncCookie = 0;
 var _ReactPerf = null;
 function ReactPerf() {
   if (!_ReactPerf) {
@@ -37,6 +38,9 @@ var BridgeProfiling = {
     ReactPerf().enableMeasure = enabled;
   },
 
+  /**
+   * profile/profileEnd for starting and then ending a profile within the same call stack frame
+  **/
   profile(profileName?: any) {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
@@ -48,6 +52,30 @@ var BridgeProfiling = {
   profileEnd() {
     if (_enabled) {
       global.nativeTraceEndSection(TRACE_TAG_REACT_APPS);
+    }
+  },
+
+  /**
+   * profileAsync/profileAsyncEnd for starting and then ending a profile where the end can either
+   * occur on another thread or out of the current stack frame, eg await
+   * the returned cookie variable should be used as input into the asyncEnd call to end the profile
+  **/
+  profileAsync(profileName?: any): any {
+    var cookie = _asyncCookie;
+    if (_enabled) {
+      _asyncCookie++;
+      profileName = typeof profileName === 'function' ?
+        profileName() : profileName;
+      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+    }
+    return cookie;
+  },
+
+  profileAsyncEnd(profileName?: any, cookie?: any) {
+    if (_enabled) {
+      profileName = typeof profileName === 'function' ?
+        profileName() : profileName;
+      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
     }
   },
 
@@ -69,11 +97,15 @@ var BridgeProfiling = {
     ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 
+  /**
+   * Relay profiles use await calls, so likely occur out of current stack frame
+   * therefore async variant of profiling is used
+  **/
   attachToRelayProfiler(relayProfiler: RelayProfiler) {
     relayProfiler.attachProfileHandler('*', (name) => {
-      BridgeProfiling.profile(name);
+      var cookie = BridgeProfiling.profileAsync(name);
       return () => {
-        BridgeProfiling.profileEnd();
+        BridgeProfiling.profileAsyncEnd(name, cookie);
       };
     });
   },
