@@ -426,12 +426,12 @@ var TouchableMixin = {
         top: PRESS_EXPAND_PX,
         bottom: PRESS_EXPAND_PX
       };
-      
+
     var pressExpandLeft = pressRectOffset.left;
     var pressExpandTop = pressRectOffset.top;
     var pressExpandRight = pressRectOffset.right;
     var pressExpandBottom = pressRectOffset.bottom;
-    
+
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
