@@ -120,7 +120,7 @@ class CameraRoll {
    * Saves the image to the camera roll / gallery.
    *
    * The CameraRoll API is not yet implemented for Android.
-   * 
+   *
    * @param {string} tag On Android, this is a local URI, such
    * as `"file:///sdcard/img.png"`.
    *
