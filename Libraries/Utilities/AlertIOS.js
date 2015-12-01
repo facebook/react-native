@@ -14,11 +14,18 @@
 var RCTAlertManager = require('NativeModules').AlertManager;
 var invariant = require('invariant');
 
-var DEFAULT_BUTTON_TEXT = 'OK';
-var DEFAULT_BUTTON = {
-  text: DEFAULT_BUTTON_TEXT,
-  onPress: null,
-};
+type AlertType = $Enum<{
+  'default': string;
+  'plain-text': string;
+  'secure-text': string;
+  'login-password': string;
+}>;
+
+type AlertButtonStyle = $Enum<{
+  'default': string;
+  'cancel': string;
+  'destructive': string;
+}>;
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -27,16 +34,13 @@ var DEFAULT_BUTTON = {
  * respective onPress callback and dismiss the alert. By default, the only
  * button will be an 'OK' button
  *
- * The last button in the list will be considered the 'Primary' button and
- * it will appear bold.
- *
  * ```
  * AlertIOS.alert(
  *   'Foo Title',
  *   'My Alert Msg',
  *   [
- *     {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
- *     {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
+ *     {text: 'OK', onPress: () => console.log('OK Pressed!')},
+ *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed!'), style: 'cancel'},
  *   ]
  * )
  * ```
@@ -47,29 +51,36 @@ class AlertIOS {
     title: ?string,
     message?: ?string,
     buttons?: Array<{
-      text: ?string;
+      text?: string;
       onPress?: ?Function;
+      style?: AlertButtonStyle;
     }>,
-    type?: ?string
+    type?: ?AlertType
   ): void {
     var callbacks = [];
     var buttonsSpec = [];
-    title = title || '';
-    message = message || '';
-    buttons = buttons || [DEFAULT_BUTTON];
-    type = type || '';
-
-    buttons.forEach((btn, index) => {
+    var cancelButtonKey;
+    var destructiveButtonKey;
+    buttons && buttons.forEach((btn, index) => {
       callbacks[index] = btn.onPress;
-      var btnDef = {};
-      btnDef[index] = btn.text || DEFAULT_BUTTON_TEXT;
-      buttonsSpec.push(btnDef);
+      if (btn.style == 'cancel') {
+        cancelButtonKey = String(index);
+      } else if (btn.style == 'destructive') {
+        destructiveButtonKey = String(index);
+      }
+      if (btn.text || index < (buttons || []).length - 1) {
+        var btnDef = {};
+        btnDef[index] = btn.text || '';
+        buttonsSpec.push(btnDef);
+      }
     });
     RCTAlertManager.alertWithArgs({
-      title,
-      message,
+      title: title || undefined,
+      message: message || undefined,
       buttons: buttonsSpec,
-      type,
+      type: type || undefined,
+      cancelButtonKey,
+      destructiveButtonKey,
     }, (id, value) => {
       var cb = callbacks[id];
       cb && cb(value);
@@ -80,8 +91,9 @@ class AlertIOS {
     title: string,
     value?: string,
     buttons?: Array<{
-      text: ?string;
+      text?: string;
       onPress?: ?Function;
+      style?: AlertButtonStyle;
     }>,
     callback?: ?Function
   ): void {
@@ -104,12 +116,7 @@ class AlertIOS {
     );
 
     if (!buttons) {
-      buttons = [{
-        text: 'Cancel',
-      }, {
-        text: 'OK',
-        onPress: callback
-      }];
+      buttons = [{ onPress: callback }];
     }
     this.alert(title, value, buttons, 'plain-text');
   }

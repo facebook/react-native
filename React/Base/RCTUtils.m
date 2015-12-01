@@ -575,3 +575,11 @@ NSString *RCTColorToHexString(CGColorRef color)
     return [NSString stringWithFormat:@"#%02x%02x%02x", r, g, b];
   }
 }
+
+
+// (https://github.com/0xced/XCDFormInputAccessoryView/blob/master/XCDFormInputAccessoryView/XCDFormInputAccessoryView.m#L10-L14)
+RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string)
+{
+  NSBundle *UIKitBundle = [NSBundle bundleForClass:[UIApplication class]];
+  return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
+}
