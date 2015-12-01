@@ -41,13 +41,38 @@ public class UIImplementation {
   private final int[] mMeasureBuffer = new int[4];
 
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
-    mViewManagers = new ViewManagerRegistry(viewManagers);
-    mOperationsQueue = new UIViewOperationQueue(
-        reactContext,
-        new NativeViewHierarchyManager(mViewManagers));
+    this(reactContext, new ViewManagerRegistry(viewManagers));
+  }
+
+  private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
+    this(
+        viewManagers,
+        new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
+  }
+
+  protected UIImplementation(
+      ViewManagerRegistry viewManagers,
+      UIViewOperationQueue operationsQueue) {
+    mViewManagers = viewManagers;
+    mOperationsQueue = operationsQueue;
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);
+  }
+
+  protected ReactShadowNode createRootShadowNode() {
+    ReactShadowNode rootCSSNode = new ReactShadowNode();
+    rootCSSNode.setViewClassName("Root");
+    return rootCSSNode;
+  }
+
+  protected ReactShadowNode createShadowNode(String className) {
+    ViewManager viewManager = mViewManagers.get(className);
+    return viewManager.createShadowNodeInstance();
+  }
+
+  protected final ReactShadowNode resolveShadowNode(int reactTag) {
+    return mShadowNodeRegistry.getNode(reactTag);
   }
 
   /**
@@ -60,12 +85,11 @@ public class UIImplementation {
       int width,
       int height,
       ThemedReactContext context) {
-    final ReactShadowNode rootCSSNode = new ReactShadowNode();
+    final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
-    rootCSSNode.setViewClassName("Root");
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
     // register it within NativeViewHierarchyManager
@@ -104,8 +128,7 @@ public class UIImplementation {
    * Invoked by React to create a new node with a given tag, class name and properties.
    */
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
-    ViewManager viewManager = mViewManagers.get(className);
-    ReactShadowNode cssNode = viewManager.createShadowNodeInstance();
+    ReactShadowNode cssNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
@@ -120,8 +143,15 @@ public class UIImplementation {
       cssNode.updateProperties(styles);
     }
 
+    handleCreateView(cssNode, rootViewTag, styles);
+  }
+
+  protected void handleCreateView(
+      ReactShadowNode cssNode,
+      int rootViewTag,
+      @Nullable CatalystStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, rootNode.getThemedContext(), styles);
+      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
     }
   }
 
@@ -141,9 +171,16 @@ public class UIImplementation {
     if (props != null) {
       CatalystStylesDiffMap styles = new CatalystStylesDiffMap(props);
       cssNode.updateProperties(styles);
-      if (!cssNode.isVirtual()) {
-        mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
-      }
+      handleUpdateView(cssNode, className, styles);
+    }
+  }
+
+  protected void handleUpdateView(
+      ReactShadowNode cssNode,
+      String className,
+      CatalystStylesDiffMap styles) {
+    if (!cssNode.isVirtual()) {
+      mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
     }
   }
 
@@ -401,14 +438,7 @@ public class UIImplementation {
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
       notifyOnBeforeLayoutRecursive(cssRoot);
 
-      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
-          .arg("rootTag", tag)
-          .flush();
-      try {
-        cssRoot.calculateLayout(mLayoutContext);
-      } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      }
+      calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
 
@@ -492,7 +522,7 @@ public class UIImplementation {
     mOperationsQueue.setViewHierarchyUpdateDebugListener(listener);
   }
 
-  private void removeShadowNode(ReactShadowNode nodeToRemove) {
+  protected final void removeShadowNode(ReactShadowNode nodeToRemove) {
     mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
@@ -597,7 +627,18 @@ public class UIImplementation {
     cssNode.onBeforeLayout();
   }
 
-  private void applyUpdatesRecursive(
+  protected void calculateRootLayout(ReactShadowNode cssRoot) {
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
+        .arg("rootTag", cssRoot.getReactTag())
+        .flush();
+    try {
+      cssRoot.calculateLayout(mLayoutContext);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
+  protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
       float absoluteY,
