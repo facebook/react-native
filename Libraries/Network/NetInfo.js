@@ -17,7 +17,7 @@ var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTNetInfo = NativeModules.NetInfo;
 
-var DEVICE_REACHABILITY_EVENT = 'networkDidChange';
+var DEVICE_REACHABILITY_EVENT = 'reachabilityDidChange';
 
 type ChangeEventName = $Enum<{
   change: string;
@@ -163,7 +163,7 @@ var NetInfo = {
     var listener = RCTDeviceEventEmitter.addListener(
       DEVICE_REACHABILITY_EVENT,
       (appStateData) => {
-        handler(appStateData.network_info);
+        handler(appStateData.network_reachability);
       }
     );
     _subscriptions.set(handler, listener);
