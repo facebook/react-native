@@ -62,7 +62,6 @@ import com.facebook.react.touch.JSResponderHandler;
   private final SparseArray<View> mTagsToViews;
   private final SparseArray<ViewManager> mTagsToViewManagers;
   private final SparseBooleanArray mRootTags;
-  private final SparseArray<ThemedReactContext> mRootViewsContext;
   private final ViewManagerRegistry mViewManagers;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager = new RootViewManager();
@@ -73,7 +72,6 @@ import com.facebook.react.touch.JSResponderHandler;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
     mRootTags = new SparseBooleanArray();
-    mRootViewsContext = new SparseArray<>();
   }
 
   public AnimationRegistry getAnimationRegistry() {
@@ -162,15 +160,14 @@ import com.facebook.react.touch.JSResponderHandler;
   }
 
   public void createView(
-      int rootViewTagForContext,
+      ThemedReactContext themedContext,
       int tag,
       String className,
       @Nullable CatalystStylesDiffMap initialProps) {
     UiThreadUtil.assertOnUiThread();
     ViewManager viewManager = mViewManagers.get(className);
 
-    View view =
-        viewManager.createView(mRootViewsContext.get(rootViewTagForContext), mJSResponderHandler);
+    View view = viewManager.createView(themedContext, mJSResponderHandler);
     mTagsToViews.put(tag, view);
     mTagsToViewManagers.put(tag, viewManager);
 
@@ -376,7 +373,6 @@ import com.facebook.react.touch.JSResponderHandler;
     mTagsToViews.put(tag, view);
     mTagsToViewManagers.put(tag, mRootViewManager);
     mRootTags.put(tag, true);
-    mRootViewsContext.put(tag, themedContext);
     view.setId(tag);
   }
 
@@ -416,7 +412,6 @@ import com.facebook.react.touch.JSResponderHandler;
     View rootView = mTagsToViews.get(rootViewTag);
     dropView(rootView);
     mRootTags.delete(rootViewTag);
-    mRootViewsContext.remove(rootViewTag);
   }
 
   /**
@@ -585,14 +580,10 @@ import com.facebook.react.touch.JSResponderHandler;
   }
 
   /**
-   * @return Themed React context for view with a given {@param reactTag} - in the case of root
-   * view it returns the context from {@link #mRootViewsContext} and all the other cases it gets the
+   * @return Themed React context for view with a given {@param reactTag} -  it gets the
    * context directly from the view using {@link View#getContext}.
    */
   private ThemedReactContext getReactContextForView(int reactTag) {
-    if (mRootTags.get(reactTag)) {
-      return Assertions.assertNotNull(mRootViewsContext.get(reactTag));
-    }
     View view = mTagsToViews.get(reactTag);
     if (view == null) {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
