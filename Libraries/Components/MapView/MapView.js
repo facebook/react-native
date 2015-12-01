@@ -23,7 +23,7 @@ var resolveAssetSource = require('resolveAssetSource');
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
-type MapRegion = {    
+type MapRegion = {
   latitude: number;
   longitude: number;
   latitudeDelta: number;
