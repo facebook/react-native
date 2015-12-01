@@ -232,7 +232,7 @@ var MapView = React.createClass({
        * @platform ios
        */
       image: Image.propTypes.source,
-      
+
       /**
        * annotation id
        */

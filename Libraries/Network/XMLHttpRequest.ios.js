@@ -13,7 +13,6 @@
 
 var FormData = require('FormData');
 var RCTNetworking = require('RCTNetworking');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var XMLHttpRequestBase = require('XMLHttpRequestBase');
 
