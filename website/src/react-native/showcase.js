@@ -386,6 +386,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
   },
+  {
+    name: 'MockingBot',
+    icon: 'https://s3.cn-north-1.amazonaws.com.cn/modao/downloads/images/MockingBot175.png',
+    link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
+    author: 'YuanYi Zhang (@mockingbot)',
+  },
 ];
 
 var AppList = React.createClass({
