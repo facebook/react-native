@@ -16,7 +16,6 @@
 let BridgeProfiling = require('BridgeProfiling');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
-let ReactUpdates = require('ReactUpdates');
 
 let invariant = require('invariant');
 let keyMirror = require('keyMirror');
