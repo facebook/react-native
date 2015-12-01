@@ -437,7 +437,7 @@ public class NativeViewHierarchyManager {
     if (view == null) {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + reactTag);
     }
-    return TouchTargetHelper.findTargetTagForTouch(touchY, touchX, (ViewGroup) view);
+    return TouchTargetHelper.findTargetTagForTouch(touchX, touchY, (ViewGroup) view);
   }
 
   public void setJSResponder(int reactTag, int initialReactTag, boolean blockNativeResponder) {
