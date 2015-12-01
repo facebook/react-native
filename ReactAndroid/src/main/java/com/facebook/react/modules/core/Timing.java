@@ -90,7 +90,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private final Object mTimerGuard = new Object();
   private final PriorityQueue<Timer> mTimers;
   private final SparseArray<Timer> mTimerIdsToTimers;
-  private final AtomicBoolean isPaused = new AtomicBoolean(false);
+  private final AtomicBoolean isPaused = new AtomicBoolean(true);
   private final FrameCallback mFrameCallback = new FrameCallback();
   private @Nullable ReactChoreographer mReactChoreographer;
   private @Nullable JSTimersExecution mJSTimersModule;
