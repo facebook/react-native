@@ -14,7 +14,6 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
 var UIManager = require('UIManager');
