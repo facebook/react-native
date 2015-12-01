@@ -20,6 +20,7 @@ var View = require('View');
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
 var dismissKeyboard = require('dismissKeyboard');
+var requireNativeComponent = require('requireNativeComponent');
 
 var RK_DRAWER_REF = 'drawerlayout';
 var INNERVIEW_REF = 'innerView';
