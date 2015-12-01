@@ -46,11 +46,11 @@ var PropTypes = React.PropTypes;
 /**
  * Reusable props objects.
  */
-var CRUMB_PROPS = Interpolators.map(() => {return {style: {}};});
-var ICON_PROPS = Interpolators.map(() => {return {style: {}};});
-var SEPARATOR_PROPS = Interpolators.map(() => {return {style: {}};});
-var TITLE_PROPS = Interpolators.map(() => {return {style: {}};});
-var RIGHT_BUTTON_PROPS = Interpolators.map(() => {return {style: {}};});
+var CRUMB_PROPS = Interpolators.map(() => ({style: {}}));
+var ICON_PROPS = Interpolators.map(() => ({style: {}}));
+var SEPARATOR_PROPS = Interpolators.map(() => ({style: {}}));
+var TITLE_PROPS = Interpolators.map(() => ({style: {}}));
+var RIGHT_BUTTON_PROPS = Interpolators.map(() => ({style: {}}));
 
 
 var navStatePresentedIndex = function(navState) {
