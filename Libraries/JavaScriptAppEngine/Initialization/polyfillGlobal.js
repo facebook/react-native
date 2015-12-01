@@ -37,17 +37,30 @@ function polyfillGlobal(name, newValue, scope=GLOBAL) {
 		writable: true,
 	};
 
-	// Properties cannot have both a getter and value. The guards against the exception:
-	// "Invalid property. 'value' present on property with getter or setter."
-	delete descriptor.get;
-	delete descriptor.set;
-
-	if (scope[name] !== undefined) {
+	if (scope[name] !== undefined && Object.isExtensible(scope)) {
 		var backupName = `original${name[0].toUpperCase()}${name.substr(1)}`;
-		Object.defineProperty(scope, backupName, {...descriptor, value: scope[name]});
+		Object.defineProperty(scope, backupName, descriptor);
 	}
 
-	Object.defineProperty(scope, name, {...descriptor, value: newValue});
+	// If working on an existing accessor, we need to set the new value as an accessor
+	// instead of as a value. This prevents the exception: "Invalid property. 'value'
+	// present on property with getter or setter."
+	// https://github.com/facebook/react-native/pull/4287
+	var newDescriptor;
+	if (descriptor.get) {
+		newDescriptor = {...descriptor, get: function() { return newValue; }};
+	} else {
+		newDescriptor = {...descriptor, value: newValue};
+	}
+
+	// If an existing property is marked as non-configurable or the object
+	// is frozen, we can't polyfill it and will have to assume the native
+	// implementation is good enough.
+	try {
+		Object.defineProperty(scope, name, newDescriptor);
+	} catch (e) {
+		console.warn(`Unable to polyfill ${name}: ${e.message}`);
+	}
 }
 
 module.exports = polyfillGlobal;
