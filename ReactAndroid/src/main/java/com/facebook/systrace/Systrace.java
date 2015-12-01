@@ -83,4 +83,22 @@ public class Systrace {
       final String counterName,
       final int counterValue) {
   }
+
+  public static void startAsyncFlow(
+      long tag,
+      final String sectionName,
+      final int cookie){
+  }
+
+  public static void stepAsyncFlow(
+      long tag,
+      final String sectionName,
+      final int cookie){
+  }
+
+  public static void endAsyncFlow(
+      long tag,
+      final String sectionName,
+      final int cookie){
+  }
 }
