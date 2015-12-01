@@ -229,6 +229,12 @@ RCT_ENUM_CONVERTER(NSUnderlineStyle, (@{
   @"dashed": @(NSUnderlinePatternDash | NSUnderlineStyleSingle),
 }), NSUnderlineStyleSingle, integerValue)
 
+RCT_ENUM_CONVERTER(RCTBorderStyle, (@{
+  @"solid": @(RCTBorderStyleSolid),
+  @"dotted": @(RCTBorderStyleDotted),
+  @"dashed": @(RCTBorderStyleDashed),
+}), RCTBorderStyleSolid, integerValue)
+
 RCT_ENUM_CONVERTER(RCTTextDecorationLineType, (@{
   @"none": @(RCTTextDecorationLineTypeNone),
   @"underline": @(RCTTextDecorationLineTypeUnderline),
