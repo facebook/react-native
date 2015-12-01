@@ -46,7 +46,7 @@ public class UIViewOperationQueue {
   /**
    * A mutation or animation operation on the view hierarchy.
    */
-  private interface UIOperation {
+  protected interface UIOperation {
 
     void execute();
   }
@@ -440,7 +440,7 @@ public class UIViewOperationQueue {
 
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
 
-  /* package */ UIViewOperationQueue(
+  protected UIViewOperationQueue(
       ReactApplicationContext reactContext,
       NativeViewHierarchyManager nativeViewHierarchyManager) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
@@ -482,6 +482,14 @@ public class UIViewOperationQueue {
         throw new RuntimeException(e);
       }
     }
+  }
+
+  /**
+   * Enqueues a UIOperation to be executed in UI thread. This method should only be used by a
+   * subclass to support UIOperations not provided by UIViewOperationQueue.
+   */
+  protected void enqueueUIOperation(UIOperation operation) {
+    mOperations.add(operation);
   }
 
   public void enqueueRemoveRootView(int rootViewTag) {
