@@ -35,38 +35,38 @@ public class TouchTargetHelper {
    * Find touch event target view within the provided container given the coordinates provided
    * via {@link MotionEvent}.
    *
-   * @param eventY the Y screen coordinate of the touch location
    * @param eventX the X screen coordinate of the touch location
+   * @param eventY the Y screen coordinate of the touch location
    * @param viewGroup the container view to traverse
    * @return the react tag ID of the child view that should handle the event
    */
   public static int findTargetTagForTouch(
-      float eventY,
       float eventX,
+      float eventY,
       ViewGroup viewGroup) {
-    return findTargetTagAndCoordinatesForTouch(eventY, eventX, viewGroup, mEventCoords);
+    return findTargetTagAndCoordinatesForTouch(eventX, eventY, viewGroup, mEventCoords);
   }
 
   /**
    * Find touch event target view within the provided container given the coordinates provided
    * via {@link MotionEvent}.
    *
-   * @param eventY the Y screen coordinate of the touch location
    * @param eventX the X screen coordinate of the touch location
+   * @param eventY the Y screen coordinate of the touch location
    * @param viewGroup the container view to traverse
-   * @param viewCoords an out parameter that will return the Y,X value in the target view
+   * @param viewCoords an out parameter that will return the X,Y value in the target view
    * @return the react tag ID of the child view that should handle the event
    */
   public static int findTargetTagAndCoordinatesForTouch(
-      float eventY,
       float eventX,
+      float eventY,
       ViewGroup viewGroup,
       float[] viewCoords) {
     UiThreadUtil.assertOnUiThread();
     int targetTag = viewGroup.getId();
     // Store eventCoords in array so that they are modified to be relative to the targetView found.
-    viewCoords[0] = eventY;
-    viewCoords[1] = eventX;
+    viewCoords[0] = eventX;
+    viewCoords[1] = eventY;
     View nativeTargetView = findTouchTargetView(viewCoords, viewGroup);
     if (nativeTargetView != null) {
       View reactTargetView = findClosestReactAncestor(nativeTargetView);
@@ -105,16 +105,16 @@ public class TouchTargetHelper {
         // coordinates relative to the child
         // We need to store the existing X,Y for the viewGroup away as it is possible this child
         // will not actually be the target and so we restore them if not
-        float restoreY = eventCoords[0];
-        float restoreX = eventCoords[1];
-        eventCoords[0] = childPoint.y;
-        eventCoords[1] = childPoint.x;
+        float restoreX = eventCoords[0];
+        float restoreY = eventCoords[1];
+        eventCoords[0] = childPoint.x;
+        eventCoords[1] = childPoint.y;
         View targetView = findTouchTargetViewWithPointerEvents(eventCoords, child);
         if (targetView != null) {
           return targetView;
         }
-        eventCoords[0] = restoreY;
-        eventCoords[1] = restoreX;
+        eventCoords[0] = restoreX;
+        eventCoords[1] = restoreY;
       }
     }
     return viewGroup;
@@ -126,8 +126,8 @@ public class TouchTargetHelper {
    * This code is taken from {@link ViewGroup#isTransformedTouchPointInView()}
    */
   private static boolean isTransformedTouchPointInView(
-      float y,
       float x,
+      float y,
       ViewGroup parent,
       View child,
       PointF outLocalPoint) {
@@ -190,7 +190,7 @@ public class TouchTargetHelper {
     }
   }
 
-  private static int getTouchTargetForView(View targetView, float eventY, float eventX) {
+  private static int getTouchTargetForView(View targetView, float eventX, float eventY) {
     if (targetView instanceof ReactCompoundView) {
       // Use coordinates relative to the view, which have been already computed by
       // {@link #findTouchTargetView()}.
