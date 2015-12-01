@@ -53,7 +53,7 @@ function setUpConsole() {
  * For more info on that particular case, see:
  * https://github.com/facebook/react-native/issues/934
  */
-function polyfillGlobal(name, newValue, scope=GLOBAL) {
+function polyfillGlobal(name, newValue, scope = GLOBAL) {
   var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
     // jest for some bad reasons runs the polyfill code multiple times. In jest
     // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
