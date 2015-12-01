@@ -122,17 +122,17 @@ public class UIViewOperationQueue {
 
   private final class CreateViewOperation extends ViewOperation {
 
-    private final int mRootViewTagForContext;
+    private final ThemedReactContext mThemedContext;
     private final String mClassName;
     private final @Nullable CatalystStylesDiffMap mInitialProps;
 
     public CreateViewOperation(
-        int rootViewTagForContext,
+        ThemedReactContext themedContext,
         int tag,
         String className,
         @Nullable CatalystStylesDiffMap initialProps) {
       super(tag);
-      mRootViewTagForContext = rootViewTagForContext;
+      mThemedContext = themedContext;
       mClassName = className;
       mInitialProps = initialProps;
     }
@@ -140,7 +140,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.createView(
-          mRootViewTagForContext,
+          mThemedContext,
           mTag,
           mClassName,
           mInitialProps);
@@ -533,13 +533,13 @@ public class UIViewOperationQueue {
   }
 
   public void enqueueCreateView(
-      int rootViewTagForContext,
+      ThemedReactContext themedContext,
       int viewReactTag,
       String viewClassName,
       @Nullable CatalystStylesDiffMap initialProps) {
     mOperations.add(
         new CreateViewOperation(
-            rootViewTagForContext,
+            themedContext,
             viewReactTag,
             viewClassName,
             initialProps));

@@ -121,7 +121,7 @@ public class UIImplementation {
     }
 
     if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, rootViewTag, styles);
+      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, rootNode.getThemedContext(), styles);
     }
   }
 
