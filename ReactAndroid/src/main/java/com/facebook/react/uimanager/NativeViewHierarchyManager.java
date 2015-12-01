@@ -56,7 +56,7 @@ import com.facebook.react.touch.JSResponderHandler;
  * TODO(5483031): Only dispatch updates when shadow views have changed
  */
 @NotThreadSafe
-/* package */ final class NativeViewHierarchyManager {
+public class NativeViewHierarchyManager {
 
   private final AnimationRegistry mAnimationRegistry;
   private final SparseArray<View> mTagsToViews;
@@ -74,6 +74,23 @@ import com.facebook.react.touch.JSResponderHandler;
     mRootTags = new SparseBooleanArray();
   }
 
+  protected final View resolveView(int tag) {
+    View view = mTagsToViews.get(tag);
+    if (view == null) {
+      throw new IllegalViewOperationException("Trying to resolve view with tag " + tag
+          + " which doesn't exist");
+    }
+    return view;
+  }
+
+  protected final ViewManager resolveViewManager(int tag) {
+    ViewManager viewManager = mTagsToViewManagers.get(tag);
+    if (viewManager == null) {
+      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
+    }
+    return viewManager;
+  }
+
   public AnimationRegistry getAnimationRegistry() {
     return mAnimationRegistry;
   }
@@ -81,32 +98,16 @@ import com.facebook.react.touch.JSResponderHandler;
   public void updateProperties(int tag, CatalystStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
 
-    ViewManager viewManager = mTagsToViewManagers.get(tag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
-    }
-
-    View viewToUpdate = mTagsToViews.get(tag);
-    if (viewToUpdate == null) {
-      throw new IllegalViewOperationException("Trying to update view with tag " + tag
-          + " which doesn't exist");
-    }
+    ViewManager viewManager = resolveViewManager(tag);
+    View viewToUpdate = resolveView(tag);
     viewManager.updateProperties(viewToUpdate, props);
   }
 
   public void updateViewExtraData(int tag, Object extraData) {
     UiThreadUtil.assertOnUiThread();
 
-    ViewManager viewManager = mTagsToViewManagers.get(tag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
-    }
-
-    View viewToUpdate = mTagsToViews.get(tag);
-    if (viewToUpdate == null) {
-      throw new IllegalViewOperationException("Trying to update view with tag " + tag + " which " +
-          "doesn't exist");
-    }
+    ViewManager viewManager = resolveViewManager(tag);
+    View viewToUpdate = resolveView(tag);
     viewManager.updateExtraData(viewToUpdate, extraData);
   }
 
@@ -119,11 +120,7 @@ import com.facebook.react.touch.JSResponderHandler;
       int height) {
     UiThreadUtil.assertOnUiThread();
 
-    View viewToUpdate = mTagsToViews.get(tag);
-    if (viewToUpdate == null) {
-      throw new IllegalViewOperationException("Trying to update view with tag " + tag + " which " +
-          "doesn't exist");
-    }
+    View viewToUpdate = resolveView(tag);
 
     // Even though we have exact dimensions, we still call measure because some platform views (e.g.
     // Switch) assume that method will always be called before onLayout and onDraw. They use it to
@@ -257,10 +254,7 @@ import com.facebook.react.touch.JSResponderHandler;
       @Nullable ViewAtIndex[] viewsToAdd,
       @Nullable int[] tagsToDelete) {
     ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
-    ViewGroupManager viewManager = (ViewGroupManager) mTagsToViewManagers.get(tag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
-    }
+    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
       throw new IllegalViewOperationException("Trying to manageChildren view with tag " + tag +
         " which doesn't exist\n detail: " +
@@ -362,6 +356,13 @@ import com.facebook.react.touch.JSResponderHandler;
       int tag,
       SizeMonitoringFrameLayout view,
       ThemedReactContext themedContext) {
+    addRootViewGroup(tag, view, themedContext);
+  }
+
+  protected final void addRootViewGroup(
+      int tag,
+      ViewGroup view,
+      ThemedReactContext themedContext) {
     UiThreadUtil.assertOnUiThread();
     if (view.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
@@ -383,7 +384,7 @@ import com.facebook.react.touch.JSResponderHandler;
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      Assertions.assertNotNull(mTagsToViewManagers.get(view.getId())).onDropViewInstance(
+      resolveViewManager(view.getId()).onDropViewInstance(
           (ThemedReactContext) view.getContext(),
           view);
     }
@@ -512,12 +513,7 @@ import com.facebook.react.touch.JSResponderHandler;
           "with tag " + reactTag);
     }
 
-    ViewManager viewManager = mTagsToViewManagers.get(reactTag);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException(
-          "ViewManager for view tag " + reactTag + " could not be found");
-    }
-
+    ViewManager viewManager = resolveViewManager(reactTag);
     viewManager.receiveCommand(view, commandId, args);
   }
 
