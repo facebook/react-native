@@ -30,6 +30,10 @@ __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your 
 
   - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`
 
+### Use gradle daemon
+
+React Native Android use [gradle](https://docs.gradle.org) as a build system. We recommend to enable gradle daemon functionailty which may result in up to 50% improvement in incremental build times for changes in java code. Learn [here](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) how to enable it for your platform.
+
 ### Configure your SDK
 
 1. Open the Android SDK Manager (**on Mac** start a new shell and run `android`); in the window that appears make sure you check:
