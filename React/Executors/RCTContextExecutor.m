@@ -352,7 +352,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       [bridge handleBuffer:calls batchEnded:NO];
     };
 
-    strongSelf->_context.context[@"RCTPerformanceNow"] = ^(){
+    strongSelf->_context.context[@"RCTPerformanceNow"] = ^{
       return CACurrentMediaTime() * 1000 * 1000;
     };
 
@@ -360,6 +360,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     if (RCTProfileIsProfiling()) {
       strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
     }
+
+    CFMutableDictionaryRef cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+    strongSelf->_context.context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
+      NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
+      CFDictionarySetValue(cookieMap, (const void *)cookie, (const void *)newCookie);
+      return;
+    };
+
+    strongSelf->_context.context[@"nativeTraceEndAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
+      NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
+      RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, nil);
+      CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
+      return;
+    };
 
     [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
     [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
