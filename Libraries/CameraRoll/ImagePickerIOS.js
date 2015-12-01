@@ -24,7 +24,7 @@ var ImagePickerIOS = {
     config = {
       videoMode: false,
       ...config,
-    }
+    };
     return RCTImagePicker.openCameraDialog(config, successCallback, cancelCallback);
   },
   openSelectDialog: function(config: Object, successCallback: Function, cancelCallback: Function) {
@@ -32,7 +32,7 @@ var ImagePickerIOS = {
       showImages: true,
       showVideos: false,
       ...config,
-    }
+    };
     return RCTImagePicker.openSelectDialog(config, successCallback, cancelCallback);
   },
 };
