@@ -102,6 +102,10 @@ const bundleOpts = declareOpts({
       'InitializeJavaScriptAppEngine'
     ],
   },
+  unbundle: {
+    type: 'boolean',
+    default: false,
+  }
 });
 
 const dependencyOpts = declareOpts({
