@@ -65,6 +65,8 @@ var IntentAndroidExample = React.createClass({
         <OpenURLButton url={'http://www.facebook.com'} />
         <OpenURLButton url={'http://facebook.com'} />
         <OpenURLButton url={'geo:37.484847,-122.148386'} />
+        <OpenURLButton url={'tel:10086'} />
+        <OpenURLButton url={'sms:10086'} />
       </UIExplorerBlock>
     );
   },
