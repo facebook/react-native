@@ -14,26 +14,15 @@
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
 var RCTMapConstants = require('NativeModules').UIManager.RCTMap.Constants;
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
 
-var deepDiffer = require('deepDiffer');
-var insetsDiffer = require('insetsDiffer');
-var merge = require('merge');
 var processColor = require('processColor');
 var resolveAssetSource = require('resolveAssetSource');
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
-type MapRegion = {
-  latitude: number;
-  longitude: number;
-  latitudeDelta: number;
-  longitudeDelta: number;
-};
 
 var MapView = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -232,7 +221,7 @@ var MapView = React.createClass({
        * @platform ios
        */
       image: Image.propTypes.source,
-      
+
       /**
        * annotation id
        */
