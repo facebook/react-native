@@ -102,3 +102,6 @@ RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *imageURL);
 
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
+
+// Get standard localized string (if it exists)
+RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
