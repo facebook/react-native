@@ -880,6 +880,13 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
   }];
 }
 
+- (void)partialBatchDidFlush
+{
+  if (self.unsafeFlushUIChangesBeforeBatchEnds) {
+    [self flushUIBlocks];
+  }
+}
+
 - (void)batchDidComplete
 {
   // Gather blocks to be executed now that all view hierarchy manipulations have

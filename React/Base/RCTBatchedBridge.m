@@ -720,6 +720,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (buffer != nil && buffer != (id)kCFNull) {
     _wasBatchActive = YES;
     [self handleBuffer:buffer];
+    [self partialBatchDidFlush];
   }
 
   if (batchEnded) {
@@ -796,6 +797,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
     } else if (queue) {
       dispatch_async(queue, block);
+    }
+  }
+}
+
+- (void)partialBatchDidFlush
+{
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    if (moduleData.hasInstance && [moduleData.instance respondsToSelector:@selector(partialBatchDidFlush)]) {
+      [self dispatchBlock:^{
+        [moduleData.instance partialBatchDidFlush];
+      } queue:moduleData.methodQueue];
     }
   }
 }
