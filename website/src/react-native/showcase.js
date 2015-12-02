@@ -249,6 +249,12 @@ var apps = [
     author: 'Peter Cottle',
   },
   {
+    name: 'Mobabuild',
+    icon: 'http://mobabuild.co/images/applogo.png',
+    link: 'http://mobabuild.co',
+    author: 'Sercan Demircan ( @sercanov )',
+  },
+  {
     name: 'MockingBot',
     icon: 'https://s3.cn-north-1.amazonaws.com.cn/modao/downloads/images/MockingBot175.png',
     link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
