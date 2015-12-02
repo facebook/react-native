@@ -130,36 +130,34 @@ static NSString *RCTGenerateFormBoundary()
 
 RCT_EXPORT_MODULE()
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  // get handlers
-  NSMutableArray<id<RCTURLRequestHandler>> *handlers = [NSMutableArray array];
-  for (id<RCTBridgeModule> module in bridge.modules.allValues) {
-    if ([module conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
-      [handlers addObject:(id<RCTURLRequestHandler>)module];
-    }
-  }
-
-  // Sort handlers in reverse priority order (highest priority first)
-  [handlers sortUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
-    float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
-    float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
-    if (priorityA > priorityB) {
-      return NSOrderedAscending;
-    } else if (priorityA < priorityB) {
-      return NSOrderedDescending;
-    } else {
-      return NSOrderedSame;
-    }
-  }];
-
-  _bridge = bridge;
-  _handlers = handlers;
-  _tasksByRequestID = [NSMutableDictionary new];
-}
-
 - (id<RCTURLRequestHandler>)handlerForRequest:(NSURLRequest *)request
 {
+  if (!_handlers) {
+
+    // get handlers
+    NSMutableArray<id<RCTURLRequestHandler>> *handlers = [NSMutableArray array];
+    for (Class moduleClass in _bridge.moduleClasses) {
+      if ([moduleClass conformsToProtocol:@protocol(RCTURLRequestHandler)]) {
+        [handlers addObject:[_bridge moduleForClass:moduleClass]];
+      }
+    }
+
+    // Sort handlers in reverse priority order (highest priority first)
+    [handlers sortUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+      float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
+      float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
+      if (priorityA > priorityB) {
+        return NSOrderedAscending;
+      } else if (priorityA < priorityB) {
+        return NSOrderedDescending;
+      } else {
+        return NSOrderedSame;
+      }
+    }];
+
+    _handlers = handlers;
+  }
+
   if (RCT_DEBUG) {
     // Check for handler conflicts
     float previousPriority = 0;
@@ -198,6 +196,8 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)buildRequest:(NSDictionary<NSString *, id> *)query
                                  completionBlock:(void (^)(NSURLRequest *request))block
 {
+  RCTAssertThread(_methodQueue, @"buildRequest: must be called on method queue");
+
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
@@ -222,7 +222,10 @@ RCT_EXPORT_MODULE()
       [request setValue:(@(request.HTTPBody.length)).description forHTTPHeaderField:@"Content-Length"];
     }
 
-    block(request);
+    dispatch_async(_methodQueue, ^{
+      block(request);
+    });
+
     return (RCTURLRequestCancellationBlock)nil;
   }];
 }
@@ -253,6 +256,8 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary<NSString *, id> *)query callback:
 (RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary<NSString *, id> *result))callback
 {
+  RCTAssertThread(_methodQueue, @"processData: must be called on method queue");
+
   if (!query) {
     return callback(nil, nil);
   }
@@ -291,6 +296,8 @@ RCT_EXPORT_MODULE()
 
 - (void)sendData:(NSData *)data forTask:(RCTNetworkTask *)task
 {
+  RCTAssertThread(_methodQueue, @"sendData: must be called on method queue");
+
   if (data.length == 0) {
     return;
   }
@@ -335,6 +342,8 @@ RCT_EXPORT_MODULE()
  incrementalUpdates:(BOOL)incrementalUpdates
      responseSender:(RCTResponseSenderBlock)responseSender
 {
+  RCTAssertThread(_methodQueue, @"sendRequest: must be called on method queue");
+
   __block RCTNetworkTask *task;
 
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
@@ -391,6 +400,9 @@ RCT_EXPORT_MODULE()
   task.uploadProgressBlock = uploadProgressBlock;
 
   if (task.requestID) {
+    if (_tasksByRequestID) {
+      _tasksByRequestID = [NSMutableDictionary new];
+    }
     _tasksByRequestID[task.requestID] = task;
     responseSender(@[task.requestID]);
   }
@@ -443,7 +455,7 @@ RCT_EXPORT_METHOD(cancelRequest:(nonnull NSNumber *)requestID)
 
 - (RCTNetworking *)networking
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTNetworking class])];
+  return [self moduleForClass:[RCTNetworking class]];
 }
 
 @end

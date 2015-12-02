@@ -13,13 +13,19 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -41,7 +47,7 @@ public class UIViewOperationQueue {
   /**
    * A mutation or animation operation on the view hierarchy.
    */
-  private interface UIOperation {
+  protected interface UIOperation {
 
     void execute();
   }
@@ -117,17 +123,17 @@ public class UIViewOperationQueue {
 
   private final class CreateViewOperation extends ViewOperation {
 
-    private final int mRootViewTagForContext;
+    private final ThemedReactContext mThemedContext;
     private final String mClassName;
     private final @Nullable CatalystStylesDiffMap mInitialProps;
 
     public CreateViewOperation(
-        int rootViewTagForContext,
+        ThemedReactContext themedContext,
         int tag,
         String className,
         @Nullable CatalystStylesDiffMap initialProps) {
       super(tag);
-      mRootViewTagForContext = rootViewTagForContext;
+      mThemedContext = themedContext;
       mClassName = className;
       mInitialProps = initialProps;
     }
@@ -135,7 +141,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.createView(
-          mRootViewTagForContext,
+          mThemedContext,
           mTag,
           mClassName,
           mInitialProps);
@@ -317,6 +323,32 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class SetLayoutAnimationEnabledOperation implements UIOperation {
+    private final boolean mEnabled;
+
+    private SetLayoutAnimationEnabledOperation(final boolean enabled) {
+      mEnabled = enabled;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setLayoutAnimationEnabled(mEnabled);
+    }
+  }
+
+  private class ConfigureLayoutAnimationOperation implements UIOperation {
+    private final ReadableMap mConfig;
+
+    private ConfigureLayoutAnimationOperation(final ReadableMap config) {
+      mConfig = config;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.configureLayoutAnimation(mConfig);
+    }
+  }
+
   private final class MeasureOperation implements UIOperation {
 
     private final int mReactTag;
@@ -386,11 +418,10 @@ public class UIViewOperationQueue {
       final float containerX = (float) mMeasureBuffer[0];
       final float containerY = (float) mMeasureBuffer[1];
 
-      final int touchTargetReactTag = mUIManagerModule.getNonVirtualParent(
-          mNativeViewHierarchyManager.findTargetTagForTouch(
-            mReactTag,
-            mTargetX,
-            mTargetY));
+      final int touchTargetReactTag = mNativeViewHierarchyManager.findTargetTagForTouch(
+          mReactTag,
+          mTargetX,
+          mTargetY);
 
       try {
         mNativeViewHierarchyManager.measure(
@@ -424,29 +455,68 @@ public class UIViewOperationQueue {
     }
   }
 
-  private final UIManagerModule mUIManagerModule;
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final AnimationRegistry mAnimationRegistry;
 
   private final Object mDispatchRunnablesLock = new Object();
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
+  private final ReactApplicationContext mReactApplicationContext;
 
   @GuardedBy("mDispatchRunnablesLock")
   private final ArrayList<Runnable> mDispatchUIRunnables = new ArrayList<>();
 
-  /* package */ UIViewOperationQueue(
+  private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
+
+  public UIViewOperationQueue(
       ReactApplicationContext reactContext,
-      UIManagerModule uiManagerModule,
-      NativeViewHierarchyManager nativeViewHierarchyManager,
-      AnimationRegistry animationRegistry) {
-    mUIManagerModule = uiManagerModule;
+      NativeViewHierarchyManager nativeViewHierarchyManager) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
-    mAnimationRegistry = animationRegistry;
+    mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
+    mReactApplicationContext = reactContext;
+  }
+
+  public void setViewHierarchyUpdateDebugListener(
+      @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
+    mViewHierarchyUpdateDebugListener = listener;
   }
 
   public boolean isEmpty() {
     return mOperations.isEmpty();
+  }
+
+  public void addRootView(
+      final int tag,
+      final SizeMonitoringFrameLayout rootView,
+      final ThemedReactContext themedRootContext) {
+    if (UiThreadUtil.isOnUiThread()) {
+      mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
+    } else {
+      final Semaphore semaphore = new Semaphore(0);
+      mReactApplicationContext.runOnUiQueueThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
+              semaphore.release();
+            }
+          });
+      try {
+        SoftAssertions.assertCondition(
+            semaphore.tryAcquire(5000, TimeUnit.MILLISECONDS),
+            "Timed out adding root view");
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  /**
+   * Enqueues a UIOperation to be executed in UI thread. This method should only be used by a
+   * subclass to support UIOperations not provided by UIViewOperationQueue.
+   */
+  protected void enqueueUIOperation(UIOperation operation) {
+    mOperations.add(operation);
   }
 
   public void enqueueRemoveRootView(int rootViewTag) {
@@ -490,13 +560,13 @@ public class UIViewOperationQueue {
   }
 
   public void enqueueCreateView(
-      int rootViewTagForContext,
+      ThemedReactContext themedContext,
       int viewReactTag,
       String viewClassName,
       @Nullable CatalystStylesDiffMap initialProps) {
     mOperations.add(
         new CreateViewOperation(
-            rootViewTagForContext,
+            themedContext,
             viewReactTag,
             viewClassName,
             initialProps));
@@ -541,6 +611,18 @@ public class UIViewOperationQueue {
     mOperations.add(new RemoveAnimationOperation(animationID));
   }
 
+  public void enqueueSetLayoutAnimationEnabled(
+      final boolean enabled) {
+    mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
+  }
+
+  public void enqueueConfigureLayoutAnimation(
+      final ReadableMap config,
+      final Callback onSuccess,
+      final Callback onError) {
+    mOperations.add(new ConfigureLayoutAnimationOperation(config));
+  }
+
   public void enqueueMeasure(
       final int reactTag,
       final Callback callback) {
@@ -569,7 +651,9 @@ public class UIViewOperationQueue {
       mOperations = new ArrayList<>();
     }
 
-    mUIManagerModule.notifyOnViewHierarchyUpdateEnqueued();
+    if (mViewHierarchyUpdateDebugListener != null) {
+      mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateEnqueued();
+    }
 
     synchronized (mDispatchRunnablesLock) {
       mDispatchUIRunnables.add(
@@ -585,7 +669,9 @@ public class UIViewOperationQueue {
                      operations.get(i).execute();
                    }
                  }
-                 mUIManagerModule.notifyOnViewHierarchyUpdateFinished();
+                 if (mViewHierarchyUpdateDebugListener != null) {
+                   mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
+                 }
                } finally {
                  Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
                }
@@ -633,6 +719,9 @@ public class UIViewOperationQueue {
           mDispatchUIRunnables.get(i).run();
         }
         mDispatchUIRunnables.clear();
+
+        // Clear layout animation, as animation only apply to current UI operations batch.
+        mNativeViewHierarchyManager.clearLayoutAnimation();
       }
 
       ReactChoreographer.getInstance().postFrameCallback(

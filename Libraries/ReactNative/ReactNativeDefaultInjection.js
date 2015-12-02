@@ -23,6 +23,7 @@ var EventPluginUtils = require('EventPluginUtils');
 var IOSDefaultEventPluginOrder = require('IOSDefaultEventPluginOrder');
 var IOSNativeBridgeEventPlugin = require('IOSNativeBridgeEventPlugin');
 var NodeHandle = require('NodeHandle');
+var ReactElement = require('ReactElement');
 var ReactComponentEnvironment = require('ReactComponentEnvironment');
 var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
 var ReactEmptyComponent = require('ReactEmptyComponent');
@@ -37,7 +38,6 @@ var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var invariant = require('invariant');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
@@ -81,12 +81,15 @@ function inject() {
     ReactNativeComponentEnvironment
   );
 
-  // Can't import View here because it depends on React to make its composite
-  var RCTView = createReactNativeComponentClass({
-    validAttributes: {},
-    uiViewClassName: 'RCTView',
-  });
-  ReactEmptyComponent.injection.injectEmptyComponent(RCTView);
+  var EmptyComponent = () => {
+    // Can't import View at the top because it depends on React to make its composite
+    var View = require('View');
+    return ReactElement.createElement(View, {
+      collapsable: true,
+      style: { position: 'absolute' }
+    });
+  };
+  ReactEmptyComponent.injection.injectEmptyComponent(EmptyComponent);
 
   EventPluginUtils.injection.injectMount(ReactNativeMount);
 

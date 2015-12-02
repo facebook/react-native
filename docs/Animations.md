@@ -168,9 +168,11 @@ Input | Output
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
 class including quadratic, exponential, and bezier curves as well as functions
-like step and bounce.  `interpolation` also has configurable behavior for
-extrapolation, the default being `'extend'`, but `'clamp'` is also very useful
-to prevent the output value from exceeding `outputRange`.
+like step and bounce. `interpolation` also has configurable behavior for
+extrapolating the `outputRange`. You can set the extrapolation by setting the `extrapolate`, 
+`extrapolateLeft` or `extrapolateRight` options. The default value is 
+`extend` but you can use `clamp` to prevent the output value from exceeding 
+`outputRange`.
 
 #### Tracking Dynamic Values
 

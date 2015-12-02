@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var { TestModule, UIManager } = require('NativeModules');
@@ -38,6 +37,7 @@ var SnapshotViewIOS = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     // A callback when the Snapshot view is ready to be compared
     onSnapshotReady : React.PropTypes.func,
     // A name to identify the individual instance to the SnapshotView

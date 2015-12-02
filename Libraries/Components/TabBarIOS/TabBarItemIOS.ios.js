@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TabBarItemIOS
+ * @noflow
  */
 'use strict';
 
@@ -21,6 +22,7 @@ var requireNativeComponent = require('requireNativeComponent');
 
 var TabBarItemIOS = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Little red bubble that sits at the top right of the icon.
      */

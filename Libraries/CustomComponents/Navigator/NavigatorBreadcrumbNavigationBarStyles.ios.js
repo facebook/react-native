@@ -136,7 +136,7 @@ CENTER[0] = {
   Title: merge(FIRST_TITLE_BASE, {opacity: 1}),
   RightItem: CENTER[0].RightItem,
 };
-LEFT[0].Title = merge(FIRST_TITLE_BASE, {left: - SCREEN_WIDTH / 4, opacity: 0});
+LEFT[0].Title = merge(FIRST_TITLE_BASE, {left: -SCREEN_WIDTH / 4, opacity: 0});
 RIGHT[0].Title = merge(FIRST_TITLE_BASE, {opacity: 0});
 
 

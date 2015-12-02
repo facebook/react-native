@@ -107,7 +107,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if ((self.hidden && shouldShow) || (!self.hidden && [_lastErrorMessage isEqualToString:message])) {
     _lastStackTrace = stack;
-    _lastErrorMessage = message;
+    // message is displayed using UILabel, which is unable to render text of
+    // unlimited length, so we truncate it
+    _lastErrorMessage = [message substringToIndex:MIN((NSUInteger)10000, message.length)];
 
     [_stackTraceTableView reloadData];
 
@@ -325,7 +327,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTRedBox *)redBox
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTRedBox class])];
+  return [self moduleForClass:[RCTRedBox class]];
 }
 
 @end

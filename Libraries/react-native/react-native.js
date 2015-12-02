@@ -37,6 +37,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   SliderIOS: require('SliderIOS'),
   SnapshotViewIOS: require('SnapshotViewIOS'),
   Switch: require('Switch'),
+  PullToRefreshLayoutAndroid: require('PullToRefreshLayoutAndroid'),
   SwitchAndroid: require('SwitchAndroid'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
@@ -77,6 +78,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  UIManager: require('UIManager'),
   VibrationIOS: require('VibrationIOS'),
 
   // Plugins

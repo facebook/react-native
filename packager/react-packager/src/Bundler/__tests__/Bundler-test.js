@@ -46,6 +46,7 @@ describe('Bundler', function() {
   }
 
   var getDependencies;
+  var getModuleSystemDependencies;
   var wrapModule;
   var bundler;
   var assetServer;
@@ -53,10 +54,12 @@ describe('Bundler', function() {
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
+    getModuleSystemDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
     Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
+        getModuleSystemDependencies: getModuleSystemDependencies,
         wrapModule: wrapModule,
       };
     });
@@ -112,6 +115,10 @@ describe('Bundler', function() {
       });
     });
 
+    getModuleSystemDependencies.mockImpl(function() {
+      return [];
+    });
+
     JSTransformer.prototype.loadFileAndTransform
       .mockImpl(function(path) {
         return Promise.resolve({
@@ -123,7 +130,10 @@ describe('Bundler', function() {
       });
 
     wrapModule.mockImpl(function(response, module, code) {
-      return Promise.resolve('lol ' + code + ' lol');
+      return module.getName().then(name => ({
+        name,
+        code: 'lol ' + code + ' lol'
+      }));
     });
 
     sizeOf.mockImpl(function(path, cb) {
@@ -153,6 +163,7 @@ describe('Bundler', function() {
       sourceMapUrl: 'source_map_url',
     }).then(function(p) {
         expect(p.addModule.mock.calls[0][0]).toEqual({
+          name: 'foo',
           code: 'lol transformed /root/foo.js lol',
           map: 'sourcemap /root/foo.js',
           sourceCode: 'source /root/foo.js',
@@ -160,6 +171,7 @@ describe('Bundler', function() {
         });
 
         expect(p.addModule.mock.calls[1][0]).toEqual({
+          name: 'bar',
           code: 'lol transformed /root/bar.js lol',
           map: 'sourcemap /root/bar.js',
           sourceCode: 'source /root/bar.js',
@@ -176,6 +188,7 @@ describe('Bundler', function() {
         };
 
         expect(p.addModule.mock.calls[2][0]).toEqual({
+          name: 'image!img',
           code: 'lol module.exports = ' +
             JSON.stringify(imgModule_DEPRECATED) +
             '; lol',
@@ -205,6 +218,7 @@ describe('Bundler', function() {
         };
 
         expect(p.addModule.mock.calls[3][0]).toEqual({
+          name: 'new_image.png',
           code: 'lol module.exports = require("AssetRegistry").registerAsset(' +
             JSON.stringify(imgModule) +
             '); lol',
@@ -217,6 +231,7 @@ describe('Bundler', function() {
         });
 
         expect(p.addModule.mock.calls[4][0]).toEqual({
+          name: 'package/file.json',
           code: 'lol module.exports = {"json":true}; lol',
           sourceCode: 'module.exports = {"json":true};',
           sourcePath: '/root/file.json',

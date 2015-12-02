@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.stetho.okhttp.StethoInterceptor;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
@@ -56,6 +57,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
 
   private final OkHttpClient mClient;
+  private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
   private boolean mShuttingDown;
 
@@ -65,28 +67,35 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       OkHttpClient client) {
     super(reactContext);
     mClient = client;
+    mClient.networkInterceptors().add(new StethoInterceptor());
+    mCookieHandler = new ForwardingCookieHandler(reactContext);
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
   }
 
   /**
-   * @param reactContext the ReactContext of the application
+   * @param context the ReactContext of the application
    */
-  public NetworkingModule(ReactApplicationContext reactContext) {
-    this(reactContext, null, OkHttpClientProvider.getOkHttpClient());
+  public NetworkingModule(final ReactApplicationContext context) {
+    this(context, null, OkHttpClientProvider.getOkHttpClient());
   }
 
   /**
-   * @param reactContext the ReactContext of the application
+   * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
    * caller does not provide one explicitly
    */
-  public NetworkingModule(ReactApplicationContext reactContext, String defaultUserAgent) {
-    this(reactContext, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
+  public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
   }
 
   public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
     this(reactContext, null, client);
+  }
+
+  @Override
+  public void initialize() {
+    mClient.setCookieHandler(mCookieHandler);
   }
 
   @Override
@@ -98,6 +107,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public void onCatalystInstanceDestroy() {
     mShuttingDown = true;
     mClient.cancel(null);
+
+    mCookieHandler.destroy();
+    mClient.setCookieHandler(null);
   }
 
   @ReactMethod
@@ -307,6 +319,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         mClient.cancel(requestId);
       }
     }.execute();
+  }
+
+  @ReactMethod
+  public void clearCookies(com.facebook.react.bridge.Callback callback) {
+    mCookieHandler.clearCookies(callback);
   }
 
   private @Nullable MultipartBuilder constructMultipartBody(

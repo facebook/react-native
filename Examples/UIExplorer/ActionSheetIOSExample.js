@@ -88,6 +88,11 @@ var ShareActionSheetExample = React.createClass({
   showShareActionSheet() {
     ActionSheetIOS.showShareActionSheetWithOptions({
       url: 'https://code.facebook.com',
+      message: 'message to go with the shared url',
+      subject: 'a subject to go in the email heading',
+      excludedActivityTypes: [
+        'com.apple.UIKit.activity.PostToTwitter'
+      ]
     },
     (error) => {
       console.error(error);

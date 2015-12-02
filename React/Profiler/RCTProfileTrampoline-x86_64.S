@@ -1,11 +1,17 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
 #if RCT_DEV && defined(__x86_64__)
 
-/**
- * Define both symbols for compatibility with other assemblers
- */
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
 

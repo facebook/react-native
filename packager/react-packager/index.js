@@ -35,6 +35,15 @@ exports.buildBundle = function(options, bundleOptions) {
     });
 };
 
+exports.buildPrepackBundle = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.buildPrepackBundle(bundleOptions)
+    .then(function(p) {
+      server.end();
+      return p;
+    });
+};
+
 exports.buildPackageFromUrl =
 exports.buildBundleFromUrl = function(options, reqUrl) {
   var server = createNonPersistentServer(options);

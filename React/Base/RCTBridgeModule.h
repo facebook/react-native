@@ -76,7 +76,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * will be set automatically by the bridge when it initializes the module.
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
  */
-@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, weak, readonly) RCTBridge *bridge;
 
 /**
  * The queue that will be used to call all exported methods. If omitted, this

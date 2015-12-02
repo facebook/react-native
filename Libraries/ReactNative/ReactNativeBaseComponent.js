@@ -14,10 +14,9 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var warning = require('warning');
@@ -123,7 +122,7 @@ ReactNativeBaseComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      RCTUIManager
+      UIManager
         .manageChildren(containerTag, null, null, createdTags, indexes, null);
     }
   },
@@ -151,7 +150,7 @@ ReactNativeBaseComponent.Mixin = {
     );
 
     if (updatePayload) {
-      RCTUIManager.updateView(
+      UIManager.updateView(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
         this.viewConfig.uiViewClassName,
         updatePayload
@@ -216,7 +215,7 @@ ReactNativeBaseComponent.Mixin = {
     );
 
     var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
-    RCTUIManager.createView(
+    UIManager.createView(
       tag,
       this.viewConfig.uiViewClassName,
       nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,

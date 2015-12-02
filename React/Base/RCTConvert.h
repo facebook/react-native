@@ -12,6 +12,7 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTBorderStyle.h"
 #import "RCTTextDecorationLineType.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
@@ -140,6 +141,7 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
 @end

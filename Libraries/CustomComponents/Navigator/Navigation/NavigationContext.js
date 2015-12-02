@@ -23,6 +23,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule NavigationContext
+ * @noflow
  */
 'use strict';
 

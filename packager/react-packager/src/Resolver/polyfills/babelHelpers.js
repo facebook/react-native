@@ -11,8 +11,10 @@
 /* eslint-disable strict */
 
 // Created by running:
-// require('babel-core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits objectWithoutProperties possibleConstructorReturn slicedToArray toConsumableArray'.split(' '))
+// require('babel-core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits  interopRequireDefault interopRequireWildcard objectWithoutProperties possibleConstructorReturn slicedToArray toConsumableArray'.split(' '))
 // then replacing the `global` reference in the last line to also use `this`.
+//
+// actually, that's a lie, because babel6 omits _extends and createRawReactElement
 
 (function (global) {
   var babelHelpers = global.babelHelpers = {};
@@ -123,6 +125,29 @@
       }
     });
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  };
+
+  babelHelpers.interopRequireDefault = function (obj) {
+    return obj && obj.__esModule ? obj : {
+      default: obj
+    };
+  };
+
+  babelHelpers.interopRequireWildcard = function (obj) {
+    if (obj && obj.__esModule) {
+      return obj;
+    } else {
+      var newObj = {};
+
+      if (obj != null) {
+        for (var key in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+        }
+      }
+
+      newObj.default = obj;
+      return newObj;
+    }
   };
 
   babelHelpers.objectWithoutProperties = function (obj, keys) {

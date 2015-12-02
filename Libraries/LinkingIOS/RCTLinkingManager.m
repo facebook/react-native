@@ -21,15 +21,20 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleOpenURLNotification:)
-                                                 name:RCTOpenURLNotification
-                                               object:nil];
-  }
-  return self;
+  _bridge = bridge;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleOpenURLNotification:)
+                                               name:RCTOpenURLNotification
+                                             object:nil];
+}
+
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
 }
 
 - (void)dealloc
@@ -73,12 +78,6 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
   // This can be expensive, so we deliberately don't call on main thread
   BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
   callback(@[@(canOpen)]);
-}
-
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
 }
 
 @end

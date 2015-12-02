@@ -6,17 +6,16 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactElement = require('ReactElement');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
+var UIManager = require('UIManager');
+var View = require('View');
 
-var RCTUIManager = NativeModules.UIManager;
-
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var dismissKeyboard = require('dismissKeyboard');
+var requireNativeComponent = require('requireNativeComponent');
 
 var VIEWPAGER_REF = 'viewPager';
 
@@ -61,6 +60,7 @@ var VIEWPAGER_REF = 'viewPager';
 var ViewPagerAndroid = React.createClass({
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Index of initial page that should be selected. Use `setPage` method to
      * update the page, and `onPageSelected` to monitor page changes
@@ -155,9 +155,9 @@ var ViewPagerAndroid = React.createClass({
    * The transition between pages will be animated.
    */
   setPage: function(selectedPage: number) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.AndroidViewPager.Commands.setPage,
+      UIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
   },
@@ -167,9 +167,9 @@ var ViewPagerAndroid = React.createClass({
    * The transition between pages will be *not* be animated.
    */
   setPageWithoutAnimation: function(selectedPage: number) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
+      UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );
   },
@@ -187,9 +187,6 @@ var ViewPagerAndroid = React.createClass({
   },
 });
 
-var NativeAndroidViewPager = createReactNativeComponentClass({
-  validAttributes: ReactNativeViewAttributes.UIView,
-  uiViewClassName: 'AndroidViewPager',
-});
+var NativeAndroidViewPager = requireNativeComponent('AndroidViewPager', ViewPagerAndroid);
 
 module.exports = ViewPagerAndroid;
