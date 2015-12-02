@@ -273,7 +273,7 @@ var styles = StyleSheet.create({
     fontWeight: '500',
   },
   tile2: {
-    backgroundColor: '#eeeeee',
+    backgroundColor: '#eeeeef',
   },
   tile4: {
     backgroundColor: '#eeeecc',
