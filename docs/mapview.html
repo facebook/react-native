@@ -34,6 +34,17 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
   longitudeDelta<span class="token punctuation">:</span> <span class="token string">&#x27;0&#x27;</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
+type MapRegion <span class="token operator">=</span> <span class="token punctuation">{</span>
+  latitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  longitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  latitudeDelta<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  longitudeDelta<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+type MapRegionInputState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  region<span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
 <span class="token keyword">var</span> MapRegionInput <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
   propTypes<span class="token punctuation">:</span> <span class="token punctuation">{</span>
@@ -46,7 +57,7 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
     onChange<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> MapRegionInputState <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       region<span class="token punctuation">:</span> <span class="token punctuation">{</span>
         latitude<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
@@ -138,19 +149,42 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
 
   _change<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-      latitude<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>latitude<span class="token punctuation">)</span><span class="token punctuation">,</span>
-      longitude<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>longitude<span class="token punctuation">)</span><span class="token punctuation">,</span>
-      latitudeDelta<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>latitudeDelta<span class="token punctuation">)</span><span class="token punctuation">,</span>
-      longitudeDelta<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>longitudeDelta<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      region<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        latitude<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>latitude<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        longitude<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>longitude<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        latitudeDelta<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>latitudeDelta<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        longitudeDelta<span class="token punctuation">:</span> <span class="token function">parseFloat<span class="token punctuation">(</span></span>regionText<span class="token punctuation">.</span>longitudeDelta<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onChange<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>region<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+type Annotations <span class="token operator">=</span> Array&lt;<span class="token punctuation">{</span>
+  animateDrop<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  latitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  longitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  title<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+  subtitle<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+  hasLeftCallout<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  hasRightCallout<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  onLeftCalloutPress<span class="token operator">?</span><span class="token punctuation">:</span> Function<span class="token punctuation">,</span>
+  onRightCalloutPress<span class="token operator">?</span><span class="token punctuation">:</span> Function<span class="token punctuation">,</span>
+  tintColor<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+  image<span class="token operator">?</span><span class="token punctuation">:</span> any<span class="token punctuation">,</span>
+  id<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+type MapViewExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+  mapRegionInput<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
 <span class="token keyword">var</span> MapViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> MapViewExampleState <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -174,7 +208,7 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  <span class="token function">_getAnnotations<span class="token punctuation">(</span></span>region<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">_getAnnotations<span class="token punctuation">(</span></span>region<span class="token punctuation">)</span><span class="token punctuation">:</span> Annotations <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
       longitude<span class="token punctuation">:</span> region<span class="token punctuation">.</span>longitude<span class="token punctuation">,</span>
       latitude<span class="token punctuation">:</span> region<span class="token punctuation">.</span>latitude<span class="token punctuation">,</span>
@@ -208,9 +242,14 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+type CalloutMapViewExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
+  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CalloutMapViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> CalloutMapViewExampleState <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -246,9 +285,14 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+type CustomPinColorMapViewExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
+  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CustomPinColorMapViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> CustomPinColorMapViewExampleState <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -281,9 +325,14 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+type CustomPinImageMapViewExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
+  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CustomPinImageMapViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> CustomPinImageMapViewExampleState <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -316,9 +365,25 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+type Overlays <span class="token operator">=</span> Array&lt;<span class="token punctuation">{</span>
+  coordinates<span class="token operator">?</span><span class="token punctuation">:</span> Array&lt;<span class="token punctuation">{</span>
+    latitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+    longitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">,</span>
+  lineWidth<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+  strokeColor<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+  fillColor<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+  id<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+type CustomOverlayMapViewExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
+  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+  overlays<span class="token operator">?</span><span class="token punctuation">:</span> Overlays<span class="token punctuation">,</span>
+  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
+  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> CustomOverlayMapViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> CustomOverlayMapViewExampleState <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
