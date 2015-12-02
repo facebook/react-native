@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
+import com.facebook.react.modules.netinfo.ConnectivityModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
@@ -54,6 +55,7 @@ public class MainReactPackage implements ReactPackage {
       new IntentModule(reactContext),
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),
+      new ConnectivityModule(reactContext),
       new WebSocketModule(reactContext),
       new ToastModule(reactContext));
   }
