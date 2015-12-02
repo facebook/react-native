@@ -303,7 +303,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#eecc33',
   },
   tile2048: {
-    backgroundColor: '#eecc22',
+    backgroundColor: '#eecc21',
   },
   whiteText: {
     color: '#ffffff',
