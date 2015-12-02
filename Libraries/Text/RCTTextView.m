@@ -410,6 +410,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
+- (BOOL)isFirstResponder
+{
+  return [_textView isFirstResponder];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return [_textView canBecomeFirstResponder];
+}
+
 - (void)reactWillMakeFirstResponder
 {
   [_textView reactWillMakeFirstResponder];
@@ -427,7 +437,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (BOOL)resignFirstResponder
 {
-  return [_textView resignFirstResponder];
+  return [super resignFirstResponder] && [_textView resignFirstResponder];
 }
 
 - (void)layoutSubviews
