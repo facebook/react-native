@@ -9,6 +9,16 @@ next: linux-windows-support
 
 This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
 
+### Install Git
+
+  - **On Mac**, if you have installed [XCode](https://developer.apple.com/xcode/), Git is already installed, otherwise run the following:
+
+         brew install git
+
+  - **On Linux**, install Git [via your package manager](https://git-scm.com/download/linux).
+
+  - **On Windows**, download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.  
+  
 ### Install the Android SDK (unless you have it)
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
@@ -31,9 +41,6 @@ __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your 
   - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`.   
    
 __NOTE__: You need to restart the Command Prompt (Windows) / Terminal Emulator (Mac OS X, Linux) to apply the new Environment variables.
-
-### Install Git and add it to PATH (windows)  
-Download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.
 
 ### Use gradle daemon
 
