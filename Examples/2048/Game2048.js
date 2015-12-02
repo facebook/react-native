@@ -165,7 +165,6 @@ class Game2048 extends React.Component {
     if (this.state.board.hasWon()) {
       return;
     }
-
     this.startX = event.nativeEvent.pageX;
     this.startY = event.nativeEvent.pageY;
   }
