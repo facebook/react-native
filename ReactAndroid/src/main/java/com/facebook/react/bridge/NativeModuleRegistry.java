@@ -10,17 +10,16 @@
 package com.facebook.react.bridge;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.facebook.react.common.MapBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
@@ -28,18 +27,15 @@ import com.fasterxml.jackson.core.JsonGenerator;
   */
 public class NativeModuleRegistry {
 
-  private final ArrayList<ModuleDefinition> mModuleTable;
+  private final List<ModuleDefinition> mModuleTable;
   private final Map<Class<? extends NativeModule>, NativeModule> mModuleInstances;
-  private final String mModuleDescriptions;
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
 
   private NativeModuleRegistry(
-      ArrayList<ModuleDefinition> moduleTable,
-      Map<Class<? extends NativeModule>, NativeModule> moduleInstances,
-      String moduleDescriptions) {
+      List<ModuleDefinition> moduleTable,
+      Map<Class<? extends NativeModule>, NativeModule> moduleInstances) {
     mModuleTable = moduleTable;
     mModuleInstances = moduleInstances;
-    mModuleDescriptions = moduleDescriptions;
 
     mBatchCompleteListenerModules = new ArrayList<OnBatchCompleteListener>(mModuleTable.size());
     for (int i = 0; i < mModuleTable.size(); i++) {
@@ -62,8 +58,29 @@ public class NativeModuleRegistry {
     definition.call(catalystInstance, methodId, parameters);
   }
 
-  /* package */ String moduleDescriptions() {
-    return mModuleDescriptions;
+  /* package */ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateJSON");
+    try {
+      jg.writeStartObject();
+      for (ModuleDefinition moduleDef : mModuleTable) {
+        jg.writeObjectFieldStart(moduleDef.name);
+        jg.writeNumberField("moduleID", moduleDef.id);
+        jg.writeObjectFieldStart("methods");
+        for (int i = 0; i < moduleDef.methods.size(); i++) {
+          MethodRegistration method = moduleDef.methods.get(i);
+          jg.writeObjectFieldStart(method.name);
+          jg.writeNumberField("methodID", i);
+          jg.writeStringField("type", method.method.getType());
+          jg.writeEndObject();
+        }
+        jg.writeEndObject();
+        moduleDef.target.writeConstantsField(jg, "constants");
+        jg.writeEndObject();
+      }
+      jg.writeEndObject();
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   /* package */ void notifyCatalystInstanceDestroy() {
@@ -174,45 +191,16 @@ public class NativeModuleRegistry {
     }
 
     public NativeModuleRegistry build() {
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateJSON");
-      ArrayList<ModuleDefinition> moduleTable = new ArrayList<>();
-      Map<Class<? extends NativeModule>, NativeModule> moduleInstances = MapBuilder.newHashMap();
-      String moduleDefinitionJson;
-      try {
-        JsonFactory jsonFactory = new JsonFactory();
-        StringWriter writer = new StringWriter();
-        try {
-          JsonGenerator jg = jsonFactory.createGenerator(writer);
-          jg.writeStartObject();
-          int idx = 0;
-          for (NativeModule module : mModules.values()) {
-            ModuleDefinition moduleDef = new ModuleDefinition(idx++, module.getName(), module);
-            moduleTable.add(moduleDef);
-            moduleInstances.put(module.getClass(), module);
-            jg.writeObjectFieldStart(moduleDef.name);
-            jg.writeNumberField("moduleID", moduleDef.id);
-            jg.writeObjectFieldStart("methods");
-            for (int i = 0; i < moduleDef.methods.size(); i++) {
-              MethodRegistration method = moduleDef.methods.get(i);
-              jg.writeObjectFieldStart(method.name);
-              jg.writeNumberField("methodID", i);
-              jg.writeStringField("type", method.method.getType());
-              jg.writeEndObject();
-            }
-            jg.writeEndObject();
-            moduleDef.target.writeConstantsField(jg, "constants");
-            jg.writeEndObject();
-          }
-          jg.writeEndObject();
-          jg.close();
-        } catch (IOException ioe) {
-          throw new RuntimeException("Unable to serialize Java module configuration", ioe);
-        }
-        moduleDefinitionJson = writer.getBuffer().toString();
-      } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      List<ModuleDefinition> moduleTable = new ArrayList<>();
+      Map<Class<? extends NativeModule>, NativeModule> moduleInstances = new HashMap<>();
+
+      int idx = 0;
+      for (NativeModule module : mModules.values()) {
+        ModuleDefinition moduleDef = new ModuleDefinition(idx++, module.getName(), module);
+        moduleTable.add(moduleDef);
+        moduleInstances.put(module.getClass(), module);
       }
-      return new NativeModuleRegistry(moduleTable, moduleInstances, moduleDefinitionJson);
+      return new NativeModuleRegistry(moduleTable, moduleInstances);
     }
   }
 }

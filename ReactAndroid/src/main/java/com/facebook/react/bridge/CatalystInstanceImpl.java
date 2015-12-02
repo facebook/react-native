@@ -361,16 +361,15 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private String buildModulesConfigJSONProperty(
       NativeModuleRegistry nativeModuleRegistry,
       JavaScriptModulesConfig jsModulesConfig) {
-    // TODO(5300733): Serialize config using single json generator
     JsonFactory jsonFactory = new JsonFactory();
     StringWriter writer = new StringWriter();
     try {
       JsonGenerator jg = jsonFactory.createGenerator(writer);
       jg.writeStartObject();
       jg.writeFieldName("remoteModuleConfig");
-      jg.writeRawValue(nativeModuleRegistry.moduleDescriptions());
+      nativeModuleRegistry.writeModuleDescriptions(jg);
       jg.writeFieldName("localModulesConfig");
-      jg.writeRawValue(jsModulesConfig.moduleDescriptions());
+      jsModulesConfig.writeModuleDescriptions(jg);
       jg.writeEndObject();
       jg.close();
     } catch (IOException ioe) {
