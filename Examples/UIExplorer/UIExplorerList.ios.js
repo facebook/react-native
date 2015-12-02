@@ -68,7 +68,7 @@ var APIS = [
   require('./CameraRollExample.ios'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
-  require('./NetInfoExample'),
+  require('./NetInfoExample.ios'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./PushNotificationIOSExample'),
