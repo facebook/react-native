@@ -37,7 +37,7 @@ var onlyMultiline = {
 };
 
 var notMultiline = {
-  onSubmitEditing: true,
+  // nothing yet
 };
 
 if (Platform.OS === 'android') {
@@ -46,10 +46,6 @@ if (Platform.OS === 'android') {
   var RCTTextView = requireNativeComponent('RCTTextView', null);
   var RCTTextField = requireNativeComponent('RCTTextField', null);
 }
-
-type DefaultProps = {
-  blurOnSubmit: boolean;
-};
 
 type Event = Object;
 
@@ -73,17 +69,6 @@ type Event = Object;
  * ```
  *
  * Note that some props are only available with `multiline={true/false}`:
- * ```
- *   var onlyMultiline = {
- *     onSelectionChange: true, // not supported in Open Source yet
- *     onTextInput: true, // not supported in Open Source yet
- *     children: true,
- *   };
- *
- *   var notMultiline = {
- *     onSubmitEditing: true,
- *   };
- * ```
  */
 var TextInput = React.createClass({
   statics: {
@@ -304,7 +289,10 @@ var TextInput = React.createClass({
     selectTextOnFocus: PropTypes.bool,
     /**
      * If true, the text field will blur when submitted.
-     * The default value is true.
+     * The default value is true for single-line fields and false for
+     * multiline fields. Note that for multiline fields, setting blurOnSubmit
+     * to true means that pressing return will blur the field and trigger the
+     * onSubmitEditing event instead of inserting a newline into the field.
      * @platform ios
      */
     blurOnSubmit: PropTypes.bool,
@@ -321,12 +309,6 @@ var TextInput = React.createClass({
      * @platform android
      */
     underlineColorAndroid: PropTypes.string,
-  },
-
-  getDefaultProps: function(): DefaultProps {
-    return {
-      blurOnSubmit: true,
-    };
   },
 
   /**
