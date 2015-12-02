@@ -249,6 +249,12 @@ var apps = [
     author: 'Peter Cottle',
   },
   {
+    name: 'Mobabuild',
+    icon: 'http://mobabuild.co/images/applogo.png',
+    link: 'http://mobabuild.co',
+    author: 'Sercan Demircan ( @sercanov )',
+  },
+  {
     name: 'MockingBot',
     icon: 'https://s3.cn-north-1.amazonaws.com.cn/modao/downloads/images/MockingBot175.png',
     link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
@@ -391,12 +397,6 @@ var apps = [
     icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/80/4f/43/804f431d-2828-05aa-2593-99cfb0475351/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
-  },
-  {
-    name: 'Mobabuild',
-    icon: 'http://mobabuild.co/images/applogo.png',
-    link: 'http://mobabuild.co',
-    author: 'Sercan Demircan ( @sercanov )',
   },
 ];
 
