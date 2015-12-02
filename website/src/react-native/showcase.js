@@ -249,6 +249,12 @@ var apps = [
     author: 'Peter Cottle',
   },
   {
+    name: 'MockingBot',
+    icon: 'https://s3.cn-north-1.amazonaws.com.cn/modao/downloads/images/MockingBot175.png',
+    link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
+    author: 'YuanYi Zhang (@mockingbot)',
+  },
+  {
     name: 'Mr. Dapper',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple4/v4/e8/3f/7c/e83f7cb3-2602-f8e8-de9a-ce0a775a4a14/mzl.hmdjhfai.png',
     link: 'https://itunes.apple.com/us/app/mr.-dapper-men-fashion-app/id989735184?ls=1&mt=8',
