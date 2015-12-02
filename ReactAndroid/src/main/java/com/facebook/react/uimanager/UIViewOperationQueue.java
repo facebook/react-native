@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -322,6 +323,32 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class SetLayoutAnimationEnabledOperation implements UIOperation {
+    private final boolean mEnabled;
+
+    private SetLayoutAnimationEnabledOperation(final boolean enabled) {
+      mEnabled = enabled;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setLayoutAnimationEnabled(mEnabled);
+    }
+  }
+
+  private class ConfigureLayoutAnimationOperation implements UIOperation {
+    private final ReadableMap mConfig;
+
+    private ConfigureLayoutAnimationOperation(final ReadableMap config) {
+      mConfig = config;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.configureLayoutAnimation(mConfig);
+    }
+  }
+
   private final class MeasureOperation implements UIOperation {
 
     private final int mReactTag;
@@ -584,6 +611,18 @@ public class UIViewOperationQueue {
     mOperations.add(new RemoveAnimationOperation(animationID));
   }
 
+  public void enqueueSetLayoutAnimationEnabled(
+      final boolean enabled) {
+    mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
+  }
+
+  public void enqueueConfigureLayoutAnimation(
+      final ReadableMap config,
+      final Callback onSuccess,
+      final Callback onError) {
+    mOperations.add(new ConfigureLayoutAnimationOperation(config));
+  }
+
   public void enqueueMeasure(
       final int reactTag,
       final Callback callback) {
@@ -680,6 +719,9 @@ public class UIViewOperationQueue {
           mDispatchUIRunnables.get(i).run();
         }
         mDispatchUIRunnables.clear();
+
+        // Clear layout animation, as animation only apply to current UI operations batch.
+        mNativeViewHierarchyManager.clearLayoutAnimation();
       }
 
       ReactChoreographer.getInstance().postFrameCallback(

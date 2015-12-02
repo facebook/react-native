@@ -374,12 +374,40 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.showPopupMenu(reactTag, items, error, success);
   }
 
+  /**
+   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
+   * explicitly in order to avoid regression in existing application written for iOS using this API.
+   *
+   * Warning : This method will be removed in future version of React Native, and layout animation
+   * will be enabled by default, so always check for its existence before invoking it.
+   *
+   * TODO(9139831) : remove this method once layout animation is fully stable.
+   *
+   * @param enabled whether layout animation is enabled or not
+   */
+  @ReactMethod
+  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
+    mUIImplementation.setLayoutAnimationEnabledExperimental(enabled);
+  }
+
+  /**
+   * Configure an animation to be used for the native layout changes, and native views
+   * creation. The animation will only apply during the current batch operations.
+   *
+   * TODO(7728153) : animating view deletion is currently not supported.
+   * TODO(7613721) : callbacks are not supported, this feature will likely be killed.
+   *
+   * @param config the configuration of the animation for view addition/removal/update.
+   * @param success will be called when the animation completes, or when the animation get
+   *        interrupted. In this case, callback parameter will be false.
+   * @param error will be called if there was an error processing the animation
+   */
   @ReactMethod
   public void configureNextLayoutAnimation(
       ReadableMap config,
-      Callback successCallback,
-      Callback errorCallback) {
-    // TODO(6588266): Implement if required
+      Callback success,
+      Callback error) {
+    mUIImplementation.configureNextLayoutAnimation(config, success, error);
   }
 
   /**

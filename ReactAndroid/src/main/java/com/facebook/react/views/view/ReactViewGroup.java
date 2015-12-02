@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.view.animation.Animation;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -286,7 +287,15 @@ public class ReactViewGroup extends ViewGroup implements
     boolean intersects = clippingRect
         .intersects(sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
     boolean needUpdateClippingRecursive = false;
-    if (!intersects && child.getParent() != null) {
+    // We never want to clip children that are being animated, as this can easily break layout :
+    // when layout animation changes size and/or position of views contained inside a listview that
+    // clips offscreen children, we need to ensure that, when view exits the viewport, final size
+    // and position is set prior to removing the view from its listview parent.
+    // Otherwise, when view gets re-attached again, i.e when it re-enters the viewport after scroll,
+    // it won't be size and located properly.
+    Animation animation = child.getAnimation();
+    boolean isAnimating = animation != null && !animation.hasEnded();
+    if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       super.removeViewsInLayout(idx - clippedSoFar, 1);
