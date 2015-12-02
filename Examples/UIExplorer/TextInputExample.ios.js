@@ -549,6 +549,23 @@ exports.examples = [
     render: function(): ReactElement { return <BlurOnSubmitExample />; },
   },
   {
+    title: 'Multiline blur on submit',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.multiline}
+            placeholder='blurOnSubmit = true'
+            returnKeyType='next'
+            blurOnSubmit={true}
+            multiline={true}
+            onSubmitEditing={event => alert(event.nativeEvent.text)}
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Multiline',
     render: function() {
       return (

@@ -72,6 +72,7 @@
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
+    _blurOnSubmit = NO;
 
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
@@ -276,11 +277,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (textView.textWasPasted) {
     textView.textWasPasted = NO;
   } else {
+    
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                    reactTag:self.reactTag
                                        text:nil
                                         key:text
                                  eventCount:_nativeEventCount];
+
+    if (_blurOnSubmit && [text isEqualToString:@"\n"]) {
+
+      // TODO: the purpose of blurOnSubmit on RCTextField is to decide if the
+      // field should lose focus when return is pressed or not. We're cheating a
+      // bit here by using it on RCTextView to decide if return character should
+      // submit the form, or be entered into the field.
+      //
+      // The reason this is cheating is because there's no way to specify that
+      // you want the return key to be swallowed *and* have the field retain
+      // focus (which was what blurOnSubmit was originally for). For the case
+      // where _blurOnSubmit = YES, this is still the correct and expected
+      // behavior though, so we'll leave the don't-blur-or-add-newline problem
+      // to be solved another day.
+
+      [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                     reactTag:self.reactTag
+                                         text:self.text
+                                          key:nil
+                                   eventCount:_nativeEventCount];
+      [self resignFirstResponder];
+      return NO;
+    }
   }
 
   if (_maxLength == nil) {
