@@ -77,6 +77,17 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
  */
 + (UIView *)JSResponder;
 
+/**
+ * Normally, UI changes are not applied until the complete batch of method
+ * invocations from JavaScript to native has completed.
+ *
+ * Setting this to YES will flush UI changes sooner, which could potentially
+ * result in inconsistent UI updates.
+ *
+ * The default is NO (recommended).
+ */
+@property (atomic, assign) BOOL unsafeFlushUIChangesBeforeBatchEnds;
+
 @end
 
 /**
