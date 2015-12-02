@@ -86,7 +86,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   }
 
   @ReactProp(name = "rtl")
-  public void setLayoutDirection(ReactToolbar view, boolean flag) {
+  public void setRtl(ReactToolbar view, boolean rtl) {
     view.setLayoutDirection(flag ? LayoutDirection.LTR : LayoutDirection.RTL)
   }
 
