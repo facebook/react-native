@@ -79,7 +79,7 @@ function _server(argv, config, resolve, reject) {
   }
 
   args.assetRoots = args.assetRoots
-    ? argToArray(args.projectRoots).map(dir =>
+    ? argToArray(args.assetRoots).map(dir =>
       path.resolve(process.cwd(), dir)
     )
     : config.getAssetRoots();
