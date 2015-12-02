@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Copyright (C) 2014 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="58dip"
+                style="@style/RtlOverlay.Widget.AppCompat.Search.DropDown">
+
+    <!-- Icons come first in the layout, since their placement doesn't depend on
+         the placement of the text views. -->
+    <android.support.v7.internal.widget.TintImageView
+               android:id="@android:id/icon1"
+               android:layout_width="@dimen/abc_dropdownitem_icon_width"
+               android:layout_height="48dip"
+               android:scaleType="centerInside"
+               android:layout_alignParentTop="true"
+               android:layout_alignParentBottom="true"
+               android:visibility="invisible"
+               style="@style/RtlOverlay.Widget.AppCompat.Search.DropDown.Icon1" />
+
+    <android.support.v7.internal.widget.TintImageView
+               android:id="@+id/edit_query"
+               android:layout_width="48dip"
+               android:layout_height="48dip"
+               android:scaleType="centerInside"
+               android:layout_alignParentTop="true"
+               android:layout_alignParentBottom="true"
+               android:background="?attr/selectableItemBackground"
+               android:visibility="gone"
+               style="@style/RtlOverlay.Widget.AppCompat.Search.DropDown.Query" />
+
+    <android.support.v7.internal.widget.TintImageView
+               android:id="@id/android:icon2"
+               android:layout_width="48dip"
+               android:layout_height="48dip"
+               android:scaleType="centerInside"
+               android:layout_alignWithParentIfMissing="true"
+               android:layout_alignParentTop="true"
+               android:layout_alignParentBottom="true"
+               android:visibility="gone"
+               style="@style/RtlOverlay.Widget.AppCompat.Search.DropDown.Icon2" />
+
+
+    <!-- The subtitle comes before the title, since the height of the title depends on whether the
+         subtitle is visible or gone. -->
+    <TextView android:id="@android:id/text2"
+              style="?android:attr/dropDownItemStyle"
+              android:textAppearance="?attr/textAppearanceSearchResultSubtitle"
+              android:singleLine="true"
+              android:layout_width="match_parent"
+              android:layout_height="29dip"
+              android:paddingBottom="4dip"
+              android:gravity="top"
+              android:layout_alignWithParentIfMissing="true"
+              android:layout_alignParentBottom="true"
+              android:visibility="gone" />
+
+    <!-- The title is placed above the subtitle, if there is one. If there is no
+         subtitle, it fills the parent. -->
+    <TextView android:id="@android:id/text1"
+              style="?android:attr/dropDownItemStyle"
+              android:textAppearance="?attr/textAppearanceSearchResultTitle"
+              android:singleLine="true"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_centerVertical="true"
+              android:layout_above="@android:id/text2" />
+
+</RelativeLayout>
+<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/layout/abc_search_dropdown_item_icons_2line.xml -->

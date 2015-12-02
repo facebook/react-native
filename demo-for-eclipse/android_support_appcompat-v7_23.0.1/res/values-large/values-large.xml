@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/values-large/bools.xml -->
+    <eat-comment/>
+    <bool name="abc_action_bar_embed_tabs_pre_jb">true</bool>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/values-large/config.xml -->
+    <eat-comment/>
+    <bool name="abc_config_allowActionMenuItemTextWithIcon">true</bool>
+    <dimen name="abc_config_prefDialogWidth">440dp</dimen>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/values-large/dimens.xml -->
+    <eat-comment/>
+    <dimen name="abc_search_view_text_min_width">192dip</dimen>
+    <item name="dialog_fixed_height_major" type="dimen">60%</item>
+    <item name="dialog_fixed_height_minor" type="dimen">90%</item>
+    <item name="dialog_fixed_width_major" type="dimen">60%</item>
+    <item name="dialog_fixed_width_minor" type="dimen">90%</item>
+    <integer name="abc_max_action_buttons">4</integer>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/values-large/themes_base.xml -->
+    <eat-comment/>
+    <style name="Base.Theme.AppCompat.DialogWhenLarge" parent="Base.Theme.AppCompat.Dialog.FixedSize"/>
+    <style name="Base.Theme.AppCompat.Light.DialogWhenLarge" parent="Base.Theme.AppCompat.Light.Dialog.FixedSize"/>
+</resources>

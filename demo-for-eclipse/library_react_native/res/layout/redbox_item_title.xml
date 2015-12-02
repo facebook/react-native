@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/catalyst_redbox_title"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="16.0dip"
+    android:textColor="@android:color/white"
+    android:textSize="16.0sp"
+    android:textStyle="bold" />

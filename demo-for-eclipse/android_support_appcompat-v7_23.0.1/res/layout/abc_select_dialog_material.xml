@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2015 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!--
+    This layout file is used by the AlertDialog when displaying a list of items.
+    This layout file is inflated and used as the ListView to display the items.
+    Assign an ID so its state will be saved/restored.
+-->
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/select_dialog_listview"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:cacheColorHint="@null"
+      android:divider="?attr/listDividerAlertDialog"
+      android:scrollbars="vertical"
+      android:overScrollMode="ifContentScrolls"
+      android:fadingEdge="none"
+      android:paddingTop="@dimen/abc_dialog_list_padding_vertical_material"
+      android:paddingBottom="@dimen/abc_dialog_list_padding_vertical_material"
+      android:clipToPadding="false"
+      style="@style/Widget.AppCompat.ListView" /><!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/layout/abc_select_dialog_material.xml -->

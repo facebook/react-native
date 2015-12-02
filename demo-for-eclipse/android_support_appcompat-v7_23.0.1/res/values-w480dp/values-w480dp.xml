@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/values-w480dp/bools.xml -->
+    <eat-comment/>
+    <bool name="abc_action_bar_embed_tabs_pre_jb">true</bool>
+    <!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/values-w480dp/config.xml -->
+    <eat-comment/>
+    <bool name="abc_config_allowActionMenuItemTextWithIcon">true</bool>
+</resources>

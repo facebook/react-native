@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="catalyst_perf"
+        android:title="Performance" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="js_dev_mode_debug"
+            android:summary="Load JavaScript bundle with __DEV__ = true for easier debugging.  Disable for performance testing."
+            android:title="JS Dev Mode" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="fps_debug"
+            android:summary="Overlay FPS information and print debug FPS info about animations"
+            android:title="FPS Debugging" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="animations_debug"
+            android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."
+            android:title="Animations FPS Summaries" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_key_catalyst_debug"
+        android:title="Debugging" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="reload_on_js_change"
+            android:summary="Reload JS automatically when JS changes. It&apos;s required for this to work to have dev server connection setup correctly."
+            android:title="Auto reload on JS change" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="debug_http_host"
+            android:summary="Debug server host &amp; port for downloading JS bundle or communicating with JS debugger. With this setting empty launcher should work fine when running on emulator (or genymotion) and connection to debug server running on emulator&apos;s host."
+            android:title="Debug server host &amp; port for device" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

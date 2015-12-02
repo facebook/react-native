@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="GenericDraweeView">
+        <attr name="fadeDuration" format="integer" />
+        <attr name="viewAspectRatio" format="float" />
+        <attr name="placeholderImage" format="reference" />
+        <attr name="placeholderImageScaleType">
+            <enum name="none" value="-1" />
+            <enum name="fitXY" value="0" />
+            <enum name="fitStart" value="1" />
+            <enum name="fitCenter" value="2" />
+            <enum name="fitEnd" value="3" />
+            <enum name="center" value="4" />
+            <enum name="centerInside" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="focusCrop" value="7" />
+        </attr>
+        <attr name="retryImage" format="reference" />
+        <attr name="retryImageScaleType">
+            <enum name="none" value="-1" />
+            <enum name="fitXY" value="0" />
+            <enum name="fitStart" value="1" />
+            <enum name="fitCenter" value="2" />
+            <enum name="fitEnd" value="3" />
+            <enum name="center" value="4" />
+            <enum name="centerInside" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="focusCrop" value="7" />
+        </attr>
+        <attr name="failureImage" format="reference" />
+        <attr name="failureImageScaleType">
+            <enum name="none" value="-1" />
+            <enum name="fitXY" value="0" />
+            <enum name="fitStart" value="1" />
+            <enum name="fitCenter" value="2" />
+            <enum name="fitEnd" value="3" />
+            <enum name="center" value="4" />
+            <enum name="centerInside" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="focusCrop" value="7" />
+        </attr>
+        <attr name="progressBarImage" format="reference" />
+        <attr name="progressBarImageScaleType">
+            <enum name="none" value="-1" />
+            <enum name="fitXY" value="0" />
+            <enum name="fitStart" value="1" />
+            <enum name="fitCenter" value="2" />
+            <enum name="fitEnd" value="3" />
+            <enum name="center" value="4" />
+            <enum name="centerInside" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="focusCrop" value="7" />
+        </attr>
+        <attr name="progressBarAutoRotateInterval" format="integer" />
+        <attr name="actualImageScaleType">
+            <enum name="none" value="-1" />
+            <enum name="fitXY" value="0" />
+            <enum name="fitStart" value="1" />
+            <enum name="fitCenter" value="2" />
+            <enum name="fitEnd" value="3" />
+            <enum name="center" value="4" />
+            <enum name="centerInside" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="focusCrop" value="7" />
+        </attr>
+        <attr name="backgroundImage" format="reference" />
+        <attr name="overlayImage" format="reference" />
+        <attr name="pressedStateOverlayImage" format="reference" />
+        <attr name="roundAsCircle" format="boolean" />
+        <attr name="roundedCornerRadius" format="dimension" />
+        <attr name="roundTopLeft" format="boolean" />
+        <attr name="roundTopRight" format="boolean" />
+        <attr name="roundBottomRight" format="boolean" />
+        <attr name="roundBottomLeft" format="boolean" />
+        <attr name="roundWithOverlayColor" format="color" />
+        <attr name="roundingBorderWidth" format="dimension" />
+        <attr name="roundingBorderColor" format="color" />
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+  <PreferenceCategory
+      android:key="catalyst_perf"
+      android:title="Performance"
+      >
+    <CheckBoxPreference
+        android:key="js_dev_mode_debug"
+        android:title="JS Dev Mode"
+        android:summary="Load JavaScript bundle with __DEV__ = true for easier debugging.  Disable for performance testing."
+        android:defaultValue="true"
+        />
+    <CheckBoxPreference
+        android:key="animations_debug"
+        android:title="Animations FPS Summaries"
+        android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."
+        android:defaultValue="false"
+        />
+  </PreferenceCategory>
+  <PreferenceCategory
+      android:key="pref_key_catalyst_debug"
+      android:title="Debugging"
+      >
+    <EditTextPreference
+        android:key="debug_http_host"
+        android:title="Debug server host &amp; port for device"
+        android:summary="Debug server host &amp; port for downloading JS bundle or communicating with JS debugger. With this setting empty launcher should work fine when running on emulator (or genymotion) and connection to debug server running on emulator's host."
+        android:defaultValue=""
+        />
+  </PreferenceCategory>
+</PreferenceScreen>

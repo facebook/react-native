@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2015 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/status_bar_latest_event_content"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:orientation="horizontal"
+    >
+    <ImageView android:id="@+id/icon"
+        android:layout_width="@dimen/notification_large_icon_width"
+        android:layout_height="@dimen/notification_large_icon_width"
+        android:scaleType="centerCrop"
+        />
+    <include layout="@layout/notification_template_lines"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+    <LinearLayout
+        android:id="@+id/media_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical|end"
+        android:orientation="horizontal"
+        android:layoutDirection="ltr"
+        >
+        <!-- media buttons will be added here -->
+    </LinearLayout>
+    <include layout="@layout/notification_media_cancel_action"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"/>
+    <ImageView android:id="@+id/end_padder"
+        android:layout_width="6dp"
+        android:layout_height="match_parent"
+        />
+</LinearLayout>
+<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/layout/notification_template_media.xml -->

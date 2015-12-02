@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2015 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/parentPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <LinearLayout
+            android:id="@+id/topPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:id="@+id/title_template"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="?attr/dialogPreferredPadding"
+                android:paddingRight="?attr/dialogPreferredPadding"
+                android:paddingTop="@dimen/abc_dialog_padding_top_material">
+
+            <ImageView
+                    android:id="@android:id/icon"
+                    android:layout_width="32dip"
+                    android:layout_height="32dip"
+                    android:scaleType="fitCenter"
+                    android:src="@null"
+                    style="@style/RtlOverlay.Widget.AppCompat.DialogTitle.Icon"/>
+
+            <android.support.v7.internal.widget.DialogTitle
+                    android:id="@+id/alertTitle"
+                    style="?attr/android:windowTitleStyle"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="viewStart" />
+
+        </LinearLayout>
+        <!-- If the client uses a customTitle, it will be added here. -->
+    </LinearLayout>
+
+    <FrameLayout
+            android:id="@+id/contentPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="48dp">
+
+        <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false">
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <TextView
+                        android:id="@android:id/message"
+                        style="@style/TextAppearance.AppCompat.Subhead"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="?attr/dialogPreferredPadding"
+                        android:paddingTop="@dimen/abc_dialog_padding_top_material"
+                        android:paddingRight="?attr/dialogPreferredPadding"/>
+
+                <View
+                        android:id="@+id/textSpacerNoButtons"
+                        android:visibility="gone"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/abc_dialog_padding_top_material"/>
+            </LinearLayout>
+        </ScrollView>
+
+    </FrameLayout>
+
+    <FrameLayout
+            android:id="@+id/customPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="48dp">
+
+        <FrameLayout
+                android:id="@+id/custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+    </FrameLayout>
+
+    <LinearLayout
+            android:id="@+id/buttonPanel"
+            style="?attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="locale"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:gravity="bottom">
+
+        <Button
+                android:id="@android:id/button3"
+                style="?attr/buttonBarNeutralButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:visibility="invisible"/>
+
+        <Button
+                android:id="@android:id/button2"
+                style="?attr/buttonBarNegativeButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <Button
+                android:id="@android:id/button1"
+                style="?attr/buttonBarPositiveButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+</LinearLayout><!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/mnc-sdk-release/frameworks/support/v7/appcompat/res/layout/abc_alert_dialog_material.xml -->
