@@ -1094,6 +1094,10 @@ function createAnimatedComponent(Component: any): any {
   }
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
+      if (!Component.propTypes) {
+        return;
+      }
+
       for (var key in ViewStylePropTypes) {
         if (!Component.propTypes[key] && props[key] !== undefined) {
           console.error(
