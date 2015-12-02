@@ -239,6 +239,11 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   }
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return _jsRequestingFirstResponder;
+}
+
 - (void)reactWillMakeFirstResponder
 {
   _jsRequestingFirstResponder = YES;
@@ -247,11 +252,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (void)reactDidMakeFirstResponder
 {
   _jsRequestingFirstResponder = NO;
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
 }
 
 - (BOOL)resignFirstResponder
