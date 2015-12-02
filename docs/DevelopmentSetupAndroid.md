@@ -28,7 +28,10 @@ __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your 
         
         export ANDROID_HOME=<path_where_you_unpacked_android_sdk>
 
-  - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`
+  - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`. __NOTE__: You need to reopen current CMD processes to apply the new Environment variables.
+
+### Install git and add it to PATH (windows)  
+Download [git for windows](https://git-for-windows.github.io/) and install, remember to add it to `PATH` environment variable during installation. Otherwises you may hit a `not found: git` error.
 
 ### Use gradle daemon
 
