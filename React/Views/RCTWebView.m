@@ -126,6 +126,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     @"title": [_webView stringByEvaluatingJavaScriptFromString:@"document.title"],
     @"canGoBack": @(_webView.canGoBack),
     @"canGoForward" : @(_webView.canGoForward),
+    @"html": [_webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"],
   }];
 
   return event;
