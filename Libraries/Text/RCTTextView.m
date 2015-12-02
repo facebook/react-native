@@ -201,10 +201,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)updateContentSize
 {
-  _textView.scrollEnabled = YES;
-  _scrollView.contentSize = _textView.contentSize;
-  _textView.frame = (CGRect){CGPointZero, _scrollView.contentSize};
-  _textView.scrollEnabled = NO;
+  CGSize size = (CGSize){_scrollView.frame.size.width, INFINITY};
+  size.height = [_textView sizeThatFits:size].height;
+  _scrollView.contentSize = size;
+  _textView.frame = (CGRect){CGPointZero, size};
 }
 
 - (void)updatePlaceholder
@@ -462,7 +462,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (BOOL)resignFirstResponder
 {
-  return [super resignFirstResponder] && [_textView resignFirstResponder];
+  [super resignFirstResponder];
+  return [_textView resignFirstResponder];
 }
 
 - (void)layoutSubviews
