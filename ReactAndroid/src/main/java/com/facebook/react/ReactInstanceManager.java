@@ -47,6 +47,18 @@ import com.facebook.react.uimanager.ViewManager;
  * have a static method, and so cannot (in Java < 8), be one.
  */
 public abstract class ReactInstanceManager {
+
+  /**
+   * Listener interface for react instance events.
+   */
+  public interface ReactInstanceEventListener {
+    /**
+     * Called when the react context is initialized (all modules registered). Always called on the
+     * UI thread.
+     */
+    void onReactContextInitialized(ReactContext context);
+  }
+
   public abstract DevSupportManager getDevSupportManager();
 
   /**
@@ -117,6 +129,11 @@ public abstract class ReactInstanceManager {
    */
   public abstract List<ViewManager> createAllViewManagers(
     ReactApplicationContext catalystApplicationContext);
+
+  /**
+   * Add a listener to be notified of react instance events.
+   */
+  public abstract void addReactInstanceEventListener(ReactInstanceEventListener listener);
 
   @VisibleForTesting
   public abstract @Nullable ReactContext getCurrentReactContext();
