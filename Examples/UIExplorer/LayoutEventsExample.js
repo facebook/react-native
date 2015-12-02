@@ -24,19 +24,30 @@ var {
   View,
 } = React;
 
+type Layout = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
 type LayoutEvent = {
   nativeEvent: {
-    layout: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    };
+    layout: Layout,
   };
 };
 
+type State = {
+  containerStyle?: { width: number },
+  extraText?: string,
+  imageLayout?: Layout,
+  textLayout?: Layout,
+  viewLayout?: Layout,
+  viewStyle: { margin: number },
+};
+
 var LayoutEventExample = React.createClass({
-  getInitialState: function() {
+  getInitialState(): State {
     return {
       viewStyle: {
         margin: 20,
