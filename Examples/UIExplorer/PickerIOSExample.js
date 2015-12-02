@@ -99,7 +99,7 @@ var PickerExample = React.createClass({
           {CAR_MAKES_AND_MODELS[this.state.carMake].models.map(
             (modelName, modelIndex) => (
               <PickerItemIOS
-                key={this.state.carmake + '_' + modelIndex}
+                key={this.state.carMake + '_' + modelIndex}
                 value={modelIndex}
                 label={modelName}
               />

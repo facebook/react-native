@@ -31,6 +31,17 @@ var regionText = {
   longitudeDelta: '0',
 };
 
+type MapRegion = {
+  latitude: number,
+  longitude: number,
+  latitudeDelta: number,
+  longitudeDelta: number,
+};
+
+type MapRegionInputState = {
+  region: MapRegion,
+};
+
 var MapRegionInput = React.createClass({
 
   propTypes: {
@@ -43,7 +54,7 @@ var MapRegionInput = React.createClass({
     onChange: React.PropTypes.func.isRequired,
   },
 
-  getInitialState: function() {
+  getInitialState(): MapRegionInputState {
     return {
       region: {
         latitude: 0,
@@ -135,19 +146,42 @@ var MapRegionInput = React.createClass({
 
   _change: function() {
     this.setState({
-      latitude: parseFloat(regionText.latitude),
-      longitude: parseFloat(regionText.longitude),
-      latitudeDelta: parseFloat(regionText.latitudeDelta),
-      longitudeDelta: parseFloat(regionText.longitudeDelta),
+      region: {
+        latitude: parseFloat(regionText.latitude),
+        longitude: parseFloat(regionText.longitude),
+        latitudeDelta: parseFloat(regionText.latitudeDelta),
+        longitudeDelta: parseFloat(regionText.longitudeDelta),
+      },
     });
     this.props.onChange(this.state.region);
   },
 
 });
 
+type Annotations = Array<{
+  animateDrop?: boolean,
+  latitude: number,
+  longitude: number,
+  title?: string,
+  subtitle?: string,
+  hasLeftCallout?: boolean,
+  hasRightCallout?: boolean,
+  onLeftCalloutPress?: Function,
+  onRightCalloutPress?: Function,
+  tintColor?: string,
+  image?: any,
+  id?: string,
+}>;
+type MapViewExampleState = {
+  isFirstLoad: boolean,
+  mapRegion?: MapRegion,
+  mapRegionInput?: MapRegion,
+  annotations?: Annotations,
+};
+
 var MapViewExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): MapViewExampleState {
     return {
       isFirstLoad: true,
     };
@@ -171,7 +205,7 @@ var MapViewExample = React.createClass({
     );
   },
 
-  _getAnnotations(region) {
+  _getAnnotations(region): Annotations {
     return [{
       longitude: region.longitude,
       latitude: region.latitude,
@@ -205,9 +239,14 @@ var MapViewExample = React.createClass({
 
 });
 
+type CalloutMapViewExampleState = {
+  isFirstLoad: boolean,
+  annotations?: Annotations,
+  mapRegion?: MapRegion,
+};
 var CalloutMapViewExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): CalloutMapViewExampleState {
     return {
       isFirstLoad: true,
     };
@@ -243,9 +282,14 @@ var CalloutMapViewExample = React.createClass({
 
 });
 
+type CustomPinColorMapViewExampleState = {
+  isFirstLoad: boolean,
+  annotations?: Annotations,
+  mapRegion?: MapRegion,
+};
 var CustomPinColorMapViewExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): CustomPinColorMapViewExampleState {
     return {
       isFirstLoad: true,
     };
@@ -278,9 +322,14 @@ var CustomPinColorMapViewExample = React.createClass({
 
 });
 
+type CustomPinImageMapViewExampleState = {
+  isFirstLoad: boolean,
+  annotations?: Annotations,
+  mapRegion?: MapRegion,
+};
 var CustomPinImageMapViewExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): CustomPinImageMapViewExampleState {
     return {
       isFirstLoad: true,
     };
@@ -313,9 +362,25 @@ var CustomPinImageMapViewExample = React.createClass({
 
 });
 
+type Overlays = Array<{
+  coordinates?: Array<{
+    latitude: number,
+    longitude: number,
+  }>,
+  lineWidth?: number,
+  strokeColor?: string,
+  fillColor?: string,
+  id?: string,
+}>;
+type CustomOverlayMapViewExampleState = {
+  isFirstLoad: boolean,
+  overlays?: Overlays,
+  annotations?: Annotations,
+  mapRegion?: MapRegion,
+};
 var CustomOverlayMapViewExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): CustomOverlayMapViewExampleState {
     return {
       isFirstLoad: true,
     };

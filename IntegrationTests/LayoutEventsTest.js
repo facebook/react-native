@@ -27,19 +27,38 @@ function debug() {
   // console.log.apply(null, arguments);
 }
 
+type Layout = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 type LayoutEvent = {
   nativeEvent: {
-    layout: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    };
+    layout: Layout;
   };
+};
+type Style = {
+  margin?: number,
+  padding?: number,
+  borderColor?: string,
+  borderWidth?: number,
+  backgroundColor?: string,
+  width?: number,
+};
+
+type State = {
+  didAnimation: boolean,
+  extraText?: string,
+  imageLayout?: Layout,
+  textLayout?: Layout,
+  viewLayout?: Layout,
+  viewStyle?: Style,
+  containerStyle?: Style,
 };
 
 var LayoutEventsTest = React.createClass({
-  getInitialState: function() {
+  getInitialState(): State {
     return {
       didAnimation: false,
     };

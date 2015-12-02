@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AsyncStorage
+ * @noflow
  * @flow-weak
  */
 'use strict';

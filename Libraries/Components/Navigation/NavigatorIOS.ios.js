@@ -74,7 +74,7 @@ type State = {
   fromIndex: number;
   toIndex: number;
   makingNavigatorRequest: boolean;
-  updatingAllIndicesAtOrBeyond: number;
+  updatingAllIndicesAtOrBeyond: ?number;
 }
 
 type Event = Object;
@@ -592,7 +592,7 @@ var NavigatorIOS = React.createClass({
 
   _routeToStackItem: function(route: Route, i: number) {
     var Component = route.component;
-    var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond !== null &&
+    var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond != null &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
 
     return (
