@@ -17,6 +17,8 @@ var Platform = require('Platform');
 var WebSocketBase = require('WebSocketBase');
 var WebSocketEvent = require('WebSocketEvent');
 
+var base64 = require('base64-js');
+
 var WebSocketId = 0;
 var CLOSE_NORMAL = 1000;
 
@@ -78,9 +80,20 @@ class WebSocket extends WebSocketBase {
         if (ev.id !== id) {
           return;
         }
-        var event = new WebSocketEvent('message', {
-          data: ev.data
-        });
+
+        var message;
+
+        if (ev.type === 'text') {
+          message = {
+            data: ev.data
+          };
+        } else if (ev.type === 'binary') {
+          message = {
+            data: base64.toByteArray(ev.data).buffer
+          };
+        }
+
+        var event = new WebSocketEvent('message', message);
         this.onmessage && this.onmessage(event);
         this.dispatchEvent(event);
       }),
