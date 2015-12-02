@@ -11,6 +11,7 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @provides ListViewPagingExample
  * @flow
  */
 'use strict';
@@ -25,6 +26,11 @@ var {
   TouchableOpacity,
   View,
 } = React;
+
+var NativeModules = require('NativeModules');
+var {
+  UIManager,
+} = NativeModules;
 
 var PAGE_SIZE = 4;
 var THUMB_URLS = [
@@ -47,6 +53,10 @@ var NUM_ROWS_PER_SECTION = 10;
 var Thumb = React.createClass({
   getInitialState: function() {
     return {thumbIndex: this._getThumbIdx(), dir: 'row'};
+  },
+  componentWillMount: function() {
+    UIManager.setLayoutAnimationEnabledExperimental &&
+      UIManager.setLayoutAnimationEnabledExperimental(true);
   },
   _getThumbIdx: function() {
     return Math.floor(Math.random() * THUMB_URLS.length);
