@@ -23,7 +23,8 @@
     "transform-object-rest-spread",
     "transform-react-display-name",
     "transform-react-jsx",
-    "transform-regenerator"
+    "transform-regenerator",
+    "transform-es2015-for-of"
   ],
   "sourceMaps": false
 }
