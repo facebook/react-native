@@ -12,10 +12,11 @@ package com.facebook.react;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -95,6 +96,8 @@ import com.facebook.systrace.Systrace;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
+  private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
+      new ConcurrentLinkedQueue<>();
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
 
@@ -406,6 +409,7 @@ import com.facebook.systrace.Systrace;
       mCurrentReactContext = null;
       mHasStartedCreatingInitialContext = false;
     }
+    mCurrentActivity = null;
   }
 
   @Override
@@ -482,6 +486,11 @@ import com.facebook.systrace.Systrace;
     }
   }
 
+  @Override
+  public void addReactInstanceEventListener(ReactInstanceEventListener listener) {
+    mReactInstanceEventListeners.add(listener);
+  }
+
   @VisibleForTesting
   @Override
   public @Nullable ReactContext getCurrentReactContext() {
@@ -534,6 +543,10 @@ import com.facebook.systrace.Systrace;
 
     for (ReactRootView rootView : mAttachedRootViews) {
       attachMeasuredRootViewToInstance(rootView, catalystInstance);
+    }
+
+    for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
+      listener.onReactContextInitialized(reactContext);
     }
   }
 
