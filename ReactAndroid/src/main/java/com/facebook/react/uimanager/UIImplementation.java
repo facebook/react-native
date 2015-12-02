@@ -698,8 +698,18 @@ public class UIImplementation {
           absoluteX,
           absoluteY,
           mOperationsQueue,
-          mNativeViewHierarchyOptimizer,
-          eventDispatcher);
+          mNativeViewHierarchyOptimizer);
+      
+      // notify JS about layout event if requested
+      if (cssNode.shouldNotifyOnLayout()) {
+        eventDispatcher.dispatchEvent(
+            OnLayoutEvent.obtain(
+                tag,
+                cssNode.getScreenX(),
+                cssNode.getScreenY(),
+                cssNode.getScreenWidth(),
+                cssNode.getScreenHeight()));
+      }
     }
     cssNode.markUpdateSeen();
   }
