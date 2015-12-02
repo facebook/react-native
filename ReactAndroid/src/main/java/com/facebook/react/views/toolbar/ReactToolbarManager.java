@@ -87,7 +87,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @ReactProp(name = "rtl")
   public void setRtl(ReactToolbar view, boolean rtl) {
-    view.setLayoutDirection(rtl ? LayoutDirection.LTR : LayoutDirection.RTL)
+    view.setLayoutDirection(rtl ? LayoutDirection.LTR : LayoutDirection.RTL);
   }
 
   @ReactProp(name = "titleColor", customType = "Color")
