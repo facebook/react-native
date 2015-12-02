@@ -59,6 +59,8 @@ static NSString *RCTGenerateFormBoundary()
 - (RCTURLRequestCancellationBlock)process:(NSDictionaryArray *)formData
                                  callback:(RCTHTTPQueryResult)callback
 {
+  RCTAssertThread(_networker.methodQueue, @"process: must be called on method queue");
+
   if (formData.count == 0) {
     return callback(nil, nil);
   }
@@ -76,6 +78,8 @@ static NSString *RCTGenerateFormBoundary()
 - (RCTURLRequestCancellationBlock)handleResult:(NSDictionary<NSString *, id> *)result
                                          error:(NSError *)error
 {
+  RCTAssertThread(_networker.methodQueue, @"handleResult: must be called on method queue");
+
   if (error) {
     return _callback(error, nil);
   }
@@ -256,7 +260,7 @@ RCT_EXPORT_MODULE()
 - (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(nullable NSDictionary<NSString *, id> *)query callback:
 (RCTURLRequestCancellationBlock (^)(NSError *error, NSDictionary<NSString *, id> *result))callback
 {
-  RCTAssertThread(_methodQueue, @"processData: must be called on method queue");
+  RCTAssertThread(_methodQueue, @"processDataForHTTPQuery: must be called on method queue");
 
   if (!query) {
     return callback(nil, nil);
@@ -270,7 +274,9 @@ RCT_EXPORT_MODULE()
 
     __block RCTURLRequestCancellationBlock cancellationBlock = nil;
     RCTNetworkTask *task = [self networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
-      cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
+      dispatch_async(_methodQueue, ^{
+        cancellationBlock = callback(error, data ? @{@"body": data, @"contentType": RCTNullIfNil(response.MIMEType)} : nil);
+      });
     }];
 
     [task start];
