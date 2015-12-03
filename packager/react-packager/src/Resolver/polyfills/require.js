@@ -54,7 +54,7 @@
       // require cycles inside the factory from causing an infinite require loop.
       mod.isInitialized = true;
 
-      __DEV__ && BridgeProfiling().profile(id);
+      __DEV__ && BridgeProfiling().profile('JS_require_' + id);
 
       // keep args in sync with with defineModuleCode in
       // packager/react-packager/src/Resolver/index.js
