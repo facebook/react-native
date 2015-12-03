@@ -69,10 +69,20 @@ numberOfRowsInComponent:(__unused NSInteger)component
   return [self itemForRow:row][@"value"];
 }
 
-- (NSString *)pickerView:(__unused UIPickerView *)pickerView
-             titleForRow:(NSInteger)row forComponent:(__unused NSInteger)component
-{
-  return [self itemForRow:row][@"label"];
+- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row
+ forComponent:(NSInteger)component reusingView:(UIView *)view {
+
+  UILabel *retval = (UILabel*)view;
+  if (!retval) {
+      retval = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, 0.0f, [pickerView rowSizeForComponent:component].width, [pickerView rowSizeForComponent:component].height)];
+  }
+
+  retval.font = [UIFont systemFontOfSize:[self fontSize]];
+  retval.textColor = [self color];
+  retval.textAlignment = [self textAlign];
+  retval.text = [self itemForRow:row][@"label"];
+
+  return retval;
 }
 
 - (void)pickerView:(__unused UIPickerView *)pickerView

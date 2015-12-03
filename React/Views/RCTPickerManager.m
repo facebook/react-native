@@ -25,6 +25,9 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(items, NSDictionaryArray)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(fontSize, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
