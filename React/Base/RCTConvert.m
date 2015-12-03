@@ -172,7 +172,7 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
   }
   if ([json isKindOfClass:[NSNumber class]]) {
     NSArray *allValues = mapping.allValues;
-    if ([mapping.allValues containsObject:json] || [json isEqual:defaultValue]) {
+    if ([allValues containsObject:json] || [json isEqual:defaultValue]) {
       return json;
     }
     RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
