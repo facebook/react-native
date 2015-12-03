@@ -52,7 +52,10 @@ var TabBarItemIOS = React.createClass({
     /**
      * A custom icon for the tab. It is ignored when a system icon is defined.
      */
-    icon: Image.propTypes.source,
+    icon: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      Image.propTypes.source,
+    ]),
     /**
      * A custom icon when the tab is selected. It is ignored when a system
      * icon is defined. If left empty, the icon will be tinted in blue.
