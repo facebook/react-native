@@ -9,15 +9,18 @@
 
 package com.facebook.react.modules.intent;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Intent module. Launch other activities or open URLs.
@@ -31,6 +34,28 @@ public class IntentModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "IntentAndroid";
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    String initialURL = null;
+    Activity currentActivity = getCurrentActivity();
+
+    if (currentActivity != null) {
+      Intent intent = currentActivity.getIntent();
+
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
+      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        initialURL = uri.toString();
+      }
+    }
+
+    constants.put("initialURL", initialURL);
+
+    return constants;
   }
 
   /**
@@ -48,10 +73,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
     }
     try {
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-      // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
-      // the ApplicationContext instead of the Activity context.
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      getReactApplicationContext().startActivity(intent);
+      getCurrentActivity().startActivity(intent);
     } catch (Exception e) {
       throw new JSApplicationIllegalArgumentException(
           "Could not open URL '" + url + "': " + e.getMessage());
@@ -75,7 +97,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       boolean canOpen =
-          intent.resolveActivity(this.getReactApplicationContext().getPackageManager()) != null;
+          intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
       callback.invoke(canOpen);
     } catch (Exception e) {
       throw new JSApplicationIllegalArgumentException(

@@ -13,6 +13,8 @@
 var IntentAndroidModule = require('NativeModules').IntentAndroid;
 var invariant = require('invariant');
 
+var _initialURL = IntentAndroidModule.initialURL;
+
 /**
  * `IntentAndroid` gives you a general interface to handle external links.
  *
@@ -73,6 +75,16 @@ class IntentAndroid {
       'A valid callback function is required'
     );
     IntentAndroidModule.canOpenURL(url, callback);
+  }
+
+  /**
+   * If the app launch was triggered by an app link, it will pop the link url,
+   * otherwise it will return `null`
+   */
+  static popInitialURL(): ?string {
+    var initialURL = _initialURL;
+    _initialURL = null;
+    return initialURL;
   }
 
   static _validateURL(url: string) {
