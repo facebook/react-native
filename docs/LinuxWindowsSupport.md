@@ -19,12 +19,6 @@ As of **version 0.14** Android development with React native is mostly possible 
 
 On Windows the packager won't be started automatically when you run `react-native run-android`. You can start it manually using:
     
-    #For React Native version < 0.14
-    cd MyAwesomeApp
-    node node_modules/react-native/packager/packager.js
-
-    
-    #For React Native version >= 0.14 （which had removed packager.js)
     cd MyAwesomeApp
     react-native start
 
