@@ -3,7 +3,7 @@ id: android-building-from-source
 title: Building React Native from source
 layout: docs
 category: Guides (Android)
-permalink: docs/android-building-from-source
+permalink: docs/android-building-from-source.html
 next: activityindicatorios
 ---
 
