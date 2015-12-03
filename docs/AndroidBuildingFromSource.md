@@ -45,7 +45,7 @@ npm install --save github:facebook/react-native#master
 
 Alternatively, you can clone the repo to your `node_modules` directory and run `npm install` inside the cloned repo.
 
-2. Add `gradle-download-task` as dependency in `andoid/build.gradle`:
+2. Add `gradle-download-task` as dependency in `android/build.gradle`:
 
 ```gradle
 ...
@@ -59,7 +59,7 @@ Alternatively, you can clone the repo to your `node_modules` directory and run `
 ...
 ```
 
-3. Add the `:ReactAndroid` project in `andoid/settings.gradle`:
+3. Add the `:ReactAndroid` project in `android/settings.gradle`:
 
 ```gradle
 ...
