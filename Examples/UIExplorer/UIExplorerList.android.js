@@ -24,6 +24,7 @@ var UIExplorerListBase = require('./UIExplorerListBase');
 
 var COMPONENTS = [
   require('./ImageExample'),
+  require('./ListViewExample'),
   require('./ProgressBarAndroidExample'),
   require('./ScrollViewSimpleExample'),
   require('./SwitchAndroidExample'),
