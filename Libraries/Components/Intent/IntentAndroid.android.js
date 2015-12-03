@@ -18,6 +18,21 @@ var _initialURL = IntentAndroidModule.initialURL;
 /**
  * `IntentAndroid` gives you a general interface to handle external links.
  *
+ * ### Basic Usage
+ *
+ * #### Handling deep links
+ *
+ * If your app was launched from an external url registered to your app you can
+ * access and handle it from any component you want with
+ *
+ * ```
+ * componentDidMount() {
+ *  var url = IntentAndroid.popInitialURL();
+ * }
+ * ```
+ *
+ * NOTE: For instructions on how to add support for deep linking, refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ *
  * #### Opening external links
  *
  * To start the corresponding activity for a link (web URL, email, contact etc.), call
@@ -78,8 +93,10 @@ class IntentAndroid {
   }
 
   /**
-   * If the app launch was triggered by an app link, it will pop the link url,
-   * otherwise it will return `null`
+   * If the app launch was triggered by an app link with {@code Intent.ACTION_VIEW},
+   * it will pop the link url, otherwise it will return `null`
+   *
+   * Refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
    */
   static popInitialURL(): ?string {
     var initialURL = _initialURL;
