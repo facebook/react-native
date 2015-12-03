@@ -110,7 +110,8 @@ var _isConnectedSubscriptions = new Map();
  * `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />`
  * Asynchronously determine if the device is connected and details about that connection.
  *
- * Android Connectivity Types
+ * Android Connectivity Types.
+ *
  * - `NONE` - device is offline
  * - `BLUETOOTH` - The Bluetooth data connection.
  * - `DUMMY` -  Dummy data connection.
@@ -124,6 +125,7 @@ var _isConnectedSubscriptions = new Map();
  * - `WIFI` - The WIFI data connection.
  * - `WIMAX` -  The WiMAX data connection.
  * - `UNKNOWN` - Unknown data connection.
+ *
  * The rest ConnectivityStates are hidden by the Android API, but can be used if necessary.
  *
  * ### isConnectionMetered
@@ -132,6 +134,7 @@ var _isConnectedSubscriptions = new Map();
  * classified as metered when the user is sensitive to heavy data usage on that connection due to
  * monetary costs, data limitations or battery/performance issues.
  *
+ * ```
  * NetInfo.isConnectionMetered((isConnectionMetered) => {
  *   console.log('Connection is ' + (isConnectionMetered ? 'Metered' : 'Not Metered'));
  * });
