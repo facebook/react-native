@@ -70,6 +70,7 @@ var ReactNative = {
   get InteractionManager() { return require('InteractionManager'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
   get LinkingIOS() { return require('LinkingIOS'); },
+  get Linking() { return require('Linking'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
   get PixelRatio() { return require('PixelRatio'); },
