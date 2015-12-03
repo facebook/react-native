@@ -68,7 +68,7 @@ function getPathInArchive(asset) {
     if (match) {
       // scriptURL has no scheme, 
       // E.g. /sdcard/path/to/file.jsbundle  or /data/data/path/to/file.jsbundle
-      return 'file://' + match[0] + getBasePath(asset) + '/' + asset.name;
+      return 'file://' + match[0] + getScaledAssetPath(asset);
     } else {
       // scriptURL has a scheme, E.g. assets://file.jsbundle 
       var assetDir = getBasePath(asset);
