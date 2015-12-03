@@ -9,12 +9,6 @@
 
 package com.facebook.react.modules.network;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,7 +20,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.stetho.okhttp.StethoInterceptor;
-
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -36,6 +29,12 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+
+import javax.annotation.Nullable;
 
 import static java.lang.Math.min;
 
@@ -136,7 +135,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     requestBuilder.headers(requestHeaders);
 
     if (data == null) {
-      requestBuilder.method(method, null);
+      if(method.equals("POST")
+              || method.equals("PUT")
+              || method.equals("PATCH")){
+        requestBuilder.method(method, RequestBody.create(null, new byte[0]));
+      } else {
+        requestBuilder.method(method, null);
+      }
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         onRequestError(requestId, "Payload is set but no content-type header specified");
