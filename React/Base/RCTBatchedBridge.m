@@ -804,7 +804,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)partialBatchDidFlush
 {
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.hasInstance && [moduleData.instance respondsToSelector:@selector(partialBatchDidFlush)]) {
+    if (moduleData.implementsPartialBatchDidFlush) {
       [self dispatchBlock:^{
         [moduleData.instance partialBatchDidFlush];
       } queue:moduleData.methodQueue];
@@ -816,7 +816,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   // TODO: batchDidComplete is only used by RCTUIManager - can we eliminate this special case?
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.hasInstance && [moduleData.instance respondsToSelector:@selector(batchDidComplete)]) {
+    if (moduleData.implementsBatchDidComplete) {
       [self dispatchBlock:^{
         [moduleData.instance batchDidComplete];
       } queue:moduleData.methodQueue];
