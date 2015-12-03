@@ -720,6 +720,33 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
         removeAtIndices:removeAtIndices];
 }
 
+RCT_EXPORT_METHOD(addChildren:(nonnull NSNumber *)containerTag
+                  reactTags:(NSNumberArray *)reactTags)
+{
+  RCTAddChildren(containerTag, reactTags,
+                 (NSDictionary<NSNumber *, id<RCTComponent>> *)_shadowViewRegistry);
+
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+
+    RCTAddChildren(containerTag, reactTags,
+                   (NSDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry);
+  }];
+}
+
+static void RCTAddChildren(NSNumber *containerTag,
+                           NSArray<NSNumber *> *reactTags,
+                           NSDictionary<NSNumber *, id<RCTComponent>> *registry)
+{
+  id<RCTComponent> container = registry[containerTag];
+  NSInteger index = [container reactSubviews].count;
+  for (NSNumber *reactTag in reactTags) {
+    id<RCTComponent> view = registry[reactTag];
+    if (view) {
+      [container insertReactSubview:view atIndex:index++];
+    }
+  }
+}
+
 RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
                   moveFromIndices:(NSNumberArray *)moveFromIndices
                   moveToIndices:(NSNumberArray *)moveToIndices
@@ -754,39 +781,57 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
         removeAtIndices:(NSArray<NSNumber *> *)removeAtIndices
                registry:(NSMutableDictionary<NSNumber *, id<RCTComponent>> *)registry
 {
+  RCTAssert(moveFromIndices.count == moveToIndices.count,
+            @"moveFromIndices had size %tu, moveToIndices had size %tu",
+            moveFromIndices.count, moveToIndices.count);
+
+  RCTAssert(addChildReactTags.count == addAtIndices.count,
+            @"addChildReactTags had size %tu, addAtIndices had size %tu",
+            addChildReactTags.count, addAtIndices.count);
+
   id<RCTComponent> container = registry[containerReactTag];
-  RCTAssert(moveFromIndices.count == moveToIndices.count, @"moveFromIndices had size %tu, moveToIndices had size %tu", moveFromIndices.count, moveToIndices.count);
-  RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one React child to add");
+  NSArray<id<RCTComponent>> *views = [container reactSubviews];
 
-  // Removes (both permanent and temporary moves) are using "before" indices
-  NSArray<id<RCTComponent>> *permanentlyRemovedChildren =
-    [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
-  NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
-    [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
-  [self _removeChildren:permanentlyRemovedChildren fromContainer:container];
-  [self _removeChildren:temporarilyRemovedChildren fromContainer:container];
-
-  [self _purgeChildren:permanentlyRemovedChildren fromRegistry:registry];
-
-  // TODO (#5906496): optimize all these loops - constantly calling array.count is not efficient
-
-  // Figure out what to insert - merge temporary inserts and adds
-  NSMutableDictionary *destinationsToChildrenToAdd = [NSMutableDictionary dictionary];
-  for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
-    destinationsToChildrenToAdd[moveToIndices[index]] = temporarilyRemovedChildren[index];
+  // Get indices to insert/remove
+  NSUInteger purgeCount = removeAtIndices.count;
+  NSUInteger moveCount = moveFromIndices.count;
+  NSUInteger insertCount = addAtIndices.count;
+  NSUInteger removeCount = purgeCount + moveCount;
+  NSMutableArray<id<RCTComponent>> *toRemove = removeCount ? [NSMutableArray new] : nil;
+  NSMutableDictionary *toInsert = insertCount ? [NSMutableDictionary new] : nil;
+  for (NSNumber *index in removeAtIndices) {
+    id<RCTComponent> view = views[index.integerValue];
+    [toRemove addObject:view];
+    RCTTraverseViewNodes(registry[view.reactTag], ^(id<RCTComponent> subview) {
+      RCTAssert(![subview isReactRootView], @"Root views should not be unregistered");
+      if ([subview conformsToProtocol:@protocol(RCTInvalidating)]) {
+        [(id<RCTInvalidating>)subview invalidate];
+      }
+      [registry removeObjectForKey:subview.reactTag];
+      [_bridgeTransactionListeners removeObject:subview];
+    });
   }
-  for (NSInteger index = 0, length = addAtIndices.count; index < length; index++) {
-    id<RCTComponent> view = registry[addChildReactTags[index]];
-    if (view) {
-      destinationsToChildrenToAdd[addAtIndices[index]] = view;
-    }
+  NSInteger i = 0;
+  for (NSNumber *index in moveFromIndices) {
+    id<RCTComponent> view = views[index.integerValue];
+    [toRemove addObject:view];
+    toInsert[moveToIndices[i]] = view;
+    i++;
+  }
+  i = 0;
+  for (NSNumber *reactTag in addChildReactTags) {
+    toInsert[addAtIndices[i]] = registry[reactTag];
+    i++;
   }
 
-  NSArray<NSNumber *> *sortedIndices =
-    [destinationsToChildrenToAdd.allKeys sortedArrayUsingSelector:@selector(compare:)];
-  for (NSNumber *reactIndex in sortedIndices) {
-    [container insertReactSubview:destinationsToChildrenToAdd[reactIndex]
-                          atIndex:reactIndex.integerValue];
+  // Remove old views
+  for (id<RCTComponent> view in toRemove) {
+    [container removeReactSubview:view];
+  }
+
+  // Insert new views in ascending order
+  for (NSNumber *index in [toInsert.allKeys sortedArrayUsingSelector:@selector(compare:)]) {
+    [container insertReactSubview:toInsert[index] atIndex:index.integerValue];
   }
 }
 

@@ -53,6 +53,7 @@ var dangerouslyProcessChildrenUpdates = function(childrenUpdates, markupList) {
       (updates.addChildTags || (updates.addChildTags = [])).push(tag);
     }
   }
+  
   // Note this enumeration order will be different on V8!  Move `byContainerTag`
   // to a sparse array as soon as we confirm there are not horrible perf
   // penalties.
