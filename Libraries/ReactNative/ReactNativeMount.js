@@ -188,6 +188,16 @@ var ReactNativeMount = {
         mountImage.rootNodeID,
         mountImage.tag
       );
+      
+      // Fast path for iOS
+      if (UIManager.addChildren) {
+        UIManager.addChildren(
+          ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
+          [mountImage.tag]
+        );
+        return;
+      }
+      
       var addChildTags = [mountImage.tag];
       var addAtIndices = [0];
       UIManager.manageChildren(
