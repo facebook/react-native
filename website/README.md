@@ -10,7 +10,7 @@ Then, run the server via
 
 ```
 npm start
-open http://localhost:8080/react-native/index.html
+open http://localhost:8079/react-native/index.html
 ```
 
 Anytime you change the contents, just refresh the page and it's going to be updated.
