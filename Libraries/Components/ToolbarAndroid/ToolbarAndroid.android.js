@@ -126,6 +126,17 @@ var ToolbarAndroid = React.createClass({
      */
     titleColor: ReactPropTypes.string,
     /**
+     * Used to set the toolbar direction to RTL.
+     * In addition to this property you need to add
+     *
+     *   android:supportsRtl="true"
+     *
+     * to your application AndroidManifest.xml and then call
+     * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
+     * `onCreate` method.
+     */
+    rtl: ReactPropTypes.bool,
+    /**
      * Used to locate this view in end-to-end tests.
      */
     testID: ReactPropTypes.string,
@@ -180,6 +191,7 @@ var toolbarAttributes = {
   logo: true,
   navIcon: true,
   overflowIcon: true,
+  rtl: true,
   subtitle: true,
   subtitleColor: true,
   title: true,

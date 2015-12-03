@@ -18,6 +18,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.SystemClock;
+import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -62,6 +63,11 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   @ReactProp(name = "overflowIcon")
   public void setOverflowIcon(ReactToolbar view, @Nullable ReadableMap overflowIcon) {
     view.setOverflowIconSource(overflowIcon);
+  }
+
+  @ReactProp(name = "rtl")
+  public void setRtl(ReactToolbar view, boolean rtl) {
+    view.setLayoutDirection(rtl ? LayoutDirection.LTR : LayoutDirection.RTL);
   }
 
   @ReactProp(name = "subtitle")
