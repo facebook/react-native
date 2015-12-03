@@ -279,7 +279,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#eeeecc',
   },
   tile8: {
-    backgroundColor: '#ffbb88',
+    backgroundColor: '#ffbb87',
   },
   tile16: {
     backgroundColor: '#ff9966',
