@@ -11,6 +11,15 @@
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const path = require('path');
 const transformer = require('../packager/transformer.js');
+const fs = require('fs');
+
+var babel_core_location = path.join(__dirname, '../node_modules/babel-core/package.json');
+try {
+  fs.lstatSync(babel_core_location);
+}
+catch(e) {
+  babel_core_location = path.join(__dirname, '../../babel-core/package.json');
+}
 
 module.exports = {
   process(src, file) {
@@ -26,6 +35,6 @@ module.exports = {
   getCacheKey: createCacheKeyFunction([
     __filename,
     path.join(__dirname, '../packager/transformer.js'),
-    path.join(__dirname, '../node_modules/babel-core/package.json'),
+    babel_core_location,
   ]),
 };
