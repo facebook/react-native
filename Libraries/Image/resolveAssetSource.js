@@ -63,14 +63,23 @@ function getOfflinePath() {
  */
 function getPathInArchive(asset) {
   if (Platform.OS === 'android') {
-    var assetDir = getBasePath(asset);
-    // E.g. 'assets_awesomemodule_icon'
-    // The Android resource system picks the correct scale.
-    return (assetDir + '/' + asset.name)
-      .toLowerCase()
-      .replace(/\//g, '_')           // Encode folder structure in file name
-      .replace(/([^a-z0-9_])/g, '')  // Remove illegal chars
-      .replace(/^assets_/, '');      // Remove "assets_" prefix
+    var scriptURL = SourceCode.scriptURL;
+    var match = scriptURL && scriptURL.match(/^\/.*\//);
+    if (match) {
+      // scriptURL has no scheme, 
+      // E.g. /sdcard/path/to/file.jsbundle  or /data/data/path/to/file.jsbundle
+      return 'file://' + match[0] + getScaledAssetPath(asset);
+    } else {
+      // scriptURL has a scheme, E.g. assets://file.jsbundle 
+      var assetDir = getBasePath(asset);
+      // E.g. 'assets_awesomemodule_icon'
+      // The Android resource system picks the correct scale.
+      return (assetDir + '/' + asset.name)
+        .toLowerCase()
+        .replace(/\//g, '_')           // Encode folder structure in file name
+        .replace(/([^a-z0-9_])/g, '')  // Remove illegal chars
+        .replace(/^assets_/, '');      // Remove "assets_" prefix
+    }
   } else {
     // E.g. 'assets/AwesomeModule/icon@2x.png'
     return getOfflinePath() + getScaledAssetPath(asset);
