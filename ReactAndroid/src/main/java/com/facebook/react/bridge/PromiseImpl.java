@@ -31,6 +31,11 @@ public class PromiseImpl implements Promise {
   }
 
   @Override
+  public void reject(Throwable reason) {
+    reject(reason.getMessage());
+  }
+
+  @Override
   public void reject(String reason) {
     if (mReject != null) {
       // The JavaScript side expects a map with at least the error message.
