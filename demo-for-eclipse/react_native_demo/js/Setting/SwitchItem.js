@@ -32,7 +32,7 @@ var SwitchItem = React.createClass({
 	  
 	render:function(){
 		return(
-			<TouchableHighlight>	
+			/*<TouchableHighlight>*/	
 			<View style={styles.container}>
 		        <View>
 		          <Text style={styles.titleText}>
@@ -43,7 +43,7 @@ var SwitchItem = React.createClass({
 		          {this.props.children}
 		        </View>
 	      </View>
-	      </TouchableHighlight>
+	      /*</TouchableHighlight>*/
 		);
 	}
 });

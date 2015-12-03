@@ -23,6 +23,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
+import com.sina.weibo.react.shell.WeiboMainReactPackage;
 
 public class PrivacySettingActivity extends Activity implements DefaultHardwareBackBtnHandler {
 
@@ -38,6 +39,7 @@ public class PrivacySettingActivity extends Activity implements DefaultHardwareB
         .setBundleAssetName("privacySetting.android.bundle")
         .setJSMainModuleName("demo-for-eclipse/react_native_demo/js/Setting/privacySetting.android")
         .addPackage(new MainReactPackage())
+        .addPackage(new WeiboMainReactPackage())
         .setUseDeveloperSupport(true)
         .setInitialLifecycleState(LifecycleState.RESUMED)
         .build();
