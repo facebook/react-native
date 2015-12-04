@@ -81,6 +81,7 @@
     _textView.delegate = self;
 
     _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.scrollsToTop = NO;
     [_scrollView addSubview:_textView];
 
     _previousSelectionRange = _textView.selectedTextRange;
