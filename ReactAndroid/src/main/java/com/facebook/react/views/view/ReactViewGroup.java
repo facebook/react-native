@@ -304,8 +304,8 @@ public class ReactViewGroup extends ViewGroup implements
       super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
-    } else if (intersects && !clippingRect.contains(sHelperRect)) {
-      // View is partially clipped.
+    } else if (intersects) {
+      // If there is any intersection we need to inform the child to update its clipping rect
       needUpdateClippingRecursive = true;
     }
     if (needUpdateClippingRecursive) {
