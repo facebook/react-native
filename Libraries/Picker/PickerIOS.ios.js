@@ -17,6 +17,7 @@ var React = require('React');
 var ReactChildren = require('ReactChildren');
 var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
+var StyleSheetRegistry = require('StyleSheetRegistry');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
@@ -53,15 +54,38 @@ var PickerIOS = React.createClass({
     return {selectedIndex, items};
   },
 
+  _getItemsStyleFromProps: function(props){    
+     var styleFromProps;    
+     var itemsStyle;    
+     if(typeof props.style === 'number') {    
+       styleFromProps = StyleSheetRegistry.getStyleByID(props.style);   
+     } else if(typeof  props.style === 'object') {    
+       styleFromProps = props.style;    
+     } else {   
+       styleFromProps = {}    
+     }    
+     //default styles for items   
+     itemsStyle = {   
+       fontSize: styleFromProps.fontSize || 20,   
+       color: styleFromProps.color || '#000000',    
+       textAlign: styleFromProps.textAlign || 'center'    
+     };   
+     return itemsStyle;   
+   },
+
   render: function() {
+    var itemsStyle = this._getItemsStyleFromProps(this.props);
     return (
-      <View style={this.props.style}>
+      <View>
         <RCTPickerIOS
           ref={PICKER}
-          style={styles.pickerIOS}
+          style={[styles.pickerIOS, this.props.style]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
+          fontSize={itemsStyle.fontSize}
+          color={itemsStyle.color}
+          textAlign={itemsStyle.textAlign}
         />
       </View>
     );
