@@ -54,6 +54,19 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
++ (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+  restorationHandler:(void (^)(NSArray *))restorationHandler
+{
+  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSDictionary *payload = @{@"url": userActivity.webpageURL.absoluteString};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                        object:self
+                                                      userInfo:payload];
+  }
+  return YES;
+}
+
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
@@ -62,6 +75,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
 {
+  // TODO: we should really return success/failure via a callback here
   // Doesn't really matter what thread we call this on since it exits the app
   [RCTSharedApplication() openURL:URL];
 }
@@ -72,7 +86,8 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
   if (RCTRunningInAppExtension()) {
     // Technically Today widgets can open urls, but supporting that would require
     // a reference to the NSExtensionContext
-    callback(@[@(NO)]);
+    callback(@[@NO]);
+    return;
   }
 
   // This can be expensive, so we deliberately don't call on main thread
