@@ -54,6 +54,19 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
++ (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+{
+  if([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSDictionary *payload = @{@"url": userActivity.webpageURL.absoluteString};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                        object:self
+                                                      userInfo:payload];
+  }
+  return YES;
+}
+
 - (void)handleOpenURLNotification:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"openURL"
