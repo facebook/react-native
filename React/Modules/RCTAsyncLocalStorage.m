@@ -75,12 +75,7 @@ static NSString *RCTGetStorageDirectory()
 
 static NSString *RCTGetManifestFilePath()
 {
-  static NSString *manifestFilePath = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    manifestFilePath = [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
-  });
-  return manifestFilePath;
+  return [RCTGetStorageDirectory() stringByAppendingPathComponent:RCTManifestFileName];
 }
 
 // Only merges objects - all other types are just clobbered (including arrays)
@@ -405,9 +400,7 @@ RCT_EXPORT_METHOD(setStorageDirectory:(NSString*)storageDirectory
     if([fileManager fileExistsAtPath:storageDirectory]){
       // If storage already exists at new location,
       // simply use it and remove old storage directory.
-      if(![fileManager removeItemAtPath:cachedStorageDirectory error:&error]){
-        callback(@[RCTMakeError(@"Failed to remove existing storage directory.", error, nil)]);
-      }
+      RCTDeleteStorageDirectory();
     }else{
       // Migrate the old storage directory to new location.
       if(![fileManager moveItemAtPath:cachedStorageDirectory toPath:storageDirectory error:&error]){
@@ -417,6 +410,8 @@ RCT_EXPORT_METHOD(setStorageDirectory:(NSString*)storageDirectory
     }
   }
   cachedStorageDirectory = storageDirectory;
+  [self invalidate];
+  [self _ensureSetup];
 }
 
 @end
