@@ -295,6 +295,28 @@ var AsyncStorage = {
       });
     });
   },
+
+  /**
+   * Sets location for storage directory and calls `callback` on completion,
+   * along with an `Error` if there is any. Returns a `Promise` object.  If
+   * previous storage exists, it is migrated to new location.
+   */
+  setStorageDirectory: function(
+    storageDirectory: string,
+    callback?: ?(error: ?Error) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.setStorageDirectory(storageDirectory, function(errors) {
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
 };
 
 // Not all native implementations support merge.
