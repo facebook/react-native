@@ -43,9 +43,22 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
  *
  * ```
- * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
- *   return [RCTLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+ * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+ *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+ * {
+ *   return [RCTLinkingManager application:application openURL:url
+ *                       sourceApplication:sourceApplication annotation:annotation];
  * }
+ *
+ * // Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
+ * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
+ *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
+ * {
+ *  return [RCTLinkingManager application:application
+ *                   continueUserActivity:userActivity
+ *                     restorationHandler:restorationHandler];
+ * }
+ *
  * ```
  *
  * And then on your React component you'll be able to listen to the events on
@@ -71,7 +84,7 @@ var DEVICE_NOTIF_EVENT = 'openURL';
  * LinkingIOS.openURL(url)
  * ```
  *
- * If you want to check if any installed app can handle a given URL beforehand you can call
+ * If you want to check if any installed app can handle a given URL beforehand, call
  * ```
  * LinkingIOS.canOpenURL(url, (supported) => {
  *   if (!supported) {
@@ -130,7 +143,7 @@ class LinkingIOS {
    * Determine whether or not an installed app can handle a given URL.
    * The callback function will be called with `bool supported` as the only argument
    *
-   * NOTE: As of iOS 9, your app needs to provide a `LSApplicationQueriesSchemes` key
+   * NOTE: As of iOS 9, your app needs to provide the `LSApplicationQueriesSchemes` key
    * inside `Info.plist`.
    */
   static canOpenURL(url: string, callback: Function) {
