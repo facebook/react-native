@@ -84,6 +84,11 @@ class Module {
         const data = {};
 
         // Set an id on the module if it's using @providesModule syntax
+        // and if it's NOT in node_modules (and not a whitelisted node_module).
+        // This handles the case where a project may have a dep that has @providesModule
+        // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+        // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+        // project-specific code that is using @providesModule.
         const moduleDocBlock = docblock.parseAsObject(content);
         if (!this._depGraphHelpers.isNodeModulesDir(this.path) &&
             (moduleDocBlock.providesModule || moduleDocBlock.provides)) {
