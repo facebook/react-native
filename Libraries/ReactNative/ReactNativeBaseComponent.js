@@ -104,11 +104,11 @@ ReactNativeBaseComponent.Mixin = {
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
     if (mountImages.length) {
-      
+      var indexes = cachedIndexArray(mountImages.length);
       // TODO: Pool these per platform view class. Reusing the `mountImages`
       // array would likely be a jit deopt.
       var createdTags = [];
-      for (var i = 0, l = mountImages.length; i < l; i++) {
+      for (var i = 0; i < mountImages.length; i++) {
         var mountImage = mountImages[i];
         var childTag = mountImage.tag;
         var childID = mountImage.rootNodeID;
@@ -122,15 +122,8 @@ ReactNativeBaseComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      
-      // Fast path for iOS
-      if (UIManager.addChildren) {
-        UIManager.addChildren(containerTag, createdTags);
-        return; 
-      }
-      
-      var indexes = cachedIndexArray(mountImages.length);
-      UIManager.manageChildren(containerTag, null, null, createdTags, indexes, null);
+      UIManager
+        .manageChildren(containerTag, null, null, createdTags, indexes, null);
     }
   },
 
