@@ -36,6 +36,9 @@ type Event = Object;
  * source of truth.
  */
 var DatePickerIOS = React.createClass({
+  // TOOD: Put a better type for _picker
+  _picker: (undefined: ?$FlowFixMe),
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
