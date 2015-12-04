@@ -81,8 +81,8 @@ void Bridge::executeApplicationScript(const std::string& script, const std::stri
 }
 
 void Bridge::executeJSCall(
-    const std::string& script,
-    const std::string& sourceURL,
+    const std::string& moduleName,
+    const std::string& methodName,
     const std::vector<folly::dynamic>& arguments) {
   if (*m_destroyed) {
     return;
@@ -90,7 +90,7 @@ void Bridge::executeJSCall(
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.executeJSCall");
   #endif
-  m_threadState->executeJSCall(script, sourceURL, arguments);
+  m_threadState->executeJSCall(moduleName, methodName, arguments);
 }
 
 void Bridge::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
