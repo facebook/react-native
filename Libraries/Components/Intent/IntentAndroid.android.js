@@ -31,7 +31,8 @@ var _initialURL = IntentAndroidModule.initialURL;
  * }
  * ```
  *
- * NOTE: For instructions on how to add support for deep linking, refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ * NOTE: For instructions on how to add support for deep linking,
+ * refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
  *
  * #### Opening external links
  *

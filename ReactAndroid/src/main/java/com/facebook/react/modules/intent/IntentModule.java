@@ -18,6 +18,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,12 +41,11 @@ public class IntentModule extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    String initialURL = null;
     Activity currentActivity = getCurrentActivity();
+    String initialURL = null;
 
     if (currentActivity != null) {
       Intent intent = currentActivity.getIntent();
-
       String action = intent.getAction();
       Uri uri = intent.getData();
 
@@ -71,9 +72,17 @@ public class IntentModule extends ReactContextBaseJavaModule {
     if (url == null || url.isEmpty()) {
       throw new JSApplicationIllegalArgumentException("Invalid URL: " + url);
     }
+
     try {
+      Activity currentActivity = getCurrentActivity();
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-      getCurrentActivity().startActivity(intent);
+
+      if (currentActivity != null) {
+        currentActivity.startActivity(intent);
+      } else {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getReactApplicationContext().startActivity(intent);
+      }
     } catch (Exception e) {
       throw new JSApplicationIllegalArgumentException(
           "Could not open URL '" + url + "': " + e.getMessage());
@@ -91,6 +100,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
     if (url == null || url.isEmpty()) {
       throw new JSApplicationIllegalArgumentException("Invalid URL: " + url);
     }
+
     try {
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
       // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
