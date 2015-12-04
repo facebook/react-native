@@ -17,7 +17,7 @@
 @property (nonatomic, assign) NSInteger selectedIndex;
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic, assign) CGFloat fontSize;
-@property (nonatomic, copy) UIColor *color;
+@property (nonatomic, strong) UIColor *color;
 @property (nonatomic, assign) NSTextAlignment textAlign;
 
 @end
