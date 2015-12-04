@@ -1,0 +1,12 @@
+machine:
+  node:
+    version: 5.1.0
+
+dependencies:
+  pre:
+  - npm install -g npm@3.2
+
+test:
+  override:
+    # gradle is flaky in CI envs, found a solution here http://stackoverflow.com/questions/28409608/gradle-assembledebug-and-predexdebug-fail-with-circleci
+    - TERM=dumb ./gradlew cleanTest test -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
