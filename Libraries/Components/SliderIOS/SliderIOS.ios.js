@@ -19,6 +19,7 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 type Event = Object;
 
@@ -78,10 +79,20 @@ var SliderIOS = React.createClass({
      */
     disabled: PropTypes.bool,
 
-   /**
-     * Sets an image for the track. It only supports images that are included as assets
+    /**
+     * Assign a single image for both min/max tracks.
      */
     trackImage: Image.propTypes.source,
+
+    /**
+     * Assigns a minimum track image.
+     */
+    minimumTrackImage: Image.propTypes.source,
+
+    /**
+     * Assigns a maximum track image.
+     */
+    maximumTrackImage: Image.propTypes.source,
 
     /**
      * Sets an image for the thumb. It only supports static images.
@@ -121,10 +132,16 @@ var SliderIOS = React.createClass({
     let {style, ...props} = this.props;
     style = [styles.slider, style];
 
+    let {thumbImage, trackImage, minimumTrackImage, maximumTrackImage} = this.props;
+
     return (
       <RCTSlider
         {...props}
         style={style}
+        thumbImage={thumbImage && resolveAssetSource(thumbImage)}
+        trackImage={trackImage && resolveAssetSource(trackImage)}
+        minimumTrackImage={minimumTrackImage && resolveAssetSource(minimumTrackImage)}
+        maximumTrackImage={maximumTrackImage && resolveAssetSource(maximumTrackImage)}
         onValueChange={onValueChange}
         onSlidingComplete={onSlidingComplete}
       />

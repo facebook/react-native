@@ -77,6 +77,8 @@ static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 RCT_EXPORT_VIEW_PROPERTY(value, float);
 RCT_EXPORT_VIEW_PROPERTY(step, float);
 RCT_EXPORT_VIEW_PROPERTY(trackImage, UIImage);
+RCT_EXPORT_VIEW_PROPERTY(minimumTrackImage, UIImage);
+RCT_EXPORT_VIEW_PROPERTY(maximumTrackImage, UIImage);
 RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumTrackTintColor, UIColor);
