@@ -25,6 +25,7 @@ var AssetRegistry = require('AssetRegistry');
 var PixelRatio = require('PixelRatio');
 var Platform = require('Platform');
 var SourceCode = require('NativeModules').SourceCode;
+var getAssetDestPathAndroid = require('../../local-cli/bundle/getAssetDestPathAndroid');
 
 var _serverURL, _offlinePath;
 
@@ -77,6 +78,7 @@ function getPathInArchive(asset) {
   if (Platform.OS === 'ios' || offlinePath) {
     return offlinePath + getScaledAssetPath(asset);
   } else {
+    // In Android, image assets are belong to the drawables.
     return getResourceIdentifier(asset);
   }
 }
@@ -108,9 +110,13 @@ function getBasePath(asset) {
  */
 function getScaledAssetPath(asset) {
   var scale = pickScale(asset.scales, PixelRatio.get());
-  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-  var assetDir = getBasePath(asset);
-  return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+  if (Platform.OS === 'ios') {
+    var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+    var assetDir = getBasePath(asset);
+    return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+  } else {
+    return getAssetDestPathAndroid(asset, scale);
+  }
 }
 
 function pickScale(scales: Array<number>, deviceScale: number): number {
