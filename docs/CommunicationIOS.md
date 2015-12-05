@@ -11,7 +11,7 @@ In [Integrating with Existing Apps guide](http://facebook.github.io/react-native
 
 ## Introduction
 
-React Native is inspired by React, so the basic idea of the information flow is similar. The flow in React is one-directional. We maintain a hierarchy of components, in which each component depends only on its parent and own internal state. We do this with properties: data is passed from a parent to its children in a top-down manner.If we have an ancestor component that rely on the state of its descendant, the recommended solution would be to pass down a callback that would be used by the descendant to update the ancestor.
+React Native is inspired by React, so the basic idea of the information flow is similar. The flow in React is one-directional. We maintain a hierarchy of components, in which each component depends only on its parent and own internal state. We do this with properties: data is passed from a parent to its children in a top-down manner. If we have an ancestor component that rely on the state of its descendant, the recommended solution would be to pass down a callback that would be used by the descendant to update the ancestor.
 
 The same concept applies to React Native. As long as we are building our application purely within the framework, we can drive our app with properties and callbacks. But, when we mix React Native and native components, we need some special, cross-language mechanisms that would allow us to pass information between them.
 
