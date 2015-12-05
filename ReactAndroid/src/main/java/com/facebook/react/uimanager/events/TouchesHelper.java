@@ -35,35 +35,25 @@ import com.facebook.react.uimanager.PixelUtil;
    * given {@param event} instance. This method use {@param reactTarget} parameter to set as a
    * target view id associated with current gesture.
    */
-  private static WritableArray createsPointersArray(int reactTarget, TouchEvent event) {
+  private static WritableArray createsPointersArray(int reactTarget, TouchEvent touchEvent) {
+    MotionEvent event = touchEvent.getMotionEvent();
+
     WritableArray touches = Arguments.createArray();
-    MotionEvent motionEvent = event.getMotionEvent();
 
-    // Calculate the coordinates for the target view.
-    // The MotionEvent contains the X,Y of the touch in the coordinate space of the root view
-    // The TouchEvent contains the X,Y of the touch in the coordinate space of the target view
-    // Subtracting them allows us to get the coordinates of the target view's top left corner
-    // We then use this when computing the view specific touches below
-    // Since only one view is actually handling even multiple touches, the values are all relative
-    // to this one target view.
-    float targetViewCoordinateX = motionEvent.getX() - event.getViewX();
-    float targetViewCoordinateY = motionEvent.getY() - event.getViewY();
+    // Calculate raw-to-relative offset as getRawX() and getRawY() can only return values for the
+    // pointer at index 0. We use those value to calculate "raw" coordinates for other pointers
+    float offsetX = event.getRawX() - event.getX();
+    float offsetY = event.getRawY() - event.getY();
 
-    for (int index = 0; index < motionEvent.getPointerCount(); index++) {
+    for (int index = 0; index < event.getPointerCount(); index++) {
       WritableMap touch = Arguments.createMap();
-      // pageX,Y values are relative to the RootReactView
-      // the motionEvent already contains coordinates in that view
-      touch.putDouble(PAGE_X_KEY, PixelUtil.toDIPFromPixel(motionEvent.getX(index)));
-      touch.putDouble(PAGE_Y_KEY, PixelUtil.toDIPFromPixel(motionEvent.getY(index)));
-      // locationX,Y values are relative to the target view
-      // To compute the values for the view, we subtract that views location from the event X,Y
-      float locationX = motionEvent.getX(index) - targetViewCoordinateX;
-      float locationY = motionEvent.getY(index) - targetViewCoordinateY;
-      touch.putDouble(LOCATION_X_KEY, PixelUtil.toDIPFromPixel(locationX));
-      touch.putDouble(LOCATION_Y_KEY, PixelUtil.toDIPFromPixel(locationY));
+      touch.putDouble(PAGE_X_KEY, PixelUtil.toDIPFromPixel(event.getX(index) + offsetX));
+      touch.putDouble(PAGE_Y_KEY, PixelUtil.toDIPFromPixel(event.getY(index) + offsetY));
+      touch.putDouble(LOCATION_X_KEY, PixelUtil.toDIPFromPixel(event.getX(index)));
+      touch.putDouble(LOCATION_Y_KEY, PixelUtil.toDIPFromPixel(event.getY(index)));
       touch.putInt(TARGET_KEY, reactTarget);
-      touch.putDouble(TIMESTAMP_KEY, motionEvent.getEventTime());
-      touch.putDouble(POINTER_IDENTIFIER_KEY, motionEvent.getPointerId(index));
+      touch.putDouble(TIMESTAMP_KEY, event.getEventTime());
+      touch.putDouble(POINTER_IDENTIFIER_KEY, event.getPointerId(index));
       touches.pushMap(touch);
     }
 
