@@ -329,12 +329,6 @@ var TextInput = React.createClass({
       React.findNodeHandle(this.refs.input);
   },
 
-  getInitialState: function() {
-    return {
-      mostRecentEventCount: 0,
-    };
-  },
-
   contextTypes: {
     onFocusRequested: React.PropTypes.func,
     focusEmitter: React.PropTypes.instanceOf(EventEmitter),
@@ -431,7 +425,6 @@ var TextInput = React.createClass({
           onSelectionChange={onSelectionChange}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
           text={this._getText()}
-          mostRecentEventCount={this.state.mostRecentEventCount}
         />;
     } else {
       for (var propKey in notMultiline) {
@@ -460,7 +453,6 @@ var TextInput = React.createClass({
           ref="input"
           {...props}
           children={children}
-          mostRecentEventCount={this.state.mostRecentEventCount}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -506,7 +498,6 @@ var TextInput = React.createClass({
         textAlign={textAlign}
         textAlignVertical={textAlignVertical}
         keyboardType={this.props.keyboardType}
-        mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
         numberOfLines={this.props.numberOfLines}
         maxLength={this.props.maxLength}
@@ -553,8 +544,6 @@ var TextInput = React.createClass({
     });
 
     var text = event.nativeEvent.text;
-    var eventCount = event.nativeEvent.eventCount;
-
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
   },
