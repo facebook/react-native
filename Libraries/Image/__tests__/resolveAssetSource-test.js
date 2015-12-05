@@ -10,7 +10,8 @@
 
 jest
   .dontMock('AssetRegistry')
-  .dontMock('../resolveAssetSource');
+  .dontMock('../resolveAssetSource')
+  .dontMock('../../../local-cli/bundle/getAssetDestPathAndroid');
 
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
@@ -182,7 +183,7 @@ describe('resolveAssetSource', () => {
         __packager_asset: true,
         width: 100,
         height: 200,
-        uri: 'file:///sdcard/Path/To/Simulator/assets/AwesomeModule/Subdir/!@Logo#1_€.png',
+        uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
         scale: 1,
       });
     });
