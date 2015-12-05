@@ -314,46 +314,6 @@ exports.examples = [
     }
   },
   {
-    title: 'Text input, Alignment (Horizontal Demo Only)',
-    render: function() {
-      return (
-        <View>
-          <TextInput
-            placeholder="StyleSheet - textAlign: 'auto'"
-            style={[styles.singleLine, {textAlign: 'auto'}]}
-          />
-          <TextInput
-            placeholder="StyleSheet - textAlign: 'left'"
-            style={[styles.singleLine, {textAlign: 'left'}]}
-          />
-          <TextInput
-            placeholder="StyleSheet - textAlign: 'center'"
-            style={[styles.singleLine, {textAlign: 'center'}]}
-          />
-          <TextInput
-            placeholder="StyleSheet - textAlign: 'right'"
-            style={[styles.singleLine, {textAlign: 'right'}]}
-          />
-          <TextInput
-            placeholder="Native - textAlign='start'"
-            textAlign="start"
-            style={[styles.singleLine]}
-          />
-          <TextInput
-            placeholder="Native - textAlign='center'"
-            textAlign="center"
-            style={[styles.singleLine]}
-          />
-          <TextInput
-            placeholder="Native - textAlign='end'"
-            textAlign="end"
-            style={[styles.singleLine]}
-          />
-        </View>
-      );
-    }
-  },
-  {
     title: 'Passwords',
     render: function() {
       return (
@@ -387,25 +347,19 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            textAlign="start"
-            textAlignVertical="top"
-            style={styles.multiline}
+            style={[styles.multiline, {textAlign: "left", textAlignVertical: "top"}]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            textAlign="center"
-            textAlignVertical="center"
-            style={[styles.multiline]}
+            style={[styles.multiline, {textAlign: "center", textAlignVertical: "center"}]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            textAlign="end"
-            textAlignVertical="bottom"
-            style={[styles.multiline, {color: 'blue'}]}>
+            style={[styles.multiline, {color: 'blue'}, {textAlign: "right", textAlignVertical: "bottom"}]}>
             <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
           </TextInput>
         </View>

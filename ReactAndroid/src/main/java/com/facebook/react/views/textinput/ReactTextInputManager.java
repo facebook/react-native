@@ -11,8 +11,7 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
-import java.util.Map; 
-import java.util.HashMap;
+import java.util.Map;
 
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
@@ -60,24 +59,6 @@ public class ReactTextInputManager extends
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
-
-  private static final Map<String, Map<String, Integer>> TEXT_ALIGN_CONSTANTS;
-  static {
-    TEXT_ALIGN_CONSTANTS = MapBuilder.of(
-        ViewProps.TEXT_ALIGN,
-        MapBuilder.of(
-            "left", Gravity.LEFT,
-            "right", Gravity.RIGHT,
-            "auto", Gravity.NO_GRAVITY,
-            "start", Gravity.START,
-            "center", Gravity.CENTER_HORIZONTAL,
-            "end", Gravity.END),
-        "textAlignVertical",
-        MapBuilder.of(
-            "top", Gravity.TOP,
-            "center", Gravity.CENTER_VERTICAL,
-            "bottom", Gravity.BOTTOM));
-  }
 
   @Override
   public String getName() {
@@ -211,16 +192,32 @@ public class ReactTextInputManager extends
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
-    Map<String, Integer> constants = TEXT_ALIGN_CONSTANTS.get(ViewProps.TEXT_ALIGN);
-    int gravity = constants.get(textAlign);
-    view.setGravityHorizontal(gravity);
+    if (textAlign == null || "auto".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.NO_GRAVITY);
+    } else if ("left".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.LEFT);
+    } else if ("right".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.RIGHT);
+    } else if ("center".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
   }
 
-  @ReactProp(name = "textAlignVertical")
+  @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
   public void setTextAlignVertical(ReactEditText view, @Nullable String textAlignVertical) {
-    Map<String, Integer> constants = TEXT_ALIGN_CONSTANTS.get("textAlignVertical");
-    int gravity = constants.get(textAlignVertical);
-    view.setGravityVertical(gravity);
+    if (textAlignVertical == null || "auto".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.NO_GRAVITY);
+    } else if ("top".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.TOP);
+    } else if ("bottom".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.BOTTOM);
+    } else if ("center".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.CENTER_VERTICAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
+    }
   }
 
   @ReactProp(name = "editable", defaultBoolean = true)

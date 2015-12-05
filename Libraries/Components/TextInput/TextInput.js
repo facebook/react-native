@@ -117,24 +117,6 @@ var TextInput = React.createClass({
      */
     autoFocus: PropTypes.bool,
     /**
-     * Set the position of the cursor from where editing will begin.
-     * @platform android
-     */
-    textAlign: PropTypes.oneOf([
-      'start',
-      'center',
-      'end',
-    ]),
-    /**
-     * Aligns text vertically within the TextInput.
-     * @platform android
-     */
-    textAlignVertical: PropTypes.oneOf([
-      'top',
-      'center',
-      'bottom',
-    ]),
-    /**
      * If false, text is not editable. The default value is true.
      */
     editable: PropTypes.bool,
@@ -513,8 +495,6 @@ var TextInput = React.createClass({
         style={[this.props.style]}
         autoCapitalize={autoCapitalize}
         autoCorrect={this.props.autoCorrect}
-        textAlign={this.props.textAlign}
-        textAlignVertical={this.props.textAlignVertical}
         keyboardType={this.props.keyboardType}
         mostRecentEventCount={this.state.mostRecentEventCount}
         multiline={this.props.multiline}
