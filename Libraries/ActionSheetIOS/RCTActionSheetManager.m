@@ -65,7 +65,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
-
+  UIColor *tintColor = [RCTConvert UIColor:options[@"tintColor"]];
+  
   UIViewController *controller = RCTKeyWindow().rootViewController;
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
@@ -139,6 +140,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
       alertController.popoverPresentationController.permittedArrowDirections = 0;
     }
     [controller presentViewController:alertController animated:YES completion:nil];
+    
+    alertController.view.tintColor = tintColor;
   }
 }
 
@@ -176,6 +179,8 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   if (excludedActivityTypes) {
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
+  
+  UIColor *tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
 
@@ -210,6 +215,8 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   [controller presentViewController:shareController animated:YES completion:nil];
+  
+  shareController.view.tintColor = tintColor;
 }
 
 #pragma mark UIActionSheetDelegate Methods

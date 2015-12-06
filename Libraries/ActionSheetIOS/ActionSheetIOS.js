@@ -14,6 +14,7 @@
 var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 
 var invariant = require('invariant');
+var processColor = require('processColor');
 
 var ActionSheetIOS = {
   showActionSheetWithOptions(options: Object, callback: Function) {
@@ -25,6 +26,9 @@ var ActionSheetIOS = {
       typeof callback === 'function',
       'Must provide a valid callback'
     );
+
+    options.tintColor = processColor(options.tintColor);
+
     RCTActionSheetManager.showActionSheetWithOptions(
       options,
       callback
@@ -48,6 +52,9 @@ var ActionSheetIOS = {
       typeof successCallback === 'function',
       'Must provide a valid successCallback'
     );
+
+    options.tintColor = processColor(options.tintColor);
+
     RCTActionSheetManager.showShareActionSheetWithOptions(
       options,
       failureCallback,
