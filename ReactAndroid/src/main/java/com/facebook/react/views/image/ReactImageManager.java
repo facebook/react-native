@@ -73,6 +73,12 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setSource(source);
   }
 
+  // In JS this is Image.props.loadingIndicatorSource.uri
+  @ReactProp(name = "loadingIndicatorSrc")
+  public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
+    view.setLoadingIndicatorSource(source);
+  }
+
   @ReactProp(name = "borderColor", customType = "Color")
   public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
     if (borderColor == null) {
