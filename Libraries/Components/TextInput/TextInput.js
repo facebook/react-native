@@ -539,6 +539,8 @@ var TextInput = React.createClass({
   },
 
   _onChange: function(event: Event) {
+    // Make sure to fire the mostRecentEventCount first so it is already set on
+    // native when the text value is set.
     this.refs.input.setNativeProps({
       mostRecentEventCount: event.nativeEvent.eventCount,
     });
@@ -546,6 +548,15 @@ var TextInput = React.createClass({
     var text = event.nativeEvent.text;
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
+
+    // This is necessary in case native updates the text and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    if (text !== this.props.value && typeof this.props.value === 'string') {
+      this.refs.input.setNativeProps({
+        text: this.props.value,
+      });
+    }
   },
 
   _onBlur: function(event: Event) {
