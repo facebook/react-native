@@ -53,6 +53,7 @@ var resolveAssetSource = require('resolveAssetSource');
 
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
+  loadingIndicatorSrc: true,
   resizeMode: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
@@ -74,6 +75,18 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]).isRequired,
+    /**
+     * similarly to `source`, this property represents the resource used to render
+     * the loading indicator for the image, displayed until image is ready to be
+     * displayed, typically after when it got downloaded from network.
+     */
+    loadingIndicatorSource: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
     /**
@@ -138,6 +151,7 @@ var Image = React.createClass({
 
   render: function() {
     var source = resolveAssetSource(this.props.source);
+    var loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
 
     // As opposed to the ios version, here it render `null`
     // when no source or source.uri... so let's not break that.
@@ -155,6 +169,7 @@ var Image = React.createClass({
         style,
         shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
         src: source.uri,
+        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
       if (nativeProps.children) {
@@ -197,6 +212,7 @@ var styles = StyleSheet.create({
 var cfg = {
   nativeOnly: {
     src: true,
+    loadingIndicatorSrc: true,
     defaultImageSrc: true,
     imageTag: true,
     progressHandlerRegistered: true,

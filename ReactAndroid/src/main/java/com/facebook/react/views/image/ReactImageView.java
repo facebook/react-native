@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -26,6 +27,7 @@ import android.os.SystemClock;
 
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
@@ -104,6 +106,7 @@ public class ReactImageView extends GenericDraweeView {
   }
 
   private @Nullable Uri mUri;
+  private @Nullable Drawable mLoadingImageDrawable;
   private int mBorderColor;
   private float mBorderWidth;
   private float mBorderRadius;
@@ -220,6 +223,13 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
+  public void setLoadingIndicatorSource(@Nullable String name) {
+    Drawable drawable = getResourceDrawable(getContext(), name);
+    mLoadingImageDrawable =
+        drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
+    mIsDirty = true;
+  }
+
   public void setProgressiveRenderingEnabled(boolean enabled) {
     mProgressiveRenderingEnabled = enabled;
     // no worth marking as dirty if it already rendered..
@@ -243,6 +253,10 @@ public class ReactImageView extends GenericDraweeView {
 
     GenericDraweeHierarchy hierarchy = getHierarchy();
     hierarchy.setActualImageScaleType(mScaleType);
+
+    if (mLoadingImageDrawable != null) {
+      hierarchy.setPlaceholderImage(mLoadingImageDrawable, ScalingUtils.ScaleType.CENTER);
+    }
 
     boolean usePostprocessorScaling =
         mScaleType != ScalingUtils.ScaleType.CENTER_CROP &&
@@ -322,18 +336,26 @@ public class ReactImageView extends GenericDraweeView {
     return uri != null && (UriUtil.isLocalContentUri(uri) || UriUtil.isLocalFileUri(uri));
   }
 
-  private static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
+  private static int getResourceDrawableId(Context context, @Nullable String name) {
     if (name == null || name.isEmpty()) {
-      return null;
+      return 0;
     }
-    name = name.toLowerCase().replace("-", "_");
-    int resId = context.getResources().getIdentifier(
-        name,
+    return context.getResources().getIdentifier(
+        name.toLowerCase().replace("-", "_"),
         "drawable",
         context.getPackageName());
-    return new Uri.Builder()
+  }
+
+  private static @Nullable Drawable getResourceDrawable(Context context, @Nullable String name) {
+    int resId = getResourceDrawableId(context, name);
+    return resId > 0 ? context.getResources().getDrawable(resId) : null;
+  }
+
+  private static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
+    int resId = getResourceDrawableId(context, name);
+    return resId > 0 ? new Uri.Builder()
         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
         .path(String.valueOf(resId))
-        .build();
+        .build() : null;
   }
 }
