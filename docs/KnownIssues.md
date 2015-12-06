@@ -25,7 +25,7 @@ Our provisional plan for common views and modules includes:
 ART
 Maps
 Modal
-Spinner ([not a loading indicator](http://developer.android.com/guide/topics/ui/controls/spinner.html))
+Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
 Webview
 ```
 
