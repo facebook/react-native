@@ -95,6 +95,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
 
   // See http://facebook.github.io/react/docs/addons.html
   addons: {
+    InteractionMixin: require('InteractionMixin'),
     LinkedStateMixin: require('LinkedStateMixin'),
     Perf: undefined,
     PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
