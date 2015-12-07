@@ -373,6 +373,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSMutableArray<NSValue *> *_cachedChildFrames;
   BOOL _allowNextScrollNoMatterWhat;
   CGRect _lastClippedToRect;
+  BOOL _bouncesTop;
+  BOOL _bouncesBottom;
+  BOOL _bouncesLeft;
+  BOOL _bouncesRight;
 }
 
 @synthesize nativeScrollDelegate = _nativeScrollDelegate;
@@ -390,6 +394,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     _contentInset = UIEdgeInsetsZero;
     _contentSize = CGSizeZero;
     _lastClippedToRect = CGRectNull;
+    _bouncesTop = true;
+    _bouncesBottom = true;
+    _bouncesLeft = true;
+    _bouncesRight = true;
 
     _scrollEventThrottle = 0.0;
     _lastScrollDispatchTime = CACurrentMediaTime();
@@ -559,6 +567,19 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+  if (!_bouncesRight && scrollView.contentOffset.x >= _scrollView.contentSize.width - _scrollView.frame.size.width) {
+    [_scrollView setContentOffset:CGPointMake(_scrollView.contentSize.width - _scrollView.frame.size.width, _scrollView.contentOffset.y)];
+  }
+  if (!_bouncesLeft && scrollView.contentOffset.x < 0) {
+    [_scrollView setContentOffset:CGPointMake(0, _scrollView.contentOffset.y)];
+  }
+  if (!_bouncesBottom && scrollView.contentOffset.y >= _scrollView.contentSize.height - _scrollView.frame.size.height) {
+    [_scrollView setContentOffset:CGPointMake(_scrollView.contentOffset.x, _scrollView.contentSize.height - _scrollView.frame.size.height)];
+  }
+  if (!_bouncesTop && scrollView.contentOffset.y < 0) {
+    [_scrollView setContentOffset:CGPointMake(_scrollView.contentOffset.x, 0)];
+  }
+
   [_scrollView dockClosestSectionHeader];
   [self updateClippedSubviews];
 

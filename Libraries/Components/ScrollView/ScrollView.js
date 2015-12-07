@@ -83,6 +83,34 @@ var ScrollView = React.createClass({
      */
     bounces: PropTypes.bool,
     /**
+     * When false, the scroll view is not allowed to bounce when it reaches 
+     * the top of the content. When true, bouncing on the top edge is enabled 
+     * if bouncing is enabled. The default value is true.
+     * @platform ios
+     */
+    bouncesTop: PropTypes.bool,
+    /**
+     * When false, the scroll view is not allowed to bounce when it reaches 
+     * the bottom of the content. When true, bouncing on the bottom edge is enabled 
+     * if bouncing is enabled. The default value is true.
+     * @platform ios
+     */
+    bouncesBottom: PropTypes.bool,
+    /**
+     * When false, the scroll view is not allowed to bounce when it reaches 
+     * the left edge of the content. When true, bouncing on the left edge is enabled 
+     * if bouncing is enabled. The default value is true.
+     * @platform ios
+     */
+    bouncesLeft: PropTypes.bool,
+    /**
+     * When false, the scroll view is not allowed to bounce when it reaches 
+     * the right edge of the content. When true, bouncing on the right edge is enabled 
+     * if bouncing is enabled. The default value is true.
+     * @platform ios
+     */
+    bouncesRight: PropTypes.bool,
+    /**
      * When true, gestures can drive zoom past min/max and the zoom will animate
      * to the min/max value at gesture end, otherwise the zoom will not exceed
      * the limits.
@@ -482,6 +510,10 @@ var validAttributes = {
   alwaysBounceVertical: true,
   automaticallyAdjustContentInsets: true,
   bounces: true,
+  bouncesBottom: true,
+  bouncesLeft: true,
+  bouncesRight: true,
+  bouncesTop: true,
   centerContent: true,
   contentInset: {diff: insetsDiffer},
   contentOffset: {diff: pointsDiffer},
