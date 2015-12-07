@@ -299,7 +299,7 @@ var styles = StyleSheet.create({
   overlayMessage: {
     fontSize: 40,
     marginBottom: 20,
-    marginLeft: 20,
+    marginLeft: 21,
     marginRight: 20,
     fontFamily: 'AvenirNext-DemiBold',
     textAlign: 'center',
