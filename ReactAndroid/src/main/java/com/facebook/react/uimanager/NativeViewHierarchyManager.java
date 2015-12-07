@@ -34,6 +34,8 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
+import com.facebook.systrace.Systrace;
+import com.facebook.systrace.SystraceMessage;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
@@ -128,40 +130,50 @@ public class NativeViewHierarchyManager {
       int width,
       int height) {
     UiThreadUtil.assertOnUiThread();
+    SystraceMessage.beginSection(
+        Systrace.TRACE_TAG_REACT_VIEW,
+        "NativeViewHierarchyManager_updateLayout")
+        .arg("parentTag", parentTag)
+        .arg("tag", tag)
+        .flush();
+    try {
+      View viewToUpdate = resolveView(tag);
 
-    View viewToUpdate = resolveView(tag);
+      // Even though we have exact dimensions, we still call measure because some platform views (e.g.
+      // Switch) assume that method will always be called before onLayout and onDraw. They use it to
+      // calculate and cache information used in the draw pass. For most views, onMeasure can be
+      // stubbed out to only call setMeasuredDimensions. For ViewGroups, onLayout should be stubbed
+      // out to not recursively call layout on its children: React Native already handles doing that.
+      //
+      // Also, note measure and layout need to be called *after* all View properties have been updated
+      // because of caching and calculation that may occur in onMeasure and onLayout. Layout
+      // operations should also follow the native view hierarchy and go top to bottom for consistency
+      // with standard layout passes (some views may depend on this).
 
-    // Even though we have exact dimensions, we still call measure because some platform views (e.g.
-    // Switch) assume that method will always be called before onLayout and onDraw. They use it to
-    // calculate and cache information used in the draw pass. For most views, onMeasure can be
-    // stubbed out to only call setMeasuredDimensions. For ViewGroups, onLayout should be stubbed
-    // out to not recursively call layout on its children: React Native already handles doing that.
-    //
-    // Also, note measure and layout need to be called *after* all View properties have been updated
-    // because of caching and calculation that may occur in onMeasure and onLayout. Layout
-    // operations should also follow the native view hierarchy and go top to bottom for consistency
-    // with standard layout passes (some views may depend on this).
+      viewToUpdate.measure(
+          View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+          View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
 
-    viewToUpdate.measure(
-        View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
-
-    // Check if the parent of the view has to layout the view, or the child has to lay itself out.
-    if (!mRootTags.get(parentTag)) {
-      ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);
-      ViewGroupManager parentViewGroupManager;
-      if (parentViewManager instanceof ViewGroupManager) {
-        parentViewGroupManager = (ViewGroupManager) parentViewManager;
+      // Check if the parent of the view has to layout the view, or the child has to lay itself out.
+      if (!mRootTags.get(parentTag)) {
+        ViewManager parentViewManager = mTagsToViewManagers.get(parentTag);
+        ViewGroupManager parentViewGroupManager;
+        if (parentViewManager instanceof ViewGroupManager) {
+          parentViewGroupManager = (ViewGroupManager) parentViewManager;
+        } else {
+          throw new IllegalViewOperationException(
+              "Trying to use view with tag " + tag +
+                  " as a parent, but its Manager doesn't extends ViewGroupManager");
+        }
+        if (parentViewGroupManager != null
+            && !parentViewGroupManager.needsCustomLayoutForChildren()) {
+          updateLayout(viewToUpdate, x, y, width, height);
+        }
       } else {
-        throw new IllegalViewOperationException("Trying to use view with tag " + tag +
-            " as a parent, but its Manager doesn't extends ViewGroupManager");
-      }
-      if (parentViewGroupManager != null
-          && !parentViewGroupManager.needsCustomLayoutForChildren()) {
         updateLayout(viewToUpdate, x, y, width, height);
       }
-    } else {
-      updateLayout(viewToUpdate, x, y, width, height);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
   }
 
@@ -180,18 +192,28 @@ public class NativeViewHierarchyManager {
       String className,
       @Nullable CatalystStylesDiffMap initialProps) {
     UiThreadUtil.assertOnUiThread();
-    ViewManager viewManager = mViewManagers.get(className);
+    SystraceMessage.beginSection(
+        Systrace.TRACE_TAG_REACT_VIEW,
+        "NativeViewHierarchyManager_createView")
+        .arg("tag", tag)
+        .arg("className", className)
+        .flush();
+    try {
+      ViewManager viewManager = mViewManagers.get(className);
 
-    View view = viewManager.createView(themedContext, mJSResponderHandler);
-    mTagsToViews.put(tag, view);
-    mTagsToViewManagers.put(tag, viewManager);
+      View view = viewManager.createView(themedContext, mJSResponderHandler);
+      mTagsToViews.put(tag, view);
+      mTagsToViewManagers.put(tag, viewManager);
 
-    // Use android View id field to store React tag. This is possible since we don't inflate
-    // React views from layout xmls. Thus it is easier to just reuse that field instead of
-    // creating another (potentially much more expensive) mapping from view to React tag
-    view.setId(tag);
-    if (initialProps != null) {
-      viewManager.updateProperties(view, initialProps);
+      // Use android View id field to store React tag. This is possible since we don't inflate
+      // React views from layout xmls. Thus it is easier to just reuse that field instead of
+      // creating another (potentially much more expensive) mapping from view to React tag
+      view.setId(tag);
+      if (initialProps != null) {
+        viewManager.updateProperties(view, initialProps);
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
   }
 
