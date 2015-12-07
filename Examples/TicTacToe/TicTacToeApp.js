@@ -297,7 +297,7 @@ var styles = StyleSheet.create({
     alignItems: 'center',
   },
   overlayMessage: {
-    fontSize: 40,
+    fontSize: 41,
     marginBottom: 20,
     marginLeft: 20,
     marginRight: 20,
