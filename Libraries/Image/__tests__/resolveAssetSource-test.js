@@ -11,7 +11,7 @@
 jest
   .dontMock('AssetRegistry')
   .dontMock('../resolveAssetSource')
-  .dontMock('../../../local-cli/bundle/getAssetDestPathAndroid');
+  .dontMock('../../../local-cli/bundle/assetPathUtils');
 
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
