@@ -9,6 +9,7 @@
 
 package com.facebook.react.flat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -33,20 +34,37 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  */
 public class FlatUIImplementation extends UIImplementation {
 
-  public FlatUIImplementation(
+  private final StateBuilder mStateBuilder;
+
+  public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers) {
-    this(reactContext, new ViewManagerRegistry(viewManagers));
+
+    viewManagers = new ArrayList<ViewManager>(viewManagers);
+    viewManagers.add(new RCTViewManager());
+    viewManagers.add(new RCTTextManager());
+    viewManagers.add(new RCTRawTextManager());
+    viewManagers.add(new RCTVirtualTextManager());
+
+    ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
+    FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(
+        viewManagerRegistry);
+    FlatUIViewOperationQueue operationsQueue = new FlatUIViewOperationQueue(
+        reactContext,
+        nativeViewHierarchyManager);
+    return new FlatUIImplementation(viewManagerRegistry, operationsQueue);
   }
 
   private FlatUIImplementation(
-      ReactApplicationContext reactContext,
-      ViewManagerRegistry viewManagers) {
-    super(
-        viewManagers,
-        new UIViewOperationQueue(
-            reactContext,
-            new NativeViewHierarchyManager(viewManagers)));
+      ViewManagerRegistry viewManagers,
+      FlatUIViewOperationQueue operationsQueue) {
+    super(viewManagers, operationsQueue);
+    mStateBuilder = new StateBuilder(operationsQueue);
+  }
+
+  @Override
+  protected ReactShadowNode createRootShadowNode() {
+    return new FlatRootShadowNode();
   }
 
   @Override
@@ -122,16 +140,6 @@ public class FlatUIImplementation extends UIImplementation {
       float absoluteX,
       float absoluteY,
       EventDispatcher eventDispatcher) {
-    markNodeLayoutSeen(cssNode);
-  }
-
-  private void markNodeLayoutSeen(CSSNode node) {
-    if (node.hasNewLayout()) {
-      node.markLayoutSeen();
-    }
-
-    for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
-      markNodeLayoutSeen(node.getChildAt(i));
-    }
+    mStateBuilder.applyUpdates((FlatRootShadowNode) cssNode);
   }
 }

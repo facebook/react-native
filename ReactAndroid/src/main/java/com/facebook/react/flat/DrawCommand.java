@@ -1,0 +1,29 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+package com.facebook.react.flat;
+
+import android.graphics.Canvas;
+
+/**
+ * DrawCommand is an inteface that shadow nodes need to implement to do the drawing.
+ * Instaces of DrawCommand are created in background thread and passed to UI thread.
+ * Once a DrawCommand is shared with UI thread, it can no longer be mutated in background thread.
+ */
+public interface DrawCommand {
+  // used by StateBuilder, FlatViewGroup and FlatShadowNode
+  /* package */ static final DrawCommand[] EMPTY_ARRAY = new DrawCommand[0];
+
+  /**
+   * Performs drawing into the given canvas.
+   *
+   * @param canvas The canvas to draw into
+   */
+  public void draw(Canvas canvas);
+}
