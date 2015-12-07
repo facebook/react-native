@@ -75,11 +75,11 @@ function getResourceIdentifier(asset) {
  */
 function getPathInArchive(asset) {
   var offlinePath = getOfflinePath();
-  if (Platform.OS === 'ios' || offlinePath) {
-    return offlinePath + getScaledAssetPath(asset);
-  } else {
+  if (platform === 'android' && !offlinePath) {
     // In Android, image assets are belong to the drawables.
     return getResourceIdentifier(asset);
+  } else {
+    return offlinePath + getScaledAssetPath(asset);
   }
 }
 
