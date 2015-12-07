@@ -265,7 +265,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#72d0eb',
   },
   cellO: {
-    backgroundColor: '#7ebd26',
+    backgroundColor: '#7ebd21',
   },
 
   // CELL TEXT
