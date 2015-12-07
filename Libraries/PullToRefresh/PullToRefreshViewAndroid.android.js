@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule PullToRefreshLayoutAndroid
+ * @providesModule PullToRefreshViewAndroid
  */
 'use strict';
 
@@ -24,7 +24,7 @@ var NATIVE_REF = 'native_swiperefreshlayout';
  * React view that supports a single scrollable child view (e.g. `ScrollView`). When this child
  * view is at `scrollY: 0`, swiping down triggers an `onRefresh` event.
  */
-var PullToRefreshLayoutAndroid = React.createClass({
+var PullToRefreshViewAndroid = React.createClass({
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },
@@ -48,7 +48,7 @@ var PullToRefreshLayoutAndroid = React.createClass({
      */
     refreshing: React.PropTypes.bool,
     /**
-     * Size of the refresh indicator, see PullToRefreshLayoutAndroid.SIZE
+     * Size of the refresh indicator, see PullToRefreshViewAndroid.SIZE
      */
     size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
   },
@@ -81,7 +81,7 @@ var PullToRefreshLayoutAndroid = React.createClass({
 
 var NativePullToRefresh = requireNativeComponent(
   'AndroidSwipeRefreshLayout',
-  PullToRefreshLayoutAndroid
+  PullToRefreshViewAndroid
 );
 
-module.exports = PullToRefreshLayoutAndroid;
+module.exports = PullToRefreshViewAndroid;

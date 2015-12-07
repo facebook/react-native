@@ -18,7 +18,7 @@ const React = require('react-native');
 const {
   ScrollView,
   StyleSheet,
-  PullToRefreshLayoutAndroid,
+  PullToRefreshViewAndroid,
   Text,
   TouchableWithoutFeedback,
   View,
@@ -61,9 +61,9 @@ const Row = React.createClass({
     );
   },
 });
-const PullToRefreshLayoutAndroidExample = React.createClass({
+const PullToRefreshViewAndroidExample = React.createClass({
   statics: {
-    title: '<PullToRefreshLayoutAndroid>',
+    title: '<PullToRefreshViewAndroid>',
     description: 'Container that adds pull-to-refresh support to its child view.'
   },
 
@@ -88,7 +88,7 @@ const PullToRefreshLayoutAndroidExample = React.createClass({
       return <Row data={row} onClick={this._onClick}/>;
     });
     return (
-      <PullToRefreshLayoutAndroid
+      <PullToRefreshViewAndroid
         style={styles.layout}
         refreshing={this.state.isRefreshing}
         onRefresh={this._onRefresh}
@@ -98,7 +98,7 @@ const PullToRefreshLayoutAndroidExample = React.createClass({
         <ScrollView style={styles.scrollview}>
           {rows}
         </ScrollView>
-      </PullToRefreshLayoutAndroid>
+      </PullToRefreshViewAndroid>
     );
   },
 
@@ -124,4 +124,4 @@ const PullToRefreshLayoutAndroidExample = React.createClass({
 });
 
 
-module.exports = PullToRefreshLayoutAndroidExample;
+module.exports = PullToRefreshViewAndroidExample;
