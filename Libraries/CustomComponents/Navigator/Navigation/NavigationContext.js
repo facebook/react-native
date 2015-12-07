@@ -36,7 +36,7 @@ var Set = require('Set');
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
 
-import type * as EventSubscription from 'EventSubscription';
+import type EventSubscription from 'EventSubscription';
 
 var {
   AT_TARGET,
