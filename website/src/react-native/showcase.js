@@ -205,6 +205,12 @@ var apps = [
     author: 'HS Schaaf',
   },
   {
+    name: 'Hubhopper',
+    icon: 'http://hubhopper.com/images/h_logo.jpg',
+    link: 'https://play.google.com/store/apps/details?id=com.hubhopper',
+    author: 'Soch Technologies',
+  },
+  {
     name: 'Kakapo',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
