@@ -113,10 +113,12 @@ public class UIViewOperationQueue {
       mY = y;
       mWidth = width;
       mHeight = height;
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
     }
 
     @Override
     public void execute() {
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
       mNativeViewHierarchyManager.updateLayout(mParentTag, mTag, mX, mY, mWidth, mHeight);
     }
   }
@@ -136,10 +138,12 @@ public class UIViewOperationQueue {
       mThemedContext = themedContext;
       mClassName = className;
       mInitialProps = initialProps;
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
     }
 
     @Override
     public void execute() {
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
       mNativeViewHierarchyManager.createView(
           mThemedContext,
           mTag,
