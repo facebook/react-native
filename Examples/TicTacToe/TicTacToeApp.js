@@ -305,7 +305,7 @@ var styles = StyleSheet.create({
     textAlign: 'center',
   },
   newGame: {
-    backgroundColor: '#887766',
+    backgroundColor: '#887762',
     padding: 20,
     borderRadius: 5,
   },
