@@ -33,6 +33,7 @@ public class DevInternalSettings implements
   private static final String PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
+  private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
 
   private final SharedPreferences mPreferences;
   private final DevSupportManager mDebugManager;
@@ -82,5 +83,13 @@ public class DevInternalSettings implements
 
   public void setReloadOnJSChangeEnabled(boolean enabled) {
     mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
+  }
+
+  public boolean isElementInspectorEnabled() {
+    return mPreferences.getBoolean(PREFS_INSPECTOR_DEBUG_KEY, false);
+  }
+
+  public void setElementInspectorEnabled(boolean enabled) {
+    mPreferences.edit().putBoolean(PREFS_INSPECTOR_DEBUG_KEY, enabled).apply();
   }
 }

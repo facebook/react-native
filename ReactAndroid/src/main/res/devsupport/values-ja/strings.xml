@@ -12,5 +12,5 @@
     <string name="catalyst_jsload_title">しばらくお待ちください</string>
     <string name="catalyst_jsload_message">Fetching JS bundle</string>
     <string name="catalyst_jsload_error">Unable to download JS bundle</string>
-    <string name="catalyst_inspect_element">要素を確認</string>
+    <string name="catalyst_element_inspector">要素を確認</string>
 </resources>

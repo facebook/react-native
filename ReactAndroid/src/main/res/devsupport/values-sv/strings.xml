@@ -12,5 +12,5 @@
     <string name="catalyst_jsload_title">Vänta ...</string>
     <string name="catalyst_jsload_message">Fetching JS bundle</string>
     <string name="catalyst_jsload_error">Unable to download JS bundle</string>
-    <string name="catalyst_inspect_element">Inspektionselement</string>
+    <string name="catalyst_element_inspector">Inspektionselement</string>
 </resources>
