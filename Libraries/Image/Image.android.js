@@ -63,7 +63,8 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 var Image = React.createClass({
   propTypes: {
     ...View.propTypes,
-    /**
+    style: StyleSheetPropType(ImageStylePropTypes), 
+   /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('image!name')` function).
