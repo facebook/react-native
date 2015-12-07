@@ -314,6 +314,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaRegistry.getAllModules();
   }
 
+  @Override
+  public void handleMemoryPressure(MemoryPressure level) {
+    Assertions.assertNotNull(mBridge).handleMemoryPressure(level);
+  }
+
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
    * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is

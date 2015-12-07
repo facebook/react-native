@@ -31,7 +31,9 @@ public:
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
-  
+  virtual void handleMemoryPressureModerate() override;
+  virtual void handleMemoryPressureCritical() override;
+
   void flushQueueImmediate(std::string queueJSON);
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
 

@@ -51,6 +51,14 @@ public:
     m_jsExecutor->stopProfiler(title, filename);
   }
 
+  void handleMemoryPressureModerate() {
+    m_jsExecutor->handleMemoryPressureModerate();
+  }
+
+  void handleMemoryPressureCritical() {
+    m_jsExecutor->handleMemoryPressureCritical();
+  }
+
 private:
   std::unique_ptr<JSExecutor> m_jsExecutor;
   Bridge::Callback m_callback;
@@ -107,6 +115,14 @@ void Bridge::startProfiler(const std::string& title) {
 
 void Bridge::stopProfiler(const std::string& title, const std::string& filename) {
   m_threadState->stopProfiler(title, filename);
+}
+
+void Bridge::handleMemoryPressureModerate() {
+  m_threadState->handleMemoryPressureModerate();
+}
+
+void Bridge::handleMemoryPressureCritical() {
+  m_threadState->handleMemoryPressureCritical();
 }
 
 } }

@@ -56,6 +56,19 @@ public class ReactBridge extends Countable {
     super.dispose();
   }
 
+  public void handleMemoryPressure(MemoryPressure level) {
+    switch (level) {
+      case MODERATE:
+        handleMemoryPressureModerate();
+        break;
+      case CRITICAL:
+        handleMemoryPressureCritical();
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown level: " + level);
+    }
+  }
+
   private native void initialize(
       JavaScriptExecutor jsExecutor,
       ReactCallback callback,
@@ -72,4 +85,6 @@ public class ReactBridge extends Countable {
   public native boolean supportsProfiling();
   public native void startProfiler(String title);
   public native void stopProfiler(String title, String filename);
+  private native void handleMemoryPressureModerate();
+  private native void handleMemoryPressureCritical();
 }

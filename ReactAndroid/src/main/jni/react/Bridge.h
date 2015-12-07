@@ -38,6 +38,8 @@ public:
   bool supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);
+  void handleMemoryPressureModerate();
+  void handleMemoryPressureCritical();
 private:
   Callback m_callback;
   std::unique_ptr<JSThreadState> m_threadState;

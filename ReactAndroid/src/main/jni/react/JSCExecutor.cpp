@@ -18,6 +18,10 @@
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #endif
 
+#ifdef WITH_JSC_MEMORY_PRESSURE
+#include <jsc_memory.h>
+#endif
+
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
@@ -179,6 +183,18 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
   facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
   JSStringRelease(title);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureModerate() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureCritical() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
   #endif
 }
 

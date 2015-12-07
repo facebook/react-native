@@ -100,6 +100,7 @@ import com.facebook.systrace.Systrace;
       new ConcurrentLinkedQueue<>();
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
+  private final MemoryPressureRouter mMemoryPressureRouter;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -215,6 +216,7 @@ import com.facebook.systrace.Systrace;
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
+    mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
   }
 
   @Override
@@ -400,6 +402,7 @@ import com.facebook.systrace.Systrace;
   public void onDestroy() {
     UiThreadUtil.assertOnUiThread();
 
+    mMemoryPressureRouter.destroy(mApplicationContext);
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
@@ -539,6 +542,7 @@ import com.facebook.systrace.Systrace;
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
+    mMemoryPressureRouter.onNewReactContextCreated(reactContext);
     moveReactContextToCurrentLifecycleState(reactContext);
 
     for (ReactRootView rootView : mAttachedRootViews) {
@@ -591,6 +595,7 @@ import com.facebook.systrace.Systrace;
     }
     reactContext.onDestroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
+    mMemoryPressureRouter.onReactInstanceDestroyed();
   }
 
   /**
