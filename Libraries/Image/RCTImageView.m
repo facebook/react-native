@@ -13,6 +13,7 @@
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTImageLoader.h"
+#import "RCTImageSource.h"
 #import "RCTImageUtils.h"
 #import "RCTUtils.h"
 
@@ -107,6 +108,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
+- (void)setTintColor:(UIColor *)tintColor
+{
+  super.tintColor = tintColor;
+  self.renderingMode = tintColor ? UIImageRenderingModeAlwaysTemplate : UIImageRenderingModeAlwaysOriginal;
+}
+
 - (void)setRenderingMode:(UIImageRenderingMode)renderingMode
 {
   if (_renderingMode != renderingMode) {
@@ -115,28 +122,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)setSrc:(NSString *)src
+- (void)setSource:(RCTImageSource *)source
 {
-  if (![src isEqual:_src]) {
-    _src = [src copy];
+  if (![source isEqual:_source]) {
+    _source = source;
     [self reloadImage];
   }
 }
 
-+ (BOOL)srcNeedsReload:(NSString *)src
+- (BOOL)sourceNeedsReload
 {
+  NSString *scheme = _source.imageURL.scheme;
   return
-    [src hasPrefix:@"http://"] ||
-    [src hasPrefix:@"https://"] ||
-    [src hasPrefix:@"assets-library://"] ||
-    [src hasPrefix:@"ph://"];
+    [scheme isEqualToString:@"http"] ||
+    [scheme isEqualToString:@"https"] ||
+    [scheme isEqualToString:@"assets-library"] ||
+    [scheme isEqualToString:@"ph"];
 }
 
 - (void)setContentMode:(UIViewContentMode)contentMode
 {
   if (self.contentMode != contentMode) {
     super.contentMode = contentMode;
-    if ([RCTImageView srcNeedsReload:_src]) {
+    if ([self sourceNeedsReload]) {
       [self reloadImage];
     }
   }
@@ -162,7 +170,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [self cancelImageLoad];
 
-  if (_src && self.frame.size.width > 0 && self.frame.size.height > 0) {
+  if (_source && self.frame.size.width > 0 && self.frame.size.height > 0) {
     if (_onLoadStart) {
       _onLoadStart(nil);
     }
@@ -177,31 +185,37 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       };
     }
 
-    _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithTag:_src
+    RCTImageSource *source = _source;
+    __weak RCTImageView *weakSelf = self;
+    _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithTag:_source.imageURL.absoluteString
                                                                      size:self.bounds.size
                                                                     scale:RCTScreenScale()
                                                                resizeMode:self.contentMode
                                                             progressBlock:progressHandler
                                                           completionBlock:^(NSError *error, UIImage *image) {
-      if (error) {
-        if (_onError) {
-          _onError(@{ @"error": error.localizedDescription });
-        }
-      } else {
-        if (_onLoad) {
-          _onLoad(nil);
-        }
-      }
-      if (_onLoadEnd) {
-         _onLoadEnd(nil);
-      }
-
       dispatch_async(dispatch_get_main_queue(), ^{
+        RCTImageView *strongSelf = weakSelf;
+        if (![source isEqual:strongSelf.source]) {
+          // Bail out if source has changed since we started loading
+          return;
+        }
         if (image.reactKeyframeAnimation) {
-          [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+          [strongSelf.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
         } else {
-          [self.layer removeAnimationForKey:@"contents"];
-          self.image = image;
+          [strongSelf.layer removeAnimationForKey:@"contents"];
+          strongSelf.image = image;
+        }
+        if (error) {
+          if (strongSelf->_onError) {
+            strongSelf->_onError(@{ @"error": error.localizedDescription });
+          }
+        } else {
+          if (strongSelf->_onLoad) {
+            strongSelf->_onLoad(nil);
+          }
+        }
+        if (strongSelf->_onLoadEnd) {
+           strongSelf->_onLoadEnd(nil);
         }
       });
     }];
@@ -217,13 +231,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (!self.image || self.image == _defaultImage) {
     _targetSize = frame.size;
     [self reloadImage];
-  } else if ([RCTImageView srcNeedsReload:_src]) {
+  } else if ([self sourceNeedsReload]) {
     CGSize imageSize = self.image.size;
     CGSize idealSize = RCTTargetSize(imageSize, self.image.scale, frame.size, RCTScreenScale(), self.contentMode, YES);
 
     if (RCTShouldReloadImageForSizeChange(imageSize, idealSize)) {
       if (RCTShouldReloadImageForSizeChange(_targetSize, idealSize)) {
-        RCTLogInfo(@"[PERF IMAGEVIEW] Reloading image %@ as size %@", _src, NSStringFromCGSize(idealSize));
+        RCTLogInfo(@"[PERF IMAGEVIEW] Reloading image %@ as size %@", _source.imageURL, NSStringFromCGSize(idealSize));
 
         // If the existing image or an image being loaded are not the right size, reload the asset in case there is a
         // better size available.

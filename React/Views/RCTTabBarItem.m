@@ -13,73 +13,78 @@
 #import "RCTLog.h"
 #import "UIView+React.h"
 
+@implementation RCTConvert (UITabBarSystemItem)
+
+RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
+  @"bookmarks": @(UITabBarSystemItemBookmarks),
+  @"contacts": @(UITabBarSystemItemContacts),
+  @"downloads": @(UITabBarSystemItemDownloads),
+  @"favorites": @(UITabBarSystemItemFavorites),
+  @"featured": @(UITabBarSystemItemFeatured),
+  @"history": @(UITabBarSystemItemHistory),
+  @"more": @(UITabBarSystemItemMore),
+  @"most-recent": @(UITabBarSystemItemMostRecent),
+  @"most-viewed": @(UITabBarSystemItemMostViewed),
+  @"recents": @(UITabBarSystemItemRecents),
+  @"search": @(UITabBarSystemItemSearch),
+  @"top-rated": @(UITabBarSystemItemTopRated),
+}), NSNotFound, integerValue)
+
+@end
+
 @implementation RCTTabBarItem
 
 @synthesize barItem = _barItem;
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if ((self = [super initWithFrame:frame])) {
+    _systemIcon = NSNotFound;
+  }
+  return self;
+}
 
 - (UITabBarItem *)barItem
 {
   if (!_barItem) {
     _barItem = [UITabBarItem new];
+    _systemIcon = NSNotFound;
   }
   return _barItem;
 }
 
-- (void)setIcon:(id)icon
+- (void)setBadge:(id)badge
 {
-  static NSDictionary *systemIcons;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    systemIcons = @{
-      @"bookmarks": @(UITabBarSystemItemBookmarks),
-      @"contacts": @(UITabBarSystemItemContacts),
-      @"downloads": @(UITabBarSystemItemDownloads),
-      @"favorites": @(UITabBarSystemItemFavorites),
-      @"featured": @(UITabBarSystemItemFeatured),
-      @"history": @(UITabBarSystemItemHistory),
-      @"more": @(UITabBarSystemItemMore),
-      @"most-recent": @(UITabBarSystemItemMostRecent),
-      @"most-viewed": @(UITabBarSystemItemMostViewed),
-      @"recents": @(UITabBarSystemItemRecents),
-      @"search": @(UITabBarSystemItemSearch),
-      @"top-rated": @(UITabBarSystemItemTopRated),
-    };
-  });
+  _badge = [badge copy];
+  self.barItem.badgeValue = [badge description];
+}
 
-  // Update icon
-  BOOL wasSystemIcon = (systemIcons[_icon] != nil);
-  _icon = [icon copy];
-
-  // Check if string matches any custom images first
-  UIImage *image = [RCTConvert UIImage:_icon];
-  UITabBarItem *oldItem = _barItem;
-  if (image) {
-    // Recreate barItem if previous item was a system icon. Calling self.barItem
-    // creates a new instance if it wasn't set yet.
-    if (wasSystemIcon) {
-      _barItem = nil;
-      self.barItem.image = image;
-    } else {
-      self.barItem.image = image;
-      return;
-    }
-  } else if ([icon isKindOfClass:[NSString class]] && [icon length] > 0) {
-    // Not a custom image, may be a system item?
-    NSNumber *systemIcon = systemIcons[icon];
-    if (!systemIcon) {
-      RCTLogError(@"The tab bar icon '%@' did not match any known image or system icon", icon);
-      return;
-    }
-    _barItem = [[UITabBarItem alloc] initWithTabBarSystemItem:systemIcon.integerValue tag:oldItem.tag];
-  } else {
-    self.barItem.image = nil;
+- (void)setSystemIcon:(UITabBarSystemItem)systemIcon
+{
+  if (_systemIcon != systemIcon) {
+    _systemIcon = systemIcon;
+    UITabBarItem *oldItem = _barItem;
+    _barItem = [[UITabBarItem alloc] initWithTabBarSystemItem:_systemIcon
+                                                          tag:oldItem.tag];
+    _barItem.title = oldItem.title;
+    _barItem.imageInsets = oldItem.imageInsets;
+    _barItem.badgeValue = oldItem.badgeValue;
   }
+}
 
-  // Reapply previous properties
-  _barItem.title = oldItem.title;
-  _barItem.imageInsets = oldItem.imageInsets;
-  _barItem.selectedImage = oldItem.selectedImage;
-  _barItem.badgeValue = oldItem.badgeValue;
+- (void)setIcon:(UIImage *)icon
+{
+  _icon = icon;
+  if (_icon && _systemIcon != NSNotFound) {
+    _systemIcon = NSNotFound;
+    UITabBarItem *oldItem = _barItem;
+    _barItem = [UITabBarItem new];
+    _barItem.title = oldItem.title;
+    _barItem.imageInsets = oldItem.imageInsets;
+    _barItem.selectedImage = oldItem.selectedImage;
+    _barItem.badgeValue = oldItem.badgeValue;
+  }
+  self.barItem.image = _icon;
 }
 
 - (UIViewController *)reactViewController
