@@ -17,8 +17,11 @@ var React = require('React');
 var ReactChildren = require('ReactChildren');
 var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
+var StyleSheetPropType = require('StyleSheetPropType');
+var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
 
+var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
 
 var PickerIOS = React.createClass({
@@ -26,6 +29,7 @@ var PickerIOS = React.createClass({
 
   propTypes: {
     ...View.propTypes,
+    itemStyle: itemStylePropType,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically
   },
@@ -50,13 +54,13 @@ var PickerIOS = React.createClass({
     });
     return {selectedIndex, items};
   },
-
+  
   render: function() {
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={ picker => this._picker = picker }
-          style={styles.pickerIOS}
+          ref={picker => this._picker = picker}
+          style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
@@ -108,7 +112,11 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTPickerIOS = requireNativeComponent('RCTPicker', PickerIOS, {
+var RCTPickerIOS = requireNativeComponent('RCTPicker', {
+  propTypes: {
+    style: itemStylePropType,
+  },
+}, {
   nativeOnly: {
     items: true,
     onChange: true,
