@@ -130,7 +130,7 @@ const IsConnected = React.createClass({
 const IsConnectionExpensive = React.createClass({
   getInitialState() {
     return {
-      isConnectionExpensive: null,
+      isConnectionExpensive: (null : ?boolean),
     };
   },
   _checkIfExpensive() {
