@@ -2,8 +2,6 @@
 
 package com.facebook.react.modules.netinfo;
 
-import javax.annotation.Nullable;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +11,10 @@ import android.net.NetworkInfo;
 import android.support.v4.net.ConnectivityManagerCompat;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 
@@ -34,27 +31,26 @@ public class ConnectivityModule extends ReactContextBaseJavaModule
 
   private final ConnectivityManager mConnectivityManager;
   private final ConnectivityManagerCompat mConnectivityManagerCompat;
+  private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
 
-  private String mConnectivity;
-  private @Nullable ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
+  private String mConnectivity = "";
 
   public ConnectivityModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mConnectivityManager =
         (ConnectivityManager) reactContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     mConnectivityManagerCompat = new ConnectivityManagerCompat();
-    mConnectivity = "";
+    mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver();
   }
 
   @Override
   public void onHostResume() {
-    maybeRegisterReceiver();
-    updateAndSendConnectionType();
+    registerReceiver();
   }
 
   @Override
   public void onHostPause() {
-    maybeUnregisterReceiver();
+    unregisterReceiver();
   }
 
   @Override
@@ -64,13 +60,6 @@ public class ConnectivityModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     getReactApplicationContext().addLifecycleEventListener(this);
-    maybeRegisterReceiver();
-    updateAndSendConnectionType();
-  }
-
-  @Override
-  public void onCatalystInstanceDestroy() {
-    maybeUnregisterReceiver();
   }
 
   @Override
@@ -88,23 +77,14 @@ public class ConnectivityModule extends ReactContextBaseJavaModule
     successCallback.invoke(mConnectivityManagerCompat.isActiveNetworkMetered(mConnectivityManager));
   }
 
-  private void maybeRegisterReceiver() {
-    if (mConnectivityBroadcastReceiver != null) {
-      return;
-    }
-    mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver();
+  private void registerReceiver() {
     IntentFilter filter = new IntentFilter();
     filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     getReactApplicationContext().registerReceiver(mConnectivityBroadcastReceiver, filter);
   }
 
-  private void maybeUnregisterReceiver() {
-    if (mConnectivityBroadcastReceiver == null) {
-      return;
-    }
+  private void unregisterReceiver() {
     getReactApplicationContext().unregisterReceiver(mConnectivityBroadcastReceiver);
-    mConnectivityBroadcastReceiver = null;
-    mConnectivity = "";
   }
 
   private void updateAndSendConnectionType() {
