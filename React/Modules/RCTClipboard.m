@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTPasteboard.h"
+#import "RCTClipboard.h"
 
 #import <UIKit/UIKit.h>
 
-@implementation RCTPasteboard
+@implementation RCTClipboard
 
 RCT_EXPORT_MODULE()
 
@@ -20,17 +20,17 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(getPasteboardString:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getClipboardString:(RCTResponseSenderBlock)callback)
 {
-  UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
-  callback(@[pasteBoard.string ? pasteBoard.string : @""]);
+  UIPasteboard *clipBoard = [UIPasteboard generalPasteboard];
+  callback(@[clipBoard.string ? clipBoard.string : @""]);
 }
 
-RCT_EXPORT_METHOD(setPasteboardString:(NSString *)content)
+RCT_EXPORT_METHOD(setClipboardString:(NSString *)content)
 {
   if (content) {
-    UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
-    pasteBoard.string = content;
+    UIPasteboard *clipBoard = [UIPasteboard generalPasteboard];
+    clipBoard.string = content;
   }
 }
 

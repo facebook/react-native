@@ -6,18 +6,21 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Pasteboard
+ * @providesModule Clipboard
  */
 'use strict';
 
-
-var NativePasteboard = require('react-native').NativeModules.PasteboardAndroid;
+var NativeModules = require('NativeModules');
+var NativeClipboard = NativeModules.Clipboard;
+if(!NativeClipboard){
+  NativeClipboard = NativeModules.ClipboardAndroid;
+}
 
 module.exports = {
   getString(callback){
-    NativePasteboard.getPasteboardString(callback);
+    NativeClipboard.getClipboardString(callback);
   },
   setString(content){
-    NativePasteboard.setPasteboardString(content);
+    NativeClipboard.setClipboardString(content);
   }
 };
