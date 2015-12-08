@@ -92,8 +92,11 @@ static JSValueRef nativeTraceBeginSection(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 2)) {
-    // Could raise an exception here.
-    // TODO T9329825
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeTraceBeginSection: requires at least 2 arguments");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
@@ -129,8 +132,11 @@ static JSValueRef nativeTraceEndSection(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 1)) {
-    // Could raise an exception here.
-    // TODO T9329825
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeTraceEndSection: requires at least 1 argument");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
@@ -170,8 +176,11 @@ static JSValueRef beginOrEndAsync(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 3)) {
-    // Could raise an exception here.
-    // TODO T9329825
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "beginOrEndAsync: requires at least 3 arguments");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
@@ -230,8 +239,11 @@ static JSValueRef stageAsync(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 4)) {
-    // Could raise an exception here.
-    // TODO T9329825
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "stageAsync: requires at least 4 arguments");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
@@ -373,8 +385,11 @@ static JSValueRef nativeTraceCounter(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (FBSYSTRACE_UNLIKELY(argumentCount < 3)) {
-    // Could raise an exception here.
-    // TODO T9329825
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeTraceCounter: requires at least 3 arguments");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
