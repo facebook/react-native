@@ -105,7 +105,7 @@ var WebView = React.createClass({
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
-        key="webViewKey"
+        key='webViewKey'
         style={webViewStyles}
         url={this.props.url}
         html={this.props.html}
