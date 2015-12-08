@@ -34,9 +34,6 @@ var MovieScreen = React.createClass({
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.mainSection}>
-          {/* $FlowIssue #7363964 - There's a bug in Flow where you cannot
-            * omit a property or set it to undefined if it's inside a shape,
-            * even if it isn't required */}
           <Image
             source={getImageSource(this.props.movie, 'det')}
             style={styles.detailsImage}
