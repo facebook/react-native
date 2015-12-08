@@ -33,19 +33,31 @@ class WebSocketBase extends EventTarget {
   readyState: number;
   url: ?string;
 
-  constructor(url: string, protocols: ?any) {
+  /**
+   * @constructor WebSocket
+   * @param {String} address Connection address.
+   * @param {String|Array} protocols WebSocket protocols.
+   * @param {Object} options Additional connection options.
+   */
+  constructor(url: string, protocols: ?any, options: ?any) {
     super();
     this.CONNECTING = 0;
     this.OPEN = 1;
     this.CLOSING = 2;
     this.CLOSED = 3;
 
-    if (!protocols) {
-      protocols = [];
+    if (protocols && !Array.isArray(protocols) && typeof protocols === 'object') {
+      // accept the "options" Object as the 2nd argument
+      options = protocols;
+      protocols = null;
+    }
+
+    if (typeof protocols === 'string') {
+      protocols = [protocols];
     }
 
     this.readyState = this.CONNECTING;
-    this.connectToSocketImpl(url);
+    this.connectToSocketImpl(url, protocols, options);
   }
 
   close(): void {

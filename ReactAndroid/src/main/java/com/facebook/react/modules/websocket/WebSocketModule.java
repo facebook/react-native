@@ -10,6 +10,7 @@
 package com.facebook.react.modules.websocket;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
@@ -17,6 +18,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -57,7 +60,7 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void connect(final String url, final int id) {
+  public void connect(final String url, @Nullable final String protocols, @Nullable final ReadableMap options, final int id) {
     OkHttpClient client = new OkHttpClient();
 
     client.setConnectTimeout(10, TimeUnit.SECONDS);
@@ -65,12 +68,46 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     // Disable timeouts for read
     client.setReadTimeout(0, TimeUnit.MINUTES);
 
-    Request request = new Request.Builder()
+    Request.Builder builder = new Request.Builder()
         .tag(id)
-        .url(url)
-        .build();
+        .url(url);
 
-    WebSocketCall.create(client, request).enqueue(new WebSocketListener() {
+    if (options != null) {
+      if (options.hasKey("origin")) {
+        builder.addHeader("Origin", options.getString("origin"));
+      }
+
+      if (options.hasKey("headers")) {
+        ReadableMap headers = options.getMap("headers");
+        ReadableMapKeySetIterator keyIterator = headers.keySetIterator();
+        while (keyIterator.hasNextKey()) {
+          String key = keyIterator.nextKey();
+          switch (headers.getType(key)) {
+            case Null:
+              builder.addHeader(key, "null");
+              break;
+            case Boolean:
+              builder.addHeader(key, String.valueOf(headers.getBoolean(key)));
+              break;
+            case Number:
+              // Can be int or double.
+              builder.addHeader(key, String.valueOf(headers.getDouble(key)));
+              break;
+            case String:
+              builder.addHeader(key, headers.getString(key));
+              break;
+            case Map:
+              throw new UnsupportedOperationException("Maps aren't supported header values.");
+            case Array:
+              throw new UnsupportedOperationException("Arrays aren't supported header values.");
+            default:
+              throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+          }
+        }
+      }
+    }
+
+    WebSocketCall.create(client, builder.build()).enqueue(new WebSocketListener() {
 
       @Override
       public void onOpen(WebSocket webSocket, Response response) {
