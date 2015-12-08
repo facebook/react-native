@@ -229,7 +229,7 @@ const NetInfo = {
     },
   },
 
-  isConnectionExpensive(callback: (metered: ?boolean, error: string) => void): void {
+  isConnectionExpensive(callback: (metered: ?boolean, error?: string) => void): void {
     if (Platform.OS === 'android') {
       RCTNetInfo.isConnectionMetered((_isMetered) => {
         callback(_isMetered);
