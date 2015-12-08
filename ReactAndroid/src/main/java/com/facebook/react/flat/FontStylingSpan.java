@@ -84,14 +84,10 @@ import android.text.style.MetricAffectingSpan;
       return;
     }
 
-    // TODO: optimize this part (implemented in a followup patch)
-
     if (mFontFamily != null) {
-      // efficient in API 21+
-      typeface = Typeface.create(mFontFamily, newStyle);
+      typeface = TypefaceCache.getTypeface(mFontFamily, newStyle);
     } else {
-      // efficient in API 16+
-      typeface = Typeface.create(typeface, newStyle);
+      typeface = TypefaceCache.getTypeface(typeface, newStyle);
     }
 
     ds.setTypeface(typeface);
