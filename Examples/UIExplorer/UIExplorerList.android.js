@@ -43,7 +43,7 @@ var APIS = [
   require('./IntentAndroidExample.android'),
   require('./LayoutEventsExample'),
   require('./LayoutExample'),
-  require('./NetInfoExample.android'),
+  require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./TimerExample'),

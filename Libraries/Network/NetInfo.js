@@ -11,13 +11,13 @@
  */
 'use strict';
 
-var Map = require('Map');
-var NativeModules = require('NativeModules');
-var Platform = require('Platform');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-var RCTNetInfo = NativeModules.NetInfo;
+const Map = require('Map');
+const NativeModules = require('NativeModules');
+const Platform = require('Platform');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTNetInfo = NativeModules.NetInfo;
 
-var DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
+const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
 type ChangeEventName = $Enum<{
   change: string;
@@ -54,24 +54,20 @@ type ConnectivityStateAndroid = $Enum<{
 }>;
 
 
-var _subscriptions = new Map();
+const _subscriptions = new Map();
 
+let _isConnected;
 if (Platform.OS === 'ios') {
-  var _isConnected = function(
-    reachability: ReachabilityStateIOS
-  ): bool {
-    return reachability !== 'none' &&
-      reachability !== 'unknown';
+  _isConnected = (reachability: ReachabilityStateIOS): bool => {
+    return reachability !== 'none' && reachability !== 'unknown';
   };
 } else if (Platform.OS === 'android') {
-  var _isConnected = function(
-      connectionType: ConnectivityStateAndroid
-    ): bool {
+  _isConnected = (connectionType: ConnectivityStateAndroid) : bool => {
     return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
   };
 }
 
-var _isConnectedSubscriptions = new Map();
+const _isConnectedSubscriptions = new Map();
 
 /**
  * NetInfo exposes info about online/offline status
@@ -128,15 +124,15 @@ var _isConnectedSubscriptions = new Map();
  *
  * The rest ConnectivityStates are hidden by the Android API, but can be used if necessary.
  *
- * ### isConnectionMetered
+ * ### isConnectionExpensive
  *
  * Available on Android. Detect if the current active connection is metered or not. A network is
  * classified as metered when the user is sensitive to heavy data usage on that connection due to
  * monetary costs, data limitations or battery/performance issues.
  *
  * ```
- * NetInfo.isConnectionMetered((isConnectionMetered) => {
- *   console.log('Connection is ' + (isConnectionMetered ? 'Metered' : 'Not Metered'));
+ * NetInfo.isConnectionExpensive((isConnectionExpensive) => {
+ *   console.log('Connection is ' + (isConnectionExpensive ? 'Expensive' : 'Not Expensive'));
  * });
  * ```
  *
@@ -162,12 +158,12 @@ var _isConnectedSubscriptions = new Map();
  * );
  * ```
  */
-var NetInfo = {
-  addEventListener: function (
+const NetInfo = {
+  addEventListener(
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    var listener = RCTDeviceEventEmitter.addListener(
+    const listener = RCTDeviceEventEmitter.addListener(
       DEVICE_CONNECTIVITY_EVENT,
       (appStateData) => {
         handler(appStateData.network_info);
@@ -176,11 +172,11 @@ var NetInfo = {
     _subscriptions.set(handler, listener);
   },
 
-  removeEventListener: function(
+  removeEventListener(
     eventName: ChangeEventName,
     handler: Function
   ): void {
-    var listener = _subscriptions.get(handler);
+    const listener = _subscriptions.get(handler);
     if (!listener) {
       return;
     }
@@ -188,7 +184,7 @@ var NetInfo = {
     _subscriptions.delete(handler);
   },
 
-  fetch: function(): Promise {
+  fetch(): Promise {
     return new Promise((resolve, reject) => {
       RCTNetInfo.getCurrentConnectivity(
         function(resp) {
@@ -200,11 +196,11 @@ var NetInfo = {
   },
 
   isConnected: {
-    addEventListener: function (
+    addEventListener(
       eventName: ChangeEventName,
       handler: Function
     ): void {
-      var listener = (connection) => {
+      const listener = (connection) => {
         handler(_isConnected(connection));
       };
       _isConnectedSubscriptions.set(handler, listener);
@@ -214,11 +210,11 @@ var NetInfo = {
       );
     },
 
-    removeEventListener: function(
+    removeEventListener(
       eventName: ChangeEventName,
       handler: Function
     ): void {
-      var listener = _isConnectedSubscriptions.get(handler);
+      const listener = _isConnectedSubscriptions.get(handler);
       NetInfo.removeEventListener(
         eventName,
         listener
@@ -226,22 +222,23 @@ var NetInfo = {
       _isConnectedSubscriptions.delete(handler);
     },
 
-    fetch: function(): Promise {
+    fetch(): Promise {
       return NetInfo.fetch().then(
         (connection) => _isConnected(connection)
       );
     },
   },
 
-  isConnectionMetered: ({}: {} | (callback:Function) => void),
+  isConnectionExpensive(callback: (metered: ?boolean, error: string) => void): void {
+    if (Platform.OS === 'android') {
+      RCTNetInfo.isConnectionMetered((_isMetered) => {
+        callback(_isMetered);
+      });
+    } else {
+      // TODO t9296080 consider polyfill and more features later on
+      callback(null, "Unsupported");
+    }
+  },
 };
-
-if (Platform.OS === 'android') {
-  NetInfo.isConnectionMetered = function(callback): void {
-    RCTNetInfo.isConnectionMetered((_isMetered) => {
-      callback(_isMetered);
-    });
-  };
-}
 
 module.exports = NetInfo;
