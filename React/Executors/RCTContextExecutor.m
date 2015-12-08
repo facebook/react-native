@@ -394,6 +394,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   [self executeBlockOnJavaScriptQueue:^{
     BOOL enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
+    // TODO: Don't use require, go through the normal execution modes instead. #9317773
     NSString *script = [NSString stringWithFormat:@"var p = require('BridgeProfiling') || {}; p.setEnabled && p.setEnabled(%@)", enabled ? @"true" : @"false"];
     JSStringRef scriptJSRef = JSStringCreateWithUTF8CString(script.UTF8String);
     JSEvaluateScript(_context.ctx, scriptJSRef, NULL, NULL, 0, NULL);
@@ -435,10 +436,32 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   [self invalidate];
 }
 
-- (void)executeJSCall:(NSString *)name
-               method:(NSString *)method
-            arguments:(NSArray *)arguments
-             callback:(RCTJavaScriptCallback)onComplete
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+{
+  // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
+  [self _executeJSCall:@"flushedQueue" arguments:@[] callback:onComplete];
+}
+
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete
+{
+  // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
+  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
+}
+
+- (void)invokeCallbackID:(NSNumber *)cbID
+               arguments:(NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
+{
+  // TODO: Make this function handle first class instead of dynamically dispatching it. #9317773
+  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
+}
+
+- (void)_executeJSCall:(NSString *)method
+             arguments:(NSArray *)arguments
+              callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"onComplete block should not be nil");
   __weak RCTContextExecutor *weakSelf = self;
@@ -460,58 +483,49 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     JSGlobalContextRef contextJSRef = JSContextGetGlobalContext(strongSelf->_context.ctx);
     JSObjectRef globalObjectJSRef = JSContextGetGlobalObject(strongSelf->_context.ctx);
 
-    // get require
-    JSStringRef requireNameJSStringRef = JSStringCreateWithUTF8CString("require");
-    JSValueRef requireJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, requireNameJSStringRef, &errorJSRef);
-    JSStringRelease(requireNameJSStringRef);
+    // get the BatchedBridge object
+    JSStringRef moduleNameJSStringRef = JSStringCreateWithUTF8CString("__fbBatchedBridge");
+    JSValueRef moduleJSRef = JSObjectGetProperty(contextJSRef, globalObjectJSRef, moduleNameJSStringRef, &errorJSRef);
+    JSStringRelease(moduleNameJSStringRef);
 
-    if (requireJSRef != NULL && !JSValueIsUndefined(contextJSRef, requireJSRef) && errorJSRef == NULL) {
+    if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
 
-      // get module
-      JSStringRef moduleNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)name);
-      JSValueRef moduleNameJSRef = JSValueMakeString(contextJSRef, moduleNameJSStringRef);
-      JSValueRef moduleJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)requireJSRef, NULL, 1, (const JSValueRef *)&moduleNameJSRef, &errorJSRef);
-      JSStringRelease(moduleNameJSStringRef);
+      // get method
+      JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
+      JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
+      JSStringRelease(methodNameJSStringRef);
 
-      if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+      if (methodJSRef != NULL && errorJSRef == NULL) {
 
-        // get method
-        JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
-        JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
-        JSStringRelease(methodNameJSStringRef);
+        // direct method invoke with no arguments
+        if (arguments.count == 0) {
+          resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
+        }
 
-        if (methodJSRef != NULL && errorJSRef == NULL) {
+        // direct method invoke with 1 argument
+        else if(arguments.count == 1) {
+          JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
+          JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
+          resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
+          JSStringRelease(argsJSStringRef);
 
-          // direct method invoke with no arguments
-          if (arguments.count == 0) {
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
-          }
+        } else {
+          // apply invoke with array of arguments
+          JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
+          JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
+          JSStringRelease(applyNameJSStringRef);
 
-          // direct method invoke with 1 argument
-          else if(arguments.count == 1) {
+          if (applyJSRef != NULL && errorJSRef == NULL) {
+            // invoke apply
             JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
             JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 1, &argsJSRef, &errorJSRef);
+
+            JSValueRef args[2];
+            args[0] = JSValueMakeNull(contextJSRef);
+            args[1] = argsJSRef;
+
+            resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
             JSStringRelease(argsJSStringRef);
-
-          } else {
-            // apply invoke with array of arguments
-            JSStringRef applyNameJSStringRef = JSStringCreateWithUTF8CString("apply");
-            JSValueRef applyJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)methodJSRef, applyNameJSStringRef, &errorJSRef);
-            JSStringRelease(applyNameJSStringRef);
-
-            if (applyJSRef != NULL && errorJSRef == NULL) {
-              // invoke apply
-              JSStringRef argsJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)argsString);
-              JSValueRef argsJSRef = JSValueMakeFromJSONString(contextJSRef, argsJSStringRef);
-
-              JSValueRef args[2];
-              args[0] = JSValueMakeNull(contextJSRef);
-              args[1] = argsJSRef;
-
-              resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)applyJSRef, (JSObjectRef)methodJSRef, 2, args, &errorJSRef);
-              JSStringRelease(argsJSStringRef);
-            }
           }
         }
       }
@@ -539,7 +553,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     }
 
     onComplete(objcValue, nil);
-  }), 0, @"js_call", (@{@"module":name, @"method": method, @"args": arguments}))];
+  }), 0, @"js_call", (@{@"method": method, @"args": arguments}))];
 }
 
 - (void)executeApplicationScript:(NSData *)script

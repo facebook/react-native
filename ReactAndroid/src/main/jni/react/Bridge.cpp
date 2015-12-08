@@ -27,11 +27,18 @@ public:
     m_jsExecutor->executeApplicationScript(script, sourceURL);
   }
 
-  void executeJSCall(
-      const std::string& moduleName,
-      const std::string& methodName,
-      const std::vector<folly::dynamic>& arguments) {
-    auto returnedJSON = m_jsExecutor->executeJSCall(moduleName, methodName, arguments);
+  void flush() {
+    auto returnedJSON = m_jsExecutor->flush();
+    m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+  }
+
+  void callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+    auto returnedJSON = m_jsExecutor->callFunction(moduleId, methodId, arguments);
+    m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+  }
+
+  void invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+    auto returnedJSON = m_jsExecutor->invokeCallback(callbackId, arguments);
     m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
   }
 
@@ -88,17 +95,31 @@ void Bridge::executeApplicationScript(const std::string& script, const std::stri
   m_threadState->executeApplicationScript(script, sourceURL);
 }
 
-void Bridge::executeJSCall(
-    const std::string& script,
-    const std::string& sourceURL,
-    const std::vector<folly::dynamic>& arguments) {
+void Bridge::flush() {
+  if (*m_destroyed) {
+    return;
+  }
+  m_threadState->flush();
+}
+
+void Bridge::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
   if (*m_destroyed) {
     return;
   }
   #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.executeJSCall");
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.callFunction");
   #endif
-  m_threadState->executeJSCall(script, sourceURL, arguments);
+  m_threadState->callFunction(moduleId, methodId, arguments);
+}
+
+void Bridge::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+  if (*m_destroyed) {
+    return;
+  }
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
+  #endif
+  m_threadState->invokeCallback(callbackId, arguments);
 }
 
 void Bridge::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {

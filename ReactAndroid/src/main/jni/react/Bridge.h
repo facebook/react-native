@@ -29,10 +29,22 @@ public:
   Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback);
   virtual ~Bridge();
 
-  void executeJSCall(
-    const std::string& moduleName,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& values);
+  /**
+   * Flush get the next queue of changes.
+   */
+  void flush();
+
+  /**
+   * Executes a function with the module ID and method ID and any additional
+   * arguments in JS.
+   */
+  void callFunction(const double moduleId, const double methodId, const folly::dynamic& args);
+
+  /**
+   * Invokes a callback with the cbID, and optional additional arguments in JS.
+   */
+  void invokeCallback(const double callbackId, const folly::dynamic& args);
+
   void executeApplicationScript(const std::string& script, const std::string& sourceURL);
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue);
   bool supportsProfiling();

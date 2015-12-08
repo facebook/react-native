@@ -161,13 +161,31 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+{
+  [self _executeJSCall:@"flushedQueue" arguments:@[] callback:onComplete];
+}
+
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete
+{
+  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
+}
+
+- (void)invokeCallbackID:(NSNumber *)cbID
+               arguments:(NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
+{
+  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
+}
+
+- (void)_executeJSCall:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
   NSDictionary<NSString *, id> *message = @{
-    @"method": @"executeJSCall",
-    @"moduleName": name,
-    @"moduleMethod": method,
+    @"method": method,
     @"arguments": arguments
   };
   [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {

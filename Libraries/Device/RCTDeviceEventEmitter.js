@@ -12,7 +12,13 @@
 'use strict';
 
 var EventEmitter = require('EventEmitter');
+var BatchedBridge = require('BatchedBridge');
 
 var RCTDeviceEventEmitter = new EventEmitter();
+
+BatchedBridge.registerCallableModule(
+  'RCTDeviceEventEmitter',
+  RCTDeviceEventEmitter
+);
 
 module.exports = RCTDeviceEventEmitter;

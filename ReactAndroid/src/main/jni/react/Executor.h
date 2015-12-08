@@ -28,13 +28,31 @@ public:
 
 class JSExecutor {
 public:
+  /**
+   * Execute an application script bundle in the JS context.
+   */
   virtual void executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) = 0;
-  virtual std::string executeJSCall(
-    const std::string& moduleName,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) = 0;
+
+  /**
+   * Executes BatchedBridge.flushedQueue in JS to get the next queue of changes.
+   */
+  virtual std::string flush() = 0;
+
+  /**
+   * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
+   * method ID and optional additional arguments in JS, and returns the next
+   * queue.
+   */
+  virtual std::string callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) = 0;
+
+  /**
+   * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
+   * and optional additional arguments in JS and returns the next queue.
+   */
+  virtual std::string invokeCallback(const double callbackId, const folly::dynamic& arguments) = 0;
+
   virtual void setGlobalVariable(
     const std::string& propName,
     const std::string& jsonValue) = 0;

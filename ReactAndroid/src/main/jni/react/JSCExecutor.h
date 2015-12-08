@@ -18,13 +18,18 @@ class JSCExecutor : public JSExecutor {
 public:
   explicit JSCExecutor(FlushImmediateCallback flushImmediateCallback);
   ~JSCExecutor() override;
+
   virtual void executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) override;
-  virtual std::string executeJSCall(
-    const std::string& moduleName,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) override;
+  virtual std::string flush() override;
+  virtual std::string callFunction(
+    const double moduleId,
+    const double methodId,
+    const folly::dynamic& arguments) override;
+  virtual std::string invokeCallback(
+    const double callbackId,
+    const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
     const std::string& propName,
     const std::string& jsonValue) override;

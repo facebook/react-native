@@ -37,9 +37,11 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
 @interface RCTBridge (RCTModuleMethod)
 
-- (void)_invokeAndProcessModule:(NSString *)module
-                         method:(NSString *)method
-                      arguments:(NSArray *)args;
+/**
+ * This method is used to invoke a callback that was registered in the
+ * JavaScript application context. Safe to call from any thread.
+ */
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args;
 
 @end
 
@@ -191,9 +193,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray<RCTMethodArgument
       }
 
       RCT_BLOCK_ARGUMENT(^(NSArray *args) {
-        [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                 method:@"invokeCallbackAndReturnFlushedQueue"
-                              arguments:@[json, args]];
+        [bridge enqueueCallback:json args:args];
       });
     )
   };
@@ -290,9 +290,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray<RCTMethodArgument
         }
 
         RCT_BLOCK_ARGUMENT(^(NSError *error) {
-          [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                     method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
+          [bridge enqueueCallback:json args:@[RCTJSErrorFromNSError(error)]];
         });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
@@ -306,9 +304,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray<RCTMethodArgument
         }
 
         RCT_BLOCK_ARGUMENT(^(id result) {
-          [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                   method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, result ? @[result] : @[]]];
+          [bridge enqueueCallback:json args:result ? @[result] : @[]];
         });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
@@ -323,9 +319,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray<RCTMethodArgument
 
         RCT_BLOCK_ARGUMENT(^(NSError *error) {
           NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
-          [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                   method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, @[errorJSON]]];
+          [bridge enqueueCallback:json args:@[errorJSON]];
         });
       )
     } else {

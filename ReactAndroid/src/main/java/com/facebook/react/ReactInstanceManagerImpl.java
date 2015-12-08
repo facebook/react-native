@@ -52,7 +52,6 @@ import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.AppRegistry;
-import com.facebook.react.uimanager.ReactNative;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -581,8 +580,8 @@ import com.facebook.systrace.Systrace;
       ReactRootView rootView,
       CatalystInstance catalystInstance) {
     UiThreadUtil.assertOnUiThread();
-    catalystInstance.getJSModule(ReactNative.class)
-        .unmountComponentAtNodeAndRemoveContainer(rootView.getId());
+    catalystInstance.getJSModule(AppRegistry.class)
+        .unmountApplicationComponentAtRootTag(rootView.getId());
   }
 
   private void tearDownReactContext(ReactContext reactContext) {
