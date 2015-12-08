@@ -41,7 +41,7 @@ _Note: Once you publish the app on the Play Store, you will need to republish yo
 
 Edit the file `android/app/build.gradle` in your project folder and add the signing config,
 
-```
+```gradle
 ...
 android {
     ...
@@ -110,7 +110,7 @@ _**IMPORTANT**: Make sure to thoroughly test your app if you've enabled Proguard
 
 To enable Proguard, set `minifyEnabled` to `true`:
 
-```
+```gradle
 ...
 android {
     ...

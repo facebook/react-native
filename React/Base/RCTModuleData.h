@@ -63,4 +63,15 @@
  */
 @property (nonatomic, copy, readonly) NSArray *config;
 
+/**
+ * Whether the receiver has a valid `instance` which implements -batchDidComplete.
+ */
+@property (nonatomic, assign, readonly) BOOL implementsBatchDidComplete;
+
+/**
+ * Whether the receiver has a valid `instance` which implements
+ * -partialBatchDidFlush.
+ */
+@property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
+
 @end

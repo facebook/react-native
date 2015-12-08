@@ -16,7 +16,6 @@ var EventEmitter = require('EventEmitter');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactChildren = require('ReactChildren');
 var StyleSheet = require('StyleSheet');
@@ -24,6 +23,7 @@ var Text = require('Text');
 var TextInputState = require('TextInputState');
 var TimerMixin = require('react-timer-mixin');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var UIManager = require('UIManager');
 var View = require('View');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
@@ -37,7 +37,7 @@ var onlyMultiline = {
 };
 
 var notMultiline = {
-  onSubmitEditing: true,
+  // nothing yet
 };
 
 if (Platform.OS === 'android') {
@@ -46,10 +46,6 @@ if (Platform.OS === 'android') {
   var RCTTextView = requireNativeComponent('RCTTextView', null);
   var RCTTextField = requireNativeComponent('RCTTextField', null);
 }
-
-type DefaultProps = {
-  blurOnSubmit: boolean;
-};
 
 type Event = Object;
 
@@ -73,17 +69,6 @@ type Event = Object;
  * ```
  *
  * Note that some props are only available with `multiline={true/false}`:
- * ```
- *   var onlyMultiline = {
- *     onSelectionChange: true, // not supported in Open Source yet
- *     onTextInput: true, // not supported in Open Source yet
- *     children: true,
- *   };
- *
- *   var notMultiline = {
- *     onSubmitEditing: true,
- *   };
- * ```
  */
 var TextInput = React.createClass({
   statics: {
@@ -304,7 +289,10 @@ var TextInput = React.createClass({
     selectTextOnFocus: PropTypes.bool,
     /**
      * If true, the text field will blur when submitted.
-     * The default value is true.
+     * The default value is true for single-line fields and false for
+     * multiline fields. Note that for multiline fields, setting blurOnSubmit
+     * to true means that pressing return will blur the field and trigger the
+     * onSubmitEditing event instead of inserting a newline into the field.
      * @platform ios
      */
     blurOnSubmit: PropTypes.bool,
@@ -323,20 +311,18 @@ var TextInput = React.createClass({
     underlineColorAndroid: PropTypes.string,
   },
 
-  getDefaultProps: function(): DefaultProps {
-    return {
-      blurOnSubmit: true,
-    };
-  },
-
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
    */
   mixins: [NativeMethodsMixin, TimerMixin],
 
-  viewConfig: ((Platform.OS === 'ios' ? RCTTextField.viewConfig :
-    (Platform.OS === 'android' ? AndroidTextInput.viewConfig : {})) : Object),
+  viewConfig:
+    ((Platform.OS === 'ios' && RCTTextField ?
+      RCTTextField.viewConfig :
+      (Platform.OS === 'android' && AndroidTextInput ?
+        AndroidTextInput.viewConfig :
+        {})) : Object),
 
   isFocused: function(): boolean {
     return TextInputState.currentlyFocusedField() ===
@@ -496,11 +482,11 @@ var TextInput = React.createClass({
   },
 
   _renderAndroid: function() {
-    var autoCapitalize = RCTUIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
+    var autoCapitalize = UIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
     var textAlign =
-      RCTUIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
+      UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
     var textAlignVertical =
-      RCTUIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
+      UIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);

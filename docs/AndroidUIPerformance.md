@@ -4,7 +4,7 @@ title: Profiling Android UI Performance
 layout: docs
 category: Guides (Android)
 permalink: docs/android-ui-performance.html
-next: activityindicatorios
+next: android-building-from-source
 ---
 
 We try our best to deliver buttery-smooth UI performance by default, but sometimes that just isn't possible. Remember, Android supports 10k+ different phones and is generalized to support software rendering: the framework architecture and need to generalize across many hardware targets unfortunately means you get less for free relative to iOS. But sometimes, there are things you can improve (and many times it's not native code's fault at all!).
@@ -12,7 +12,7 @@ We try our best to deliver buttery-smooth UI performance by default, but sometim
 The first step for debugging this jank is to answer the fundamental question of where your time is being spent during each 16ms frame. For that, we'll be using a standard Android profiling tool called systrace. But first...
 
 > Make sure that JS dev mode is OFF!
-> 
+>
 > You should see `__DEV__ === false, development-level warning are OFF, performance optimizations are ON` in your application logs (which you can view using `adb logcat`)
 
 ## Profiling with Systrace

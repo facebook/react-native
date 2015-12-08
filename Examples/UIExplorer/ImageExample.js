@@ -32,6 +32,7 @@ var NetworkImageCallbackExample = React.createClass({
   getInitialState: function() {
     return {
       events: [],
+      mountTime: new Date(),
     };
   },
 

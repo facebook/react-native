@@ -16,6 +16,14 @@ const Activity = require('../Activity');
 
 const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
 
+const minifyCode = code =>
+  UglifyJS.minify(code, {fromString: true, ascii_only: true}).code;
+const getCode = x => x.code;
+const getMinifiedCode = x => minifyCode(x.code);
+const getNameAndCode = ({name, code}) => ({name, code});
+const getNameAndMinifiedCode =
+  ({name, code}) => ({name, code: minifyCode(code)});
+
 class Bundle {
   constructor(sourceMapUrl) {
     this._finalized = false;
@@ -24,6 +32,8 @@ class Bundle {
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
+    this._numPrependedModules = 0;
+    this._numRequireCalls = 0;
   }
 
   setMainModuleId(moduleId) {
@@ -46,6 +56,10 @@ class Bundle {
 
   getModules() {
     return this._modules;
+  }
+
+  setNumPrependedModules(n) {
+    this._numPrependedModules = n;
   }
 
   addAsset(asset) {
@@ -76,6 +90,7 @@ class Bundle {
       sourceCode: code,
       sourcePath: name + '.js',
     }));
+    this._numRequireCalls += 1;
   }
 
   _assertFinalized() {
@@ -139,6 +154,26 @@ class Bundle {
     }
 
     return source;
+  }
+
+  getUnbundle({minify}) {
+    const allModules = this._modules.slice();
+    const prependedModules = this._numPrependedModules;
+    const requireCalls = this._numRequireCalls;
+
+    const modules =
+      allModules
+        .splice(prependedModules, allModules.length - requireCalls - prependedModules);
+    const startupCode =
+      allModules
+        .map(minify ? getMinifiedCode : getCode)
+        .join('\n');
+
+    return {
+      startupCode,
+      modules:
+        modules.map(minify ? getNameAndMinifiedCode : getNameAndCode)
+    };
   }
 
   getMinifiedSourceAndMap(dev) {
@@ -336,6 +371,8 @@ class Bundle {
       assets: this._assets,
       sourceMapUrl: this._sourceMapUrl,
       mainModuleId: this._mainModuleId,
+      numPrependedModules: this._numPrependedModules,
+      numRequireCalls: this._numRequireCalls,
     };
   }
 
@@ -345,6 +382,8 @@ class Bundle {
     bundle._assets = json.assets;
     bundle._modules = json.modules;
     bundle._sourceMapUrl = json.sourceMapUrl;
+    bundle._numPrependedModules = json.numPrependedModules;
+    bundle._numRequireCalls = json.numRequireCalls;
 
     Object.freeze(bundle._modules);
     Object.seal(bundle._modules);

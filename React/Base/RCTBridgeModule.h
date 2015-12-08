@@ -235,4 +235,12 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  */
 - (void)batchDidComplete;
 
+/**
+ * Notifies the module that the active batch of JS method invocations has been
+ * partially flushed.
+ *
+ * This occurs before -batchDidComplete, and more frequently.
+ */
+- (void)partialBatchDidFlush;
+
 @end

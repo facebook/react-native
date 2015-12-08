@@ -17,7 +17,11 @@ static JSValueRef nativeProfilerStart(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (argumentCount < 1) {
-    // Could raise an exception here.
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeProfilerStart: requires at least 1 argument");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
@@ -35,7 +39,11 @@ static JSValueRef nativeProfilerEnd(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (argumentCount < 1) {
-    // Could raise an exception here.
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeProfilerEnd: requires at least 1 argument");
+    }
     return JSValueMakeUndefined(ctx);
   }
 

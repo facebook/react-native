@@ -11,6 +11,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.infer.annotation.Assertions;
@@ -39,14 +40,39 @@ public class UIImplementation {
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
 
-  public UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
-    mOperationsQueue = new UIViewOperationQueue(
-        reactContext,
-        new NativeViewHierarchyManager(viewManagers));
+  public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
+    this(reactContext, new ViewManagerRegistry(viewManagers));
+  }
+
+  private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
+    this(
+        viewManagers,
+        new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
+  }
+
+  protected UIImplementation(
+      ViewManagerRegistry viewManagers,
+      UIViewOperationQueue operationsQueue) {
     mViewManagers = viewManagers;
+    mOperationsQueue = operationsQueue;
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);
+  }
+
+  protected ReactShadowNode createRootShadowNode() {
+    ReactShadowNode rootCSSNode = new ReactShadowNode();
+    rootCSSNode.setViewClassName("Root");
+    return rootCSSNode;
+  }
+
+  protected ReactShadowNode createShadowNode(String className) {
+    ViewManager viewManager = mViewManagers.get(className);
+    return viewManager.createShadowNodeInstance();
+  }
+
+  protected final ReactShadowNode resolveShadowNode(int reactTag) {
+    return mShadowNodeRegistry.getNode(reactTag);
   }
 
   /**
@@ -59,12 +85,11 @@ public class UIImplementation {
       int width,
       int height,
       ThemedReactContext context) {
-    final ReactShadowNode rootCSSNode = new ReactShadowNode();
+    final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
     rootCSSNode.setThemedContext(context);
     rootCSSNode.setStyleWidth(width);
     rootCSSNode.setStyleHeight(height);
-    rootCSSNode.setViewClassName("Root");
     mShadowNodeRegistry.addRootNode(rootCSSNode);
 
     // register it within NativeViewHierarchyManager
@@ -103,8 +128,7 @@ public class UIImplementation {
    * Invoked by React to create a new node with a given tag, class name and properties.
    */
   public void createView(int tag, String className, int rootViewTag, ReadableMap props) {
-    ViewManager viewManager = mViewManagers.get(className);
-    ReactShadowNode cssNode = viewManager.createShadowNodeInstance();
+    ReactShadowNode cssNode = createShadowNode(className);
     ReactShadowNode rootNode = mShadowNodeRegistry.getNode(rootViewTag);
     cssNode.setReactTag(tag);
     cssNode.setViewClassName(className);
@@ -119,8 +143,15 @@ public class UIImplementation {
       cssNode.updateProperties(styles);
     }
 
+    handleCreateView(cssNode, rootViewTag, styles);
+  }
+
+  protected void handleCreateView(
+      ReactShadowNode cssNode,
+      int rootViewTag,
+      @Nullable CatalystStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
-      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, rootViewTag, styles);
+      mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
     }
   }
 
@@ -140,9 +171,16 @@ public class UIImplementation {
     if (props != null) {
       CatalystStylesDiffMap styles = new CatalystStylesDiffMap(props);
       cssNode.updateProperties(styles);
-      if (!cssNode.isVirtual()) {
-        mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
-      }
+      handleUpdateView(cssNode, className, styles);
+    }
+  }
+
+  protected void handleUpdateView(
+      ReactShadowNode cssNode,
+      String className,
+      CatalystStylesDiffMap styles) {
+    if (!cssNode.isVirtual()) {
+      mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
     }
   }
 
@@ -400,14 +438,7 @@ public class UIImplementation {
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
       notifyOnBeforeLayoutRecursive(cssRoot);
 
-      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
-          .arg("rootTag", tag)
-          .flush();
-      try {
-        cssRoot.calculateLayout(mLayoutContext);
-      } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-      }
+      calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
 
@@ -437,6 +468,41 @@ public class UIImplementation {
     assertViewExists(reactTag, "removeAnimation");
     mOperationsQueue.enqueueRemoveAnimation(animationID);
   }
+
+  /**
+   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
+   * explicitly in order to avoid regression in existing application written for iOS using this API.
+   *
+   * Warning : This method will be removed in future version of React Native, and layout animation
+   * will be enabled by default, so always check for its existence before invoking it.
+   *
+   * TODO(9139831) : remove this method once layout animation is fully stable.
+   *
+   * @param enabled whether layout animation is enabled or not
+   */
+  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
+    mOperationsQueue.enqueueSetLayoutAnimationEnabled(enabled);
+  }
+
+  /**
+   * Configure an animation to be used for the native layout changes, and native views
+   * creation. The animation will only apply during the current batch operations.
+   *
+   * TODO(7728153) : animating view deletion is currently not supported.
+   * TODO(7613721) : callbacks are not supported, this feature will likely be killed.
+   *
+   * @param config the configuration of the animation for view addition/removal/update.
+   * @param success will be called when the animation completes, or when the animation get
+   *        interrupted. In this case, callback parameter will be false.
+   * @param error will be called if there was an error processing the animation
+   */
+  public void configureNextLayoutAnimation(
+      ReadableMap config,
+      Callback success,
+      Callback error) {
+    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
+  }
+
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
@@ -491,7 +557,7 @@ public class UIImplementation {
     mOperationsQueue.setViewHierarchyUpdateDebugListener(listener);
   }
 
-  private void removeShadowNode(ReactShadowNode nodeToRemove) {
+  protected final void removeShadowNode(ReactShadowNode nodeToRemove) {
     mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
@@ -596,7 +662,18 @@ public class UIImplementation {
     cssNode.onBeforeLayout();
   }
 
-  private void applyUpdatesRecursive(
+  protected void calculateRootLayout(ReactShadowNode cssRoot) {
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
+        .arg("rootTag", cssRoot.getReactTag())
+        .flush();
+    try {
+      cssRoot.calculateLayout(mLayoutContext);
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
+  protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
       float absoluteY,
@@ -621,8 +698,18 @@ public class UIImplementation {
           absoluteX,
           absoluteY,
           mOperationsQueue,
-          mNativeViewHierarchyOptimizer,
-          eventDispatcher);
+          mNativeViewHierarchyOptimizer);
+      
+      // notify JS about layout event if requested
+      if (cssNode.shouldNotifyOnLayout()) {
+        eventDispatcher.dispatchEvent(
+            OnLayoutEvent.obtain(
+                tag,
+                cssNode.getScreenX(),
+                cssNode.getScreenY(),
+                cssNode.getScreenWidth(),
+                cssNode.getScreenHeight()));
+      }
     }
     cssNode.markUpdateSeen();
   }

@@ -15,7 +15,8 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
-var RCTMapConstants = require('NativeModules').UIManager.RCTMap.Constants;
+var RCTMap = require('UIManager').RCTMap;
+var RCTMapConstants = RCTMap && RCTMap.Constants;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
@@ -219,6 +220,10 @@ var MapView = React.createClass({
        * The pin color. This can be any valid color string, or you can use one
        * of the predefined PinColors constants. Applies to both standard pins
        * and custom pin images.
+       *
+       * Note that on iOS 8 and earlier, only the standard PinColor constants
+       * are supported for regualr pins. For custom pin images, any tintColor
+       * value is supported on all iOS versions.
        * @platform ios
        */
       tintColor: React.PropTypes.string,
@@ -228,7 +233,7 @@ var MapView = React.createClass({
        * @platform ios
        */
       image: Image.propTypes.source,
-      
+
       /**
        * annotation id
        */
@@ -373,8 +378,10 @@ var MapView = React.createClass({
 
 /**
  * Standard iOS MapView pin color constants, to be used with the
- * `annotation.tintColor` property. You are not obliged to use these,
- * but they are useful for matching the standard iOS look and feel.
+ * `annotation.tintColor` property. On iOS 8 and earlier these are the
+ * only supported values when using regular pins. On iOS 9 and later
+ * you are not obliged to use these, but they are useful for matching
+ * the standard iOS look and feel.
  */
 let PinColors = RCTMapConstants && RCTMapConstants.PinColors;
 MapView.PinColors = PinColors && {

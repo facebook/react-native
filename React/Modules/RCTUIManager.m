@@ -382,7 +382,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
       rootShadowView.frame = frame;
     }
 
-    [rootShadowView updateLayout];
+    [rootShadowView dirtyLayout];
 
     [self batchDidComplete];
   });
@@ -878,6 +878,13 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
       @(frame.size.height),
     ]);
   }];
+}
+
+- (void)partialBatchDidFlush
+{
+  if (self.unsafeFlushUIChangesBeforeBatchEnds) {
+    [self flushUIBlocks];
+  }
 }
 
 - (void)batchDidComplete

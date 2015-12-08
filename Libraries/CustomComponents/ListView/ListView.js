@@ -28,7 +28,6 @@
 
 var ListViewDataSource = require('ListViewDataSource');
 var React = require('React');
-var RCTUIManager = require('NativeModules').UIManager;
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
@@ -117,6 +116,7 @@ var ListView = React.createClass({
     dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
     /**
      * (sectionID, rowID, adjacentRowHighlighted) => renderable
+     *
      * If provided, a renderable component to be rendered as the separator
      * below each row but not the last row if there is a section header below.
      * Take a sectionID and rowID of the row above and whether its adjacent row
@@ -125,6 +125,7 @@ var ListView = React.createClass({
     renderSeparator: PropTypes.func,
     /**
      * (rowData, sectionID, rowID, highlightRow) => renderable
+     *
      * Takes a data entry from the data source and its ids and should return
      * a renderable component to be rendered as the row.  By default the data
      * is exactly what was put into the data source, but it's also possible to

@@ -10,11 +10,16 @@
 #include <folly/String.h>
 #include <jni/fbjni/Exceptions.h>
 #include "Value.h"
+#include "jni/OnLoad.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include <react/JSCTracing.h>
 #include <react/JSCLegacyProfiler.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
+#endif
+
+#ifdef WITH_JSC_MEMORY_PRESSURE
+#include <jsc_memory.h>
 #endif
 
 #ifdef WITH_FBSYSTRACE
@@ -24,6 +29,10 @@ using fbsystrace::FbSystraceSection;
 
 // Add native performance markers support
 #include <react/JSCPerfLogging.h>
+
+#ifdef WITH_FB_JSC_TUNING
+#include <jsc_config_android.h>
+#endif
 
 using namespace facebook::jni;
 
@@ -81,6 +90,11 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
+
+  #ifdef WITH_FB_JSC_TUNING
+  configureJSCForAndroid();
+  #endif
+
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
   addNativeProfilingHooks(m_context);
@@ -96,7 +110,18 @@ JSCExecutor::~JSCExecutor() {
 void JSCExecutor::executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  String jsScript(script.c_str());
+  JNIEnv* env = Environment::current();
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+  jmethodID logMarkerMethod = facebook::react::getLogMarkerMethod();
+  jstring startStringMarker = env->NewStringUTF("executeApplicationScript_startStringConvert");
+  jstring endStringMarker = env->NewStringUTF("executeApplicationScript_endStringConvert");
+
+  env->CallStaticVoidMethod(markerClass, logMarkerMethod, startStringMarker);
+  String jsScript = String::createExpectingAscii(script);
+  env->CallStaticVoidMethod(markerClass, logMarkerMethod, endStringMarker);
+  env->DeleteLocalRef(startStringMarker);
+  env->DeleteLocalRef(endStringMarker);
+
   String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
@@ -157,6 +182,18 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
   facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
   JSStringRelease(title);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureModerate() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureCritical() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
   #endif
 }
 

@@ -81,6 +81,10 @@ public class ReactScrollViewManager
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+    return createExportedCustomDirectEventTypeConstants();
+  }
+
+  public static Map createExportedCustomDirectEventTypeConstants() {
     return MapBuilder.builder()
         .put(ScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onScroll"))
         .put("topScrollBeginDrag", MapBuilder.of("registrationName", "onScrollBeginDrag"))

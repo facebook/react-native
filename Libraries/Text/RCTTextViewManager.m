@@ -25,6 +25,7 @@ RCT_EXPORT_MODULE()
 
 RCT_REMAP_VIEW_PROPERTY(autoCapitalize, textView.autocapitalizationType, UITextAutocapitalizationType)
 RCT_EXPORT_VIEW_PROPERTY(autoCorrect, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(blurOnSubmit, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnFocus, BOOL)
 RCT_REMAP_VIEW_PROPERTY(color, textView.textColor, UIColor)
 RCT_REMAP_VIEW_PROPERTY(editable, textView.editable, BOOL)

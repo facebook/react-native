@@ -22,6 +22,9 @@
 @end
 
 @implementation RCTUITextView
+{
+  BOOL _jsRequestingFirstResponder;
+}
 
 - (void)paste:(id)sender
 {
@@ -29,12 +32,26 @@
   [super paste:sender];
 }
 
+- (void)reactWillMakeFirstResponder
+{
+  _jsRequestingFirstResponder = YES;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return _jsRequestingFirstResponder;
+}
+
+- (void)reactDidMakeFirstResponder
+{
+  _jsRequestingFirstResponder = NO;
+}
+
 @end
 
 @implementation RCTTextView
 {
   RCTEventDispatcher *_eventDispatcher;
-  BOOL _jsRequestingFirstResponder;
   NSString *_placeholder;
   UITextView *_placeholderView;
   UITextView *_textView;
@@ -55,6 +72,7 @@
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
+    _blurOnSubmit = NO;
 
     _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
@@ -63,6 +81,7 @@
     _textView.delegate = self;
 
     _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.scrollsToTop = NO;
     [_scrollView addSubview:_textView];
 
     _previousSelectionRange = _textView.selectedTextRange;
@@ -183,10 +202,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)updateContentSize
 {
-  _textView.scrollEnabled = YES;
-  _scrollView.contentSize = _textView.contentSize;
-  _textView.frame = (CGRect){CGPointZero, _scrollView.contentSize};
-  _textView.scrollEnabled = NO;
+  CGSize size = (CGSize){_scrollView.frame.size.width, INFINITY};
+  size.height = [_textView sizeThatFits:size].height;
+  _scrollView.contentSize = size;
+  _textView.frame = (CGRect){CGPointZero, size};
 }
 
 - (void)updatePlaceholder
@@ -259,11 +278,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (textView.textWasPasted) {
     textView.textWasPasted = NO;
   } else {
+    
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                    reactTag:self.reactTag
                                        text:nil
                                         key:text
                                  eventCount:_nativeEventCount];
+
+    if (_blurOnSubmit && [text isEqualToString:@"\n"]) {
+
+      // TODO: the purpose of blurOnSubmit on RCTextField is to decide if the
+      // field should lose focus when return is pressed or not. We're cheating a
+      // bit here by using it on RCTextView to decide if return character should
+      // submit the form, or be entered into the field.
+      //
+      // The reason this is cheating is because there's no way to specify that
+      // you want the return key to be swallowed *and* have the field retain
+      // focus (which was what blurOnSubmit was originally for). For the case
+      // where _blurOnSubmit = YES, this is still the correct and expected
+      // behavior though, so we'll leave the don't-blur-or-add-newline problem
+      // to be solved another day.
+
+      [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                     reactTag:self.reactTag
+                                         text:self.text
+                                          key:nil
+                                   eventCount:_nativeEventCount];
+      [self resignFirstResponder];
+      return NO;
+    }
   }
 
   if (_maxLength == nil) {
@@ -360,7 +403,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:textView.text
+                                     text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
 }
@@ -385,39 +428,49 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:textView.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
+                                 reactTag:self.reactTag
+                                     text:nil
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
+- (BOOL)isFirstResponder
+{
+  return [_textView isFirstResponder];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return [_textView canBecomeFirstResponder];
+}
+
+- (void)reactWillMakeFirstResponder
+{
+  [_textView reactWillMakeFirstResponder];
 }
 
 - (BOOL)becomeFirstResponder
 {
-  _jsRequestingFirstResponder = YES;
-  BOOL result = [_textView becomeFirstResponder];
-  _jsRequestingFirstResponder = NO;
-  return result;
+  return [_textView becomeFirstResponder];
+}
+
+- (void)reactDidMakeFirstResponder
+{
+  [_textView reactDidMakeFirstResponder];
 }
 
 - (BOOL)resignFirstResponder
 {
   [super resignFirstResponder];
-  BOOL result = [_textView resignFirstResponder];
-  if (result) {
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
-                                   reactTag:self.reactTag
-                                       text:_textView.text
-                                        key:nil
-                                 eventCount:_nativeEventCount];
-  }
-  return result;
+  return [_textView resignFirstResponder];
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   [self updateFrames];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
 }
 
 - (UIFont *)defaultPlaceholderFont

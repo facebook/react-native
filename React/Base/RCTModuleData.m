@@ -39,6 +39,8 @@
   if ((self = [super init])) {
     _instance = instance;
     _moduleClass = [instance class];
+
+    [self cacheImplementedSelectors];
   }
   return self;
 }
@@ -62,8 +64,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
     // Initialize queue
     [self methodQueue];
+
+    [self cacheImplementedSelectors];
   }
   return _instance;
+}
+
+- (void)cacheImplementedSelectors
+{
+  _implementsBatchDidComplete = [_instance respondsToSelector:@selector(batchDidComplete)];
+  _implementsPartialBatchDidFlush = [_instance respondsToSelector:@selector(partialBatchDidFlush)];
 }
 
 - (void)setBridgeForInstance:(RCTBridge *)bridge

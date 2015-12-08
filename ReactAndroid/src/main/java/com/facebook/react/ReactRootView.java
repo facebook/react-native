@@ -61,8 +61,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
   private int mTargetTag = -1;
-  // Note mTargetCoordinates are Y,X
-  // TODO: t9136625 tracks moving to X,Y
   private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
   private boolean mWasMeasured = false;
@@ -147,8 +145,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // this gesture
       mChildIsHandlingNativeGesture = false;
       mTargetTag = TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
-          ev.getY(),
           ev.getX(),
+          ev.getY(),
           this,
           mTargetCoordinates);
       eventDispatcher.dispatchEvent(
@@ -157,8 +155,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
               SystemClock.uptimeMillis(),
               TouchEventType.START,
               ev,
-              mTargetCoordinates[1],
-              mTargetCoordinates[0]));
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (mChildIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
       // gesture, so we shouldn't send any more touches related to it.
@@ -179,8 +177,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
               SystemClock.uptimeMillis(),
               TouchEventType.END,
               ev,
-              mTargetCoordinates[1],
-              mTargetCoordinates[0]));
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
       mTargetTag = -1;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
@@ -190,8 +188,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
               SystemClock.uptimeMillis(),
               TouchEventType.MOVE,
               ev,
-              mTargetCoordinates[1],
-              mTargetCoordinates[0]));
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
@@ -200,8 +198,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
               SystemClock.uptimeMillis(),
               TouchEventType.START,
               ev,
-              mTargetCoordinates[1],
-              mTargetCoordinates[0]));
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
       // Exactly onw of the pointers goes up
       eventDispatcher.dispatchEvent(
@@ -210,8 +208,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
               SystemClock.uptimeMillis(),
               TouchEventType.END,
               ev,
-              mTargetCoordinates[1],
-              mTargetCoordinates[0]));
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_CANCEL) {
       dispatchCancelEvent(ev);
       mTargetTag = -1;
@@ -261,8 +259,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
             SystemClock.uptimeMillis(),
             TouchEventType.CANCEL,
             androidEvent,
-            mTargetCoordinates[1],
-            mTargetCoordinates[0]));
+            mTargetCoordinates[0],
+            mTargetCoordinates[1]));
   }
 
   @Override

@@ -22,8 +22,6 @@ var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
-var DATEPICKER = 'datepicker';
-
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime';
 };
@@ -38,6 +36,9 @@ type Event = Object;
  * source of truth.
  */
 var DatePickerIOS = React.createClass({
+  // TOOD: Put a better type for _picker
+  _picker: (undefined: ?$FlowFixMe),
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
@@ -108,8 +109,8 @@ var DatePickerIOS = React.createClass({
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
     var propsTimeStamp = this.props.date.getTime();
-    if (nativeTimeStamp !== propsTimeStamp) {
-      this.refs[DATEPICKER].setNativeProps({
+    if (this._picker && nativeTimeStamp !== propsTimeStamp) {
+      this._picker.setNativeProps({
         date: propsTimeStamp,
       });
     }
@@ -120,7 +121,7 @@ var DatePickerIOS = React.createClass({
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          ref={DATEPICKER}
+          ref={ picker => this._picker = picker }
           style={styles.datePickerIOS}
           date={props.date.getTime()}
           maximumDate={

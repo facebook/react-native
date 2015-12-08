@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -46,7 +47,7 @@ public class UIViewOperationQueue {
   /**
    * A mutation or animation operation on the view hierarchy.
    */
-  private interface UIOperation {
+  protected interface UIOperation {
 
     void execute();
   }
@@ -112,35 +113,39 @@ public class UIViewOperationQueue {
       mY = y;
       mWidth = width;
       mHeight = height;
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
     }
 
     @Override
     public void execute() {
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "updateLayout", mTag);
       mNativeViewHierarchyManager.updateLayout(mParentTag, mTag, mX, mY, mWidth, mHeight);
     }
   }
 
   private final class CreateViewOperation extends ViewOperation {
 
-    private final int mRootViewTagForContext;
+    private final ThemedReactContext mThemedContext;
     private final String mClassName;
     private final @Nullable CatalystStylesDiffMap mInitialProps;
 
     public CreateViewOperation(
-        int rootViewTagForContext,
+        ThemedReactContext themedContext,
         int tag,
         String className,
         @Nullable CatalystStylesDiffMap initialProps) {
       super(tag);
-      mRootViewTagForContext = rootViewTagForContext;
+      mThemedContext = themedContext;
       mClassName = className;
       mInitialProps = initialProps;
+      Systrace.startAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
     }
 
     @Override
     public void execute() {
+      Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
       mNativeViewHierarchyManager.createView(
-          mRootViewTagForContext,
+          mThemedContext,
           mTag,
           mClassName,
           mInitialProps);
@@ -322,6 +327,32 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class SetLayoutAnimationEnabledOperation implements UIOperation {
+    private final boolean mEnabled;
+
+    private SetLayoutAnimationEnabledOperation(final boolean enabled) {
+      mEnabled = enabled;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setLayoutAnimationEnabled(mEnabled);
+    }
+  }
+
+  private class ConfigureLayoutAnimationOperation implements UIOperation {
+    private final ReadableMap mConfig;
+
+    private ConfigureLayoutAnimationOperation(final ReadableMap config) {
+      mConfig = config;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.configureLayoutAnimation(mConfig);
+    }
+  }
+
   private final class MeasureOperation implements UIOperation {
 
     private final int mReactTag;
@@ -440,7 +471,7 @@ public class UIViewOperationQueue {
 
   private @Nullable NotThreadSafeViewHierarchyUpdateDebugListener mViewHierarchyUpdateDebugListener;
 
-  /* package */ UIViewOperationQueue(
+  public UIViewOperationQueue(
       ReactApplicationContext reactContext,
       NativeViewHierarchyManager nativeViewHierarchyManager) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
@@ -484,6 +515,14 @@ public class UIViewOperationQueue {
     }
   }
 
+  /**
+   * Enqueues a UIOperation to be executed in UI thread. This method should only be used by a
+   * subclass to support UIOperations not provided by UIViewOperationQueue.
+   */
+  protected void enqueueUIOperation(UIOperation operation) {
+    mOperations.add(operation);
+  }
+
   public void enqueueRemoveRootView(int rootViewTag) {
     mOperations.add(new RemoveRootViewOperation(rootViewTag));
   }
@@ -525,13 +564,13 @@ public class UIViewOperationQueue {
   }
 
   public void enqueueCreateView(
-      int rootViewTagForContext,
+      ThemedReactContext themedContext,
       int viewReactTag,
       String viewClassName,
       @Nullable CatalystStylesDiffMap initialProps) {
     mOperations.add(
         new CreateViewOperation(
-            rootViewTagForContext,
+            themedContext,
             viewReactTag,
             viewClassName,
             initialProps));
@@ -574,6 +613,18 @@ public class UIViewOperationQueue {
 
   public void enqueueRemoveAnimation(int animationID) {
     mOperations.add(new RemoveAnimationOperation(animationID));
+  }
+
+  public void enqueueSetLayoutAnimationEnabled(
+      final boolean enabled) {
+    mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
+  }
+
+  public void enqueueConfigureLayoutAnimation(
+      final ReadableMap config,
+      final Callback onSuccess,
+      final Callback onError) {
+    mOperations.add(new ConfigureLayoutAnimationOperation(config));
   }
 
   public void enqueueMeasure(
@@ -672,6 +723,9 @@ public class UIViewOperationQueue {
           mDispatchUIRunnables.get(i).run();
         }
         mDispatchUIRunnables.clear();
+
+        // Clear layout animation, as animation only apply to current UI operations batch.
+        mNativeViewHierarchyManager.clearLayoutAnimation();
       }
 
       ReactChoreographer.getInstance().postFrameCallback(

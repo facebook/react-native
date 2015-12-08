@@ -11,11 +11,11 @@
 'use strict';
 
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
@@ -181,17 +181,17 @@ var TouchableNativeFeedback = React.createClass({
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.RCTView.Commands.hotspotUpdate,
       [destX || 0, destY || 0]
     );
   },
 
   _dispatchPressedStateChange: function(pressed) {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
-      RCTUIManager.RCTView.Commands.setPressed,
+      UIManager.RCTView.Commands.setPressed,
       [pressed]
     );
   },

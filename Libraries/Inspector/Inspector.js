@@ -98,7 +98,9 @@ class Inspector extends React.Component {
 
   setSelection(i: number) {
     var instance = this.state.hierarchy[i];
-    var publicInstance = instance.getPublicInstance();
+    // if we inspect a stateless component we can't use the getPublicInstance method
+    // therefore we use the internal _instance property directly.
+    var publicInstance = instance._instance || {};
     UIManager.measure(React.findNodeHandle(instance), (x, y, width, height, left, top) => {
       this.setState({
         inspected: {
@@ -115,7 +117,9 @@ class Inspector extends React.Component {
       this.state.devtoolsAgent.selectFromReactInstance(instance, true);
     }
     var hierarchy = InspectorUtils.getOwnerHierarchy(instance);
-    var publicInstance = instance.getPublicInstance();
+    // if we inspect a stateless component we can't use the getPublicInstance method
+    // therefore we use the internal _instance property directly.
+    var publicInstance = instance._instance || {};
     var props = publicInstance.props || {};
     this.setState({
       panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',

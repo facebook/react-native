@@ -9,8 +9,6 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
 import java.util.Collection;
 
 import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
@@ -48,6 +46,8 @@ public interface CatalystInstance {
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   Collection<NativeModule> getNativeModules();
+
+  void handleMemoryPressure(MemoryPressure level);
 
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
