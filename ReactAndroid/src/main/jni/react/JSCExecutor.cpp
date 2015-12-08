@@ -117,9 +117,8 @@ void JSCExecutor::executeApplicationScript(
   jstring endStringMarker = env->NewStringUTF("executeApplicationScript_endStringConvert");
 
   env->CallStaticVoidMethod(markerClass, logMarkerMethod, startStringMarker);
-  String jsScript(script.c_str());
+  String jsScript = String::createExpectingAscii(script);
   env->CallStaticVoidMethod(markerClass, logMarkerMethod, endStringMarker);
-
   env->DeleteLocalRef(startStringMarker);
   env->DeleteLocalRef(endStringMarker);
 
