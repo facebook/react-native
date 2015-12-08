@@ -9,8 +9,6 @@
 
 package com.facebook.react.flat;
 
-import java.util.ArrayDeque;
-
 /**
  * Shadow node hierarchy by itself cannot display UI, it is only a representation of what UI should
  * be from JavaScript perspective. StateBuilder is a helper class that can walk the shadow node tree
@@ -21,10 +19,8 @@ import java.util.ArrayDeque;
 
   private final FlatUIViewOperationQueue mOperationsQueue;
 
-  // DrawCommands
-  private final ArrayDeque<DrawCommand> mDrawCommands = new ArrayDeque<>();
-  private DrawCommand[] mPreviousDrawCommands = DrawCommand.EMPTY_ARRAY;
-  private int mPreviousDrawCommandsIndex;
+  private final ElementsList<DrawCommand> mDrawCommands =
+      new ElementsList(DrawCommand.EMPTY_ARRAY);
 
   /* package */ StateBuilder(FlatUIViewOperationQueue operationsQueue) {
     mOperationsQueue = operationsQueue;
@@ -42,14 +38,7 @@ import java.util.ArrayDeque;
    * Adds a DrawCommand for current mountable node.
    */
   /* package */ void addDrawCommand(AbstractDrawCommand drawCommand) {
-    if (mPreviousDrawCommandsIndex < mPreviousDrawCommands.length &&
-        mPreviousDrawCommands[mPreviousDrawCommandsIndex] == drawCommand) {
-      ++mPreviousDrawCommandsIndex;
-    } else {
-      mPreviousDrawCommandsIndex = mPreviousDrawCommands.length + 1;
-    }
-
-    mDrawCommands.addLast(drawCommand);
+    mDrawCommands.add(drawCommand);
   }
 
   /**
@@ -86,47 +75,17 @@ import java.util.ArrayDeque;
       int tag,
       float width,
       float height) {
-    // save
-    int d = mDrawCommands.size();
-    DrawCommand[] previousDrawCommands = mPreviousDrawCommands;
-    int previousDrawCommandsIndex = mPreviousDrawCommandsIndex;
-
-    // reset
-    mPreviousDrawCommands = node.getDrawCommands();
-    mPreviousDrawCommandsIndex = 0;
+    mDrawCommands.start(node.getDrawCommands());
 
     collectStateRecursively(node, 0, 0, width, height);
 
-    if (mPreviousDrawCommandsIndex != mPreviousDrawCommands.length) {
-      // DrawCommands changes, need to re-mount them and re-draw the View.
-      DrawCommand[] drawCommands = extractDrawCommands(d);
+    final DrawCommand[] drawCommands = mDrawCommands.finish();
+    if (drawCommands != null) {
+      // DrawCommands changed, need to re-mount them and re-draw the View.
       node.setDrawCommands(drawCommands);
 
       mOperationsQueue.enqueueUpdateMountState(tag, drawCommands);
     }
-
-    // restore
-    mPreviousDrawCommandsIndex = previousDrawCommandsIndex;
-    mPreviousDrawCommands = previousDrawCommands;
-  }
-
-  /**
-   * Returns all DrawCommands collectes so far starting from a given index.
-   */
-  private DrawCommand[] extractDrawCommands(int lowerBound) {
-    int upperBound = mDrawCommands.size();
-    int size = upperBound - lowerBound;
-    if (size == 0) {
-      // avoid allocating empty array
-      return DrawCommand.EMPTY_ARRAY;
-    }
-
-    DrawCommand[] drawCommands = new DrawCommand[size];
-    for (int i = 0; i < size; ++i) {
-      drawCommands[i] = mDrawCommands.pollFirst();
-    }
-
-    return drawCommands;
   }
 
   /**
