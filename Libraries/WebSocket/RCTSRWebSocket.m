@@ -483,7 +483,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)origin);
 
   NSDictionary<NSString *, id> *headers = [_requestedOptions objectForKey: @"headers"];
-  [headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+  [headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
   }];
 
