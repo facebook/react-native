@@ -312,6 +312,12 @@ var NavigatorIOS = React.createClass({
     this.navigationContext = new NavigationContext();
   },
 
+  getDefaultProps: function(): Object {
+    return {
+      translucent: true,
+    };
+  },
+
   getInitialState: function(): State {
     return {
       idStack: [getuid()],
@@ -591,37 +597,26 @@ var NavigatorIOS = React.createClass({
   },
 
   _routeToStackItem: function(route: Route, i: number) {
-    var Component = route.component;
-    var shouldUpdateChild = this.state.updatingAllIndicesAtOrBeyond != null &&
+    var {component, wrapperStyle, passProps, ...route} = route;
+    var {itemWrapperStyle, ...props} = this.props;
+    var shouldUpdateChild =
+      this.state.updatingAllIndicesAtOrBeyond &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
-
+    var Component = component;
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
-          title={route.title}
+          {...route}
+          {...props}
           style={[
             styles.stackItem,
-            this.props.itemWrapperStyle,
-            route.wrapperStyle
-          ]}
-          backButtonIcon={resolveAssetSource(route.backButtonIcon)}
-          backButtonTitle={route.backButtonTitle}
-          leftButtonIcon={resolveAssetSource(route.leftButtonIcon)}
-          leftButtonTitle={route.leftButtonTitle}
-          onNavLeftButtonTap={route.onLeftButtonPress}
-          rightButtonIcon={resolveAssetSource(route.rightButtonIcon)}
-          rightButtonTitle={route.rightButtonTitle}
-          onNavRightButtonTap={route.onRightButtonPress}
-          navigationBarHidden={this.props.navigationBarHidden}
-          shadowHidden={this.props.shadowHidden}
-          tintColor={this.props.tintColor}
-          barTintColor={this.props.barTintColor}
-          translucent={this.props.translucent !== false}
-          titleTextColor={this.props.titleTextColor}>
+            itemWrapperStyle,
+            wrapperStyle
+          ]}>
           <Component
             navigator={this.navigator}
             route={route}
-            {...route.passProps}
+            {...passProps}
           />
         </RCTNavigatorItem>
       </StaticContainer>

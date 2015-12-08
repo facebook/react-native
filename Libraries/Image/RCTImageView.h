@@ -11,6 +11,7 @@
 #import "RCTImageComponent.h"
 
 @class RCTBridge;
+@class RCTImageSource;
 
 @interface RCTImageView : UIImageView <RCTImageComponent>
 
@@ -19,6 +20,6 @@
 @property (nonatomic, assign) UIEdgeInsets capInsets;
 @property (nonatomic, strong) UIImage *defaultImage;
 @property (nonatomic, assign) UIImageRenderingMode renderingMode;
-@property (nonatomic, copy) NSString *src;
+@property (nonatomic, strong) RCTImageSource *source;
 
 @end

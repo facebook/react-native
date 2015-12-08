@@ -206,6 +206,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
     }
 
 #if RCT_DEBUG
+
     // Log to red box in debug mode.
     if ([UIApplication sharedApplication] && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
@@ -233,7 +234,9 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
 
     // Log to JS executor
     [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level]) : @"info"];
+
 #endif
+
   }
 }
 

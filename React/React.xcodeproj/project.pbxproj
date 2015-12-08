@@ -38,6 +38,7 @@
 		13B0801D1A69489C00A75B9A /* RCTNavItemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080131A69489C00A75B9A /* RCTNavItemManager.m */; };
 		13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080191A69489C00A75B9A /* RCTActivityIndicatorViewManager.m */; };
 		13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B080241A694A8400A75B9A /* RCTWrapperViewController.m */; };
+		13BB3D021BECD54500932C10 /* RCTImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BB3D011BECD54500932C10 /* RCTImageSource.m */; };
 		13B202011BFB945300C07393 /* RCTPasteboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B202001BFB945300C07393 /* RCTPasteboard.m */; };
 		13B202041BFB948C00C07393 /* RCTMapAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B202031BFB948C00C07393 /* RCTMapAnnotation.m */; };
 		13C156051AB1A2840079392D /* RCTWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13C156021AB1A2840079392D /* RCTWebView.m */; };
@@ -173,7 +174,9 @@
 		13B080191A69489C00A75B9A /* RCTActivityIndicatorViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTActivityIndicatorViewManager.m; sourceTree = "<group>"; };
 		13B080231A694A8400A75B9A /* RCTWrapperViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWrapperViewController.h; sourceTree = "<group>"; };
 		13B080241A694A8400A75B9A /* RCTWrapperViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWrapperViewController.m; sourceTree = "<group>"; };
-		13B201FF1BFB945300C07393 /* RCTPasteboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPasteboard.h; sourceTree = "<group>"; };
+		13BB3D001BECD54500932C10 /* RCTImageSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageSource.h; sourceTree = "<group>"; };
+		13BB3D011BECD54500932C10 /* RCTImageSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageSource.m; sourceTree = "<group>"; };
+	13B201FF1BFB945300C07393 /* RCTPasteboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPasteboard.h; sourceTree = "<group>"; };
 		13B202001BFB945300C07393 /* RCTPasteboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPasteboard.m; sourceTree = "<group>"; };
 		13B202021BFB948C00C07393 /* RCTMapAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTMapAnnotation.h; sourceTree = "<group>"; };
 		13B202031BFB948C00C07393 /* RCTMapAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMapAnnotation.m; sourceTree = "<group>"; };
@@ -526,6 +529,8 @@
 				1345A83B1B265A0E00583190 /* RCTURLRequestHandler.h */,
 				83CBBA4F1A601E3B00E9B192 /* RCTUtils.h */,
 				83CBBA501A601E3B00E9B192 /* RCTUtils.m */,
+				13BB3D001BECD54500932C10 /* RCTImageSource.h */,
+				13BB3D011BECD54500932C10 /* RCTImageSource.m */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -645,6 +650,7 @@
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,
 				13E067561A70F44B002CDEE1 /* RCTViewManager.m in Sources */,
+				13BB3D021BECD54500932C10 /* RCTImageSource.m in Sources */,
 				58C571C11AA56C1900CDF9C8 /* RCTDatePickerManager.m in Sources */,
 				1450FF8A1BCFF28A00208362 /* RCTProfileTrampoline-x86_64.S in Sources */,
 				14F7A0EC1BDA3B3C003C6C10 /* RCTPerfMonitor.m in Sources */,

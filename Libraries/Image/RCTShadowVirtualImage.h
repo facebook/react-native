@@ -9,6 +9,7 @@
 
 #import "RCTShadowView.h"
 #import "RCTImageComponent.h"
+#import "RCTImageSource.h"
 
 @class RCTBridge;
 
@@ -20,6 +21,6 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
-@property (nonatomic, copy) NSDictionary *source;
+@property (nonatomic, strong) RCTImageSource *source;
 
 @end

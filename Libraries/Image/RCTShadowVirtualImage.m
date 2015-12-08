@@ -16,6 +16,7 @@
 @implementation RCTShadowVirtualImage
 {
   RCTBridge *_bridge;
+  RCTImageLoaderCancellationBlock _cancellationBlock;
 }
 
 @synthesize image = _image;
@@ -30,27 +31,42 @@
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-- (void)setSource:(NSDictionary *)source
+- (void)setSource:(RCTImageSource *)source
 {
   if (![source isEqual:_source]) {
-    _source = [source copy];
-    NSString *imageTag = [RCTConvert NSString:_source[@"uri"]];
-    CGFloat scale = [RCTConvert CGFloat:_source[@"scale"]] ?: 1;
+
+    // Cancel previous request
+    if (_cancellationBlock) {
+      _cancellationBlock();
+    }
+
+    _source = source;
 
     __weak RCTShadowVirtualImage *weakSelf = self;
-    [_bridge.imageLoader loadImageWithTag:imageTag
-                                     size:CGSizeZero
-                                    scale:scale
-                               resizeMode:UIViewContentModeScaleToFill
-                            progressBlock:nil
-                          completionBlock:^(NSError *error, UIImage *image) {
+    _cancellationBlock = [_bridge.imageLoader loadImageWithTag:source.imageURL.absoluteString
+                                                          size:source.size
+                                                         scale:source.scale
+                                                    resizeMode:UIViewContentModeScaleToFill
+                                                 progressBlock:nil
+                                               completionBlock:^(NSError *error, UIImage *image) {
 
       dispatch_async(_bridge.uiManager.methodQueue, ^{
         RCTShadowVirtualImage *strongSelf = weakSelf;
+        if (![source isEqual:strongSelf.source]) {
+          // Bail out if source has changed since we started loading
+          return;
+        }
         strongSelf->_image = image;
         [strongSelf dirtyText];
       });
     }];
+  }
+}
+
+- (void)dealloc
+{
+  if (_cancellationBlock) {
+    _cancellationBlock();
   }
 }
 
