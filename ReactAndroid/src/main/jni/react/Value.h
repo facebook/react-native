@@ -8,6 +8,9 @@
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
 #include <fb/noncopyable.h>
+#if WITH_FBJSCEXTENSIONS
+#include <jsc_stringref.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -51,6 +54,14 @@ public:
   // Assumes that utf8 is null terminated
   bool equals(const char* utf8) {
     return JSStringIsEqualToUTF8CString(m_string.get(), utf8);
+  }
+
+  static String createExpectingAscii(std::string const &utf8) {
+  #if WITH_FBJSCEXTENSIONS
+    return String(Adopt, JSStringCreateWithUTF8CStringExpectAscii(utf8.c_str(), utf8.size()));
+  #else
+    return String(Adopt, JSStringCreateWithUTF8CString(utf8.c_str()));
+  #endif
   }
 
   static String ref(JSStringRef string) {
