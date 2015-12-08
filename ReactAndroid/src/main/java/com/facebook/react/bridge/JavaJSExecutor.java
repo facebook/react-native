@@ -40,13 +40,12 @@ public interface JavaJSExecutor {
 
   /**
    * Execute javascript method within js context
-   * @param modulename name of the common-js like module to execute the method from
    * @param methodName name of the method to be executed
    * @param jsonArgsArray json encoded array of arguments provided for the method call
    * @return json encoded value returned from the method call
    */
   @DoNotStrip
-  String executeJSCall(String modulename, String methodName, String jsonArgsArray)
+  String executeJSCall(String methodName, String jsonArgsArray)
       throws ProxyExecutorException;
 
   @DoNotStrip

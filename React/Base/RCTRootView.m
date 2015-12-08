@@ -350,7 +350,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"
+    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
                       args:@[self.reactTag]];
   }
 }

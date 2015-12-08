@@ -12,6 +12,20 @@ namespace react {
 
 const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/JavaJSExecutor";
 
+static std::string executeJSCallWithProxy(
+    jobject executor,
+    const std::string& methodName,
+    const std::vector<folly::dynamic>& arguments) {
+  static auto executeJSCall =
+    jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<jstring(jstring, jstring)>("executeJSCall");
+
+  auto result = executeJSCall(
+    executor,
+    jni::make_jstring(methodName).get(),
+    jni::make_jstring(folly::toJson(arguments).c_str()).get());
+  return result->toString();
+}
+
 std::unique_ptr<JSExecutor> ProxyExecutorOneTimeFactory::createJSExecutor(FlushImmediateCallback ignoredCallback) {
   FBASSERTMSGF(
     m_executor.get() != nullptr,
@@ -36,19 +50,26 @@ void ProxyExecutor::executeApplicationScript(
     jni::make_jstring(sourceURL).get());
 }
 
-std::string ProxyExecutor::executeJSCall(
-    const std::string& moduleName,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
-  static auto executeJSCall =
-    jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<jstring(jstring, jstring, jstring)>("executeJSCall");
 
-  auto result = executeJSCall(
-    m_executor.get(),
-    jni::make_jstring(moduleName).get(),
-    jni::make_jstring(methodName).get(),
-    jni::make_jstring(folly::toJson(arguments).c_str()).get());
-  return result->toString();
+std::string ProxyExecutor::flush() {
+  return executeJSCallWithProxy(m_executor.get(), "flushedQueue", std::vector<folly::dynamic>());
+}
+
+std::string ProxyExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+  std::vector<folly::dynamic> call{
+    (double) moduleId,
+    (double) methodId,
+    std::move(arguments),
+  };
+  return executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
+}
+
+std::string ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+  std::vector<folly::dynamic> call{
+    (double) callbackId,
+    std::move(arguments)
+  };
+  return executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
 }
 
 void ProxyExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {

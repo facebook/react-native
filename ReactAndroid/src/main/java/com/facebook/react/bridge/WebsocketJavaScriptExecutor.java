@@ -160,11 +160,10 @@ public class WebsocketJavaScriptExecutor implements JavaJSExecutor {
   }
 
   @Override
-  public @Nullable String executeJSCall(String moduleName, String methodName, String jsonArgsArray)
+  public @Nullable String executeJSCall(String methodName, String jsonArgsArray)
       throws ProxyExecutorException {
     JSExecutorCallbackFuture callback = new JSExecutorCallbackFuture();
     Assertions.assertNotNull(mWebSocketClient).executeJSCall(
-        moduleName,
         methodName,
         jsonArgsArray,
         callback);

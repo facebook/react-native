@@ -628,7 +628,7 @@ static void executeApplicationScript(
   try {
     // Execute the application script and collect/dispatch any native calls that might have occured
     bridge->executeApplicationScript(script, sourceUri);
-    bridge->executeJSCall("BatchedBridge", "flushedQueue", std::vector<folly::dynamic>());
+    bridge->flush();
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -682,13 +682,12 @@ static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
                          NativeArray::jhybridobject args) {
   auto bridge = extractRefPtr<Bridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
-  std::vector<folly::dynamic> call{
-    (double) moduleId,
-    (double) methodId,
-    std::move(arguments->array),
-  };
   try {
-    bridge->executeJSCall("BatchedBridge", "callFunctionReturnFlushedQueue", std::move(call));
+    bridge->callFunction(
+      (double) moduleId,
+      (double) methodId,
+      std::move(arguments->array)
+    );
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -698,12 +697,11 @@ static void invokeCallback(JNIEnv* env, jobject obj, jint callbackId,
                            NativeArray::jhybridobject args) {
   auto bridge = extractRefPtr<Bridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
-  std::vector<folly::dynamic> call{
-    (double) callbackId,
-    std::move(arguments->array)
-  };
   try {
-    bridge->executeJSCall("BatchedBridge", "invokeCallbackAndReturnFlushedQueue", std::move(call));
+    bridge->invokeCallback(
+      (double) callbackId,
+      std::move(arguments->array)
+    );
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }

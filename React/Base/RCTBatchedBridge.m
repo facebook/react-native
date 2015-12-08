@@ -63,7 +63,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   BOOL _valid;
   BOOL _wasBatchActive;
   __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
-  NSMutableArray<NSArray *> *_pendingCalls;
+  NSMutableArray<dispatch_block_t> *_pendingCalls;
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
   NSDictionary<NSString *, id<RCTBridgeModule>> *_modulesByName_DEPRECATED;
@@ -436,10 +436,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 {
   _loading = NO;
   [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    for (NSArray *call in _pendingCalls) {
-      [self _actuallyInvokeAndProcessModule:call[0]
-                                     method:call[1]
-                                  arguments:call[2]];
+    for (dispatch_block_t call in _pendingCalls) {
+      call();
     }
   }];
 }
@@ -579,10 +577,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
   if (RCT_DEBUG) {
-    [_javaScriptExecutor executeJSCall:@"RCTLog"
-                                method:@"logIfNoNativeHook"
-                             arguments:@[level, message]
-                              callback:^(__unused id json, __unused NSError *error) {}];
+    [self enqueueJSCall:@"RCTLog.logIfNoNativeHook"
+                   args:@[level, message]];
   }
 }
 
@@ -593,11 +589,66 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
 {
+  /**
+   * AnyThread
+   */
+
   NSArray<NSString *> *ids = [moduleDotMethod componentsSeparatedByString:@"."];
 
-  [self _invokeAndProcessModule:@"BatchedBridge"
-                         method:@"callFunctionReturnFlushedQueue"
-                      arguments:@[ids[0], ids[1], args ?: @[]]];
+  NSString *module = ids[0];
+  NSString *method = ids[1];
+
+  RCTProfileBeginFlowEvent();
+
+  __weak RCTBatchedBridge *weakSelf = self;
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    RCTProfileEndFlowEvent();
+
+    RCTBatchedBridge *strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.valid) {
+      return;
+    }
+
+    if (strongSelf.loading) {
+      dispatch_block_t pendingCall = ^{
+        [weakSelf _actuallyInvokeAndProcessModule:module method:method arguments:args ?: @[]];
+      };
+      [strongSelf->_pendingCalls addObject:pendingCall];
+    } else {
+      [strongSelf _actuallyInvokeAndProcessModule:module method:method arguments:args ?: @[]];
+    }
+  }];
+}
+
+/**
+ * Called by RCTModuleMethod from any thread.
+ */
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
+{
+  /**
+   * AnyThread
+   */
+
+  RCTProfileBeginFlowEvent();
+
+  __weak RCTBatchedBridge *weakSelf = self;
+  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
+    RCTProfileEndFlowEvent();
+
+    RCTBatchedBridge *strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.valid) {
+      return;
+    }
+
+    if (strongSelf.loading) {
+      dispatch_block_t pendingCall = ^{
+        [weakSelf _actuallyInvokeCallback:cbID arguments:args ?: @[]];
+      };
+      [strongSelf->_pendingCalls addObject:pendingCall];
+    } else {
+      [strongSelf _actuallyInvokeCallback:cbID arguments:args];
+    }
+  }];
 }
 
 /**
@@ -608,9 +659,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   RCTAssertJSThread();
 
   dispatch_block_t block = ^{
-    [self _actuallyInvokeAndProcessModule:@"BatchedBridge"
-                                   method:@"callFunctionReturnFlushedQueue"
-                                arguments:@[@"JSTimersExecution", @"callTimers", @[@[timer]]]];
+    [self _actuallyInvokeAndProcessModule:@"JSTimersExecution"
+                                   method:@"callTimers"
+                                arguments:@[@[timer]]];
   };
 
   if ([_javaScriptExecutor respondsToSelector:@selector(executeAsyncBlockOnJavaScriptQueue:)]) {
@@ -637,10 +688,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
 
     RCT_PROFILE_BEGIN_EVENT(0, @"FetchApplicationScriptCallbacks", nil);
-    [_javaScriptExecutor executeJSCall:@"BatchedBridge"
-                                method:@"flushedQueue"
-                             arguments:@[]
-                              callback:^(id json, NSError *error)
+    [_javaScriptExecutor flushedQueue:^(id json, NSError *error)
      {
        RCT_PROFILE_END_EVENT(0, @"js_call,init", @{
          @"json": RCTNullIfNil(json),
@@ -655,35 +703,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 }
 
 #pragma mark - Payload Generation
-
-/**
- * Called by enqueueJSCall from any thread, or from _immediatelyCallTimer,
- * on the JS thread, but only in non-batched mode.
- */
-- (void)_invokeAndProcessModule:(NSString *)module method:(NSString *)method arguments:(NSArray *)args
-{
-  /**
-   * AnyThread
-   */
-
-  RCTProfileBeginFlowEvent();
-
-  __weak RCTBatchedBridge *weakSelf = self;
-  [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-    RCTProfileEndFlowEvent();
-
-    RCTBatchedBridge *strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.valid) {
-      return;
-    }
-
-    if (strongSelf.loading) {
-      [strongSelf->_pendingCalls addObject:@[module, method, args]];
-    } else {
-      [strongSelf _actuallyInvokeAndProcessModule:module method:method arguments:args];
-    }
-  }];
-}
 
 - (void)_actuallyInvokeAndProcessModule:(NSString *)module
                                  method:(NSString *)method
@@ -705,10 +724,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     [self handleBuffer:json batchEnded:YES];
   };
 
-  [_javaScriptExecutor executeJSCall:module
-                              method:method
-                           arguments:args
-                            callback:processResponse];
+  [_javaScriptExecutor callFunctionOnModule:module
+                                     method:method
+                                  arguments:args
+                                   callback:processResponse];
+}
+
+- (void)_actuallyInvokeCallback:(NSNumber *)cbID
+                      arguments:(NSArray *)args
+{
+  RCTAssertJSThread();
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
+
+  RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
+    if (error) {
+      RCTFatal(error);
+    }
+
+    if (!self.isValid) {
+      return;
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
+    [self handleBuffer:json batchEnded:YES];
+  };
+
+  [_javaScriptExecutor invokeCallbackID:cbID
+                              arguments:args
+                               callback:processResponse];
 }
 
 #pragma mark - Payload Processing

@@ -80,6 +80,26 @@ static JSValueRef evaluateScriptWithJSC(
   return result;
 }
 
+static std::string executeJSCallWithJSC(
+    JSGlobalContextRef ctx,
+    const std::string& methodName,
+    const std::vector<folly::dynamic>& arguments) {
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(
+      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.executeJSCall",
+      "method", methodName);
+  #endif
+
+  // Evaluate script with JSC
+  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
+  auto js = folly::to<folly::fbstring>(
+      "__fbBatchedBridge.", methodName, ".apply(null, ",
+      folly::toJson(jsonArgs), ")");
+  auto result = evaluateScriptWithJSC(ctx, String(js.c_str()), nullptr);
+  JSValueProtect(ctx, result);
+  return Value(ctx, result).toJSONString();
+}
+
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateCallback cb) {
   return std::unique_ptr<JSExecutor>(new JSCExecutor(cb));
 }
@@ -130,25 +150,28 @@ void JSCExecutor::executeApplicationScript(
   evaluateScriptWithJSC(m_context, jsScript, jsSourceURL);
 }
 
-std::string JSCExecutor::executeJSCall(
-    const std::string& moduleName,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.executeJSCall",
-      "module", moduleName,
-      "method", methodName);
-  #endif
+std::string JSCExecutor::flush() {
+  // TODO: Make this a first class function instead of evaling. #9317773
+  return executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+}
 
-  // Evaluate script with JSC
-  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
-  auto js = folly::to<folly::fbstring>(
-      "require('", moduleName, "').", methodName, ".apply(null, ",
-      folly::toJson(jsonArgs), ")");
-  auto result = evaluateScriptWithJSC(m_context, String(js.c_str()), nullptr);
-  JSValueProtect(m_context, result);
-  return Value(m_context, result).toJSONString();
+std::string JSCExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+  // TODO:  Make this a first class function instead of evaling. #9317773
+  std::vector<folly::dynamic> call{
+    (double) moduleId,
+    (double) methodId,
+    std::move(arguments),
+  };
+  return executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
+}
+
+std::string JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+  // TODO: Make this a first class function instead of evaling. #9317773
+  std::vector<folly::dynamic> call{
+    (double) callbackId,
+    std::move(arguments)
+  };
+  return executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
 }
 
 void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {

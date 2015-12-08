@@ -39,9 +39,10 @@ describe('MessageQueue', () => {
   beforeEach(() => {
     queue = new MessageQueue(
       remoteModulesConfig,
-      localModulesConfig,
-      customRequire,
+      localModulesConfig
     );
+
+    queue.registerCallableModule('one', TestModule);
 
     TestModule.testHook1 = jasmine.createSpy();
     TestModule.testHook2 = jasmine.createSpy();

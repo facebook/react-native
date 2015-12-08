@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-/* global self, importScripts, postMessage, onmessage: true */
+/* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
 /* eslint no-unused-vars: 0 */
 'use strict';
 
@@ -17,16 +17,6 @@ var messageHandlers = {
     }
     importScripts(message.url);
     sendReply();
-  },
-  'executeJSCall': function(message, sendReply) {
-    var returnValue = [[], [], [], [], []];
-    try {
-      if (typeof require === 'function') {
-        returnValue = require(message.moduleName)[message.moduleMethod].apply(null, message.arguments);
-      }
-    } finally {
-      sendReply(JSON.stringify(returnValue));
-    }
   }
 };
 
@@ -39,8 +29,17 @@ onmessage = function(message) {
 
   var handler = messageHandlers[object.method];
   if (handler) {
+    // Special cased handlers
     handler(object, sendReply);
   } else {
-    console.warn('Unknown method: ' + object.method);
+    // Other methods get called on the bridge
+    var returnValue = [[], [], [], [], []];
+    try {
+      if (typeof __fbBatchedBridge === 'object') {
+        returnValue = __fbBatchedBridge[object.method].apply(null, object.arguments);
+      }
+    } finally {
+      sendReply(JSON.stringify(returnValue));
+    }
   }
 };

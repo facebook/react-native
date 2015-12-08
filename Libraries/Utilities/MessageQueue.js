@@ -43,10 +43,10 @@ var guard = (fn) => {
 
 class MessageQueue {
 
-  constructor(remoteModules, localModules, customRequire) {
+  constructor(remoteModules, localModules) {
     this.RemoteModules = {};
 
-    this._require = customRequire || require;
+    this._callableModules = {};
     this._queue = [[],[],[]];
     this._moduleTable = {};
     this._methodTable = {};
@@ -154,8 +154,22 @@ class MessageQueue {
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
-    module = this._require(module);
-    module[method].apply(module, args);
+    var moduleMethods = this._callableModules[module];
+    if (!moduleMethods) {
+      // TODO: Register all the remaining test modules and make this an invariant. #9317773
+      // Fallback to require temporarily. A follow up diff will clean up the remaining
+      // modules and make this an invariant.
+      console.warn('Module is not registered:', module);
+      moduleMethods = require(module);
+      /*
+      invariant(
+        !!moduleMethods,
+        'Module %s is not a registered callable module.',
+        module
+      );
+      */
+    }
+    moduleMethods[method].apply(moduleMethods, args);
     BridgeProfiling.profileEnd();
   }
 
@@ -335,6 +349,10 @@ class MessageQueue {
     }
     fn.type = type;
     return fn;
+  }
+
+  registerCallableModule(name, methods) {
+    this._callableModules[name] = methods;
   }
 
 }

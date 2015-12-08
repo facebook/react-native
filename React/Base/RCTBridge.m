@@ -310,9 +310,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
 }
 
-RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
-                      method:(__unused NSString *)method
-                      arguments:(__unused NSArray *)args);
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
+{
+  [self.batchedBridge enqueueCallback:cbID args:args];
+}
+
 @end
 
 @implementation RCTBridge(Deprecated)

@@ -11,8 +11,14 @@
  */
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
 var EventEmitter = require('EventEmitter');
 
 var RCTNativeAppEventEmitter = new EventEmitter();
+
+BatchedBridge.registerCallableModule(
+  'RCTNativeAppEventEmitter',
+  RCTNativeAppEventEmitter
+);
 
 module.exports = RCTNativeAppEventEmitter;

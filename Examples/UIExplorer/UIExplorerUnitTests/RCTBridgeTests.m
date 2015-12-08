@@ -54,10 +54,22 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-- (void)executeJSCall:(__unused NSString *)name
-               method:(__unused NSString *)method
-            arguments:(__unused NSArray *)arguments
-             callback:(RCTJavaScriptCallback)onComplete
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+{
+  onComplete(nil, nil);
+}
+
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete
+{
+  onComplete(nil, nil);
+}
+
+- (void)invokeCallbackID:(NSNumber *)cbID
+               arguments:(NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
 {
   onComplete(nil, nil);
 }
