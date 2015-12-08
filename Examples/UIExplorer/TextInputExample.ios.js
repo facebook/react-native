@@ -158,7 +158,7 @@ class TokenizedTextExample extends React.Component {
     //highlight hashtags
     parts = parts.map((text) => {
       if (/^#/.test(text)) {
-        return <Text style={styles.hashtag}>{text}</Text>;
+        return <Text key={text} style={styles.hashtag}>{text}</Text>;
       } else {
         return text;
       }
