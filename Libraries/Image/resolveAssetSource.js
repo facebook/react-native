@@ -82,7 +82,8 @@ function getPathOnDevserver(devServerUrl, asset) {
 }
 
 /**
- * Returns a path like 'assets/AwesomeModule/icon@2x.png'
+ * Returns a path like 'assets/AwesomeModule/icon@2x.png' on iOS
+ * or 'drawable_ldpi/awesomemodule_icon.png' on Android
  */
 function getScaledAssetPath(asset) {
   var scale = pickScale(asset.scales, PixelRatio.get());
