@@ -17,16 +17,22 @@ import android.text.style.MetricAffectingSpan;
 
 /* package */ final class FontStylingSpan extends MetricAffectingSpan {
   // text property
-  private final double mTextColor;
-  private final int mBackgroundColor;
+  private double mTextColor = Double.NaN;
+  private int mBackgroundColor;
 
   // font properties
-  private final int mFontSize;
-  private final int mFontStyle;
-  private final int mFontWeight;
-  private final @Nullable String mFontFamily;
+  private int mFontSize = -1;
+  private int mFontStyle = -1;
+  private int mFontWeight = -1;
+  private @Nullable String mFontFamily;
 
-  FontStylingSpan(
+  // whether or not mutation is allowed.
+  private boolean mFrozen = false;
+
+  FontStylingSpan() {
+  }
+
+  private FontStylingSpan(
       double textColor,
       int backgroundColor,
       int fontSize,
@@ -38,6 +44,72 @@ import android.text.style.MetricAffectingSpan;
     mFontSize = fontSize;
     mFontStyle = fontStyle;
     mFontWeight = fontWeight;
+    mFontFamily = fontFamily;
+  }
+
+  /* package */ FontStylingSpan mutableCopy() {
+    return new FontStylingSpan(
+        mTextColor,
+        mBackgroundColor,
+        mFontSize,
+        mFontStyle,
+        mFontWeight,
+        mFontFamily);
+  }
+
+  /* package */ boolean isFrozen() {
+    return mFrozen;
+  }
+
+  /* package */ void freeze() {
+    mFrozen = true;
+  }
+
+  /* package */ double getTextColor() {
+    return mTextColor;
+  }
+
+  /* package */ void setTextColor(double textColor) {
+    mTextColor = textColor;
+  }
+
+  /* package */ int getBackgroundColor() {
+    return mBackgroundColor;
+  }
+
+  /* package */ void setBackgroundColor(int backgroundColor) {
+    mBackgroundColor = backgroundColor;
+  }
+
+  /* package */ int getFontSize() {
+    return mFontSize;
+  }
+
+  /* package */ void setFontSize(int fontSize) {
+    mFontSize = fontSize;
+  }
+
+  /* package */ int getFontStyle() {
+    return mFontStyle;
+  }
+
+  /* package */ void setFontStyle(int fontStyle) {
+    mFontStyle = fontStyle;
+  }
+
+  /* package */ int getFontWeight() {
+    return mFontWeight;
+  }
+
+  /* package */ void setFontWeight(int fontWeight) {
+    mFontWeight = fontWeight;
+  }
+
+  /* package */ @Nullable String getFontFamily() {
+    return mFontFamily;
+  }
+
+  /* package */ void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
   }
 

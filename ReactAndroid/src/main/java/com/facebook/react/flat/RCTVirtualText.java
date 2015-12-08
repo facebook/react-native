@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
@@ -28,18 +29,15 @@ import com.facebook.react.uimanager.ViewProps;
   private static final String ITALIC = "italic";
   private static final String NORMAL = "normal";
 
-  // TODO: cache CustomStyleSpan and move remove these values from here
-  // (implemented in a followup patch)
-  private double mTextColor = Double.NaN;
-  private int mBgColor;
-  private int mFontSize = getDefaultFontSize();
-  private int mFontStyle = -1;  // -1, Typeface.NORMAL or Typeface.ITALIC
-  private int mFontWeight = -1; // -1, Typeface.NORMAL or Typeface.BOLD
-  private @Nullable String mFontFamily;
+  private FontStylingSpan mFontStylingSpan = new FontStylingSpan();
 
   // these 2 are only used between collectText() and applySpans() calls.
   private int mTextBegin;
   private int mTextEnd;
+
+  RCTVirtualText() {
+    mFontStylingSpan.setFontSize(getDefaultFontSize());
+  }
 
   @Override
   protected void collectText(SpannableStringBuilder builder) {
@@ -59,9 +57,10 @@ import com.facebook.react.uimanager.ViewProps;
       return;
     }
 
+    mFontStylingSpan.freeze();
+
     builder.setSpan(
-        // Future patch: cache last custom style span with a frozen flag
-        new FontStylingSpan(mTextColor, mBgColor, mFontSize, mFontStyle, mFontWeight, mFontFamily),
+        mFontStylingSpan,
         mTextBegin,
         mTextEnd,
         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -83,32 +82,34 @@ import com.facebook.react.uimanager.ViewProps;
       fontSize = fontSizeFromSp(fontSizeSp);
     }
 
-    if (mFontSize != fontSize) {
-      mFontSize = fontSize;
+    if (mFontStylingSpan.getFontSize() != fontSize) {
+      getSpan().setFontSize(fontSize);
       notifyChanged(true);
     }
   }
 
   @ReactProp(name = ViewProps.COLOR, defaultDouble = Double.NaN)
   public void setColor(double textColor) {
-    if (mTextColor != textColor) {
-      mTextColor = textColor;
+    if (mFontStylingSpan.getTextColor() != textColor) {
+      getSpan().setTextColor(textColor);
       notifyChanged(false);
     }
   }
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR)
   public void setBackgroundColor(int backgroundColor) {
-    if (mBgColor != backgroundColor) {
-      mBgColor = backgroundColor;
+    if (mFontStylingSpan.getBackgroundColor() != backgroundColor) {
+      getSpan().setBackgroundColor(backgroundColor);
       notifyChanged(false);
     }
   }
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
-    mFontFamily = fontFamily;
-    notifyChanged(true);
+    if (!TextUtils.equals(mFontStylingSpan.getFontFamily(), fontFamily)) {
+      getSpan().setFontFamily(fontFamily);
+      notifyChanged(true);
+    }
   }
 
   @ReactProp(name = ViewProps.FONT_WEIGHT)
@@ -128,8 +129,8 @@ import com.facebook.react.uimanager.ViewProps;
       fontWeight = fontWeightNumeric >= 500 ? Typeface.BOLD : Typeface.NORMAL;
     }
 
-    if (mFontWeight != fontWeight) {
-      mFontWeight = fontWeight;
+    if (mFontStylingSpan.getFontWeight() != fontWeight) {
+      getSpan().setFontWeight(fontWeight);
       notifyChanged(true);
     }
   }
@@ -147,8 +148,8 @@ import com.facebook.react.uimanager.ViewProps;
       throw new RuntimeException("invalid font style " + fontStyleString);
     }
 
-    if (mFontStyle != fontStyle) {
-      mFontStyle = fontStyle;
+    if (mFontStylingSpan.getFontStyle() != fontStyle) {
+      getSpan().setFontStyle(fontStyle);
       notifyChanged(true);
     }
   }
@@ -159,6 +160,13 @@ import com.facebook.react.uimanager.ViewProps;
 
   /* package */ static int fontSizeFromSp(float sp) {
     return (int) Math.ceil(PixelUtil.toPixelFromSP(sp));
+  }
+
+  private FontStylingSpan getSpan() {
+    if (mFontStylingSpan.isFrozen()) {
+      mFontStylingSpan = mFontStylingSpan.mutableCopy();
+    }
+    return mFontStylingSpan;
   }
 
   /**
