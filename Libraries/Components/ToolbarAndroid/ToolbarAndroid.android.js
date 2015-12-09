@@ -127,6 +127,14 @@ var ToolbarAndroid = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: ReactPropTypes.string,
+    /**
+     * Sets the content inset start
+     */
+    contentInsetStart: ReactPropTypes.number,
+    /**
+     * Sets the content inset end
+     */
+    contentInsetEnd: ReactPropTypes.number,
   },
 
   render: function() {
@@ -181,6 +189,8 @@ var toolbarAttributes = {
   subtitleColor: true,
   title: true,
   titleColor: true,
+  contentInsetStart: true,
+  contentInsetEnd: true,
 };
 
 var NativeToolbar = requireNativeComponent('ToolbarAndroid', null);
