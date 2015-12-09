@@ -9,6 +9,6 @@
 
 #import "RCTBridgeModule.h"
 
-@interface RCTPasteboard : NSObject <RCTBridgeModule>
+@interface RCTClipboard : NSObject <RCTBridgeModule>
 
 @end
