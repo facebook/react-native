@@ -124,6 +124,7 @@ RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
  */
 RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
                                          NSString *name,
+                                         NSTimeInterval time,
                                          char scope);
 
 /**
