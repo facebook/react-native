@@ -176,7 +176,7 @@ exports.examples = [
   {
     platform: 'android',
     title: 'NetInfo.isConnectionExpensive (Android)',
-    description: 'Asycnronously check isConnectionExpensive',
+    description: 'Asynchronously check isConnectionExpensive',
     render(): ReactElement { return <IsConnectionExpensive />; }
   },
 ];
