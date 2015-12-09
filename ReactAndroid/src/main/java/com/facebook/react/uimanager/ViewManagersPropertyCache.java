@@ -141,6 +141,11 @@ import com.facebook.react.bridge.ReadableMap;
       mDefaultValue = defaultValue;
     }
 
+    public DoublePropSetter(ReactPropGroup prop, Method setter, int index, double defaultValue) {
+      super(prop, "number", setter, index);
+      mDefaultValue = defaultValue;
+    }
+
     @Override
     protected Object extractProperty(CatalystStylesDiffMap props) {
       return props.getDouble(mPropName, mDefaultValue);
@@ -365,6 +370,12 @@ import com.facebook.react.bridge.ReadableMap;
         props.put(
             names[i],
             new FloatPropSetter(annotation, method, i, annotation.defaultFloat()));
+      }
+    } else if (propTypeClass == double.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new DoublePropSetter(annotation, method, i, annotation.defaultDouble()));
       }
     } else if (propTypeClass == Integer.class) {
       for (int i = 0; i < names.length; i++) {
