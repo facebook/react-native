@@ -58,11 +58,15 @@ const _subscriptions = new Map();
 
 let _isConnected;
 if (Platform.OS === 'ios') {
-  _isConnected = (reachability: ReachabilityStateIOS): bool => {
+  _isConnected = function(
+    reachability: ReachabilityStateIOS,
+  ): bool {
     return reachability !== 'none' && reachability !== 'unknown';
   };
 } else if (Platform.OS === 'android') {
-  _isConnected = (connectionType: ConnectivityStateAndroid) : bool => {
+  _isConnected = function(
+      connectionType: ConnectivityStateAndroid,
+    ): bool {
     return connectionType !== 'NONE' && connectionType !== 'UNKNOWN';
   };
 }
