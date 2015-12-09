@@ -275,9 +275,9 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 @implementation RCTProfile
 
-+ (void)vsync:(__unused CADisplayLink *)displayLink
++ (void)vsync:(CADisplayLink *)displayLink
 {
-  RCTProfileImmediateEvent(0, @"VSYNC", 'g');
+  RCTProfileImmediateEvent(0, @"VSYNC", displayLink.timestamp, 'g');
 }
 
 @end
@@ -513,6 +513,7 @@ void RCTProfileEndAsyncEvent(
 void RCTProfileImmediateEvent(
   uint64_t tag,
   NSString *name,
+  NSTimeInterval time,
   char scope
 ) {
   CHECK();
@@ -522,7 +523,6 @@ void RCTProfileImmediateEvent(
     return;
   }
 
-  NSTimeInterval time = CACurrentMediaTime();
   NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
