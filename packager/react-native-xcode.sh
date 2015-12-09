@@ -14,16 +14,12 @@ case "$CONFIGURATION" in
   Debug)
     DEV=true
     ;;
-  Release)
-    DEV=false
-    ;;
   "")
     echo "$0 must be invoked by Xcode"
     exit 1
     ;;
   *)
-    echo "Unsupported value of \$CONFIGURATION=$CONFIGURATION"
-    exit 1
+    DEV=false
     ;;
 esac
 
