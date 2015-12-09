@@ -20,11 +20,11 @@ import android.content.ContextWrapper;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.SimpleArray;
 import com.facebook.react.bridge.SimpleMap;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
-
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -60,13 +60,6 @@ public class AsyncStorageModuleTest {
   private AsyncStorageModule mStorage;
   private SimpleArray mEmptyArray;
 
-  private static class FakeFragmentContext extends ContextWrapper {
-
-    public FakeFragmentContext(Context base) {
-      super(base);
-    }
-  }
-
   @Rule
   public PowerMockRule rule = new PowerMockRule();
 
@@ -90,8 +83,7 @@ public class AsyncStorageModuleTest {
      });
 
     // don't use Robolectric before initializing mocks
-    mStorage = new AsyncStorageModule(new ReactApplicationContext(
-      new FakeFragmentContext(RuntimeEnvironment.application)));
+    mStorage = new AsyncStorageModule(ReactTestHelper.createCatalystContextForTest());
     mEmptyArray = new SimpleArray();
   }
 
