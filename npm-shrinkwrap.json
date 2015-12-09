@@ -4377,9 +4377,9 @@
       }
     },
     "react-haste": {
-      "version": "0.14.0",
-      "from": "react-haste@0.14.0",
-      "resolved": "https://registry.npmjs.org/react-haste/-/react-haste-0.14.0.tgz"
+      "version": "0.14.2",
+      "from": "react-haste@0.14.2",
+      "resolved": "https://registry.npmjs.org/react-haste/-/react-haste-0.14.2.tgz"
     },
     "react-timer-mixin": {
       "version": "0.13.2",
