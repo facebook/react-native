@@ -5,39 +5,12 @@
 
 var merge = require('merge');
 var flattenStyle = require('flattenStyle');
-var precomputeStyle = require('precomputeStyle');
+var processTransform = require('processTransform');
 var warning = require('warning');
-
-var __LEGACY_FLEX__ = !!global.__LEGACY_FLEX__;
-
-if (__LEGACY_FLEX__) {
-    var legacyFlexAlignItemsMap = {
-        'center': 'center',
-        'stretch': 'stretch',
-        'flex-start': 'start',
-        'flex-end': 'end',
-    };
-    var legacyFlexJustifyContentMap = {
-        'center': 'center',
-        'stretch': 'justify',
-        'flex-start': 'start',
-        'flex-end': 'end',
-        'space-between': 'justify',
-    };
-    var legacyFlexDirectionMap = {
-        'row': 'horizontal',
-        'column': 'vertical',
-    };
-}
 
 var styleKeyMap = {
 
     flex: function(value) {
-        if (__LEGACY_FLEX__) {
-            return {
-                WebkitBoxFlex: value,
-            };
-        }
         return {
             flex: value,
             WebkitFlex: value,
@@ -45,11 +18,6 @@ var styleKeyMap = {
     },
 
     flexDirection: function(value) {
-        if (__LEGACY_FLEX__) {
-            return {
-                WebkitBoxOrient: legacyFlexDirectionMap[value],
-            };
-        }
         return {
             flexDirection: value,
             WebkitFlexDirection: value,
@@ -57,11 +25,6 @@ var styleKeyMap = {
     },
 
     alignItems: function(value) {
-        if (__LEGACY_FLEX__) {
-            return {
-                WebkitBoxAlign: legacyFlexAlignItemsMap[value],
-            };
-        }
         return {
             alignItems: value,
             WebkitAlignItems: value,
@@ -69,11 +32,6 @@ var styleKeyMap = {
     },
 
     justifyContent: function(value) {
-        if (__LEGACY_FLEX__) {
-            return {
-                WebkitBoxPack: legacyFlexJustifyContentMap[value],
-            };
-        }
         return {
             justifyContent: value,
             WebkitJustifyContent: value,
@@ -81,9 +39,6 @@ var styleKeyMap = {
     },
 
     alignSelf: function(value) {
-        if (__LEGACY_FLEX__) {
-            throw new Error("alignSelf not supported");
-        }
         return {
             alignSelf: value,
             WebkitAlignSelf: value,
@@ -166,7 +121,7 @@ var styleKeyMap = {
     },
 
     transform: function(value) {
-        var transformMatrix = precomputeStyle({transform: value}).transformMatrix;
+        var transformMatrix = processTransform(value);
         var cssValue = `matrix3d(${transformMatrix})`;
         return {
             transform: cssValue,

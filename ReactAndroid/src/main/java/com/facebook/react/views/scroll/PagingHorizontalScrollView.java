@@ -11,22 +11,23 @@ public class PagingHorizontalScrollView extends HorizontalScrollView implements
         View.OnTouchListener, GestureDetector.OnGestureListener {
 
     private static final int SWIPE_PAGE_ON_FACTOR = 5;
+    private static final int SWIPE_PAGE_MINIMUM_VELOCITY = 1000;
 
     private GestureDetector gestureDetector;
     private float prevScrollX = 0;
     private boolean start = true;
     private float currentScrollX;
 
-    private int snapToInterval = 0;
+    private float snapToInterval = 0;
 
     public PagingHorizontalScrollView(Context context) {
         super(context);
         setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
     }
 
-    public void setSnapToInterval(int snapToInterval) {
+    public void setSnapToInterval(float snapToInterval) {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        this.snapToInterval = (int) (snapToInterval * metrics.density);
+        this.snapToInterval = snapToInterval * metrics.density;
 
         if (snapToInterval != 0) {
             gestureDetector = new GestureDetector(getContext(), this);
@@ -68,26 +69,9 @@ public class PagingHorizontalScrollView extends HorizontalScrollView implements
             case MotionEvent.ACTION_UP:
                 start = true;
                 currentScrollX = x;
-                int minSwipe = snapToInterval / SWIPE_PAGE_ON_FACTOR;
-                int currentPage = currentPage(computeHorizontalScrollOffset());
+                int minSwipe = (int) (snapToInterval / SWIPE_PAGE_ON_FACTOR);
                 float delta = prevScrollX - currentScrollX;
-
-                int targetPage;
-                if (delta > minSwipe && currentPage < numPages() - 1) {
-                    // Swipe forward, go to next page.
-                    targetPage = currentPage + 1;
-                } else if (-1 * delta > minSwipe) {
-                    // Swipe backward; at this point currentPage is actually the previous page.
-                    targetPage = currentPage;
-                } else if (delta < 0) {
-                    // Partial swipe backward, scroll forward to the page we started at.
-                    targetPage = currentPage + 1;
-                } else {
-                    // Partial swipe forward, scroll back to the page we started at.
-                    targetPage = currentPage;
-                }
-
-                smoothScrollTo(targetPage * snapToInterval, 0);
+                handleMovement(delta, minSwipe);
                 result = true;
                 break;
         }
@@ -97,7 +81,41 @@ public class PagingHorizontalScrollView extends HorizontalScrollView implements
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
+        if (snapToInterval == 0) {
+            return false;
+        }
+
+        if (Math.abs(velocityX) < SWIPE_PAGE_MINIMUM_VELOCITY) {
+            return false;
+        }
+
+        if (e2 == null || e1 == null) {
+            return false;
+        }
+
+        handleMovement(e2.getRawX() - e1.getRawX(), SWIPE_PAGE_MINIMUM_VELOCITY);
+        return true;
+    }
+
+    private void handleMovement(float delta, float threshold) {
+        int currentPage = currentPage(computeHorizontalScrollOffset());
+
+        int targetPage;
+        if (delta > threshold && currentPage < numPages() - 1) {
+            // Swipe forward, go to next page.
+            targetPage = currentPage + 1;
+        } else if (-1 * delta > threshold) {
+            // Swipe backward; at this point currentPage is actually the previous page.
+            targetPage = currentPage;
+        } else if (delta < 0) {
+            // Partial swipe backward, scroll forward to the page we started at.
+            targetPage = currentPage + 1;
+        } else {
+            // Partial swipe forward, scroll back to the page we started at.
+            targetPage = currentPage;
+        }
+
+        smoothScrollTo(Math.round(targetPage * snapToInterval), 0);
     }
 
     @Override

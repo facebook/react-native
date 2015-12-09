@@ -15,9 +15,13 @@
 
 'use strict';
 
+console.log("AA")
 var DebugComponentOwnershipModule = require('NativeModules').DebugComponentOwnershipModule;
+console.log("BB")
 var InspectorUtils = require('InspectorUtils');
+console.log("CC")
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
+console.log("DD")
 
 function componentToString(component) {
   return component.getName ? component.getName() : 'Unknown';

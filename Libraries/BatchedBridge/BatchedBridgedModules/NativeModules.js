@@ -11,7 +11,9 @@
  */
 'use strict';
 
+console.log("AAA");
 var NativeModules = require('BatchedBridge').RemoteModules;
+console.log("BBB");
 
 var nativeModulePrefixNormalizer = require('nativeModulePrefixNormalizer');
 

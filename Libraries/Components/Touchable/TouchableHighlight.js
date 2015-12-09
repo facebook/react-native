@@ -233,14 +233,18 @@ var TouchableHighlight = React.createClass({
         {...this.props}
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
-        stopPropagation={true}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
-        testID={this.props.testID}>
+        testID={this.props.testID}
+
+        onMouseEnter={this.touchableHandleActivePressIn}
+        onMouseLeave={this.touchableHandleActivePressOut}
+        onClick={this.touchableHandlePress}
+        >
         {cloneWithProps(
           onlyChild(this.props.children),
           {

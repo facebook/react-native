@@ -9,7 +9,6 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 var webifyStyle = require('webifyStyle');
-var Touchable = require('Touchable');
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -21,8 +20,6 @@ var pixelKeys = {
 };
 
 var View = React.createClass({
-
-    touchGranted: false,
 
     propTypes: {
         style: stylePropType,
@@ -84,15 +81,6 @@ var View = React.createClass({
                 {...this.props}
                 ref="div"
                 style={style}
-                onTouchStart={this.props.stopPropagation && this._onTouchStart}
-                onTouchMove={this.props.stopPropagation && this._onTouchMove}
-                onTouchEnd={this.props.stopPropagation && this._onTouchEnd}
-                onTouchCancel={this.props.stopPropagation && this._onTouchCancel}
-                onMouseEnter={this.props.stopPropagation && this._onMouseEnter}
-                onMouseLeave={this.props.stopPropagation && this._onMouseLeave}
-                onMouseDown={this.props.stopPropagation && this._onMouseDown}
-                onMouseMove={this.props.stopPropagation && this._onMouseMove}
-                onMouseUp={this.props.stopPropagation && this._onMouseUp}
             />
         );
     },
@@ -117,82 +105,6 @@ var View = React.createClass({
                     },
                 },
             });
-        }
-    },
-
-    _processEvent: function(e: SyntheticEvent) {
-        if (this.props.stopPropagation) {
-            e.stopPropagation();
-        }
-    },
-
-    _onTouchStart: function(e: SyntheticTouchEvent) {
-        this._processEvent(e);
-        if (this.props.onResponderGrant) {
-            var domID = this.refs.div.dataset.reactid;
-            this.props.onResponderGrant(e, domID);
-        }
-    },
-
-    _onTouchMove: function(e: SyntheticTouchEvent) {
-        this._processEvent(e);
-        if (this.props.onResponderMove) {
-            this.props.onResponderMove(e);
-        }
-    },
-
-    _onTouchEnd: function(e: SyntheticTouchEvent) {
-        this._processEvent(e);
-        if (this.props.onResponderRelease) {
-            this.props.onResponderRelease(e);
-        }
-    },
-
-    _onTouchCancel: function(e: SyntheticTouchEvent) {
-        this._processEvent(e);
-        if (this.props.onResponderTerminate) {
-            this.props.onResponderTerminate(e);
-        }
-    },
-
-    _onMouseEnter: function(e: SyntheticMouseEvent) {
-        this._processEvent(e);
-        if (this.props.onResponderGrant) {
-            var domID = this.refs.div.dataset.reactid;
-            this.props.onResponderGrant(e, domID);
-            this.touchGranted = true;
-        }
-    },
-
-    _onMouseMove: function(e: SyntheticMouseEvent) {
-        this._processEvent(e);
-        if (this.touchGranted && this.props.onResponderMove) {
-            this.props.onResponderMove(e);
-        }
-    },
-
-    _onMouseLeave: function(e: SyntheticMouseEvent) {
-        this._processEvent(e);
-        if (this.touchGranted && this.props.onResponderTerminate) {
-            this.props.onResponderTerminate(e);
-            this.touchGranted = false;
-        }
-    },
-
-    _onMouseDown: function(e: SyntheticMouseEvent) {
-        this._processEvent(e);
-        if (!Touchable.touchesEnabled && this.props.onResponderGrant) {
-            var domID = this.refs.div.dataset.reactid;
-            this.props.onResponderGrant(e, domID);
-            this.touchGranted = true;
-        }
-    },
-
-    _onMouseUp: function(e: SyntheticMouseEvent) {
-        this._processEvent(e);
-        if (!Touchable.touchesEnabled && this.props.onResponderRelease) {
-            this.props.onResponderRelease(e);
-            this.touchGranted = false;
         }
     },
 

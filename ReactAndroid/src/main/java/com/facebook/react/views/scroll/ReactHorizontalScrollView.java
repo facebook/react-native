@@ -59,7 +59,7 @@ public class ReactHorizontalScrollView extends PagingHorizontalScrollView {
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
-      return false;
+      return true;
     }
     if (super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);

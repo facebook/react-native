@@ -10,8 +10,6 @@ var webifyStyle = require('webifyStyle');
 
 var stylePropType = StyleSheetPropType(TextStylePropTypes);
 
-var __LEGACY_FLEX__ = !!global.__LEGACY_FLEX__;
-
 var Text = React.createClass({
 
     propTypes: {
@@ -45,30 +43,14 @@ var Text = React.createClass({
         } else if (innerElements) {
             innerElements = this._renderChild(innerElements);
         }
-
-        if (__LEGACY_FLEX__ && !this.props.isChild) {
-            /*
-            2009 flexbox doesn't apply flex styles to spans.
-            Get around this limitation by wrapping the root in a div.
-            */
-            return (
-                <div
-                    {...this.props}
-                    style={webifyStyle(this.props.style)}
-                    children={innerElements}
-                    />
-            );
-
-        } else {
-            return (
-                <span
-                    {...this.props}
-                    isChild={true}
-                    style={webifyStyle(this.props.style)}
-                    children={innerElements}
-                    />
-            );
-        }
+        return (
+            <span
+                {...this.props}
+                isChild={true}
+                style={webifyStyle(this.props.style)}
+                children={innerElements}
+                />
+        );
     },
 
     _renderInnerText: function(text) {

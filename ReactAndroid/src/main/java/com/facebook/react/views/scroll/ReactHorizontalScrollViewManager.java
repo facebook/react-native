@@ -49,7 +49,7 @@ public class ReactHorizontalScrollViewManager
   }
 
   @ReactProp(name = "snapToInterval")
-  public void setSnapToInterval(ReactHorizontalScrollView view, int interval) {
+  public void setSnapToInterval(ReactHorizontalScrollView view, float interval) {
     view.setSnapToInterval(interval);
   }
 

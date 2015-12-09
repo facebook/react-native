@@ -9,15 +9,16 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+import android.util.Pair;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class CustomStyleSpan extends MetricAffectingSpan {
 
@@ -28,7 +29,8 @@ public class CustomStyleSpan extends MetricAffectingSpan {
   // that font family. Of course this is not ideal, and especially after adding Typeface loading
   // from assets, we will need to have our own caching mechanism for all Typeface creation types.
   // TODO: t6866343 add better Typeface caching
-  private static final Map<String, Typeface> sTypefaceCache = new HashMap<String, Typeface>();
+  private static final Map<Pair<String, Integer>, Typeface> sTypefaceCache =
+          new HashMap<Pair<String, Integer>, Typeface>();
 
   private final int mStyle;
   private final int mWeight;
@@ -92,27 +94,31 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     }
 
     if (family != null) {
-      typeface = getOrCreateTypeface(family, want);
+      typeface = getCachedTypeface(family, want);
     }
 
     if (typeface != null) {
-      paint.setTypeface(Typeface.create(typeface, want));
+      paint.setTypeface(typeface);
     } else {
       paint.setTypeface(Typeface.defaultFromStyle(want));
     }
   }
 
-  private static Typeface getOrCreateTypeface(String family, int style) {
-    if (sTypefaceCache.get(family) != null) {
-      return sTypefaceCache.get(family);
+  private static Typeface getCachedTypeface(String family, int style) {
+    Pair<String, Integer> key = Pair.create(family, style);
+    if (sTypefaceCache.get(key) != null) {
+      return sTypefaceCache.get(key);
     }
 
-    Typeface typeface = Typeface.create(family, style);
-    sTypefaceCache.put(family, typeface);
-    return typeface;
+    key = Pair.create(family, Typeface.NORMAL);
+    if (sTypefaceCache.get(key) != null) {
+      return sTypefaceCache.get(key);
+    }
+
+    return null;
   }
 
-  public static void addCustomTypeface(String family, Typeface typeface) {
-    sTypefaceCache.put(family, typeface);
+  public static void addCustomTypeface(String family, int style, Typeface typeface) {
+    sTypefaceCache.put(Pair.create(family, style), typeface);
   }
 }

@@ -55,6 +55,10 @@ var ViewStylePropTypes = {
   WebkitOverflowScrolling: ReactPropTypes.string,
   background: ReactPropTypes.string,
   cursor: ReactPropTypes.string,
+  WebkitAnimationName: ReactPropTypes.string,
+  WebkitAnimationDuration: ReactPropTypes.string,
+  WebkitAnimationIterationCount: ReactPropTypes.string,
+  WebkitAnimationTimingFunction: ReactPropTypes.string,
 };
 
 module.exports = ViewStylePropTypes;

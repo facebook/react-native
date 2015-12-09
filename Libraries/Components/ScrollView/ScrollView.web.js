@@ -6,11 +6,11 @@
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
-var flattenStyle = require('flattenStyle');
 
 var styles = StyleSheet.create({
 
     scroll: {
+        flex: 1,
         WebkitOverflowScrolling: 'touch',
     },
 
@@ -103,31 +103,7 @@ var ScrollView = React.createClass({
     },
 
     render: function() {
-        var {
-            paddingTop,
-            paddingRight,
-            paddingBottom,
-            paddingLeft,
-            paddingVertical,
-            paddingHorizontal,
-            padding,
-            ...style,
-        } = flattenStyle(this.props.style || {});
-
         var scrollStyle = [
-            /*
-            We need to do this ridiculousness because when using 2009 flexbox,
-            changing inline styles on any element in a scroll view with box-flex defined
-            will cause scrollTop to reset to zero. e.g. modifying the opacity of a button
-            in the scroll view will cause the scroll view to jump back to the top. Gah!
-            */
-            {
-                position: 'absolute',
-                top: paddingTop || paddingVertical || padding || 0,
-                right: paddingRight || paddingHorizontal || padding || 0,
-                bottom: paddingBottom || paddingVertical || padding || 0,
-                left: paddingLeft || paddingHorizontal || padding || 0,
-            },
             styles.scroll,
             (this.props.horizontal ? styles.horizontal : null),
             (this.props.horizontal ? {overflowX: 'auto'} : {overflowY: 'auto'}),
@@ -139,7 +115,7 @@ var ScrollView = React.createClass({
         ];
 
         return (
-            <View {...this.props} style={style}>
+            <View {...this.props}>
                 <View ref="scrollView" style={scrollStyle} onScroll={this._onScroll}>
                     <View ref="containerView" style={containerStyle}>
                         {this.props.children}
@@ -152,14 +128,14 @@ var ScrollView = React.createClass({
     _updateScrollProperties: function() {
         var layout = this.refs.scrollView.measure();
         var containerLayout = this.refs.containerView.measure();
-        var scrollViewNode = this.refs.scrollView.getDOMNode();
+        var scrollViewNode = this.refs.scrollView;
         var contentSize = {
             width: containerLayout.width,
             height: containerLayout.height,
         };
         var contentOffset = {
-            x: scrollViewNode.scrollLeft,
-            y: scrollViewNode.scrollTop,
+            x: scrollViewNode.getDOMNode().scrollLeft,
+            y: scrollViewNode.getDOMNode().scrollTop,
         };
         this.scrollProperties = {
             layout: layout,

@@ -44,6 +44,13 @@
 
 RCT_EXPORT_MODULE()
 
+- (instancetype)initWithCache:(NSURLCache *)cache {
+  if (self = [super init]) {
+    _cache = cache;
+  }
+  return self;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   // Get image loaders and decoders
@@ -87,9 +94,12 @@ RCT_EXPORT_MODULE()
   _bridge = bridge;
   _loaders = loaders;
   _decoders = decoders;
-  _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
-                                         diskCapacity:200 * 1024 * 1024 // 200MB
-                                             diskPath:@"React/RCTImageDownloader"];
+
+  if (!_cache) {
+    _cache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
+                                           diskCapacity:200 * 1024 * 1024 // 200MB
+                                               diskPath:@"React/RCTImageDownloader"];
+  }
 }
 
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
