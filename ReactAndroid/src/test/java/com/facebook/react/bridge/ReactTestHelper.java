@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 /**
  * Utility for creating pre-configured instances of core react components for tests.
  */
-public class CatalystTestHelper {
+public class ReactTestHelper {
 
   /**
    * @return a ReactApplicationContext that has a CatalystInstance mock returned by
