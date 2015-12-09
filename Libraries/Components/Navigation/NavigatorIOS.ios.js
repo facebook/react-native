@@ -95,6 +95,12 @@ type Event = Object;
  * NavigatorIOS wraps UIKit navigation and allows you to add back-swipe
  * functionality across your app.
  *
+ * > **NOTE**: This Component is not maintained by Facebook
+ * >
+ * > This component is under community responsibility.
+ * > If a pure JavaScript solution fits your needs you may try the `Navigator`
+ * > component instead.
+ *
  * #### Routes
  * A route is an object used to describe each page in the navigator. The first
  * route is provided to NavigatorIOS as `initialRoute`:
