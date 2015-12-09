@@ -54,8 +54,8 @@ var NativeModules = {
   AlertManager: {
     alertWithArgs: jest.genMockFunction(),
   },
-  Pasteboard: {
-    setPasteboardString: jest.genMockFunction(),
+  Clipboard: {
+    setString: jest.genMockFunction(),
   },
 };
 

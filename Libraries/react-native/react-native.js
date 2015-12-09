@@ -58,6 +58,7 @@ var ReactNative = {
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); },
   get CameraRoll() { return require('CameraRoll'); },
+  get Clipboard() { return require('Clipboard'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
