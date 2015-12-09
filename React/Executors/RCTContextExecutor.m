@@ -51,14 +51,22 @@ static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnable
 
 @implementation RCTJavaScriptContext
 {
-  RCTJavaScriptContext *_self;
+  RCTJavaScriptContext *_selfReference;
 }
 
 - (instancetype)initWithJSContext:(JSContext *)context
 {
   if ((self = [super init])) {
     _context = context;
-    _self = self;
+
+    /**
+     * Explicitly introduce a retain cycle here - The RCTContextExecutor might
+     * be deallocated while there's still work enqueued in the JS thread, so
+     * we wouldn't be able kill the JSContext. Instead we create this retain
+     * cycle, and enqueue the -invalidate message in this object, it then
+     * releases the JSContext, breaks the cycle and stops the runloop.
+     */
+    _selfReference = self;
   }
   return self;
 }
@@ -79,7 +87,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   if (self.isValid) {
     _context = nil;
-    _self = nil;
+    _selfReference = nil;
   }
 }
 
