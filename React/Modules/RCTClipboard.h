@@ -7,22 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTPasteboard.h"
+#import "RCTBridgeModule.h"
 
-#import <UIKit/UIKit.h>
-
-@implementation RCTPasteboard
-
-RCT_EXPORT_MODULE()
-
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
-RCT_EXPORT_METHOD(setPasteboardString:(NSString *)string)
-{
-  [[UIPasteboard generalPasteboard] setString:string];
-}
+@interface RCTClipboard : NSObject <RCTBridgeModule>
 
 @end
