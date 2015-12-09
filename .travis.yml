@@ -28,6 +28,7 @@ script:
   elif [ "$TEST_TYPE" = js ]
   then
 
+    cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
     flow check && npm test -- '\/Libraries\/'
 
   elif [ "$TEST_TYPE" = packager ]
