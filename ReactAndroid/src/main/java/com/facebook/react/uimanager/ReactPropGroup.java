@@ -26,7 +26,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * group of the property being updated. Last, third argument represent the value that should be set.
  *
  *
- * Currently only {@code int}, {@code float} and {@link String} value types are supported.
+ * Currently only {@code int}, {@code float}, {@code double} and {@link String} value types are
+ * supported.
  *
  * In case when property has been removed from the corresponding react component annotated setter
  * will be called and default value will be provided as a value parameter. Default value can be
@@ -67,6 +68,13 @@ public @interface ReactPropGroup {
    * from the component description in JS
    */
   float defaultFloat() default 0.0f;
+
+  /**
+   * Default value for property of type {@code double}. This value will be provided to property
+   * setter method annotated with {@link ReactPropGroup} if property with a given name gets removed
+   * from the component description in JS
+   */
+  double defaultDouble() default 0.0;
 
   /**
    * Default value for property of type {@code int}. This value will be provided to property
