@@ -10,17 +10,4 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var NativeClipboard = NativeModules.Clipboard;
-if(!NativeClipboard){
-  NativeClipboard = NativeModules.ClipboardAndroid;
-}
-
-module.exports = {
-  getString(callback){
-    NativeClipboard.getClipboardString(callback);
-  },
-  setString(content){
-    NativeClipboard.setClipboardString(content);
-  }
-};
+module.exports = require('NativeModules').Clipboard;

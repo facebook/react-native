@@ -20,13 +20,13 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(getClipboardString:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getString:(RCTResponseSenderBlock)callback)
 {
   UIPasteboard *clipBoard = [UIPasteboard generalPasteboard];
   callback(@[clipBoard.string ? clipBoard.string : @""]);
 }
 
-RCT_EXPORT_METHOD(setClipboardString:(NSString *)content)
+RCT_EXPORT_METHOD(setString:(NSString *)content)
 {
   if (content) {
     UIPasteboard *clipBoard = [UIPasteboard generalPasteboard];

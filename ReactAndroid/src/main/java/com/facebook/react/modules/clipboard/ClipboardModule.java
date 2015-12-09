@@ -41,7 +41,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getClipboardString(Callback cb) {
+    public void getString(Callback cb) {
         try {
             ReactApplicationContext reactContext = getReactApplicationContext();
             ClipboardManager clipboard = (ClipboardManager)reactContext.getSystemService(reactContext.CLIPBOARD_SERVICE);
@@ -65,7 +65,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setClipboardString(String data) {
+    public void setString(String data) {
         try {
             ReactApplicationContext reactContext = getReactApplicationContext();
             ClipboardManager clipboard = (ClipboardManager)reactContext.getSystemService(reactContext.CLIPBOARD_SERVICE);
