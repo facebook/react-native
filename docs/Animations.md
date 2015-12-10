@@ -248,7 +248,7 @@ concise, robust, and performant way.  Check out more example code in
 doesn't support what you need, and the following sections cover other animation
 systems.
 
-### LayoutAnimation (iOS only)
+### LayoutAnimation
 
 `LayoutAnimation` allows you to globally configure `create` and `update`
 animations that will be used for all views in the next render/layout cycle.
