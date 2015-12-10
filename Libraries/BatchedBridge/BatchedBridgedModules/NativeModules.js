@@ -44,7 +44,7 @@ Object.keys(RemoteModules).forEach((moduleName) => {
     enumerable: true, 
     get: () => {
       let module = RemoteModules[moduleName];
-      if (module && module.moduleID) {
+      if (module && module.moduleID && global.nativeRequireModuleConfig) {
         const json = global.nativeRequireModuleConfig(moduleName);
         const config = json && JSON.parse(json);
         module = config && BatchedBridge.processModuleConfig(config, module.moduleID);
