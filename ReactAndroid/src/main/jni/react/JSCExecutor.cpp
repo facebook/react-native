@@ -195,7 +195,11 @@ bool JSCExecutor::supportsProfiling() {
 void JSCExecutor::startProfiler(const std::string &titleString) {
   #ifdef WITH_JSC_EXTRA_TRACING
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
+  #if WITH_JSC_INTERNAL
+  JSStartProfiling(m_context, title, false);
+  #else
   JSStartProfiling(m_context, title);
+  #endif
   JSStringRelease(title);
   #endif
 }

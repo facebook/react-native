@@ -20,8 +20,9 @@ type RelayProfiler = {
 
 var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
+var TRACE_TAG_JSC_CALLS = 1 << 27;
 
-var _enabled;
+var _enabled = false;
 var _asyncCookie = 0;
 var _ReactPerf = null;
 function ReactPerf() {
@@ -33,6 +34,13 @@ function ReactPerf() {
 
 var BridgeProfiling = {
   setEnabled(enabled: boolean) {
+    if (_enabled !== enabled) {
+      if (enabled) {
+        global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
+      } else {
+        global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+      }
+    }
     _enabled = enabled;
 
     ReactPerf().enableMeasure = enabled;
