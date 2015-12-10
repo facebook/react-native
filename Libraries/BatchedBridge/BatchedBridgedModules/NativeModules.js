@@ -41,7 +41,7 @@ Object.keys(RemoteModules).forEach((moduleName) => {
 const NativeModules = {};
 Object.keys(RemoteModules).forEach((moduleName) => {
   Object.defineProperty(NativeModules, moduleName, {
-    enumerable: true, 
+    enumerable: true,
     get: () => {
       let module = RemoteModules[moduleName];
       if (module && typeof module.moduleID === 'number' && global.nativeRequireModuleConfig) {
@@ -69,8 +69,9 @@ UIManager && Object.keys(UIManager).forEach(viewName => {
   const viewConfig = UIManager[viewName];
   const constants = {};
   if (viewConfig.Manager) {
+    /* $FlowFixMe - nice try. Flow doesn't like getters */
     Object.defineProperty(viewConfig, 'Constants', {
-      enumerable: true, 
+      enumerable: true,
       get: () => {
         const viewManager = NativeModules[normalizePrefix(viewConfig.Manager)];
         viewManager && Object.keys(viewManager).forEach(key => {
