@@ -840,6 +840,64 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 }
 
+class AnimatedAddition extends AnimatedWithChildren {
+  _a: Animated;
+  _b: Animated;
+
+  constructor(a: Animated, b: Animated) {
+    super();
+    this._a = a;
+    this._b = b;
+  }
+
+  __getValue(): number {
+    return this._a.__getValue() + this._b.__getValue();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+    this._b.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+    this._b.__removeChild(this);
+  }
+}
+
+class AnimatedMultiplication extends AnimatedWithChildren {
+  _a: Animated;
+  _b: Animated;
+
+  constructor(a: Animated, b: Animated) {
+    super();
+    this._a = a;
+    this._b = b;
+  }
+
+  __getValue(): number {
+    return this._a.__getValue() * this._b.__getValue();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+    this._b.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+    this._b.__removeChild(this);
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
@@ -1159,6 +1217,20 @@ class AnimatedTracking extends Animated {
 type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void;
   stop: () => void;
+};
+
+var add = function(
+  a: Animated,
+  b: Animated
+): AnimatedAddition {
+  return new AnimatedAddition(a, b);
+};
+
+var multiply = function(
+  a: Animated,
+  b: Animated
+): AnimatedMultiplication {
+  return new AnimatedMultiplication(a, b);
 };
 
 var maybeVectorAnim = function(
@@ -1520,6 +1592,17 @@ module.exports = {
    * create fluid motions as the `toValue` updates, and can be chained together.
    */
   spring,
+
+  /**
+   * Creates a new Animated value composed from two Animated values added
+   * together.
+   */
+  add,
+  /**
+   * Creates a new Animated value composed from two Animated values multiplied
+   * together.
+   */
+  multiply,
 
   /**
    * Starts an animation after the given delay.
