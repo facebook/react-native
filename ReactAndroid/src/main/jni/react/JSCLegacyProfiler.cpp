@@ -26,7 +26,11 @@ static JSValueRef nativeProfilerStart(
   }
 
   JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
+  #if WITH_JSC_INTERNAL
+  JSStartProfiling(ctx, title, false);
+  #else
   JSStartProfiling(ctx, title);
+  #endif
   JSStringRelease(title);
   return JSValueMakeUndefined(ctx);
 }

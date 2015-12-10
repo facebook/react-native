@@ -2,12 +2,15 @@
 
 #include <algorithm>
 #include <JavaScriptCore/JavaScript.h>
+#include <JavaScriptCore/API/JSProfilerPrivate.h>
 #include <fbsystrace.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include "JSCHelpers.h"
 
 using std::min;
+
+static const char *ENABLED_FBSYSTRACE_PROFILE_NAME = "__fbsystrace__";
 
 static uint64_t tagFromJSValue(
     JSContextRef ctx,
@@ -409,12 +412,74 @@ static JSValueRef nativeTraceCounter(
   return JSValueMakeUndefined(ctx);
 }
 
+static JSValueRef nativeTraceBeginLegacy(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  if (FBSYSTRACE_UNLIKELY(argumentCount < 1)) {
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeTraceBeginLegacy: requires TAG Argument");
+    }
+    return JSValueMakeUndefined(ctx);
+  }
+
+  uint64_t tag = tagFromJSValue(ctx, arguments[0], exception);
+  if (!fbsystrace_is_tracing(tag)) {
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);
+  #if WITH_JSC_INTERNAL
+  JSStartProfiling(ctx, title, true);
+  #else
+  JSStartProfiling(ctx, title);
+  #endif
+  JSStringRelease(title);
+
+  return JSValueMakeUndefined(ctx);
+}
+
+static JSValueRef nativeTraceEndLegacy(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef* exception) {
+  if (FBSYSTRACE_UNLIKELY(argumentCount < 1)) {
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeTraceBeginLegacy: requires TAG Argument");
+    }
+    return JSValueMakeUndefined(ctx);
+  }
+
+  uint64_t tag = tagFromJSValue(ctx, arguments[0], exception);
+  if (!fbsystrace_is_tracing(tag)) {
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);
+  JSEndProfiling(ctx, title);
+  JSStringRelease(title);
+
+  return JSValueMakeUndefined(ctx);
+}
+
 namespace facebook {
 namespace react {
 
 void addNativeTracingHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeTraceBeginSection", nativeTraceBeginSection);
   installGlobalFunction(ctx, "nativeTraceEndSection", nativeTraceEndSection);
+  installGlobalFunction(ctx, "nativeTraceBeginLegacy", nativeTraceBeginLegacy);
+  installGlobalFunction(ctx, "nativeTraceEndLegacy", nativeTraceEndLegacy);
   installGlobalFunction(ctx, "nativeTraceBeginAsyncSection", nativeTraceBeginAsyncSection);
   installGlobalFunction(ctx, "nativeTraceEndAsyncSection", nativeTraceEndAsyncSection);
   installGlobalFunction(ctx, "nativeTraceAsyncSectionStage", nativeTraceAsyncSectionStage);
