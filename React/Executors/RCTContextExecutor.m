@@ -98,10 +98,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-// Private bridge interface to allow middle-batch calls
+// Private bridge interface
 @interface RCTBridge (RCTContextExecutor)
 
 - (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
+- (NSArray *)configForModuleName:(NSString *)moduleName;
 
 @end
 
@@ -351,13 +352,24 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
     [strongSelf _addNativeHook:RCTNoop withName:"noop"];
 
-    __weak RCTBridge *bridge = strongSelf->_bridge;
+    __weak RCTBridge *weakBridge = strongSelf->_bridge;
+
+    strongSelf->_context.context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
+      if (!weakSelf.valid) {
+        return nil;
+      }
+      NSArray *config = [weakBridge configForModuleName:moduleName];
+      if (config) {
+        return RCTJSONStringify(config, NULL);
+      }
+      return nil;
+    };
+
     strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
       if (!weakSelf.valid || !calls) {
         return;
       }
-
-      [bridge handleBuffer:calls batchEnded:NO];
+      [weakBridge handleBuffer:calls batchEnded:NO];
     };
 
     strongSelf->_context.context[@"RCTPerformanceNow"] = ^{
@@ -365,6 +377,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     };
 
 #if RCT_DEV
+
     if (RCTProfileIsProfiling()) {
       strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
     }
@@ -394,7 +407,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                    name:event
                                                  object:nil];
     }
+
 #endif
+
   }];
 }
 
@@ -417,7 +432,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   JSStringRef JSName = JSStringCreateWithUTF8CString(name);
   JSObjectSetProperty(_context.ctx, globalObject, JSName, JSObjectMakeFunctionWithCallback(_context.ctx, JSName, hook), kJSPropertyAttributeNone, NULL);
   JSStringRelease(JSName);
-
 }
 
 - (void)invalidate
