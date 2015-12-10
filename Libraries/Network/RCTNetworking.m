@@ -56,7 +56,7 @@ static NSString *RCTGenerateFormBoundary()
   return [[NSString alloc] initWithBytesNoCopy:bytes length:boundaryLength encoding:NSUTF8StringEncoding freeWhenDone:YES];
 }
 
-- (RCTURLRequestCancellationBlock)process:(NSDictionaryArray *)formData
+- (RCTURLRequestCancellationBlock)process:(NSArray<NSDictionary *> *)formData
                                  callback:(RCTHTTPQueryResult)callback
 {
   RCTAssertThread(_networker.methodQueue, @"process: must be called on method queue");
@@ -289,7 +289,7 @@ RCT_EXPORT_MODULE()
       }
     };
   }
-  NSDictionaryArray *formData = [RCTConvert NSDictionaryArray:query[@"formData"]];
+  NSArray<NSDictionary *> *formData = [RCTConvert NSDictionaryArray:query[@"formData"]];
   if (formData) {
     RCTHTTPFormDataHelper *formDataHelper = [RCTHTTPFormDataHelper new];
     formDataHelper.networker = self;

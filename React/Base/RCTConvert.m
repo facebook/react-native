@@ -13,6 +13,7 @@
 
 #import "RCTDefines.h"
 #import "RCTImageSource.h"
+#import "RCTParserUtils.h"
 #import "RCTUtils.h"
 
 @implementation RCTConvert
@@ -647,6 +648,12 @@ NSArray *RCTConvertArrayValue(SEL type, id json)
     }
   }];
   return values;
+}
+
+SEL RCTConvertSelectorForType(NSString *type)
+{
+  const char *input = type.UTF8String;
+  return NSSelectorFromString([RCTParseType(&input) stringByAppendingString:@":"]);
 }
 
 RCT_ARRAY_CONVERTER(NSURL)

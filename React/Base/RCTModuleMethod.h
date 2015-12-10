@@ -10,14 +10,9 @@
 #import <Foundation/Foundation.h>
 
 #import "RCTBridgeMethod.h"
+#import "RCTNullability.h"
 
 @class RCTBridge;
-
-typedef NS_ENUM(NSUInteger, RCTNullability) {
-  RCTNullabilityUnspecified,
-  RCTNullable,
-  RCTNonnullable,
-};
 
 @interface RCTMethodArgument : NSObject
 
@@ -32,7 +27,7 @@ typedef NS_ENUM(NSUInteger, RCTNullability) {
 @property (nonatomic, readonly) Class moduleClass;
 @property (nonatomic, readonly) SEL selector;
 
-- (instancetype)initWithObjCMethodName:(NSString *)objCMethodName
+- (instancetype)initWithMethodSignature:(NSString *)objCMethodName
                           JSMethodName:(NSString *)JSMethodName
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
 
