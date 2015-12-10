@@ -117,6 +117,12 @@ var featured = [
 
 var apps = [
   {
+    name: 'Accio',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
+    author: 'Accio Delivery Inc.',
+  },
+  {
     name: 'Beetroot',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
     link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
