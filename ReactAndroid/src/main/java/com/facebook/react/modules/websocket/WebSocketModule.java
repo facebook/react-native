@@ -18,8 +18,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -60,7 +62,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void connect(final String url, @Nullable final String protocols, @Nullable final ReadableMap options, final int id) {
+  public void connect(final String url, @Nullable final ReadableArray protocols, @Nullable final ReadableMap options, final int id) {
+    // ignoring protocols, since OKHttp overrides them.
     OkHttpClient client = new OkHttpClient();
 
     client.setConnectTimeout(10, TimeUnit.SECONDS);
@@ -74,7 +77,13 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
     if (options != null) {
       if (options.hasKey("origin")) {
-        builder.addHeader("Origin", options.getString("origin"));
+        if (ReadableType.String.equals(options.getType("origin"))) {
+          builder.addHeader("Origin", options.getString("origin"));
+        } else {
+          FLog.w(
+            ReactConstants.TAG,
+            "Ignoring: requested origin, value not a string");
+        }
       }
 
       if (options.hasKey("headers")) {
@@ -82,26 +91,12 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         ReadableMapKeySetIterator keyIterator = headers.keySetIterator();
         while (keyIterator.hasNextKey()) {
           String key = keyIterator.nextKey();
-          switch (headers.getType(key)) {
-            case Null:
-              builder.addHeader(key, "null");
-              break;
-            case Boolean:
-              builder.addHeader(key, String.valueOf(headers.getBoolean(key)));
-              break;
-            case Number:
-              // Can be int or double.
-              builder.addHeader(key, String.valueOf(headers.getDouble(key)));
-              break;
-            case String:
-              builder.addHeader(key, headers.getString(key));
-              break;
-            case Map:
-              throw new UnsupportedOperationException("Maps aren't supported header values.");
-            case Array:
-              throw new UnsupportedOperationException("Arrays aren't supported header values.");
-            default:
-              throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+          if (ReadableType.String.equals(headers.getType(key))) {
+            builder.addHeader(key, headers.getString(key));
+          } else {
+            FLog.w(
+              ReactConstants.TAG,
+              "Ignoring passed in header: " + key + ", value not a string.");
           }
         }
       }
