@@ -16,6 +16,8 @@ Future releases:
 
 Note: replace 0.12 in all the commands below with the version you're releasing :)
 
+#### Check that everything works
+
 First, set up Sinopia (only need to do this once): https://github.com/facebook/react-native/tree/master/react-native-cli
 
 Make absolutely sure basic iOS and Android workflow works on master:
@@ -50,12 +52,14 @@ Make absolutely sure basic iOS and Android workflow works on master:
   - Start an Android emulator (ideally Genymotion, it's faster and more reliable than Google emulators)
   - `react-native run-android`
   - Test is the same way as on iOS, including Chrome debugging
+  
+#### Push to github
+
+  - Revert the Javadoc change in `ReactAndroid/release.gradle`
+  - `git commit -am` "[0.12-rc] Bump version numbers"
+  - `git push origin 0.12-stable`
 
 ## Do a release
-
-- Revert the Javadoc change in `ReactAndroid/release.gradle`
-- `git commit -am` "[0.12-rc] Bump version numbers"
-- `git push origin 0.12-stable`
 
 Publish to Maven Central (NOTE we could get rid of this whole section publishing binaries to npm instead):
   - Log into Sonatype and go to [Staging upload](https://oss.sonatype.org/#staging-upload). You'll need to get permissions for this by filing a ticket explaining you're a core contributor to React Native. [Example ticket](https://issues.sonatype.org/browse/OSSRH-11885).
