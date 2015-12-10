@@ -594,6 +594,10 @@ public class NativeViewHierarchyManager {
     popupMenu.show();
   }
 
+    public View getViewByTag(int reactTag) {
+      return mTagsToViews.get(reactTag);
+    }
+
   private static class PopupMenuCallbackHandler implements PopupMenu.OnMenuItemClickListener,
       PopupMenu.OnDismissListener {
 

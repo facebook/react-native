@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import android.util.SparseBooleanArray;
+import android.view.View;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -436,4 +437,8 @@ public class NativeViewHierarchyOptimizer {
     }
     return true;
   }
+
+    public View getViewByTag(int reactTag) {
+      return mUIViewOperationQueue.getViewByTag(reactTag);
+    }
 }

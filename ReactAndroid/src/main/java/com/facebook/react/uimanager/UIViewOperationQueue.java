@@ -9,6 +9,8 @@
 
 package com.facebook.react.uimanager;
 
+import android.view.View;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -731,5 +733,10 @@ public class UIViewOperationQueue {
       ReactChoreographer.getInstance().postFrameCallback(
           ReactChoreographer.CallbackType.DISPATCH_UI, this);
     }
+  }
+
+
+  public View getViewByTag(int reactTag) {
+    return mNativeViewHierarchyManager.getViewByTag(reactTag);
   }
 }

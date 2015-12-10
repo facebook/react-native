@@ -713,4 +713,9 @@ public class UIImplementation {
     }
     cssNode.markUpdateSeen();
   }
+
+  public View getViewByTag(int reactTag) {
+    assertViewExists(reactTag, "getNode");
+    return mNativeViewHierarchyOptimizer.getViewByTag(reactTag);
+  }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.facebook.csslayout.CSSLayoutContext;
 import com.facebook.infer.annotation.Assertions;
@@ -135,6 +136,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
+
+    public View getViewByTag (int reactTag) {
+      return mUIImplementation.getViewByTag(reactTag);
+    }
 
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
