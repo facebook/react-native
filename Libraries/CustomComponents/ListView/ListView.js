@@ -436,6 +436,9 @@ var ListView = React.createClass({
       height : width;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
   },
 
   _onLayout: function(event) {
@@ -444,6 +447,9 @@ var ListView = React.createClass({
       height : width;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
+    if (this.props.onLayout) {
+      this.props.onLayout(event);
+    }
   },
 
   _setScrollVisibleLength: function(left, top, width, height) {
