@@ -33,6 +33,13 @@ RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadEnd, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(resizeMode, contentMode, UIViewContentMode)
 RCT_EXPORT_VIEW_PROPERTY(source, RCTImageSource)
-RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
+RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
+{
+  // Default tintColor isn't nil - it's inherited from the superView - but we
+  // want to treat a null json value for `tintColor` as meaning 'disable tint',
+  // so we toggle `renderingMode` here instead of in `-[RCTImageView setTintColor:]`
+  view.tintColor = [RCTConvert UIColor:json] ?: defaultView.tintColor;
+  view.renderingMode = json ? UIImageRenderingModeAlwaysTemplate : defaultView.renderingMode;
+}
 
 @end

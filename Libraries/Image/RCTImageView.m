@@ -108,12 +108,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-- (void)setTintColor:(UIColor *)tintColor
-{
-  super.tintColor = tintColor;
-  self.renderingMode = tintColor ? UIImageRenderingModeAlwaysTemplate : UIImageRenderingModeAlwaysOriginal;
-}
-
 - (void)setRenderingMode:(UIImageRenderingMode)renderingMode
 {
   if (_renderingMode != renderingMode) {
