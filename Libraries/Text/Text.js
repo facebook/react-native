@@ -181,35 +181,35 @@ const Text = React.createClass({
             }
             return setResponder;
           },
-          onResponderGrant: (e: SyntheticEvent, dispatchID: string) => {
+          onResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
             this.touchableHandleResponderGrant(e, dispatchID);
             this.props.onResponderGrant &&
               this.props.onResponderGrant.apply(this, arguments);
-          },
-          onResponderMove: (e: SyntheticEvent) => {
+          }.bind(this),
+          onResponderMove: function(e: SyntheticEvent) {
             this.touchableHandleResponderMove(e);
             this.props.onResponderMove &&
               this.props.onResponderMove.apply(this, arguments);
-          },
-          onResponderRelease: (e: SyntheticEvent) => {
+          }.bind(this),
+          onResponderRelease: function(e: SyntheticEvent) {
             this.touchableHandleResponderRelease(e);
             this.props.onResponderRelease &&
               this.props.onResponderRelease.apply(this, arguments);
-          },
-          onResponderTerminate: (e: SyntheticEvent) => {
+          }.bind(this),
+          onResponderTerminate: function(e: SyntheticEvent) {
             this.touchableHandleResponderTerminate(e);
             this.props.onResponderTerminate &&
               this.props.onResponderTerminate.apply(this, arguments);
-          },
-          onResponderTerminationRequest: (): bool => {
+          }.bind(this),
+          onResponderTerminationRequest: function(): bool {
             // Allow touchable or props.onResponderTerminationRequest to deny
             // the request
             var allowTermination = this.touchableHandleResponderTerminationRequest();
             if (allowTermination && this.props.onResponderTerminationRequest) {
-              allowTermination = this.props.onResponderTerminationRequest();
+              allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
             }
             return allowTermination;
-          },
+          }.bind(this),
         };
       }
       newProps = {
