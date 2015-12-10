@@ -33,27 +33,26 @@ class WebSocketBase extends EventTarget {
   readyState: number;
   url: ?string;
 
-  /**
-   * @constructor WebSocket
-   * @param {String} address Connection address.
-   * @param {String|Array} protocols WebSocket protocols.
-   * @param {Object} options Additional connection options.
-   */
-  constructor(url: string, protocols: ?any, options: ?any) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string, headers?: Object}) {
     super();
     this.CONNECTING = 0;
     this.OPEN = 1;
     this.CLOSING = 2;
     this.CLOSED = 3;
 
-    if (protocols && !Array.isArray(protocols) && typeof protocols === 'object') {
-      // accept the "options" Object as the 2nd argument
-      options = protocols;
-      protocols = null;
-    }
-
     if (typeof protocols === 'string') {
       protocols = [protocols];
+    }
+
+    if (options && options.headers) {
+      // ensure all header values are strings
+      for (var header in options.headers) {
+        if (options.headers.hasOwnProperty(header)) {
+          if (typeof options.headers[header] !== 'string') {
+            throw new Error('header values are required to be strings: ' + header + '.');
+          }
+        }
+      }
     }
 
     this.readyState = this.CONNECTING;

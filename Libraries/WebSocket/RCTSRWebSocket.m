@@ -476,15 +476,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
 
-  NSString *origin = (NSString *)[_requestedOptions objectForKey: @"origin"];
-  if (!origin) {
-    origin = _url.RCTSR_origin;
+  NSString *origin = origin = _url.RCTSR_origin;
+  NSObject *requestedOrigin = [_requestedOptions objectForKey: @"origin"];
+  if (requestedOrigin) {
+    if ([requestedOrigin isKindOfClass:[NSString class]]) {
+       origin = (NSString *)requestedOrigin;
+     } else {
+       RCTSRFastLog(@"Ignoring requested origin, value not a string.");
+     }
   }
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)origin);
 
-  NSDictionary<NSString *, id> *headers = [_requestedOptions objectForKey: @"headers"];
+  NSDictionary<NSString *, NSString *> *headers = [_requestedOptions objectForKey: @"headers"];
   [headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-    CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
+    if ([obj isKindOfClass:[NSString class]]) {
+      CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
+    } else {
+      RCTSRFastLog(@"Ignoring passed in header: %@, value not a string.", key);
+    }
   }];
 
   [_urlRequest.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {

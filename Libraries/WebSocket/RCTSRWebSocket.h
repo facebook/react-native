@@ -65,7 +65,7 @@ extern NSString *const RCTSRHTTPResponseErrorKey;
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 
 // Some helper constructors.
-- (instancetype)initWithURL:(NSURL *)url protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, id> *)options;
+- (instancetype)initWithURL:(NSURL *)url protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, NSString *> *)options;
 - (instancetype)initWithURL:(NSURL *)url protocols:(NSArray<NSString *> *)protocols;
 - (instancetype)initWithURL:(NSURL *)url;
 
