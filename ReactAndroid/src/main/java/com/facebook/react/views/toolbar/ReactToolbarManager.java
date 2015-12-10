@@ -100,6 +100,16 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     }
   }
 
+  @ReactProp(name = "contentInsetStart")
+  public void setContentInsetStart(ReactToolbar view, float insetStart) {
+    view.setContentInsetsRelative(Math.round(PixelUtil.toPixelFromDIP(insetStart)), view.getContentInsetEnd());
+  }
+
+  @ReactProp(name = "contentInsetEnd")
+  public void setContentInsetEnd(ReactToolbar view, float insetEnd) {
+    view.setContentInsetsRelative(view.getContentInsetStart(), Math.round(PixelUtil.toPixelFromDIP(insetEnd)));
+  }
+
   @ReactProp(name = "nativeActions")
   public void setActions(ReactToolbar view, @Nullable ReadableArray actions) {
     view.setActions(actions);

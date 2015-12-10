@@ -126,6 +126,14 @@ var ToolbarAndroid = React.createClass({
      */
     titleColor: ReactPropTypes.string,
     /**
+     * Content inset for the toolbar starting edge
+     */
+    contentInsetStart: ReactPropTypes.number,
+    /**
+     * Content inset for the toolbar ending edge
+     */
+    contentInsetEnd: ReactPropTypes.number,
+    /**
      * Used to set the toolbar direction to RTL.
      * In addition to this property you need to add
      *
