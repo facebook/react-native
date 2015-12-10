@@ -21,7 +21,7 @@
 
 @property (nonatomic, readonly) Class managerClass;
 @property (nonatomic, copy, readonly) NSString *name;
-@property (nonatomic, strong, readonly) RCTViewManager *manager;
+@property (nonatomic, weak, readonly) RCTViewManager *manager;
 
 - (instancetype)initWithManagerClass:(Class)managerClass
                               bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
