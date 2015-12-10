@@ -12,7 +12,7 @@
   <span class="token string">&#x27;Option 0&#x27;</span><span class="token punctuation">,</span>
   <span class="token string">&#x27;Option 1&#x27;</span><span class="token punctuation">,</span>
   <span class="token string">&#x27;Option 2&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Destruct&#x27;</span><span class="token punctuation">,</span>
+  <span class="token string">&#x27;Delete&#x27;</span><span class="token punctuation">,</span>
   <span class="token string">&#x27;Cancel&#x27;</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> DESTRUCTIVE_INDEX <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
@@ -49,6 +49,40 @@
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> ActionSheetTintExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      clicked<span class="token punctuation">:</span> <span class="token string">&#x27;none&#x27;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View<span class="token operator">&gt;</span>
+        &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>showActionSheet<span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>style<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          Click to show the ActionSheet
+        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;Text<span class="token operator">&gt;</span>
+          Clicked button<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>clicked<span class="token punctuation">}</span>
+        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">showActionSheet<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ActionSheetIOS<span class="token punctuation">.</span><span class="token function">showActionSheetWithOptions<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+      options<span class="token punctuation">:</span> BUTTONS<span class="token punctuation">,</span>
+      cancelButtonIndex<span class="token punctuation">:</span> CANCEL_INDEX<span class="token punctuation">,</span>
+      destructiveButtonIndex<span class="token punctuation">:</span> DESTRUCTIVE_INDEX<span class="token punctuation">,</span>
+      tintColor<span class="token punctuation">:</span> <span class="token string">&#x27;green&#x27;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span>buttonIndex<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span> clicked<span class="token punctuation">:</span> BUTTONS<span class="token punctuation">[</span>buttonIndex<span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
 
 <span class="token keyword">var</span> ShareActionSheetExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -107,6 +141,10 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Show Action Sheet&#x27;</span><span class="token punctuation">,</span>
     <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span> <span class="token keyword">return</span> &lt;ActionSheetExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Show Action Sheet with tinted buttons&#x27;</span><span class="token punctuation">,</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span> <span class="token keyword">return</span> &lt;ActionSheetTintExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Show Share Action Sheet&#x27;</span><span class="token punctuation">,</span>
