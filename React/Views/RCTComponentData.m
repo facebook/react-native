@@ -44,7 +44,7 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
   RCTShadowView *_defaultShadowView;
   NSMutableDictionary<NSString *, RCTPropBlock> *_viewPropBlocks;
   NSMutableDictionary<NSString *, RCTPropBlock> *_shadowPropBlocks;
-  RCTBridge *_bridge;
+  __weak RCTBridge *_bridge;
 }
 
 @synthesize manager = _manager;
