@@ -13,7 +13,7 @@ select <code>Build Phases</code> and drag the static library from the <code>Prod
 inside the Library you are importing to <code>Link Binary With Libraries</code></p><p><img src="/react-native/img/AddToBuildPhases.png" alt=""></p><h3><a class="anchor" name="step-3"></a>Step 3 <a class="hash-link" href="#step-3">#</a></h3><p>Not every library will need this step, what you need to consider is:</p><p><em>Do I need to know the contents of the library at compile time?</em></p><p>What that means is, are you using this library on the native side or only in
 JavaScript? If you are only using it in JavaScript, you are good to go!</p><p>This step is not necessary for libraries that we ship with React Native with the
 exception of <code>PushNotificationIOS</code> and <code>LinkingIOS</code>.</p><p>In the case of the <code>PushNotificationIOS</code> for example, you have to call a method
-on the library from your <code>AppDelegate</code> every time a new push notifiation is
+on the library from your <code>AppDelegate</code> every time a new push notification is
 received.</p><p>For that we need to know the library&#x27;s headers. To achieve that you have to go
 to your project&#x27;s file, select <code>Build Settings</code> and search for <code>Header Search
 Paths</code>. There you should include the path to your library (if it has relevant
