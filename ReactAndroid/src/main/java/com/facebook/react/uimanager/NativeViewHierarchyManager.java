@@ -466,8 +466,15 @@ public class NativeViewHierarchyManager {
       throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
     }
 
-    // Puts x/y in outputBuffer[0]/[1]
-    v.getLocationOnScreen(outputBuffer);
+    View rootView = (View) RootViewUtil.getRootView(v);
+    rootView.getLocationInWindow(outputBuffer);
+    int rootX = outputBuffer[0];
+    int rootY = outputBuffer[1];
+
+    v.getLocationInWindow(outputBuffer);
+
+    outputBuffer[0] = outputBuffer[0] - rootX;
+    outputBuffer[1] = outputBuffer[1] - rootY;
     outputBuffer[2] = v.getWidth();
     outputBuffer[3] = v.getHeight();
   }
