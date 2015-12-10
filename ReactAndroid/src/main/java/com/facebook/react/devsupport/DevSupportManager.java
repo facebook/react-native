@@ -70,7 +70,6 @@ import com.facebook.react.modules.debug.DeveloperSettings;
  * IMPORTANT: In order for developer support to work correctly it is required that the
  * manifest of your application contain the following entries:
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
- * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
 public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
@@ -93,6 +92,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   private final @Nullable String mJSAppBundleName;
   private final File mJSBundleTempFile;
 
+  private Context mActivityContext;
   private @Nullable RedBoxDialog mRedBoxDialog;
   private @Nullable AlertDialog mDevOptionsDialog;
   private @Nullable DebugOverlayController mDebugOverlayController;
@@ -107,11 +107,13 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
   public DevSupportManager(
       Context applicationContext,
+      Context activityContext,
       ReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
       @Nullable String packagerPathForJSBundleName,
       boolean enableOnCreate) {
     mReactInstanceCommandsHandler = reactInstanceCommandsHandler;
     mApplicationContext = applicationContext;
+    mActivityContext = activityContext;
     mJSAppBundleName = packagerPathForJSBundleName;
     mDevSettings = new DevInternalSettings(applicationContext, this);
     mDevServerHelper = new DevServerHelper(mDevSettings);
@@ -215,8 +217,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
           @Override
           public void run() {
             if (mRedBoxDialog == null) {
-              mRedBoxDialog = new RedBoxDialog(mApplicationContext, DevSupportManager.this);
-              mRedBoxDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+              mRedBoxDialog = new RedBoxDialog(mActivityContext, DevSupportManager.this);
             }
             if (mRedBoxDialog.isShowing()) {
               // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
@@ -335,7 +336,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
     mDevOptionsDialog =
-        new AlertDialog.Builder(mApplicationContext)
+        new AlertDialog.Builder(mActivityContext)
             .setItems(
                 options.keySet().toArray(new String[0]),
                 new DialogInterface.OnClickListener() {
@@ -352,7 +353,6 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
               }
             })
             .create();
-    mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     mDevOptionsDialog.show();
   }
 
@@ -502,13 +502,12 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
       mRedBoxDialog.dismiss();
     }
 
-    ProgressDialog progressDialog = new ProgressDialog(mApplicationContext);
+    ProgressDialog progressDialog = new ProgressDialog(mActivityContext);
     progressDialog.setTitle(R.string.catalyst_jsload_title);
     progressDialog.setMessage(mApplicationContext.getString(
         mIsUsingJSProxy ? R.string.catalyst_remotedbg_message : R.string.catalyst_jsload_message));
     progressDialog.setIndeterminate(true);
     progressDialog.setCancelable(false);
-    progressDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     progressDialog.show();
 
     if (mIsUsingJSProxy) {
@@ -520,6 +519,10 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
   public void isPackagerRunning(DevServerHelper.PackagerStatusCallback callback) {
     mDevServerHelper.isPackagerRunning(callback);
+  }
+
+  public void setActivityContext(Context activityContext) {
+    mActivityContext = activityContext;
   }
 
   private void reloadJSInProxyMode(final ProgressDialog progressDialog) {
