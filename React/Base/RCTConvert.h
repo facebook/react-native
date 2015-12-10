@@ -94,28 +94,13 @@ typedef NSURL RCTFileURL;
               size:(id)size weight:(id)weight style:(id)style
    scaleMultiplier:(CGFloat)scaleMultiplier;
 
-typedef NSArray NSArrayArray;
 + (NSArray<NSArray *> *)NSArrayArray:(id)json;
-
-typedef NSArray NSStringArray;
 + (NSArray<NSString *> *)NSStringArray:(id)json;
-
-typedef NSArray NSStringArrayArray;
 + (NSArray<NSArray<NSString *> *> *)NSStringArrayArray:(id)json;
-
-typedef NSArray NSDictionaryArray;
 + (NSArray<NSDictionary *> *)NSDictionaryArray:(id)json;
-
-typedef NSArray NSURLArray;
 + (NSArray<NSURL *> *)NSURLArray:(id)json;
-
-typedef NSArray RCTFileURLArray;
-+ (NSArray<NSURL *> *)RCTFileURLArray:(id)json;
-
-typedef NSArray NSNumberArray;
++ (NSArray<RCTFileURL *> *)RCTFileURLArray:(id)json;
 + (NSArray<NSNumber *> *)NSNumberArray:(id)json;
-
-typedef NSArray UIColorArray;
 + (NSArray<UIColor *> *)UIColorArray:(id)json;
 
 typedef NSArray CGColorArray;
@@ -146,6 +131,18 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 @interface RCTConvert (Deprecated)
 
 /**
+ * Use lightweight generics syntax instead, e.g. NSArray<NSString *>
+ */
+typedef NSArray NSArrayArray __deprecated_msg("Use NSArray<NSArray *>");
+typedef NSArray NSStringArray __deprecated_msg("Use NSArray<NSString *>");
+typedef NSArray NSStringArrayArray __deprecated_msg("Use NSArray<NSArray<NSString *> *>");
+typedef NSArray NSDictionaryArray __deprecated_msg("Use NSArray<NSDictionary *>");
+typedef NSArray NSURLArray __deprecated_msg("Use NSArray<NSURL *>");
+typedef NSArray RCTFileURLArray __deprecated_msg("Use NSArray<RCTFileURL *>");
+typedef NSArray NSNumberArray __deprecated_msg("Use NSArray<NSNumber *>");
+typedef NSArray UIColorArray __deprecated_msg("Use NSArray<UIColor *>");
+
+/**
  * Synchronous image loading is generally a bad idea for performance reasons.
  * If you need to pass image references, try to use `RCTImageSource` and then
  * `RCTImageLoader` instead of converting directly to a UIImage.
@@ -161,6 +158,11 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
+
+/**
+ * Get the converter function for the specified type
+ */
+RCT_EXTERN SEL RCTConvertSelectorForType(NSString *type);
 
 /**
  * This macro is used for logging conversion errors. This is just used to
@@ -238,7 +240,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray<type *> *)type##Array:(id)json                      \
++ (NSArray<id> *)type##Array:(id)json                      \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

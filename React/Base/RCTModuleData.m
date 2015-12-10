@@ -122,9 +122,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         NSArray<NSString *> *entries =
           ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
         id<RCTBridgeMethod> moduleMethod =
-          [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
-                                             JSMethodName:entries[0]
-                                              moduleClass:_moduleClass];
+          [[RCTModuleMethod alloc] initWithMethodSignature:entries[1]
+                                              JSMethodName:entries[0]
+                                               moduleClass:_moduleClass];
 
         [moduleMethods addObject:moduleMethod];
       }

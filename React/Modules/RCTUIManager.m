@@ -721,11 +721,11 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
-                  moveFromIndices:(NSNumberArray *)moveFromIndices
-                  moveToIndices:(NSNumberArray *)moveToIndices
-                  addChildReactTags:(NSNumberArray *)addChildReactTags
-                  addAtIndices:(NSNumberArray *)addAtIndices
-                  removeAtIndices:(NSNumberArray *)removeAtIndices)
+                  moveFromIndices:(NSArray<NSNumber *> *)moveFromIndices
+                  moveToIndices:(NSArray<NSNumber *> *)moveToIndices
+                  addChildReactTags:(NSArray<NSNumber *> *)addChildReactTags
+                  addAtIndices:(NSArray<NSNumber *> *)addAtIndices
+                  removeAtIndices:(NSArray<NSNumber *> *)removeAtIndices)
 {
   [self _manageChildren:containerReactTag
         moveFromIndices:moveFromIndices

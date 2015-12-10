@@ -114,7 +114,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     if ([managerClass respondsToSelector:selector]) {
       NSArray<NSString *> *typeAndKeyPath =
         ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(managerClass, selector);
-      type = NSSelectorFromString([typeAndKeyPath[0] stringByAppendingString:@":"]);
+      type = RCTConvertSelectorForType(typeAndKeyPath[0]);
       keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
     } else {
       propBlock = ^(__unused id view, __unused id json) {};
