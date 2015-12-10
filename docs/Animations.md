@@ -309,7 +309,7 @@ for more information.
 familiar with. It accepts a function as its only argument and calls that
 function before the next repaint. It is an essential building block for
 animations that underlies all of the JavaScript-based animation APIs.  In
-general, you shouldn't need to call this yourself - the animation API's will
+general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
 ### react-tween-state (Not recommended - use [Animated](#animated) instead)

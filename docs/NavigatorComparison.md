@@ -41,7 +41,7 @@ between the two.
 - Development belongs to open-source community - not used by the React Native team on their apps.
   - A result of this is that there is currently a backlog of unresolved bugs, nobody who uses this has stepped up to take ownership for it yet.
 - Wraps UIKit, so it works exactly the same as it would on another native app. Lives in Objective-C and JavaScript.
-  - Consequently, you get the animations and behaviour that Apple has developed.
+  - Consequently, you get the animations and behavior that Apple has developed.
 - iOS only.
 - Includes a navigation bar by default; this navigation bar is not a React Native view component and the style can only be slightly modified.
 

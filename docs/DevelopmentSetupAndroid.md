@@ -45,7 +45,7 @@ __NOTE__: You need to restart the Command Prompt (Windows) / Terminal Emulator (
 
 ### Use gradle daemon
 
-React Native Android use [gradle](https://docs.gradle.org) as a build system. We recommend to enable gradle daemon functionailty which may result in up to 50% improvement in incremental build times for changes in java code. Learn [here](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) how to enable it for your platform.
+React Native Android use [gradle](https://docs.gradle.org) as a build system. We recommend to enable gradle daemon functionality which may result in up to 50% improvement in incremental build times for changes in java code. Learn [here](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) how to enable it for your platform.
 
 ### Configure your SDK
 

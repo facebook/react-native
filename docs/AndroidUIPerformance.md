@@ -41,7 +41,7 @@ Once the trace starts collecting, perform the animation or interaction you care 
 
 ## Reading the trace
 
-After opening the trace in your browser (preferrably Chrome), you should see something like this:
+After opening the trace in your browser (preferably Chrome), you should see something like this:
 
 ![Example](/react-native/img/SystraceExample.png)
 
