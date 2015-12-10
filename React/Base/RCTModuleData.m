@@ -14,6 +14,12 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 
+@interface RCTBridge (Private)
+
+- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData;
+
+@end
+
 @implementation RCTModuleData
 {
   NSString *_queueName;
@@ -88,6 +94,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
                   "or provide your own setter method.", self.name);
     }
   }
+  [bridge registerModuleForFrameUpdates:self];
 }
 
 - (NSString *)name

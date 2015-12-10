@@ -128,7 +128,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     dispatch_group_leave(initModulesAndLoadSource);
   }];
 
-  // Synchronously initialize all native modules that cannot be deferred
+  // Synchronously initialize all native modules that cannot be loaded lazily
   [self initModules];
 
 #if RCT_DEBUG
@@ -236,14 +236,19 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (id)moduleForName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
-  if (RCT_DEBUG) {
-    Class moduleClass = moduleData.moduleClass;
-    if (!RCTBridgeModuleClassIsRegistered(moduleClass)) {
-      RCTLogError(@"Class %@ was not exported. Did you forget to use "
-                  "RCT_EXPORT_MODULE()?", moduleClass);
-    }
-  }
   return moduleData.instance;
+}
+
+- (NSArray *)configForModuleName:(NSString *)moduleName
+{
+  RCTModuleData *moduleData = _moduleDataByName[moduleName];
+  if (!moduleData) {
+    moduleData = _moduleDataByName[[@"RCT" stringByAppendingString:moduleName]];
+  }
+  if (moduleData) {
+    return moduleData.config;
+  }
+  return (id)kCFNull;
 }
 
 - (void)initModules
@@ -344,21 +349,29 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   [_javaScriptExecutor setUp];
 }
 
+- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData
+{
+  if ([moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
+    [_frameUpdateObservers addObject:moduleData];
+    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
+    __weak typeof(self) weakSelf = self;
+    __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
+    observer.pauseCallback = ^{
+      [weakJavaScriptExecutor executeBlockOnJavaScriptQueue:^{
+        [weakSelf updateJSDisplayLinkState];
+      }];
+    };
+  }
+}
+
 - (NSString *)moduleConfig
 {
   NSMutableArray<NSArray *> *config = [NSMutableArray new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    [config addObject:RCTNullIfNil(moduleData.config)];
-    if ([moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
-      [_frameUpdateObservers addObject:moduleData];
-      id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-      __weak typeof(self) weakSelf = self;
-      __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
-      observer.pauseCallback = ^{
-        [weakJavaScriptExecutor executeBlockOnJavaScriptQueue:^{
-          [weakSelf updateJSDisplayLinkState];
-        }];
-      };
+    if (self.executorClass == [RCTContextExecutor class]) {
+      [config addObject:@[moduleData.name]];
+    } else {
+      [config addObject:RCTNullIfNil(moduleData.config)];
     }
   }
 
