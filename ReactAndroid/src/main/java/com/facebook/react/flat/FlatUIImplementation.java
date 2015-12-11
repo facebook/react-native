@@ -9,20 +9,16 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-import com.facebook.csslayout.CSSNode;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIImplementation;
-import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -45,6 +41,7 @@ public class FlatUIImplementation extends UIImplementation {
     viewManagers.add(new RCTTextManager());
     viewManagers.add(new RCTRawTextManager());
     viewManagers.add(new RCTVirtualTextManager());
+    TypefaceCache.setAssetManager(reactContext.getAssets());
 
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
     FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(

@@ -9,9 +9,14 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import java.util.HashMap;
 
+import android.content.res.AssetManager;
 import android.graphics.Typeface;
+
+import com.facebook.infer.annotation.Assertions;
 
 /**
  * TypefaceCache provides methods to resolve typeface from font family, or existing typeface
@@ -24,9 +29,20 @@ import android.graphics.Typeface;
   private static final HashMap<String, Typeface[]> FONTFAMILY_CACHE = new HashMap<>();
   private static final HashMap<Typeface, Typeface[]> TYPEFACE_CACHE = new HashMap<>();
 
-  /**
-   * Returns a Typeface for a given a FontFamily and style.
-   */
+  private static final String[] EXTENSIONS = {
+      "",
+      "_bold",
+      "_italic",
+      "_bold_italic"};
+  private static final String[] FILE_EXTENSIONS = {".ttf", ".otf"};
+  private static final String FONTS_ASSET_PATH = "fonts/";
+
+  @Nullable private static AssetManager sAssetManager = null;
+
+  public static void setAssetManager(AssetManager assetManager) {
+    sAssetManager = assetManager;
+  }
+
   public static Typeface getTypeface(String fontFamily, int style) {
     Typeface[] cache = FONTFAMILY_CACHE.get(fontFamily);
     if (cache == null) {
@@ -38,10 +54,30 @@ import android.graphics.Typeface;
       return cache[style];
     }
 
-    Typeface typeface = Typeface.create(fontFamily, style);
+    Typeface typeface = createTypeface(fontFamily, style);
     cache[style] = typeface;
     TYPEFACE_CACHE.put(typeface, cache);
     return typeface;
+  }
+
+  private static Typeface createTypeface(String fontFamilyName, int style) {
+    String extension = EXTENSIONS[style];
+    StringBuilder fileNameBuffer = new StringBuilder(32)
+        .append(FONTS_ASSET_PATH)
+        .append(fontFamilyName)
+        .append(extension);
+    int length = fileNameBuffer.length();
+    for (String fileExtension : FILE_EXTENSIONS) {
+      String fileName = fileNameBuffer.append(fileExtension).toString();
+      try {
+        return Typeface.createFromAsset(sAssetManager, fileName);
+      } catch (RuntimeException e) {
+        // unfortunately Typeface.createFromAsset throws an exception instead of returning null
+        // if the typeface doesn't exist
+        fileNameBuffer.setLength(length);
+      }
+    }
+    return Assertions.assumeNotNull(Typeface.create(fontFamilyName, style));
   }
 
   /**
