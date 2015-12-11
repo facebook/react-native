@@ -61,7 +61,7 @@ Make absolutely sure basic iOS and Android workflow works on master:
 
 ## Do a release
 
-Publish to Maven Central (NOTE we could get rid of this whole section publishing binaries to npm instead):
+Publish to Maven Central (Note: We could get rid of this whole section publishing binaries to npm instead):
   - Log into Sonatype and go to [Staging upload](https://oss.sonatype.org/#staging-upload). You'll need to get permissions for this by filing a ticket explaining you're a core contributor to React Native. [Example ticket](https://issues.sonatype.org/browse/OSSRH-11885).
   - Select Artifact(s) with a POM (to publish to a local Maven repo for testing run `./gradlew :ReactAndroid:installArchives`)
   - Add all files: .aar, sources jar, javadoc jar, .asc for everything (including the POM file)
