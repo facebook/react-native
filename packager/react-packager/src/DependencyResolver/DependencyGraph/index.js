@@ -18,7 +18,7 @@ const getPontentialPlatformExt = require('../../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 const util = require('util');
-const Helpers = require('./Helpers');
+const DependencyGraphHelpers = require('./DependencyGraphHelpers');
 const ResolutionRequest = require('./ResolutionRequest');
 const ResolutionResponse = require('./ResolutionResponse');
 const HasteMap = require('./HasteMap');
@@ -56,8 +56,6 @@ const validateOpts = declareOpts({
       // should work after this release and we can
       // remove it from here.
       'parse',
-      // Hack - how to handle properly?
-      'even-client',
     ],
   },
   platforms: {
@@ -74,7 +72,7 @@ class DependencyGraph {
   constructor(options) {
     this._opts = validateOpts(options);
     this._cache = this._opts.cache;
-    this._helpers = new Helpers(this._opts);
+    this._helpers = new DependencyGraphHelpers(this._opts);
     this.load().catch((err) => {
       // This only happens at initialization. Live errors are easier to recover from.
       console.error('Error building DepdendencyGraph:\n', err.stack);
@@ -109,7 +107,7 @@ class DependencyGraph {
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
-    this._moduleCache = new ModuleCache(this._fastfs, this._cache);
+    this._moduleCache = new ModuleCache(this._fastfs, this._cache, this._opts.extractRequires, this._helpers);
 
     this._hasteMap = new HasteMap({
       fastfs: this._fastfs,

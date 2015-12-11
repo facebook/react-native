@@ -164,6 +164,7 @@ describe('Bundler', function() {
 
         var imgModule_DEPRECATED = {
           __packager_asset: true,
+          isStatic: true,
           path: '/root/img/img.png',
           uri: 'img',
           width: 25,

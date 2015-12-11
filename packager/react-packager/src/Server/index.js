@@ -388,9 +388,7 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' ||
-        error.type === 'NotFoundError' ||
-        error.type === 'UnableToResolveError') {
+    if (error.type === 'TransformError' || error.type === 'NotFoundError') {
       error.errors = [{
         description: error.description,
         filename: error.filename,

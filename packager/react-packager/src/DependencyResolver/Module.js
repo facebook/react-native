@@ -15,7 +15,7 @@ const replacePatterns = require('./replacePatterns');
 
 class Module {
 
-  constructor(file, fastfs, moduleCache, cache) {
+  constructor({ file, fastfs, moduleCache, cache, extractor, depGraphHelpers }) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -26,6 +26,8 @@ class Module {
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
     this._cache = cache;
+    this._extractor = extractor;
+    this._depGraphHelpers = depGraphHelpers;
   }
 
   isHaste() {
@@ -85,7 +87,8 @@ class Module {
       this._reading = this._fastfs.readFile(this.path).then(content => {
         const data = {};
         const moduleDocBlock = docblock.parseAsObject(content);
-        if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
+        if (!this._depGraphHelpers.isNodeModulesDir(this.path) &&
+            (moduleDocBlock.providesModule || moduleDocBlock.provides)) {
           data.id = /^(\S*)/.exec(
             moduleDocBlock.providesModule || moduleDocBlock.provides
           )[1];
@@ -159,14 +162,10 @@ function extractRequires(code /*: string*/) /*: Array<string>*/ {
       deps.sync.push(dep);
       return match;
     })
-    .replace(replacePatterns.EXPORT_RE, (match, pre, quot, dep, post) => {
-      deps.sync.push(dep);
-      return match;
-    })
     // Parse the sync dependencies this module has. When the module is
     // required, all it's sync dependencies will be loaded into memory.
     // Sync dependencies can be defined either using `require` or the ES6
-    // `import` or `export` syntaxes:
+    // `import` syntax:
     //   var dep1 = require('dep1');
     .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
       deps.sync.push(dep);

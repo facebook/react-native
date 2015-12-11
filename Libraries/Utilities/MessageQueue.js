@@ -13,15 +13,10 @@
 
 'use strict';
 
-console.log("123")
 let BridgeProfiling = require('BridgeProfiling');
-console.log("124")
 let ErrorUtils = require('ErrorUtils');
-console.log("125")
 let JSTimersExecution = require('JSTimersExecution');
-console.log("126")
 let ReactUpdates = require('ReactUpdates');
-console.log("127")
 
 let invariant = require('invariant');
 let keyMirror = require('keyMirror');

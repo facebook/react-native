@@ -5,7 +5,7 @@ const Module = require('./Module');
 
 class Polyfill extends Module {
   constructor({ path, id, dependencies }) {
-    super(path);
+    super({ file: path });
     this._id = id;
     this._dependencies = dependencies;
   }

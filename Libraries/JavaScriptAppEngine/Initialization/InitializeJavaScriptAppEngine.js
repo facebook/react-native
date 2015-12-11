@@ -22,17 +22,11 @@
 /* eslint strict: 0 */
 /* globals GLOBAL: true, window: true */
 
-console.log("A")
-
 // Just to make sure the JS gets packaged up.
 require('RCTDebugComponentOwnership');
-console.log("b")
 require('RCTDeviceEventEmitter');
-console.log("c")
 require('PerformanceLogger');
-console.log("d")
 require('regenerator/runtime');
-console.log("e")
 
 if (typeof GLOBAL === 'undefined') {
   GLOBAL = this;

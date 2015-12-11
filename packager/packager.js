@@ -20,10 +20,10 @@ const isAbsolutePath = require('absolute-path');
 
 const blacklist = require('./blacklist.js');
 const chalk = require('chalk');
-const checkNodeVersion = require('../private-cli/src/server/checkNodeVersion');
+const checkNodeVersion = require('./checkNodeVersion');
 const cpuProfilerMiddleware = require('./cpuProfilerMiddleware');
 const connect = require('connect');
-const formatBanner = require('../private-cli/src/server/formatBanner');
+const formatBanner = require('./formatBanner');
 const getDevToolsMiddleware = require('./getDevToolsMiddleware');
 const loadRawBodyMiddleware = require('./loadRawBodyMiddleware');
 const openStackFrameInEditorMiddleware = require('./openStackFrameInEditorMiddleware');
@@ -41,10 +41,6 @@ var options = parseCommandLine([{
   command: 'root',
   type: 'string',
   description: 'add another root(s) to be used by the packager in this project',
-}, {
-  command: 'projectRoots',
-  type: 'string',
-  description: 'override the root(s) to be used by the packager',
 }, {
   command: 'assetRoots',
   type: 'string',
@@ -67,10 +63,6 @@ var options = parseCommandLine([{
 }, {
   command: 'reset-cache',
   description: 'Removes cached files',
-  default: false,
-}, {
-  command: 'verbose',
-  description: 'Enables logging',
   default: false,
 }]);
 
@@ -169,7 +161,6 @@ var server = runServer(options, function() {
 });
 
 webSocketProxy.attachToServer(server, '/debugger-proxy');
-webSocketProxy.attachToServer(server, '/devtools');
 
 function getAppMiddleware(options) {
   var transformerPath = options.transformer;
@@ -187,14 +178,13 @@ function getAppMiddleware(options) {
   return ReactPackager.middleware({
     nonPersistent: options.nonPersistent,
     projectRoots: options.projectRoots,
-    blacklistRE: blacklist(options.platform),
+    blacklistRE: blacklist(),
     cacheVersion: '3',
     transformModulePath: transformerPath,
     assetRoots: options.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
     resetCache: options.resetCache || options['reset-cache'],
     polyfillModuleNames: polyfillModuleNames,
-    verbose: options.verbose,
   });
 }
 

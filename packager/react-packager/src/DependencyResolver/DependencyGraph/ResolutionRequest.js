@@ -65,8 +65,7 @@ class ResolutionRequest {
     };
 
     const forgive = (error) => {
-      if (error.type !== 'UnableToResolveError' ||
-        this._platform === 'ios') {
+      if (error.type !== 'UnableToResolveError') {
         throw error;
       }
 
@@ -93,7 +92,7 @@ class ResolutionRequest {
     return this._resolveNodeDependency(fromModule, toModuleName)
       .then(
         cacheResult,
-        forgive,
+        forgive
       );
   }
 
@@ -194,20 +193,12 @@ class ResolutionRequest {
           path.relative(packageName, realModuleName)
         );
         return this._tryResolve(
-          () => this._loadAsFile(
-            potentialModulePath,
-            fromModule,
-            toModuleName,
-          ),
-          () => this._loadAsDir(potentialModulePath, fromModule, toModuleName),
+          () => this._loadAsFile(potentialModulePath),
+          () => this._loadAsDir(potentialModulePath),
         );
       }
 
-      throw new UnableToResolveError(
-        fromModule,
-        toModuleName,
-        'Unable to resolve dependency',
-      );
+      throw new UnableToResolveError('Unable to resolve dependency');
     });
   }
 
@@ -227,8 +218,8 @@ class ResolutionRequest {
               path.join(path.dirname(fromModule.path), toModuleName);
       return this._redirectRequire(fromModule, potentialModulePath).then(
         realModuleName => this._tryResolve(
-          () => this._loadAsFile(realModuleName, fromModule, toModuleName),
-          () => this._loadAsDir(realModuleName, fromModule, toModuleName)
+          () => this._loadAsFile(realModuleName),
+          () => this._loadAsDir(realModuleName)
         )
       );
     } else {
@@ -243,18 +234,14 @@ class ResolutionRequest {
             );
           }
 
-          let p = Promise.reject(new UnableToResolveError(
-            fromModule,
-            toModuleName,
-            'Node module not found',
-          ));
+          let p = Promise.reject(new UnableToResolveError('Node module not found'));
           searchQueue.forEach(potentialModulePath => {
             p = this._tryResolve(
               () => this._tryResolve(
                 () => p,
-                () => this._loadAsFile(potentialModulePath, fromModule, toModuleName),
+                () => this._loadAsFile(potentialModulePath),
               ),
-              () => this._loadAsDir(potentialModulePath, fromModule, toModuleName)
+              () => this._loadAsDir(potentialModulePath)
             );
           });
 
@@ -263,16 +250,12 @@ class ResolutionRequest {
     }
   }
 
-  _loadAsFile(potentialModulePath, fromModule, toModule) {
+  _loadAsFile(potentialModulePath) {
     return Promise.resolve().then(() => {
       if (this._helpers.isAssetFile(potentialModulePath)) {
         const dirname = path.dirname(potentialModulePath);
         if (!this._fastfs.dirExists(dirname)) {
-          throw new UnableToResolveError(
-            fromModule,
-            toModule,
-            `Directory ${dirname} doesn't exist`,
-          );
+          throw new UnableToResolveError(`Directory ${dirname} doesn't exist`);
         }
 
         const {name, type} = getAssetDataFromName(potentialModulePath);
@@ -306,25 +289,17 @@ class ResolutionRequest {
       } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
         file = potentialModulePath + '.json';
       } else {
-        throw new UnableToResolveError(
-          fromModule,
-          toModule,
-          `File ${potentialModulePath} doesnt exist`,
-        );
+        throw new UnableToResolveError(`File ${potentialModulePath} doesnt exist`);
       }
 
       return this._moduleCache.getModule(file);
     });
   }
 
-  _loadAsDir(potentialDirPath, fromModule, toModule) {
+  _loadAsDir(potentialDirPath) {
     return Promise.resolve().then(() => {
       if (!this._fastfs.dirExists(potentialDirPath)) {
-        throw new UnableToResolveError(
-          fromModule,
-          toModule,
-          `Invalid directory ${potentialDirPath}`,
-        );
+        throw new UnableToResolveError(`Invalid directory ${potentialDirPath}`);
       }
 
       const packageJsonPath = path.join(potentialDirPath, 'package.json');
@@ -332,17 +307,13 @@ class ResolutionRequest {
         return this._moduleCache.getPackage(packageJsonPath)
           .getMain().then(
             (main) => this._tryResolve(
-              () => this._loadAsFile(main, fromModule, toModule),
-              () => this._loadAsDir(main, fromModule, toModule)
+              () => this._loadAsFile(main),
+              () => this._loadAsDir(main)
             )
           );
       }
 
-      return this._loadAsFile(
-        path.join(potentialDirPath, 'index'),
-        fromModule,
-        toModule,
-      );
+      return this._loadAsFile(path.join(potentialDirPath, 'index'));
     });
   }
 
@@ -357,19 +328,16 @@ function resolutionHash(modulePath, depName) {
 }
 
 
-function UnableToResolveError(fromModule, toModule, message) {
+function UnableToResolveError() {
   Error.call(this);
   Error.captureStackTrace(this, this.constructor);
-  this.message = util.format(
-    'Unable to resolve module %s from %s: %s',
-    toModule,
-    fromModule.path,
-    message,
-  );
+  var msg = util.format.apply(util, arguments);
+  this.message = msg;
   this.type = this.name = 'UnableToResolveError';
 }
 
 util.inherits(UnableToResolveError, Error);
+
 
 function normalizePath(modulePath) {
   if (path.sep === '/') {
@@ -380,5 +348,6 @@ function normalizePath(modulePath) {
 
   return modulePath.replace(/\/$/, '');
 }
+
 
 module.exports = ResolutionRequest;
