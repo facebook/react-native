@@ -13,7 +13,7 @@
 
 'use strict';
 
-let BridgeProfiling = require('BridgeProfiling');
+let Systrace = require('Systrace');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
 
@@ -114,9 +114,9 @@ class MessageQueue {
    */
 
   __callImmediates() {
-    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
+    Systrace.beginEvent('JSTimersExecution.callImmediates()');
     guard(() => JSTimersExecution.callImmediates());
-    BridgeProfiling.profileEnd();
+    Systrace.endEvent();
   }
 
   __nativeCall(module, method, params, onFail, onSucc) {
@@ -154,7 +154,7 @@ class MessageQueue {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
     }
-    BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
+    Systrace.beginEvent(() => `${module}.${method}(${stringifySafe(args)})`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
@@ -165,11 +165,11 @@ class MessageQueue {
       module
     );
     moduleMethods[method].apply(moduleMethods, args);
-    BridgeProfiling.profileEnd();
+    Systrace.endEvent();
   }
 
   __invokeCallback(cbID, args) {
-    BridgeProfiling.profile(
+    Systrace.beginEvent(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
     this._lastFlush = new Date().getTime();
     let callback = this._callbacks[cbID];
@@ -188,7 +188,7 @@ class MessageQueue {
     this._callbacks[cbID & ~1] = null;
     this._callbacks[cbID |  1] = null;
     callback.apply(null, args);
-    BridgeProfiling.profileEnd();
+    Systrace.endEvent();
   }
 
   /**
@@ -244,7 +244,7 @@ class MessageQueue {
       this._genLookup(config, moduleID, moduleTable, methodTable);
     });
   }
-  
+
   _genLookup(config, moduleID, moduleTable, methodTable) {
     if (!config) {
       return;
@@ -287,15 +287,15 @@ class MessageQueue {
       module[methodName] = this._genMethod(moduleID, methodID, methodType);
     });
     Object.assign(module, constants);
-    
+
     if (!constants && !methods && !asyncMethods) {
       module.moduleID = moduleID;
     }
-    
+
     this.RemoteModules[moduleName] = module;
     return module;
   }
-  
+
   _genMethod(module, method, type) {
     let fn = null;
     let self = this;

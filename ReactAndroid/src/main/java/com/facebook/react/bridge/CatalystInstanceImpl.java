@@ -469,12 +469,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private class JSProfilerTraceListener implements TraceListener {
     @Override
     public void onTraceStarted() {
-      getJSModule(BridgeProfiling.class).setEnabled(true);
+      getJSModule(com.facebook.react.bridge.Systrace.class).setEnabled(true);
     }
 
     @Override
     public void onTraceStopped() {
-      getJSModule(BridgeProfiling.class).setEnabled(false);
+      getJSModule(com.facebook.react.bridge.Systrace.class).setEnabled(false);
     }
   }
 
