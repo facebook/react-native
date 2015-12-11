@@ -1362,19 +1362,19 @@ describe('DependencyGraph', function() {
       });
     });
 
-    testBrowserField('browser')
-    testBrowserField('react-native')
+    testBrowserField('browser');
+    testBrowserField('react-native');
 
-    function replaceBrowserField (json, fieldName) {
+    function replaceBrowserField(json, fieldName) {
       if (fieldName !== 'browser') {
-        json[fieldName] = json.browser
-        delete json.browser
+        json[fieldName] = json.browser;
+        delete json.browser;
       }
 
-      return json
+      return json;
     }
 
-    function testBrowserField (fieldName) {
+    function testBrowserField(fieldName) {
       pit('should support simple browser field in packages ("' + fieldName + '")', function() {
         var root = '/root';
         fs.__setMockFilesystem({
@@ -1393,8 +1393,8 @@ describe('DependencyGraph', function() {
               }, fieldName)),
               'main.js': 'some other code',
               'client.js': 'some code',
-            }
-          }
+            },
+          },
         });
 
         var dgraph = new DependencyGraph({
@@ -1448,8 +1448,8 @@ describe('DependencyGraph', function() {
               }, fieldName)),
               'main.js': 'some other code',
               'client.js': 'some code',
-            }
-          }
+            },
+          },
         });
 
         var dgraph = new DependencyGraph({
@@ -1503,8 +1503,8 @@ describe('DependencyGraph', function() {
               }, fieldName)),
               'main.js': 'some other code',
               'client.js': 'some code',
-            }
-          }
+            },
+          },
         });
 
         var dgraph = new DependencyGraph({
@@ -1559,8 +1559,8 @@ describe('DependencyGraph', function() {
               }, fieldName)),
               'main.js': 'some other code',
               'client.js': 'some code',
-            }
-          }
+            },
+          },
         });
 
         var dgraph = new DependencyGraph({
@@ -1630,15 +1630,15 @@ describe('DependencyGraph', function() {
               },
               'hello.js': 'hello',
               'bye.js': 'bye',
-            }
-          }
+            },
+          },
         });
 
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        const dgraph = new DependencyGraph({
+          ...defaults,
+          roots: [root],
+        });
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
           expect(deps)
             .toEqual([
               { id: 'index',
@@ -1716,7 +1716,7 @@ describe('DependencyGraph', function() {
                 name: 'aPackage',
                 browser: {
                   'node-package': 'browser-package',
-                }
+                },
               }, fieldName)),
               'index.js': 'require("node-package")',
               'node-package': {
@@ -1731,8 +1731,8 @@ describe('DependencyGraph', function() {
                 }),
                 'index.js': 'some browser code',
               },
-            }
-          }
+            },
+          },
         });
 
         var dgraph = new DependencyGraph({
@@ -1788,7 +1788,7 @@ describe('DependencyGraph', function() {
                 name: 'aPackage',
                 browser: {
                   'node-package': 'browser-package',
-                }
+                },
               }, fieldName)),
               'index.js': 'require("node-package")',
               'node-package': {
@@ -1803,8 +1803,8 @@ describe('DependencyGraph', function() {
                 }),
                 'index.js': 'some browser code',
               },
-            }
-          }
+            },
+          },
         });
 
         var dgraph = new DependencyGraph({
@@ -1861,13 +1861,13 @@ describe('DependencyGraph', function() {
               name: 'aPackage',
               'react-native': {
                 'node-package': 'rn-package',
-              }
+              },
             }),
             'index.js': 'require("node-package")',
             'node_modules': {
               'node-package': {
                 'package.json': JSON.stringify({
-                  'name': 'node-package'
+                  'name': 'node-package',
                 }),
                 'index.js': 'some node code',
               },
@@ -1875,8 +1875,8 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'rn-package',
                   browser: {
-                    'nested-package': 'nested-browser-package'
-                  }
+                    'nested-package': 'nested-browser-package',
+                  },
                 }),
                 'index.js': 'require("nested-package")',
               },
@@ -1884,11 +1884,11 @@ describe('DependencyGraph', function() {
                 'package.json': JSON.stringify({
                   'name': 'nested-browser-package',
                 }),
-                'index.js': 'some code'
-              }
-            }
-          }
-        }
+                'index.js': 'some code',
+              },
+            },
+          },
+        },
       });
 
       var dgraph = new DependencyGraph({

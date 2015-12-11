@@ -15,7 +15,7 @@ class Package {
 
   getMain() {
     return this._read().then(json => {
-      var replacements = getReplacements(json)
+      var replacements = getReplacements(json);
       if (typeof replacements === 'string') {
         return path.join(this.root, replacements);
       }
