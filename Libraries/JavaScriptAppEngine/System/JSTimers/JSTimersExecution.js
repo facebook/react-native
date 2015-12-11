@@ -14,7 +14,7 @@ var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var performanceNow = require('performanceNow');
 var warning = require('warning');
-var BridgeProfiling = require('BridgeProfiling');
+var Systrace = require('Systrace');
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -113,7 +113,7 @@ var JSTimersExecution = {
    * more immediates are queued up (can be used as a condition a while loop).
    */
   callImmediatesPass: function() {
-    BridgeProfiling.profile('JSTimersExecution.callImmediatesPass()');
+    Systrace.beginEvent('JSTimersExecution.callImmediatesPass()');
 
     // The main reason to extract a single pass is so that we can track
     // in the system trace
@@ -128,7 +128,7 @@ var JSTimersExecution = {
       }
     }
 
-    BridgeProfiling.profileEnd();
+    Systrace.endEvent();
 
     return JSTimersExecution.immediates.length > 0;
   },

@@ -19,10 +19,10 @@ const BatchedBridge = new MessageQueue(
 
 // TODO: Move these around to solve the cycle in a cleaner way.
 
-const BridgeProfiling = require('BridgeProfiling');
+const Systrace = require('Systrace');
 const JSTimersExecution = require('JSTimersExecution');
 
-BatchedBridge.registerCallableModule('BridgeProfiling', BridgeProfiling);
+BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
 
 // Wire up the batched bridge on the global object so that we can call into it.
