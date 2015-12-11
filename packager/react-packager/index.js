@@ -12,12 +12,13 @@ require('../babelRegisterOnly')([/react-packager\/src/]);
 
 useGracefulFs();
 
+var omit = require('underscore').omit;
 var Activity = require('./src/Activity');
 var Server = require('./src/Server');
 var SocketInterface = require('./src/SocketInterface');
 
 exports.middleware = function(options) {
-  var server = new Server(options);
+  var server = new Server(omit(options, ['verbose']));
   return server.processRequest.bind(server);
 };
 
@@ -73,5 +74,5 @@ function createServer(options) {
     options.nonPersistent = true;
   }
 
-  return new Server(options);
+  return new Server(omit(options, ['verbose']));
 }

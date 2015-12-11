@@ -21,8 +21,14 @@ const ReactPackager = require('../../../packager/react-packager');
 const statusPageMiddleware = require('../../../packager/statusPageMiddleware.js');
 const systraceProfileMiddleware = require('../../../packager/systraceProfileMiddleware.js');
 
+function cors(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+}
+
 function runServer(args, config, readyCallback) {
   const app = connect()
+    .use(cors)
     .use(loadRawBodyMiddleware)
     .use(getDevToolsMiddleware(args))
     .use(openStackFrameInEditorMiddleware)
@@ -48,6 +54,13 @@ function getAppMiddleware(args, config) {
     transformerPath = path.resolve(process.cwd(), transformerPath);
   }
 
+  var polyfillModuleNames = [];
+  if (args.platform != 'web') {
+    polyfillModuleNames.push(require.resolve(
+      '../../../Libraries/JavaScriptAppEngine/polyfills/document.js'
+    ));
+  }
+
   return ReactPackager.middleware({
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
@@ -57,11 +70,7 @@ function getAppMiddleware(args, config) {
     assetRoots: args.assetRoots,
     assetExts: ['png', 'jpeg', 'jpg'],
     resetCache: args.resetCache || args['reset-cache'],
-    polyfillModuleNames: [
-      require.resolve(
-        '../../../Libraries/JavaScriptAppEngine/polyfills/document.js'
-      ),
-    ],
+    polyfillModuleNames: polyfillModuleNames,
     verbose: args.verbose,
   });
 }
