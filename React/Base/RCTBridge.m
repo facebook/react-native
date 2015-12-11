@@ -36,7 +36,11 @@ NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 @interface RCTBridge ()
 
-@property (nonatomic, strong) RCTBatchedBridge *batchedBridge;
+// This property is mostly used on the main thread, but may be touched from
+// a background thread if the RCTBridge happens to deallocate on a background
+// thread. Therefore, we want all writes to it to be seen atomically.
+@property (atomic, strong) RCTBatchedBridge *batchedBridge;
+
 @property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 @end
@@ -232,12 +236,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray<Class> *)moduleClasses
 {
-  return _batchedBridge.moduleClasses;
+  return self.batchedBridge.moduleClasses;
 }
 
 - (id)moduleForName:(NSString *)moduleName
 {
-  return [_batchedBridge moduleForName:moduleName];
+  return [self.batchedBridge moduleForName:moduleName];
 }
 
 - (id)moduleForClass:(Class)moduleClass
@@ -270,30 +274,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
+  self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
 - (BOOL)isLoading
 {
-  return _batchedBridge.loading;
+  return self.batchedBridge.loading;
 }
 
 - (BOOL)isValid
 {
-  return _batchedBridge.valid;
+  return self.batchedBridge.valid;
 }
 
 - (void)invalidate
 {
-  RCTAssertMainThread();
+  RCTBatchedBridge *batchedBridge = self.batchedBridge;
+  self.batchedBridge = nil;
 
-  [_batchedBridge invalidate];
-  _batchedBridge = nil;
+  if (batchedBridge) {
+    RCTExecuteOnMainThread(^{
+      [batchedBridge invalidate];
+    }, NO);
+  }
 }
 
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
-  [_batchedBridge logMessage:message level:level];
+  [self.batchedBridge logMessage:message level:level];
 }
 
 
@@ -321,7 +329,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSDictionary *)modules
 {
-  return _batchedBridge.modules;
+  return self.batchedBridge.modules;
 }
 
 @end
