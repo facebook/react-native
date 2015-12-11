@@ -210,9 +210,11 @@ var ScrollView = React.createClass({
      * (as a time interval in ms). A lower number yields better accuracy for code
      * that is tracking the scroll position, but can lead to scroll performance
      * problems due to the volume of information being send over the bridge.
-     * You should NOT set this value below 16ms as you will be wasting frames.
-     * The default value is zero, which means the scroll event will be sent
-     * only once each time the view is scrolled.
+     * You will not notice a difference between values set between 1-16 as the
+     * JS run loop is synced to the screen refresh rate. If you do not need precise
+     * scroll position tracking, set this value higher to limit the information
+     * being sent across the bridge. The default value is zero, which results in
+     * the scroll event being sent only once each time the view is scrolled.
      * @platform ios
      */
     scrollEventThrottle: PropTypes.number,
