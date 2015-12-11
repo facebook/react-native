@@ -163,6 +163,12 @@ var apps = [
     author: 'Peach Labs',
   },
   {
+    name: 'Eat or Not',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple5/v4/51/be/34/51be3462-b015-ebf2-11c5-69165b37fadc/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
+    author: 'Sharath Prabhal',
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
