@@ -152,10 +152,10 @@ public class NativeModuleRegistry {
         CatalystInstance catalystInstance,
         int methodId,
         ReadableNativeArray parameters) {
-      MethodRegistration method = this.methods.get(methodId);
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, method.tracingName);
+      MethodRegistration methodRegistration = this.methods.get(methodId);
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, methodRegistration.tracingName);
       try {
-        this.methods.get(methodId).method.invoke(catalystInstance, parameters);
+        methodRegistration.method.invoke(catalystInstance, parameters);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
