@@ -1,4 +1,11 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 
 package com.facebook.react.modules.netinfo;
 
@@ -10,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.net.ConnectivityManagerCompat;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -17,25 +25,30 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.common.ReactConstants;
 
 import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
  * Module that monitors and provides information about the connectivity state of the device.
  */
-public class ConnectivityModule extends ReactContextBaseJavaModule
+public class NetInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener {
 
   private static final String CONNECTION_TYPE_NONE = "NONE";
   private static final String CONNECTION_TYPE_UNKNOWN = "UNKNOWN";
+  private static final String MISSING_PERMISSION_MESSAGE =
+      "To use NetInfo on Android, add the following to your AndroidManifest.xml:\n" +
+      "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />";
 
   private final ConnectivityManager mConnectivityManager;
   private final ConnectivityManagerCompat mConnectivityManagerCompat;
   private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
+  private boolean mNoNetworkPermission = false;
 
   private String mConnectivity = "";
 
-  public ConnectivityModule(ReactApplicationContext reactContext) {
+  public NetInfoModule(ReactApplicationContext reactContext) {
     super(reactContext);
     mConnectivityManager =
         (ConnectivityManager) reactContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -69,11 +82,23 @@ public class ConnectivityModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void getCurrentConnectivity(Callback successCallback, Callback errorCallback) {
+    if (mNoNetworkPermission) {
+      if (errorCallback == null) {
+        FLog.e(ReactConstants.TAG, MISSING_PERMISSION_MESSAGE);
+        return;
+      }
+      errorCallback.invoke(MISSING_PERMISSION_MESSAGE);
+      return;
+    }
     successCallback.invoke(createConnectivityEventMap());
   }
 
   @ReactMethod
   public void isConnectionMetered(Callback successCallback) {
+    if (mNoNetworkPermission) {
+      FLog.e(ReactConstants.TAG, MISSING_PERMISSION_MESSAGE);
+      return;
+    }
     successCallback.invoke(mConnectivityManagerCompat.isActiveNetworkMetered(mConnectivityManager));
   }
 
@@ -98,15 +123,21 @@ public class ConnectivityModule extends ReactContextBaseJavaModule
   }
 
   private String getCurrentConnectionType() {
-    NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
-    if (networkInfo == null || !networkInfo.isConnected()) {
-      return CONNECTION_TYPE_NONE;
-    } else if (ConnectivityManager.isNetworkTypeValid(networkInfo.getType())) {
-      return networkInfo.getTypeName().toUpperCase();
-    } else {
+    try {
+      NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
+      if (networkInfo == null || !networkInfo.isConnected()) {
+        return CONNECTION_TYPE_NONE;
+      } else if (ConnectivityManager.isNetworkTypeValid(networkInfo.getType())) {
+        return networkInfo.getTypeName().toUpperCase();
+      } else {
+        return CONNECTION_TYPE_UNKNOWN;
+      }
+    } catch (SecurityException e) {
+      mNoNetworkPermission = true;
       return CONNECTION_TYPE_UNKNOWN;
     }
   }
+
   private void sendConnectivityChangedEvent() {
     getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
         .emit("networkStatusDidChange", createConnectivityEventMap());
