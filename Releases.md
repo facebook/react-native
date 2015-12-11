@@ -14,7 +14,7 @@ Future releases:
 
 ## Cut a release branch
 
-Note: replace 0.18 in all the commands below with the version you're releasing :)
+Note: Make sure you replace 0.18 in all the commands below with the version you're releasing :) For example, copy-paste all of this into an editor and replace 0.18.
 
 #### Check that everything works
 
