@@ -163,6 +163,11 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
  */
 - (void)reload;
 
+/**
+ * Says whether bridge has started recieving calls from javascript.
+ */
+- (BOOL)isBatchActive;
+
 @end
 
 /**

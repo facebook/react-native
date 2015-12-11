@@ -287,6 +287,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return self.batchedBridge.valid;
 }
 
+- (BOOL)isBatchActive
+{
+  return [_batchedBridge isBatchActive];
+}
+
 - (void)invalidate
 {
   RCTBatchedBridge *batchedBridge = self.batchedBridge;
