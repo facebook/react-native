@@ -982,6 +982,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }];
 }
 
+- (BOOL)isBatchActive
+{
+  return _wasBatchActive;
+}
+
 @end
 
 @implementation RCTBatchedBridge(Deprecated)

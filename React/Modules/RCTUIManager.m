@@ -889,6 +889,15 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
 
 - (void)batchDidComplete
 {
+  [self _layoutAndMount];
+}
+
+/**
+ * Sets up animations, computes layout, creates UI mounting blocks for computed layout,
+ * runs these blocks and all other already existing blocks.
+ */
+- (void)_layoutAndMount
+{
   // Gather blocks to be executed now that all view hierarchy manipulations have
   // been completed (note that these may still take place before layout has finished)
   for (RCTComponentData *componentData in _componentDataByName.allValues) {
@@ -959,6 +968,15 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
         @"count": @(previousPendingUIBlocks.count),
       });
     });
+  }
+}
+
+- (void)setNeedsLayout
+{
+  // If there is an active batch layout will happen when batch finished, so we will wait for that.
+  // Otherwise we immidiately trigger layout.
+  if (![_bridge isBatchActive]) {
+    [self _layoutAndMount];
   }
 }
 
