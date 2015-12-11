@@ -58,17 +58,16 @@ RCT_EXPORT_MODULE()
 
   // Note: PhotoKit defaults to a deliveryMode of PHImageRequestOptionsDeliveryModeOpportunistic
   // which means it may call back multiple times - we probably don't want that
+  imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
 
   BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
   CGSize targetSize;
   if (useMaximumSize) {
     targetSize = PHImageManagerMaximumSize;
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
-    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
   } else {
     targetSize = size;
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeFast;
-    imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
   }
 
   PHImageContentMode contentMode = PHImageContentModeAspectFill;

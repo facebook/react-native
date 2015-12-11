@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.8.0"
+  s.version             = "0.14.2"
   s.summary             = "Build high quality mobile apps using React."
   s.description         = <<-DESC
                             React Native apps are built using the React JS
@@ -103,11 +103,11 @@ Pod::Spec.new do |s|
     ss.source_files     = "Libraries/LinkingIOS/*.{h,m}"
     ss.preserve_paths   = "Libraries/LinkingIOS/*.js"
   end
-  
+
   s.subspec 'RCTTest' do |ss|
     ss.source_files     = "Libraries/RCTTest/**/*.{h,m}"
     ss.preserve_paths   = "Libraries/RCTTest/**/*.js"
     ss.frameworks       = "XCTest"
   end
-  
+
 end

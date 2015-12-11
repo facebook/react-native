@@ -197,13 +197,20 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
     // Force JS __DEV__ value to match RCT_DEBUG
     if (shouldOverrideDev) {
       NSString *sourceString = [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
-      NSRange range = [sourceString rangeOfString:@"__DEV__ ="];
+      NSRange range = [sourceString rangeOfString:@"\\b__DEV__\\s*?=\\s*?(!1|!0|false|true)"
+                                          options:NSRegularExpressionSearch];
+
       RCTAssert(range.location != NSNotFound, @"It looks like the implementation"
                 "of __DEV__ has changed. Update -[RCTBatchedBridge loadSource:].");
-      NSRange valueRange = {range.location + range.length, 2};
-      if ([[sourceString substringWithRange:valueRange] isEqualToString:@"!1"]) {
-        source = [[sourceString stringByReplacingCharactersInRange:valueRange withString:@" 1"] dataUsingEncoding:NSUTF8StringEncoding];
+
+      NSString *valueString = [sourceString substringWithRange:range];
+      if ([valueString rangeOfString:@"!1"].length) {
+        valueString = [valueString stringByReplacingOccurrencesOfString:@"!1" withString:@"!0"];
+      } else if ([valueString rangeOfString:@"false"].length) {
+        valueString = [valueString stringByReplacingOccurrencesOfString:@"false" withString:@"true"];
       }
+      source = [[sourceString stringByReplacingCharactersInRange:range withString:valueString]
+                dataUsingEncoding:NSUTF8StringEncoding];
     }
 
     _onSourceLoad(error, source);
@@ -310,7 +317,10 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
 {
   NSMutableDictionary *config = [NSMutableDictionary new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    config[moduleData.name] = moduleData.config;
+    NSDictionary *moduleConfig = moduleData.config;
+    if (moduleConfig) {
+      config[moduleData.name] = moduleConfig;
+    }
     if ([moduleData.instance conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
       [_frameUpdateObservers addObject:moduleData];
 
@@ -423,6 +433,7 @@ RCT_EXTERN NSArray *RCTGetModuleClasses(void);
   } else {
     [self.redBox showError:error];
   }
+  RCTLogError(@"Error while loading: %@", error.localizedDescription);
 
   NSDictionary *userInfo = @{@"bridge": self, @"error": error};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification

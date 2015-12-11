@@ -217,7 +217,7 @@ RCT_EXPORT_MODULE()
                                   scale:scale
                              resizeMode:resizeMode
                         progressHandler:progressHandler
-                      completionHandler:completionHandler];
+                      completionHandler:completionHandler] ?: ^{};
   }
 
   // Check if networking module is available

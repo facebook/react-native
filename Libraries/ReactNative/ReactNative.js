@@ -11,6 +11,10 @@
  */
 'use strict';
 
+// Require ReactNativeDefaultInjection first for its side effects of setting up
+// the JS environment
+var ReactNativeDefaultInjection = require('ReactNativeDefaultInjection');
+
 var ReactChildren = require('ReactChildren');
 var ReactClass = require('ReactClass');
 var ReactComponent = require('ReactComponent');
@@ -18,7 +22,6 @@ var ReactCurrentOwner = require('ReactCurrentOwner');
 var ReactElement = require('ReactElement');
 var ReactElementValidator = require('ReactElementValidator');
 var ReactInstanceHandles = require('ReactInstanceHandles');
-var ReactNativeDefaultInjection = require('ReactNativeDefaultInjection');
 var ReactNativeMount = require('ReactNativeMount');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactUpdates = require('ReactUpdates');
