@@ -15,7 +15,12 @@ type RelayProfiler = {
   attachProfileHandler(
     name: string,
     handler: (name: string, state?: any) => () => void
-  ): void
+  ): void,
+
+  attachAggregateHandler(
+    name: string,
+    handler: (name: string, callback: () => void) => void
+  ): void,
 };
 
 var GLOBAL = GLOBAL || this;
@@ -115,6 +120,12 @@ var Systrace = {
       return () => {
         Systrace.endAsyncEvent(name, cookie);
       };
+    });
+
+    relayProfiler.attachAggregateHandler('*', (name, callback) => {
+      Systrace.beginEvent(name);
+      callback();
+      Systrace.endEvent();
     });
   },
 
