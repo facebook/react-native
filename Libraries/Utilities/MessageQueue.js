@@ -159,20 +159,11 @@ class MessageQueue {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
     var moduleMethods = this._callableModules[module];
-    if (!moduleMethods) {
-      // TODO: Register all the remaining test modules and make this an invariant. #9317773
-      // Fallback to require temporarily. A follow up diff will clean up the remaining
-      // modules and make this an invariant.
-      console.warn('Module is not registered:', module);
-      moduleMethods = require(module);
-      /*
-      invariant(
-        !!moduleMethods,
-        'Module %s is not a registered callable module.',
-        module
-      );
-      */
-    }
+    invariant(
+      !!moduleMethods,
+      'Module %s is not a registered callable module.',
+      module
+    );
     moduleMethods[method].apply(moduleMethods, args);
     BridgeProfiling.profileEnd();
   }
