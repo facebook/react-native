@@ -107,6 +107,10 @@ import com.facebook.infer.annotation.Assertions;
     return ((CloseableBitmap) closeableImage).getUnderlyingBitmap();
   }
 
+  /* package */ boolean isDetached() {
+    return mAttachCounter == 0;
+  }
+
   @Override
   public void onNewResult(DataSource<CloseableReference<CloseableImage>> dataSource) {
     if (!dataSource.isFinished()) {

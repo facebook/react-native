@@ -103,6 +103,9 @@ package com.facebook.react.flat;
     return mBottom;
   }
 
+  protected void onBoundsChanged() {
+  }
+
   /**
    * Updates boundaries of this DrawCommand.
    */
@@ -111,6 +114,8 @@ package com.facebook.react.flat;
     mTop = top;
     mRight = right;
     mBottom = bottom;
+
+    onBoundsChanged();
   }
 
   /**

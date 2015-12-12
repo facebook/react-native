@@ -12,11 +12,14 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Shader;
 
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.imagepipeline.request.ImageRequest;
@@ -27,15 +30,18 @@ import com.facebook.react.views.image.ImageResizeMode;
  * DrawImageWithPipeline is DrawCommand that can draw a local or remote image.
  * It uses BitmapRequestHelper internally to fetch and cache the images.
  */
-/* package */ final class DrawImageWithPipeline extends AbstractDrawCommand implements DrawImage {
+/* package */ final class DrawImageWithPipeline extends AbstractDrawBorder implements DrawImage {
 
   private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+  private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
   private @Nullable BitmapRequestHelper mBitmapRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
   private @Nullable FlatViewGroup.InvalidateCallback mCallback;
+  private @Nullable Path mPathForRoundedBitmap;
+  private @Nullable BitmapShader mBitmapShader;
   private boolean mForceClip;
 
   @Override
@@ -45,6 +51,8 @@ import com.facebook.react.views.image.ImageResizeMode;
 
   @Override
   public void setImageRequest(@Nullable ImageRequest imageRequest) {
+    mBitmapShader = null;
+
     if (imageRequest == null) {
       mBitmapRequestHelper = null;
     } else {
@@ -79,14 +87,34 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
 
     PAINT.setColorFilter(mColorFilter);
+
     if (mForceClip) {
       canvas.save();
       canvas.clipRect(getLeft(), getTop(), getRight(), getBottom());
-      canvas.drawBitmap(bitmap, mTransform, PAINT);
-      canvas.restore();
-    } else {
-      canvas.drawBitmap(bitmap, mTransform, PAINT);
     }
+
+    if (getBorderRadius() < 0.5f) {
+      canvas.drawBitmap(bitmap, mTransform, PAINT);
+    } else {
+      if (mBitmapShader == null) {
+        mBitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        mBitmapShader.setLocalMatrix(mTransform);
+      }
+      PAINT.setShader(mBitmapShader);
+      canvas.drawPath(getPathForRoundedBitmap(), PAINT);
+    }
+
+    drawBorders(canvas);
+
+    if (mForceClip) {
+      canvas.restore();
+    }
+  }
+
+  @Override
+  public void setBorderRadius(float borderRadius) {
+    super.setBorderRadius(borderRadius);
+    setFlag(BORDER_BITMAP_PATH_DIRTY);
   }
 
   @Override
@@ -98,6 +126,17 @@ import com.facebook.react.views.image.ImageResizeMode;
   @Override
   public void onDetached() {
     Assertions.assumeNotNull(mBitmapRequestHelper).detach();
+
+    if (mBitmapRequestHelper.isDetached()) {
+      // Make sure we don't hold on to the Bitmap.
+      mBitmapShader = null;
+    }
+  }
+
+  @Override
+  protected void onBoundsChanged() {
+    super.onBoundsChanged();
+    setFlag(BORDER_BITMAP_PATH_DIRTY);
   }
 
   /* package */ void updateBounds(Bitmap bitmap) {
@@ -140,5 +179,23 @@ import com.facebook.react.views.image.ImageResizeMode;
 
     mTransform.setScale(scale, scale);
     mTransform.postTranslate(left + paddingLeft, top + paddingTop);
+
+    if (mBitmapShader != null) {
+      mBitmapShader.setLocalMatrix(mTransform);
+    }
+  }
+
+  private Path getPathForRoundedBitmap() {
+    if (isFlagSet(BORDER_BITMAP_PATH_DIRTY)) {
+      if (mPathForRoundedBitmap == null) {
+        mPathForRoundedBitmap = new Path();
+      }
+
+      updatePath(mPathForRoundedBitmap, 1.0f);
+
+      resetFlag(BORDER_BITMAP_PATH_DIRTY);
+    }
+
+    return mPathForRoundedBitmap;
   }
 }

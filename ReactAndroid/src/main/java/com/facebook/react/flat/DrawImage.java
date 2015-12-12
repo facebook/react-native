@@ -43,4 +43,16 @@ import com.facebook.imagepipeline.request.ImageRequest;
    * Returns a scale type to draw to the image with.
    */
   public ScaleType getScaleType();
+
+  public void setBorderWidth(float borderWidth);
+
+  public float getBorderWidth();
+
+  public void setBorderRadius(float borderRadius);
+
+  public float getBorderRadius();
+
+  public void setBorderColor(int borderColor);
+
+  public int getBorderColor();
 }

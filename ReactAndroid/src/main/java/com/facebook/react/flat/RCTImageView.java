@@ -17,6 +17,7 @@ import android.net.Uri;
 
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.image.ImageResizeMode;
@@ -99,6 +100,29 @@ import com.facebook.react.views.image.ImageResizeMode;
     ScaleType scaleType = ImageResizeMode.toScaleType(resizeMode);
     if (mDrawImage.getScaleType() != scaleType) {
       getMutableDrawImage().setScaleType(scaleType);
+    }
+  }
+
+  @ReactProp(name = "borderColor", customType = "Color")
+  public void setBorderColor(int borderColor) {
+    if (mDrawImage.getBorderColor() != borderColor) {
+      getMutableDrawImage().setBorderColor(borderColor);
+    }
+  }
+
+  @ReactProp(name = "borderWidth")
+  public void setBorderWidth(float borderWidth) {
+    borderWidth = PixelUtil.toPixelFromDIP(borderWidth);
+
+    if (mDrawImage.getBorderWidth() != borderWidth) {
+      getMutableDrawImage().setBorderWidth(borderWidth);
+    }
+  }
+
+  @ReactProp(name = "borderRadius")
+  public void setBorderRadius(float borderRadius) {
+    if (mDrawImage.getBorderRadius() != borderRadius) {
+      getMutableDrawImage().setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
     }
   }
 
