@@ -417,11 +417,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
   [self executeBlockOnJavaScriptQueue:^{
     BOOL enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
-    // TODO: Don't use require, go through the normal execution modes instead. #9317773
-    NSString *script = [NSString stringWithFormat:@"var p = require('Systrace') || {}; p.setEnabled && p.setEnabled(%@)", enabled ? @"true" : @"false"];
-    JSStringRef scriptJSRef = JSStringCreateWithUTF8CString(script.UTF8String);
-    JSEvaluateScript(_context.ctx, scriptJSRef, NULL, NULL, 0, NULL);
-    JSStringRelease(scriptJSRef);
+    [_bridge enqueueJSCall:@"Systrace.setEnabled" args:@[enabled ? @YES : @NO]];
   }];
 }
 
