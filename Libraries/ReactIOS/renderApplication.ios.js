@@ -70,11 +70,6 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
-  // not when debugging in chrome
-  if (__DEV__ && !window.document) {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
-  }
   React.render(
     <AppContainer rootTag={rootTag}>
       <RootComponent
@@ -88,11 +83,7 @@ function renderApplication<D, P, S>(
 
 var styles = StyleSheet.create({
   appContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
   },
 });
 

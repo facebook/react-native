@@ -310,19 +310,7 @@ import com.facebook.react.touch.JSResponderHandler;
                       viewsToAdd,
                       tagsToDelete));
         }
-        View childView = viewManager.getChildAt(viewToManage, indicesToRemove[i]);
-        if (childView == null) {
-          throw new IllegalViewOperationException(
-              "Trying to remove a null view at index:"
-                  + indexToRemove + " view tag: " + tag + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
-        }
-        viewManager.removeView(viewToManage, childView);
+        viewManager.removeViewAt(viewToManage, indicesToRemove[i]);
         lastIndexToRemove = indexToRemove;
       }
     }

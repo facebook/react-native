@@ -14,36 +14,33 @@ Since React makes no assumptions about the rest of your technology stack – it�
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
 - [Node.js](http://nodejs.org)
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
+- Install your copy of React Native under your `node_modules` directory where your JS resides.
 
 ## Install React Native Using CocoaPods
 
 [CocoaPods](http://cocoapods.org/) is a package management tool for iOS/Mac development. We need to use it to download React Native. If you haven't installed CocoaPods yet, check out [this tutorial](http://guides.cocoapods.org/using/getting-started.html).
 
-When you are ready to work with CocoaPods, add the following line to `Podfile`. If you don't have one, then create it under the root directory of your project.
+When you are ready to work with CocoaPods, add the following lines to `Podfile`. If you don't have one, then create it under the root directory of your project.
 
-```
-pod 'React'
-pod 'React/RCTText'
-# Add any subspecs you want to use in your project
+```ruby
+# Depending on how your project is organized, your node_modules directory may be
+# somewhere else; tell CocoaPods where you've installed react-native from npm
+pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  'Core',
+  'RCTImage',
+  'RCTNetwork',
+  'RCTText',
+  'RCTWebSocket',
+  # Add any other subspecs you want to use in your project
+]
 ```
 
-Remember to install all subspecs you need. The `<Text>` element cannot be used without `pod 'React/RCTText'`.
+Remember to install all subspecs you need. The `<Text>` element cannot be used without the `RCTText` subspec, for example.
 
 Then install your pods:
 
 ```
 $ pod install
-```
-
-If you are installing React Native locally via npm then you will end up with duplicate local React Native installations as both Cocoapods and npm creates a local install of React Native. This can result in issues when trying to bundle your code as the packager will find duplicate modules and throw an error.
-
-To resolve this issue have your `Podfile` reference the React Native installation from npm's `node_modules` folder. Also be sure to include all subspecs that you want to have installed.
-
-```
-pod 'React', :path => './node_modules/react-native',
-  :subspecs => [
-    'RCTText'
-  ]
 ```
 
 ## Create Your React Native App

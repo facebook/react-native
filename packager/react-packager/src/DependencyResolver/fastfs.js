@@ -4,7 +4,6 @@ const Activity = require('../Activity');
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
-const _ = require('underscore');
 const fs = require('fs');
 const path = require('path');
 
@@ -62,10 +61,8 @@ class Fastfs extends EventEmitter {
   }
 
   getAllFiles() {
-    return _.chain(this._roots)
-      .map(root => root.getFiles())
-      .flatten()
-      .value();
+    // one-level-deep flatten of files
+    return [].concat(...this._roots.map(root => root.getFiles()));
   }
 
   findFilesByExt(ext, { ignore }) {
@@ -278,13 +275,16 @@ class File {
   }
 
   getFiles() {
-    return _.flatten(_.values(this.children).map(file => {
+    const files = [];
+    Object.keys(this.children).forEach(key => {
+      const file = this.children[key];
       if (file.isDir) {
-        return file.getFiles();
+        files.push(...file.getFiles());
       } else {
-        return file;
+        files.push(file);
       }
-    }));
+    });
+    return files;
   }
 
   ext() {

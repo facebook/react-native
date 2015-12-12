@@ -520,14 +520,14 @@ namespace runnable {
 static jclass gNativeRunnableClass;
 static jmethodID gNativeRunnableCtor;
 
-static jobject createNativeRunnable(JNIEnv* env, decltype(NativeRunnable::callable)&& callable) {
-  jobject jRunnable = env->NewObject(gNativeRunnableClass, gNativeRunnableCtor);
+static LocalReference<jobject> createNativeRunnable(JNIEnv* env, decltype(NativeRunnable::callable)&& callable) {
+  LocalReference<jobject> jRunnable{env->NewObject(gNativeRunnableClass, gNativeRunnableCtor)};
   if (env->ExceptionCheck()) {
     return nullptr;
   }
   auto nativeRunnable = createNew<NativeRunnable>();
   nativeRunnable->callable = std::move(callable);
-  setCountableForJava(env, jRunnable, std::move(nativeRunnable));
+  setCountableForJava(env, jRunnable.get(), std::move(nativeRunnable));
   return jRunnable;
 }
 
@@ -602,8 +602,8 @@ static void dispatchCallbacksToJava(const RefPtr<WeakReference>& weakCallback,
     }
   }, std::move(calls));
 
-  jobject jNativeRunnable = runnable::createNativeRunnable(env, std::move(runnableFunction));
-  queue::enqueueNativeRunnableOnQueue(env, callbackQueueThread, jNativeRunnable);
+  auto jNativeRunnable = runnable::createNativeRunnable(env, std::move(runnableFunction));
+  queue::enqueueNativeRunnableOnQueue(env, callbackQueueThread, jNativeRunnable.get());
 }
 
 static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
@@ -648,6 +648,9 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
   executeApplicationScript(bridge, script, assetNameStr);
+  if (env->ExceptionCheck()) {
+    return;
+  }
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_done"));
 }
 
@@ -666,6 +669,9 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
   #endif
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_read"));
   executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
+  if (env->ExceptionCheck()) {
+    return;
+  }
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_exec"));
 }
 

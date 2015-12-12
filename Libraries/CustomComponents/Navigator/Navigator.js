@@ -273,6 +273,8 @@ var Navigator = React.createClass({
   },
 
   getInitialState: function() {
+    this._navigationBarNavigator = this.props.navigationBarNavigator || this;
+
     this._renderedSceneMap = new Map();
 
     var routeStack = this.props.initialRouteStack || [this.props.initialRoute];
@@ -346,6 +348,7 @@ var Navigator = React.createClass({
       this._navigationContext.dispose();
       this._navigationContext = null;
     }
+    this.spring.removeAllListeners();
   },
 
   /**
@@ -1073,7 +1076,7 @@ var Navigator = React.createClass({
     }
     return React.cloneElement(this.props.navigationBar, {
       ref: (navBar) => { this._navBar = navBar; },
-      navigator: this,
+      navigator: this._navigationBarNavigator,
       navState: this.state,
     });
   },

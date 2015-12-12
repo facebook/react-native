@@ -42,8 +42,8 @@ RCT_EXPORT_MODULE()
   if (imageCount > 1) {
 
     NSTimeInterval duration = 0;
-    NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
-    NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray<NSNumber *> *delays = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray<id /* CGIMageRef */> *images = [NSMutableArray arrayWithCapacity:imageCount];
     for (size_t i = 0; i < imageCount; i++) {
 
       CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE()
     }
     CFRelease(imageSource);
 
-    NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
+    NSMutableArray<NSNumber *> *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
     NSTimeInterval runningDuration = 0;
     for (NSNumber *delayNumber in delays) {
       [keyTimes addObject:@(runningDuration / duration)];

@@ -15,7 +15,6 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
-#import "RCTPerfStats.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTSourceCode.h"
@@ -139,8 +138,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   NSURLSessionDataTask *_updateTask;
   NSURL *_liveReloadURL;
   BOOL _jsLoaded;
-  NSArray *_presentedItems;
-  NSMutableArray *_extraMenuItems;
+  NSArray<RCTDevMenuItem *> *_presentedItems;
+  NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
 }
 
 @synthesize bridge = _bridge;
@@ -181,22 +180,6 @@ RCT_EXPORT_MODULE()
     _extraMenuItems = [NSMutableArray new];
 
     __weak RCTDevMenu *weakSelf = self;
-
-    [_extraMenuItems addObject:[RCTDevMenuItem toggleItemWithKey:@"showFPS"
-                                               title:@"Show FPS Monitor"
-                                       selectedTitle:@"Hide FPS Monitor"
-                                             handler:^(BOOL showFPS)
-    {
-      RCTDevMenu *strongSelf = weakSelf;
-      if (strongSelf) {
-        strongSelf->_showFPS = showFPS;
-        if (showFPS) {
-          [strongSelf.bridge.perfStats show];
-        } else {
-          [strongSelf.bridge.perfStats hide];
-        }
-      }
-    }]];
 
     [_extraMenuItems addObject:[RCTDevMenuItem toggleItemWithKey:@"showInspector"
                                                  title:@"Show Inspector"
@@ -392,9 +375,9 @@ RCT_EXPORT_MODULE()
   [self settingsDidChange];
 }
 
-- (NSArray *)menuItems
+- (NSArray<RCTDevMenuItem *> *)menuItems
 {
-  NSMutableArray *items = [NSMutableArray new];
+  NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
 
   // Add built-in items
 
@@ -452,7 +435,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.title = @"React Native: Development";
   actionSheet.delegate = self;
 
-  NSArray *items = [self menuItems];
+  NSArray<RCTDevMenuItem *> *items = [self menuItems];
   for (RCTDevMenuItem *item in items) {
     switch (item.type) {
       case RCTDevMenuTypeButton: {
@@ -471,7 +454,7 @@ RCT_EXPORT_METHOD(show)
   actionSheet.cancelButtonIndex = actionSheet.numberOfButtons - 1;
 
   actionSheet.actionSheetStyle = UIBarStyleBlack;
-  [actionSheet showInView:RCTSharedApplication().keyWindow.rootViewController.view];
+  [actionSheet showInView:RCTKeyWindow().rootViewController.view];
   _actionSheet = actionSheet;
   _presentedItems = items;
 }

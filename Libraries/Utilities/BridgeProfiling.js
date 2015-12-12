@@ -14,7 +14,7 @@
 var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
 
-var _enabled = false;
+var _enabled;
 var _ReactPerf = null;
 function ReactPerf() {
   if (!_ReactPerf) {
@@ -34,13 +34,13 @@ var BridgeProfiling = {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
         profileName() : profileName;
-      console.profile(TRACE_TAG_REACT_APPS, profileName);
+      global.nativeTraceBeginSection(TRACE_TAG_REACT_APPS, profileName);
     }
   },
 
   profileEnd() {
     if (_enabled) {
-      console.profileEnd(TRACE_TAG_REACT_APPS);
+      global.nativeTraceEndSection(TRACE_TAG_REACT_APPS);
     }
   },
 
@@ -62,5 +62,7 @@ var BridgeProfiling = {
     ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 };
+
+BridgeProfiling.setEnabled(global.__RCTProfileIsProfiling || false);
 
 module.exports = BridgeProfiling;

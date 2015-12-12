@@ -167,7 +167,7 @@ Input | Output
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
-class including quadradic, exponential, and bezier curves as well as functions
+class including quadratic, exponential, and bezier curves as well as functions
 like step and bounce.  `interpolation` also has configurable behavior for
 extrapolation, the default being `'extend'`, but `'clamp'` is also very useful
 to prevent the output value from exceeding `outputRange`.
@@ -473,16 +473,13 @@ might be helpful if the component that we are updating is deeply nested
 and hasn't been optimized with `shouldComponentUpdate`.
 
 ```javascript
-// Outside of our React component
-var precomputeStyle = require('precomputeStyle');
-
 // Back inside of the App component, replace the scrollSpring listener
 // in componentWillMount with this:
 this._scrollSpring.addListener({
   onSpringUpdate: () => {
     if (!this._photo) { return }
     var v = this._scrollSpring.getCurrentValue();
-    var newProps = precomputeStyle({transform: [{scaleX: v}, {scaleY: v}]});
+    var newProps = {style: {transform: [{scaleX: v}, {scaleY: v}]}};
     this._photo.setNativeProps(newProps);
   },
 });

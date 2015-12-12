@@ -280,6 +280,7 @@ var ListView = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
+      this._sentEndForContentLength = null;
       this.setState((state, props) => {
         var rowsToRender = Math.min(
           state.curRenderedRowsCount + props.pageSize,
@@ -512,9 +513,11 @@ var ListView = React.createClass({
   },
 
   _getDistanceFromEnd: function(scrollProperties) {
-    return scrollProperties.contentLength -
-      scrollProperties.visibleLength -
-      scrollProperties.offset;
+    var maxLength = Math.max(
+      scrollProperties.contentLength,
+      scrollProperties.visibleLength
+    );
+    return maxLength - scrollProperties.visibleLength - scrollProperties.offset;
   },
 
   _updateVisibleRows: function(updatedFrames) {
@@ -600,6 +603,12 @@ var ListView = React.createClass({
     this._updateVisibleRows(e.nativeEvent.updatedChildFrames);
     if (!this._maybeCallOnEndReached(e)) {
       this._renderMoreRowsIfNeeded();
+    }
+
+    if (this.props.onEndReached &&
+        this._getDistanceFromEnd(this.scrollProperties) > this.props.onEndReachedThreshold) {
+      // Scrolled out of the end zone, so it should be able to trigger again.
+      this._sentEndForContentLength = null;
     }
 
     this.props.onScroll && this.props.onScroll(e);
