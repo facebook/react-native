@@ -15,11 +15,13 @@ package com.facebook.react.flat;
 /* package */ final class FlatRootShadowNode extends FlatShadowNode {
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
+  private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
 
   private int mViewLeft;
   private int mViewTop;
   private int mViewRight;
   private int mViewBottom;
+  private boolean mIsUpdated;
 
   @Override
   public int getScreenX() {
@@ -42,6 +44,30 @@ package com.facebook.react.flat;
   }
 
   /**
+   * Returns true when this CSSNode tree needs to be re-laid out. If true, FlatUIImplementation
+   * will request LayoutEngine to perform a layout pass to update node boundaries. This is used
+   * to avoid unnecessary node updates.
+   */
+  /* package */ boolean needsLayout() {
+    return isDirty();
+  }
+
+  /**
+   * Returns true if there are updates to the node tree other than layout (such as a change in
+   * background color) that would require StateBuilder to re-collect drawing state.
+   */
+  /* package */ boolean isUpdated() {
+    return mIsUpdated;
+  }
+
+  /**
+   * Marks the node tree as requiring or not requiring a StateBuilder pass to collect drawing state.
+   */
+  /* package */ void markUpdated(boolean isUpdated) {
+    mIsUpdated = isUpdated;
+  }
+
+  /**
    * Returns an array of DrawCommands to perform during the View's draw pass.
    */
   /* package */ DrawCommand[] getDrawCommands() {
@@ -54,6 +80,21 @@ package com.facebook.react.flat;
    */
   /* package */ void setDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
+  }
+
+  /**
+   * Sets an array of AttachDetachListeners to call onAttach/onDetach when they are attached to or
+   * detached from a View that this shadow node maps to.
+   */
+  /* package */ void setAttachDetachListeners(AttachDetachListener[] listeners) {
+    mAttachDetachListeners = listeners;
+  }
+
+  /**
+   * Returns an array of AttachDetachListeners associated with this shadow node.
+   */
+  /* package */ AttachDetachListener[] getAttachDetachListeners() {
+    return mAttachDetachListeners;
   }
 
   /**

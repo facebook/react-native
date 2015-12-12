@@ -55,6 +55,20 @@ package com.facebook.react.flat;
   }
 
   /**
+   * Returns a non-frozen shallow copy of AbstractDrawCommand as defined by {@link Object#clone()}.
+   */
+  public final AbstractDrawCommand mutableCopy() {
+    try {
+      AbstractDrawCommand copy = (AbstractDrawCommand) super.clone();
+      copy.mFrozen = false;
+      return copy;
+    } catch (CloneNotSupportedException e) {
+      // should not happen since we implement Cloneable
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
    * Returns whether this object was frozen and thus cannot be mutated.
    */
   public final boolean isFrozen() {

@@ -20,7 +20,9 @@ package com.facebook.react.flat;
   private final FlatUIViewOperationQueue mOperationsQueue;
 
   private final ElementsList<DrawCommand> mDrawCommands =
-      new ElementsList(DrawCommand.EMPTY_ARRAY);
+      new ElementsList<>(DrawCommand.EMPTY_ARRAY);
+  private final ElementsList<AttachDetachListener> mAttachDetachListeners =
+      new ElementsList<>(AttachDetachListener.EMPTY_ARRAY);
 
   /* package */ StateBuilder(FlatUIViewOperationQueue operationsQueue) {
     mOperationsQueue = operationsQueue;
@@ -39,6 +41,10 @@ package com.facebook.react.flat;
    */
   /* package */ void addDrawCommand(AbstractDrawCommand drawCommand) {
     mDrawCommands.add(drawCommand);
+  }
+
+  /* package */ void addAttachDetachListener(AttachDetachListener listener) {
+    mAttachDetachListeners.add(listener);
   }
 
   /**
@@ -76,15 +82,25 @@ package com.facebook.react.flat;
       float width,
       float height) {
     mDrawCommands.start(node.getDrawCommands());
+    mAttachDetachListeners.start(node.getAttachDetachListeners());
 
     collectStateRecursively(node, 0, 0, width, height);
 
+    boolean shouldUpdateMountState = false;
     final DrawCommand[] drawCommands = mDrawCommands.finish();
     if (drawCommands != null) {
-      // DrawCommands changed, need to re-mount them and re-draw the View.
+      shouldUpdateMountState = true;
       node.setDrawCommands(drawCommands);
+    }
 
-      mOperationsQueue.enqueueUpdateMountState(tag, drawCommands);
+    final AttachDetachListener[] listeners = mAttachDetachListeners.finish();
+    if (listeners != null) {
+      shouldUpdateMountState = true;
+      node.setAttachDetachListeners(listeners);
+    }
+
+    if (shouldUpdateMountState) {
+      mOperationsQueue.enqueueUpdateMountState(tag, drawCommands, listeners);
     }
   }
 

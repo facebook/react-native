@@ -9,6 +9,8 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import android.view.View;
 import android.view.View.MeasureSpec;
 
@@ -39,14 +41,23 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
   }
 
   /**
-   * Assigns new DrawCommands to a FlatViewGroup specified by a reactTag.
+   * Updates DrawCommands and AttachDetachListeners of a FlatViewGroup specified by a reactTag.
    *
    * @param reactTag reactTag to lookup FlatViewGroup by
-   * @param drawCommands new draw commands to execute during the drawing.
+   * @param drawCommands if non-null, new draw commands to execute during the drawing.
+   * @param listeners if non-null, new attach-detach listeners.
    */
-  /* package */ void updateMountState(int reactTag, DrawCommand[] drawCommands) {
+  /* package */ void updateMountState(
+      int reactTag,
+      @Nullable DrawCommand[] drawCommands,
+      @Nullable AttachDetachListener[] listeners) {
     FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
-    view.mountDrawCommands(drawCommands);
+    if (drawCommands != null) {
+      view.mountDrawCommands(drawCommands);
+    }
+    if (listeners != null) {
+      view.mountAttachDetachListeners(listeners);
+    }
   }
 
   /**

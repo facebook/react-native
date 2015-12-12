@@ -28,4 +28,15 @@ import com.facebook.react.uimanager.LayoutShadowNode;
       float bottom) {
     // do nothing yet.
   }
+
+  /**
+   * Marks root node as updated to trigger a StateBuilder pass to collect DrawCommands for the node
+   * tree. Use it when FlatShadowNode is updated but doesn't require a layout pass (e.g. background
+   * color is changed).
+   */
+  protected final void invalidate() {
+    // getRootNode() returns an ReactShadowNode, which is guarantied to be a FlatRootShadowNode.
+    FlatRootShadowNode rootNode = (FlatRootShadowNode) getRootNode();
+    rootNode.markUpdated(true);
+  }
 }

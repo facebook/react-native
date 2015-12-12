@@ -9,6 +9,8 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 
@@ -26,16 +28,24 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   private final class UpdateMountState implements UIOperation {
 
     private final int mReactTag;
-    private final DrawCommand[] mDrawCommands;
+    private final @Nullable DrawCommand[] mDrawCommands;
+    private final @Nullable AttachDetachListener[] mAttachDetachListeners;
 
-    private UpdateMountState(int reactTag, DrawCommand[] drawCommands) {
+    private UpdateMountState(
+        int reactTag,
+        @Nullable DrawCommand[] drawCommands,
+        @Nullable AttachDetachListener[] listeners) {
       mReactTag = reactTag;
       mDrawCommands = drawCommands;
+      mAttachDetachListeners = listeners;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.updateMountState(mReactTag, mDrawCommands);
+      mNativeViewHierarchyManager.updateMountState(
+          mReactTag,
+          mDrawCommands,
+          mAttachDetachListeners);
     }
   }
 
@@ -75,8 +85,11 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   /**
    * Enqueues a new UIOperation that will update DrawCommands for a View defined by reactTag.
    */
-  public void enqueueUpdateMountState(int reactTag, DrawCommand[] drawCommands) {
-    enqueueUIOperation(new UpdateMountState(reactTag, drawCommands));
+  public void enqueueUpdateMountState(
+      int reactTag,
+      @Nullable DrawCommand[] drawCommands,
+      @Nullable AttachDetachListener[] listeners) {
+    enqueueUIOperation(new UpdateMountState(reactTag, drawCommands, listeners));
   }
 
   /**

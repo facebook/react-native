@@ -22,6 +22,7 @@ import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.image.ReactImageManager;
 
 /**
  * FlatUIImplementation builds on top of UIImplementation and allows pre-creating everything
@@ -36,12 +37,22 @@ public class FlatUIImplementation extends UIImplementation {
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers) {
 
+    ReactImageManager reactImageManager = findReactImageManager(viewManagers);
+    if (reactImageManager != null) {
+      Object callerContext = reactImageManager.getCallerContext();
+      if (callerContext != null) {
+        RCTImageView.setCallerContext(callerContext);
+      }
+    }
+
+    TypefaceCache.setAssetManager(reactContext.getAssets());
+
     viewManagers = new ArrayList<ViewManager>(viewManagers);
     viewManagers.add(new RCTViewManager());
     viewManagers.add(new RCTTextManager());
     viewManagers.add(new RCTRawTextManager());
     viewManagers.add(new RCTVirtualTextManager());
-    TypefaceCache.setAssetManager(reactContext.getAssets());
+    viewManagers.add(new RCTImageViewManager());
 
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
     FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(
@@ -132,11 +143,32 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
+  protected void calculateRootLayout(ReactShadowNode cssRoot) {
+  }
+
+  @Override
   protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
       float absoluteY,
       EventDispatcher eventDispatcher) {
-    mStateBuilder.applyUpdates((FlatRootShadowNode) cssNode);
+    FlatRootShadowNode rootNode = (FlatRootShadowNode) cssNode;
+    if (!rootNode.needsLayout() && !rootNode.isUpdated()) {
+      return;
+    }
+
+    super.calculateRootLayout(rootNode);
+    rootNode.markUpdated(false);
+    mStateBuilder.applyUpdates(rootNode);
+  }
+
+  private static @Nullable ReactImageManager findReactImageManager(List<ViewManager> viewManagers) {
+    for (int i = 0, size = viewManagers.size(); i != size; ++i) {
+      if (viewManagers.get(i) instanceof ReactImageManager) {
+        return (ReactImageManager) viewManagers.get(i);
+      }
+    }
+
+    return null;
   }
 }
