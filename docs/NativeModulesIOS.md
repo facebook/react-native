@@ -182,7 +182,7 @@ Refactoring the above code to use a promise instead of callbacks looks like this
 ```objective-c
 RCT_REMAP_METHOD(findEvents,
                  resolver:(RCTPromiseResolveBlock)resolve,
-                 rejecter:(RCTPromiseRejectBlock)reject))
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
   NSArray *events = ...
   if (events) {
