@@ -9,6 +9,9 @@
 
 package com.facebook.react.bridge.queue;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
@@ -22,6 +25,13 @@ public interface MessageQueueThread {
    */
   @DoNotStrip
   void runOnQueue(Runnable runnable);
+
+  /**
+   * Runs the given Callable on this Thread. It will be submitted to the end of the event queue even
+   * if it is being submitted from the same queue Thread.
+   */
+  @DoNotStrip
+  <T> Future<T> callOnQueue(final Callable<T> callable);
 
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.

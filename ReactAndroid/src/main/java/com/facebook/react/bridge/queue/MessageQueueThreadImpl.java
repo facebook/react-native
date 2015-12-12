@@ -9,6 +9,10 @@
 
 package com.facebook.react.bridge.queue;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import android.os.Looper;
 
 import com.facebook.common.logging.FLog;
@@ -45,6 +49,7 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
    * if it is being submitted from the same queue Thread.
    */
   @DoNotStrip
+  @Override
   public void runOnQueue(Runnable runnable) {
     if (mIsFinished) {
       FLog.w(
@@ -55,9 +60,29 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
     mHandler.post(runnable);
   }
 
+
+  @DoNotStrip
+  @Override
+  public <T> Future<T> callOnQueue(final Callable<T> callable) {
+    final SimpleSettableFuture<T> future = new SimpleSettableFuture<>();
+    runOnQueue(
+        new Runnable() {
+          @Override
+          public void run() {
+            try {
+              future.set(callable.call());
+            } catch (Exception e) {
+              future.setException(e);
+            }
+          }
+        });
+    return future;
+  }
+
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
    */
+  @Override
   public boolean isOnThread() {
     return mLooper.getThread() == Thread.currentThread();
   }
@@ -66,6 +91,7 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
    * {@link AssertionError}) if the assertion fails.
    */
+  @Override
   public void assertIsOnThread() {
     SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
   }
@@ -139,6 +165,13 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
         }, "mqt_" + name);
     bgThread.start();
 
-    return new MessageQueueThreadImpl(name, simpleSettableFuture.get(5000), exceptionHandler);
+    try {
+      return new MessageQueueThreadImpl(
+          name,
+          simpleSettableFuture.get(5000, TimeUnit.MILLISECONDS),
+          exceptionHandler);
+    } catch (Throwable t) {
+      throw new RuntimeException(t);
+    }
   }
 }
