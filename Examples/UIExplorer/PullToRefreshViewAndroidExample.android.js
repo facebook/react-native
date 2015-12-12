@@ -84,8 +84,8 @@ const PullToRefreshViewAndroidExample = React.createClass({
   },
 
   render() {
-    const rows = this.state.rowData.map((row) => {
-      return <Row data={row} onClick={this._onClick}/>;
+    const rows = this.state.rowData.map((row, ii) => {
+      return <Row key={ii} data={row} onClick={this._onClick}/>;
     });
     return (
       <PullToRefreshViewAndroid

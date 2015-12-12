@@ -79,8 +79,8 @@ var CameraRollExample = React.createClass({
     var location = asset.node.location.longitude ?
       JSON.stringify(asset.node.location) : 'Unknown location';
     return (
-      <TouchableOpacity onPress={ this.loadAsset.bind( this, asset ) }>
-        <View key={asset} style={styles.row}>
+      <TouchableOpacity key={asset} onPress={ this.loadAsset.bind( this, asset ) }>
+        <View style={styles.row}>
           <Image
             source={asset.node.image}
             style={imageStyle}
