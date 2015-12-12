@@ -43,6 +43,9 @@ import com.facebook.infer.annotation.Assertions;
     sAssetManager = assetManager;
   }
 
+  /**
+   * Returns a Typeface for a given a FontFamily and style.
+   */
   public static Typeface getTypeface(String fontFamily, int style) {
     Typeface[] cache = FONTFAMILY_CACHE.get(fontFamily);
     if (cache == null) {
