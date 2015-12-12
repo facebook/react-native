@@ -13,7 +13,6 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
@@ -21,7 +20,6 @@ var View = require('View');
 var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
 
 var dismissKeyboard = require('dismissKeyboard');
-var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 
 var RK_DRAWER_REF = 'drawerlayout';
