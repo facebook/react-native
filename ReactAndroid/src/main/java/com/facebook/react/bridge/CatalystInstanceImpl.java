@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private boolean mInitialized = false;
 
   // Access from JS thread
-  private @Nullable ReactBridge mBridge;
+  private final ReactBridge mBridge;
   private boolean mJSBundleHasLoaded;
 
   private CatalystInstanceImpl(
@@ -83,39 +84,34 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
     mTraceListener = new JSProfilerTraceListener();
 
-    final CountDownLatch initLatch = new CountDownLatch(1);
-    mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
-        new Runnable() {
-          @Override
-          public void run() {
-            Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeBridge");
-            try {
-              initializeBridge(jsExecutor, jsModulesConfig);
-              initLatch.countDown();
-            } finally {
-              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-            }
-          }
-        });
-
     try {
-      Assertions.assertCondition(
-          initLatch.await(BRIDGE_SETUP_TIMEOUT_MS, TimeUnit.MILLISECONDS),
-          "Timed out waiting for bridge to initialize!");
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      mBridge = mCatalystQueueConfiguration.getJSQueueThread().callOnQueue(
+          new Callable<ReactBridge>() {
+            @Override
+            public ReactBridge call() throws Exception {
+              Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeBridge");
+              try {
+                return initializeBridge(jsExecutor, jsModulesConfig);
+              } finally {
+                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+              }
+            }
+          }).get(BRIDGE_SETUP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    } catch (Exception t) {
+      throw new RuntimeException("Failed to initialize bridge", t);
     }
   }
 
-  private void initializeBridge(
+  private ReactBridge initializeBridge(
       JavaScriptExecutor jsExecutor,
       JavaScriptModulesConfig jsModulesConfig) {
     mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
     Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridgeCtor");
+    ReactBridge bridge;
     try {
-      mBridge = new ReactBridge(
+      bridge = new ReactBridge(
           jsExecutor,
           new NativeModulesReactCallback(),
           mCatalystQueueConfiguration.getNativeModulesQueueThread());
@@ -125,15 +121,17 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "setBatchedBridgeConfig");
     try {
-      mBridge.setGlobalVariable(
+      bridge.setGlobalVariable(
           "__fbBatchedBridgeConfig",
           buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
-      mBridge.setGlobalVariable(
+      bridge.setGlobalVariable(
           "__RCTProfileIsProfiling",
           Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS) ? "true" : "false");
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+
+    return bridge;
   }
 
   @Override
@@ -260,13 +258,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
       }
     }
 
-    if (mBridge != null) {
-      Systrace.unregisterListener(mTraceListener);
-    }
+    Systrace.unregisterListener(mTraceListener);
 
     // We can access the Bridge from any thread now because we know either we are on the JS thread
     // or the JS thread has finished via CatalystQueueConfiguration#destroy()
-    Assertions.assertNotNull(mBridge).dispose();
+    mBridge.dispose();
   }
 
   @Override
@@ -294,8 +290,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @VisibleForTesting
-  public @Nullable
-  ReactBridge getBridge() {
+  public ReactBridge getBridge() {
     return mBridge;
   }
 
@@ -341,25 +336,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public boolean supportsProfiling() {
-    if (mBridge == null) {
-      return false;
-    }
     return mBridge.supportsProfiling();
   }
 
   @Override
   public void startProfiler(String title) {
-    if (mBridge == null) {
-      return;
-    }
     mBridge.startProfiler(title);
   }
 
   @Override
   public void stopProfiler(String title, String filename) {
-    if (mBridge == null) {
-      return;
-    }
     mBridge.stopProfiler(title, filename);
   }
 
