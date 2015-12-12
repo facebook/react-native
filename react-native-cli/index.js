@@ -138,7 +138,7 @@ function createAfterConfirmation(name, verbose) {
 
   var property = {
     name: 'yesno',
-    message: 'Directory ' + name + ' already exist. Continue?',
+    message: 'Directory ' + name + ' already exists. Continue?',
     validator: /y[es]*|n[o]?/,
     warning: 'Must respond yes or no',
     default: 'no'
