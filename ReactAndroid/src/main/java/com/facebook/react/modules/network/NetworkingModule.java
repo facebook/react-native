@@ -136,7 +136,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     requestBuilder.headers(requestHeaders);
 
     if (data == null) {
-      requestBuilder.method(method, null);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         onRequestError(requestId, "Payload is set but no content-type header specified");

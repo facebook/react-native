@@ -27,6 +27,7 @@ import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.internal.Util;
 import okio.BufferedSink;
+import okio.ByteString;
 import okio.Okio;
 import okio.Source;
 
@@ -111,5 +112,16 @@ import okio.Source;
         }
       }
     };
+  }
+
+  /**
+   * Creates a empty RequestBody if required by the http method spec, otherwise use null
+   */
+  public static RequestBody getEmptyBody(String method) {
+    if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
+      return RequestBody.create(null, ByteString.EMPTY);
+    } else {
+      return null;
+    }
   }
 }
