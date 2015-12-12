@@ -29,6 +29,9 @@ cd ..
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
+# npm global install path may be a non-standard location
+PATH="$(npm prefix -g)/bin:$PATH"
+
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
