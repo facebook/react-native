@@ -16,7 +16,6 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -137,13 +136,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public void runJSBundle() {
     try {
-      final CountDownLatch initLatch = new CountDownLatch(1);
-      mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
-          new Runnable() {
+      mJSBundleHasLoaded = mCatalystQueueConfiguration.getJSQueueThread().callOnQueue(
+          new Callable<Boolean>() {
             @Override
-            public void run() {
+            public Boolean call() throws Exception {
               Assertions.assertCondition(!mJSBundleHasLoaded, "JS bundle was already loaded!");
-              mJSBundleHasLoaded = true;
 
               incrementPendingJSCalls();
 
@@ -159,14 +156,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
                 Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
               }
 
-              initLatch.countDown();
+              return true;
             }
-          });
-      Assertions.assertCondition(
-          initLatch.await(LOAD_JS_BUNDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS),
-          "Timed out loading JS!");
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+          }).get(LOAD_JS_BUNDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    } catch (Exception t) {
+      throw new RuntimeException(t);
     }
   }
 
