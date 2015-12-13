@@ -49,6 +49,24 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  private final class UpdateViewGroup implements UIOperation {
+
+    private final int mReactTag;
+    private final int[] mViewsToAdd;
+    private final int[] mViewsToDetach;
+
+    private UpdateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
+      mReactTag = reactTag;
+      mViewsToAdd = viewsToAdd;
+      mViewsToDetach = viewsToDetach;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.updateViewGroup(mReactTag, mViewsToAdd, mViewsToDetach);
+    }
+  }
+
   /**
    * UIOperation that updates View bounds for a View defined by reactTag.
    */
@@ -74,6 +92,19 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  public final class DetachAllChildrenFromViews implements UIViewOperationQueue.UIOperation {
+    private @Nullable int[] mViewsToDetachAllChildrenFrom;
+
+    public void setViewsToDetachAllChildrenFrom(int[] viewsToDetachAllChildrenFrom) {
+      mViewsToDetachAllChildrenFrom = viewsToDetachAllChildrenFrom;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.detachAllChildrenFromViews(mViewsToDetachAllChildrenFrom);
+    }
+  }
+
   public FlatUIViewOperationQueue(
       ReactApplicationContext reactContext,
       FlatNativeViewHierarchyManager nativeViewHierarchyManager) {
@@ -92,10 +123,20 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     enqueueUIOperation(new UpdateMountState(reactTag, drawCommands, listeners));
   }
 
+  public void enqueueUpdateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
+    enqueueUIOperation(new UpdateViewGroup(reactTag, viewsToAdd, viewsToDetach));
+  }
+
   /**
    * Enqueues a new UIOperation that will update View bounds for a View defined by reactTag.
    */
   public void enqueueUpdateViewBounds(int reactTag, int left, int top, int right, int bottom) {
     enqueueUIOperation(new UpdateViewBounds(reactTag, left, top, right, bottom));
+  }
+
+  public DetachAllChildrenFromViews enqueueDetachAllChildrenFromViews() {
+    DetachAllChildrenFromViews op = new DetachAllChildrenFromViews();
+    enqueueUIOperation(op);
+    return op;
   }
 }

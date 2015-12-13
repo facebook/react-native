@@ -21,6 +21,18 @@ import com.facebook.react.uimanager.ViewProps;
  */
 /* package */ class FlatShadowNode extends LayoutShadowNode {
 
+  /* package */ static final FlatShadowNode[] EMPTY_ARRAY = new FlatShadowNode[0];
+
+  private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
+  private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
+  private FlatShadowNode[] mNativeChildren = FlatShadowNode.EMPTY_ARRAY;
+  private int mNativeParentTag;
+  private int mViewLeft;
+  private int mViewTop;
+  private int mViewRight;
+  private int mViewBottom;
+  private boolean mMountsToView;
+  private boolean mBackingViewIsCreated;
   private @Nullable DrawBackgroundColor mDrawBackground;
 
   /**
@@ -48,14 +60,137 @@ import com.facebook.react.uimanager.ViewProps;
     invalidate();
   }
 
+  @Override
+  public final int getScreenX() {
+    return mViewLeft;
+  }
+
+  @Override
+  public final int getScreenY() {
+    return mViewTop;
+  }
+
+  @Override
+  public final int getScreenWidth() {
+    return mViewRight - mViewLeft;
+  }
+
+  @Override
+  public final int getScreenHeight() {
+    return mViewBottom - mViewTop;
+  }
+
   /**
    * Marks root node as updated to trigger a StateBuilder pass to collect DrawCommands for the node
    * tree. Use it when FlatShadowNode is updated but doesn't require a layout pass (e.g. background
    * color is changed).
    */
   protected final void invalidate() {
-    // getRootNode() returns an ReactShadowNode, which is guarantied to be a FlatRootShadowNode.
-    FlatRootShadowNode rootNode = (FlatRootShadowNode) getRootNode();
-    rootNode.markUpdated(true);
+    ((FlatRootShadowNode) getRootNode()).markUpdated(true);
+  }
+
+  /**
+   * Returns an array of DrawCommands to perform during the View's draw pass.
+   */
+  /* package */ DrawCommand[] getDrawCommands() {
+    return mDrawCommands;
+  }
+
+  /**
+   * Sets an array of DrawCommands to perform during the View's draw pass. StateBuilder uses old
+   * draw commands to compare to new draw commands and see if the View neds to be redrawn.
+   */
+  /* package */ void setDrawCommands(DrawCommand[] drawCommands) {
+    mDrawCommands = drawCommands;
+  }
+
+  /**
+   * Sets an array of AttachDetachListeners to call onAttach/onDetach when they are attached to or
+   * detached from a View that this shadow node maps to.
+   */
+  /* package */ void setAttachDetachListeners(AttachDetachListener[] listeners) {
+    mAttachDetachListeners = listeners;
+  }
+
+  /**
+   * Returns an array of AttachDetachListeners associated with this shadow node.
+   */
+  /* package */ AttachDetachListener[] getAttachDetachListeners() {
+    return mAttachDetachListeners;
+  }
+
+  /* package */ final FlatShadowNode[] getNativeChildren() {
+    return mNativeChildren;
+  }
+
+  /* package */ final void setNativeChildren(FlatShadowNode[] nativeChildren) {
+    mNativeChildren = nativeChildren;
+  }
+
+  /* package */ final int getNativeParentTag() {
+    return mNativeParentTag;
+  }
+
+  /* package */ final void setNativeParentTag(int nativeParentTag) {
+    mNativeParentTag = nativeParentTag;
+  }
+
+  /**
+   * Sets boundaries of the View that this node maps to relative to the parent left/top coordinate.
+   */
+  /* package */ void setViewBounds(int left, int top, int right, int bottom) {
+    mViewLeft = left;
+    mViewTop = top;
+    mViewRight = right;
+    mViewBottom = bottom;
+  }
+
+  /**
+   * Left position of the View this node maps to relative to the parent View.
+   */
+  /* package */ int getViewLeft() {
+    return mViewLeft;
+  }
+
+  /**
+   * Top position of the View this node maps to relative to the parent View.
+   */
+  /* package */ int getViewTop() {
+    return mViewTop;
+  }
+
+  /**
+   * Right position of the View this node maps to relative to the parent View.
+   */
+  /* package */ int getViewRight() {
+    return mViewRight;
+  }
+
+  /**
+   * Bottom position of the View this node maps to relative to the parent View.
+   */
+  /* package */ int getViewBottom() {
+    return mViewBottom;
+  }
+
+  /* package */ final void forceMountToView() {
+    if (!mMountsToView) {
+      mMountsToView = true;
+      if (getParent() != null) {
+        invalidate();
+      }
+    }
+  }
+
+  /* package */ final boolean mountsToView() {
+    return mMountsToView;
+  }
+
+  /* package */ final boolean isBackingViewCreated() {
+    return mBackingViewIsCreated;
+  }
+
+  /* package */ final void signalBackingViewIsCreated() {
+    mBackingViewIsCreated = true;
   }
 }

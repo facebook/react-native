@@ -9,23 +9,16 @@
 
 package com.facebook.react.flat;
 
-/**
- * ViewManager that creates instances of RCTView.
- */
-/* package */ final class RCTViewManager extends FlatViewManager<RCTView> {
+import android.graphics.Canvas;
+
+/* package */ final class DrawView implements DrawCommand {
+
+  /* package */ static DrawView INSTANCE = new DrawView();
+
+  private DrawView() {}
 
   @Override
-  public String getName() {
-    return "RCTView";
-  }
-
-  @Override
-  public RCTView createShadowNodeInstance() {
-    return new RCTView();
-  }
-
-  @Override
-  public Class<RCTView> getShadowNodeClass() {
-    return RCTView.class;
+  public void draw(FlatViewGroup parent, Canvas canvas) {
+    parent.drawNextChild(canvas);
   }
 }

@@ -23,10 +23,16 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
  * FlatNativeViewHierarchyManager is the only class that performs View manipulations. All of this
  * class methods can only be called from UI thread by {@link FlatUIViewOperationQueue}.
  */
-/* package */ final class FlatNativeViewHierarchyManager extends NativeViewHierarchyManager {
+/* package */ final class FlatNativeViewHierarchyManager extends NativeViewHierarchyManager
+    implements ViewResolver {
 
   /* package */ FlatNativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     super(viewManagers);
+  }
+
+  @Override
+  public View getView(int reactTag) {
+    return super.resolveView(reactTag);
   }
 
   @Override
@@ -60,6 +66,11 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     }
   }
 
+  /* package */ void updateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
+    FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
+    view.mountViews(this, viewsToAdd, viewsToDetach);
+  }
+
   /**
    * Updates View bounds, possibly re-measuring and re-layouting it if the size changed.
    *
@@ -83,6 +94,13 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
       // same size, only location changed, there is a faster route.
       view.offsetLeftAndRight(left - view.getLeft());
       view.offsetTopAndBottom(top - view.getTop());
+    }
+  }
+
+  /* package */ void detachAllChildrenFromViews(int[] viewsToDetachAllChildrenFrom) {
+    for (int viewTag : viewsToDetachAllChildrenFrom) {
+      FlatViewGroup viewGroup = (FlatViewGroup) resolveView(viewTag);
+      viewGroup.detachAllViewsFromParent();
     }
   }
 }

@@ -15,7 +15,9 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 /**
  * A view that FlatShadowNode hierarchy maps to. Performs drawing by iterating over
@@ -45,10 +47,16 @@ import android.view.ViewGroup;
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
+  private int mDrawChildIndex = 0;
   private boolean mIsAttached = false;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
+  }
+
+  @Override
+  protected void detachAllViewsFromParent() {
+    super.detachAllViewsFromParent();
   }
 
   @Override
@@ -58,6 +66,19 @@ import android.view.ViewGroup;
     for (DrawCommand drawCommand : mDrawCommands) {
       drawCommand.draw(this, canvas);
     }
+
+    if (mDrawChildIndex != getChildCount()) {
+      throw new RuntimeException(
+          "Did not draw all children: " + mDrawChildIndex + " / " + getChildCount());
+    }
+    mDrawChildIndex = 0;
+  }
+
+  @Override
+  protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+    // suppress
+    // no drawing -> no invalidate -> return false
+    return false;
   }
 
   @Override
@@ -90,6 +111,13 @@ import android.view.ViewGroup;
     dispatchOnDetached(mAttachDetachListeners);
   }
 
+  /* package */ void drawNextChild(Canvas canvas) {
+    View child = getChildAt(mDrawChildIndex);
+    super.drawChild(canvas, child, getDrawingTime());
+
+    ++mDrawChildIndex;
+  }
+
   /* package */ void mountDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
     invalidate();
@@ -115,6 +143,32 @@ import android.view.ViewGroup;
     mAttachDetachListeners = listeners;
   }
 
+  /* package */ void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {
+    for (int viewToAdd : viewsToAdd) {
+      if (viewToAdd > 0) {
+        View view = ensureViewHasNoParent(viewResolver.getView(viewToAdd));
+        addView(view, -1, ensureLayoutParams(view.getLayoutParams()));
+      } else {
+        View view = ensureViewHasNoParent(viewResolver.getView(-viewToAdd));
+        attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
+      }
+    }
+
+    for (int viewToDetach : viewsToDetach) {
+      removeDetachedView(viewResolver.getView(viewToDetach), false);
+    }
+  }
+
+  private View ensureViewHasNoParent(View view) {
+    ViewParent oldParent = view.getParent();
+    if (oldParent != null) {
+      throw new RuntimeException(
+          "Cannot add view " + view + " to " + this + " while it has a parent " + oldParent);
+    }
+
+    return view;
+  }
+
   private void dispatchOnAttached(AttachDetachListener[] listeners) {
     int numListeners = listeners.length;
     if (numListeners == 0) {
@@ -138,5 +192,12 @@ import android.view.ViewGroup;
     for (AttachDetachListener listener : listeners) {
       listener.onDetached();
     }
+  }
+
+  private ViewGroup.LayoutParams ensureLayoutParams(ViewGroup.LayoutParams lp) {
+    if (checkLayoutParams(lp)) {
+      return lp;
+    }
+    return generateDefaultLayoutParams();
   }
 }
