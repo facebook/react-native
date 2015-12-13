@@ -54,16 +54,19 @@ var resolveAssetSource = require('resolveAssetSource');
 
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
+  loadingIndicatorSrc: true,
   resizeMode: true,
   capInsets: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
+  shouldNotifyLoadEvents: true,
 });
 
 var Image = React.createClass({
   propTypes: {
     ...View.propTypes,
-    /**
+    style: StyleSheetPropType(ImageStylePropTypes), 
+   /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('image!name')` function).
@@ -75,9 +78,32 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]).isRequired,
+    /**
+     * similarly to `source`, this property represents the resource used to render
+     * the loading indicator for the image, displayed until image is ready to be
+     * displayed, typically after when it got downloaded from network.
+     */
+    loadingIndicatorSource: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
-    style: StyleSheetPropType(ImageStylePropTypes),
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load completes successfully
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
     /**
      * [Even] When the image is resized, the corners of the size specified
      * by capInsets will stay a fixed size, but the center content and borders
@@ -137,6 +163,7 @@ var Image = React.createClass({
 
   render: function() {
     var source = resolveAssetSource(this.props.source);
+    var loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
 
     // As opposed to the ios version, here it render `null`
     // when no source or source.uri... so let's not break that.
@@ -148,11 +175,14 @@ var Image = React.createClass({
     if (source && source.uri) {
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      var {onLoadStart, onLoad, onLoadEnd} = this.props;
 
       var nativeProps = merge(this.props, {
         style,
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
         src: source.uri,
         capInsets: this.props.capInsets,
+        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
       var NativeComponent = RKImage;
@@ -200,9 +230,11 @@ var styles = StyleSheet.create({
 var cfg = {
   nativeOnly: {
     src: true,
+    loadingIndicatorSrc: true,
     defaultImageSrc: true,
     imageTag: true,
     progressHandlerRegistered: true,
+    shouldNotifyLoadEvents: true,
   },
 };
 var RKImage = requireNativeComponent('RCTImageView', Image, cfg);

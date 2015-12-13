@@ -27,11 +27,12 @@ import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.AppRegistry;
-import com.facebook.react.uimanager.ReactNative;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.debug.DebugComponentOwnershipModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.systrace.Systrace;
 
 /**
  * Package defining core framework modules (e.g. UIManager). It should be used for modules that
@@ -42,17 +43,35 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
+  private final UIImplementationProvider mUIImplementationProvider;
 
   CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
-      DefaultHardwareBackBtnHandler hardwareBackBtnHandler) {
+      DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
+      UIImplementationProvider uiImplementationProvider) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
+    mUIImplementationProvider = uiImplementationProvider;
   }
 
   @Override
   public List<NativeModule> createNativeModules(
       ReactApplicationContext catalystApplicationContext) {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
+    UIManagerModule uiManagerModule;
+    try {
+      List<ViewManager> viewManagersList = mReactInstanceManager.createAllViewManagers(
+          catalystApplicationContext);
+      uiManagerModule = new UIManagerModule(
+          catalystApplicationContext,
+          viewManagersList,
+          mUIImplementationProvider.createUIImplementation(
+              catalystApplicationContext,
+              viewManagersList));
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+
     return Arrays.<NativeModule>asList(
         new AnimationsDebugModule(
             catalystApplicationContext,
@@ -64,9 +83,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
         new SourceCodeModule(
             mReactInstanceManager.getSourceUrl(),
             mReactInstanceManager.getDevSupportManager().getSourceMapUrl()),
-        new UIManagerModule(
-            catalystApplicationContext,
-            mReactInstanceManager.createAllViewManagers(catalystApplicationContext)),
+        uiManagerModule,
         new DebugComponentOwnershipModule(catalystApplicationContext));
   }
 
@@ -79,7 +96,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
         BridgeProfiling.class,
-        ReactNative.class,
         DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
   }
 

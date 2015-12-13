@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule MatrixMath
+ * @noflow
  */
 /* eslint-disable space-infix-ops */
 'use strict';
@@ -464,10 +465,10 @@ var MatrixMath = {
 
       // Solve the equation by inverting perspectiveMatrix and multiplying
       // rightHandSide by the inverse.
-      var inversePerspectiveMatrix = MatrixMath.inverse3x3(
+      var inversePerspectiveMatrix = MatrixMath.inverse(
         perspectiveMatrix
       );
-      var transposedInversePerspectiveMatrix = MatrixMath.transpose4x4(
+      var transposedInversePerspectiveMatrix = MatrixMath.transpose(
         inversePerspectiveMatrix
       );
       var perspective = MatrixMath.multiplyVectorByMatrix(
@@ -582,6 +583,8 @@ var MatrixMath = {
       translation,
 
       rotate: rotationDegrees[2],
+      rotateX: rotationDegrees[0],
+      rotateY: rotationDegrees[1],
       scaleX: scale[0],
       scaleY: scale[1],
       translateX: translation[0],

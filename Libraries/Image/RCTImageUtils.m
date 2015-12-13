@@ -231,6 +231,11 @@ UIImage *RCTDecodeImageWithData(NSData *data,
 
   if (CGSizeEqualToSize(destSize, CGSizeZero)) {
     destSize = sourceSize;
+    if (!destScale) {
+      destScale = 1;
+    }
+  } else if (!destScale) {
+    destScale = RCTScreenScale();
   }
 
   // calculate target size
@@ -253,13 +258,9 @@ UIImage *RCTDecodeImageWithData(NSData *data,
     return nil;
   }
 
-  // adjust scale
-  size_t actualWidth = CGImageGetWidth(imageRef);
-  CGFloat scale = actualWidth / targetSize.width * destScale;
-
   // return image
   UIImage *image = [UIImage imageWithCGImage:imageRef
-                                       scale:scale
+                                       scale:destScale
                                  orientation:UIImageOrientationUp];
   CGImageRelease(imageRef);
   return image;

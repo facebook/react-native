@@ -28,6 +28,7 @@ var runAndroid = require('./runAndroid/runAndroid');
 var server = require('./server/server');
 var TerminalAdapter = require('yeoman-environment/lib/adapter.js');
 var yeoman = require('yeoman-environment');
+var unbundle = require('./bundle/unbundle');
 var upgrade = require('./upgrade/upgrade');
 
 var fs = require('fs');
@@ -40,6 +41,7 @@ gracefulFs.gracefulify(fs);
 var documentedCommands = {
   'start': [server, 'starts the webserver'],
   'bundle': [bundle, 'builds the javascript bundle for offline use'],
+  'unbundle': [unbundle, 'builds javascript as "unbundle" for offline use'],
   'new-library': [library, 'generates a native library bridge'],
   'link': [link, 'Adds a third-party library to your project. Example: react-native link awesome-camera'],
   'android': [generateWrapper, 'generates an Android project for your app'],

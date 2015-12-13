@@ -22,27 +22,23 @@ Our provisional plan for common views and modules includes:
 #### Views
 
 ```
-Swipe Refresh
-Spinner
 ART
 Maps
 Modal
+Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
 Webview
 ```
 
 #### Modules
 
 ```
-Geo Location
-Net Info
-Camera Roll
+Alert
 App State
+Camera Roll
 Dialog
-Intent
 Media
 Pasteboard
 PushNotificationIOS
-Alert
 ```
 
 ### Some props are only supported on one platform
@@ -59,17 +55,25 @@ There are known cases where the APIs could be made more consistent across iOS an
 - `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (on iOS this is `ProgressViewIOS`, on Android it's `ProgressBarAndroid`).
 
-### Publishing modules on Android
+### Using 3rd-party native modules
 
-There is currently no easy way of publishing custom native modules on Android. Smooth work flow for contributors is important and this will be looked at very closely after the initial Open Source release. Of course the aim will be to streamline and optimize the process between iOS and Android as much as possible.
+There are many awesome 3rd-party modules: https://react.parts/native
+
+Adding these to your apps should be made simpler. Here's [an example](https://github.com/apptailor/react-native-google-signin) how this is done currently.
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android
 
-This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks.
+This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks. 
 
-### No support for shadows on Android
+Another issue with `overflow: 'hidden'` on Android: a view is not clipped by the parent's `borderRadius` even if the parent has `overflow: 'hidden'` enabled – the corners of the inner view will be visible outside of the rounded corners. This is only on Android; it works as expected on iOS. See a [demo of the bug](https://rnplay.org/apps/BlGjdQ) and the [corresponding issue](https://github.com/facebook/react-native/issues/3198).
 
-We don't support shadows on Android currently. These are notoriously hard to implement as they require drawing outside of a view's bounds and Android's invalidation logic has a hard time with that. A possible solution is to use [elevation](https://developer.android.com/training/material/shadows-clipping.html), but more experimentation will be required.
+### View shadows
+
+The `shadow*` [view styles](/react-native/docs/view.html#style) apply on iOS, and the `elevation` view prop is available on Android. Setting `elevation` on Android is equivalent to using the [native elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation), and has the same limitations (most significantly, it only works on Android 5.0+). Setting `elevation` on Android also affects the z-order for overlapping views.
+
+### Android M permissions
+
+The open source version of React Native doesn't yet support the [Android M permission model](http://developer.android.com/training/permissions/requesting.html).
 
 ### Layout-only nodes on Android
 

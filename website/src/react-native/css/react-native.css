@@ -701,6 +701,10 @@ figure {
   width: 650px;
 }
 
+.showcaseSection .inner-content {
+  width: 800px;
+}
+
 .nosidebar .inner-content {
   float: none;
   margin: 0 auto;
@@ -1084,18 +1088,17 @@ div[data-twttr-id] iframe {
 }
 
 .showcaseHeader {
-  text-align: center;
   padding-bottom: 15px;
   padding-top: 15px;
+  text-align: center;
 }
 
 .showcase {
-  margin: 30px auto;
+  margin: 30px auto 10px auto;
   width: 100%;
   display: inline-block;
   text-align: center;
   vertical-align: top;
-  transition: 0.2s opacity ease-in;
 }
 
 @media only screen
@@ -1109,7 +1112,7 @@ div[data-twttr-id] iframe {
 @media only screen
   and (min-device-width: 1024px) {
   .showcase {
-    width: 25%;
+    width: 20%;
   }
 }
 
@@ -1128,6 +1131,7 @@ div[data-twttr-id] iframe {
 
 .showcase p {
   margin-top: 5px;
+  font-weight: normal;
 }
 
 .showcase a {

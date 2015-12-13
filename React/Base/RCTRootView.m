@@ -53,7 +53,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTBridge *_bridge;
   NSString *_moduleName;
   NSDictionary *_launchOptions;
-  NSDictionary *_initialProperties;
   RCTRootContentView *_contentView;
 }
 
@@ -71,7 +70,6 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
     _bridge = bridge;
     _moduleName = moduleName;
-    _initialProperties = [initialProperties copy];
     _appProperties = [initialProperties copy];
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
@@ -214,12 +212,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   };
 }
 
-- (NSDictionary *)initialProperties
-{
-  RCTLogWarn(@"Using deprecated 'initialProperties' property. Use 'appProperties' instead.");
-  return _initialProperties;
-}
-
 - (void)setAppProperties:(NSDictionary *)appProperties
 {
   RCTAssertMainThread();
@@ -358,7 +350,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"
+    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
                       args:@[self.reactTag]];
   }
 }

@@ -53,7 +53,7 @@ function setUpConsole() {
  * For more info on that particular case, see:
  * https://github.com/facebook/react-native/issues/934
  */
-function polyfillGlobal(name, newValue, scope=GLOBAL) {
+function polyfillGlobal(name, newValue, scope = GLOBAL) {
   var descriptor = Object.getOwnPropertyDescriptor(scope, name) || {
     // jest for some bad reasons runs the polyfill code multiple times. In jest
     // environment, XmlHttpRequest doesn't exist so getOwnPropertyDescriptor
@@ -154,6 +154,11 @@ function setUpGeolocation() {
   polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
 }
 
+function setUpProduct() {
+  Object.defineProperty(GLOBAL.navigator, 'product', {value: 'ReactNative'});
+}
+
+
 function setUpWebSockets() {
   polyfillGlobal('WebSocket', require('WebSocket'));
 }
@@ -162,7 +167,6 @@ function setUpProfile() {
   if (__DEV__) {
     var BridgeProfiling = require('BridgeProfiling');
     BridgeProfiling.swizzleReactPerf();
-    BridgeProfiling.attachToRelayProfiler();
   }
 }
 
@@ -198,6 +202,7 @@ setUpPromise();
 setUpErrorHandler();
 setUpXHR();
 setUpGeolocation();
+setUpProduct();
 setUpWebSockets();
 setUpProfile();
 setUpFlowChecker();

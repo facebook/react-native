@@ -13,10 +13,10 @@
 
 var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
+var UIManager = require('UIManager');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
@@ -126,6 +126,17 @@ var ToolbarAndroid = React.createClass({
      */
     titleColor: ReactPropTypes.string,
     /**
+     * Used to set the toolbar direction to RTL.
+     * In addition to this property you need to add
+     *
+     *   android:supportsRtl="true"
+     *
+     * to your application AndroidManifest.xml and then call
+     * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
+     * `onCreate` method.
+     */
+    rtl: ReactPropTypes.bool,
+    /**
      * Used to locate this view in end-to-end tests.
      */
     testID: ReactPropTypes.string,
@@ -154,7 +165,7 @@ var ToolbarAndroid = React.createClass({
           action.icon = resolveAssetSource(action.icon);
         }
         if (action.show) {
-          action.show = RCTUIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
+          action.show = UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
         }
         nativeActions.push(action);
       }
@@ -180,6 +191,7 @@ var toolbarAttributes = {
   logo: true,
   navIcon: true,
   overflowIcon: true,
+  rtl: true,
   subtitle: true,
   subtitleColor: true,
   title: true,

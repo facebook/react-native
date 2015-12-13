@@ -107,28 +107,25 @@ public class LocationModule extends ReactContextBaseJavaModule {
       Callback error) {
     LocationOptions locationOptions = LocationOptions.fromReactMap(options);
 
-    LocationManager locationManager =
-        (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
-    if (provider == null) {
-      error.invoke("No available location provider.");
-      return;
-    }
-
-    Location location = null;
     try {
-      location = locationManager.getLastKnownLocation(provider);
+      LocationManager locationManager =
+          (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+      String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
+      if (provider == null) {
+        error.invoke("No available location provider.");
+        return;
+      }
+      Location location = locationManager.getLastKnownLocation(provider);
+      if (location != null &&
+          SystemClock.currentTimeMillis() - location.getTime() < locationOptions.maximumAge) {
+        success.invoke(locationToMap(location));
+        return;
+      }
+      new SingleUpdateRequest(locationManager, provider, locationOptions.timeout, success, error)
+          .invoke();
     } catch (SecurityException e) {
       throwLocationPermissionMissing(e);
     }
-    if (location != null &&
-        SystemClock.currentTimeMillis() - location.getTime() < locationOptions.maximumAge) {
-      success.invoke(locationToMap(location));
-      return;
-    }
-
-    new SingleUpdateRequest(locationManager, provider, locationOptions.timeout, success, error)
-        .invoke();
   }
 
   /**
@@ -143,24 +140,23 @@ public class LocationModule extends ReactContextBaseJavaModule {
       return;
     }
     LocationOptions locationOptions = LocationOptions.fromReactMap(options);
-    LocationManager locationManager =
-        (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-    String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
-    if (provider == null) {
-      emitError("No location provider available.");
-      return;
-    }
 
     try {
+      LocationManager locationManager =
+          (LocationManager) getReactApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+      String provider = getValidProvider(locationManager, locationOptions.highAccuracy);
+      if (provider == null) {
+        emitError("No location provider available.");
+        return;
+      }
       if (!provider.equals(mWatchedProvider)) {
         locationManager.removeUpdates(mLocationListener);
         locationManager.requestLocationUpdates(provider, 1000, 0, mLocationListener);
       }
+      mWatchedProvider = provider;
     } catch (SecurityException e) {
       throwLocationPermissionMissing(e);
     }
-
-    mWatchedProvider = provider;
   }
 
   /**

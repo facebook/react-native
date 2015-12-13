@@ -39,10 +39,12 @@ var COMPONENTS = [
 var APIS = [
   require('./AccessibilityAndroidExample.android'),
   require('./BorderExample'),
+  require('./ClipboardExample'),
   require('./GeolocationExample'),
   require('./IntentAndroidExample.android'),
   require('./LayoutEventsExample'),
   require('./LayoutExample'),
+  require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./TimerExample'),

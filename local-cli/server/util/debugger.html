@@ -58,12 +58,6 @@ var messageHandlers = {
     window.onbeforeunload = undefined;
     window.localStorage.setItem('sessionID', message.id);
     window.location.reload();
-  },
-  'executeApplicationScript': function(message) {
-    worker.postMessage(message);
-  },
-  'executeJSCall': function(message) {
-    worker.postMessage(message);
   }
 };
 
@@ -87,9 +81,11 @@ function connectToDebuggerProxy() {
 
     var handler = messageHandlers[object.method];
     if (handler) {
+      // If we have a local handler, use it.
       handler(object);
     } else {
-      console.warn('Unknown method: ' + object.method);
+      // Otherwise, pass through to the worker.
+      worker.postMessage(object);
     }
   };
 

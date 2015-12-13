@@ -43,7 +43,7 @@ exports.examples = [{
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
           onPress={() => AlertIOS.alert(
-            null,
+            'Foo Title',
             null,
             [
               {text: 'Button', onPress: () => console.log('Button Pressed!')},
@@ -98,6 +98,87 @@ exports.examples = [{
   }
 },
 {
+  title: 'Alert Types',
+  render() {
+    return (
+      <View>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.alert(
+            'Hello World',
+            null,
+            [
+              {text: 'OK', onPress: (text) => console.log('OK pressed')},
+            ],
+            'default'
+          )}>
+
+          <View style={styles.button}>
+            <Text>
+              {'default'}
+            </Text>
+          </View>
+          
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.alert(
+            'Plain Text Entry',
+            null,
+            [
+              {text: 'Submit', onPress: (text) => console.log('Text: ' + text)},
+            ],
+            'plain-text'
+          )}>
+
+          <View style={styles.button}>
+            <Text>
+              plain-text
+            </Text>
+          </View>
+          
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.alert(
+            'Secure Text Entry',
+            null,
+            [
+              {text: 'Submit', onPress: (text) => console.log('Password: ' + text)},
+            ],
+            'secure-text'
+          )}>
+
+          <View style={styles.button}>
+            <Text>
+              secure-text
+            </Text>
+          </View>
+          
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => AlertIOS.alert(
+            'Login & Password',
+            null,
+            [
+              {text: 'Submit', onPress: (details) => console.log('Login: ' + details.login + '; Password: ' + details.password)},
+            ],
+            'login-password'
+          )}>
+
+          <View style={styles.button}>
+            <Text>
+              login-password
+            </Text>
+          </View>
+          
+        </TouchableHighlight>
+      </View>
+    );
+  }
+},
+{
   title: 'Prompt',
   render(): React.Component {
     return <PromptExample />
@@ -116,10 +197,11 @@ class PromptExample extends React.Component {
     this.title = 'Type a value';
     this.defaultValue = 'Default value';
     this.buttons = [{
-      text: 'Custom cancel',
-    }, {
       text: 'Custom OK',
       onPress: this.promptResponse
+    }, {
+      text: 'Custom Cancel',
+      style: 'cancel',
     }];
   }
 

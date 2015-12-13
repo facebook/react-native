@@ -17,6 +17,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.facebook.common.util.UriUtil;
+import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -28,6 +29,15 @@ import com.facebook.react.uimanager.ReactShadowNode;
 public class ReactTextInlineImageShadowNode extends LayoutShadowNode {
 
   private @Nullable Uri mUri;
+  private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private final @Nullable Object mCallerContext;
+
+  public ReactTextInlineImageShadowNode(
+      AbstractDraweeControllerBuilder draweeControllerBuilder,
+      @Nullable Object callerContext) {
+    mDraweeControllerBuilder = draweeControllerBuilder;
+    mCallerContext = callerContext;
+  }
 
   @ReactProp(name = "src")
   public void setSource(@Nullable String source) {
@@ -75,6 +85,14 @@ public class ReactTextInlineImageShadowNode extends LayoutShadowNode {
   @Override
   public boolean isVirtual() {
     return true;
+  }
+
+  public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
+    return mDraweeControllerBuilder;
+  }
+
+  public @Nullable Object getCallerContext() {
+    return mCallerContext;
   }
 
 }

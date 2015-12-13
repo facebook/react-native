@@ -13,6 +13,8 @@ class ResolutionResponse {
     this.dependencies = [];
     this.asyncDependencies = [];
     this.mainModuleId = null;
+    this.mocks = null;
+    this.numPrependedDependencies = 0;
     this._mappings = Object.create(null);
     this._finalized = false;
   }
@@ -49,6 +51,7 @@ class ResolutionResponse {
   prependDependency(module) {
     this._assertNotFinalized();
     this.dependencies.unshift(module);
+    this.numPrependedDependencies += 1;
   }
 
   pushAsyncDependency(dependency){

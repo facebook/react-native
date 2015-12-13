@@ -7,6 +7,7 @@
 #include <jsc_legacy_profiler.h>
 #include "JSCHelpers.h"
 #include "JSCLegacyProfiler.h"
+#include "Value.h"
 
 static JSValueRef nativeProfilerStart(
     JSContextRef ctx,
@@ -16,12 +17,20 @@ static JSValueRef nativeProfilerStart(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (argumentCount < 1) {
-    // Could raise an exception here.
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeProfilerStart: requires at least 1 argument");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
-  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], NULL);
+  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
+  #if WITH_JSC_INTERNAL
+  JSStartProfiling(ctx, title, false);
+  #else
   JSStartProfiling(ctx, title);
+  #endif
   JSStringRelease(title);
   return JSValueMakeUndefined(ctx);
 }
@@ -34,12 +43,24 @@ static JSValueRef nativeProfilerEnd(
     const JSValueRef arguments[],
     JSValueRef* exception) {
   if (argumentCount < 1) {
-    // Could raise an exception here.
+    if (exception) {
+      *exception = facebook::react::makeJSCException(
+        ctx,
+        "nativeProfilerEnd: requires at least 1 argument");
+    }
     return JSValueMakeUndefined(ctx);
   }
 
-  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], NULL);
-  JSEndProfilingAndRender(ctx, title, "/sdcard/profile.json");
+  std::string writeLocation("/sdcard/");
+  if (argumentCount > 1) {
+    JSStringRef fileName = JSValueToStringCopy(ctx, arguments[1], exception);
+    writeLocation += facebook::react::String::ref(fileName).str();
+    JSStringRelease(fileName);
+  } else {
+    writeLocation += "profile.json";
+  }
+  JSStringRef title = JSValueToStringCopy(ctx, arguments[0], exception);
+  JSEndProfilingAndRender(ctx, title, writeLocation.c_str());
   JSStringRelease(title);
   return JSValueMakeUndefined(ctx);
 }

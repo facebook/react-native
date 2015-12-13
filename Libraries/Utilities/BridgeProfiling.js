@@ -11,10 +11,19 @@
  */
 'use strict';
 
+type RelayProfiler = {
+  attachProfileHandler(
+    name: string,
+    handler: (name: string, state?: any) => () => void
+  ): void
+};
+
 var GLOBAL = GLOBAL || this;
 var TRACE_TAG_REACT_APPS = 1 << 17;
+var TRACE_TAG_JSC_CALLS = 1 << 27;
 
-var _enabled;
+var _enabled = false;
+var _asyncCookie = 0;
 var _ReactPerf = null;
 function ReactPerf() {
   if (!_ReactPerf) {
@@ -25,11 +34,21 @@ function ReactPerf() {
 
 var BridgeProfiling = {
   setEnabled(enabled: boolean) {
+    if (_enabled !== enabled) {
+      if (enabled) {
+        global.nativeTraceBeginLegacy && global.nativeTraceBeginLegacy(TRACE_TAG_JSC_CALLS);
+      } else {
+        global.nativeTraceEndLegacy && global.nativeTraceEndLegacy(TRACE_TAG_JSC_CALLS);
+      }
+    }
     _enabled = enabled;
 
     ReactPerf().enableMeasure = enabled;
   },
 
+  /**
+   * profile/profileEnd for starting and then ending a profile within the same call stack frame
+  **/
   profile(profileName?: any) {
     if (_enabled) {
       profileName = typeof profileName === 'function' ?
@@ -44,6 +63,30 @@ var BridgeProfiling = {
     }
   },
 
+  /**
+   * profileAsync/profileAsyncEnd for starting and then ending a profile where the end can either
+   * occur on another thread or out of the current stack frame, eg await
+   * the returned cookie variable should be used as input into the asyncEnd call to end the profile
+  **/
+  profileAsync(profileName?: any): any {
+    var cookie = _asyncCookie;
+    if (_enabled) {
+      _asyncCookie++;
+      profileName = typeof profileName === 'function' ?
+        profileName() : profileName;
+      global.nativeTraceBeginAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+    }
+    return cookie;
+  },
+
+  profileAsyncEnd(profileName?: any, cookie?: any) {
+    if (_enabled) {
+      profileName = typeof profileName === 'function' ?
+        profileName() : profileName;
+      global.nativeTraceEndAsyncSection(TRACE_TAG_REACT_APPS, profileName, cookie, 0);
+    }
+  },
+
   reactPerfMeasure(objName: string, fnName: string, func: any): any {
     return function (component) {
       if (!_enabled) {
@@ -52,7 +95,7 @@ var BridgeProfiling = {
 
       var name = objName === 'ReactCompositeComponent' && this.getName() || '';
       BridgeProfiling.profile(`${objName}.${fnName}(${name})`);
-      var ret = func.apply(this, arguments);
+    var ret = func.apply(this, arguments);
       BridgeProfiling.profileEnd();
       return ret;
     };
@@ -62,22 +105,17 @@ var BridgeProfiling = {
     ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
 
-  attachToRelayProfiler() {
-    // We don't want to create a dependency on `RelayProfiler`, so that's why
-    // we require it indirectly (rather than using a literal string). Since
-    // there's no guarantee that the module will be present, we must wrap
-    // everything in a try-catch block as requiring a non-existing module
-    // will just throw.
-    try {
-      var rpName = 'RelayProfiler';
-      var RelayProfiler = require(rpName);
-      RelayProfiler.attachProfileHandler('*', (name) => {
-        BridgeProfiling.profile(name);
-        return () => {
-          BridgeProfiling.profileEnd();
-        };
-      });
-    } catch(err) {}
+  /**
+   * Relay profiles use await calls, so likely occur out of current stack frame
+   * therefore async variant of profiling is used
+  **/
+  attachToRelayProfiler(relayProfiler: RelayProfiler) {
+    relayProfiler.attachProfileHandler('*', (name) => {
+      var cookie = BridgeProfiling.profileAsync(name);
+      return () => {
+        BridgeProfiling.profileAsyncEnd(name, cookie);
+      };
+    });
   },
 
   /* This is not called by default due to perf overhead but it's useful

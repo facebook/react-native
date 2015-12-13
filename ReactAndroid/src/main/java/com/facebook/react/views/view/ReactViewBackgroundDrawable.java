@@ -159,7 +159,7 @@ import com.facebook.csslayout.Spacing;
               : 0;
       outline.setRoundRect(getBounds(), mBorderRadius + extraRadiusFromBorderWidth);
     } else {
-      super.getOutline(outline);
+      outline.setRect(getBounds());
     }
   }
 

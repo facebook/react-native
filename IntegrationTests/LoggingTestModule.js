@@ -10,10 +10,12 @@
  */
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
+
 var warning = require('warning');
 var invariant = require('invariant');
 
-module.exports = {
+var LoggingTestModule = {
   logToConsole: function(str) {
     console.log(str);
   },
@@ -30,3 +32,10 @@ module.exports = {
     throw new Error(str);
   }
 };
+
+BatchedBridge.registerCallableModule(
+  'LoggingTestModule',
+  LoggingTestModule
+);
+
+module.exports = LoggingTestModule;

@@ -17,6 +17,7 @@ var Activity = require('./src/Activity');
 var Server = require('./src/Server');
 var SocketInterface = require('./src/SocketInterface');
 
+exports.createServer = createServer;
 exports.middleware = function(options) {
   var server = new Server(omit(options, ['verbose']));
   return server.processRequest.bind(server);

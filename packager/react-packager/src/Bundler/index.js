@@ -139,14 +139,22 @@ class Bundler {
     sourceMapUrl,
     dev: isDev,
     platform,
+    unbundle: isUnbundle,
   }) {
     const bundle = new Bundle(sourceMapUrl);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
+    const moduleSystem = this._resolver.getModuleSystemDependencies(
+      { dev: isDev, platform, isUnbundle }
+    );
+
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
       transformEventId = Activity.startEvent('transform');
+
+      // Prepend the module system polyfill to the top of dependencies
+      var dependencies = moduleSystem.concat(response.dependencies);
 
       let bar;
       if (process.stdout.isTTY) {
@@ -154,13 +162,15 @@ class Bundler {
           complete: '=',
           incomplete: ' ',
           width: 40,
-          total: response.dependencies.length,
+          total: dependencies.length,
         });
       }
 
-      bundle.setMainModuleId(response.mainModuleId);
+      bbundle.setMainModuleId(response.mainModuleId);
+      bbundle.setNumPrependedModules(
+        response.numPrependedDependencies + moduleSystem.length);
       return Promise.all(
-        response.dependencies.map(
+        dependencies.map(
           module => this._transformModule(
             bundle,
             response,
@@ -241,21 +251,20 @@ class Bundler {
       );
     }
 
-    const resolver = this._resolver;
-    return transform.then(
-      transformed => resolver.wrapModule(
-        response,
-        module,
-        transformed.code
-      ).then(
-        code => new ModuleTransport({
-          code: code,
-          map: transformed.map,
-          sourceCode: transformed.sourceCode,
-          sourcePath: transformed.sourcePath,
-          virtual: transformed.virtual,
-        })
-      )
+  _wrapTransformedModule(response, module, transformed) {
+    return this._resolver.wrapModule(
+      response,
+      module,
+      transformed.code
+    ).then(
+      ({code, name}) => new ModuleTransport({
+        code,
+        name,
+        map: transformed.map,
+        sourceCode: transformed.sourceCode,
+        sourcePath: transformed.sourcePath,
+        virtual: transformed.virtual,
+      })
     );
   }
 
@@ -293,6 +302,12 @@ class Bundler {
 
   generateAssetModule(bundle, module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
+    var assetUrlPath = path.join('/assets', path.dirname(relPath));
+    
+    // On Windows, change backslashes to slashes to get proper URL path from file path.
+    if (path.sep === '\\') {
+      assetUrlPath = assetUrlPath.replace(/\\/g, '/');
+    }
 
     return Promise.all([
       sizeOf(module.path),
@@ -303,7 +318,7 @@ class Bundler {
       const img = {
         __packager_asset: true,
         fileSystemLocation: path.dirname(module.path),
-        httpServerLocation: path.join('/assets', path.dirname(relPath)),
+        httpServerLocation: assetUrlPath,
         width: dimensions.width / module.resolution,
         height: dimensions.height / module.resolution,
         scales: assetData.scales,

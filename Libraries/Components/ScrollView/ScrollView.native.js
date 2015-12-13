@@ -18,7 +18,6 @@ var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var RCTUIManager = require('NativeModules').UIManager;
 var ScrollResponder = require('ScrollResponder');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
@@ -279,7 +278,7 @@ var ScrollView = React.createClass({
      * Experimental: When true, offscreen child views (whose `overflow` value is
      * `hidden`) are removed from their native backing superview when offscreen.
      * This can improve scrolling performance on long lists. The default value is
-     * false.
+     * true.
      */
     removeClippedSubviews: PropTypes.bool,
     /**

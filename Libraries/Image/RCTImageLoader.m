@@ -52,17 +52,17 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)setBridge:(RCTBridge *)bridge
+- (void)setUp
 {
   // Get image loaders and decoders
   NSMutableArray<id<RCTImageURLLoader>> *loaders = [NSMutableArray array];
   NSMutableArray<id<RCTImageDataDecoder>> *decoders = [NSMutableArray array];
-  for (id<RCTBridgeModule> module in bridge.modules.allValues) {
-    if ([module conformsToProtocol:@protocol(RCTImageURLLoader)]) {
-      [loaders addObject:(id<RCTImageURLLoader>)module];
+  for (Class moduleClass in _bridge.moduleClasses) {
+    if ([moduleClass conformsToProtocol:@protocol(RCTImageURLLoader)]) {
+      [loaders addObject:[_bridge moduleForClass:moduleClass]];
     }
-    if ([module conformsToProtocol:@protocol(RCTImageDataDecoder)]) {
-      [decoders addObject:(id<RCTImageDataDecoder>)module];
+    if ([moduleClass conformsToProtocol:@protocol(RCTImageDataDecoder)]) {
+      [decoders addObject:[_bridge moduleForClass:moduleClass]];
     }
   }
 
@@ -92,20 +92,16 @@ RCT_EXPORT_MODULE()
     }
   }];
 
-  _bridge = bridge;
   _loaders = loaders;
   _decoders = decoders;
-
-  if (!_URLCache) {
-    _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
-    _URLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
-                                              diskCapacity:200 * 1024 * 1024 // 200MB
-                                                  diskPath:@"React/RCTImageDownloader"];
-  }
 }
 
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
 {
+  if (!_loaders) {
+    [self setUp];
+  }
+
   if (RCT_DEBUG) {
     // Check for handler conflicts
     float previousPriority = 0;
@@ -143,6 +139,10 @@ RCT_EXPORT_MODULE()
 
 - (id<RCTImageDataDecoder>)imageDataDecoderForData:(NSData *)data
 {
+  if (!_decoders) {
+    [self setUp];
+  }
+
   if (RCT_DEBUG) {
     // Check for handler conflicts
     float previousPriority = 0;
@@ -222,7 +222,17 @@ RCT_EXPORT_MODULE()
   }
 
   // All access to URL cache must be serialized
+  if (!_URLCacheQueue) {
+    _URLCacheQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLCacheQueue", DISPATCH_QUEUE_SERIAL);
+  }
   dispatch_async(_URLCacheQueue, ^{
+
+    if (!_URLCache) {
+      _URLCache = [[NSURLCache alloc] initWithMemoryCapacity:5 * 1024 * 1024 // 5MB
+                                                diskCapacity:200 * 1024 * 1024 // 200MB
+                                                    diskPath:@"React/RCTImageDownloader"];
+    }
+
     RCTImageLoader *strongSelf = weakSelf;
     if (cancelled || !strongSelf) {
       return;
@@ -395,14 +405,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  NSURL *requestURL = request.URL;
-  for (id<RCTBridgeModule> module in _bridge.modules.allValues) {
-    if ([module conformsToProtocol:@protocol(RCTImageURLLoader)] &&
-        [(id<RCTImageURLLoader>)module canLoadImageURL:requestURL]) {
-      return YES;
-    }
-  }
-  return NO;
+  return [self imageURLLoaderForURL:request.URL] != nil;
 }
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
@@ -450,7 +453,7 @@ RCT_EXPORT_MODULE()
 
 - (RCTImageLoader *)imageLoader
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTImageLoader class])];
+  return [self moduleForClass:[RCTImageLoader class]];
 }
 
 @end

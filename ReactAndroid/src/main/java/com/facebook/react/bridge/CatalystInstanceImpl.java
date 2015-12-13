@@ -88,8 +88,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
         new Runnable() {
           @Override
           public void run() {
-            initializeBridge(jsExecutor, jsModulesConfig);
-            initLatch.countDown();
+            Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeBridge");
+            try {
+              initializeBridge(jsExecutor, jsModulesConfig);
+              initLatch.countDown();
+            } finally {
+              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            }
           }
         });
 
@@ -108,22 +113,31 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
     Assertions.assertCondition(mBridge == null, "initializeBridge should be called once");
 
-    mBridge = new ReactBridge(
-        jsExecutor,
-        new NativeModulesReactCallback(),
-        mCatalystQueueConfiguration.getNativeModulesQueueThread());
-    mBridge.setGlobalVariable(
-        "__fbBatchedBridgeConfig",
-        buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
-    Systrace.registerListener(mTraceListener);
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridgeCtor");
+    try {
+      mBridge = new ReactBridge(
+          jsExecutor,
+          new NativeModulesReactCallback(),
+          mCatalystQueueConfiguration.getNativeModulesQueueThread());
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "setBatchedBridgeConfig");
+    try {
+      mBridge.setGlobalVariable(
+          "__fbBatchedBridgeConfig",
+          buildModulesConfigJSONProperty(mJavaRegistry, jsModulesConfig));
+      mBridge.setGlobalVariable(
+          "__RCTProfileIsProfiling",
+          Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS) ? "true" : "false");
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
   }
 
   @Override
   public void runJSBundle() {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "CatalystInstance_runJSBundle");
-
     try {
       final CountDownLatch initLatch = new CountDownLatch(1);
       mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
@@ -135,10 +149,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
               incrementPendingJSCalls();
 
+              Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "loadJSScript");
               try {
                 mJSBundleLoader.loadScript(mBridge);
+
+                // This is registered after JS starts since it makes a JS call
+                Systrace.registerListener(mTraceListener);
               } catch (JSExecutionException e) {
                 mNativeModuleCallExceptionHandler.handleException(e);
+              } finally {
+                Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
               }
 
               initLatch.countDown();
@@ -149,8 +169,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
           "Timed out loading JS!");
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
-    } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
@@ -296,6 +314,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mJavaRegistry.getAllModules();
   }
 
+  @Override
+  public void handleMemoryPressure(MemoryPressure level) {
+    Assertions.assertNotNull(mBridge).handleMemoryPressure(level);
+  }
+
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
    * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
@@ -343,16 +366,15 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private String buildModulesConfigJSONProperty(
       NativeModuleRegistry nativeModuleRegistry,
       JavaScriptModulesConfig jsModulesConfig) {
-    // TODO(5300733): Serialize config using single json generator
     JsonFactory jsonFactory = new JsonFactory();
     StringWriter writer = new StringWriter();
     try {
       JsonGenerator jg = jsonFactory.createGenerator(writer);
       jg.writeStartObject();
       jg.writeFieldName("remoteModuleConfig");
-      jg.writeRawValue(nativeModuleRegistry.moduleDescriptions());
+      nativeModuleRegistry.writeModuleDescriptions(jg);
       jg.writeFieldName("localModulesConfig");
-      jg.writeRawValue(jsModulesConfig.moduleDescriptions());
+      jsModulesConfig.writeModuleDescriptions(jg);
       jg.writeEndObject();
       jg.close();
     } catch (IOException ioe) {
