@@ -25,11 +25,11 @@ var invariant = require('invariant');
  *
  * ```
  * componentDidMount() {
- *  var url = IntentAndroid.getInitialURL(url => {
- *  	if (url) {
- *  		console.log('Initial url is: ' + url);
- *  	}
- *  });
+ *   var url = IntentAndroid.getInitialURL(url => {
+ *     if (url) {
+ *       console.log('Initial url is: ' + url);
+ *     }
+ *   });
  * }
  * ```
  *
