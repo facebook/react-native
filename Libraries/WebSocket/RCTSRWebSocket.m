@@ -234,7 +234,7 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
   __strong RCTSRWebSocket *_selfRetain;
 
   NSArray<NSString *> *_requestedProtocols;
-  NSDictionary<NSString *, id> *_requestedOptions;
+  NSDictionary<NSString *, NSString *> *_requestedOptions;
   RCTSRIOConsumerPool *_consumerPool;
 }
 
@@ -245,7 +245,7 @@ static __strong NSData *CRLFCRLF;
   CRLFCRLF = [[NSData alloc] initWithBytes:"\r\n\r\n" length:4];
 }
 
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, id> *)options
+- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, NSString *> *)options
 {
   RCTAssertParam(request);
 
@@ -476,25 +476,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
 
-  NSString *origin = origin = _url.RCTSR_origin;
-  NSObject *requestedOrigin = [_requestedOptions objectForKey: @"origin"];
-  if (requestedOrigin) {
-    if ([requestedOrigin isKindOfClass:[NSString class]]) {
-       origin = (NSString *)requestedOrigin;
-     } else {
-       RCTSRFastLog(@"Ignoring requested origin, value not a string.");
-     }
+  NSString *origin = [_requestedOptions objectForKey: @"origin"];
+  if (!origin) {
+    origin = _url.RCTSR_origin;
   }
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)origin);
-
-  NSDictionary<NSString *, NSString *> *headers = [_requestedOptions objectForKey: @"headers"];
-  [headers enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-    if ([obj isKindOfClass:[NSString class]]) {
-      CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
-    } else {
-      RCTSRFastLog(@"Ignoring passed in header: %@, value not a string.", key);
-    }
-  }];
 
   [_urlRequest.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);

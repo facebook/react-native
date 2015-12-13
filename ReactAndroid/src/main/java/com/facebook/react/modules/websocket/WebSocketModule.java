@@ -75,30 +75,13 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
         .tag(id)
         .url(url);
 
-    if (options != null) {
-      if (options.hasKey("origin")) {
-        if (ReadableType.String.equals(options.getType("origin"))) {
-          builder.addHeader("Origin", options.getString("origin"));
-        } else {
-          FLog.w(
-            ReactConstants.TAG,
-            "Ignoring: requested origin, value not a string");
-        }
-      }
-
-      if (options.hasKey("headers")) {
-        ReadableMap headers = options.getMap("headers");
-        ReadableMapKeySetIterator keyIterator = headers.keySetIterator();
-        while (keyIterator.hasNextKey()) {
-          String key = keyIterator.nextKey();
-          if (ReadableType.String.equals(headers.getType(key))) {
-            builder.addHeader(key, headers.getString(key));
-          } else {
-            FLog.w(
-              ReactConstants.TAG,
-              "Ignoring passed in header: " + key + ", value not a string.");
-          }
-        }
+    if (options != null && options.hasKey("origin")) {
+      if (ReadableType.String.equals(options.getType("origin"))) {
+        builder.addHeader("Origin", options.getString("origin"));
+      } else {
+        FLog.w(
+          ReactConstants.TAG,
+          "Ignoring: requested origin, value not a string");
       }
     }
 

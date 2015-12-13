@@ -33,7 +33,7 @@ class WebSocketBase extends EventTarget {
   readyState: number;
   url: ?string;
 
-  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string, headers?: Object}) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
     super();
     this.CONNECTING = 0;
     this.OPEN = 1;
@@ -42,17 +42,6 @@ class WebSocketBase extends EventTarget {
 
     if (typeof protocols === 'string') {
       protocols = [protocols];
-    }
-
-    if (options && options.headers) {
-      // ensure all header values are strings
-      for (var header in options.headers) {
-        if (options.headers.hasOwnProperty(header)) {
-          if (typeof options.headers[header] !== 'string') {
-            throw new Error('header values are required to be strings: ' + header + '.');
-          }
-        }
-      }
     }
 
     this.readyState = this.CONNECTING;
