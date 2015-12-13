@@ -1,4 +1,3 @@
-// Keep in sync with packager/transformer.js
 {
   "retainLines": true,
   "compact": true,

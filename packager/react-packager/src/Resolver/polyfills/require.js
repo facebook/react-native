@@ -60,7 +60,7 @@
       // packager/react-packager/src/Resolver/index.js
       mod.factory.call(global, global, require, mod.module, mod.module.exports);
 
-      __DEV__ && Systrace().endEvent();
+      __DEV__ && BridgeProfiling().profileEnd();
     } catch (e) {
       mod.hasError = true;
       mod.isInitialized = false;
@@ -70,14 +70,14 @@
     return mod.module.exports;
   }
 
-  const Systrace = __DEV__ && (() => {
-    var _Systrace;
+  const BridgeProfiling = __DEV__ && (() => {
+    var _BridgeProfiling;
     try {
-      _Systrace = require('Systrace');
+      _BridgeProfiling = require('BridgeProfiling');
     } catch(e) {}
 
-    return _Systrace && _Systrace.beginEvent ?
-      _Systrace : { beginEvent: () => {}, endEvent: () => {} };
+    return _BridgeProfiling && _BridgeProfiling.profile ?
+      _BridgeProfiling : { profile: () => {}, profileEnd: () => {} };
   });
 
   global.__d = define;

@@ -1,6 +1,13 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
 'use strict';
 
-const Activity = require('../Activity');
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
@@ -15,7 +22,7 @@ const hasOwn = Object.prototype.hasOwnProperty;
 const NOT_FOUND_IN_ROOTS = 'NotFoundInRootsError';
 
 class Fastfs extends EventEmitter {
-  constructor(name, roots, fileWatcher, {ignore, crawling}) {
+  constructor(name, roots, fileWatcher, {ignore, crawling, activity}) {
     super();
     this._name = name;
     this._fileWatcher = fileWatcher;
@@ -23,6 +30,7 @@ class Fastfs extends EventEmitter {
     this._roots = roots.map(root => new File(root, { isDir: true }));
     this._fastPaths = Object.create(null);
     this._crawling = crawling;
+    this._activity = activity;
   }
 
   build() {
@@ -31,7 +39,11 @@ class Fastfs extends EventEmitter {
     );
 
     return this._crawling.then(files => {
-      const fastfsActivity = Activity.startEvent('Building in-memory fs for ' + this._name);
+      let fastfsActivity;
+      const activity = this._activity;
+      if (activity) {
+        fastfsActivity = activity.startEvent('Building in-memory fs for ' + this._name);
+      }
       files.forEach(filePath => {
         if (filePath.match(rootsPattern)) {
           const newFile = new File(filePath, { isDir: false });
@@ -48,7 +60,9 @@ class Fastfs extends EventEmitter {
           }
         }
       });
-      Activity.endEvent(fastfsActivity);
+      if (activity) {
+        activity.endEvent(fastfsActivity);
+      }
       this._fileWatcher.on('all', this._processFileChange.bind(this));
     });
   }
@@ -65,26 +79,30 @@ class Fastfs extends EventEmitter {
     return [].concat(...this._roots.map(root => root.getFiles()));
   }
 
-  findFilesByExt(ext, { ignore }) {
+  findFilesByExt(ext, { ignore } = {}) {
+    return this.findFilesByExts([ext], {ignore});
+  }
+
+  findFilesByExts(exts, { ignore } = {}) {
     return this.getAllFiles()
-      .filter(
-        file => file.ext() === ext && (!ignore || !ignore(file.path))
-      )
+      .filter(file => (
+        exts.indexOf(file.ext()) !== -1 && (!ignore || !ignore(file.path))
+      ))
       .map(file => file.path);
   }
 
-  findFilesByExts(exts) {
-    return this.getAllFiles()
-      .filter(file => exts.indexOf(file.ext()) !== -1)
-      .map(file => file.path);
-  }
-
-  findFilesByName(name, { ignore }) {
+  findFilesByName(name, { ignore } = {}) {
     return this.getAllFiles()
       .filter(
         file => path.basename(file.path) === name &&
           (!ignore || !ignore(file.path))
       )
+      .map(file => file.path);
+  }
+
+  matchFilesByPattern(pattern) {
+    return this.getAllFiles()
+      .filter(file => file.path.match(pattern))
       .map(file => file.path);
   }
 
@@ -136,7 +154,7 @@ class Fastfs extends EventEmitter {
   }
 
   matches(dir, pattern) {
-    let dirFile = this._getFile(dir);
+    const dirFile = this._getFile(dir);
     if (!dirFile.isDir) {
       throw new Error(`Expected file ${dirFile.path} to be a directory`);
     }
@@ -148,7 +166,7 @@ class Fastfs extends EventEmitter {
 
   _getRoot(filePath) {
     for (let i = 0; i < this._roots.length; i++) {
-      let possibleRoot = this._roots[i];
+      const possibleRoot = this._roots[i];
       if (isDescendant(possibleRoot.path, filePath)) {
         return possibleRoot;
       }
@@ -258,7 +276,7 @@ class File {
     /*eslint consistent-this:0*/
     let file = this;
     for (let i = 0; i < parts.length; i++) {
-      let fileName = parts[i];
+      const fileName = parts[i];
       if (!fileName) {
         continue;
       }

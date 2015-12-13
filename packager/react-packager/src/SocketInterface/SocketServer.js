@@ -56,7 +56,6 @@ class SocketServer {
 
     // Disable the file watcher.
     options.nonPersistent = true;
-    delete options["verbose"]; // HACK
     this._packagerServer = new Server(options);
     this._dieEventually(MAX_STARTUP_TIME);
   }

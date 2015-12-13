@@ -11,7 +11,7 @@
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
 const FileWatcher = require('../FileWatcher');
-const getPlatformExtension = require('../lib/getPlatformExtension');
+const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
@@ -194,6 +194,17 @@ class Server {
     });
   }
 
+  buildPrepackBundle(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = bundleOpts(options);
+      return this._bundler.prepackBundle(opts);
+    });
+  }
+
   buildBundleFromUrl(reqUrl) {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
@@ -244,6 +255,7 @@ class Server {
           p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           return p;
         });
@@ -370,6 +382,7 @@ class Server {
           var bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
           res.end(bundleSource);
@@ -377,6 +390,7 @@ class Server {
         } else if (requestType === 'map') {
           var sourceMap = p.getSourceMap({
             minify: options.minify,
+            dev: options.dev,
           });
 
           if (typeof sourceMap !== 'string') {
@@ -402,7 +416,9 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' || error.type === 'NotFoundError') {
+    if (error.type === 'TransformError' ||
+        error.type === 'NotFoundError' ||
+        error.type === 'UnableToResolveError') {
       error.errors = [{
         description: error.description,
         filename: error.filename,

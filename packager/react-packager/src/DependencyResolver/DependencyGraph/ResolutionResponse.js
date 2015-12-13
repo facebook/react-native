@@ -54,7 +54,7 @@ class ResolutionResponse {
     this.numPrependedDependencies += 1;
   }
 
-  pushAsyncDependency(dependency){
+  pushAsyncDependency(dependency) {
     this._assertNotFinalized();
     this.asyncDependencies.push(dependency);
   }
@@ -65,6 +65,10 @@ class ResolutionResponse {
     if (this._mappings[hash] == null) {
       this._mappings[hash] = pairs;
     }
+  }
+
+  setMocks(mocks) {
+    this.mocks = mocks;
   }
 
   getResolvedDependencyPairs(module) {

@@ -33,7 +33,6 @@ var ScrollView = require('ScrollView');
 var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
-var Platform = require('Platform');
 
 var isEmpty = require('isEmpty');
 var logError = require('logError');

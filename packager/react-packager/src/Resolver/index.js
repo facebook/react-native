@@ -8,14 +8,16 @@
  */
 'use strict';
 
-var path = require('path');
-var DependencyGraph = require('../DependencyResolver/DependencyGraph');
-var replacePatterns = require('../DependencyResolver/replacePatterns');
-var Polyfill = require('../DependencyResolver/Polyfill');
-var declareOpts = require('../lib/declareOpts');
-var Promise = require('promise');
 
-var validateOpts = declareOpts({
+const path = require('path');
+const Activity = require('../Activity');
+const DependencyGraph = require('../DependencyResolver/DependencyGraph');
+const replacePatterns = require('../DependencyResolver/lib/replacePatterns');
+const Polyfill = require('../DependencyResolver/Polyfill');
+const declareOpts = require('../lib/declareOpts');
+const Promise = require('promise');
+
+const validateOpts = declareOpts({
   projectRoots: {
     type: 'array',
     required: true,
@@ -49,7 +51,7 @@ var validateOpts = declareOpts({
   },
 });
 
-var getDependenciesValidateOpts = declareOpts({
+const getDependenciesValidateOpts = declareOpts({
   dev: {
     type: 'boolean',
     default: true,
@@ -67,9 +69,10 @@ var getDependenciesValidateOpts = declareOpts({
 class Resolver {
 
   constructor(options) {
-    var opts = validateOpts(options);
+    const opts = validateOpts(options);
 
     this._depGraph = new DependencyGraph({
+      activity: Activity,
       roots: opts.projectRoots,
       assetRoots_DEPRECATED: opts.assetRoots,
       assetExts: opts.assetExts,
@@ -77,6 +80,17 @@ class Resolver {
         return filepath.indexOf('__tests__') !== -1 ||
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
+      providesModuleNodeModules: [
+        'fbjs-haste',
+        'react-haste',
+        'react-native',
+        // Parse requires AsyncStorage. They will
+        // change that to require('react-native') which
+        // should work after this release and we can
+        // remove it from here.
+        'parse',
+      ],
+      platforms: ['ios', 'android'],
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
     });
@@ -85,7 +99,7 @@ class Resolver {
   }
 
   getDependencies(main, options) {
-    var opts = getDependenciesValidateOpts(options);
+    const opts = getDependenciesValidateOpts(options);
 
     return this._depGraph.getDependencies(main, opts.platform).then(
       resolutionResponse => {
@@ -127,6 +141,8 @@ class Resolver {
       path.join(__dirname, 'polyfills/error-guard.js'),
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
+      path.join(__dirname, 'polyfills/Array.es6.js'),
+      path.join(__dirname, 'polyfills/babelHelpers.js'),
     ].concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(

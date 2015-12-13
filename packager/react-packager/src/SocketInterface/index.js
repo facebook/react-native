@@ -27,12 +27,11 @@ const SocketInterface = {
     return new Promise((resolve, reject) => {
       const hash = crypto.createHash('md5');
       Object.keys(options).sort().forEach(key => {
-        if (options[key]) {
-          if (typeof options[key] !== 'string') {
-            hash.update(JSON.stringify(options[key]));
-          } else {
-            hash.update(options[key]);
-          }
+        const value = options[key];
+        if (value) {
+          hash.update(
+            typeof value === 'string' ? value : JSON.stringify(value)
+          );
         }
       });
 

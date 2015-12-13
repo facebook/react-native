@@ -8,9 +8,9 @@
  */
 'use strict';
 
-var WebSocketServer = require('ws').Server;
 
 function attachToServer(server, path) {
+  var WebSocketServer = require('ws').Server;
   var wss = new WebSocketServer({
     server: server,
     path: path

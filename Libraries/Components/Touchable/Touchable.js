@@ -697,7 +697,6 @@ var TouchableMixin = {
 };
 
 var Touchable = {
-  touchesEnabled: true,
   Mixin: TouchableMixin
 };
 
