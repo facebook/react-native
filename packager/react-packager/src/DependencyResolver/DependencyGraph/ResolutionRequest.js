@@ -78,7 +78,7 @@ class ResolutionRequest {
       return null;
     };
 
-    if (!this._helpers.isNodeModulesDir(fromModule.path)
+    if ((!this._helpers.isNodeModulesDir(fromModule.path) || toModuleName == 'react-native' || toModuleName == 'react') // because we vendor
         && toModuleName[0] !== '.' &&
         toModuleName[0] !== '/') {
       return this._tryResolve(
