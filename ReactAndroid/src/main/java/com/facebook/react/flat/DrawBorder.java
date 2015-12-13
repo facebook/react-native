@@ -169,7 +169,7 @@ import com.facebook.csslayout.Spacing;
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  public void draw(FlatViewGroup parent, Canvas canvas) {
     if (getBorderRadius() >= 0.5f) {
       drawRoundedBorders(canvas);
     } else {

@@ -31,7 +31,7 @@ import android.text.Layout;
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  public void draw(FlatViewGroup parent, Canvas canvas) {
     float left = getLeft();
     float top = getTop();
 

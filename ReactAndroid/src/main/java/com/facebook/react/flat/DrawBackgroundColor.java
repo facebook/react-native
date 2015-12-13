@@ -26,7 +26,7 @@ import android.graphics.Paint;
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  public void draw(FlatViewGroup parent, Canvas canvas) {
     PAINT.setColor(mBackgroundColor);
     canvas.drawRect(getLeft(), getTop(), getRight(), getBottom(), PAINT);
   }

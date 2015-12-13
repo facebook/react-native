@@ -80,7 +80,7 @@ import com.facebook.react.views.image.ImageResizeMode;
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  public void draw(FlatViewGroup parent, Canvas canvas) {
     Bitmap bitmap = Assertions.assumeNotNull(mBitmapRequestHelper).getBitmap();
     if (bitmap == null) {
       return;

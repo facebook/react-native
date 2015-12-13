@@ -25,5 +25,5 @@ public interface DrawCommand {
    *
    * @param canvas The canvas to draw into
    */
-  public void draw(Canvas canvas);
+  public void draw(FlatViewGroup parent, Canvas canvas);
 }

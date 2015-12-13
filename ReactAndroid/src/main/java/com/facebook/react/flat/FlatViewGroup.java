@@ -56,7 +56,7 @@ import android.view.ViewGroup;
     super.dispatchDraw(canvas);
 
     for (DrawCommand drawCommand : mDrawCommands) {
-      drawCommand.draw(canvas);
+      drawCommand.draw(this, canvas);
     }
   }
 
