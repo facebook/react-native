@@ -15,7 +15,6 @@ var path = require('path');
 var sharedBlacklist = [
   'node_modules/react-haste/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
   'node_modules/react-haste/React.js',
-  'node_modules/react-haste/renderers/dom/ReactDOM.js',
 
   // For each of these fbjs files (especially the non-forks/stubs), we should
   // consider deleting the conflicting copy and just using the fbjs version.
@@ -80,10 +79,12 @@ var platformBlacklists = {
     '.native.js',
   ],
   ios: [
+    'node_modules/react-haste/renderers/dom/ReactDOM.js',
     '.web.js',
     '.android.js',
   ],
   android: [
+    'node_modules/react-haste/renderers/dom/ReactDOM.js',
     '.web.js',
     '.ios.js',
   ],

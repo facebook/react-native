@@ -16,6 +16,16 @@ const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
 
+const extraPlugins = ['external-helpers-2'];
+
+// HACK how do we hook this in?
+var getBabelRelayPlugin = require('babel-relay-plugin');
+var schema = require('../../../../resources/schema.json');
+if (schema.data) {
+  var relayPlugin = getBabelRelayPlugin(schema.data);
+  extraPlugins.push(relayPlugin);
+}
+
 const babelRC =
   json5.parse(
     fs.readFileSync(
@@ -24,7 +34,6 @@ const babelRC =
 function transform(src, filename, options) {
   options = options || {};
 
-  const extraPlugins = ['external-helpers-2'];
   const extraConfig = {
     filename,
     sourceFileName: filename,
