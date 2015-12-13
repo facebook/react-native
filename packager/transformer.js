@@ -11,22 +11,31 @@
 'use strict';
 
 const babel = require('babel-core');
-const inlineRequires = require('fbjs-scripts/babel/inline-requires');
+const fs = require('fs');
+const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
+const json5 = require('json5');
+const path = require('path');
+
+const babelRC =
+  json5.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, 'react-packager', '.babelrc')));
 
 function transform(src, filename, options) {
   options = options || {};
-  const plugins = [];
 
-  if (
-    options.inlineRequires &&
-    // (TODO: balpert, cpojer): Remove this once react is updated to 0.14
-    !filename.endsWith('performanceNow.js')
-  ) {
-    plugins.push({
-      position: 'after',
-      transformer: inlineRequires,
-    });
+  const extraPlugins = ['external-helpers-2'];
+  const extraConfig = {
+    filename,
+    sourceFileName: filename,
+  };
+
+  const config = Object.assign({}, babelRC, extraConfig);
+
+  if (options.inlineRequires) {
+    extraPlugins.push(inlineRequires);
   }
+  config.plugins = extraPlugins.concat(config.plugins);
 
   // Manually resolve all default Babel plugins. babel.transform will attempt to resolve
   // all base plugins relative to the file it's compiling. This makes sure that we're
@@ -43,6 +52,8 @@ function transform(src, filename, options) {
     }
     return plugin;
   });
+
+  const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {
     code: result.code
