@@ -31,32 +31,32 @@ Make absolutely sure basic iOS and Android workflow works on master:
   - Check the artifacts were generated: `ls -al ~/.m2/repository/com/facebook/react/react-native/0.18.0/` should contain:
     - `react-native-0.18.0-javadoc.jar`, `react-native-0.18.0-sources.jar`, `react-native-0.18.0.aar`, `react-native-0.18.0.pom`
     - For each of the above also `.asc` file
-- In `package.json`, set version to e.g. `0.18.0-rc`.
-- In `React.podspec`, set version to e.g. `0.18.0-rc`.
-- In `local-cli/generator-android/templates/src/app/build.gradle` update the dependency to e.g. `com.facebook.react:react-native:0.18.+`
-- Publish to sinopia:
-  - `npm set registry http://localhost:4873/`, check that it worked: `npm config list` will show registry is set to localhost
-  - In a separate shell, start sinopia. Run `sinopia`. If started successfully it will print: http address - http://localhost:4873/.
-  - Make sure http://localhost:4873/ shows no old versions
-  - `npm publish`
-  - http://localhost:4873/ will show 0.18.0-rc
-- Test that everything works:
-  - `cd /tmp`
-  - `react-native init Zero12rc`
-  - `cd Zero12rc`
-  - Check that `package.json`, `android/app/build.gradle` have correct versions (`^0.18.0-rc`, `com.facebook.react:react-native:0.18.+`)
-  - `open ios/Zero12rc.xcodeproj`
-  - Hit the Run button in Xcode.
-  - Packager should open in a new window, you should see the Welcome to React Native screen, Reload JS, try Chrome debugging - put a breakpoint somewhere in `index.ios.js` and Reload JS, Chrome debugger should stop on the breakpoint (we don't have tests for Chrome debugging)
-  - Close the packager window, close Xcode
-  - Start an Android emulator (ideally Genymotion, it's faster and more reliable than Google emulators)
-  - `react-native run-android`
-  - Test is the same way as on iOS, including Chrome debugging
+  - In `package.json`, set version to e.g. `0.18.0-rc`.
+  - In `React.podspec`, set version to e.g. `0.18.0-rc`.
+  - In `local-cli/generator-android/templates/src/app/build.gradle` update the dependency to e.g. `com.facebook.react:react-native:0.18.+`
+  - Publish to sinopia:
+    - `npm set registry http://localhost:4873/`, check that it worked: `npm config list` will show registry is set to localhost
+    - In a separate shell, start sinopia. Run `sinopia`. If started successfully it will print: http address - http://localhost:4873/.
+    - Make sure http://localhost:4873/ shows no old versions
+    - `npm publish`
+    - http://localhost:4873/ will show 0.18.0-rc
+  - Test that everything works:
+    - `cd /tmp`
+    - `react-native init Zero12rc`
+    - `cd Zero12rc`
+    - Check that `package.json`, `android/app/build.gradle` have correct versions (`^0.18.0-rc`, `com.facebook.react:react-native:0.18.+`)
+    - `open ios/Zero12rc.xcodeproj`
+    - Hit the Run button in Xcode.
+    - Packager should open in a new window, you should see the Welcome to React Native screen, Reload JS, try Chrome debugging - put a breakpoint somewhere in `index.ios.js` and Reload JS, Chrome debugger should stop on the breakpoint (we don't have tests for Chrome debugging)
+    - Close the packager window, close Xcode
+    - Start an Android emulator (ideally Genymotion, it's faster and more reliable than Google emulators)
+    - `react-native run-android`
+    - Test is the same way as on iOS, including Chrome debugging
   
 #### Push to github
 
   - Revert the Javadoc change in `ReactAndroid/release.gradle`
-  - `git commit -am` "[0.18-rc] Bump version numbers"
+  - `git commit -am "[0.18-rc] Bump version numbers"`
   - `git push origin 0.18-stable`
 
 ## Do a release
