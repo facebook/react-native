@@ -9,13 +9,19 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.ViewProps;
 
 /**
  * FlatShadowNode is a base class for all shadow node used in FlatUIImplementation. It extends
  * {@link LayoutShadowNode} by adding an ability to prepare DrawCommands off the UI thread.
  */
 /* package */ class FlatShadowNode extends LayoutShadowNode {
+
+  private @Nullable DrawBackgroundColor mDrawBackground;
 
   /**
    * Collects DrawCommands produced by this FlatShadoNode.
@@ -26,7 +32,20 @@ import com.facebook.react.uimanager.LayoutShadowNode;
       float top,
       float right,
       float bottom) {
-    // do nothing yet.
+    if (mDrawBackground != null) {
+      mDrawBackground = (DrawBackgroundColor) mDrawBackground.updateBoundsAndFreeze(
+          left,
+          top,
+          right,
+          bottom);
+      stateBuilder.addDrawCommand(mDrawBackground);
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR)
+  public void setBackgroundColor(int backgroundColor) {
+    mDrawBackground = (backgroundColor == 0) ? null : new DrawBackgroundColor(backgroundColor);
+    invalidate();
   }
 
   /**

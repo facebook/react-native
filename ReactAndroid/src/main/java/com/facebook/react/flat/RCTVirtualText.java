@@ -96,11 +96,23 @@ import com.facebook.react.uimanager.ViewProps;
     }
   }
 
-  @ReactProp(name = ViewProps.BACKGROUND_COLOR)
+  @Override
   public void setBackgroundColor(int backgroundColor) {
-    if (mFontStylingSpan.getBackgroundColor() != backgroundColor) {
-      getSpan().setBackgroundColor(backgroundColor);
-      notifyChanged(false);
+    if (isVirtual()) {
+      // for nested Text elements, we want to apply background color to the text only
+      // e.g. Hello <style backgroundColor=red>World</style>, "World" will have red background color
+      if (mFontStylingSpan.getBackgroundColor() != backgroundColor) {
+        getSpan().setBackgroundColor(backgroundColor);
+        notifyChanged(false);
+      }
+    } else {
+      // for top-level Text element, background needs to be applied for the entire shadow node
+      //
+      // For example: <Text style={flex:1}>Hello World</Text>
+      // "Hello World" may only occupy e.g. 200 pixels, but the node may be measured at e.g. 500px.
+      // In this case, we want background to be 500px wide as well, and this is exactly what
+      // FlatShadowNode does.
+      super.setBackgroundColor(backgroundColor);
     }
   }
 

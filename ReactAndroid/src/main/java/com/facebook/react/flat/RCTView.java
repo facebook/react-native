@@ -35,6 +35,7 @@ import com.facebook.react.uimanager.ViewProps;
     }
   }
 
+  @Override
   public void setBackgroundColor(int backgroundColor) {
     getMutableBorder().setBackgroundColor(backgroundColor);
   }
