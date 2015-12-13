@@ -198,6 +198,7 @@ var components = [
   '../Libraries/Picker/PickerIOS.ios.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
+  '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
