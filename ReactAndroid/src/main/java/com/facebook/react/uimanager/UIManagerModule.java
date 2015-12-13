@@ -20,16 +20,14 @@ import java.util.concurrent.TimeUnit;
 import android.util.DisplayMetrics;
 
 import com.facebook.csslayout.CSSLayoutContext;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.debug.NotThreadSafeUiManagerDebugListener;
-import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -37,6 +35,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.uimanager.debug.NotThreadSafeUiManagerDebugListener;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 
@@ -262,6 +262,23 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   @ReactMethod
+  public void dropViews(ReadableArray viewTags) {
+    int size = viewTags.size(), realViewsCount = 0;
+    int realViewTags[] = new int[size];
+    for (int i = 0; i < size; i++) {
+      int tag = viewTags.getInt(i);
+      ReactShadowNode cssNode = mShadowNodeRegistry.getNode(tag);
+      if (!cssNode.isVirtual()) {
+        realViewTags[realViewsCount++] = tag;
+      }
+      mShadowNodeRegistry.removeNode(tag);
+    }
+    if (realViewsCount > 0) {
+      mNativeViewHierarchyOptimizer.handleDropViews(realViewTags, realViewsCount);
+    }
+  }
+
+  @ReactMethod
   public void updateView(int tag, String className, ReadableMap props) {
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager == null) {
@@ -399,16 +416,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     }
 
     for (int i = 0; i < tagsToDelete.length; i++) {
-      removeCSSNode(tagsToDelete[i]);
+      removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
     }
   }
 
-  private void removeCSSNode(int tag) {
-    ReactShadowNode node = mShadowNodeRegistry.getNode(tag);
-    mShadowNodeRegistry.removeNode(tag);
-    for (int i = 0;i < node.getChildCount(); i++) {
-      removeCSSNode(node.getChildAt(i).getReactTag());
+  private void removeShadowNode(ReactShadowNode nodeToRemove) {
+    mNativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
+    for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
+      removeShadowNode(nodeToRemove.getChildAt(i));
     }
+    nodeToRemove.removeAllChildren();
   }
 
   /**
@@ -663,7 +680,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
-    mOperationsQueue.enqueueSetJSResponder(reactTag, blockNativeResponder);
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    while (node.isVirtual() || node.isLayoutOnly()) {
+      node = node.getParent();
+    }
+    mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
   }
 
   @ReactMethod
@@ -763,7 +784,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
       notifyOnBeforeLayoutRecursive(cssRoot);
-      cssRoot.calculateLayout(mLayoutContext);
+
+      SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
+          .arg("rootTag", tag)
+          .flush();
+      try {
+        cssRoot.calculateLayout(mLayoutContext);
+      } finally {
+        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      }
       applyUpdatesRecursive(cssRoot, 0f, 0f);
     }
 
@@ -801,18 +830,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
           absoluteX,
           absoluteY,
           mOperationsQueue,
-          mNativeViewHierarchyOptimizer);
-
-      // notify JS about layout event if requested
-      if (cssNode.shouldNotifyOnLayout()) {
-        mEventDispatcher.dispatchEvent(
-            OnLayoutEvent.obtain(
-                tag,
-                cssNode.getScreenX(),
-                cssNode.getScreenY(),
-                cssNode.getScreenWidth(),
-                cssNode.getScreenHeight()));
-      }
+          mNativeViewHierarchyOptimizer,
+          mEventDispatcher);
     }
     cssNode.markUpdateSeen();
   }
@@ -832,6 +851,19 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
+  }
+
+  /**
+   * Get the first non-virtual (i.e. native) parent view tag of the react view with the passed tag.
+   * If the passed tag represents a non-virtual view, the same tag is returned. If the passed tag
+   * doesn't map to a react view, or a non-virtual parent cannot be found, -1 is returned.
+   */
+  /* package */ int getNonVirtualParent(int reactTag) {
+    ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+    while (node != null && node.isVirtual()) {
+      node = node.getParent();
+    }
+    return node == null ? -1 : node.getReactTag();
   }
 
 }

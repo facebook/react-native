@@ -10,15 +10,16 @@
 #import "RCTWebViewManager.h"
 
 #import "RCTBridge.h"
-#import "RCTSparseArray.h"
 #import "RCTUIManager.h"
 #import "RCTWebView.h"
+#import "UIView+React.h"
 
 @interface RCTWebViewManager () <RCTWebViewDelegate>
 
 @end
 
-@implementation RCTWebViewManager {
+@implementation RCTWebViewManager
+{
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
 }
@@ -32,20 +33,21 @@ RCT_EXPORT_MODULE()
   return webView;
 }
 
-RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL);
-RCT_REMAP_VIEW_PROPERTY(html, HTML, NSString);
-RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL);
-RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL);
-RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString);
-RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets);
-RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock);
+RCT_REMAP_VIEW_PROPERTY(url, URL, NSURL)
+RCT_REMAP_VIEW_PROPERTY(html, HTML, NSString)
+RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
+RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
+RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
+RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
+RCT_REMAP_VIEW_PROPERTY(allowsInlineMediaPlayback, _webView.allowsInlineMediaPlayback, BOOL)
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
     @"JSNavigationScheme": RCTJSNavigationScheme,
@@ -62,7 +64,7 @@ RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock);
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
@@ -74,7 +76,7 @@ RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     id view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
@@ -86,7 +88,7 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
     RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
@@ -99,7 +101,7 @@ RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 #pragma mark - Exported synchronous methods
 
 - (BOOL)webView:(__unused RCTWebView *)webView
-shouldStartLoadForRequest:(NSMutableDictionary *)request
+shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
    withCallback:(RCTDirectEventBlock)callback
 {
   _shouldStartLoadLock = [[NSConditionLock alloc] initWithCondition:arc4random()];

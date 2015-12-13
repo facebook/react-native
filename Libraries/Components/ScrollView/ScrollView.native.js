@@ -15,6 +15,7 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var Platform = require('Platform');
 var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
+var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var RCTUIManager = require('NativeModules').UIManager;
@@ -24,7 +25,6 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
@@ -56,6 +56,7 @@ var INNERVIEW = 'InnerScrollView';
  */
 var ScrollView = React.createClass({
   propTypes: {
+    ...View.propTypes,
     /**
      * Controls whether iOS should automatically adjust the content inset
      * for scroll views that are placed behind a navigation bar or
@@ -194,6 +195,12 @@ var ScrollView = React.createClass({
      */
     onScrollAnimationEnd: PropTypes.func,
     /**
+     * Called when scrollable content view of the ScrollView changes. It's
+     * implemented using onLayout handler attached to the content container
+     * which this ScrollView renders.
+     */
+    onContentSizeChange: PropTypes.func,
+    /**
      * When true, the scroll view stops on multiples of the scroll view's size
      * when scrolling. This can be used for horizontal pagination. The default
      * value is false.
@@ -280,6 +287,21 @@ var ScrollView = React.createClass({
      * @platform ios
      */
     zoomScale: PropTypes.number,
+
+    /**
+     * When defined, displays a UIRefreshControl.
+     * Invoked with a function to stop refreshing when the UIRefreshControl is animating.
+     *
+     * ```
+     * (endRefreshing) => {
+     *      endRefreshing();
+     * }
+     * ```
+     *
+     * @platform ios
+     */
+    onRefreshStart: PropTypes.func,
+
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -290,6 +312,12 @@ var ScrollView = React.createClass({
 
   setNativeProps: function(props: Object) {
     this.refs[SCROLLVIEW].setNativeProps(props);
+  },
+
+  endRefreshing: function() {
+    RCTScrollViewManager.endRefreshing(
+      React.findNodeHandle(this)
+    );
   },
 
   /**
@@ -319,7 +347,7 @@ var ScrollView = React.createClass({
     );
   },
 
-  handleScroll: function(e: Event) {
+  handleScroll: function(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && !this.props.scrollEventThrottle) {
         console.log(
@@ -339,6 +367,11 @@ var ScrollView = React.createClass({
     this.scrollResponderHandleScroll(e);
   },
 
+  _handleContentOnLayout: function(e: Object) {
+    var {width, height} = e.nativeEvent.layout;
+    this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
+  },
+
   render: function() {
     var contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
@@ -355,8 +388,16 @@ var ScrollView = React.createClass({
       );
     }
 
+    var contentSizeChangeProps = {};
+    if (this.props.onContentSizeChange) {
+      contentSizeChangeProps = {
+        onLayout: this._handleContentOnLayout,
+      };
+    }
+
     var contentContainer =
       <View
+        {...contentSizeChangeProps}
         ref={INNERVIEW}
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
@@ -396,6 +437,13 @@ var ScrollView = React.createClass({
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
     };
+
+    var onRefreshStart = this.props.onRefreshStart;
+    // this is necessary because if we set it on props, even when empty,
+    // it'll trigger the default pull-to-refresh behaviour on native.
+    props.onRefreshStart = onRefreshStart
+      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
+      : null;
 
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
@@ -460,14 +508,11 @@ var validAttributes = {
 };
 
 if (Platform.OS === 'android') {
-  var AndroidScrollView = createReactNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'RCTScrollView',
-  });
-  var AndroidHorizontalScrollView = createReactNativeComponentClass({
-    validAttributes: validAttributes,
-    uiViewClassName: 'AndroidHorizontalScrollView',
-  });
+  var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView);
+  var AndroidHorizontalScrollView = requireNativeComponent(
+    'AndroidHorizontalScrollView',
+    ScrollView
+  );
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }

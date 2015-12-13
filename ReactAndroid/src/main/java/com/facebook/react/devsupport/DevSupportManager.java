@@ -255,12 +255,13 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
           }
         });
     options.put(
-        mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
+        mDevSettings.isReloadOnJSChangeEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
+            : mApplicationContext.getString(R.string.catalyst_live_reload),
+        new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApplicationContext.startActivity(intent);
+            mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
           }
         });
     options.put(
@@ -271,12 +272,20 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
             mReactInstanceCommandsHandler.toggleElementInspector();
           }
         });
-
+    options.put(
+        mDevSettings.isFpsDebugEnabled()
+            ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off)
+            : mApplicationContext.getString(R.string.catalyst_perf_monitor),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
+          }
+        });
     if (mCurrentContext != null &&
-      mCurrentContext.getCatalystInstance() != null &&
-      !mCurrentContext.getCatalystInstance().isDestroyed() &&
-      mCurrentContext.getCatalystInstance().getBridge() != null &&
-      mCurrentContext.getCatalystInstance().getBridge().supportsProfiling()) {
+        mCurrentContext.getCatalystInstance() != null &&
+        !mCurrentContext.getCatalystInstance().isDestroyed() &&
+        mCurrentContext.getCatalystInstance().supportsProfiling()) {
       options.put(
           mApplicationContext.getString(
               mIsCurrentlyProfiling ? R.string.catalyst_stop_profile :
@@ -292,7 +301,6 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   mProfileIndex++;
                   Debug.stopMethodTracing();
                   mCurrentContext.getCatalystInstance()
-                      .getBridge()
                       .stopProfiler("profile", profileName);
                   Toast.makeText(
                       mCurrentContext,
@@ -300,7 +308,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                       Toast.LENGTH_LONG).show();
                 } else {
                   mIsCurrentlyProfiling = true;
-                  mCurrentContext.getCatalystInstance().getBridge().startProfiler("profile");
+                  mCurrentContext.getCatalystInstance().startProfiler("profile");
                   Debug.startMethodTracingSampling(
                       profileName,
                       JAVA_SAMPLING_PROFILE_MEMORY_BYTES,
@@ -310,6 +318,15 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
             }
           });
     }
+    options.put(
+        mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mApplicationContext.startActivity(intent);
+          }
+        });
 
     if (mCustomDevOptions.size() > 0) {
       options.putAll(mCustomDevOptions);
@@ -317,21 +334,24 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
 
     final DevOptionHandler[] optionHandlers = options.values().toArray(new DevOptionHandler[0]);
 
-    mDevOptionsDialog = new AlertDialog.Builder(mApplicationContext)
-        .setItems(options.keySet().toArray(new String[0]), new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            optionHandlers[which].onOptionSelected();
-            mDevOptionsDialog = null;
-          }
-        })
-        .setOnCancelListener(new DialogInterface.OnCancelListener() {
-          @Override
-          public void onCancel(DialogInterface dialog) {
-            mDevOptionsDialog = null;
-          }
-        })
-        .create();
+    mDevOptionsDialog =
+        new AlertDialog.Builder(mApplicationContext)
+            .setItems(
+                options.keySet().toArray(new String[0]),
+                new DialogInterface.OnClickListener() {
+                  @Override
+                  public void onClick(DialogInterface dialog, int which) {
+                    optionHandlers[which].onOptionSelected();
+                    mDevOptionsDialog = null;
+                  }
+                })
+            .setOnCancelListener(new DialogInterface.OnCancelListener() {
+              @Override
+              public void onCancel(DialogInterface dialog) {
+                mDevOptionsDialog = null;
+              }
+            })
+            .create();
     mDevOptionsDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     mDevOptionsDialog.show();
   }
@@ -454,7 +474,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
           "/profile_" + mProfileIndex + ".json");
       mProfileIndex++;
       Debug.stopMethodTracing();
-      mCurrentContext.getCatalystInstance().getBridge().stopProfiler("profile", profileName);
+      mCurrentContext.getCatalystInstance().stopProfiler("profile", profileName);
     }
 
     mCurrentContext = reactContext;
@@ -519,7 +539,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   @Override
                   public void run() {
                     mReactInstanceCommandsHandler.onReloadWithJSDebugger(
-                        new ProxyJavaScriptExecutor(webSocketJSExecutor));
+                        webSocketJSExecutor);
                   }
                 });
           }

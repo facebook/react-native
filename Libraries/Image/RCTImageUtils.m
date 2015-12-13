@@ -9,7 +9,12 @@
 
 #import "RCTImageUtils.h"
 
+#import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/UTCoreTypes.h>
+#import <tgmath.h>
+
 #import "RCTLog.h"
+#import "RCTUtils.h"
 
 static CGFloat RCTCeilValue(CGFloat value, CGFloat scale)
 {
@@ -192,4 +197,93 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
       RCTLogError(@"A resizeMode value of %zd is not supported", resizeMode);
       return NO;
   }
+}
+
+CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
+{
+  return (CGSize){
+    ceil(pointSize.width * scale),
+    ceil(pointSize.height * scale),
+  };
+}
+
+UIImage *RCTDecodeImageWithData(NSData *data,
+                                CGSize destSize,
+                                CGFloat destScale,
+                                UIViewContentMode resizeMode)
+{
+  CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+  if (!sourceRef) {
+    return nil;
+  }
+
+  // get original image size
+  CGSize sourceSize;
+  CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(sourceRef, 0, NULL);
+  if (!imageProperties) {
+    CFRelease(sourceRef);
+    return nil;
+  }
+  NSNumber *width = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
+  NSNumber *height = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
+  sourceSize = (CGSize){width.doubleValue, height.doubleValue};
+  CFRelease(imageProperties);
+
+  if (CGSizeEqualToSize(destSize, CGSizeZero)) {
+    destSize = sourceSize;
+  }
+
+  // calculate target size
+  CGSize targetSize = RCTTargetSize(sourceSize, 1, destSize, destScale, resizeMode, YES);
+  CGSize targetPixelSize = RCTSizeInPixels(targetSize, destScale);
+  CGFloat maxPixelSize = fmax(fmin(sourceSize.width, targetPixelSize.width),
+                              fmin(sourceSize.height, targetPixelSize.height));
+
+  NSDictionary<NSString *, NSNumber *> *options = @{
+    (id)kCGImageSourceShouldAllowFloat: @YES,
+    (id)kCGImageSourceCreateThumbnailWithTransform: @YES,
+    (id)kCGImageSourceCreateThumbnailFromImageAlways: @YES,
+    (id)kCGImageSourceThumbnailMaxPixelSize: @(maxPixelSize),
+  };
+
+  // get thumbnail
+  CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
+  CFRelease(sourceRef);
+  if (!imageRef) {
+    return nil;
+  }
+
+  // adjust scale
+  size_t actualWidth = CGImageGetWidth(imageRef);
+  CGFloat scale = actualWidth / targetSize.width * destScale;
+
+  // return image
+  UIImage *image = [UIImage imageWithCGImage:imageRef
+                                       scale:scale
+                                 orientation:UIImageOrientationUp];
+  CGImageRelease(imageRef);
+  return image;
+}
+
+NSData *RCTGetImageData(CGImageRef image, float quality)
+{
+  NSDictionary *properties;
+  CGImageDestinationRef destination;
+  CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
+  if (RCTImageHasAlpha(image)) {
+    // get png data
+    destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
+  } else {
+    // get jpeg data
+    destination = CGImageDestinationCreateWithData(imageData, kUTTypeJPEG, 1, NULL);
+    properties = @{(NSString *)kCGImageDestinationLossyCompressionQuality: @(quality)};
+  }
+  CGImageDestinationAddImage(destination, image, (__bridge CFDictionaryRef)properties);
+  if (!CGImageDestinationFinalize(destination))
+  {
+    CFRelease(imageData);
+    imageData = NULL;
+  }
+  CFRelease(destination);
+  return (__bridge_transfer NSData *)imageData;
 }

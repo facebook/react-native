@@ -35,7 +35,7 @@ Note: In order to run your own tests, you will have to first follow the Getting 
 },
 ...
 "jest": {
-  "scriptPreprocessor": "node_modules/react-native/jestSupport/scriptPreprocess.js",
+  "scriptPreprocessor": "node_modules/react-native/jestSupport/preprocessor.js",
   "setupEnvScriptFile": "node_modules/react-native/jestSupport/env.js",
   "testPathIgnorePatterns": [
     "/node_modules/",

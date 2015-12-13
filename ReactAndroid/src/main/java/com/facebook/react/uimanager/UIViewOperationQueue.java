@@ -142,6 +142,25 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class DropViewsOperation extends ViewOperation {
+
+    private final int[] mViewTagsToDrop;
+    private final int mArrayLength;
+
+    public DropViewsOperation(int[] viewTagsToDrop, int length) {
+      super(-1);
+      mViewTagsToDrop = viewTagsToDrop;
+      mArrayLength = length;
+    }
+
+    @Override
+    public void execute() {
+      for (int i = 0; i < mArrayLength; i++) {
+        mNativeViewHierarchyManager.dropView(mViewTagsToDrop[i]);
+      }
+    }
+  }
+
   private final class ManageChildrenOperation extends ViewOperation {
 
     private final @Nullable int[] mIndicesToRemove;
@@ -186,14 +205,17 @@ public class UIViewOperationQueue {
 
   private final class ChangeJSResponderOperation extends ViewOperation {
 
+    private final int mInitialTag;
     private final boolean mBlockNativeResponder;
     private final boolean mClearResponder;
 
     public ChangeJSResponderOperation(
         int tag,
+        int initialTag,
         boolean clearResponder,
         boolean blockNativeResponder) {
       super(tag);
+      mInitialTag = initialTag;
       mClearResponder = clearResponder;
       mBlockNativeResponder = blockNativeResponder;
     }
@@ -201,7 +223,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       if (!mClearResponder) {
-        mNativeViewHierarchyManager.setJSResponder(mTag, mBlockNativeResponder);
+        mNativeViewHierarchyManager.setJSResponder(mTag, mInitialTag, mBlockNativeResponder);
       } else {
         mNativeViewHierarchyManager.clearJSResponder();
       }
@@ -383,10 +405,11 @@ public class UIViewOperationQueue {
       final float containerX = (float) mMeasureBuffer[0];
       final float containerY = (float) mMeasureBuffer[1];
 
-      final int touchTargetReactTag = mNativeViewHierarchyManager.findTargetTagForTouch(
-          mReactTag,
-          mTargetX,
-          mTargetY);
+      final int touchTargetReactTag = mUIManagerModule.getNonVirtualParent(
+          mNativeViewHierarchyManager.findTargetTagForTouch(
+            mReactTag,
+            mTargetX,
+            mTargetY));
 
       try {
         mNativeViewHierarchyManager.measure(
@@ -449,14 +472,21 @@ public class UIViewOperationQueue {
     mOperations.add(new RemoveRootViewOperation(rootViewTag));
   }
 
-  public void enqueueSetJSResponder(int reactTag, boolean blockNativeResponder) {
+  public void enqueueSetJSResponder(
+      int tag,
+      int initialTag,
+      boolean blockNativeResponder) {
     mOperations.add(
-        new ChangeJSResponderOperation(reactTag, false /*clearResponder*/, blockNativeResponder));
+        new ChangeJSResponderOperation(
+            tag,
+            initialTag,
+            false /*clearResponder*/,
+            blockNativeResponder));
   }
 
   public void enqueueClearJSResponder() {
     // Tag is 0 because JSResponderHandler doesn't need one in order to clear the responder.
-    mOperations.add(new ChangeJSResponderOperation(0, true /*clearResponder*/, false));
+    mOperations.add(new ChangeJSResponderOperation(0, 0, true /*clearResponder*/, false));
   }
 
   public void enqueueDispatchCommand(
@@ -489,6 +519,10 @@ public class UIViewOperationQueue {
             viewReactTag,
             viewClassName,
             initialProps));
+  }
+
+  public void enqueueDropViews(int[] viewTagsToDrop, int length) {
+    mOperations.add(new DropViewsOperation(viewTagsToDrop, length));
   }
 
   public void enqueueUpdateProperties(int reactTag, String className, CatalystStylesDiffMap props) {

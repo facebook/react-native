@@ -12,7 +12,6 @@ package com.facebook.react.views.text;
 import javax.annotation.Nullable;
 
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
@@ -82,7 +81,12 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
 
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
-    view.setText((Spanned) extraData);
+    ReactTextUpdate update = (ReactTextUpdate) extraData;
+    if (update.containsImages()) {
+      Spannable spannable = update.getText();
+      TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
+    }
+    view.setText(update);
   }
 
   @Override

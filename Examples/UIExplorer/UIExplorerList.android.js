@@ -27,6 +27,7 @@ var COMPONENTS = [
   require('./ProgressBarAndroidExample'),
   require('./ScrollViewSimpleExample'),
   require('./SwitchAndroidExample'),
+  require('./PullToRefreshViewAndroidExample.android'),
   require('./TextExample.android'),
   require('./TextInputExample.android'),
   require('./ToolbarAndroidExample'),

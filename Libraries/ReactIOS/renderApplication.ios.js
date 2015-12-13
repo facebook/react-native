@@ -8,18 +8,20 @@
  *
  * @providesModule renderApplication
  */
+
 'use strict';
 
-var Inspector = require('Inspector');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var View = require('View');
-var WarningBox = require('WarningBox');
 
 var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
+
+var Inspector = __DEV__ ? require('Inspector') : null;
+var YellowBox = __DEV__ ? require('YellowBox') : null;
 
 var AppContainer = React.createClass({
   mixins: [Subscribable.Mixin],
@@ -29,7 +31,7 @@ var AppContainer = React.createClass({
   },
 
   toggleElementInspector: function() {
-    var inspector = this.state.inspector
+    var inspector = !__DEV__ || this.state.inspector
       ? null
       : <Inspector
           rootTag={this.props.rootTag}
@@ -47,14 +49,16 @@ var AppContainer = React.createClass({
   },
 
   render: function() {
-    var shouldRenderWarningBox = __DEV__ && console.yellowBoxEnabled;
-    var warningBox = shouldRenderWarningBox ? <WarningBox /> : null;
+    let yellowBox = null;
+    if (__DEV__) {
+      yellowBox = <YellowBox />;
+    }
     return (
       <View style={styles.appContainer}>
         <View collapsible={false} style={styles.appContainer} ref="main">
           {this.props.children}
         </View>
-        {warningBox}
+        {yellowBox}
         {this.state.inspector}
       </View>
     );
@@ -70,6 +74,7 @@ function renderApplication<D, P, S>(
     rootTag,
     'Expect to have a valid rootTag, instead got ', rootTag
   );
+  /* eslint-disable jsx-no-undef-with-namespace */
   React.render(
     <AppContainer rootTag={rootTag}>
       <RootComponent
@@ -79,6 +84,7 @@ function renderApplication<D, P, S>(
     </AppContainer>,
     rootTag
   );
+  /* eslint-enable jsx-no-undef-with-namespace */
 }
 
 var styles = StyleSheet.create({

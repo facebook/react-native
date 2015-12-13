@@ -272,6 +272,12 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
 
+RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
+  @"default": @(UIKeyboardAppearanceDefault),
+  @"light": @(UIKeyboardAppearanceLight),
+  @"dark": @(UIKeyboardAppearanceDark),
+}), UIKeyboardAppearanceDefault, integerValue)
+
 RCT_ENUM_CONVERTER(UIReturnKeyType, (@{
   @"default": @(UIReturnKeyDefault),
   @"go": @(UIReturnKeyGo),
@@ -423,7 +429,18 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     return nil;
   }
 
-  UIImage *image;
+  __block UIImage *image;
+  if (![NSThread isMainThread]) {
+    // It seems that none of the UIImage loading methods can be guaranteed
+    // thread safe, so we'll pick the lesser of two evils here and block rather
+    // than run the risk of crashing
+    RCTLogWarn(@"Calling [RCTConvert UIImage:] on a background thread is not recommended");
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      image = [self UIImage:json];
+    });
+    return image;
+  }
+
   NSString *path;
   CGFloat scale = 0.0;
   BOOL isPackagerAsset = NO;
@@ -446,7 +463,6 @@ RCT_CGSTRUCT_CONVERTER(CGAffineTransform, (@[
     if (RCTIsXCAssetURL(URL)) {
       // Image may reside inside a .car file, in which case we have no choice
       // but to use +[UIImage imageNamed] - but this method isn't thread safe
-      RCTAssertMainThread();
       NSString *assetName = RCTBundlePathForURL(URL);
       image = [UIImage imageNamed:assetName];
     } else {

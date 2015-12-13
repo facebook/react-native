@@ -280,7 +280,6 @@ var ListView = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
-      this._sentEndForContentLength = null;
       this.setState((state, props) => {
         var rowsToRender = Math.min(
           state.curRenderedRowsCount + props.pageSize,
@@ -342,7 +341,7 @@ var ListView = React.createClass({
 
       for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         var rowID = rowIDs[rowIdx];
-        var comboID = sectionID + rowID;
+        var comboID = sectionID + '_' + rowID;
         var shouldUpdateRow = rowCount >= this.state.prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
         var rowData = dataSource.getRowData(sectionIdx, rowIdx);
@@ -418,6 +417,8 @@ var ListView = React.createClass({
     // component's original ref instead of clobbering it
     return React.cloneElement(renderScrollComponent(props), {
       ref: SCROLLVIEW_REF,
+      onContentSizeChange: this._onContentSizeChange,
+      onLayout: this._onLayout,
     }, header, bodyComponents, footer);
   },
 
@@ -430,18 +431,6 @@ var ListView = React.createClass({
     if (!scrollComponent || !scrollComponent.getInnerViewNode) {
       return;
     }
-    var scrollNode = Platform.OS == 'web' ? scrollComponent : findNodeHandle(scrollComponent);
-    RCTUIManager.measureLayout(
-      scrollComponent.getInnerViewNode(),
-      scrollNode,
-      logError,
-      this._setScrollContentLength
-    );
-    RCTUIManager.measureLayoutRelativeToParent(
-      scrollNode,
-      logError,
-      this._setScrollVisibleLength
-    );
 
     // RCTScrollViewManager.calculateChildFrames is not available on
     // every platform
@@ -452,9 +441,19 @@ var ListView = React.createClass({
       );
   },
 
-  _setScrollContentLength: function(left, top, width, height) {
+  _onContentSizeChange: function(width, height) {
     this.scrollProperties.contentLength = !this.props.horizontal ?
       height : width;
+    this._updateVisibleRows();
+    this._renderMoreRowsIfNeeded();
+  },
+
+  _onLayout: function(event) {
+    var {width, height} = event.nativeEvent.layout;
+    this.scrollProperties.visibleLength = !this.props.horizontal ?
+      height : width;
+    this._updateVisibleRows();
+    this._renderMoreRowsIfNeeded();
   },
 
   _setScrollVisibleLength: function(left, top, width, height) {

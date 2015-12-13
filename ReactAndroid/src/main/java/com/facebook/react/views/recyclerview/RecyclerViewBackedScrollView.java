@@ -3,9 +3,7 @@
 package com.facebook.react.views.recyclerview;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.content.Context;
 import android.os.SystemClock;
@@ -84,10 +82,73 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     }
   }
 
+  /**
+   * JavaScript ListView implementation rely on getting correct scroll offset. This class helps
+   * with calculating that "real" offset of items in recycler view as those are not provided by
+   * android widget implementation ({@link #onScrollChanged} is called with offset 0). We can't use
+   * onScrolled either as we need to take into account that if height of element that is not above
+   * the visible window changes the real scroll offset will change too, but onScrolled will only
+   * give us scroll deltas that comes from the user interaction.
+   *
+   * This class helps in calculating "real" offset of row at specified index. It's used from
+   * {@link #onScrollChanged} to query for the first visible index. Since while scrolling the
+   * queried index will usually increment or decrement by one it's optimize to return result in
+   * that common case very quickly.
+   */
+  private static class ScrollOffsetTracker {
+
+    private final ReactListAdapter mReactListAdapter;
+
+    private int mLastRequestedPosition;
+    private int mOffsetForLastPosition;
+
+    private ScrollOffsetTracker(ReactListAdapter reactListAdapter) {
+      mReactListAdapter = reactListAdapter;
+    }
+
+    public void onHeightChange(int index, int oldHeight, int newHeight) {
+      if (index < mLastRequestedPosition) {
+        mOffsetForLastPosition = (mOffsetForLastPosition - oldHeight + newHeight);
+      }
+    }
+
+    public int getTopOffsetForItem(int index) {
+      if (mLastRequestedPosition != index) {
+        int sum = 0;
+        int startIndex = 0;
+        if (mLastRequestedPosition < index) {
+          if (mLastRequestedPosition != -1) {
+            sum = mOffsetForLastPosition;
+            startIndex = mLastRequestedPosition;
+          }
+          for (int i = startIndex; i < index; i++) {
+            sum += mReactListAdapter.mViews.get(i).getMeasuredHeight();
+          }
+        }
+        else {
+          if (index < (mLastRequestedPosition - index)) {
+            for (int i = 0; i < index; i++) {
+              sum += mReactListAdapter.mViews.get(i).getMeasuredHeight();
+            }
+          } else {
+            for (int i = mLastRequestedPosition - 1; i >= index; i--) {
+              sum -= mReactListAdapter.mViews.get(i).getMeasuredHeight();
+            }
+          }
+        }
+        mLastRequestedPosition = index;
+        mOffsetForLastPosition = sum;
+      }
+      return mOffsetForLastPosition;
+    }
+
+  }
+
   /*package*/ static class ReactListAdapter extends Adapter<ConcreteViewHolder> {
 
     private final List<View> mViews = new ArrayList<>();
-    private final Map<View, Integer> mTopOffsetsFromLayout = new HashMap<>();
+    private final ScrollOffsetTracker mScrollOffsetTracker;
+    private final RecyclerViewBackedScrollView mScrollView;
     private int mTotalChildrenHeight = 0;
 
     // The following `OnLayoutChangeListsner` is attached to the views stored in the adapter
@@ -95,8 +156,6 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     // and to update its layout to be enclosed in the wrapper view group.
     private final View.OnLayoutChangeListener
         mChildLayoutChangeListener = new View.OnLayoutChangeListener() {
-
-      private boolean mReentrant = false;
 
       @Override
       public void onLayoutChange(
@@ -109,27 +168,14 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
           int oldTop,
           int oldRight,
           int oldBottom) {
-        // We need to get layout information from css-layout to set the size of the rows correctly
-        // and we also use top position that is calculated there to provide correct offset for the
-        // scroll events.
-        // To achieve both we first store updated top position. Then we call layout again to
-        // re-layout view at (0,0) position because each view cell needs a position in relative
-        // coordinates. To prevent from this event being triggered when we call layout again, we
-        // use `mReentrant` boolean as a guard.
+        // We need to get layout information from css-layout to set the size of the rows correctly.
 
-        if (!mReentrant) {
-          int oldHeight = (oldBottom - oldTop);
-          int newHeight = (bottom - top);
-          int width = right - left;
+        int oldHeight = (oldBottom - oldTop);
+        int newHeight = (bottom - top);
 
-          // Update top positions cache and total height
-          mTopOffsetsFromLayout.put(v, top);
-          mTotalChildrenHeight = mTotalChildrenHeight - oldHeight + newHeight;
-
-          // We need to re-layout view to place it in relative coordinates of cell wrapper -> (0,0)
-          mReentrant = true;
-          v.layout(0, 0, width, newHeight);
-          mReentrant = false;
+        if (oldHeight != newHeight) {
+          updateTotalChildrenHeight(newHeight - oldHeight);
+          mScrollOffsetTracker.onHeightChange(mViews.indexOf(v), oldHeight, newHeight);
 
           // Since "wrapper" view position +dimensions are not managed by NativeViewHierarchyManager
           // we need to ensure that the wrapper view is properly layed out as it dimension should
@@ -142,7 +188,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
           // update dimensions of them through overridden onMeasure method.
           // We don't care about calling this is the view is not currently attached as it would be
           // laid out once added to the recycler.
-          if (newHeight != oldHeight && v.getParent() != null
+          if (v.getParent() != null
               && v.getParent().getParent() != null) {
             View wrapper = (View) v.getParent(); // native view that wraps view added to adapter
             wrapper.forceLayout();
@@ -155,29 +201,36 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
       }
     };
 
-    public ReactListAdapter() {
+    public ReactListAdapter(RecyclerViewBackedScrollView scrollView) {
+      mScrollView = scrollView;
+      mScrollOffsetTracker = new ScrollOffsetTracker(this);
       setHasStableIds(true);
     }
 
     public void addView(View child, int index) {
       mViews.add(index, child);
 
-      mTotalChildrenHeight += child.getMeasuredHeight();
-      mTopOffsetsFromLayout.put(child, child.getTop());
+      updateTotalChildrenHeight(child.getMeasuredHeight());
       child.addOnLayoutChangeListener(mChildLayoutChangeListener);
 
-      notifyDataSetChanged();
+      notifyItemInserted(index);
     }
 
     public void removeViewAt(int index) {
       View child = mViews.get(index);
       if (child != null) {
         mViews.remove(index);
-        mTopOffsetsFromLayout.remove(child);
         child.removeOnLayoutChangeListener(mChildLayoutChangeListener);
-        mTotalChildrenHeight -= child.getMeasuredHeight();
+        updateTotalChildrenHeight(-child.getMeasuredHeight());
 
-        notifyDataSetChanged();
+        notifyItemRemoved(index);
+      }
+    }
+
+    private void updateTotalChildrenHeight(int delta) {
+      if (delta != 0) {
+        mTotalChildrenHeight += delta;
+        mScrollView.onTotalChildrenHeightChange(mTotalChildrenHeight);
       }
     }
 
@@ -220,16 +273,21 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     }
 
     public int getTopOffsetForItem(int index) {
-      return Assertions.assertNotNull(
-          mTopOffsetsFromLayout.get(Assertions.assertNotNull(mViews.get(index))));
+      return mScrollOffsetTracker.getTopOffsetForItem(index);
     }
+  }
+
+  private boolean mSendContentSizeChangeEvents;
+
+  public void setSendContentSizeChangeEvents(boolean sendContentSizeChangeEvents) {
+    mSendContentSizeChangeEvents = sendContentSizeChangeEvents;
   }
 
   private int calculateAbsoluteOffset() {
     int offsetY = 0;
     if (getChildCount() > 0) {
       View recyclerViewChild = getChildAt(0);
-      int childPosition = getChildAdapterPosition(recyclerViewChild);
+      int childPosition = getChildViewHolder(recyclerViewChild).getLayoutPosition();
       offsetY = ((ReactListAdapter) getAdapter()).getTopOffsetForItem(childPosition) -
           recyclerViewChild.getTop();
     }
@@ -261,12 +319,23 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
                 getHeight()));
   }
 
+  private void onTotalChildrenHeightChange(int newTotalChildrenHeight) {
+    if (mSendContentSizeChangeEvents) {
+      ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher()
+          .dispatchEvent(new ContentSizeChangeEvent(
+                  getId(),
+                  SystemClock.uptimeMillis(),
+                  getWidth(),
+                  newTotalChildrenHeight));
+    }
+  }
+
   public RecyclerViewBackedScrollView(Context context) {
     super(context);
     setHasFixedSize(true);
     setItemAnimator(new NotAnimatedItemAnimator());
     setLayoutManager(new LinearLayoutManager(context));
-    setAdapter(new ReactListAdapter());
+    setAdapter(new ReactListAdapter(this));
   }
 
   /*package*/ void addViewToAdapter(View child, int index) {

@@ -14,13 +14,8 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-@interface RCTTextFieldDelegate : NSObject<UITextFieldDelegate>
-
-@end
-
 @interface RCTTextField ()
 
-@property (nonatomic, strong) RCTTextFieldDelegate *helperDelegate;
 @property (nonatomic, strong) RCTEventDispatcher *eventDispatcher;
 @property (nonatomic, assign) NSInteger nativeEventCount;
 
@@ -33,6 +28,7 @@
   BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
   BOOL _submitted;
+  UITextRange *_previousSelectionRange;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -40,15 +36,20 @@
   if ((self = [super initWithFrame:CGRectZero])) {
     RCTAssert(eventDispatcher, @"eventDispatcher is a required parameter");
     _eventDispatcher = eventDispatcher;
+    _previousSelectionRange = self.selectedTextRange;
     [self addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldBeginEditing) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEndEditing) forControlEvents:UIControlEventEditingDidEnd];
+    [self addTarget:self action:@selector(textFieldSubmitEditing) forControlEvents:UIControlEventEditingDidEndOnExit];
+    [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
     _reactSubviews = [NSMutableArray new];
-
-    _helperDelegate = [[RCTTextFieldDelegate alloc] init];
-    self.delegate = _helperDelegate;
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [self removeObserver:self forKeyPath:@"selectedTextRange"];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
@@ -168,6 +169,10 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                      text:self.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  // selectedTextRange observer isn't triggered when you type even though the
+  // cursor position moves, so we send event again here.
+  [self sendSelectionEvent];
 }
 
 - (void)textFieldEndEditing
@@ -212,6 +217,36 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   return YES;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(RCTTextField *)textField
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  if ([keyPath isEqualToString:@"selectedTextRange"]) {
+    [self sendSelectionEvent];
+  }
+}
+
+- (void)sendSelectionEvent
+{
+  if (_onSelectionChange &&
+      self.selectedTextRange != _previousSelectionRange &&
+      ![self.selectedTextRange isEqual:_previousSelectionRange]) {
+
+    _previousSelectionRange = self.selectedTextRange;
+
+    UITextRange *selection = self.selectedTextRange;
+    NSInteger start = [self offsetFromPosition:[self beginningOfDocument] toPosition:selection.start];
+    NSInteger end = [self offsetFromPosition:[self beginningOfDocument] toPosition:selection.end];
+    _onSelectionChange(@{
+      @"selection": @{
+        @"start": @(start),
+        @"end": @(end),
+      },
+    });
+  }
+}
+
 - (BOOL)becomeFirstResponder
 {
   _jsRequestingFirstResponder = YES;
@@ -237,40 +272,6 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 - (BOOL)canBecomeFirstResponder
 {
   return _jsRequestingFirstResponder;
-}
-
-@end
-
-
-#pragma mark -
-#pragma mark Delegate
-
-@implementation RCTTextFieldDelegate
-
-- (BOOL)textField:(UITextField *)aTextField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-  RCTTextField *textField = (RCTTextField *)aTextField;
-  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
-    return YES;
-  }
-  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
-  if (string.length > allowedLength) {
-    if (string.length > 1) {
-      // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [string substringToIndex:allowedLength];
-      NSMutableString *newString = textField.text.mutableCopy;
-      [newString replaceCharactersInRange:range withString:limitedString];
-      textField.text = newString;
-      // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
-                                                                 offset:(range.location + allowedLength)];
-      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
-      [textField textFieldDidChange];
-    }
-    return NO;
-  } else {
-    return YES;
-  }
 }
 
 @end

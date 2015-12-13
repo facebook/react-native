@@ -22,7 +22,6 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTProfile.h"
 #import "RCTSourceCode.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
 #define RCTAssertJSThread() \
@@ -175,35 +174,11 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
 {
   RCTPerformanceLoggerStart(RCTPLScriptDownload);
-  int cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
+  NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
 
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source) {
     RCTProfileEndAsyncEvent(0, @"init,download", cookie, @"JavaScript download", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
-
-    // Only override the value of __DEV__ if running in debug mode, and if we
-    // haven't explicitly overridden the packager dev setting in the bundleURL
-    BOOL shouldOverrideDev = RCT_DEBUG && ([self.bundleURL isFileURL] ||
-    [self.bundleURL.absoluteString rangeOfString:@"dev="].location == NSNotFound);
-
-    // Force JS __DEV__ value to match RCT_DEBUG
-    if (shouldOverrideDev) {
-      NSString *sourceString = [[NSString alloc] initWithData:source encoding:NSUTF8StringEncoding];
-      NSRange range = [sourceString rangeOfString:@"\\b__DEV__\\s*?=\\s*?(!1|!0|false|true)"
-                                          options:NSRegularExpressionSearch];
-
-      RCTAssert(range.location != NSNotFound, @"It looks like the implementation"
-                "of __DEV__ has changed. Update -[RCTBatchedBridge loadSource:].");
-
-      NSString *valueString = [sourceString substringWithRange:range];
-      if ([valueString rangeOfString:@"!1"].length) {
-        valueString = [valueString stringByReplacingOccurrencesOfString:@"!1" withString:@"!0"];
-      } else if ([valueString rangeOfString:@"false"].length) {
-        valueString = [valueString stringByReplacingOccurrencesOfString:@"false" withString:@"true"];
-      }
-      source = [[sourceString stringByReplacingCharactersInRange:range withString:valueString]
-                dataUsingEncoding:NSUTF8StringEncoding];
-    }
 
     _onSourceLoad(error, source);
   };
@@ -592,13 +567,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       return;
     }
 
-    RCTProfileBeginEvent(0, @"FetchApplicationScriptCallbacks", nil);
+    RCT_PROFILE_BEGIN_EVENT(0, @"FetchApplicationScriptCallbacks", nil);
     [_javaScriptExecutor executeJSCall:@"BatchedBridge"
                                 method:@"flushedQueue"
                              arguments:@[]
                               callback:^(id json, NSError *error)
      {
-       RCTProfileEndEvent(0, @"js_call,init", @{
+       RCT_PROFILE_END_EVENT(0, @"js_call,init", @{
          @"json": RCTNullIfNil(json),
          @"error": RCTNullIfNil(error),
        });
@@ -730,10 +705,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
-      
+
 #if RCT_DEV
       NSString *_threadName = RCTCurrentThreadName();
-      RCTProfileBeginEvent(0, _threadName, nil);
+      RCT_PROFILE_BEGIN_EVENT(0, _threadName, nil);
 #endif
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
@@ -747,7 +722,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
         }
       }
 
-      RCTProfileEndEvent(0, @"objc_call,dispatch_async", @{
+      RCT_PROFILE_END_EVENT(0, @"objc_call,dispatch_async", @{
         @"calls": @(calls.count),
       });
     };
@@ -798,14 +773,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
-  RCTProfileBeginEvent(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
+  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
 
   @try {
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
   @catch (NSException *exception) {
     // Pass on JS exceptions
-    if ([exception.name rangeOfString:@"Unhandled JS Exception"].location == 0) {
+    if ([exception.name isEqualToString:RCTFatalExceptionName]) {
       @throw exception;
     }
 
@@ -819,7 +794,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     NSMutableDictionary *args = [method.profileArgs mutableCopy];
     args[@"method"] = method.JSMethodName;
     args[@"args"] = RCTJSONStringify(RCTNullIfNil(params), NULL);
-    RCTProfileEndEvent(0, @"objc_call", args);
+    RCT_PROFILE_END_EVENT(0, @"objc_call", args);
   }
 
   return YES;
@@ -828,7 +803,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)_jsThreadUpdate:(CADisplayLink *)displayLink
 {
   RCTAssertJSThread();
-  RCTProfileBeginEvent(0, @"DispatchFrameUpdate", nil);
+  RCT_PROFILE_BEGIN_EVENT(0, @"DispatchFrameUpdate", nil);
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
@@ -839,9 +814,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
       [moduleData dispatchBlock:^{
         RCTProfileEndFlowEvent();
-        RCTProfileBeginEvent(0, name, nil);
+        RCT_PROFILE_BEGIN_EVENT(0, name, nil);
         [observer didUpdateFrame:frameUpdate];
-        RCTProfileEndEvent(0, @"objc_call,fps", nil);
+        RCT_PROFILE_END_EVENT(0, @"objc_call,fps", nil);
       }];
     }
   }
@@ -851,7 +826,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
   RCTProfileImmediateEvent(0, @"JS Thread Tick", 'g');
 
-  RCTProfileEndEvent(0, @"objc_call", nil);
+  RCT_PROFILE_END_EVENT(0, @"objc_call", nil);
 }
 
 - (void)startProfiling

@@ -15,6 +15,7 @@ var RCTUIManager = require('NativeModules').UIManager;
 
 var ReactElement = require('ReactElement');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
+var ReactNativeViewPool = require('ReactNativeViewPool');
 var ReactPerf = require('ReactPerf');
 var ReactReconciler = require('ReactReconciler');
 var ReactUpdateQueue = require('ReactUpdateQueue');
@@ -34,6 +35,10 @@ function instanceNumberToChildRootID(rootNodeID, instanceNumber) {
  * here.
  */
 var TopLevelWrapper = function() {};
+TopLevelWrapper.prototype.isReactComponent = {};
+if (__DEV__) {
+  TopLevelWrapper.displayName = 'TopLevelWrapper';
+}
 TopLevelWrapper.prototype.render = function() {
   // this.props is actually a ReactElement
   return this.props;
@@ -108,6 +113,8 @@ var ReactNativeMount = {
   ): ?ReactComponent {
     var nextWrappedElement = new ReactElement(
       TopLevelWrapper,
+      null,
+      null,
       null,
       null,
       null,
@@ -210,6 +217,7 @@ var ReactNativeMount = {
     ReactNativeMount.unmountComponentAtNode(containerTag);
     // call back into native to remove all of the subviews from this container
     RCTUIManager.removeRootView(containerTag);
+    ReactNativeViewPool.clearPoolForRootView(containerTag);
   },
 
   /**

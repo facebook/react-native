@@ -16,6 +16,7 @@ var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
+var ReactNativeViewPool = require('ReactNativeViewPool');
 var ReactMultiChild = require('ReactMultiChild');
 var RCTUIManager = require('NativeModules').UIManager;
 
@@ -88,6 +89,7 @@ ReactNativeBaseComponent.Mixin = {
   unmountComponent: function() {
     deleteAllListeners(this._rootNodeID);
     this.unmountChildren();
+    ReactNativeViewPool.release(this);
     this._rootNodeID = null;
   },
 
@@ -204,24 +206,7 @@ ReactNativeBaseComponent.Mixin = {
   mountComponent: function(rootID, transaction, context) {
     this._rootNodeID = rootID;
 
-    var tag = ReactNativeTagHandles.allocateTag();
-
-    if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
-    }
-
-    var updatePayload = ReactNativeAttributePayload.create(
-      this._currentElement.props,
-      this.viewConfig.validAttributes
-    );
-
-    var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
-    RCTUIManager.createView(
-      tag,
-      this.viewConfig.uiViewClassName,
-      nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
-      updatePayload
-    );
+    var tag = ReactNativeViewPool.acquire(this);
 
     this._registerListenersUponCreation(this._currentElement.props);
     this.initializeChildren(

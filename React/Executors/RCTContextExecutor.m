@@ -126,7 +126,7 @@ static JSValueRef RCTNativeLoggingHook(JSContextRef context, __unused JSObjectRe
       level = MAX(level, JSValueToNumber(context, arguments[1], exception));
     }
 
-    _RCTLog(level, @"%@", message);
+    _RCTLogJavaScriptInternal(level, message);
   }
 
   return JSValueMakeUndefined(context);
@@ -192,7 +192,7 @@ static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSOb
   }
 
   if (profileName) {
-    RCTProfileBeginEvent(tag, profileName, nil);
+    RCT_PROFILE_BEGIN_EVENT(tag, profileName, nil);
   }
 
   return JSValueMakeUndefined(context);
@@ -202,7 +202,7 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
 {
   if (argumentCount > 0) {
     double tag = JSValueToNumber(context, arguments[0], exception);
-    RCTProfileEndEvent((uint64_t)tag, @"console", nil);
+    RCT_PROFILE_END_EVENT((uint64_t)tag, @"console", nil);
   }
 
   return JSValueMakeUndefined(context);
@@ -227,6 +227,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
 
       static BOOL isProfiling = NO;
+
+      if (isProfiling) {
+        nativeProfilerStart(context, "profile");
+      }
+
       [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
 
         if (shouldStart == isProfiling) {
@@ -279,7 +284,13 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                        selector:@selector(runRunLoopThread)
                                                          object:nil];
   javaScriptThread.name = @"com.facebook.React.JavaScript";
-  javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
+
+  if ([javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
+    [javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
+  } else {
+    javaScriptThread.threadPriority = [NSThread mainThread].threadPriority;
+  }
+
   [javaScriptThread start];
 
   return [self initWithJavaScriptThread:javaScriptThread context:nil];

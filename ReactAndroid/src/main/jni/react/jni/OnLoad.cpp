@@ -60,10 +60,6 @@ struct ReadableNativeMapKeySetIterator : public Countable {
     , mapRef(mapRef_) {}
 };
 
-struct NativeRunnable : public Countable {
-  std::function<void()> callable;
-};
-
 static jobject createReadableNativeMapWithContents(JNIEnv* env, folly::dynamic map) {
   if (map.isNull()) {
     return nullptr;
@@ -515,7 +511,13 @@ static jstring getNextKey(JNIEnv* env, jobject obj) {
 } // namespace iterator
 } // namespace map
 
+namespace {
+
 namespace runnable {
+
+struct NativeRunnable : public Countable {
+  std::function<void()> callable;
+};
 
 static jclass gNativeRunnableClass;
 static jmethodID gNativeRunnableCtor;
@@ -743,6 +745,8 @@ static void createProxyExecutor(JNIEnv *env, jobject obj, jobject executorInstan
 
 } // namespace executors
 
+}
+
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     // get the current env
@@ -808,7 +812,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     registerNatives("com/facebook/react/bridge/ProxyJavaScriptExecutor", {
         makeNativeMethod(
-          "initialize", "(Lcom/facebook/react/bridge/ProxyJavaScriptExecutor$JavaJSExecutor;)V",
+          "initialize", "(Lcom/facebook/react/bridge/JavaJSExecutor;)V",
           executors::createProxyExecutor),
     });
 

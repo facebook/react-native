@@ -8,11 +8,57 @@
  */
 'use strict';
 
+const fs = require('fs');
 const log = require('../util/log').out('bundle');
-const processBundle = require('./processBundle');
 const Promise = require('promise');
 const ReactPackager = require('../../packager/react-packager');
-const saveBundleAndMap = require('./saveBundleAndMap');
+const saveAssets = require('./saveAssets');
+
+const sign = require('./sign');
+
+function saveBundleAndMap(
+  bundle,
+  bundleOutput,
+  encoding,
+  sourcemapOutput,
+  dev
+) {
+  log('start');
+  let codeWithMap;
+  if (!dev) {
+    codeWithMap = bundle.getMinifiedSourceAndMap(dev);
+  } else {
+    codeWithMap = {
+      code: bundle.getSource({ dev }),
+      map: JSON.stringify(bundle.getSourceMap({ dev })),
+    };
+  }
+  log('finish');
+
+  log('Writing bundle output to:', bundleOutput);
+  fs.writeFileSync(bundleOutput, sign(codeWithMap.code), encoding);
+  log('Done writing bundle output');
+
+  if (sourcemapOutput) {
+    log('Writing sourcemap output to:', sourcemapOutput);
+    fs.writeFileSync(sourcemapOutput, codeWithMap.map);
+    log('Done writing sourcemap output');
+  }
+}
+
+function savePrepackBundleAndMap(
+  bundle,
+  bundleOutput,
+  sourcemapOutput,
+  bridgeConfig
+) {
+  log('Writing prepack bundle output to:', bundleOutput);
+  const result = bundle.build({
+    batchedBridgeConfig: bridgeConfig
+  });
+  fs.writeFileSync(bundleOutput, result, 'ucs-2');
+  log('Done writing prepack bundle output');
+}
 
 function buildBundle(args, config) {
   return new Promise((resolve, reject) => {
@@ -36,24 +82,56 @@ function buildBundle(args, config) {
       platform: args.platform,
     };
 
-    resolve(ReactPackager.createClientFor(options).then(client => {
-      log('Created ReactPackager');
-      return client.buildBundle(requestOpts)
+    const prepack = args.prepack;
+
+    const client = ReactPackager.createClientFor(options);
+
+    client.then(() => log('Created ReactPackager'));
+
+    // Build and save the bundle
+    let bundle;
+    if (prepack) {
+      bundle = client.then(c => c.buildPrepackBundle(requestOpts))
         .then(outputBundle => {
-          log('Closing client');
-          client.close();
+          savePrepackBundleAndMap(
+            outputBundle,
+            args['bundle-output'],
+            args['sourcemap-output'],
+            args['bridge-config']
+          );
           return outputBundle;
-        })
-        .then(outputBundle => processBundle(outputBundle, !args.dev))
-        .then(outputBundle => saveBundleAndMap(
-          outputBundle,
+        });
+    } else {
+      bundle = client.then(c => c.buildBundle(requestOpts))
+        .then(outputBundle => {
+          saveBundleAndMap(
+            outputBundle,
+            args['bundle-output'],
+            args['bundle-encoding'],
+            args['sourcemap-output'],
+            args.dev
+          );
+          return outputBundle;
+        });
+    }
+
+    // When we're done bundling, close the client
+    bundle.then(() => client.then(c => {
+      log('Closing client');
+      c.close();
+    }));
+
+    // Save the assets of the bundle
+    const assets = bundle
+        .then(outputBundle => outputBundle.getAssets())
+        .then(outputAssets => saveAssets(
+          outputAssets,
           args.platform,
-          args['bundle-output'],
-          args['bundle-encoding'],
-          args['sourcemap-output'],
           args['assets-dest']
         ));
-    }));
+
+    // When we're done saving the assets, we're done.
+    resolve(assets);
   });
 }
 

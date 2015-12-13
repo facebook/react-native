@@ -61,6 +61,82 @@ var BridgeProfiling = {
   swizzleReactPerf() {
     ReactPerf().injection.injectMeasure(BridgeProfiling.reactPerfMeasure);
   },
+
+  attachToRelayProfiler() {
+    // We don't want to create a dependency on `RelayProfiler`, so that's why
+    // we require it indirectly (rather than using a literal string). Since
+    // there's no guarantee that the module will be present, we must wrap
+    // everything in a try-catch block as requiring a non-existing module
+    // will just throw.
+    try {
+      var rpName = 'RelayProfiler';
+      var RelayProfiler = require(rpName);
+      RelayProfiler.attachProfileHandler('*', (name) => {
+        BridgeProfiling.profile(name);
+        return () => {
+          BridgeProfiling.profileEnd();
+        };
+      });
+    } catch(err) {}
+  },
+
+  /* This is not called by default due to perf overhead but it's useful
+     if you want to find traces which spend too much time in JSON. */
+  swizzleJSON() {
+    BridgeProfiling.measureMethods(JSON, 'JSON', [
+      'parse',
+      'stringify'
+    ]);
+  },
+
+ /**
+  * Measures multiple methods of a class. For example, you can do:
+  * BridgeProfiling.measureMethods(JSON, 'JSON', ['parse', 'stringify']);
+  *
+  * @param object
+  * @param objectName
+  * @param methodNames Map from method names to method display names.
+  */
+ measureMethods(object: any, objectName: string, methodNames: Array<string>): void {
+   if (!__DEV__) {
+     return;
+   }
+
+   methodNames.forEach(methodName => {
+     object[methodName] = BridgeProfiling.measure(
+       objectName,
+       methodName,
+       object[methodName]
+     );
+   });
+ },
+
+ /**
+  * Returns an profiled version of the input function. For example, you can:
+  * JSON.parse = BridgeProfiling.measure('JSON', 'parse', JSON.parse);
+  *
+  * @param objName
+  * @param fnName
+  * @param {function} func
+  * @return {function} replacement function
+  */
+ measure(objName: string, fnName: string, func: any): any {
+   if (!__DEV__) {
+     return func;
+   }
+
+   var profileName = `${objName}.${fnName}`;
+   return function() {
+     if (!_enabled) {
+       return func.apply(this, arguments);
+     }
+
+     BridgeProfiling.profile(profileName);
+     var ret = func.apply(this, arguments);
+     BridgeProfiling.profileEnd();
+     return ret;
+   };
+ },
 };
 
 BridgeProfiling.setEnabled(global.__RCTProfileIsProfiling || false);

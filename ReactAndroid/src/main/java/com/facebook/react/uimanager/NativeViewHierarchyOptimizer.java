@@ -90,6 +90,17 @@ public class NativeViewHierarchyOptimizer {
     }
   }
 
+  public void handleDropViews(int[] viewTagsToDrop, int length) {
+    mUIViewOperationQueue.enqueueDropViews(viewTagsToDrop, length);
+  }
+
+  /**
+   * Handles native children cleanup when css node is removed from hierarchy
+   */
+  public static void handleRemoveNode(ReactShadowNode node) {
+    node.removeAllNativeChildren();
+  }
+
   /**
    * Handles an updateView call. If a view transitions from being layout-only to not (or vice-versa)
    * this could result in some number of additional createView and manageChildren calls. If the

@@ -349,7 +349,7 @@ import com.facebook.react.touch.JSResponderHandler;
                       viewsToAdd,
                       tagsToDelete));
         }
-        dropView(viewToDestroy);
+        detachView(viewToDestroy);
       }
     }
   }
@@ -378,10 +378,15 @@ import com.facebook.react.touch.JSResponderHandler;
     view.setId(tag);
   }
 
+  public void dropView(int tag) {
+    mTagsToViews.remove(tag);
+    mTagsToViewManagers.remove(tag);
+  }
+
   /**
    * Releases all references to given native View.
    */
-  private void dropView(View view) {
+  private void detachView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
@@ -393,15 +398,14 @@ import com.facebook.react.touch.JSResponderHandler;
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
       ViewGroup viewGroup = (ViewGroup) view;
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
-      for (int i = 0; i < viewGroupManager.getChildCount(viewGroup); i++) {
+      for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
         if (mTagsToViews.get(child.getId()) != null) {
-          dropView(child);
+          detachView(child);
         }
       }
+      viewGroupManager.removeAllViews(viewGroup);
     }
-    mTagsToViews.remove(view.getId());
-    mTagsToViewManagers.remove(view.getId());
   }
 
   public void removeRootView(int rootViewTag) {
@@ -411,7 +415,7 @@ import com.facebook.react.touch.JSResponderHandler;
             "View with tag " + rootViewTag + " is not registered as a root view");
     }
     View rootView = mTagsToViews.get(rootViewTag);
-    dropView(rootView);
+    detachView(rootView);
     mRootTags.delete(rootViewTag);
     mRootViewsContext.remove(rootViewTag);
   }
@@ -441,13 +445,26 @@ import com.facebook.react.touch.JSResponderHandler;
     return TouchTargetHelper.findTargetTagForTouch(touchY, touchX, (ViewGroup) view);
   }
 
-  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
+  public void setJSResponder(int reactTag, int initialReactTag, boolean blockNativeResponder) {
+    if (!blockNativeResponder) {
+      mJSResponderHandler.setJSResponder(initialReactTag, null);
+      return;
+    }
+
+    View view = mTagsToViews.get(reactTag);
+    if (initialReactTag != reactTag && view instanceof ViewParent) {
+      // In this case, initialReactTag corresponds to a virtual/layout-only View, and we already
+      // have a parent of that View in reactTag, so we can use it.
+      mJSResponderHandler.setJSResponder(initialReactTag, (ViewParent) view);
+      return;
+    }
+
     if (mRootTags.get(reactTag)) {
       SoftAssertions.assertUnreachable(
           "Cannot block native responder on " + reactTag + " that is a root view");
     }
-    ViewParent viewParent = blockNativeResponder ? mTagsToViews.get(reactTag).getParent() : null;
-    mJSResponderHandler.setJSResponder(reactTag, viewParent);
+    mJSResponderHandler
+        .setJSResponder(initialReactTag, view.getParent());
   }
 
   public void clearJSResponder() {

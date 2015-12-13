@@ -31,6 +31,7 @@ function runServer(args, config, readyCallback) {
   const app = connect()
     .use(cors)
     .use(loadRawBodyMiddleware)
+    .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
@@ -43,7 +44,6 @@ function runServer(args, config, readyCallback) {
   args.projectRoots.forEach(root => app.use(connect.static(root)));
 
   app.use(connect.logger())
-    .use(connect.compress())
     .use(connect.errorHandler());
 
   const serverInstance = http.createServer(app).listen(

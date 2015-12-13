@@ -85,19 +85,13 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     return;
   }
 
-  if (RCTRunningInAppExtension()) {
-    return;
-  }
-
-  UIViewController *presentingController = RCTKeyWindow().rootViewController;
-  if (presentingController == nil) {
-    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
-    return;
-  }
-
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
-  if ([UIAlertController class] == nil) {
+  // TODO: we've encountered some bug when presenting alerts on top of a window that is subsequently
+  // dismissed. As a temporary solution to this, we'll use UIAlertView preferentially if it's available.
+  BOOL preferAlertView = (!RCTRunningInAppExtension() && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone);
+
+  if (preferAlertView || [UIAlertController class] == nil) {
 
     UIAlertView *alertView = RCTAlertView(title, nil, self, nil, nil);
     NSMutableArray<NSString *> *buttonKeys = [[NSMutableArray alloc] initWithCapacity:buttons.count];
@@ -135,6 +129,18 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
 #endif
 
   {
+    UIViewController *presentingController = RCTKeyWindow().rootViewController;
+    if (presentingController == nil) {
+      RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
+      return;
+    }
+
+    // Walk the chain up to get the topmost modal view controller. If modals are presented,
+    // the root view controller's view might not be in the window hierarchy, and presenting from it will fail.
+    while (presentingController.presentedViewController) {
+      presentingController = presentingController.presentedViewController;
+    }
+
     UIAlertController *alertController =
     [UIAlertController alertControllerWithTitle:title
                                         message:nil

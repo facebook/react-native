@@ -71,6 +71,10 @@ function polyfillGlobal(name, newValue, scope=GLOBAL) {
 }
 
 function setUpErrorHandler() {
+  if (global.__fbDisableExceptionsManager) {
+    return;
+  }
+
   function handleError(e, isFatal) {
     try {
       require('ExceptionsManager').handleException(e, isFatal);
@@ -156,7 +160,9 @@ function setUpWebSockets() {
 
 function setUpProfile() {
   if (__DEV__) {
-    require('BridgeProfiling').swizzleReactPerf();
+    var BridgeProfiling = require('BridgeProfiling');
+    BridgeProfiling.swizzleReactPerf();
+    BridgeProfiling.attachToRelayProfiler();
   }
 }
 
@@ -176,9 +182,11 @@ function setUpNumber() {
 
 function setUpDevTools() {
   // not when debugging in chrome
-  if (__DEV__ && !window.document && require('Platform').OS === 'ios') {
-    var setupDevtools = require('setupDevtools');
-    setupDevtools();
+  if (__DEV__) { // TODO(9123099) Strip `__DEV__ &&`
+    if (!window.document && require('Platform').OS === 'ios') {
+      var setupDevtools = require('setupDevtools');
+      setupDevtools();
+    }
   }
 }
 
@@ -198,6 +206,8 @@ setUpDevTools();
 
 // Just to make sure the JS gets packaged up. Wait until the JS environment has
 // been initialized before requiring them.
-require('RCTDebugComponentOwnership');
+if (__DEV__) {
+  require('RCTDebugComponentOwnership');
+}
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
