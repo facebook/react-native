@@ -529,7 +529,9 @@ make them customizable, React Native exposes a
 [NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
 
 ```javascript
-var SCREEN_WIDTH = require('Dimensions').get('window').width;
+var React = require('react-native');
+var { Dimensions } = React;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 
 var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
