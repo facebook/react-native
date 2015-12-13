@@ -12,6 +12,11 @@ Future releases:
 - 0.19.0 - Jan 28
 - ...
 
+## Ideas for improvements
+
+- A lot of these steps could be done by a script
+- We could simplify the process quite a bit by publishing the Android binaries to npm. This will increase the size of the npm package by about 3.3MB. To do that: after `installArchives`, move the binaries to somewhere where `npm publish` will pick them up. Then, change the `build.gradle` file(s) of your generated app so that Gradle will pick up the binaries from `node_modules`.
+
 ## Cut a release branch
 
 Note: Make sure you replace 0.18 in all the commands below with the version you're releasing :) For example, copy-paste all of this into an editor and replace 0.18.
@@ -61,7 +66,7 @@ Make absolutely sure basic iOS and Android workflow works on master:
 
 ## Do a release
 
-Publish to Maven Central (Note: We could get rid of this whole section publishing binaries to npm instead):
+Publish to Maven Central (Note: **We could get rid of this whole section by publishing binaries to npm instead**):
   - Log into Sonatype and go to [Staging upload](https://oss.sonatype.org/#staging-upload). You'll need to get permissions for this by filing a ticket explaining you're a core contributor to React Native. [Example ticket](https://issues.sonatype.org/browse/OSSRH-11885).
   - Select Artifact(s) with a POM (to publish to a local Maven repo for testing run `./gradlew :ReactAndroid:installArchives`)
   - Add all files: .aar, sources jar, javadoc jar, .asc for everything (including the POM file)
