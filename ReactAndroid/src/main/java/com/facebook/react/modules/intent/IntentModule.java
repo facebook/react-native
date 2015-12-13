@@ -14,15 +14,10 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.common.logging.FLog;
-import com.facebook.react.common.ReactConstants;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Intent module. Launch other activities or open URLs.
@@ -38,25 +33,32 @@ public class IntentModule extends ReactContextBaseJavaModule {
     return "IntentAndroid";
   }
 
-  @Override
-  public Map<String, Object> getConstants() {
-    final Map<String, Object> constants = new HashMap<>();
-    Activity currentActivity = getCurrentActivity();
-    String initialURL = null;
+  /**
+   * Return the URL the activity was started with
+   *
+   * @param callback a callback which is called with the initial URL
+   */
+  @ReactMethod
+  public void getInitialURL(Callback callback) {
+    try {
+      Activity currentActivity = getCurrentActivity();
+      String initialURL = null;
 
-    if (currentActivity != null) {
-      Intent intent = currentActivity.getIntent();
-      String action = intent.getAction();
-      Uri uri = intent.getData();
+      if (currentActivity != null) {
+        Intent intent = currentActivity.getIntent();
+        String action = intent.getAction();
+        Uri uri = intent.getData();
 
-      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
-        initialURL = uri.toString();
+        if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+          initialURL = uri.toString();
+        }
       }
+
+      callback.invoke(initialURL);
+    } catch (Exception e) {
+      throw new JSApplicationIllegalArgumentException(
+          "Could not get the initial URL : " + e.getMessage());
     }
-
-    constants.put("initialURL", initialURL);
-
-    return constants;
   }
 
   /**
@@ -65,7 +67,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
    * For example, if the URL is "https://www.facebook.com", the system browser will be opened,
    * or the "choose application" dialog will be shown.
    *
-   * @param URL the URL to open
+   * @param url the URL to open
    */
   @ReactMethod
   public void openURL(String url) {
@@ -92,8 +94,8 @@ public class IntentModule extends ReactContextBaseJavaModule {
   /**
    * Determine whether or not an installed app can handle a given URL.
    *
-   * @param URL the URL to open
-   * @param promise a promise that is always resolved with a boolean argument
+   * @param url the URL to open
+   * @param callback a callback that is always called with a boolean argument
    */
   @ReactMethod
   public void canOpenURL(String url, Callback callback) {

@@ -13,8 +13,6 @@
 var IntentAndroidModule = require('NativeModules').IntentAndroid;
 var invariant = require('invariant');
 
-var _initialURL = IntentAndroidModule.initialURL;
-
 /**
  * `IntentAndroid` gives you a general interface to handle external links.
  *
@@ -27,7 +25,11 @@ var _initialURL = IntentAndroidModule.initialURL;
  *
  * ```
  * componentDidMount() {
- *  var url = IntentAndroid.popInitialURL();
+ *  var url = IntentAndroid.getInitialURL(url => {
+ *  	if (url) {
+ *  		console.log('Initial url is: ' + url);
+ *  	}
+ *  });
  * }
  * ```
  *
@@ -95,14 +97,16 @@ class IntentAndroid {
 
   /**
    * If the app launch was triggered by an app link with {@code Intent.ACTION_VIEW},
-   * it will pop the link url, otherwise it will return `null`
+   * it will give the link url, otherwise it will give `null`
    *
    * Refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
    */
-  static popInitialURL(): ?string {
-    var initialURL = _initialURL;
-    _initialURL = null;
-    return initialURL;
+  static getInitialURL(callback: Function) {
+    invariant(
+      typeof callback === 'function',
+      'A valid callback function is required'
+    );
+    IntentAndroidModule.getInitialURL(callback);
   }
 
   static _validateURL(url: string) {
