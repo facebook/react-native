@@ -19,7 +19,7 @@ jest.setMock('worker-farm', function() { return () => {}; })
 const Promise = require('promise');
 
 var Bundler = require('../../Bundler');
-var FileWatcher = require('../../FileWatcher');
+var FileWatcher = require('../../DependencyResolver/FileWatcher');
 var Server = require('../');
 var Server = require('../../Server');
 var AssetServer = require('../../AssetServer');
