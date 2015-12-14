@@ -57,6 +57,10 @@ var PullToRefreshViewAndroid = React.createClass({
     return this.refs[NATIVE_REF];
   },
 
+  setNativeProps: function(props) {
+    return this.refs[NATIVE_REF].setNativeProps(props);
+  },
+
   render: function() {
     return (
       <NativePullToRefresh
