@@ -16,7 +16,7 @@ Assuming you have the Android SDK installed, run `android` to open the Android S
 Make sure you have the following installed:
 
 1. Android SDK version 23 (compileSdkVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
-2. SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle)])
+2. SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](https://github.com/facebook/react-native/blob/master/ReactAndroid/build.gradle))
 3. Android Support Repository >= 17 (for Android Support Library)
 4. Android NDK (download & extraction instructions [here](http://developer.android.com/ndk/downloads/index.html))
 
@@ -47,8 +47,7 @@ npm install --save github:facebook/react-native#master
 
 Alternatively, you can clone the repo to your `node_modules` directory and run `npm install` inside the cloned repo.
 
-
-#### 2. Adding missing dependencies
+#### 2. Adding gradle dependencies
 
 Add `gradle-download-task` as dependency in `android/build.gradle`:
 
@@ -64,7 +63,6 @@ Add `gradle-download-task` as dependency in `android/build.gradle`:
 ...
 ```
 
-
 #### 3. Adding the `:ReactAndroid` project
 
 Add the `:ReactAndroid` project in `android/settings.gradle`:
@@ -73,7 +71,8 @@ Add the `:ReactAndroid` project in `android/settings.gradle`:
 ...
 include ':ReactAndroid'
 
-project(':ReactAndroid').projectDir = new File(rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
+project(':ReactAndroid').projectDir = new File(
+    rootProject.projectDir, '../node_modules/react-native/ReactAndroid')
 ...
 ```
 
@@ -109,7 +108,7 @@ compile(project(':react-native-custom-module')) {
 
 ## Additional notes
 
-Building from source can take a long time, especially for the first build, as it needs to download ~200 MB of files and compile JSC etc. Every time you update the `react-native` version from your repo, the build directory may get deleted, and all the files are re-downloaded. To avoid this, you might want to change your build directory path by editing the `~/.gradle/init.gradle ` file:
+Building from source can take a long time, especially for the first build, as it needs to download ~200 MB of artifacts and compile the native code. Every time you update the `react-native` version from your repo, the build directory may get deleted, and all the files are re-downloaded. To avoid this, you might want to change your build directory path by editing the `~/.gradle/init.gradle ` file:
 
 ```gradle
 gradle.projectsLoaded {
