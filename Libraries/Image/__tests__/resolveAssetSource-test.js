@@ -164,7 +164,7 @@ describe('resolveAssetSource', () => {
   describe('bundle was loaded from file on Android', () => {
     beforeEach(() => {
       NativeModules.SourceCode.scriptURL =
-        '/sdcard/Path/To/Simulator/main.bundle';
+        'file:///sdcard/Path/To/Simulator/main.bundle';
       Platform.OS = 'android';
     });
 

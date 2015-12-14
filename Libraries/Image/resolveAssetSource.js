@@ -48,9 +48,9 @@ function getDevServerURL() {
 function getOfflinePath() {
   if (_offlinePath === undefined) {
     var scriptURL = SourceCode.scriptURL;
-    var match = scriptURL && scriptURL.match(/^(file:\/\/)?(\/.*\/)/);
+    var match = scriptURL && scriptURL.match(/^file:\/\/(\/.*\/)/);
     if (match) {
-      _offlinePath = (Platform.OS === 'android' ? 'file://' : '') + match[2];
+      _offlinePath = match[1];
     } else {
       _offlinePath = '';
     }
@@ -64,10 +64,16 @@ function getOfflinePath() {
  */
 function getPathInArchive(asset) {
   var offlinePath = getOfflinePath();
-  if (Platform.OS === 'android' && !offlinePath) {
-    // In Android, image assets are belong to the drawables.
+  if (Platform.OS === 'android') {
+    if (offlinePath) {
+      // E.g. 'file:///sdcard/AwesomeModule/drawable-mdpi/icon.png'
+      return "file://" + offlinePath + getAssetPathInDrawableFolder(asset);
+    }
+    // E.g. 'assets_awesomemodule_icon'
+    // The Android resource system picks the correct scale.
     return assetPathUtils.getAndroidResourceIdentifier(asset);
   } else {
+    // E.g. '/assets/AwesomeModule/icon@2x.png'
     return offlinePath + getScaledAssetPath(asset);
   }
 }
@@ -82,20 +88,23 @@ function getPathOnDevserver(devServerUrl, asset) {
 }
 
 /**
- * Returns a path like 'assets/AwesomeModule/icon@2x.png' on iOS
- * or 'drawable_ldpi/awesomemodule_icon.png' on Android
+ * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
 function getScaledAssetPath(asset) {
   var scale = pickScale(asset.scales, PixelRatio.get());
-  if (Platform.OS === 'ios') {
-    var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-    var assetDir = assetPathUtils.getBasePath(asset);
-    return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
-  } else {
-    const androidFolder = assetPathUtils.getAndroidDrawableFolderName(asset, scale);
-    const fileName =  assetPathUtils.getAndroidResourceIdentifier(asset);
-    return androidFolder + '/' + fileName + '.' + asset.type;
-  }
+  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+  var assetDir = assetPathUtils.getBasePath(asset);
+  return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+}
+
+/**
+ * Returns a path like 'drawable-mdpi/icon.png'
+ */
+function getAssetPathInDrawableFolder(asset) {
+  var scale = pickScale(asset.scales, PixelRatio.get());
+  const drawbleFolder = assetPathUtils.getAndroidDrawableFolderName(asset, scale);
+  const fileName =  assetPathUtils.getAndroidResourceIdentifier(asset);
+  return drawbleFolder + '/' + fileName + '.' + asset.type;
 }
 
 function pickScale(scales: Array<number>, deviceScale: number): number {
