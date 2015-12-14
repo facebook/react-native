@@ -422,6 +422,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
   },
+  {
+    name: 'Due',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a2/41/5d/a2415d5f-407a-c565-ffb4-4f27f23d8ac2/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/due-countdown-reminders-for/id1050909468?mt=8',
+    author: 'Dotan Nahum',
+  },
 ];
 
 var AppList = React.createClass({
