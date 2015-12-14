@@ -366,8 +366,6 @@
   };
 
   function setupConsole(global) {
-    var originalConsole = global.console;
-
     if (!global.nativeLoggingHook) {
       return;
     }
@@ -461,7 +459,14 @@
       global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.info);
     }
 
-    global.console = {
+    // Preserve the original `console` as `originalConsole`
+    var originalConsole = global.console;
+    var descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+    if (descriptor) {
+      Object.defineProperty(global, 'originalConsole', descriptor);
+    }
+
+    var console = {
       error: getNativeLogFunction(LOG_LEVELS.error),
       info: getNativeLogFunction(LOG_LEVELS.info),
       log: getNativeLogFunction(LOG_LEVELS.info),
@@ -469,17 +474,19 @@
       trace: getNativeLogFunction(LOG_LEVELS.trace),
       table: consoleTablePolyfill
     };
+    descriptor.value = console;
+    Object.defineProperty(global, 'console', descriptor);
 
     // If available, also call the original `console` method since that is
     // sometimes useful. Ex: on OS X, this will let you see rich output in
     // the Safari Web Inspector console.
     if (__DEV__ && originalConsole) {
-      Object.keys(global.console).forEach(methodName => {
-        var reactNativeMethod = global.console[methodName];
+      Object.keys(console).forEach(methodName => {
+        var reactNativeMethod = console[methodName];
         if (originalConsole[methodName]) {
-          global.console[methodName] = function() {
+          console[methodName] = function() {
             originalConsole[methodName](...arguments);
-            reactNativeMethod.apply(global.console, arguments);
+            reactNativeMethod.apply(console, arguments);
           };
         }
       });
