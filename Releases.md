@@ -88,6 +88,7 @@ git push --tags
 - Publish to npm
 
 ```
+npm set registry https://registry.npmjs.org/
 npm publish
 # Only when doing a non-rc release:
 npm dist-tag add react-native@0.18.0 latest
