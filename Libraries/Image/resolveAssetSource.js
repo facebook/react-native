@@ -67,7 +67,7 @@ function getPathInArchive(asset) {
   if (Platform.OS === 'android') {
     if (offlinePath) {
       // E.g. 'file:///sdcard/AwesomeModule/drawable-mdpi/icon.png'
-      return "file://" + offlinePath + getAssetPathInDrawableFolder(asset);
+      return 'file://' + offlinePath + getAssetPathInDrawableFolder(asset);
     }
     // E.g. 'assets_awesomemodule_icon'
     // The Android resource system picks the correct scale.
