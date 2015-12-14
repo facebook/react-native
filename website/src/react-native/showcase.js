@@ -163,6 +163,12 @@ var apps = [
     author: 'Peach Labs',
   },
   {
+    name: 'Due',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a2/41/5d/a2415d5f-407a-c565-ffb4-4f27f23d8ac2/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/due-countdown-reminders-for/id1050909468?mt=8',
+    author: 'Dotan Nahum',
+  },
+  {
     name: 'Eat or Not',
     icon: 'http://a3.mzstatic.com/us/r30/Purple5/v4/51/be/34/51be3462-b015-ebf2-11c5-69165b37fadc/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
