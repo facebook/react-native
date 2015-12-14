@@ -88,6 +88,10 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       int tag,
       @Nullable CatalystStylesDiffMap styles) {
     if (node.isBackingViewCreated()) {
+      if (styles != null) {
+        // if the View is already created, make sure propagate new styles.
+        mOperationsQueue.enqueueUpdateProperties(tag, node.getViewClass(), styles);
+      }
       return;
     }
 
