@@ -161,37 +161,6 @@ that call back to the `TouchableOpacity` component.
 `TouchableHighlight`, in contrast, is backed by a native view and only
 requires that we implement `setNativeProps`.
 
-## Precomputing style
-
-We learned above that `setNativeProps` is a wrapper around
-`RCTUIManager.updateView`, which is also used internally by React to
-perform updates on re-render. One important difference is that
-`setNativeProps` does not call `precomputeStyle`, which is done
-internally by React, and so the `transform` property will not work if
-you try to update it manually with `setNativeProps`. To fix this,
-you can call `precomputeStyle` on your object first:
-
-```javascript
-var precomputeStyle = require('precomputeStyle');
-
-var App = React.createClass({
-  componentDidMount() {
-    var nativeProps = precomputeStyle({transform: [{rotate: '45deg'}]});
-    this._root.setNativeProps(nativeProps);
-  },
-
-  render() {
-    return (
-      <View ref={component => this._root = component}
-            style={styles.container}>
-        <Text>Precompute style!</Text>
-      </View>
-    )
-  },
-});
-```
-[Run this example](https://rnplay.org/apps/8_mIAA)
-
 ## setNativeProps to clear TextInput value
 
 Another very common use case of `setNativeProps` is to clear the value
