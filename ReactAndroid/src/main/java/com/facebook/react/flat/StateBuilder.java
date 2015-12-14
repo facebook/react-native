@@ -38,6 +38,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
   private final ArrayList<FlatShadowNode> mViewsToDetachAllChildrenFrom = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
+  private final ArrayList<FlatShadowNode> mViewsToUpdateBounds = new ArrayList<>();
 
   private @Nullable FlatUIViewOperationQueue.DetachAllChildrenFromViews mDetachAllChildrenFromViews;
 
@@ -61,7 +62,8 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     float right = left + width;
     float bottom = top + height;
     updateNodeRegion(node, tag, left, top, right, bottom);
-    updateViewBounds(node, tag, left, top, right, bottom);
+
+    mViewsToUpdateBounds.add(node);
 
     if (mDetachAllChildrenFromViews != null) {
       int[] viewsToDetachAllChildrenFrom = collectViewTags(mViewsToDetachAllChildrenFrom);
@@ -70,6 +72,11 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       mDetachAllChildrenFromViews.setViewsToDetachAllChildrenFrom(viewsToDetachAllChildrenFrom);
       mDetachAllChildrenFromViews = null;
     }
+
+    for (int i = 0, size = mViewsToUpdateBounds.size(); i != size; ++i) {
+      updateViewBounds(mViewsToUpdateBounds.get(i));
+    }
+    mViewsToUpdateBounds.clear();
   }
 
   /**
@@ -110,18 +117,13 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
   /**
    * Updates boundaries of a View that a give nodes maps to.
    */
-  private void updateViewBounds(
-      FlatShadowNode node,
-      int tag,
-      float leftInParent,
-      float topInParent,
-      float rightInParent,
-      float bottomInParent) {
-    int viewLeft = Math.round(leftInParent);
-    int viewTop = Math.round(topInParent);
-    int viewRight = Math.round(rightInParent);
-    int viewBottom = Math.round(bottomInParent);
+  private void updateViewBounds(FlatShadowNode node) {
+    NodeRegion nodeRegion = node.getNodeRegion();
 
+    int viewLeft = Math.round(nodeRegion.mLeft);
+    int viewTop = Math.round(nodeRegion.mTop);
+    int viewRight = Math.round(nodeRegion.mRight);
+    int viewBottom = Math.round(nodeRegion.mBottom);
     if (node.getViewLeft() == viewLeft && node.getViewTop() == viewTop &&
         node.getViewRight() == viewRight && node.getViewBottom() == viewBottom) {
       // nothing changed.
@@ -130,6 +132,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
     // this will optionally measure and layout the View this node maps to.
     node.setViewBounds(viewLeft, viewTop, viewRight, viewBottom);
+    int tag = node.getReactTag();
     mOperationsQueue.enqueueUpdateViewBounds(tag, viewLeft, viewTop, viewRight, viewBottom);
   }
 
@@ -284,7 +287,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       mDrawCommands.add(DrawView.INSTANCE);
 
       collectStateForMountableNode(node, tag, width, height);
-      updateViewBounds(node, tag, left, top, right, bottom);
+      mViewsToUpdateBounds.add(node);
     } else {
       collectStateRecursively(node, left, top, right, bottom);
       addNodeRegion(node.getNodeRegion());
