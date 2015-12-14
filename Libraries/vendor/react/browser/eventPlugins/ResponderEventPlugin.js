@@ -37,7 +37,7 @@ var executeDispatchesInOrderStopAtTrue =
 var responderID = null;
 
 /**
- * Count of current touches. A textInput should become responder iff the
+ * Count of current touches. A textInput should become responder if the
  * the selection changes while there is a touch on the screen.
  */
 var trackedTouchCount = 0;
