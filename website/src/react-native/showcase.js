@@ -285,6 +285,13 @@ var apps = [
     author: 'YuanYi Zhang (@mockingbot)',
   },
   {
+    name: 'Movie Trailers by MovieLaLa',
+    icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
+    linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
+    author: 'MovieLaLa'
+  },
+  {
     name: 'Mr. Dapper',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple4/v4/e8/3f/7c/e83f7cb3-2602-f8e8-de9a-ce0a775a4a14/mzl.hmdjhfai.png',
     link: 'https://itunes.apple.com/us/app/mr.-dapper-men-fashion-app/id989735184?ls=1&mt=8',
