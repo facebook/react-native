@@ -19,11 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.facebook.react.uimanager.ReactCompoundView;
+
 /**
  * A view that FlatShadowNode hierarchy maps to. Performs drawing by iterating over
  * array of DrawCommands, executing them one by one.
  */
-/* package */ final class FlatViewGroup extends ViewGroup {
+/* package */ final class FlatViewGroup extends ViewGroup implements ReactCompoundView {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */
@@ -47,6 +49,7 @@ import android.view.ViewParent;
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
+  private NodeRegion[] mNodeRegions = NodeRegion.EMPTY_ARRAY;
   private int mDrawChildIndex = 0;
   private boolean mIsAttached = false;
 
@@ -57,6 +60,19 @@ import android.view.ViewParent;
   @Override
   protected void detachAllViewsFromParent() {
     super.detachAllViewsFromParent();
+  }
+
+  @Override
+  public int reactTagForTouch(float touchX, float touchY) {
+    for (NodeRegion nodeRegion : mNodeRegions) {
+      if (nodeRegion.mLeft <= touchX && touchX < nodeRegion.mRight &&
+          nodeRegion.mTop <= touchY && touchY < nodeRegion.mBottom) {
+        return nodeRegion.mTag;
+      }
+    }
+
+    // no children found
+    return getId();
   }
 
   @Override
@@ -141,6 +157,10 @@ import android.view.ViewParent;
       dispatchOnDetached(mAttachDetachListeners);
     }
     mAttachDetachListeners = listeners;
+  }
+
+  /* package */ void mountNodeRegions(NodeRegion[] nodeRegions) {
+    mNodeRegions = nodeRegions;
   }
 
   /* package */ void mountViews(ViewResolver viewResolver, int[] viewsToAdd, int[] viewsToDetach) {

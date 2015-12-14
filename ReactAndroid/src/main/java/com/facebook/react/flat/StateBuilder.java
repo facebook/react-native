@@ -31,6 +31,8 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       new ElementsList<>(DrawCommand.EMPTY_ARRAY);
   private final ElementsList<AttachDetachListener> mAttachDetachListeners =
       new ElementsList<>(AttachDetachListener.EMPTY_ARRAY);
+  private final ElementsList<NodeRegion> mNodeRegions =
+      new ElementsList<>(NodeRegion.EMPTY_ARRAY);
   private final ElementsList<FlatShadowNode> mNativeChildren =
       new ElementsList<>(FlatShadowNode.EMPTY_ARRAY);
 
@@ -56,7 +58,10 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
     float left = node.getLayoutX();
     float top = node.getLayoutY();
-    updateViewBounds(node, tag, left, top, left + width, top + height);
+    float right = left + width;
+    float bottom = top + height;
+    updateNodeRegion(node, tag, left, top, right, bottom);
+    updateViewBounds(node, tag, left, top, right, bottom);
 
     if (mDetachAllChildrenFromViews != null) {
       int[] viewsToDetachAllChildrenFrom = collectViewTags(mViewsToDetachAllChildrenFrom);
@@ -88,6 +93,10 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
     mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), styles);
     node.signalBackingViewIsCreated();
+  }
+
+  private void addNodeRegion(NodeRegion nodeRegion) {
+    mNodeRegions.add(nodeRegion);
   }
 
   private void addNativeChild(FlatShadowNode nativeChild) {
@@ -130,6 +139,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       float height) {
     mDrawCommands.start(node.getDrawCommands());
     mAttachDetachListeners.start(node.getAttachDetachListeners());
+    mNodeRegions.start(node.getNodeRegions());
     mNativeChildren.start(node.getNativeChildren());
 
     collectStateRecursively(node, 0, 0, width, height);
@@ -147,11 +157,18 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       node.setAttachDetachListeners(listeners);
     }
 
+    final NodeRegion[] nodeRegions = mNodeRegions.finish();
+    if (nodeRegions != null) {
+      shouldUpdateMountState = true;
+      node.setNodeRegions(nodeRegions);
+    }
+
     if (shouldUpdateMountState) {
       mOperationsQueue.enqueueUpdateMountState(
           tag,
           drawCommands,
-          listeners);
+          listeners,
+          nodeRegions);
     }
 
     final FlatShadowNode[] nativeChildren = mNativeChildren.finish();
@@ -254,6 +271,8 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     float right = left + width;
     float bottom = top + height;
 
+    updateNodeRegion(node, tag, left, top, right, bottom);
+
     if (node.mountsToView()) {
       ensureBackingViewIsCreated(node, tag, null);
 
@@ -264,6 +283,21 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       updateViewBounds(node, tag, left, top, right, bottom);
     } else {
       collectStateRecursively(node, left, top, right, bottom);
+      addNodeRegion(node.getNodeRegion());
+    }
+  }
+
+  private static void updateNodeRegion(
+      FlatShadowNode node,
+      int tag,
+      float left,
+      float top,
+      float right,
+      float bottom) {
+    final NodeRegion nodeRegion = node.getNodeRegion();
+    if (nodeRegion.mLeft != left || nodeRegion.mTop != top ||
+        nodeRegion.mRight != right || nodeRegion.mBottom != bottom) {
+      node.setNodeRegion(new NodeRegion(left, top, right, bottom, tag));
     }
   }
 

@@ -25,7 +25,9 @@ import com.facebook.react.uimanager.ViewProps;
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
+  private NodeRegion[] mNodeRegions = NodeRegion.EMPTY_ARRAY;
   private FlatShadowNode[] mNativeChildren = FlatShadowNode.EMPTY_ARRAY;
+  private NodeRegion mNodeRegion = NodeRegion.EMPTY;
   private int mNativeParentTag;
   private int mViewLeft;
   private int mViewTop;
@@ -133,6 +135,22 @@ import com.facebook.react.uimanager.ViewProps;
 
   /* package */ final void setNativeParentTag(int nativeParentTag) {
     mNativeParentTag = nativeParentTag;
+  }
+
+  /* package */ final NodeRegion[] getNodeRegions() {
+    return mNodeRegions;
+  }
+
+  /* package */ final void setNodeRegions(NodeRegion[] nodeRegion) {
+    mNodeRegions = nodeRegion;
+  }
+
+  /* package */ final NodeRegion getNodeRegion() {
+    return mNodeRegion;
+  }
+
+  /* package */ final void setNodeRegion(NodeRegion nodeRegion) {
+    mNodeRegion = nodeRegion;
   }
 
   /**
