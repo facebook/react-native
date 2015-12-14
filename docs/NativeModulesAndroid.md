@@ -125,12 +125,7 @@ mReactInstanceManager = ReactInstanceManager.builder()
 To make it simpler to access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. This is not necessary but saves the consumers of your library the need to pull it off of `NativeModules` each time. This JavaScript file also becomes a good location for you to add any JavaScript side functionality.
 
 ```js
-/**
- * @providesModule ToastAndroid
- */
-
 'use strict';
-
 /**
  * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
  * which takes the following parameters:
@@ -142,16 +137,12 @@ var { NativeModules } = require('react-native');
 module.exports = NativeModules.ToastAndroid;
 ```
 
-Save the above code into a file named "ToastAndroid.js". Now, from your other JavaScript file you can call the method like this:
+Now, from your other JavaScript file you can call the method like this:
 
 ```js
-// Suppose this js file is under the same directory as ToastAndroid.js. 
-// Otherwise change the require path.
 var ToastAndroid = require('./ToastAndroid'); 
-ToastAndroid.show('Awesome', ToastAndroid.SHORT);
 
-// Note: We require ToastAndroid without any relative filepath because
-// of the @providesModule directive. Using @providesModule is optional.
+ToastAndroid.show('Awesome', ToastAndroid.SHORT);
 ```
 
 ## Beyond Toasts
