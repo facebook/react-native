@@ -10,7 +10,7 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../FileWatcher');
+const FileWatcher = require('../DependencyResolver/FileWatcher');
 const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
 const Bundler = require('../Bundler');
 const Promise = require('promise');
