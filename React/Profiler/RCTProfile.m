@@ -232,7 +232,20 @@ void RCTProfileHookModules(RCTBridge *bridge)
       for (NSUInteger i = 0; i < methodCount; i++) {
         Method method = methods[i];
         SEL selector = method_getName(method);
-        if ([NSStringFromSelector(selector) hasPrefix:@"rct"] || [NSObject instancesRespondToSelector:selector]) {
+
+        /**
+         * Bail out on struct returns (except arm64) - we don't use it enough
+         * to justify writing a stret version
+         */
+#ifdef __arm64__
+        BOOL returnsStruct = NO;
+#else
+        const char *typeEncoding = method_getTypeEncoding(method);
+        // bail out on structs and unions (since they might contain structs)
+        BOOL returnsStruct = typeEncoding[0] == '{' || typeEncoding[0] == '(';
+#endif
+
+        if ([NSStringFromSelector(selector) hasPrefix:@"rct"] || [NSObject instancesRespondToSelector:selector] || returnsStruct) {
           continue;
         }
         const char *types = method_getTypeEncoding(method);
