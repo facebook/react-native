@@ -578,7 +578,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Adds an asynchronous listener to the value so you can observe updates from
    * animations or whathaveyou.  This is useful because there is no way to
-   * syncronously read the value because it might be driven natively.
+   * synchronously read the value because it might be driven natively.
    */
   addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
@@ -1485,7 +1485,7 @@ var event = function(
  * The simplest workflow is to create an `Animated.Value`, hook it up to one or
  * more style attributes of an animated component, and then drive updates either
  * via animations, such as `Animated.timing`, or by hooking into gestures like
- * panning or scolling via `Animated.event`.  `Animated.Value` can also bind to
+ * panning or scrolling via `Animated.event`.  `Animated.Value` can also bind to
  * props other than style, and can be interpolated as well.  Here is a basic
  * example of a container view that will fade in when it's mounted:
  *
@@ -1517,7 +1517,7 @@ var event = function(
  * Note that only animatable components can be animated.  `View`, `Text`, and
  * `Image` are already provided, and you can create custom ones with
  * `createAnimatedComponent`.  These special components do the magic of binding
- * the animated values to the properties, and do targetted native updates to
+ * the animated values to the properties, and do targeted native updates to
  * avoid the cost of the react render and reconciliation process on every frame.
  * They also handle cleanup on unmount so they are safe by default.
  *
@@ -1559,7 +1559,7 @@ var event = function(
  * Animation App, and [Animations documentation guide](http://facebook.github.io/react-native/docs/animations.html).
  *
  * Note that `Animated` is designed to be fully serializable so that animations
- * can be run in a high performace way, independent of the normal JavaScript
+ * can be run in a high performance way, independent of the normal JavaScript
  * event loop. This does influence the API, so keep that in mind when it seems a
  * little trickier to do something compared to a fully synchronous system.
  * Checkout `Animated.Value.addListener` as a way to work around some of these

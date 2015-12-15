@@ -150,7 +150,7 @@ var MapView = React.createClass({
      *
      * - standard: standard road map (default)
      * - satellite: satellite view
-     * - hybrid: satellite view with roads and points of interest overlayed
+     * - hybrid: satellite view with roads and points of interest overlaid
      */
     mapType: React.PropTypes.oneOf([
       'standard',
@@ -172,7 +172,7 @@ var MapView = React.createClass({
       longitude: React.PropTypes.number.isRequired,
 
       /**
-       * Distance between the minimun and the maximum latitude/longitude
+       * Distance between the minimum and the maximum latitude/longitude
        * to be displayed.
        */
       latitudeDelta: React.PropTypes.number.isRequired,
@@ -218,7 +218,7 @@ var MapView = React.createClass({
        * and custom pin images.
        *
        * Note that on iOS 8 and earlier, only the standard PinColor constants
-       * are supported for regualr pins. For custom pin images, any tintColor
+       * are supported for regular pins. For custom pin images, any tintColor
        * value is supported on all iOS versions.
        * @platform ios
        */

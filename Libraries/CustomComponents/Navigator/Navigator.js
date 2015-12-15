@@ -50,7 +50,7 @@ var rebound = require('rebound');
 var PropTypes = React.PropTypes;
 
 // TODO: this is not ideal because there is no guarantee that the navigator
-// is full screen, hwoever we don't have a good way to measure the actual
+// is full screen, however we don't have a good way to measure the actual
 // size of the navigator right now, so this is the next best thing.
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;

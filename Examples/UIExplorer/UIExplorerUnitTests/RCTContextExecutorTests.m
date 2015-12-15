@@ -98,7 +98,7 @@ static uint64_t _get_time_nanoseconds(void)
 {
 /**
  * Since we almost don't change the RCTContextExecutor logic, and this test is
- * very likely to become flaky (specially accross different devices) leave it
+ * very likely to become flaky (specially across different devices) leave it
  * to be run manually
  *
  * Previous Values: If you change the executor code, you should update this values

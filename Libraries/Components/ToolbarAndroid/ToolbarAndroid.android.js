@@ -97,7 +97,7 @@ var ToolbarAndroid = React.createClass({
      */
     navIcon: optionalImageSource,
     /**
-     * Callback that is called when an action is selected. The only argument that is passeed to the
+     * Callback that is called when an action is selected. The only argument that is passed to the
      * callback is the position of the action in the actions array.
      */
     onActionSelected: ReactPropTypes.func,

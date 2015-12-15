@@ -39,7 +39,7 @@ var SliderIOS = React.createClass({
      * Default value is 0.
      *
      * *This is not a controlled component*, e.g. if you don't update
-     * the value, the component won't be reset to its inital value.
+     * the value, the component won't be reset to its initial value.
      */
     value: PropTypes.number,
 

@@ -66,7 +66,7 @@ var Mixin = {
    * @see Transaction
    * @abstract
    * @final
-   * @return {array<object>} List of operation wrap proceedures.
+   * @return {array<object>} List of operation wrap procedures.
    *   TODO: convert to array<TransactionWrapper>
    */
   getTransactionWrappers: function() {
@@ -83,7 +83,7 @@ var Mixin = {
 
   /**
    * `PooledClass` looks for this, and will invoke this before allowing this
-   * instance to be resused.
+   * instance to be reused.
    */
   destructor: function() {
     CallbackQueue.release(this.reactMountReady);
