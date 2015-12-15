@@ -61,7 +61,7 @@ import com.facebook.react.uimanager.ViewProps;
   }
 
   @Override
-  public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
     CharSequence text = getText();
 
     if (TextUtils.isEmpty(text)) {
