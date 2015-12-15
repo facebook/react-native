@@ -30,6 +30,7 @@ using fbsystrace::FbSystraceSection;
 
 // Add native performance markers support
 #include <react/JSCPerfLogging.h>
+#include <react/JSCMemory.h>
 
 #ifdef WITH_FB_JSC_TUNING
 #include <jsc_config_android.h>
@@ -132,6 +133,8 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   addNativeProfilingHooks(m_context);
   addNativePerfLoggingHooks(m_context);
   #endif
+
+  addNativeMemoryHooks(m_context);
 }
 
 JSCExecutor::~JSCExecutor() {
