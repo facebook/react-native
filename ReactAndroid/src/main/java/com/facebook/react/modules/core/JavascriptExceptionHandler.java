@@ -7,12 +7,13 @@ import com.facebook.react.bridge.ReadableArray;
  */
 public interface JavascriptExceptionHandler {
   /**
-   * Javascript runtime error occurred. This is the first place a javascript
+   * Javascript runtime error occurred for the first time.
    */
   void handleNewError(String title, ReadableArray details, int exceptionId, String exceptionMessage);
 
   /**
-   * Update error detail
+   * Update detail of error which was already passed to {@link #handleNewError(String, ReadableArray, int, String)}.
+   *
    */
   void updateError(String title, ReadableArray details, int exceptionId,String exceptionMessage);
 }
