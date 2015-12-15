@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<4b95f0548441afa1e91e957a93fa6f0b>>
+// @generated SignedSource<<1f520d46cbfddbbea0661a8fb6a00748>>
 
 package com.facebook.csslayout;
 
@@ -56,7 +56,7 @@ public class CSSNode {
      *
      * NB: measure is NOT guaranteed to be threadsafe/re-entrant safe!
      */
-    public void measure(CSSNode node, float width, MeasureOutput measureOutput);
+    public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput);
   }
 
   // VisibleForTesting
@@ -128,13 +128,13 @@ public class CSSNode {
     return mMeasureFunction != null;
   }
 
-  /*package*/ MeasureOutput measure(MeasureOutput measureOutput, float width) {
+  /*package*/ MeasureOutput measure(MeasureOutput measureOutput, float width, float height) {
     if (!isMeasureDefined()) {
       throw new RuntimeException("Measure function isn't defined!");
     }
     measureOutput.height = CSSConstants.UNDEFINED;
     measureOutput.width = CSSConstants.UNDEFINED;
-    Assertions.assertNotNull(mMeasureFunction).measure(this, width, measureOutput);
+    Assertions.assertNotNull(mMeasureFunction).measure(this, width, height, measureOutput);
     return measureOutput;
   }
 
@@ -143,7 +143,7 @@ public class CSSNode {
    */
   public void calculateLayout(CSSLayoutContext layoutContext) {
     layout.resetResult();
-    LayoutEngine.layoutNode(layoutContext, this, CSSConstants.UNDEFINED, null);
+    LayoutEngine.layoutNode(layoutContext, this, CSSConstants.UNDEFINED, CSSConstants.UNDEFINED, null);
   }
 
   /**
