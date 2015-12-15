@@ -194,7 +194,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   private static final CSSNode.MeasureFunction TEXT_MEASURE_FUNCTION =
       new CSSNode.MeasureFunction() {
         @Override
-        public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+        public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           ReactTextShadowNode reactCSSNode = (ReactTextShadowNode) node;
           TextPaint textPaint = sTextPaintInstance;
