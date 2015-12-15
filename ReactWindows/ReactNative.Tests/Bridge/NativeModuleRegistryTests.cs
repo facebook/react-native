@@ -31,8 +31,6 @@ namespace ReactNative.Tests.Bridge
             var builder = new NativeModuleRegistry.Builder();
             builder.Add(new OverrideAllowedModule());
             builder.Add(new OverrideAllowedModule());
-            var registry = builder.Build();
-            Assert.AreEqual(1, registry.Modules.Count);
         }
 
         [TestMethod]

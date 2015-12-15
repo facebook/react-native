@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReactNative.Bridge
 {
-    class ReactApplicationContext
+    class ReactContext
     {
     }
 }
