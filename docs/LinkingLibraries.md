@@ -26,7 +26,7 @@ error as soon as you try to use the library._
 
 ### Automatic linking
 
-There is a way to link your native dependencies automatically by using [rnpm](http://github.com/rnpm/rnpm):
+"[rnpm](http://github.com/rnpm/rnpm)" is a community project that allows linking of native dependencies automatically:
 
 #### Step 1
 
