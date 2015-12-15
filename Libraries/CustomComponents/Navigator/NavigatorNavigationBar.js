@@ -153,11 +153,11 @@ var NavigatorNavigationBar = React.createClass({
       height: this.props.navigationStyles.General.TotalNavHeight,
     };
     var navState = this.props.navState;
-    var components = COMPONENT_NAMES.map(function (componentName) {
-      return navState.routeStack.map(
-        this._getComponent.bind(this, componentName)
-      );
-    }, this);
+    var components = navState.routeStack.map((route, index) =>
+      COMPONENT_NAMES.map(componentName =>
+        this._getComponent(componentName, route, index)
+      )
+    );
 
     return (
       <View style={[styles.navBarContainer, navBarStyle, this.props.style]}>
