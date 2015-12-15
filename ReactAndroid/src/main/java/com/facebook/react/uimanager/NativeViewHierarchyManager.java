@@ -467,6 +467,11 @@ public class NativeViewHierarchyManager {
     }
 
     View rootView = (View) RootViewUtil.getRootView(v);
+    // It is possible that the RootView can't be found because this view is no longer on the screen
+    // and has been removed by clipping
+    if (rootView == null) {
+      throw new NoSuchNativeViewException("Native view " + tag + " is no longer on screen");
+    }
     rootView.getLocationInWindow(outputBuffer);
     int rootX = outputBuffer[0];
     int rootY = outputBuffer[1];
