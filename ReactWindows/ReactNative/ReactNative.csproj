@@ -152,6 +152,8 @@
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\MethodInfoHelpers.cs" />
     <Compile Include="Reflection\ReflectionHelpers.cs" />
+    <Compile Include="Tracing\TraceDisposable.cs" />
+    <Compile Include="Tracing\Tracer.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup />

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Reflection;
+using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -124,7 +125,10 @@ namespace ReactNative.Bridge
 
             public void Invoke(ICatalystInstance catalystInstance, JArray jsArguments)
             {
-                _invokeDelegate.Value(catalystInstance, jsArguments);
+                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "callNativeModuleMethod"))
+                {
+                    _invokeDelegate.Value(catalystInstance, jsArguments);
+                }
             }
 
             private static ConstructorInfo s_newArgumentNullException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentNullException(default(string)));
