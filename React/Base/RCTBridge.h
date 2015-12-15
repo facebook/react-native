@@ -25,24 +25,28 @@
 RCT_EXTERN NSString *const RCTReloadNotification;
 
 /**
- * This notification fires when the bridge starts loading.
+ * This notification fires when the bridge starts loading the JS bundle.
  */
 RCT_EXTERN NSString *const RCTJavaScriptWillStartLoadingNotification;
 
 /**
- * This notification fires when the bridge has finished loading.
+ * This notification fires when the bridge has finished loading the JS bundle.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
- * This notification fires when the bridge failed to load.
+ * This notification fires when the bridge failed to load the JS bundle. The
+ * `error` key can be used to determine the error that occured.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
 /**
- * This notification fires when the bridge created all registered native modules
+ * This notification fires each time a native module is instantiated. The
+ * `module` key will contain a reference to the newly-created module instance.
+ * Note that this notification may be fired before the module is available via
+ * the `[bridge moduleForClass:]` method.
  */
-RCT_EXTERN NSString *const RCTDidCreateNativeModules;
+RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
 
 /**
  * This block can be used to instantiate modules that require additional
@@ -171,10 +175,28 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
 @end
 
 /**
- * These properties and methods are deprecated and should not be used
+ * These features are deprecated and should not be used.
  */
 @interface RCTBridge (Deprecated)
 
+/**
+ * This notification used to fire after all native modules has been initialized,
+ * but now that native modules are instantiated lazily on demand, its original
+ * purpose is meaningless.
+ *
+ * If you need to access a module, you can do so as soon as the bridge has been
+ * initialized, by calling `[bridge moduleForClass:]`. If you need to know when
+ * an individual module has been instantiated, use the `RCTDidInitializeModule`
+ * notification instead.
+ */
+RCT_EXTERN NSString *const RCTDidCreateNativeModules
+__deprecated_msg("Use RCTDidInitializeModule to observe init of individual modules");
+
+/**
+ * Accessing the modules property causes all modules to be eagerly initialized,
+ * which stalls the main thread. Use moduleClasses to enumerate through modules
+ * without causing them to be instantiated.
+ */
 @property (nonatomic, copy, readonly) NSDictionary *modules
 __deprecated_msg("Use moduleClasses and/or moduleForName: instead");
 

@@ -22,7 +22,7 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
-NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
+NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
@@ -213,10 +213,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(__unused UIKeyCommand *command) {
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                                                        object:nil
-                                                                                      userInfo:nil];
-                                 }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                        object:nil
+                                                      userInfo:nil];
+  }];
 
 #endif
 }
@@ -304,6 +304,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @end
 
 @implementation RCTBridge(Deprecated)
+
+NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 - (NSDictionary *)modules
 {

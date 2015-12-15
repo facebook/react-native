@@ -29,6 +29,9 @@
               [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
             @"This method must be called on JS thread")
 
+/**
+ * Used by RKAnalyticsCPULogger
+ */
 NSString *const RCTEnqueueNotification = @"RCTEnqueueNotification";
 NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
 
@@ -90,9 +93,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
     [RCTBridge setCurrentBridge:self];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
-                                                        object:self
-                                                      userInfo:@{ @"bridge": self }];
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:RCTJavaScriptWillStartLoadingNotification
+     object:_parentBridge userInfo:@{@"bridge": self}];
 
     [self start];
   }
@@ -208,9 +211,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{
       [self didFinishLoading];
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                          object:_parentBridge
-                                                        userInfo:@{ @"bridge": self }];
+      [[NSNotificationCenter defaultCenter]
+       postNotificationName:RCTJavaScriptDidLoadNotification
+       object:_parentBridge userInfo:@{@"bridge": self}];
     });
     onSourceLoad(nil, nil);
   }
@@ -331,8 +334,15 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     }
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
-                                                      object:self];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+  [[NSNotificationCenter defaultCenter]
+   postNotificationName:RCTDidCreateNativeModules
+   object:self userInfo:@{@"bridge": self}];
+
+#pragma clang diagnostic pop
+
   RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
 }
 
@@ -429,10 +439,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     // timing issues with RCTRootView
     dispatch_async(dispatch_get_main_queue(), ^{
       [self didFinishLoading];
-
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                          object:_parentBridge
-                                                        userInfo:@{ @"bridge": self }];
+      [[NSNotificationCenter defaultCenter]
+       postNotificationName:RCTJavaScriptDidLoadNotification
+       object:_parentBridge userInfo:@{@"bridge": self}];
     });
   }];
 }
@@ -457,9 +466,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   _loading = NO;
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
-                                                      object:_parentBridge
-                                                    userInfo:@{@"bridge": self, @"error": error}];
+  [[NSNotificationCenter defaultCenter]
+   postNotificationName:RCTJavaScriptDidFailToLoadNotification
+   object:_parentBridge userInfo:@{@"bridge": self, @"error": error}];
+
   RCTFatal(error);
 }
 
@@ -715,7 +725,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:self userInfo:nil];
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
@@ -725,7 +735,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     if (!self.isValid) {
       return;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:self userInfo:nil];
     [self handleBuffer:json batchEnded:YES];
   };
 
@@ -740,7 +750,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:self userInfo:nil];
 
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
@@ -750,7 +760,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     if (!self.isValid) {
       return;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:self userInfo:nil];
     [self handleBuffer:json batchEnded:YES];
   };
 
