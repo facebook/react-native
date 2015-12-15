@@ -260,8 +260,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       [weakBridge handleBuffer:calls batchEnded:NO];
     };
 
-    context[@"RCTPerformanceNow"] = ^{
-      return CACurrentMediaTime() * 1000 * 1000;
+    context[@"nativePerformanceNow"] = ^{
+      return @(CACurrentMediaTime() * 1000);
     };
 
 #if RCT_DEV
