@@ -18,12 +18,8 @@ var Platform = require('Platform');
 var RCTMap = require('UIManager').RCTMap;
 var RCTMapConstants = RCTMap && RCTMap.Constants;
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
 
-var deepDiffer = require('deepDiffer');
-var insetsDiffer = require('insetsDiffer');
-var merge = require('merge');
 var processColor = require('processColor');
 var resolveAssetSource = require('resolveAssetSource');
 var requireNativeComponent = require('requireNativeComponent');
