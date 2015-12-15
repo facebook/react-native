@@ -79,10 +79,15 @@ public class FlatUIImplementation extends UIImplementation {
   protected void handleCreateView(
       ReactShadowNode cssNode,
       int rootViewTag,
-      CatalystStylesDiffMap styles) {
-    int tag = cssNode.getReactTag();
+      @Nullable CatalystStylesDiffMap styles) {
     FlatShadowNode node = (FlatShadowNode) cssNode;
+
+    if (styles != null) {
+      node.handleUpdateProperties(styles);
+    }
+
     if (node.mountsToView()) {
+      int tag = cssNode.getReactTag();
       mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
     }
   }
@@ -92,9 +97,12 @@ public class FlatUIImplementation extends UIImplementation {
       ReactShadowNode cssNode,
       String className,
       CatalystStylesDiffMap styles) {
-    int tag = cssNode.getReactTag();
     FlatShadowNode node = (FlatShadowNode) cssNode;
+
+    node.handleUpdateProperties(styles);
+
     if (node.mountsToView()) {
+      int tag = cssNode.getReactTag();
       mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
     }
   }

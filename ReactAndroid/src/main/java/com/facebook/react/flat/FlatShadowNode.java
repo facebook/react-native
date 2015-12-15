@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
@@ -22,6 +23,15 @@ import com.facebook.react.uimanager.ViewProps;
 /* package */ class FlatShadowNode extends LayoutShadowNode {
 
   /* package */ static final FlatShadowNode[] EMPTY_ARRAY = new FlatShadowNode[0];
+
+  private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
+  private static final String PROP_OPACITY = "opacity";
+  private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
+  private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
+  private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
+  private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+  private static final String PROP_TEST_ID = "testID";
 
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
@@ -36,6 +46,22 @@ import com.facebook.react.uimanager.ViewProps;
   private boolean mMountsToView;
   private boolean mBackingViewIsCreated;
   private @Nullable DrawBackgroundColor mDrawBackground;
+
+  /* package */ void handleUpdateProperties(CatalystStylesDiffMap styles) {
+    if (!mountsToView()) {
+      // Make sure we mount this FlatShadowNode to a View if any of these properties are present.
+      if (styles.hasKey(PROP_DECOMPOSED_MATRIX) ||
+          styles.hasKey(PROP_OPACITY) ||
+          styles.hasKey(PROP_RENDER_TO_HARDWARE_TEXTURE) ||
+          styles.hasKey(PROP_TEST_ID) ||
+          styles.hasKey(PROP_ACCESSIBILITY_LABEL) ||
+          styles.hasKey(PROP_ACCESSIBILITY_COMPONENT_TYPE) ||
+          styles.hasKey(PROP_ACCESSIBILITY_LIVE_REGION) ||
+          styles.hasKey(PROP_IMPORTANT_FOR_ACCESSIBILITY)) {
+        forceMountToView();
+      }
+    }
+  }
 
   /**
    * Collects DrawCommands produced by this FlatShadoNode.
