@@ -71,13 +71,74 @@ namespace ReactNative.Tests.Bridge
             Assert.AreEqual(2, testModule.Methods.Count);
 
             var catalystInstance = new TestCatalystInstance();
-            testModule.Methods["Foo"].Invoke(catalystInstance, new JArray());
-            testModule.Methods["Foo"].Invoke(catalystInstance, new JArray());
+            testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, new JArray());
+            testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, new JArray());
             Assert.AreEqual(2, fooCount);
 
-            testModule.Methods["Bar"].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
-            testModule.Methods["Bar"].Invoke(catalystInstance, JArray.FromObject(new[] { 17 }));
+            testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
+            testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, JArray.FromObject(new[] { 17 }));
             Assert.AreEqual(59, barSum);
+        }
+
+        [TestMethod]
+        public void NativeModuleBase_Invocation_Callbacks()
+        {
+            var callbackArgs = new object[] { 1, 2, 3 };
+            var module = new CallbackNativeModule(callbackArgs);
+            module.Initialize();
+
+            var id = default(int);
+            var args = default(List<int>);
+
+            var catalystInstance = new TestCatalystInstance((i, a) =>
+            {
+                id = i;
+                args = a.ToObject<List<int>>();
+            });
+
+            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
+            Assert.AreEqual(42, id);
+            Assert.IsTrue(args.Cast<object>().SequenceEqual(callbackArgs));
+        }
+
+        [TestMethod]
+        public void NativeModuleBase_Invocation_Callbacks_InvalidArgumentThrows()
+        {
+            var callbackArgs = new object[] { 1, 2, 3 };
+            var module = new CallbackNativeModule(callbackArgs);
+            module.Initialize();
+
+            var id = default(int);
+            var args = default(List<int>);
+
+            var catalystInstance = new TestCatalystInstance((i, a) =>
+            {
+                id = i;
+                args = a.ToObject<List<int>>();
+            });
+
+            AssertEx.Throws<NativeArgumentsParseException>(
+                () => module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { default(object) })),
+                ex => Assert.AreEqual("jsArguments", ex.ParamName));
+        }
+
+        [TestMethod]
+        public void NativeModuleBase_Invocation_Callbacks_NullCallback()
+        {
+            var module = new CallbackNativeModule(null);
+            module.Initialize();
+
+            var id = default(int);
+            var args = default(List<int>);
+
+            var catalystInstance = new TestCatalystInstance((i, a) =>
+            {
+                id = i;
+                args = a.ToObject<List<int>>();
+            });
+
+            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
+            Assert.AreEqual(0, args.Count);
         }
 
         class MethodOverloadNativeModule : NativeModuleBase
@@ -135,6 +196,35 @@ namespace ReactNative.Tests.Bridge
             public void Bar(int x)
             {
                 _onBar(x);
+            }
+        }
+
+        class CallbackNativeModule : NativeModuleBase
+        {
+            private readonly object[] _callbackArgs;
+
+            public CallbackNativeModule()
+                : this(null)
+            {
+            }
+
+            public CallbackNativeModule(object[] callbackArgs)
+            {
+                _callbackArgs = callbackArgs;
+            }
+
+            public override string Name
+            {
+                get
+                {
+                    return "Test";
+                }
+            }
+
+            [ReactMethod]
+            public void Foo(ICallback callback)
+            {
+                callback.Invoke(_callbackArgs);
             }
         }
 

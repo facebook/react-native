@@ -296,7 +296,7 @@ namespace ReactNative.Bridge
                             new[] { id },
                             Expression.Assign(
                                 id,
-                                Expression.Call(tokenExpression, s_valueInt)
+                                Expression.Call(s_valueInt, tokenExpression)
                             ),
                             Expression.New(s_newCallback, id, catalystInstanceExpression)
                         )
@@ -331,6 +331,8 @@ namespace ReactNative.Bridge
 
             class Callback : ICallback
             {
+                private static readonly object[] s_empty = new object[0];
+
                 private readonly int _id;
                 private readonly ICatalystInstance _instance;
 
@@ -342,7 +344,7 @@ namespace ReactNative.Bridge
 
                 public void Invoke(params object[] arguments)
                 {
-                    _instance.InvokeCallback(_id, JArray.FromObject(arguments));
+                    _instance.InvokeCallback(_id, JArray.FromObject(arguments ?? s_empty));
                 }
             }
         }
