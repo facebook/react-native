@@ -403,7 +403,7 @@ void RCTProfileInit(RCTBridge *bridge)
                               forMode:NSRunLoopCommonModes];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidStartProfiling
-                                                      object:nil];
+                                                      object:bridge];
 }
 
 void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
@@ -417,7 +417,7 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
   OSAtomicAnd32Barrier(0, &RCTProfileProfiling);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
-                                                      object:nil];
+                                                      object:bridge];
 
   [RCTProfileDisplayLink invalidate];
   RCTProfileDisplayLink = nil;

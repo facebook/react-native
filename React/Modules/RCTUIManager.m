@@ -347,7 +347,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRegisterRootViewNotification
                                                       object:self
-                                                    userInfo:@{ RCTUIManagerRootViewKey: rootView }];
+                                                    userInfo:@{RCTUIManagerRootViewKey: rootView}];
 }
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
@@ -695,7 +695,7 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRemoveRootViewNotification
                                                         object:uiManager
-                                                      userInfo:@{ RCTUIManagerRootViewKey: rootView }];
+                                                      userInfo:@{RCTUIManagerRootViewKey: rootView}];
   }];
 }
 
