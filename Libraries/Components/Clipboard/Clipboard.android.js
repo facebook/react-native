@@ -10,4 +10,16 @@
  */
 'use strict';
 
-module.exports = require('NativeModules').Clipboard;
+var Clipboard = require('NativeModules').Clipboard;
+
+module.exports = {
+  getString(cb,errorCb){
+    if(!errorCb){
+      errorCb = ()=>{};
+    }
+    Clipboard.getString(cb,errorCb);
+  },
+  setString(content){
+    Clipboard.setString(content);
+  }
+}

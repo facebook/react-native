@@ -43,12 +43,17 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   }
 
   private ClipboardManager getClipboardService() {
-    ReactApplicationContext reactContext = getReactApplicationContext(); 
+    ReactApplicationContext reactContext = getReactApplicationContext();
     return (ClipboardManager) reactContext.getSystemService(reactContext.CLIPBOARD_SERVICE);
   }
 
+  // @ReactMethod
+  // public void getString(Callback cb){
+  //   this.getString(cb,null);
+  // }
+
   @ReactMethod
-  public void getString(Callback cb) {
+  public void getString(Callback cb,Callback errorCb) {
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
@@ -65,6 +70,9 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
       }
     } catch(Exception e) {
       FLog.w(ReactConstants.TAG, "Cannot get clipboard contents: " + e.getMessage());
+      if(errorCb!=null){
+        errorCb.invoke(e.getMessage());
+      }
     }
   }
 
