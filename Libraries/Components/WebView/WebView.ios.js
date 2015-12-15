@@ -159,7 +159,7 @@ var WebView = React.createClass({
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
       invariant(
-        errorEvent != null,
+        errorEvent !== null,
         'lastErrorEvent expected to be non-null'
       );
       otherView = (this.props.renderError || defaultRenderError)(

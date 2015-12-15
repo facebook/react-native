@@ -100,7 +100,7 @@ var ReactNative = {
     get createFragment() { return require('ReactFragment').create; },
     get update() { return require('update'); },
   },
-  
+
   // Note: this must be placed last to prevent eager
   // evaluation of the getter-wrapped submodules above
   ...require('React'),
@@ -108,11 +108,11 @@ var ReactNative = {
 
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactDefaultPerf'),
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactTestUtils'),
   });
 }

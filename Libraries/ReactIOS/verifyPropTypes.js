@@ -49,7 +49,7 @@ function verifyPropTypes(
         message = '`' + componentName + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
         nativeProps[prop] + '`';
-      };
+      }
       throw new Error(message);
     }
   }

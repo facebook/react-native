@@ -65,7 +65,7 @@ function findNodeHandle(componentOrHandle: any): ?number {
       owner._warnedAboutRefsInRender = true;
     }
   }
-  if (componentOrHandle == null) {
+  if (componentOrHandle === null) {
     return null;
   }
   if (typeof componentOrHandle === 'number') {
@@ -92,7 +92,7 @@ function findNodeHandle(componentOrHandle: any): ?number {
           '_rootNodeID' in component
         ) || (
           // Composite
-          component.render != null &&
+          component.render !== null &&
           typeof component.render === 'function'
         ),
         'findNodeHandle(...): Argument is not a component ' +

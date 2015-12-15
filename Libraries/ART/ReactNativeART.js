@@ -23,7 +23,7 @@ var merge = require('merge');
 // Diff Helpers
 
 function arrayDiffer(a, b) {
-  if (a == null) {
+  if (a === null) {
     return true;
   }
   if (a.length !== b.length) {
@@ -157,7 +157,7 @@ var Surface = React.createClass({
 // accessibility support here too even though hovering doesn't work.
 
 function extractNumber(value, defaultValue) {
-  if (value == null) {
+  if (value === null) {
     return defaultValue;
   }
   return +value;
@@ -166,10 +166,10 @@ function extractNumber(value, defaultValue) {
 var pooledTransform = new Transform();
 
 function extractTransform(props) {
-  var scaleX = props.scaleX != null ? props.scaleX :
-               props.scale != null ? props.scale : 1;
-  var scaleY = props.scaleY != null ? props.scaleY :
-               props.scale != null ? props.scale : 1;
+  var scaleX = props.scaleX !== null ? props.scaleX :
+               props.scale !== null ? props.scale : 1;
+  var scaleY = props.scaleY !== null ? props.scaleY :
+               props.scale !== null ? props.scale : 1;
 
   pooledTransform
     .transformTo(1, 0, 0, 1, 0, 0)
@@ -177,7 +177,7 @@ function extractTransform(props) {
     .rotate(props.rotation || 0, props.originX, props.originY)
     .scale(scaleX, scaleY, props.originX, props.originY);
 
-  if (props.transform != null) {
+  if (props.transform !== null) {
     pooledTransform.transform(props.transform);
   }
 
@@ -193,7 +193,7 @@ function extractOpacity(props) {
   if (props.visible === false) {
     return 0;
   }
-  if (props.opacity == null) {
+  if (props.opacity === null) {
     return 1;
   }
   return +props.opacity;
@@ -334,7 +334,7 @@ function applyBoundingBoxToBrushData(brushData, props) {
 }
 
 function extractBrush(colorOrBrush, props) {
-  if (colorOrBrush == null) {
+  if (colorOrBrush === null) {
     return null;
   }
   if (colorOrBrush._brush) {
@@ -354,7 +354,7 @@ function extractBrush(colorOrBrush, props) {
 }
 
 function extractColor(color) {
-  if (color == null) {
+  if (color === null) {
     return null;
   }
   var c = new Color(color);
@@ -445,7 +445,7 @@ function parseFontString(font) {
 }
 
 function extractFont(font) {
-  if (font == null) {
+  if (font === null) {
     return null;
   }
   if (typeof font === 'string') {
@@ -513,7 +513,7 @@ function LinearGradient(stops, x1, y1, x2, y2) {
   var type = LINEAR_GRADIENT;
 
   if (arguments.length < 5) {
-    var angle = ((x1 == null) ? 270 : x1) * Math.PI / 180;
+    var angle = ((x1 === null) ? 270 : x1) * Math.PI / 180;
 
     var x = Math.cos(angle);
     var y = -Math.sin(angle);
@@ -536,16 +536,16 @@ function LinearGradient(stops, x1, y1, x2, y2) {
 }
 
 function RadialGradient(stops, fx, fy, rx, ry, cx, cy) {
-  if (ry == null) {
+  if (ry === null) {
     ry = rx;
   }
-  if (cx == null) {
+  if (cx === null) {
     cx = fx;
   }
-  if (cy == null) {
+  if (cy === null) {
     cy = fy;
   }
-  if (fx == null) {
+  if (fx === null) {
     // As a convenience we allow the whole radial gradient to cover the
     // bounding box. We should consider dropping this API.
     fx = fy = rx = ry = cx = cy = 0.5;

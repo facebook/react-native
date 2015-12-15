@@ -63,9 +63,9 @@ class AlertIOS {
     var destructiveButtonKey;
     buttons && buttons.forEach((btn, index) => {
       callbacks[index] = btn.onPress;
-      if (btn.style == 'cancel') {
+      if (btn.style === 'cancel') {
         cancelButtonKey = String(index);
-      } else if (btn.style == 'destructive') {
+      } else if (btn.style === 'destructive') {
         destructiveButtonKey = String(index);
       }
       if (btn.text || index < (buttons || []).length - 1) {

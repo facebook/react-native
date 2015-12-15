@@ -72,7 +72,7 @@ const PullToRefreshViewAndroidExample = React.createClass({
       isRefreshing: false,
       loaded: 0,
       rowData: Array.from(new Array(20)).map(
-        (val, i) => {return {text: 'Initial row' + i, clicks: 0}}),
+        (val, i) => {return {text: 'Initial row' + i, clicks: 0};}),
     };
   },
 
@@ -110,7 +110,7 @@ const PullToRefreshViewAndroidExample = React.createClass({
       .map((val, i) => {return {
         text: 'Loaded row' + (+this.state.loaded + i),
         clicks: 0,
-      }})
+      };})
       .concat(this.state.rowData);
 
       this.setState({

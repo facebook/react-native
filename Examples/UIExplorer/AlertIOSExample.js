@@ -118,7 +118,7 @@ exports.examples = [{
               {'default'}
             </Text>
           </View>
-          
+
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
@@ -136,7 +136,7 @@ exports.examples = [{
               plain-text
             </Text>
           </View>
-          
+
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
@@ -154,7 +154,7 @@ exports.examples = [{
               secure-text
             </Text>
           </View>
-          
+
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
@@ -172,7 +172,7 @@ exports.examples = [{
               login-password
             </Text>
           </View>
-          
+
         </TouchableHighlight>
       </View>
     );
@@ -181,7 +181,7 @@ exports.examples = [{
 {
   title: 'Prompt',
   render(): React.Component {
-    return <PromptExample />
+    return <PromptExample />;
   }
 }];
 

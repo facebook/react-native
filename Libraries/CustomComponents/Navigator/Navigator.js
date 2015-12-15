@@ -403,7 +403,7 @@ var Navigator = React.createClass({
       sceneConfig,
       'Cannot configure scene at index ' + this.state.transitionFromIndex
     );
-    if (jumpSpringTo != null) {
+    if (jumpSpringTo !== null) {
       this.spring.setCurrentValue(jumpSpringTo);
     }
     this.spring.setOvershootClampingEnabled(true);
@@ -422,13 +422,13 @@ var Navigator = React.createClass({
       return;
     }
     // Prioritize handling transition in progress over a gesture:
-    if (this.state.transitionFromIndex != null) {
+    if (this.state.transitionFromIndex !== null) {
       this._transitionBetween(
         this.state.transitionFromIndex,
         this.state.presentedIndex,
         this.spring.getCurrentValue()
       );
-    } else if (this.state.activeGesture != null) {
+    } else if (this.state.activeGesture !== null) {
       var presentedToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
       this._transitionBetween(
         this.state.presentedIndex,
@@ -566,7 +566,7 @@ var Navigator = React.createClass({
   _onAnimationStart: function() {
     var fromIndex = this.state.presentedIndex;
     var toIndex = this.state.presentedIndex;
-    if (this.state.transitionFromIndex != null) {
+    if (this.state.transitionFromIndex !== null) {
       fromIndex = this.state.transitionFromIndex;
     } else if (this.state.activeGesture) {
       toIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
@@ -668,7 +668,7 @@ var Navigator = React.createClass({
     if (transitionVelocity < 0 || this._doesGestureOverswipe(releaseGestureAction)) {
       // This gesture is to an overswiped region or does not have enough velocity to complete
       // If we are currently mid-transition, then this gesture was a pending gesture. Because this gesture takes no action, we can stop here
-      if (this.state.transitionFromIndex == null) {
+      if (this.state.transitionFromIndex === null) {
         // There is no current transition, so we need to transition back to the presented index
         var transitionBackToPresentedIndex = this.state.presentedIndex;
         // slight hack: change the presented index for a moment in order to transitionTo correctly
@@ -697,7 +697,7 @@ var Navigator = React.createClass({
   },
 
   _handlePanResponderTerminate: function(e, gestureState) {
-    if (this.state.activeGesture == null) {
+    if (this.state.activeGesture === null) {
       return;
     }
     var destIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
@@ -758,7 +758,7 @@ var Navigator = React.createClass({
       var gesturingToIndex = this.state.presentedIndex + this._deltaForGestureAction(this.state.activeGesture);
       this._transitionBetween(this.state.presentedIndex, gesturingToIndex, 0);
       this._detachGesture();
-      if (this.state.pendingGestureProgress != null) {
+      if (this.state.pendingGestureProgress !== null) {
         this.spring.setCurrentValue(0);
       }
       return;
@@ -770,7 +770,7 @@ var Navigator = React.createClass({
       nextProgress *= frictionRatio;
     }
     nextProgress = clamp(0, nextProgress, 1);
-    if (this.state.transitionFromIndex != null) {
+    if (this.state.transitionFromIndex !== null) {
       this.state.pendingGestureProgress = nextProgress;
     } else if (this.state.pendingGestureProgress) {
       this.spring.setEndValue(nextProgress);
@@ -789,7 +789,7 @@ var Navigator = React.createClass({
       if (!gesture) {
         return;
       }
-      if (gesture.overswipe == null && this._doesGestureOverswipe(gestureName)) {
+      if (gesture.overswipe === null && this._doesGestureOverswipe(gestureName)) {
         // cannot swipe past first or last scene without overswiping
         return false;
       }
@@ -808,7 +808,7 @@ var Navigator = React.createClass({
           -(SCREEN_HEIGHT - edgeHitWidth) :
           -(SCREEN_WIDTH - edgeHitWidth);
       }
-      var moveStartedInRegion = gesture.edgeHitWidth == null ||
+      var moveStartedInRegion = gesture.edgeHitWidth === null ||
         currentLoc < edgeHitWidth;
       if (!moveStartedInRegion) {
         return false;
@@ -1070,7 +1070,7 @@ var Navigator = React.createClass({
         key={'scene_' + getRouteID(route)}
         ref={'scene_' + i}
         onStartShouldSetResponderCapture={() => {
-          return (this.state.transitionFromIndex != null) || (this.state.transitionFromIndex != null);
+          return (this.state.transitionFromIndex !== null) || (this.state.transitionFromIndex !== null);
         }}
         pointerEvents={disabledScenePointerEvents}
         style={[styles.baseScene, this.props.sceneStyle, disabledSceneStyle]}>

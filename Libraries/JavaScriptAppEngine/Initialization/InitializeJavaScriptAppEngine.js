@@ -78,7 +78,7 @@ function setUpErrorHandler() {
   function handleError(e, isFatal) {
     try {
       require('ExceptionsManager').handleException(e, isFatal);
-    } catch(ee) {
+    } catch (ee) {
       console.log('Failed to print error: ', ee.message);
     }
   }

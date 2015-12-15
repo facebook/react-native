@@ -28,14 +28,14 @@ var ClipboardExample = React.createClass({
       content: 'Content will appear here'
     };
   },
-  
+
   _setContentToClipboard:function(){
     Clipboard.setString('Hello World');
     Clipboard.getString(content => {
       this.setState({content});
     });
   },
-  
+
   render() {
     return (
       <View>
