@@ -127,11 +127,12 @@ To make it simpler to access your new functionality from JavaScript, it is commo
 ```js
 'use strict';
 /**
- * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
- * which takes the following parameters:
+ * This exposes the native ToastAndroid module as a JS module. This has a
+ * function 'show' which takes the following parameters:
  *
  * 1. String message: A string with the text to toast
- * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or ToastAndroid.LONG
+ * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or
+ *    ToastAndroid.LONG
  */
 var { NativeModules } = require('react-native');
 module.exports = NativeModules.ToastAndroid;
@@ -140,7 +141,7 @@ module.exports = NativeModules.ToastAndroid;
 Now, from your other JavaScript file you can call the method like this:
 
 ```js
-var ToastAndroid = require('./ToastAndroid'); 
+var ToastAndroid = require('./ToastAndroid');
 
 ToastAndroid.show('Awesome', ToastAndroid.SHORT);
 ```
