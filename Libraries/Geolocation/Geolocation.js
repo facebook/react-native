@@ -43,9 +43,6 @@ type GeoOptions = {
  *
  * `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`
  *
- * Geolocation support for Android is planned but not yet open sourced. See
- * [Known Issues](http://facebook.github.io/react-native/docs/known-issues.html#missing-modules-and-native-views).
- *
  */
 var Geolocation = {
 
