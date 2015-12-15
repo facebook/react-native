@@ -188,15 +188,9 @@ var ReactNativeMount = {
         mountImage.rootNodeID,
         mountImage.tag
       );
-      var addChildTags = [mountImage.tag];
-      var addAtIndices = [0];
-      UIManager.manageChildren(
+      UIManager.setChildren(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
-        null,         // moveFromIndices
-        null,         // moveToIndices
-        addChildTags,
-        addAtIndices,
-        null          // removeAtIndices
+        [mountImage.tag]
       );
     }
   ),
