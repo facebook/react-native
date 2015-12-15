@@ -255,6 +255,12 @@ var apps = [
     author: 'LoadDocs',
   },
   {
+    name: 'Lugg – Your On-Demand Mover',
+    icon: 'http://lh3.googleusercontent.com/EV9z7kRRME2KPMBRNHnje7bBNEl_Why2CFq-MfKzBC88uSFJTYr1HO3-nPt-JuVJwKFb=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.lugg',
+    author: 'Lugg',
+  },
+  {
     name: 'Lumpen Radio',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/46/43/00/464300b1-fae3-9640-d4a2-0eb050ea3ff2/mzl.xjjawige.png',
     link: 'https://itunes.apple.com/us/app/lumpen-radio/id1002193127?mt=8',
