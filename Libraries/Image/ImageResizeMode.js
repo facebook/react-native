@@ -31,7 +31,7 @@ var ImageResizeMode = keyMirror({
   /**
    * stretch - The image will be stretched to fill the entire frame of the
    * view without clipping. This may change the aspect ratio of the image,
-   * distoring it.
+   * distorting it.
    */
   stretch: null,
 });

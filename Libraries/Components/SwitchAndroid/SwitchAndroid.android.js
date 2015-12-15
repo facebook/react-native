@@ -36,7 +36,7 @@ var SwitchAndroid = React.createClass({
      */
     disabled: PropTypes.bool,
     /**
-     * Invoked with the new value when the value chages.
+     * Invoked with the new value when the value changes.
      */
     onValueChange: PropTypes.func,
     /**

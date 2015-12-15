@@ -36,7 +36,7 @@ var Switch = React.createClass({
      */
     disabled: React.PropTypes.bool,
     /**
-     * Invoked with the new value when the value chages.
+     * Invoked with the new value when the value changes.
      */
     onValueChange: React.PropTypes.func,
     /**

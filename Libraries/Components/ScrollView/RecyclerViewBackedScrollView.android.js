@@ -20,9 +20,9 @@ var INNERVIEW = 'InnerView';
  * Wrapper around android native recycler view.
  *
  * It simply renders rows passed as children in a separate recycler view cells
- * similarily to how `ScrollView` is doing it. Thanks to the fact that it uses
+ * similarly to how `ScrollView` is doing it. Thanks to the fact that it uses
  * native `RecyclerView` though, rows that are out of sight are going to be
- * automatically detached (similarily on how this would work with
+ * automatically detached (similarly on how this would work with
  * `removeClippedSubviews = true` on a `ScrollView.js`).
  *
  * CAUTION: This is an experimental component and should only be used together

@@ -102,7 +102,7 @@ var DrawerLayoutAndroid = React.createClass({
     /**
      * Function called when the drawer state has changed. The drawer can be in 3 states:
      * - idle, meaning there is no interaction with the navigation view happening at the time
-     * - dragging, meaning there is currently an interation with the navigation view
+     * - dragging, meaning there is currently an interaction with the navigation view
      * - settling, meaning that there was an interaction with the navigation view, and the
      * navigation view is now finishing it's closing or opening animation
      */

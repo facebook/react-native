@@ -5,7 +5,7 @@
  */
 'use strict';
 
-// this a partial list of the contants in CSSConstants:: from PHP that are applicable to mobile
+// this a partial list of the constants in CSSConstants:: from PHP that are applicable to mobile
 
 module.exports = {
   'fbui-accent-blue': '#5890ff',

@@ -58,7 +58,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                eventCount:_nativeEventCount];
 }
 
-// This method is overriden for `onKeyPress`. The manager
+// This method is overridden for `onKeyPress`. The manager
 // will not send a keyPress for text that was pasted.
 - (void)paste:(id)sender
 {

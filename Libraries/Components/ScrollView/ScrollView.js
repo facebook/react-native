@@ -184,7 +184,7 @@ var ScrollView = React.createClass({
     minimumZoomScale: PropTypes.number,
     /**
      * Fires at most once per frame during scrolling. The frequency of the
-     * events can be contolled using the `scrollEventThrottle` prop.
+     * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
     /**
@@ -438,7 +438,7 @@ var ScrollView = React.createClass({
 
     var onRefreshStart = this.props.onRefreshStart;
     // this is necessary because if we set it on props, even when empty,
-    // it'll trigger the default pull-to-refresh behaviour on native.
+    // it'll trigger the default pull-to-refresh behavior on native.
     props.onRefreshStart = onRefreshStart
       ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
       : null;

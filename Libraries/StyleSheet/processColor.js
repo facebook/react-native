@@ -30,7 +30,7 @@ function processColor(color) {
         // Android use 32 bit *signed* integer to represent the color
         // We utilize the fact that bitwise operations in JS also operates on
         // signed 32 bit integers, so that we can use those to convert from
-        // *unsiged* to *signed* 32bit int that way.
+        // *unsigned* to *signed* 32bit int that way.
         colorInt = colorInt | 0x0;
       }
       return colorInt;

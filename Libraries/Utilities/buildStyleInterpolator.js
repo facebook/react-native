@@ -102,7 +102,7 @@ var ARGUMENT_NAMES_RE = /([^\s,]+)/g;
  *
  *  inline(inlineMe, ['hi', 'bye']);  // "hi = bye + bye;"
  *
- * @param {function} func Any simple function whos arguments can be replaced via a regex.
+ * @param {function} func Any simple function who's arguments can be replaced via a regex.
  * @param {array<string>} replaceWithArgs Corresponding names of variables
  * within an environment, to replace `func` args with.
  * @return {string} Resulting function body string.
