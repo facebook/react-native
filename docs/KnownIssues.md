@@ -51,7 +51,7 @@ There are known cases where the APIs could be made more consistent across iOS an
 
 - `<AndroidViewPager>` and `<ScrollView pagingEnabled={true}>` on iOS do a similar thing. We might want to unify them to `<ViewPager>`.
 - `alert()` needs Android support (once the Dialogs module is open sourced)
-- It might be possible to bring `LinkingIOS` and `IntentAndroid` (to be open sourced) closer together.
+- It might be possible to bring `LinkingIOS` and `IntentAndroid` closer together.
 - `ActivityIndicator` could render a native spinning indicator on both platforms (currently this is done using `ActivityIndicatorIOS` on iOS and `ProgressBarAndroid` on Android).
 - `ProgressBar` could render a horizontal progress bar on both platforms (on iOS this is `ProgressViewIOS`, on Android it's `ProgressBarAndroid`).
 
@@ -63,7 +63,7 @@ Adding these to your apps should be made simpler. Here's [an example](https://gi
 
 ### The `overflow` style property defaults to `hidden` and cannot be changed on Android
 
-This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks. 
+This is a result of how Android rendering works. This feature is not being worked on as it would be a significant undertaking and there are many more important tasks.
 
 Another issue with `overflow: 'hidden'` on Android: a view is not clipped by the parent's `borderRadius` even if the parent has `overflow: 'hidden'` enabled – the corners of the inner view will be visible outside of the rounded corners. This is only on Android; it works as expected on iOS. See a [demo of the bug](https://rnplay.org/apps/BlGjdQ) and the [corresponding issue](https://github.com/facebook/react-native/issues/3198).
 
