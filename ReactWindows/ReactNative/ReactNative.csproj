@@ -108,6 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridge\CatalystInstance.cs" />
+    <Compile Include="Bridge\Executors\ICSharpJSExecutor.cs" />
+    <Compile Include="Bridge\Executors\ProxyJavaScriptExecutor.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
