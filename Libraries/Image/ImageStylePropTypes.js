@@ -20,6 +20,7 @@ var ImageStylePropTypes = {
   ...LayoutPropTypes,
   ...TransformPropTypes,
   resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
+  backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
   backgroundColor: ReactPropTypes.string,
   borderColor: ReactPropTypes.string,
   borderWidth: ReactPropTypes.number,
