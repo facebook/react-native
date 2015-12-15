@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.System.Threading;
 
 namespace ReactNative.Bridge.Queue
 {
@@ -20,14 +21,18 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
-        public Task<T> CallOnQueue<T>(this IMessageQueueThread actionQueue, Func<T> func)
+        public static Task<T> CallOnQueue<T>(this IMessageQueueThread actionQueue, Func<T> func)
         {
             var taskCompletionSource = new TaskCompletionSource<T>();
 
-            actionQueue.RunOnQueue(async () =>
+            actionQueue.RunOnQueue(() =>
             {
-                var result = func;
-                await ThreadPool.RunAsync(taskCompletionSource.SetResult(result));
+                var result = func();
+
+                // TaskCompletionSource<T>.SetResult can call continuations
+                // on the awaiter of the task completion source.
+                // TODO: Prevent such thread stealing.
+                taskCompletionSource.SetResult(result);
             });
 
             return taskCompletionSource.Task;

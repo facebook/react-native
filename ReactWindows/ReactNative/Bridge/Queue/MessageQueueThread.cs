@@ -29,10 +29,10 @@ namespace ReactNative.Bridge.Queue
         {
             switch (spec.Kind)
             {
-                case MessageQueueThreadKind.MainUi:
-                    return new DispatcherMessageQueueThread(name, handler);
-                case MessageQueueThreadKind.NewBackground:
-                    return new BackgroundMessageQueueThread(name, handler);
+                //case MessageQueueThreadKind.MainUi:
+                //    return new DispatcherMessageQueueThread(name, handler);
+                //case MessageQueueThreadKind.NewBackground:
+                //    return new BackgroundMessageQueueThread(name, handler);
                 default:
                     throw new InvalidOperationException(
                         string.Format(
@@ -40,14 +40,6 @@ namespace ReactNative.Bridge.Queue
                             "Unknown thread type '{0}' with name '{1}'.", 
                             spec.Kind,
                             spec.Name));
-            }
-        }
-
-        class DispatcherMessageQueueThread : MessageQueueThread
-        {
-            public DispatcherMessageQueueThread(string name, IQueueThreadExceptionHandler handler)
-            {
-
             }
         }
     }

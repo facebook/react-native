@@ -107,14 +107,20 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bridge\ChakraReactBridge.cs" />
+    <Compile Include="Bridge\CatalystInstance.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
     <Compile Include="Bridge\IOnBatchCompleteListener.cs" />
-    <Compile Include="Bridge\ModuleDefinition.cs" />
     <Compile Include="Bridge\NativeModuleBase.cs" />
     <Compile Include="Bridge\NativeModuleRegistry.cs" />
+    <Compile Include="Bridge\Queue\IMessageQueueThread.cs" />
+    <Compile Include="Bridge\Queue\IQueueThreadExceptionHandler.cs" />
+    <Compile Include="Bridge\Queue\MessageQueueThread.cs" />
+    <Compile Include="Bridge\Queue\MessageQueueThreadExtensions.cs" />
+    <Compile Include="Bridge\Queue\MessageQueueThreadKind.cs" />
+    <Compile Include="Bridge\Queue\MessageQueueThreadSpec.cs" />
+    <Compile Include="Bridge\ReactContext.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -139,10 +145,7 @@
     <Compile Include="Hosting\Native.cs" />
     <Compile Include="Imports.cs" />
     <Compile Include="Bridge\INativeModule.cs" />
-    <Compile Include="IReactPackage.cs" />
-    <Compile Include="IViewManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReactApplicationContext.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
     <Compile Include="ReactMethodAttribute.cs" />
     <Compile Include="Reflection\MethodInfoHelpers.cs" />
