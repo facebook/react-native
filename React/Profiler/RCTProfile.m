@@ -669,7 +669,7 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
 void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
 {
   if (![bridge.bundleURL.scheme hasPrefix:@"http"]) {
-    RCTLogError(@"Cannot upload profile information");
+    RCTLogWarn(@"Cannot upload profile information because you're not connected to the packager. The profiling data is still saved in the app container.");
     return;
   }
 
