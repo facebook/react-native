@@ -18,17 +18,11 @@ namespace ReactNative.Bridge.Queue
 
         internal MessageQueueThreadKind Kind { get; }
 
-        public static MessageQueueThreadSpec MainUiThreadSpec { get; } = new MessageQueueThreadSpec(MessageQueueThreadKind.MainUi, "main_ui")
+        public static MessageQueueThreadSpec MainUiThreadSpec { get; } = new MessageQueueThreadSpec(MessageQueueThreadKind.MainUi, "main_ui");
 
         public static MessageQueueThreadSpec Create(string name)
         {
             return new MessageQueueThreadSpec(MessageQueueThreadKind.NewBackground, name);
-        }
-
-        enum MessageQueueThreadKind
-        {
-            MainUi,
-            NewBackground,
         }
     }
 }
