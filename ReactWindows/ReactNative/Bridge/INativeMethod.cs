@@ -6,6 +6,6 @@ namespace ReactNative.Bridge
     {
         string Type { get; }
 
-        void Invoke(ICatalystInstance instance, JArray parameters);
+        void Invoke(ICatalystInstance catalystInstance, JArray jsArguments);
     }
 }
