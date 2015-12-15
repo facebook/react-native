@@ -195,6 +195,7 @@ var NavigatorNavigationBar = React.createClass({
         ref={(ref) => {
           this._components[componentName] = this._components[componentName].set(route, ref);
         }}
+        pointerEvents="box-none"
         style={initialStage[componentName]}>
         {content}
       </View>
