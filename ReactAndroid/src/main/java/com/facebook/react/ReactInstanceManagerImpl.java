@@ -43,6 +43,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -51,6 +52,8 @@ import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.JavascriptException;
+import com.facebook.react.modules.core.JavascriptExceptionHandler;
 import com.facebook.react.uimanager.AppRegistry;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -100,6 +103,7 @@ import com.facebook.systrace.Systrace;
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
+  private final JavascriptExceptionHandler mJavascriptExceptionHandler;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -145,6 +149,22 @@ import com.facebook.systrace.Systrace;
 
     public JSBundleLoader getJsBundleLoader() {
       return mJsBundleLoader;
+    }
+  }
+
+  /**
+   * Default behavior for runtime javascript error is simply raise a {@link JavascriptException}.
+   */
+  private static class DefaultJavascriptExceptionHandler implements JavascriptExceptionHandler{
+
+    @Override
+    public void handleNewError(String title, ReadableArray details, int exceptionId, String exceptionMessage) {
+      throw new JavascriptException(exceptionMessage);
+    }
+
+    @Override
+    public void updateError(String title, ReadableArray details, int exceptionId, String exceptionMessage) {
+      //do nothing
     }
   }
 
@@ -195,7 +215,8 @@ import com.facebook.systrace.Systrace;
       boolean useDeveloperSupport,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
-      UIImplementationProvider uiImplementationProvider) {
+      UIImplementationProvider uiImplementationProvider,
+      @Nullable JavascriptExceptionHandler exceptionHandler) {
     initializeSoLoaderIfNecessary(applicationContext);
 
     mApplicationContext = applicationContext;
@@ -216,6 +237,16 @@ import com.facebook.systrace.Systrace;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
+    if(useDeveloperSupport){
+      mJavascriptExceptionHandler = mDevSupportManager;
+    }else {
+      mJavascriptExceptionHandler = exceptionHandler == null ? new DefaultJavascriptExceptionHandler() : exceptionHandler;
+    }
+  }
+
+  @Override
+  public JavascriptExceptionHandler getJavascriptExceptionHandler(){
+    return mJavascriptExceptionHandler;
   }
 
   @Override

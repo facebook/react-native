@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.core.JavascriptExceptionHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
 
@@ -61,6 +62,7 @@ public abstract class ReactInstanceManager {
 
   public abstract DevSupportManager getDevSupportManager();
 
+  public abstract JavascriptExceptionHandler getJavascriptExceptionHandler();
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
@@ -159,6 +161,7 @@ public abstract class ReactInstanceManager {
     protected boolean mUseDeveloperSupport;
     protected @Nullable LifecycleState mInitialLifecycleState;
     protected @Nullable UIImplementationProvider mUIImplementationProvider;
+    protected @Nullable JavascriptExceptionHandler mJSExceptionHandler;
 
     protected Builder() {
     }
@@ -243,6 +246,16 @@ public abstract class ReactInstanceManager {
     }
 
     /**
+     * Sets handler for runtime javascript. The handler will called in non-dev mode (by set
+     * {@link #setUseDeveloperSupport(boolean) to false}. Default behavior is simply raising a
+     * {@link com.facebook.react.modules.core.JavascriptException}.
+     */
+    public Builder setJavascriptExceptionHandler(JavascriptExceptionHandler exceptionHandler){
+      mJSExceptionHandler = exceptionHandler;
+      return this;
+    }
+
+    /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
      * <ul>
@@ -274,7 +287,8 @@ public abstract class ReactInstanceManager {
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,
           Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-          mUIImplementationProvider);
+          mUIImplementationProvider,
+              mJSExceptionHandler);
     }
   }
 }

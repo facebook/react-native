@@ -44,6 +44,7 @@ import com.facebook.react.bridge.WebsocketJavaScriptExecutor;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
+import com.facebook.react.modules.core.JavascriptExceptionHandler;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**
@@ -72,7 +73,7 @@ import com.facebook.react.modules.debug.DeveloperSettings;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManager implements NativeModuleCallExceptionHandler {
+public class DevSupportManager implements NativeModuleCallExceptionHandler,JavascriptExceptionHandler {
 
   private static final int JAVA_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
@@ -178,8 +179,14 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
     mCustomDevOptions.put(optionName, optionHandler);
   }
 
-  public void showNewJSError(String message, ReadableArray details, int errorCookie) {
-    showNewError(message, StackTraceHelper.convertJsStackTrace(details), errorCookie);
+  @Override
+  public void handleNewError(String title, ReadableArray details, int exceptionId, String exceptionMessage) {
+    showNewError(title, StackTraceHelper.convertJsStackTrace(details), exceptionId);
+  }
+
+  @Override
+  public void updateError(String title, ReadableArray details, int exceptionId, String exceptionMessage) {
+    updateJSError(title, details, exceptionId);
   }
 
   public void updateJSError(
