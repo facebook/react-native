@@ -19,6 +19,12 @@
         android:summary="At the end of animations, Toasts and logs to logcat debug information about the FPS during that transition. Currently only supported for transitions (animated navigations)."
         android:defaultValue="false"
         />
+    <CheckBoxPreference
+        android:key="use_cached_bundle"
+        android:title="Use Cached Bundle"
+        android:summary="Use the last JS bundle downloaded from the packager if the packager cannot be reached."
+        android:defaultValue="true"
+        />
   </PreferenceCategory>
   <PreferenceCategory
       android:key="pref_key_catalyst_debug"

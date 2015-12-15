@@ -452,7 +452,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
    */
   @Override
   public boolean hasUpToDateJSBundleInCache() {
-    if (mIsDevSupportEnabled && mJSBundleTempFile.exists()) {
+    if (mIsDevSupportEnabled && mDevServerHelper.getShouldUseCachedBundle() && mJSBundleTempFile.exists()) {
       try {
         String packageName = mApplicationContext.getPackageName();
         PackageInfo thisPackage = mApplicationContext.getPackageManager()

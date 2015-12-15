@@ -135,6 +135,13 @@ public class DevServerHelper {
   }
 
   /**
+   * @return whether we should use cached JS bundles.
+   */
+  public boolean getShouldUseCachedBundle() {
+    return mSettings.getShouldUseCachedBundle();
+  }
+
+  /**
    * @return the host to use when connecting to the bundle server.
    */
   private String getDebugServerHost() {
