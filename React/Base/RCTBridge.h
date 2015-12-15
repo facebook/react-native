@@ -186,11 +186,11 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
  *
  * If you need to access a module, you can do so as soon as the bridge has been
  * initialized, by calling `[bridge moduleForClass:]`. If you need to know when
- * an individual module has been instantiated, use the `RCTDidInitializeModule`
- * notification instead.
+ * an individual module has been instantiated, add an observer for the
+ * `RCTDidInitializeModuleNotification` instead.
  */
 RCT_EXTERN NSString *const RCTDidCreateNativeModules
-__deprecated_msg("Use RCTDidInitializeModule to observe init of individual modules");
+__deprecated_msg("Use RCTDidInitializeModuleNotification to observe init of individual modules");
 
 /**
  * Accessing the modules property causes all modules to be eagerly initialized,
