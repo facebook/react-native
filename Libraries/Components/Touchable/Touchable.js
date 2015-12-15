@@ -31,7 +31,7 @@ var queryLayoutByID = require('queryLayoutByID');
  *
  * A good tap interaction isn't as simple as you might think. There should be a
  * slight delay before showing a highlight when starting a touch. If a
- * subsequent touch move exceeds the boundary of the elemement, it should
+ * subsequent touch move exceeds the boundary of the element, it should
  * unhighlight, but if that same touch is brought back within the boundary, it
  * should rehighlight again. A touch can move in and out of that boundary
  * several times, each time toggling highlighting, but a "press" is only
@@ -574,7 +574,7 @@ var TouchableMixin = {
         curState !== States.RESPONDER_ACTIVE_LONG_PRESS_IN) {
       console.error('Attempted to transition from state `' + curState + '` to `' +
         States.RESPONDER_ACTIVE_LONG_PRESS_IN + '`, which is not supported. This is ' +
-        'most likely due to `Touchable.longPressDelayTimeout` not being cancelled.');   
+        'most likely due to `Touchable.longPressDelayTimeout` not being cancelled.');
     } else {
       this._receiveSignal(Signals.LONG_PRESS_DETECTED, e);
     }

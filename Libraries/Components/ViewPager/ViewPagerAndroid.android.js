@@ -22,7 +22,7 @@ var VIEWPAGER_REF = 'viewPager';
 /**
  * Container that allows to flip left and right between child views. Each
  * child view of the `ViewPagerAndroid` will be treated as a separate page
- * and will be streched to fill the `ViewPagerAndroid`.
+ * and will be stretched to fill the `ViewPagerAndroid`.
  *
  * It is important all children are `<View>`s and not composite components.
  * You can set style properties like `padding` or `backgroundColor` for each
@@ -79,7 +79,7 @@ var ViewPagerAndroid = React.createClass({
     onPageScroll: ReactPropTypes.func,
 
     /**
-     * This callback will be caleld once ViewPager finish navigating to selected page
+     * This callback will be called once ViewPager finish navigating to selected page
      * (when user swipes between pages). The `event.nativeEvent` object passed to this
      * callback will have following fields:
      *  - position - index of page that has been selected

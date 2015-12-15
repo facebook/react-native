@@ -148,7 +148,7 @@ var WebViewExample = React.createClass({
         url: url,
       });
     }
-    // dismiss keyoard
+    // dismiss keyboard
     this.refs[TEXT_INPUT_REF].blur();
   },
 

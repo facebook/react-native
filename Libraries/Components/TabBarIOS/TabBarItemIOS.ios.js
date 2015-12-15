@@ -31,7 +31,7 @@ var TabBarItemIOS = React.createClass({
     ]),
     /**
      * Items comes with a few predefined system icons. Note that if you are
-     * using them, the title and selectedIcon will be overriden with the
+     * using them, the title and selectedIcon will be overridden with the
      * system ones.
      */
     systemIcon: React.PropTypes.oneOf([
@@ -109,7 +109,7 @@ var TabBarItemIOS = React.createClass({
     } else {
       var tabContents = <View />;
     }
-    
+
     return (
       <RCTTabBarItem
         {...props}
