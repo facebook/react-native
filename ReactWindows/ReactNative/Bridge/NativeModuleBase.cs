@@ -2,6 +2,7 @@
 using ReactNative.Reflection;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -76,6 +77,18 @@ namespace ReactNative.Bridge
             var methodMap = new Dictionary<string, INativeMethod>(exportedMethods.Count);
             foreach (var method in exportedMethods)
             {
+                var existingMethod = default(INativeMethod);
+                if (methodMap.TryGetValue(method.Name, out existingMethod))
+                {
+                    throw new NotSupportedException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "React module '{0}' with name '{1}' has more than one ReactMethod with the name '{2}'.",
+                            GetType(),
+                            Name,
+                            method.Name));
+                }
+
                 methodMap.Add(method.Name, new NativeMethod(this, method));
             }
 
@@ -109,17 +122,23 @@ namespace ReactNative.Bridge
                 get;
             }
 
-            public void Invoke(ICatalystInstance instance, JArray parameters)
+            public void Invoke(ICatalystInstance catalystInstance, JArray jsArguments)
             {
-                
+                _invokeDelegate.Value(catalystInstance, jsArguments);
             }
 
-            private static MethodInfo s_extractCallback = (MethodInfo)ReflectionHelpers.InfoOf(() => ExtractCallback(default(JToken), default(ICatalystInstance)));
-            private static MethodInfo s_extractGeneric = ((MethodInfo)ReflectionHelpers.InfoOf(() => Extract<object>(default(JToken)))).GetGenericMethodDefinition();
+            private static ConstructorInfo s_newArgumentNullException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentNullException(default(string)));
+            private static ConstructorInfo s_newArgumentException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentException(default(string), default(string)));
+            private static ConstructorInfo s_newNativeArgumentParseException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new NativeArgumentsParseException(default(string), default(string)));
+            private static ConstructorInfo s_newNativeArgumentParseExceptionInner = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new NativeArgumentsParseException(default(string), default(string), default(Exception)));
+            private static ConstructorInfo s_newCallback = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new Callback(default(int), default(ICatalystInstance)));
+            private static MethodInfo s_valueInt = ((MethodInfo)ReflectionHelpers.InfoOf((JToken token) => token.Value<object>())).GetGenericMethodDefinition().MakeGenericMethod(typeof(int));
+            private static MethodInfo s_toObjectGeneric = ((MethodInfo)ReflectionHelpers.InfoOf((JToken token) => token.ToObject<object>())).GetGenericMethodDefinition();
+            private static MethodInfo s_stringFormat = (MethodInfo)ReflectionHelpers.InfoOf(() => string.Format(default(IFormatProvider), default(string), default(object)));
+            private static MethodInfo s_getIndex = (MethodInfo)ReflectionHelpers.InfoOf((JArray arr) => arr[0]);
             private static PropertyInfo s_countProperty = (PropertyInfo)ReflectionHelpers.InfoOf((JArray arr) => arr.Count);
-            private static Expression s_throwExpression = Expression.Throw(Expression.Constant(new ArgumentException("Invalid argument count.")));
 
-            private static Expression<Action<ICatalystInstance, JArray>> GenerateExpression(NativeModuleBase instance, MethodInfo method)
+            private static Expression<Action<ICatalystInstance, JArray>> GenerateExpression(NativeModuleBase module, MethodInfo method)
             {
                 var parameterInfos = method.GetParameters();
                 var n = parameterInfos.Length;
@@ -136,57 +155,66 @@ namespace ReactNative.Bridge
                     var parameterType = parameterInfo.ParameterType;
                     var parameterExpression = Expression.Parameter(parameterType, parameterInfo.Name);
                     parameterExpressions[i] = parameterExpression;
-
-                    if (parameterType == typeof(ICallback))
-                    {
-                        //
-                        // valueOf(parameterInfo.Name) = ExtractCallback(jsArguments[valueOf(i)], catalystInstance)
-                        //
-                        extractExpressions[i] = Expression.Assign(
-                            parameterExpression,
-                            Expression.Call(
-                                s_extractCallback,
-                                Expression.ArrayIndex(
-                                    jsArgumentsParameter,
-                                    Expression.Constant(i)
-                                ),
-                                catalystInstanceParameter
-                            )
-                        );
-                    }
-                    else
-                    {
-                        var extractMethod = s_extractGeneric.MakeGenericMethod(parameterType);
-
-                        //
-                        // valueOf(parameterInfo.Name) = Extract<T>(jsArguments[valueOf(i)]);
-                        //
-                        extractExpressions[i] = Expression.Assign(
-                            parameterExpression,
-                            Expression.Call(
-                                extractMethod,
-                                Expression.ArrayIndex(
-                                    jsArgumentsParameter,
-                                    Expression.Constant(i)
-                                )
-                            )
-                        );
-                    }
+                    extractExpressions[i] = GenerateExtractExpression(
+                        parameterInfo.ParameterType,
+                        parameterExpression,
+                        Expression.Call(jsArgumentsParameter, s_getIndex, Expression.Constant(i)),
+                        catalystInstanceParameter,
+                        jsArgumentsParameter.Name,
+                        module.Name,
+                        method.Name,
+                        i);
                 }
 
-                var blockStatements = new Expression[parameterInfos.Length + 2];
+                var blockStatements = new Expression[parameterInfos.Length + 4];
 
                 //
-                // if (args.Count != valueOf(n))
-                //     throw new ArgumentException("Invalid argument count.");
+                // if (catalystInstance == null)
+                //     throw new ArgumentNullException(nameof(catalystInstance));
                 //
-                blockStatements[0] = Expression.Condition(
+                blockStatements[0] = CreateNullCheckExpression<ICatalystInstance>(catalystInstanceParameter);
+
+                //
+                // if (jsArguments == null)
+                //     throw new ArgumentNullException(nameof(jsArguments));
+                //
+                blockStatements[1] = CreateNullCheckExpression<JArray>(jsArgumentsParameter);
+
+                //
+                // if (jsArguments.Count != valueOf(parameterInfos.Count))
+                //     throw new NativeArgumentsParseException(
+                //         string.Format(
+                //             CultureInfo.InvariantCulture,
+                //             "Module 'moduleName' method 'methodName' got '{0}' arguments, expected 'parameterCount'."
+                //             jsArguments.Count));
+                //
+                blockStatements[2] = Expression.IfThen(
                     Expression.NotEqual(
-                        Expression.Property(jsArgumentsParameter, s_countProperty),
-                        Expression.Constant(n)
+                        Expression.MakeMemberAccess(jsArgumentsParameter, s_countProperty),
+                        Expression.Constant(parameterInfos.Length)
                     ),
-                    s_throwExpression,
-                    Expression.Empty()
+                    Expression.Throw(
+                        Expression.New(
+                            s_newNativeArgumentParseException,
+                            Expression.Call(
+                                s_stringFormat,
+                                Expression.Constant(CultureInfo.InvariantCulture),
+                                Expression.Constant(
+                                    string.Format(
+                                        CultureInfo.InvariantCulture,
+                                        "Module '{0}' method '{1}' got '{{0}}' arguments, expected '{2}'.",
+                                        module.Name,
+                                        method.Name,
+                                        parameterInfos.Length)
+                                ),
+                                Expression.Convert(
+                                    Expression.MakeMemberAccess(jsArgumentsParameter, s_countProperty),
+                                    typeof(object)
+                                )
+                            ),
+                            Expression.Constant(jsArgumentsParameter.Name)
+                        )
+                    )
                 );
 
                 //
@@ -195,10 +223,10 @@ namespace ReactNative.Bridge
                 // ...
                 // pn = Extract<T>(jsArguments[n]);
                 //
-                Array.Copy(extractExpressions, 0, blockStatements, 1, parameterInfos.Length);
+                Array.Copy(extractExpressions, 0, blockStatements, 3, parameterInfos.Length);
 
-                blockStatements[parameterInfos.Length + 1] = Expression.Call(
-                    Expression.Constant(instance),
+                blockStatements[blockStatements.Length - 1] = Expression.Call(
+                    Expression.Constant(module),
                     method,
                     parameterExpressions);
 
@@ -209,17 +237,98 @@ namespace ReactNative.Bridge
                 );
             }
 
-            private static T Extract<T>(JToken value)
+            private static Expression GenerateExtractExpression(
+                Type type,
+                Expression leftExpression,
+                Expression tokenExpression,
+                Expression catalystInstanceExpression, 
+                string parameterName,
+                string moduleName,
+                string methodName,
+                int argumentIndex)
             {
-                return value.ToObject<T>();
-            }
+                //
+                // try
+                // {
+                //     ...
+                // }
+                // catch (Exception ex)
+                // {
+                //     throw new NativeArgumentParseException(
+                //         string.Format(
+                //             CultureInfo.InvariantCulture,
+                //             "Error extracting argument for module 'moduleName' method 'methodName' at index '{0}'.",
+                //             argumentIndex),
+                //         paramName,
+                //         ex);
+                // }
+                //
+                var catchBlock = Expression.Parameter(typeof(Exception), "ex").Let(ex => 
+                    Expression.Catch(
+                        ex,
+                        Expression.Throw(
+                            Expression.New(
+                                s_newNativeArgumentParseExceptionInner,
+                                Expression.Call(
+                                    s_stringFormat,
+                                    Expression.Constant(CultureInfo.InvariantCulture),
+                                    Expression.Constant(
+                                        string.Format(
+                                            CultureInfo.InvariantCulture,
+                                            "Error extracting argument for module '{0}' method '{1}' at index '{{0}}'.",
+                                            moduleName,
+                                            methodName)
+                                    ),
+                                    Expression.Constant(argumentIndex, typeof(object))
+                                ),
+                                Expression.Constant(parameterName),
+                                ex
+                            )
+                        )
+                    )
+                );
 
-            private static ICallback ExtractCallback(JToken value, ICatalystInstance instance)
-            {
-                var id = value.Value<int>();
-                return new Callback(id, instance);
+                var valueExpression = default(Expression);
+                if (type == typeof(ICallback))
+                {
+                    valueExpression = Expression.Parameter(typeof(int), "id").Let(id =>
+                        Expression.Block(
+                            new[] { id },
+                            Expression.Assign(
+                                id,
+                                Expression.Call(tokenExpression, s_valueInt)
+                            ),
+                            Expression.New(s_newCallback, id, catalystInstanceExpression)
+                        )
+                    );
+                }
+                else
+                {
+                    var toObjectMethod = s_toObjectGeneric.MakeGenericMethod(type);
+                    valueExpression = Expression.Call(tokenExpression, toObjectMethod);
+                }
+
+                return Expression.TryCatch(
+                    Expression.Block(
+                        typeof(void), 
+                        Expression.Assign(leftExpression, valueExpression)
+                    ),
+                    catchBlock
+                );
             }
             
+            private static Expression CreateNullCheckExpression<T>(ParameterExpression parameter)
+                where T : class
+            {
+                return Expression.IfThen(
+                    Expression.Equal(
+                        parameter,
+                        Expression.Default(typeof(T))
+                    ),
+                    Expression.Throw(Expression.New(s_newArgumentNullException, Expression.Constant(parameter.Name)))
+                );
+            }
+
             class Callback : ICallback
             {
                 private readonly int _id;

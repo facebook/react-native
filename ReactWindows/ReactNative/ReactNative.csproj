@@ -112,6 +112,7 @@
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
     <Compile Include="Bridge\IOnBatchCompleteListener.cs" />
+    <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\NativeModuleBase.cs" />
     <Compile Include="Bridge\NativeModuleRegistry.cs" />
     <Compile Include="Bridge\Queue\IMessageQueueThread.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
     <Compile Include="ReactMethodAttribute.cs" />
+    <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\MethodInfoHelpers.cs" />
     <Compile Include="Reflection\ReflectionHelpers.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
