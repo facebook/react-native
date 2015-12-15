@@ -507,7 +507,8 @@ import com.facebook.systrace.Systrace;
     recreateReactContextInBackground(
         new ProxyJavaScriptExecutor(jsExecutor),
         JSBundleLoader.createRemoteDebuggerBundleLoader(
-            mDevSupportManager.getJSBundleURLForRemoteDebugging()));
+            mDevSupportManager.getJSBundleURLForRemoteDebugging(),
+            mDevSupportManager.getSourceUrl()));
   }
 
   private void onJSBundleLoadedFromServer() {
