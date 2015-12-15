@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(setValues:(NSDictionary *)values)
 /**
  * Remove some values from the settings.
  */
-RCT_EXPORT_METHOD(deleteValues:(NSStringArray *)keys)
+RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
 {
   _ignoringUpdates = YES;
   for (NSString *key in keys) {

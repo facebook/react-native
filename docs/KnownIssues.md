@@ -25,8 +25,7 @@ Our provisional plan for common views and modules includes:
 ART
 Maps
 Modal
-Spinner
-Swipe Refresh
+Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
 Webview
 ```
 
@@ -38,7 +37,6 @@ App State
 Camera Roll
 Dialog
 Media
-Net Info
 Pasteboard
 PushNotificationIOS
 ```

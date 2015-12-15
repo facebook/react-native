@@ -181,8 +181,8 @@ Refactoring the above code to use a promise instead of callbacks looks like this
 
 ```objective-c
 RCT_REMAP_METHOD(findEvents,
-                 resolver:(RCTPromiseResolveBlock)resolve,
-                 rejecter:(RCTPromiseRejectBlock)reject))
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
   NSArray *events = ...
   if (events) {
@@ -374,7 +374,7 @@ Then create a private implementation file that will register the required inform
 
 @interface RCT_EXTERN_MODULE(CalendarManager, NSObject)
 
-RCT_EXTERN_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(NSNumber *)date)
+RCT_EXTERN_METHOD(addEvent:(NSString *)name location:(NSString *)location date:(nonnull NSNumber *)date)
 
 @end
 ```

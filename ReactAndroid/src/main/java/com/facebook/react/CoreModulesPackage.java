@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.react.bridge.BridgeProfiling;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,7 +26,6 @@ import com.facebook.react.modules.debug.AnimationsDebugModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.uimanager.AppRegistry;
-import com.facebook.react.uimanager.ReactNative;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -96,8 +94,7 @@ import com.facebook.systrace.Systrace;
         RCTEventEmitter.class,
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
-        BridgeProfiling.class,
-        ReactNative.class,
+        com.facebook.react.bridge.Systrace.class,
         DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
   }
 

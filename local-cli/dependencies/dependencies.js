@@ -104,7 +104,9 @@ function _dependencies(argv, config, resolve, reject) {
             outStream.write(modulePath + '\n');
           }
         });
-        writeToFile && outStream.end();
+        return writeToFile
+          ? Promise.denodeify(outStream.end).bind(outStream)()
+          : Promise.resolve();
         // log('Wrote dependencies to output file');
       });
   }));

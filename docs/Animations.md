@@ -248,7 +248,7 @@ concise, robust, and performant way.  Check out more example code in
 doesn't support what you need, and the following sections cover other animation
 systems.
 
-### LayoutAnimation (iOS only)
+### LayoutAnimation
 
 `LayoutAnimation` allows you to globally configure `create` and `update`
 animations that will be used for all views in the next render/layout cycle.
@@ -309,7 +309,7 @@ for more information.
 familiar with. It accepts a function as its only argument and calls that
 function before the next repaint. It is an essential building block for
 animations that underlies all of the JavaScript-based animation APIs.  In
-general, you shouldn't need to call this yourself - the animation API's will
+general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
 ### react-tween-state (Not recommended - use [Animated](#animated) instead)
@@ -529,7 +529,9 @@ make them customizable, React Native exposes a
 [NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
 
 ```javascript
-var SCREEN_WIDTH = require('Dimensions').get('window').width;
+var React = require('react-native');
+var { Dimensions } = React;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 
 var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {

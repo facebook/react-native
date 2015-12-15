@@ -1756,9 +1756,9 @@
       }
     },
     "fbjs-haste": {
-      "version": "0.3.2",
-      "from": "fbjs-haste@0.3.2",
-      "resolved": "https://registry.npmjs.org/fbjs-haste/-/fbjs-haste-0.3.2.tgz"
+      "version": "0.3.4",
+      "from": "fbjs-haste@0.3.4",
+      "resolved": "https://registry.npmjs.org/fbjs-haste/-/fbjs-haste-0.3.4.tgz"
     },
     "fbjs-scripts": {
       "version": "0.4.0",
@@ -4377,9 +4377,9 @@
       }
     },
     "react-haste": {
-      "version": "0.14.0",
-      "from": "react-haste@0.14.0",
-      "resolved": "https://registry.npmjs.org/react-haste/-/react-haste-0.14.0.tgz"
+      "version": "0.14.2",
+      "from": "react-haste@0.14.2",
+      "resolved": "https://registry.npmjs.org/react-haste/-/react-haste-0.14.2.tgz"
     },
     "react-timer-mixin": {
       "version": "0.13.2",

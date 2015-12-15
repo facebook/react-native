@@ -52,7 +52,6 @@ import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.AppRegistry;
-import com.facebook.react.uimanager.ReactNative;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
@@ -100,6 +99,7 @@ import com.facebook.systrace.Systrace;
       new ConcurrentLinkedQueue<>();
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
+  private final MemoryPressureRouter mMemoryPressureRouter;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -215,6 +215,7 @@ import com.facebook.systrace.Systrace;
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
+    mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
   }
 
   @Override
@@ -400,6 +401,7 @@ import com.facebook.systrace.Systrace;
   public void onDestroy() {
     UiThreadUtil.assertOnUiThread();
 
+    mMemoryPressureRouter.destroy(mApplicationContext);
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
@@ -539,6 +541,7 @@ import com.facebook.systrace.Systrace;
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
+    mMemoryPressureRouter.onNewReactContextCreated(reactContext);
     moveReactContextToCurrentLifecycleState(reactContext);
 
     for (ReactRootView rootView : mAttachedRootViews) {
@@ -577,8 +580,8 @@ import com.facebook.systrace.Systrace;
       ReactRootView rootView,
       CatalystInstance catalystInstance) {
     UiThreadUtil.assertOnUiThread();
-    catalystInstance.getJSModule(ReactNative.class)
-        .unmountComponentAtNodeAndRemoveContainer(rootView.getId());
+    catalystInstance.getJSModule(AppRegistry.class)
+        .unmountApplicationComponentAtRootTag(rootView.getId());
   }
 
   private void tearDownReactContext(ReactContext reactContext) {
@@ -591,6 +594,7 @@ import com.facebook.systrace.Systrace;
     }
     reactContext.onDestroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
+    mMemoryPressureRouter.onReactInstanceDestroyed();
   }
 
   /**

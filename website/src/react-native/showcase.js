@@ -64,6 +64,13 @@ var featured = [
     author: 'Lrn Labs, Inc',
   },
   {
+    name: 'Movie Trailers by MovieLaLa',
+    icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
+    linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
+    author: 'MovieLaLa'
+  },
+  {
     name: 'Myntra',
     icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
     link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
@@ -117,6 +124,12 @@ var featured = [
 
 var apps = [
   {
+    name: 'Accio',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
+    author: 'Accio Delivery Inc.',
+  },
+  {
     name: 'Beetroot',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
     link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
@@ -155,6 +168,18 @@ var apps = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/fb/df/73/fbdf73e0-22d2-c936-3115-1defa195acba/icon175x175.png',
     link:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
     author: 'Peach Labs',
+  },
+  {
+    name: 'Due',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a2/41/5d/a2415d5f-407a-c565-ffb4-4f27f23d8ac2/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/due-countdown-reminders-for/id1050909468?mt=8',
+    author: 'Dotan Nahum',
+  },
+  {
+    name: 'Eat or Not',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple5/v4/51/be/34/51be3462-b015-ebf2-11c5-69165b37fadc/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
+    author: 'Sharath Prabhal',
   },
   {
     name: 'Fan of it',
@@ -203,6 +228,12 @@ var apps = [
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
     link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
     author: 'HS Schaaf',
+  },
+  {
+    name: 'Hubhopper',
+    icon: 'http://hubhopper.com/images/h_logo.jpg',
+    link: 'https://play.google.com/store/apps/details?id=com.hubhopper',
+    author: 'Soch Technologies',
   },
   {
     name: 'Kakapo',
@@ -355,6 +386,12 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple4/v4/80/50/9d/80509d05-18f4-a0b8-0cbb-9ba927d04477/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/tabtor-math/id1018651199?utm_source=ParentAppLP',
     author: 'PrazAs Learning Inc.',
+  },
+  {
+    name: 'Thai Tone',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
+    author: 'Alexey Ledak',
   },
   {
     name: 'Tong Xing Wang',

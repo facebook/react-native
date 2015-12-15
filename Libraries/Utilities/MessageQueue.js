@@ -13,7 +13,7 @@
 
 'use strict';
 
-let BridgeProfiling = require('BridgeProfiling');
+let Systrace = require('Systrace');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
 
@@ -43,10 +43,10 @@ var guard = (fn) => {
 
 class MessageQueue {
 
-  constructor(remoteModules, localModules, customRequire) {
+  constructor(remoteModules, localModules) {
     this.RemoteModules = {};
 
-    this._require = customRequire || require;
+    this._callableModules = {};
     this._queue = [[],[],[]];
     this._moduleTable = {};
     this._methodTable = {};
@@ -65,8 +65,6 @@ class MessageQueue {
     localModules && this._genLookupTables(
       this._genModulesConfig(localModules),this._moduleTable, this._methodTable
     );
-
-    this._copyNativeComponentConstants(this.RemoteModules);
 
     this._debugInfo = {};
     this._remoteModuleTable = {};
@@ -105,14 +103,20 @@ class MessageQueue {
     return queue[0].length ? queue : null;
   }
 
+  processModuleConfig(config, moduleID) {
+    const module = this._genModule(config, moduleID);
+    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable)
+    return module;
+  }
+
   /**
    * "Private" methods
    */
 
   __callImmediates() {
-    BridgeProfiling.profile('JSTimersExecution.callImmediates()');
+    Systrace.beginEvent('JSTimersExecution.callImmediates()');
     guard(() => JSTimersExecution.callImmediates());
-    BridgeProfiling.profileEnd();
+    Systrace.endEvent();
   }
 
   __nativeCall(module, method, params, onFail, onSucc) {
@@ -150,17 +154,22 @@ class MessageQueue {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
     }
-    BridgeProfiling.profile(() => `${module}.${method}(${stringifySafe(args)})`);
+    Systrace.beginEvent(() => `${module}.${method}(${stringifySafe(args)})`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
-    module = this._require(module);
-    module[method].apply(module, args);
-    BridgeProfiling.profileEnd();
+    var moduleMethods = this._callableModules[module];
+    invariant(
+      !!moduleMethods,
+      'Module %s is not a registered callable module.',
+      module
+    );
+    moduleMethods[method].apply(moduleMethods, args);
+    Systrace.endEvent();
   }
 
   __invokeCallback(cbID, args) {
-    BridgeProfiling.profile(
+    Systrace.beginEvent(
       () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
     this._lastFlush = new Date().getTime();
     let callback = this._callbacks[cbID];
@@ -179,36 +188,12 @@ class MessageQueue {
     this._callbacks[cbID & ~1] = null;
     this._callbacks[cbID |  1] = null;
     callback.apply(null, args);
-    BridgeProfiling.profileEnd();
+    Systrace.endEvent();
   }
 
   /**
    * Private helper methods
    */
-
-  /**
-   * Copies the ViewManager constants into UIManager. This is only
-   * needed for iOS, which puts the constants in the ViewManager
-   * namespace instead of UIManager, unlike Android.
-   */
-  _copyNativeComponentConstants(remoteModules) {
-    let UIManager = remoteModules.RCTUIManager;
-    UIManager && Object.keys(UIManager).forEach(viewName => {
-      let viewConfig = UIManager[viewName];
-      if (viewConfig.Manager) {
-        const viewManager = remoteModules[viewConfig.Manager];
-        viewManager && Object.keys(viewManager).forEach(key => {
-          const value = viewManager[key];
-          if (typeof value !== 'function') {
-            if (!viewConfig.Constants) {
-              viewConfig.Constants = {};
-            }
-            viewConfig.Constants[key] = value;
-          }
-        });
-      }
-    });
-  }
 
   /**
    * Converts the old, object-based module structure to the new
@@ -255,52 +240,59 @@ class MessageQueue {
   }
 
   _genLookupTables(modulesConfig, moduleTable, methodTable) {
-    modulesConfig.forEach((module, moduleID) => {
-      if (!module) {
-        return;
-      }
-
-      let moduleName, methods;
-      if (moduleHasConstants(module)) {
-        [moduleName, , methods] = module;
-      } else {
-        [moduleName, methods] = module;
-      }
-
-      moduleTable[moduleID] = moduleName;
-      methodTable[moduleID] = Object.assign({}, methods);
+    modulesConfig.forEach((config, moduleID) => {
+      this._genLookup(config, moduleID, moduleTable, methodTable);
     });
+  }
+
+  _genLookup(config, moduleID, moduleTable, methodTable) {
+    if (!config) {
+      return;
+    }
+
+    let moduleName, methods;
+    if (moduleHasConstants(config)) {
+      [moduleName, , methods] = config;
+    } else {
+      [moduleName, methods] = config;
+    }
+
+    moduleTable[moduleID] = moduleName;
+    methodTable[moduleID] = Object.assign({}, methods);
   }
 
   _genModules(remoteModules) {
-    remoteModules.forEach((module, moduleID) => {
-      if (!module) {
-        return;
-      }
-
-      let moduleName, constants, methods, asyncMethods;
-      if (moduleHasConstants(module)) {
-        [moduleName, constants, methods, asyncMethods] = module;
-      } else {
-        [moduleName, methods, asyncMethods] = module;
-      }
-
-      const moduleConfig = {moduleID, constants, methods, asyncMethods};
-      this.RemoteModules[moduleName] = this._genModule({}, moduleConfig);
+    remoteModules.forEach((config, moduleID) => {
+      this._genModule(config, moduleID);
     });
   }
 
-  _genModule(module, moduleConfig) {
-    const {moduleID, constants, methods = [], asyncMethods = []} = moduleConfig;
+  _genModule(config, moduleID) {
+    if (!config) {
+      return;
+    }
 
-    methods.forEach((methodName, methodID) => {
+    let moduleName, constants, methods, asyncMethods;
+    if (moduleHasConstants(config)) {
+      [moduleName, constants, methods, asyncMethods] = config;
+    } else {
+      [moduleName, methods, asyncMethods] = config;
+    }
+
+    let module = {};
+    methods && methods.forEach((methodName, methodID) => {
       const methodType =
-        arrayContains(asyncMethods, methodID) ?
+        asyncMethods && arrayContains(asyncMethods, methodID) ?
           MethodTypes.remoteAsync : MethodTypes.remote;
       module[methodName] = this._genMethod(moduleID, methodID, methodType);
     });
     Object.assign(module, constants);
 
+    if (!constants && !methods && !asyncMethods) {
+      module.moduleID = moduleID;
+    }
+
+    this.RemoteModules[moduleName] = module;
     return module;
   }
 
@@ -335,6 +327,10 @@ class MessageQueue {
     }
     fn.type = type;
     return fn;
+  }
+
+  registerCallableModule(name, methods) {
+    this._callableModules[name] = methods;
   }
 
 }

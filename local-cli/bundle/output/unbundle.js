@@ -12,6 +12,7 @@ const fs = require('fs');
 const Promise = require('promise');
 const writeFile = require('./writeFile');
 
+const MAGIC_UNBUNDLE_FILE_HEADER = 0xFB0BD1E5;
 const MAGIC_STARTUP_MODULE_ID = '';
 
 function buildBundle(packagerClient, requestOptions) {
@@ -49,6 +50,8 @@ function saveUnbundle(bundle, options, log) {
 }
 
 /* global Buffer: true */
+const fileHeader = Buffer(4);
+fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER);
 const nullByteBuffer = Buffer(1).fill(0);
 
 const moduleToBuffer = ({name, code}, encoding) => ({
@@ -109,7 +112,7 @@ function buildModuleTable(buffers) {
 function buildTableAndContents(startupCode, modules, encoding) {
   const buffers = buildModuleBuffers(startupCode, modules, encoding);
   const table = buildModuleTable(buffers, encoding);
-  return [table].concat(buffers.map(({buffer}) => buffer));
+  return [fileHeader, table].concat(buffers.map(({buffer}) => buffer));
 }
 
 function writeBuffers(stream, buffers) {

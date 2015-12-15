@@ -125,6 +125,27 @@ class RewriteExample extends React.Component {
   }
 }
 
+class RewriteExampleInvalidCharacters extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          onChangeText={(text) => {
+            this.setState({text: text.replace(/\s/g, '')});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+      </View>
+    );
+  }
+}
+
 class TokenizedTextExample extends React.Component {
   constructor(props) {
     super(props);
@@ -158,7 +179,7 @@ class TokenizedTextExample extends React.Component {
     //highlight hashtags
     parts = parts.map((text) => {
       if (/^#/.test(text)) {
-        return <Text style={styles.hashtag}>{text}</Text>;
+        return <Text key={text} style={styles.hashtag}>{text}</Text>;
       } else {
         return text;
       }
@@ -311,6 +332,12 @@ exports.examples = [
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function() {
       return <RewriteExample />;
+    }
+  },
+  {
+    title: "Live Re-Write (no spaces allowed)",
+    render: function() {
+      return <RewriteExampleInvalidCharacters />;
     }
   },
   {

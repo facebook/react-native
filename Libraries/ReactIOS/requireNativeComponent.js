@@ -16,10 +16,12 @@ var UIManager = require('UIManager');
 var UnimplementedView = require('UnimplementedView');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
+
 var insetsDiffer = require('insetsDiffer');
 var pointsDiffer = require('pointsDiffer');
 var matricesDiffer = require('matricesDiffer');
 var processColor = require('processColor');
+var resolveAssetSource = require('resolveAssetSource');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
 var warning = require('warning');
@@ -110,6 +112,9 @@ var TypeToProcessorMap = {
   CGColorArray: processColor,
   UIColor: processColor,
   UIColorArray: processColor,
+  CGImage: resolveAssetSource,
+  UIImage: resolveAssetSource,
+  RCTImageSource: resolveAssetSource,
   // Android Types
   Color: processColor,
 };

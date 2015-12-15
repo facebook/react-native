@@ -18,5 +18,6 @@ package com.facebook.react.bridge;
  */
 public interface Promise {
   void resolve(Object value);
+  void reject(Throwable reason);
   void reject(String reason);
 }

@@ -10,6 +10,7 @@
  */
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
 
 var performanceNow = require('performanceNow');
 
@@ -139,5 +140,10 @@ var PerformanceLogger = {
     return extras;
   }
 };
+
+BatchedBridge.registerCallableModule(
+  'PerformanceLogger',
+  PerformanceLogger
+);
 
 module.exports = PerformanceLogger;

@@ -16,8 +16,8 @@
  *
  * This file provides a set of functions and macros for performance profiling
  *
- * NOTE: This API is a work in a work in progress, please consider carefully
- * before before using it.
+ * NOTE: This API is a work in progress, please consider carefully before
+ * using it.
  */
 
 RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
@@ -124,6 +124,7 @@ RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
  */
 RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
                                          NSString *name,
+                                         NSTimeInterval time,
                                          char scope);
 
 /**
