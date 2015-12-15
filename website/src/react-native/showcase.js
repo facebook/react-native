@@ -64,6 +64,13 @@ var featured = [
     author: 'Lrn Labs, Inc',
   },
   {
+    name: 'Movie Trailers by MovieLaLa',
+    icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
+    linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
+    author: 'MovieLaLa'
+  },
+  {
     name: 'Myntra',
     icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
     link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
@@ -283,13 +290,6 @@ var apps = [
     icon: 'https://s3.cn-north-1.amazonaws.com.cn/modao/downloads/images/MockingBot175.png',
     link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
     author: 'YuanYi Zhang (@mockingbot)',
-  },
-  {
-    name: 'Movie Trailers by MovieLaLa',
-    icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
-    linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
-    author: 'MovieLaLa'
   },
   {
     name: 'Mr. Dapper',
