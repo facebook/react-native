@@ -10,15 +10,10 @@
 #import "RCTModuleData.h"
 
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-
-@interface RCTBridge (Private)
-
-- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData;
-
-@end
 
 @implementation RCTModuleData
 {

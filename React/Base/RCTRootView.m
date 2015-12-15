@@ -14,7 +14,7 @@
 #import <objc/runtime.h>
 
 #import "RCTAssert.h"
-#import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -27,12 +27,6 @@
 #import "UIView+React.h"
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
-
-@interface RCTBridge (RCTRootView)
-
-@property (nonatomic, weak, readonly) RCTBridge *batchedBridge;
-
-@end
 
 @interface RCTUIManager (RCTRootView)
 

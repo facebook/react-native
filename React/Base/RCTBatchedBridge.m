@@ -11,6 +11,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
 #import "RCTContextExecutor.h"
@@ -41,15 +42,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
-
-@interface RCTBridge ()
-
-+ (instancetype)currentBridge;
-+ (void)setCurrentBridge:(RCTBridge *)bridge;
-
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
-
-@end
 
 @interface RCTBatchedBridge : RCTBridge
 

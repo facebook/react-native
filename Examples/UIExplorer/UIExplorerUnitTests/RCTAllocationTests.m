@@ -16,6 +16,7 @@
 #import <XCTest/XCTest.h>
 
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTContextExecutor.h"
 #import "RCTModuleMethod.h"
 #import "RCTRootView.h"
@@ -28,12 +29,6 @@ while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
   [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
 } \
 _Pragma("clang diagnostic pop")
-
-@interface RCTBridge (RCTAllocationTests)
-
-@property (nonatomic, weak) RCTBridge *batchedBridge;
-
-@end
 
 @interface RCTJavaScriptContext : NSObject
 
