@@ -33,6 +33,8 @@ var Platform = require('Platform');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
+var guid = require('guid');
+
 var { Map } = require('immutable');
 
 var COMPONENT_NAMES = ['Title', 'LeftButton', 'RightButton'];
@@ -78,6 +80,21 @@ var NavigatorNavigationBar = React.createClass({
   },
 
   componentWillMount: function() {
+    this._reset();
+  },
+
+  /**
+   * Stop transtion, immediately resets the cached state and re-render the
+   * whole view.
+   */
+  immediatelyRefresh() {
+    this._reset();
+    this.forceUpdate();
+  },
+
+  _reset() {
+    this._key = guid();
+    this._reusableProps = {};
     this._components = {};
     this._descriptors = {};
 
@@ -91,9 +108,6 @@ var NavigatorNavigationBar = React.createClass({
     /*string*/componentName,
     /*number*/index
   ) /*object*/ {
-    if (!this._reusableProps) {
-      this._reusableProps = {};
-    }
     var propStack = this._reusableProps[componentName];
     if (!propStack) {
       propStack = this._reusableProps[componentName] = [];
@@ -160,7 +174,9 @@ var NavigatorNavigationBar = React.createClass({
     );
 
     return (
-      <View style={[styles.navBarContainer, navBarStyle, this.props.style]}>
+      <View
+        key={this._key}
+        style={[styles.navBarContainer, navBarStyle, this.props.style]}>
         {components}
       </View>
     );
