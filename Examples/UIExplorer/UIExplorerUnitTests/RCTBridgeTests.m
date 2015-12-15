@@ -16,18 +16,10 @@
 #import <XCTest/XCTest.h>
 
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTJavaScriptExecutor.h"
 #import "RCTUtils.h"
-
-@interface RCTBridge (Testing)
-
-@property (nonatomic, strong, readonly) RCTBridge *batchedBridge;
-
-- (void)handleBuffer:(id)buffer;
-- (void)setUp;
-
-@end
 
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 

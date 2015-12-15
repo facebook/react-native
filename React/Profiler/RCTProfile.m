@@ -20,6 +20,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
@@ -31,13 +32,6 @@ NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
 NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 #if RCT_DEV
-
-@interface RCTBridge ()
-
-- (void)dispatchBlock:(dispatch_block_t)block
-                queue:(dispatch_queue_t)queue;
-
-@end
 
 #pragma mark - Constants
 

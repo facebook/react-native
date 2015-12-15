@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 
 #import <objc/runtime.h>
 
@@ -24,24 +24,11 @@ NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotific
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
 NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
-@class RCTBatchedBridge;
-
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
 @property (nonatomic, weak) RCTBridge *parentBridge;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-
-@end
-
-@interface RCTBridge ()
-
-// This property is mostly used on the main thread, but may be touched from
-// a background thread if the RCTBridge happens to deallocate on a background
-// thread. Therefore, we want all writes to it to be seen atomically.
-@property (atomic, strong) RCTBatchedBridge *batchedBridge;
-
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 @end
 
@@ -294,7 +281,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)invalidate
 {
-  RCTBatchedBridge *batchedBridge = self.batchedBridge;
+  RCTBatchedBridge *batchedBridge = (RCTBatchedBridge *)self.batchedBridge;
   self.batchedBridge = nil;
 
   if (batchedBridge) {
@@ -302,20 +289,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [batchedBridge invalidate];
     }, NO);
   }
-}
-
-- (void)logMessage:(NSString *)message level:(NSString *)level
-{
-  [self.batchedBridge logMessage:message level:level];
-}
-
-
-#define RCT_INNER_BRIDGE_ONLY(...) \
-- (void)__VA_ARGS__ \
-{ \
-  NSString *errorMessage = [NSString stringWithFormat:@"Called method \"%@\" on top level bridge. \
-    This method should oly be called from bridge instance in a bridge module", @(__func__)]; \
-  RCTFatal(RCTErrorWithMessage(errorMessage)); \
 }
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args

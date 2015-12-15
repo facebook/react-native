@@ -15,6 +15,7 @@
 #import <UIKit/UIDevice.h>
 
 #import "RCTAssert.h"
+#import "RCTBridge+Private.h"
 #import "RCTDefines.h"
 #import "RCTDevMenu.h"
 #import "RCTLog.h"
@@ -80,14 +81,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   CFRunLoopStop([[NSRunLoop currentRunLoop] getCFRunLoop]);
 }
-
-@end
-
-// Private bridge interface
-@interface RCTBridge (RCTContextExecutor)
-
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
-- (NSArray *)configForModuleName:(NSString *)moduleName;
 
 @end
 

@@ -11,17 +11,9 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-
-@interface RCTBridge (Private)
-
-/**
- * Allow super fast, one time, timers to skip the queue and be directly executed
- */
-- (void)_immediatelyCallTimer:(NSNumber *)timer;
-
-@end
 
 @interface RCTTimer : NSObject
 
