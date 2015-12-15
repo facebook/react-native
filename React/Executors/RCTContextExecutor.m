@@ -21,24 +21,9 @@
 #import "RCTProfile.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
-
-#ifndef RCT_JSC_PROFILER
-#if RCT_DEV
-#define RCT_JSC_PROFILER 1
-#else
-#define RCT_JSC_PROFILER 0
-#endif
-#endif
-
-#if RCT_JSC_PROFILER
-#include <dlfcn.h>
+#import "RCTJSCProfiler.h"
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
-
-#ifndef RCT_JSC_PROFILER_DYLIB
-#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"RCTJSCProfiler"] UTF8String]
-#endif
-#endif
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
@@ -219,51 +204,19 @@ static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObje
 
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
-#if RCT_JSC_PROFILER
-  void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);
-  if (JSCProfiler != NULL) {
-    void (*nativeProfilerStart)(JSContextRef, const char *) =
-      (__typeof__(nativeProfilerStart))dlsym(JSCProfiler, "nativeProfilerStart");
-    void (*nativeProfilerEnd)(JSContextRef, const char *, const char *) =
-      (__typeof__(nativeProfilerEnd))dlsym(JSCProfiler, "nativeProfilerEnd");
-
-    if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-      void (*nativeProfilerEnableBytecode)(void) =
-        (__typeof__(nativeProfilerEnableBytecode))dlsym(JSCProfiler, "nativeProfilerEnableBytecode");
-
-      if (nativeProfilerEnableBytecode != NULL) {
-        nativeProfilerEnableBytecode();
-      }
-
-      static BOOL isProfiling = NO;
-
-      if (isProfiling) {
-        nativeProfilerStart(context, "profile");
-      }
-
-      [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
-
-        if (shouldStart == isProfiling) {
-          return;
-        }
-
-        isProfiling = shouldStart;
-
+  if (RCTJSCProfilerIsSupported()) {
+    [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
+      if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
         if (shouldStart) {
-          nativeProfilerStart(context, "profile");
+          RCTJSCProfilerStart(context);
         } else {
-          NSString *outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"cpu_profile.json"];
-          nativeProfilerEnd(context, "profile", outputFile.UTF8String);
-          NSData *profileData = [NSData dataWithContentsOfFile:outputFile
-                                                       options:NSDataReadingMappedIfSafe
-                                                         error:NULL];
-
+          NSString *outputFile = RCTJSCProfilerStop(context);
+          NSData *profileData = [NSData dataWithContentsOfFile:outputFile options:NSDataReadingMappedIfSafe error:NULL];
           RCTProfileSendResult(bridge, @"cpu-profile", profileData);
         }
-      }]];
-    }
+      }
+    }]];
   }
-#endif
 }
 
 #endif
