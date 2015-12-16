@@ -515,6 +515,9 @@ var NavigatorSceneConfigs = {
   },
   FloatFromLeft: {
     ...BaseConfig,
+    gestures: {
+      pop: BaseRightToLeftGesture,
+    },
     animationInterpolators: {
       into: buildStyleInterpolator(FromTheLeft),
       out: buildStyleInterpolator(FadeToTheRight),
@@ -572,6 +575,28 @@ var NavigatorSceneConfigs = {
     animationInterpolators: {
       into: buildStyleInterpolator(FromTheRight),
       out: buildStyleInterpolator(ToTheLeft),
+    },
+  },
+  HorizontalSwipeJumpFromRight: {
+    ...BaseConfig,
+    gestures: {
+      jumpBack: {
+        ...BaseRightToLeftGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+      jumpForward: {
+        ...BaseLeftToRightGesture,
+        overswipe: BaseOverswipeConfig,
+        edgeHitWidth: null,
+        isDetachable: true,
+      },
+      pop: BaseRightToLeftGesture,
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheLeft),
+      out: buildStyleInterpolator(FadeToTheRight),
     },
   },
   VerticalUpSwipeJump: {
