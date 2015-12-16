@@ -76,6 +76,16 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
+  protected ReactShadowNode createShadowNode(String className) {
+    ReactShadowNode cssNode = super.createShadowNode(className);
+    if (cssNode instanceof FlatShadowNode) {
+      return cssNode;
+    }
+
+    ViewManager viewManager = resolveViewManager(className);
+    return new AndroidView(viewManager);
+  }
+
   protected void handleCreateView(
       ReactShadowNode cssNode,
       int rootViewTag,

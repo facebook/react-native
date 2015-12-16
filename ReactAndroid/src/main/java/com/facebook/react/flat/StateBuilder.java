@@ -149,7 +149,14 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     mNodeRegions.start(node.getNodeRegions());
     mNativeChildren.start(node.getNativeChildren());
 
-    collectStateRecursively(node, 0, 0, width, height);
+    boolean isAndroidView = false;
+    boolean needsCustomLayoutForChildren = false;
+    if (node instanceof AndroidView) {
+      isAndroidView = true;
+      needsCustomLayoutForChildren = ((AndroidView) node).needsCustomLayoutForChildren();
+    }
+
+    collectStateRecursively(node, 0, 0, width, height, isAndroidView, needsCustomLayoutForChildren);
 
     boolean shouldUpdateMountState = false;
     final DrawCommand[] drawCommands = mDrawCommands.finish();
@@ -248,7 +255,9 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       float left,
       float top,
       float right,
-      float bottom) {
+      float bottom,
+      boolean isAndroidView,
+      boolean needsCustomLayoutForChildren) {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
@@ -257,7 +266,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       FlatShadowNode child = (FlatShadowNode) node.getChildAt(i);
-      processNodeAndCollectState(child, left, top);
+      processNodeAndCollectState(child, left, top, isAndroidView, needsCustomLayoutForChildren);
     }
   }
 
@@ -267,7 +276,9 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
   private void processNodeAndCollectState(
       FlatShadowNode node,
       float parentLeft,
-      float parentTop) {
+      float parentTop,
+      boolean parentIsAndroidView,
+      boolean needsCustomLayout) {
     int tag = node.getReactTag();
 
     float width = node.getLayoutWidth();
@@ -284,12 +295,17 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       ensureBackingViewIsCreated(node, tag, null);
 
       addNativeChild(node);
-      mDrawCommands.add(DrawView.INSTANCE);
+      if (!parentIsAndroidView) {
+        mDrawCommands.add(DrawView.INSTANCE);
+      }
 
       collectStateForMountableNode(node, tag, width, height);
-      mViewsToUpdateBounds.add(node);
+
+      if (!needsCustomLayout) {
+        mViewsToUpdateBounds.add(node);
+      }
     } else {
-      collectStateRecursively(node, left, top, right, bottom);
+      collectStateRecursively(node, left, top, right, bottom, false, false);
       addNodeRegion(node.getNodeRegion());
     }
   }

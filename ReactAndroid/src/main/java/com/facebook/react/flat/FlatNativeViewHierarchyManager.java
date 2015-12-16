@@ -13,10 +13,12 @@ import javax.annotation.Nullable;
 
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 
 /**
@@ -71,8 +73,18 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
   }
 
   /* package */ void updateViewGroup(int reactTag, int[] viewsToAdd, int[] viewsToDetach) {
-    FlatViewGroup view = (FlatViewGroup) resolveView(reactTag);
-    view.mountViews(this, viewsToAdd, viewsToDetach);
+    View view = resolveView(reactTag);
+    if (view instanceof FlatViewGroup) {
+      ((FlatViewGroup) view).mountViews(this, viewsToAdd, viewsToDetach);
+      return;
+    }
+
+    ViewGroup viewGroup = (ViewGroup) view;
+    ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(reactTag);
+    for (int i = 0; i < viewsToAdd.length; ++i) {
+      int tag = Math.abs(viewsToAdd[i]);
+      viewManager.addView(viewGroup, resolveView(tag), i);
+    }
   }
 
   /**
@@ -103,8 +115,17 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 
   /* package */ void detachAllChildrenFromViews(int[] viewsToDetachAllChildrenFrom) {
     for (int viewTag : viewsToDetachAllChildrenFrom) {
-      FlatViewGroup viewGroup = (FlatViewGroup) resolveView(viewTag);
-      viewGroup.detachAllViewsFromParent();
+      View view = resolveView(viewTag);
+      if (view instanceof FlatViewGroup) {
+        ((FlatViewGroup) view).detachAllViewsFromParent();
+        continue;
+      }
+
+      ViewGroup viewGroup = (ViewGroup) view;
+      ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(viewTag);
+      for (int i = viewManager.getChildCount(viewGroup) - 1; i >= 0; --i) {
+        viewManager.removeViewAt(viewGroup, i);
+      }
     }
   }
 }
