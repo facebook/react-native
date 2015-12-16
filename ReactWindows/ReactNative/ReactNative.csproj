@@ -110,6 +110,7 @@
     <Compile Include="Bridge\CatalystInstance.cs" />
     <Compile Include="Bridge\ICSharpJSExecutor.cs" />
     <Compile Include="Bridge\JavaScriptExecuter.cs" />
+    <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\ProxyJavaScriptExecutor.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
     <Compile Include="ReactMethodAttribute.cs" />
+    <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\MethodInfoHelpers.cs" />
     <Compile Include="Reflection\ReflectionHelpers.cs" />
     <Compile Include="Tracing\TraceDisposable.cs" />
