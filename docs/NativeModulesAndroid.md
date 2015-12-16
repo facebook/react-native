@@ -86,6 +86,8 @@ ReadableMap -> Object
 ReadableArray -> Array
 ```
 
+Read more about [ReadableMap](https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableMap.java) and [ReadableArray](https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableArray.java)
+
 ### Register the Module
 
 The last step within Java is to register the Module; this happens in the `createNativeModules` of your apps package. If a module is not registered it will not be available from JavaScript.
@@ -140,7 +142,7 @@ module.exports = NativeModules.ToastAndroid;
 Now, from your other JavaScript file you can call the method like this:
 
 ```js
-var ToastAndroid = require('./ToastAndroid'); 
+var ToastAndroid = require('./ToastAndroid');
 
 ToastAndroid.show('Awesome', ToastAndroid.SHORT);
 ```
