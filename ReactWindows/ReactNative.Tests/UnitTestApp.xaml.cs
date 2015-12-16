@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,6 +23,8 @@ namespace ReactNative.Tests
     /// </summary>
     sealed partial class App : Application
     {
+        public static CoreDispatcher Dispatcher { get; private set; }
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -71,6 +74,8 @@ namespace ReactNative.Tests
 
             // Ensure the current window is active
             Window.Current.Activate();
+
+            Dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
 
             Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.Run(e.Arguments);
         }

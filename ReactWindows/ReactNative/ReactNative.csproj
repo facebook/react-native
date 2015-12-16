@@ -116,7 +116,7 @@
     <Compile Include="Bridge\NativeModuleBase.cs" />
     <Compile Include="Bridge\NativeModuleRegistry.cs" />
     <Compile Include="Bridge\Queue\IMessageQueueThread.cs" />
-    <Compile Include="Bridge\Queue\IQueueThreadExceptionHandler.cs" />
+    <Compile Include="Bridge\Queue\LimitedConcurrencyTaskScheduler.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThread.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadExtensions.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadKind.cs" />
