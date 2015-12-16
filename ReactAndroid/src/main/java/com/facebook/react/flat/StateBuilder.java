@@ -270,7 +270,22 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       FlatShadowNode child = (FlatShadowNode) node.getChildAt(i);
+      if (child.isVirtual()) {
+        markLayoutSeenRecursively(child);
+        continue;
+      }
+
       processNodeAndCollectState(child, left, top, isAndroidView, needsCustomLayoutForChildren);
+    }
+  }
+
+  private void markLayoutSeenRecursively(FlatShadowNode node) {
+    if (node.hasNewLayout()) {
+      node.markLayoutSeen();
+    }
+
+    for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
+      markLayoutSeenRecursively((FlatShadowNode) node.getChildAt(i));
     }
   }
 
