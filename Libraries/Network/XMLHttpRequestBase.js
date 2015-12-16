@@ -26,7 +26,9 @@ class XMLHttpRequestBase {
   DONE: number;
 
   onreadystatechange: ?Function;
+  ontimeout: ?Function;
   onload: ?Function;
+  timeout: ?number;
   upload: any;
   readyState: number;
   responseHeaders: ?Object;
@@ -38,6 +40,7 @@ class XMLHttpRequestBase {
   };
 
   _requestId: ?number;
+  _timeoutId: ?number;
   _subscriptions: [any];
 
   _method: ?string;
@@ -46,6 +49,8 @@ class XMLHttpRequestBase {
   _sent: boolean;
   _aborted: boolean;
   _lowerCaseResponseHeaders: Object;
+  _checkTimeout: Function;
+
 
   constructor() {
     this.UNSENT = 0;
@@ -55,13 +60,17 @@ class XMLHttpRequestBase {
     this.DONE = 4;
 
     this.onreadystatechange = null;
+    this.ontimeout = null;
     this.onload = null;
     this.upload = undefined; /* Upload not supported yet */
+    this.timeout = null;
 
     this._reset();
     this._method = null;
     this._url = null;
     this._aborted = false;
+    this._timeoutId = null;
+    this._checkTimeout = this._checkTimeout.bind(this);
   }
 
   _reset() {
@@ -71,6 +80,7 @@ class XMLHttpRequestBase {
     this.status = 0;
 
     this._requestId = null;
+    this._timeoutId = null;
 
     this._headers = {};
     this._sent = false;
@@ -137,6 +147,9 @@ class XMLHttpRequestBase {
       this._clearSubscriptions();
       this._requestId = null;
       this.setReadyState(this.DONE);
+      // If a timeout was set, the timeout will be cleared
+      // once a response is complete
+      this._clearTimeout();
     }
   }
 
@@ -199,6 +212,28 @@ class XMLHttpRequestBase {
     }
     this._sent = true;
     this.sendImpl(this._method, this._url, this._headers, data);
+    if (this.timeout) {
+      this._timeoutId =  setTimeout(this._checkTimeout, this.timeout);
+    }
+  }
+
+  // called by setTimeout, aborts the request
+  _checkTimeout(): void {
+    if (this.readyState !== this.DONE) {
+      // timed-out
+      this.abort();
+      if (this.ontimeout) {
+        // should send event, but not proccessing event, leaving empty
+        this.ontimeout(null);
+      }
+    }
+  }
+
+  // if a timeout is set, cancel the timeout call
+  _clearTimeout(): void {
+    if (this._timeoutId) {
+      clearTimeout(this._timeoutId);
+    }
   }
 
   abort(): void {
