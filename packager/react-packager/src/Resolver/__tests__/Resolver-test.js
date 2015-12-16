@@ -604,10 +604,12 @@ describe('Resolver', function() {
         'require( \'z\' )',
         'require( "a")',
         'require("b" )',
+        '["require"]("c")',
+        '["require"]("d")',
       ].join('\n');
       /*eslint-disable */
 
-      const module = createModule('test module', ['x', 'y']);
+      const module = createModule('test module', ['x', 'y', 'd']);
 
       const resolutionResponse = new ResolutionResponseMock({
         dependencies: [module],
@@ -619,6 +621,7 @@ describe('Resolver', function() {
         return [
           ['x', createModule('changed')],
           ['y', createModule('Y')],
+          ['d', createModule('D')],
         ];
       }
 
@@ -1015,6 +1018,8 @@ describe('Resolver', function() {
           'require( \'z\' )',
           'require( "a")',
           'require("b" )',
+          '["require"]("c")',
+          '["require"]("D")',
           '});',
         ].join('\n'));
       });
