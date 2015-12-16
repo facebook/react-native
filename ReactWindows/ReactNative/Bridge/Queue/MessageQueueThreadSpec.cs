@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactNative.Bridge.Queue
 {
@@ -20,9 +16,14 @@ namespace ReactNative.Bridge.Queue
 
         public static MessageQueueThreadSpec MainUiThreadSpec { get; } = new MessageQueueThreadSpec(MessageQueueThreadKind.MainUi, "main_ui");
 
-        public static MessageQueueThreadSpec Create(string name)
+        public static MessageQueueThreadSpec Create(string name, MessageQueueThreadKind kind)
         {
-            return new MessageQueueThreadSpec(MessageQueueThreadKind.NewBackground, name);
+            if (kind == MessageQueueThreadKind.MainUi)
+            {
+                throw new NotSupportedException("Use the singleton MainUiThreadSpec instance.");
+            }
+
+            return new MessageQueueThreadSpec(kind, name);
         }
     }
 }
