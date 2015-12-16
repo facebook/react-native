@@ -48,7 +48,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     super.setThemedContext(themedContext);
 
     // TODO #7120264: cache this stuff better
