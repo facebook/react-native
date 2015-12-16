@@ -108,10 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridge\CatalystInstance.cs" />
-    <Compile Include="Bridge\ICSharpJSExecutor.cs" />
-    <Compile Include="Bridge\JavaScriptExecuter.cs" />
     <Compile Include="Bridge\NativeArgumentsParseException.cs" />
-    <Compile Include="Bridge\ProxyJavaScriptExecutor.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
@@ -159,9 +156,7 @@
     <Compile Include="Tracing\Tracer.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Bridge\Executors\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
