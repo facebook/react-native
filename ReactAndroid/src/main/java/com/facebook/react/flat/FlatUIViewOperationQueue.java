@@ -21,6 +21,14 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 /* package */ final class FlatUIViewOperationQueue extends UIViewOperationQueue {
 
   private final FlatNativeViewHierarchyManager mNativeViewHierarchyManager;
+  private final ProcessLayoutRequests mProcessLayoutRequests = new ProcessLayoutRequests();
+
+  private final class ProcessLayoutRequests implements UIOperation {
+    @Override
+    public void execute() {
+      FlatViewGroup.processLayoutRequests();
+    }
+  }
 
   /**
    * UIOperation that updates DrawCommands for a View defined by reactTag.
@@ -197,6 +205,10 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
   public void enqueueDropViews(int[] viewsToDrop) {
     enqueueUIOperation(new DropViews(viewsToDrop));
+  }
+
+  public void enqueueProcessLayoutRequests() {
+    enqueueUIOperation(mProcessLayoutRequests);
   }
 
   public DetachAllChildrenFromViews enqueueDetachAllChildrenFromViews() {

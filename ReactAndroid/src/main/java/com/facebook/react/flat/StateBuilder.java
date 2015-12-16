@@ -84,6 +84,8 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       mOperationsQueue.enqueueDropViews(collectViewTags(mViewsToDrop));
       mViewsToDrop.clear();
     }
+
+    mOperationsQueue.enqueueProcessLayoutRequests();
   }
 
   /**

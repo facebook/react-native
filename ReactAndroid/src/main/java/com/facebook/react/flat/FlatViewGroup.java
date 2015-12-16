@@ -10,6 +10,7 @@
 package com.facebook.react.flat;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -46,12 +47,15 @@ import com.facebook.react.uimanager.ReactCompoundView;
     }
   }
 
+  private static final ArrayList<FlatViewGroup> LAYOUT_REQUESTS = new ArrayList<>();
+
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
   private AttachDetachListener[] mAttachDetachListeners = AttachDetachListener.EMPTY_ARRAY;
   private NodeRegion[] mNodeRegions = NodeRegion.EMPTY_ARRAY;
   private int mDrawChildIndex = 0;
   private boolean mIsAttached = false;
+  private boolean mIsLayoutRequested = false;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -60,6 +64,16 @@ import com.facebook.react.uimanager.ReactCompoundView;
   @Override
   protected void detachAllViewsFromParent() {
     super.detachAllViewsFromParent();
+  }
+
+  @Override
+  public void requestLayout() {
+    if (mIsLayoutRequested) {
+      return;
+    }
+
+    mIsLayoutRequested = true;
+    LAYOUT_REQUESTS.add(this);
   }
 
   @Override
@@ -167,7 +181,7 @@ import com.facebook.react.uimanager.ReactCompoundView;
     for (int viewToAdd : viewsToAdd) {
       if (viewToAdd > 0) {
         View view = ensureViewHasNoParent(viewResolver.getView(viewToAdd));
-        addView(view, -1, ensureLayoutParams(view.getLayoutParams()));
+        addViewInLayout(view, -1, ensureLayoutParams(view.getLayoutParams()), true);
       } else {
         View view = ensureViewHasNoParent(viewResolver.getView(-viewToAdd));
         attachViewToParent(view, -1, ensureLayoutParams(view.getLayoutParams()));
@@ -177,6 +191,29 @@ import com.facebook.react.uimanager.ReactCompoundView;
     for (int viewToDetach : viewsToDetach) {
       removeDetachedView(viewResolver.getView(viewToDetach), false);
     }
+  }
+
+  /* package */ void processLayoutRequest() {
+    mIsLayoutRequested = false;
+    for (int i = 0, childCount = getChildCount(); i != childCount; ++i) {
+      View child = getChildAt(i);
+      if (!child.isLayoutRequested()) {
+        continue;
+      }
+
+      child.measure(
+        MeasureSpec.makeMeasureSpec(child.getWidth(), MeasureSpec.EXACTLY),
+        MeasureSpec.makeMeasureSpec(child.getHeight(), MeasureSpec.EXACTLY));
+      child.layout(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
+    }
+  }
+
+  /* package */ static void processLayoutRequests() {
+    for (int i = 0, numLayoutRequests = LAYOUT_REQUESTS.size(); i != numLayoutRequests; ++i) {
+      FlatViewGroup flatViewGroup = LAYOUT_REQUESTS.get(i);
+      flatViewGroup.processLayoutRequest();
+    }
+    LAYOUT_REQUESTS.clear();
   }
 
   private View ensureViewHasNoParent(View view) {
