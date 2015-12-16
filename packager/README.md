@@ -144,5 +144,5 @@ is informed by React Native needs.
 ### Why didn't you use webpack?
 
 We love webpack, however, when we tried on our codebase it was slower
-than our developers would like it to be. You find can more discussion about
-the subject [here](https://github.com/facebook/react-native/issues/5)
+than our developers would like it to be. You can find more discussion about
+the subject [here](https://github.com/facebook/react-native/issues/5).
