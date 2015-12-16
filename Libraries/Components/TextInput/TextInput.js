@@ -550,6 +550,12 @@ var TextInput = React.createClass({
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
 
+    if (!this.refs.input) {
+      // calling `this.props.onChange` or `this.props.onChangeText`
+      // may clean up the input itself. Exits here.
+      return;
+    }
+
     // This is necessary in case native updates the text and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.

@@ -184,7 +184,7 @@ var ScrollView = React.createClass({
     minimumZoomScale: PropTypes.number,
     /**
      * Fires at most once per frame during scrolling. The frequency of the
-     * events can be contolled using the `scrollEventThrottle` prop.
+     * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
     /**
@@ -234,6 +234,13 @@ var ScrollView = React.createClass({
      * @platform ios
      */
     scrollsToTop: PropTypes.bool,
+    /**
+     * When true, momentum events will be sent from Android
+     * This is internal and set automatically by the framework if you have
+     * onMomentumScrollBegin or onMomentumScrollEnd set on your ScrollView
+     * @platform android
+     */
+    sendMomentumEvents: PropTypes.bool,
     /**
      * When true, shows a horizontal scroll indicator.
      */
@@ -434,11 +441,12 @@ var ScrollView = React.createClass({
       onResponderTerminate: this.scrollResponderHandleTerminate,
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
+      sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ? true : false,
     };
 
     var onRefreshStart = this.props.onRefreshStart;
     // this is necessary because if we set it on props, even when empty,
-    // it'll trigger the default pull-to-refresh behaviour on native.
+    // it'll trigger the default pull-to-refresh behavior on native.
     props.onRefreshStart = onRefreshStart
       ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
       : null;

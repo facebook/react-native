@@ -20,6 +20,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTComponentData.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
@@ -31,13 +32,6 @@ NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
 NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 #if RCT_DEV
-
-@interface RCTBridge ()
-
-- (void)dispatchBlock:(dispatch_block_t)block
-                queue:(dispatch_queue_t)queue;
-
-@end
 
 #pragma mark - Constants
 
@@ -409,7 +403,7 @@ void RCTProfileInit(RCTBridge *bridge)
                               forMode:NSRunLoopCommonModes];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidStartProfiling
-                                                      object:nil];
+                                                      object:bridge];
 }
 
 void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
@@ -423,7 +417,7 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
   OSAtomicAnd32Barrier(0, &RCTProfileProfiling);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
-                                                      object:nil];
+                                                      object:bridge];
 
   [RCTProfileDisplayLink invalidate];
   RCTProfileDisplayLink = nil;
@@ -669,7 +663,7 @@ void _RCTProfileEndFlowEvent(NSNumber *flowID)
 void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
 {
   if (![bridge.bundleURL.scheme hasPrefix:@"http"]) {
-    RCTLogError(@"Cannot upload profile information");
+    RCTLogWarn(@"Cannot upload profile information because you're not connected to the packager. The profiling data is still saved in the app container.");
     return;
   }
 

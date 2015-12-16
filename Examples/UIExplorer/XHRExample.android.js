@@ -30,7 +30,7 @@ var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleCookies = require('./XHRExampleCookies');
 
 
-// TODO t7093728 This is a simlified XHRExample.ios.js.
+// TODO t7093728 This is a simplified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
 // we should make this consistent with iOS.
 

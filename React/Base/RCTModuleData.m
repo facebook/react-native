@@ -10,15 +10,10 @@
 #import "RCTModuleData.h"
 
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
-
-@interface RCTBridge (Private)
-
-- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData;
-
-@end
 
 @implementation RCTModuleData
 {
@@ -84,6 +79,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)setBridgeForInstance:(RCTBridge *)bridge
 {
+  _bridge = bridge;
   if ([_instance respondsToSelector:@selector(bridge)]) {
     @try {
       [(id)_instance setValue:bridge forKey:@"bridge"];
@@ -203,6 +199,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         }
       }
     }
+
+    // Needs to be sent after bridge has been set for all module instances.
+    // Makes sense to put it here, since the same rules apply for methodQueue.
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:RCTDidInitializeModuleNotification
+                   object:_bridge userInfo:@{@"module": _instance}];
   }
   return _methodQueue;
 }

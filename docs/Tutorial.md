@@ -129,7 +129,7 @@ Great, we've rendered our data. Now let's make it look better. I'd like to put t
 +---------------------------------+
 ```
 
-We'll need to add another container in order to vertically lay out components within horizontally layed out components.
+We'll need to add another container in order to vertically lay out components within horizontally laid out components.
 
 ```javascript
       return (

@@ -15,30 +15,16 @@
 #import <UIKit/UIDevice.h>
 
 #import "RCTAssert.h"
+#import "RCTBridge+Private.h"
 #import "RCTDefines.h"
 #import "RCTDevMenu.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
-
-#ifndef RCT_JSC_PROFILER
-#if RCT_DEV
-#define RCT_JSC_PROFILER 1
-#else
-#define RCT_JSC_PROFILER 0
-#endif
-#endif
-
-#if RCT_JSC_PROFILER
-#include <dlfcn.h>
+#import "RCTJSCProfiler.h"
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
-
-#ifndef RCT_JSC_PROFILER_DYLIB
-#define RCT_JSC_PROFILER_DYLIB [[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"RCTJSCProfiler.ios%zd", [[[UIDevice currentDevice] systemVersion] integerValue]] ofType:@"dylib" inDirectory:@"RCTJSCProfiler"] UTF8String]
-#endif
-#endif
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
@@ -98,14 +84,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-// Private bridge interface
-@interface RCTBridge (RCTContextExecutor)
-
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
-- (NSArray *)configForModuleName:(NSString *)moduleName;
-
-@end
-
 @implementation RCTContextExecutor
 {
   RCTJavaScriptContext *_context;
@@ -116,38 +94,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
-
-/**
- * The one tiny pure native hook that we implement is a native logging hook.
- * You could even argue that this is not necessary - we could plumb logging
- * calls through a batched bridge, but having the pure native hook allows
- * logging to successfully come through even in the event that a batched bridge
- * crashes.
- */
-
-static JSValueRef RCTNativeLoggingHook(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
-{
-  if (argumentCount > 0) {
-    NSString *message = RCTJSValueToNSString(context, arguments[0], exception);
-
-    RCTLogLevel level = RCTLogLevelInfo;
-    if (argumentCount > 1) {
-      level = MAX(level, JSValueToNumber(context, arguments[1], exception));
-    }
-
-    _RCTLogJavaScriptInternal(level, message);
-  }
-
-  return JSValueMakeUndefined(context);
-}
-
-// Do-very-little native hook for testing.
-static JSValueRef RCTNoop(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], __unused JSValueRef *exception)
-{
-  static int counter = 0;
-  counter++;
-  return JSValueMakeUndefined(context);
-}
 
 static NSString *RCTJSValueToNSString(JSContextRef context, JSValueRef value, JSValueRef *exception)
 {
@@ -180,90 +126,21 @@ static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 
 #if RCT_DEV
 
-static JSValueRef RCTNativeTraceBeginSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception)
-{
-  static int profileCounter = 1;
-  NSString *profileName;
-  double tag = 0;
-
-  if (argumentCount > 0) {
-    if (JSValueIsNumber(context, arguments[0])) {
-      tag = JSValueToNumber(context, arguments[0], NULL);
-    } else {
-      profileName = RCTJSValueToNSString(context, arguments[0], exception);
-    }
-  } else {
-    profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
-  }
-
-  if (argumentCount > 1 && JSValueIsString(context, arguments[1])) {
-    profileName = RCTJSValueToNSString(context, arguments[1], exception);
-  }
-
-  if (profileName) {
-    RCT_PROFILE_BEGIN_EVENT(tag, profileName, nil);
-  }
-
-  return JSValueMakeUndefined(context);
-}
-
-static JSValueRef RCTNativeTraceEndSection(JSContextRef context, __unused JSObjectRef object, __unused JSObjectRef thisObject, __unused size_t argumentCount, __unused const JSValueRef arguments[], JSValueRef *exception)
-{
-  if (argumentCount > 0) {
-    double tag = JSValueToNumber(context, arguments[0], exception);
-    RCT_PROFILE_END_EVENT((uint64_t)tag, @"console", nil);
-  }
-
-  return JSValueMakeUndefined(context);
-}
-
 static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 {
-#if RCT_JSC_PROFILER
-  void *JSCProfiler = dlopen(RCT_JSC_PROFILER_DYLIB, RTLD_NOW);
-  if (JSCProfiler != NULL) {
-    void (*nativeProfilerStart)(JSContextRef, const char *) =
-      (__typeof__(nativeProfilerStart))dlsym(JSCProfiler, "nativeProfilerStart");
-    void (*nativeProfilerEnd)(JSContextRef, const char *, const char *) =
-      (__typeof__(nativeProfilerEnd))dlsym(JSCProfiler, "nativeProfilerEnd");
-
-    if (nativeProfilerStart != NULL && nativeProfilerEnd != NULL) {
-      void (*nativeProfilerEnableBytecode)(void) =
-        (__typeof__(nativeProfilerEnableBytecode))dlsym(JSCProfiler, "nativeProfilerEnableBytecode");
-
-      if (nativeProfilerEnableBytecode != NULL) {
-        nativeProfilerEnableBytecode();
-      }
-
-      static BOOL isProfiling = NO;
-
-      if (isProfiling) {
-        nativeProfilerStart(context, "profile");
-      }
-
-      [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
-
-        if (shouldStart == isProfiling) {
-          return;
-        }
-
-        isProfiling = shouldStart;
-
+  if (RCTJSCProfilerIsSupported()) {
+    [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTJSCProfilerEnabledDefaultsKey title:@"Start Profiling" selectedTitle:@"Stop Profiling" handler:^(BOOL shouldStart) {
+      if (shouldStart != RCTJSCProfilerIsProfiling(context)) {
         if (shouldStart) {
-          nativeProfilerStart(context, "profile");
+          RCTJSCProfilerStart(context);
         } else {
-          NSString *outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"cpu_profile.json"];
-          nativeProfilerEnd(context, "profile", outputFile.UTF8String);
-          NSData *profileData = [NSData dataWithContentsOfFile:outputFile
-                                                       options:NSDataReadingMappedIfSafe
-                                                         error:NULL];
-
+          NSString *outputFile = RCTJSCProfilerStop(context);
+          NSData *profileData = [NSData dataWithContentsOfFile:outputFile options:NSDataReadingMappedIfSafe error:NULL];
           RCTProfileSendResult(bridge, @"cpu-profile", profileData);
         }
-      }]];
-    }
+      }
+    }]];
   }
-#endif
 }
 
 #endif
@@ -345,16 +222,27 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     if (!strongSelf.isValid) {
       return;
     }
+
     if (!strongSelf->_context) {
       JSContext *context = [JSContext new];
       strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
     }
-    [strongSelf _addNativeHook:RCTNativeLoggingHook withName:"nativeLoggingHook"];
-    [strongSelf _addNativeHook:RCTNoop withName:"noop"];
 
     __weak RCTBridge *weakBridge = strongSelf->_bridge;
+    JSContext *context = strongSelf->_context.context;
 
-    strongSelf->_context.context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
+    context[@"noop"] = ^{};
+
+    context[@"nativeLoggingHook"] = ^(NSString *message, NSNumber *logLevel) {
+      RCTLogLevel level = RCTLogLevelInfo;
+      if (logLevel) {
+        level = MAX(level, logLevel.integerValue);
+      }
+
+      _RCTLogJavaScriptInternal(level, message);
+    };
+
+    context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
       if (!weakSelf.valid) {
         return nil;
       }
@@ -365,39 +253,47 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return nil;
     };
 
-    strongSelf->_context.context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
+    context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
       if (!weakSelf.valid || !calls) {
         return;
       }
       [weakBridge handleBuffer:calls batchEnded:NO];
     };
 
-    strongSelf->_context.context[@"RCTPerformanceNow"] = ^{
-      return CACurrentMediaTime() * 1000 * 1000;
+    context[@"nativePerformanceNow"] = ^{
+      return @(CACurrentMediaTime() * 1000);
     };
 
 #if RCT_DEV
 
     if (RCTProfileIsProfiling()) {
-      strongSelf->_context.context[@"__RCTProfileIsProfiling"] = @YES;
+      context[@"__RCTProfileIsProfiling"] = @YES;
     }
 
     CFMutableDictionaryRef cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
-    strongSelf->_context.context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
       NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
       CFDictionarySetValue(cookieMap, (const void *)cookie, (const void *)newCookie);
-      return;
     };
 
-    strongSelf->_context.context[@"nativeTraceEndAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    context[@"nativeTraceEndAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
       NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
       RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, nil);
       CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
-      return;
     };
 
-    [strongSelf _addNativeHook:RCTNativeTraceBeginSection withName:"nativeTraceBeginSection"];
-    [strongSelf _addNativeHook:RCTNativeTraceEndSection withName:"nativeTraceEndSection"];
+    context[@"nativeTraceBeginSection"] = ^(NSNumber *tag, NSString *profileName){
+      static int profileCounter = 1;
+      if (!profileName) {
+        profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
+      }
+
+      RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+    };
+
+    context[@"nativeTraceEndSection"] = ^(NSNumber *tag) {
+      RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
+    };
 
     RCTInstallJSCProfiler(_bridge, strongSelf->_context.ctx);
 
@@ -419,15 +315,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     BOOL enabled = [notification.name isEqualToString:RCTProfileDidStartProfiling];
     [_bridge enqueueJSCall:@"Systrace.setEnabled" args:@[enabled ? @YES : @NO]];
   }];
-}
-
-- (void)_addNativeHook:(JSObjectCallAsFunctionCallback)hook withName:(const char *)name
-{
-  JSObjectRef globalObject = JSContextGetGlobalObject(_context.ctx);
-
-  JSStringRef JSName = JSStringCreateWithUTF8CString(name);
-  JSObjectSetProperty(_context.ctx, globalObject, JSName, JSObjectMakeFunctionWithCallback(_context.ctx, JSName, hook), kJSPropertyAttributeNone, NULL);
-  JSStringRelease(JSName);
 }
 
 - (void)invalidate

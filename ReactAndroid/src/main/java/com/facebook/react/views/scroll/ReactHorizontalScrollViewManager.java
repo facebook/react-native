@@ -43,6 +43,19 @@ public class ReactHorizontalScrollViewManager
     view.setHorizontalScrollBarEnabled(value);
   }
 
+  /**
+   * Computing momentum events is potentially expensive since we post a runnable on the UI thread
+   * to see when it is done.  We only do that if {@param sendMomentumEvents} is set to true.  This
+   * is handled automatically in js by checking if there is a listener on the momentum events.
+   *
+   * @param view
+   * @param sendMomentumEvents
+   */
+  @ReactProp(name = "sendMomentumEvents")
+  public void setSendMomentumEvents(ReactHorizontalScrollView view, boolean sendMomentumEvents) {
+    view.setSendMomentumEvents(sendMomentumEvents);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,

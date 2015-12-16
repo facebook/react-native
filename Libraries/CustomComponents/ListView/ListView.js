@@ -137,7 +137,7 @@ var ListView = React.createClass({
     renderRow: PropTypes.func.isRequired,
     /**
      * How many rows to render on initial component mount.  Use this to make
-     * it so that the first screen worth of data apears at one time instead of
+     * it so that the first screen worth of data appears at one time instead of
      * over the course of multiple frames.
      */
     initialListSize: PropTypes.number,
