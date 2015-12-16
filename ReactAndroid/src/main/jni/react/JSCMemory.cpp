@@ -8,7 +8,7 @@
 
 #include "Value.h"
 
-#if WITH_FB_MEMORY_PROFILING
+#ifdef WITH_FB_MEMORY_PROFILING
 
 static JSValueRef nativeEnableAllocationTag(
     JSContextRef ctx,
@@ -143,7 +143,7 @@ namespace facebook {
 namespace react {
 
 void addNativeMemoryHooks(JSGlobalContextRef ctx) {
-#if WITH_FB_MEMORY_PROFILING
+#ifdef WITH_FB_MEMORY_PROFILING
   installGlobalFunction(ctx, "nativeEnableAllocationTag", nativeEnableAllocationTag);
   installGlobalFunction(ctx, "nativeAllocationPushTag", nativeAllocationPushTag);
   installGlobalFunction(ctx, "nativeAllocationPopTag", nativeAllocationPopTag);
