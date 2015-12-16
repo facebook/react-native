@@ -11,12 +11,6 @@
  */
 'use strict';
 
-var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
-
-var loadSourceMap = require('loadSourceMap');
-var parseErrorStack = require('parseErrorStack');
-var stringifySafe = require('stringifySafe');
-
 var sourceMapPromise;
 
 var exceptionID = 0;
@@ -25,6 +19,10 @@ var exceptionID = 0;
  * Handles the developer-visible aspect of errors and exceptions
  */
 function reportException(e: Error, isFatal: bool) {
+  var loadSourceMap = require('loadSourceMap');
+  var parseErrorStack = require('parseErrorStack');
+  var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+
   var currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
     var stack = parseErrorStack(e);
@@ -83,6 +81,7 @@ function installConsoleErrorReporter() {
     if (arguments[0] && arguments[0].stack) {
       reportException(arguments[0], /* isFatal */ false);
     } else {
+      var stringifySafe = require('stringifySafe');
       var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
       if (str.slice(0, 10) === '"Warning: ') {
         // React warnings use console.error so that a stack trace is shown, but
