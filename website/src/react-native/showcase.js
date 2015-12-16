@@ -336,7 +336,7 @@ var apps = [
   {
     name: 'Pimmr',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8&ign-mpt=uo%3D4',
+    link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
     author: 'Pimmr'
   },
   {
