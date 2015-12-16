@@ -63,9 +63,6 @@ var sharedBlacklist = [
   'downstream/core/invariant.js',
   'downstream/core/nativeRequestAnimationFrame.js',
   'downstream/core/toArray.js',
-  'downstream/functional/mapObject.js',
-  'downstream/key-mirror/keyMirror.js',
-  'downstream/key-mirror/keyOf.js',
 ];
 
 // Raw unescaped patterns in case you need to use wildcards
