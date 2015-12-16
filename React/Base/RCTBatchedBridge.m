@@ -908,8 +908,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
-  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
-
   @try {
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
@@ -923,13 +921,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                          @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
                          exception, method.JSMethodName, moduleData.name, params];
     RCTFatal(RCTErrorWithMessage(message));
-  }
-
-  if (RCTProfileIsProfiling()) {
-    NSMutableDictionary *args = [method.profileArgs mutableCopy];
-    args[@"method"] = method.JSMethodName;
-    args[@"args"] = RCTJSONStringify(RCTNullIfNil(params), NULL);
-    RCT_PROFILE_END_EVENT(0, @"objc_call", args);
   }
 
   return YES;
@@ -948,9 +939,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
       [self dispatchBlock:^{
         RCTProfileEndFlowEvent();
-        RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ didUpdateFrame:%f]", observer, displayLink.timestamp], nil);
         [observer didUpdateFrame:frameUpdate];
-        RCT_PROFILE_END_EVENT(0, @"objc_call,fps", nil);
       } queue:moduleData.methodQueue];
     }
   }
