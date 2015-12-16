@@ -21,18 +21,24 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
+        /// <summary>
+        /// Calls a function on a message queue and returns a task to await the response.
+        /// </summary>
+        /// <typeparam name="T">Type of response.</typeparam>
+        /// <param name="actionQueue">The message queue thread.</param>
+        /// <param name="func">The function.</param>
+        /// <returns>A task to await the result.</returns>
         public static Task<T> CallOnQueue<T>(this IMessageQueueThread actionQueue, Func<T> func)
         {
             var taskCompletionSource = new TaskCompletionSource<T>();
 
-            actionQueue.RunOnQueue(() =>
+            actionQueue.RunOnQueue(async () =>
             {
                 var result = func();
 
                 // TaskCompletionSource<T>.SetResult can call continuations
                 // on the awaiter of the task completion source.
-                // TODO: Prevent such thread stealing.
-                taskCompletionSource.SetResult(result);
+                await Task.Run(() => taskCompletionSource.SetResult(result));
             });
 
             return taskCompletionSource.Task;

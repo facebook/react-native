@@ -1,9 +1,10 @@
 ﻿namespace ReactNative.Bridge.Queue
 {
-    enum MessageQueueThreadKind
+    public enum MessageQueueThreadKind
     {
         MainUi,
-        NewBackground,
+        BackgroundSingleThread,
+        BackgroundAnyThread,
     }
 
 }
