@@ -19,6 +19,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 
 /**
  * Wraps {@link RecyclerView} providing interface similar to `ScrollView.js` where each children
@@ -311,6 +312,7 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
         .dispatchEvent(ScrollEvent.obtain(
                 getId(),
                 SystemClock.uptimeMillis(),
+                ScrollEventType.SCROLL,
                 0, /* offsetX = 0, horizontal scrolling only */
                 calculateAbsoluteOffset(),
                 getWidth(),

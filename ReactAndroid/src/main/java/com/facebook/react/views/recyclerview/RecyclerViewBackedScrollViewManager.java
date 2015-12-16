@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.scroll.ReactScrollViewCommandHelper;
-import com.facebook.react.views.scroll.ScrollEvent;
+import com.facebook.react.views.scroll.ScrollEventType;
 
 /**
  * View manager for {@link RecyclerViewBackedScrollView}.
@@ -91,7 +91,7 @@ public class RecyclerViewBackedScrollViewManager extends
   public @Nullable
   Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.builder()
-        .put(ScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onScroll"))
+        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
         .put(
             ContentSizeChangeEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onContentSizeChange"))
