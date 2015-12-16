@@ -235,6 +235,13 @@ var ScrollView = React.createClass({
      */
     scrollsToTop: PropTypes.bool,
     /**
+     * When true, momentum events will be sent from Android
+     * This is internal and set automatically by the framework if you have
+     * onMomentumScrollBegin or onMomentumScrollEnd set on your ScrollView
+     * @platform android
+     */
+    sendMomentumEvents: PropTypes.bool,
+    /**
      * When true, shows a horizontal scroll indicator.
      */
     showsHorizontalScrollIndicator: PropTypes.bool,
@@ -434,6 +441,7 @@ var ScrollView = React.createClass({
       onResponderTerminate: this.scrollResponderHandleTerminate,
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
+      sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ? true : false,
     };
 
     var onRefreshStart = this.props.onRefreshStart;
