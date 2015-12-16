@@ -128,6 +128,20 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  private final class DropViews implements UIOperation {
+
+    private final int[] mViewsToDrop;
+
+    private DropViews(int[] viewsToDrop) {
+      mViewsToDrop = viewsToDrop;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dropViews(mViewsToDrop);
+    }
+  }
+
   public final class DetachAllChildrenFromViews implements UIViewOperationQueue.UIOperation {
     private @Nullable int[] mViewsToDetachAllChildrenFrom;
 
@@ -179,6 +193,10 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
       int paddingBottom) {
     enqueueUIOperation(
         new SetPadding(reactTag, paddingLeft, paddingTop, paddingRight, paddingBottom));
+  }
+
+  public void enqueueDropViews(int[] viewsToDrop) {
+    enqueueUIOperation(new DropViews(viewsToDrop));
   }
 
   public DetachAllChildrenFromViews enqueueDetachAllChildrenFromViews() {

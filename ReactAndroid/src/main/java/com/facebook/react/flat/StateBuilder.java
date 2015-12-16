@@ -40,6 +40,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
   private final ArrayList<FlatShadowNode> mViewsToDetachAllChildrenFrom = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToUpdateBounds = new ArrayList<>();
+  private final ArrayList<FlatShadowNode> mViewsToDrop = new ArrayList<>();
 
   private @Nullable FlatUIViewOperationQueue.DetachAllChildrenFromViews mDetachAllChildrenFromViews;
 
@@ -78,6 +79,11 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       updateViewBounds(mViewsToUpdateBounds.get(i));
     }
     mViewsToUpdateBounds.clear();
+
+    if (!mViewsToDrop.isEmpty()) {
+      mOperationsQueue.enqueueDropViews(collectViewTags(mViewsToDrop));
+      mViewsToDrop.clear();
+    }
   }
 
   /**
@@ -105,6 +111,10 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
     mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), styles);
     node.signalBackingViewIsCreated();
+  }
+
+  /* package */ void dropView(FlatShadowNode node) {
+    mViewsToDrop.add(node);
   }
 
   private void addNodeRegion(NodeRegion nodeRegion) {

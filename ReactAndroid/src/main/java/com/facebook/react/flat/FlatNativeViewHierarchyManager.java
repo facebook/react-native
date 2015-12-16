@@ -122,6 +122,12 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     resolveView(reactTag).setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
   }
 
+  /* package */ void dropViews(int[] viewsToDrop) {
+    for (int viewToDrop : viewsToDrop) {
+      dropView(resolveView(viewToDrop));
+    }
+  }
+
   /* package */ void detachAllChildrenFromViews(int[] viewsToDetachAllChildrenFrom) {
     for (int viewTag : viewsToDetachAllChildrenFrom) {
       View view = resolveView(viewTag);

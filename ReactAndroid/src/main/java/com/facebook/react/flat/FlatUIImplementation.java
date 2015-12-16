@@ -149,8 +149,12 @@ public class FlatUIImplementation extends UIImplementation {
               "Invariant failure, needs sorting! prevIndex: " + prevIndex + " index: " + index);
         }
 
-        ReactShadowNode child = parentNode.removeChildAt(index);
+        FlatShadowNode child = (FlatShadowNode) parentNode.removeChildAt(index);
         prevIndex = index;
+
+        if (child.mountsToView()) {
+          mStateBuilder.dropView(child);
+        }
 
         removeShadowNode(child);
       }
