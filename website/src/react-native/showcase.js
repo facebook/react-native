@@ -334,6 +334,12 @@ var apps = [
     author: 'Levi Cabral',
   },
   {
+    name: 'Pimmr',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
+    author: 'Pimmr'
+  },
+  {
     name: 'Posyt - Tinder for ideas',
     icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/a5/b3/86/a5b38618-a5e9-6089-7425-7fa51ecd5d30/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/posyt-anonymously-meet-right/id1037842845?mt=8',
