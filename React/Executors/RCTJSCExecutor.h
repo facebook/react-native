@@ -11,12 +11,10 @@
 
 #import "RCTJavaScriptExecutor.h"
 
-// TODO (#5906496): Might RCTJSCoreExecutor be a better name for this?
-
 /**
  * Uses a JavaScriptCore context as the execution engine.
  */
-@interface RCTContextExecutor : NSObject <RCTJavaScriptExecutor>
+@interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
 
 /**
  * Configures the executor to run JavaScript on a specific thread with a given JS context.

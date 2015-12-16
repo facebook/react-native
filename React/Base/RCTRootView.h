@@ -85,7 +85,7 @@ extern NSString *const RCTContentDidAppearNotification;
 
 /**
  * The class of the RCTJavaScriptExecutor to use with this view.
- * If not specified, it will default to using RCTContextExecutor.
+ * If not specified, it will default to using RCTJSCExecutor.
  * Changes will take effect next time the bundle is reloaded.
  */
 @property (nonatomic, strong) Class executorClass;

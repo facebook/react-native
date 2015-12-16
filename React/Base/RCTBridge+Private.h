@@ -65,13 +65,13 @@
 - (void)handleBuffer:(NSArray<NSArray *> *)buffer;
 
 /**
- * Exposed for the RCTContextExecutor for sending native methods called from
+ * Exposed for the RCTJSCExecutor for sending native methods called from
  * JavaScript in the middle of a batch.
  */
 - (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
 
 /**
- * Exposed for the RCTContextExecutor for lazily loading native modules
+ * Exposed for the RCTJSCExecutor for lazily loading native modules
  */
 - (NSArray *)configForModuleName:(NSString *)moduleName;
 

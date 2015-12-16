@@ -20,6 +20,7 @@
 #import "RCTFPSGraph.h"
 #import "RCTInvalidating.h"
 #import "RCTJavaScriptExecutor.h"
+#import "RCTJSCExecutor.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTUIManager.h"
@@ -311,7 +312,7 @@ RCT_EXPORT_MODULE()
                        forMode:NSRunLoopCommonModes];
 
   id<RCTJavaScriptExecutor> executor = [_bridge valueForKey:@"javaScriptExecutor"];
-  if ([executor isKindOfClass:NSClassFromString(@"RCTContextExecutor")]) {
+  if ([executor isKindOfClass:[RCTJSCExecutor class]]) {
     self.container.frame = (CGRect) {
       self.container.frame.origin, {
         self.container.frame.size.width + 44,
