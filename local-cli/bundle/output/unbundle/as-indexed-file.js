@@ -10,16 +10,19 @@
 
 const fs = require('fs');
 const Promise = require('promise');
-const writeFile = require('./writeFile');
+const writeSourceMap = require('./write-sourcemap');
 
 const MAGIC_UNBUNDLE_FILE_HEADER = 0xFB0BD1E5;
 const MAGIC_STARTUP_MODULE_ID = '';
 
-function buildBundle(packagerClient, requestOptions) {
-  return packagerClient.buildBundle({...requestOptions, unbundle: true});
-}
-
-function saveUnbundle(bundle, options, log) {
+/**
+ * Saves all JS modules of an app as a single file, separated with null bytes.
+ * The file begins with an offset table that contains module ids and their
+ * lengths/offsets.
+ * The module id for the startup code (prelude, polyfills etc.) is the
+ * empty string.
+ */
+function saveAsIndexedFile(bundle, options, log) {
   const {
     'bundle-output': bundleOutput,
     'bundle-encoding': encoding,
@@ -39,20 +42,23 @@ function saveUnbundle(bundle, options, log) {
 
   writeUnbundle.then(() => log('Done writing unbundle output'));
 
-  if (sourcemapOutput) {
-    log('Writing sourcemap output to:', sourcemapOutput);
-    const writeMap = writeFile(sourcemapOutput, '', null);
-    writeMap.then(() => log('Done writing sourcemap output'));
-    return Promise.all([writeUnbundle, writeMap]);
-  } else {
-    return writeUnbundle;
-  }
+  return Promise.all([writeUnbundle, writeSourceMap(sourcemapOutput, '', log)]);
 }
 
 /* global Buffer: true */
+
 const fileHeader = Buffer(4);
 fileHeader.writeUInt32LE(MAGIC_UNBUNDLE_FILE_HEADER);
 const nullByteBuffer = Buffer(1).fill(0);
+
+function writeBuffers(stream, buffers) {
+  buffers.forEach(buffer => stream.write(buffer));
+  return new Promise((resolve, reject) => {
+    stream.on('error', reject);
+    stream.on('finish', () => resolve());
+    stream.end();
+  });
+}
 
 const moduleToBuffer = ({name, code}, encoding) => ({
   name,
@@ -62,16 +68,9 @@ const moduleToBuffer = ({name, code}, encoding) => ({
   ])
 });
 
-function buildModuleBuffers(startupCode, modules, encoding) {
-  return (
-    [moduleToBuffer({name: '', code: startupCode}, encoding)]
-      .concat(modules.map(module => moduleToBuffer(module, encoding)))
-  );
-}
-
 function uInt32Buffer(n) {
   const buffer = Buffer(4);
-  buffer.writeUInt32LE(n, 0); // let's assume LE for now :)
+  buffer.writeUInt32LE(n, 0);
   return buffer;
 }
 
@@ -109,21 +108,17 @@ function buildModuleTable(buffers) {
   return Buffer.concat(offsetTable);
 }
 
+function buildModuleBuffers(startupCode, modules, encoding) {
+  return (
+    [moduleToBuffer({name: '', code: startupCode}, encoding)]
+      .concat(modules.map(module => moduleToBuffer(module, encoding)))
+  );
+}
+
 function buildTableAndContents(startupCode, modules, encoding) {
   const buffers = buildModuleBuffers(startupCode, modules, encoding);
   const table = buildModuleTable(buffers, encoding);
   return [fileHeader, table].concat(buffers.map(({buffer}) => buffer));
 }
 
-function writeBuffers(stream, buffers) {
-  buffers.forEach(buffer => stream.write(buffer));
-  return new Promise((resolve, reject) => {
-    stream.on('error', reject);
-    stream.on('finish', () => resolve());
-    stream.end();
-  });
-}
-
-exports.build = buildBundle;
-exports.save = saveUnbundle;
-exports.formatName = 'bundle';
+module.exports = saveAsIndexedFile;
