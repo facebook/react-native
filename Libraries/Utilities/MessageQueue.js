@@ -154,7 +154,7 @@ class MessageQueue {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
     }
-    Systrace.beginEvent(() => `${module}.${method}(${stringifySafe(args)})`);
+    Systrace.beginEvent(`${module}.${method}()`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
@@ -169,8 +169,7 @@ class MessageQueue {
   }
 
   __invokeCallback(cbID, args) {
-    Systrace.beginEvent(
-      () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
+    Systrace.beginEvent(`MessageQueue.invokeCallback(${cbID})`);
     this._lastFlush = new Date().getTime();
     let callback = this._callbacks[cbID];
     if (!callback || __DEV__) {
