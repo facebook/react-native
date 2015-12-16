@@ -113,6 +113,15 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     }
   }
 
+  /* package */ void setPadding(
+      int reactTag,
+      int paddingLeft,
+      int paddingTop,
+      int paddingRight,
+      int paddingBottom) {
+    resolveView(reactTag).setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+  }
+
   /* package */ void detachAllChildrenFromViews(int[] viewsToDetachAllChildrenFrom) {
     for (int viewTag : viewsToDetachAllChildrenFrom) {
       View view = resolveView(viewTag);

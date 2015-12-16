@@ -21,6 +21,7 @@ import com.facebook.react.uimanager.ViewManager;
   final ViewManager mViewManager;
   private final ReactShadowNode mReactShadowNode;
   private final boolean mNeedsCustomLayoutForChildren;
+  private boolean mPaddingChanged = false;
 
   /* package */ AndroidView(ViewManager viewManager) {
     mViewManager = viewManager;
@@ -44,6 +45,14 @@ import com.facebook.react.uimanager.ViewManager;
 
   /* package */ boolean needsCustomLayoutForChildren() {
     return mNeedsCustomLayoutForChildren;
+  }
+
+  /* package */ boolean isPaddingChanged() {
+    return mPaddingChanged;
+  }
+
+  /* package */ void resetPaddingChanged() {
+    mPaddingChanged = false;
   }
 
   @Override
@@ -71,5 +80,13 @@ import com.facebook.react.uimanager.ViewManager;
   public void addChildAt(CSSNode child, int i) {
     super.addChildAt(child, i);
     ((FlatShadowNode) child).forceMountToView();
+  }
+
+  @Override
+  public void setPadding(int spacingType, float padding) {
+    if (getPadding().set(spacingType, padding)) {
+      mPaddingChanged = true;
+      dirty();
+    }
   }
 }

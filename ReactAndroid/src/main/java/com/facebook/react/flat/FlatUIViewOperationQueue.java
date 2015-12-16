@@ -96,6 +96,38 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  private final class SetPadding implements UIOperation {
+
+    private final int mReactTag;
+    private final int mPaddingLeft;
+    private final int mPaddingTop;
+    private final int mPaddingRight;
+    private final int mPaddingBottom;
+
+    private SetPadding(
+        int reactTag,
+        int paddingLeft,
+        int paddingTop,
+        int paddingRight,
+        int paddingBottom) {
+      mReactTag = reactTag;
+      mPaddingLeft = paddingLeft;
+      mPaddingTop = paddingTop;
+      mPaddingRight = paddingRight;
+      mPaddingBottom = paddingBottom;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setPadding(
+          mReactTag,
+          mPaddingLeft,
+          mPaddingTop,
+          mPaddingRight,
+          mPaddingBottom);
+    }
+  }
+
   public final class DetachAllChildrenFromViews implements UIViewOperationQueue.UIOperation {
     private @Nullable int[] mViewsToDetachAllChildrenFrom;
 
@@ -137,6 +169,16 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
    */
   public void enqueueUpdateViewBounds(int reactTag, int left, int top, int right, int bottom) {
     enqueueUIOperation(new UpdateViewBounds(reactTag, left, top, right, bottom));
+  }
+
+  public void enqueueSetPadding(
+      int reactTag,
+      int paddingLeft,
+      int paddingTop,
+      int paddingRight,
+      int paddingBottom) {
+    enqueueUIOperation(
+        new SetPadding(reactTag, paddingLeft, paddingTop, paddingRight, paddingBottom));
   }
 
   public DetachAllChildrenFromViews enqueueDetachAllChildrenFromViews() {

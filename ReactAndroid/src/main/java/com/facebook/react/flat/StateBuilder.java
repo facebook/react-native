@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import com.facebook.csslayout.Spacing;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
 /**
@@ -152,8 +153,11 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     boolean isAndroidView = false;
     boolean needsCustomLayoutForChildren = false;
     if (node instanceof AndroidView) {
+      AndroidView androidView = (AndroidView) node;
+      updateViewPadding(androidView, tag);
+
       isAndroidView = true;
-      needsCustomLayoutForChildren = ((AndroidView) node).needsCustomLayoutForChildren();
+      needsCustomLayoutForChildren = androidView.needsCustomLayoutForChildren();
     }
 
     collectStateRecursively(node, 0, 0, width, height, isAndroidView, needsCustomLayoutForChildren);
@@ -321,6 +325,19 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     if (nodeRegion.mLeft != left || nodeRegion.mTop != top ||
         nodeRegion.mRight != right || nodeRegion.mBottom != bottom) {
       node.setNodeRegion(new NodeRegion(left, top, right, bottom, tag));
+    }
+  }
+
+  private void updateViewPadding(AndroidView androidView, int tag) {
+    if (androidView.isPaddingChanged()) {
+      Spacing padding = androidView.getPadding();
+      mOperationsQueue.enqueueSetPadding(
+          tag,
+          Math.round(padding.get(Spacing.LEFT)),
+          Math.round(padding.get(Spacing.TOP)),
+          Math.round(padding.get(Spacing.RIGHT)),
+          Math.round(padding.get(Spacing.BOTTOM)));
+      androidView.resetPaddingChanged();
     }
   }
 
