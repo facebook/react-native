@@ -16,24 +16,24 @@
 
 #import <XCTest/XCTest.h>
 
-#import "RCTContextExecutor.h"
+#import "RCTJSCExecutor.h"
 #import "RCTUtils.h"
 
 #define RUN_PERF_TESTS 0
 
-@interface RCTContextExecutorTests : XCTestCase
+@interface RCTJSCExecutorTests : XCTestCase
 
 @end
 
-@implementation RCTContextExecutorTests
+@implementation RCTJSCExecutorTests
 {
-  RCTContextExecutor *_executor;
+  RCTJSCExecutor *_executor;
 }
 
 - (void)setUp
 {
   [super setUp];
-  _executor = [RCTContextExecutor new];
+  _executor = [RCTJSCExecutor new];
   [_executor setUp];
 }
 
@@ -97,7 +97,7 @@ static uint64_t _get_time_nanoseconds(void)
 - (void)testJavaScriptCallSpeed
 {
 /**
- * Since we almost don't change the RCTContextExecutor logic, and this test is
+ * Since we almost don't change the RCTJSCExecutor logic, and this test is
  * very likely to become flaky (specially across different devices) leave it
  * to be run manually
  *

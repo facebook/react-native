@@ -15,7 +15,7 @@
 #import "RCTRootView.h"
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
-#import "RCTContextExecutor.h"
+#import "RCTJSCExecutor.h"
 
 static const NSTimeInterval kTestTimeoutSeconds = 60;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
@@ -135,7 +135,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     // Take a weak reference to the JS context, so we track its deallocation later
     // (we can only do this now, since it's been lazily initialized)
     id jsExecutor = [bridge valueForKeyPath:@"batchedBridge.javaScriptExecutor"];
-    if ([jsExecutor isKindOfClass:[RCTContextExecutor class]]) {
+    if ([jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
       weakJSContext = [jsExecutor valueForKey:@"context"];
     }
     [rootView removeFromSuperview];

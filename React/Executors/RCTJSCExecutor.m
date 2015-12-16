@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTContextExecutor.h"
+#import "RCTJSCExecutor.h"
 
 #import <pthread.h>
 
@@ -46,7 +46,7 @@ static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnable
     _context = context;
 
     /**
-     * Explicitly introduce a retain cycle here - The RCTContextExecutor might
+     * Explicitly introduce a retain cycle here - The RCTJSCExecutor might
      * be deallocated while there's still work enqueued in the JS thread, so
      * we wouldn't be able kill the JSContext. Instead we create this retain
      * cycle, and enqueue the -invalidate message in this object, it then
@@ -84,7 +84,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-@implementation RCTContextExecutor
+@implementation RCTJSCExecutor
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
@@ -186,14 +186,14 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                  context:(JSContext *)context
 {
   RCTAssert(javaScriptThread != nil,
-            @"Can't initialize RCTContextExecutor without a javaScriptThread");
+            @"Can't initialize RCTJSCExecutor without a javaScriptThread");
 
   if ((self = [super init])) {
     _valid = YES;
     _javaScriptThread = javaScriptThread;
-    __weak RCTContextExecutor *weakSelf = self;
+    __weak RCTJSCExecutor *weakSelf = self;
     [self executeBlockOnJavaScriptQueue: ^{
-      RCTContextExecutor *strongSelf = weakSelf;
+      RCTJSCExecutor *strongSelf = weakSelf;
       if (!strongSelf) {
         return;
       }
@@ -216,9 +216,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 - (void)setUp
 {
-  __weak RCTContextExecutor *weakSelf = self;
+  __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
-    RCTContextExecutor *strongSelf = weakSelf;
+    RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf.isValid) {
       return;
     }
@@ -369,9 +369,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
               callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"onComplete block should not be nil");
-  __weak RCTContextExecutor *weakSelf = self;
+  __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
-    RCTContextExecutor *strongSelf = weakSelf;
+    RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid) {
       return;
     }
@@ -443,7 +443,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     // Looks like making lots of JSC API calls is slower than communicating by using a JSON
     // string. Also it ensures that data stuctures don't have cycles and non-serializable fields.
-    // see [RCTContextExecutorTests testDeserializationPerf]
+    // see [RCTJSCExecutorTests testDeserializationPerf]
     id objcValue;
     // We often return `null` from JS when there is nothing for native side. JSONKit takes an extra hundred microseconds
     // to handle this simple case, so we are adding a shortcut to make executeJSCall method even faster
@@ -468,9 +468,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   RCTAssertParam(script);
   RCTAssertParam(sourceURL);
 
-  __weak RCTContextExecutor *weakSelf = self;
+  __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
-    RCTContextExecutor *strongSelf = weakSelf;
+    RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid) {
       return;
     }
@@ -532,9 +532,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     RCTAssert(RCTJSONParse(script, NULL) != nil, @"%@ wasn't valid JSON!", script);
   }
 
-  __weak RCTContextExecutor *weakSelf = self;
+  __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
-    RCTContextExecutor *strongSelf = weakSelf;
+    RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf || !strongSelf.isValid) {
       return;
     }

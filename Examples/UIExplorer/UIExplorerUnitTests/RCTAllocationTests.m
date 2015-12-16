@@ -17,7 +17,7 @@
 
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
-#import "RCTContextExecutor.h"
+#import "RCTJSCExecutor.h"
 #import "RCTModuleMethod.h"
 #import "RCTRootView.h"
 
