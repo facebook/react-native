@@ -182,7 +182,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
     <Compile Include="ReactMethodAttribute.cs" />
-    <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\MethodInfoHelpers.cs" />
     <Compile Include="Reflection\ReflectionHelpers.cs" />
     <Compile Include="Tracing\EventSourceManager.cs" />
@@ -199,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Folder Include="Bridge\Executors\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
