@@ -256,7 +256,7 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 

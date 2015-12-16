@@ -75,6 +75,10 @@ public class UIImplementation {
     return mShadowNodeRegistry.getNode(reactTag);
   }
 
+  protected final ViewManager resolveViewManager(String className) {
+    return mViewManagers.get(className);
+  }
+
   /**
    * Registers a root node with a given tag, size and ThemedReactContext
    * and adds it to a node registry.
