@@ -420,7 +420,7 @@ public class NativeViewHierarchyManager {
   /**
    * Releases all references to given native View.
    */
-  private void dropView(View view) {
+  protected final void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
