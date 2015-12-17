@@ -18,17 +18,26 @@ namespace ReactNative.Bridge
         IEnumerable<INativeModule> NativeModules { get; }
 
         /// <summary>
+        /// Initializes the instance.
+        /// </summary>
+        /// <returns>A task to await initialization.</returns>
+        Task InitializeAsync();
+
+        /// <summary>
+        /// Invokes a JavaScript function.
+        /// </summary>
+        /// <param name="moduleId">The module ID.</param>
+        /// <param name="methodId">The method ID.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <param name="tracingName">The tracing name.</param>
+        void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName);
+
+        /// <summary>
         /// Invokes a JavaScript callback.
         /// </summary>
         /// <param name="callbackId">The callback ID.</param>
         /// <param name="arguments">The arguments.</param>
         void InvokeCallback(int callbackId, JArray arguments);
-
-        /// <summary>
-        /// Initializes the instance.
-        /// </summary>
-        /// <returns>A task to await initialization.</returns>
-        Task InitializeAsync();
 
         /// <summary>
         /// Gets a native module instance.

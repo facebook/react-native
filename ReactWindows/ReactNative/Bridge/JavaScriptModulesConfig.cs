@@ -64,7 +64,7 @@ namespace ReactNative.Bridge
             /// </summary>
             /// <typeparam name="T">Type of JavaScript module.</typeparam>
             /// <returns>The builder instance.</returns>
-            public Builder Add<T>() where T : IJavaScriptModule
+            public Builder Add<T>() where T : IJavaScriptModule, new()
             {
                 var moduleId = _modules.Count;
                 _modules.Add(new JavaScriptModuleRegistration(moduleId, typeof(T)));

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ReactNative.Tests.Bridge
 {
@@ -24,7 +23,7 @@ namespace ReactNative.Tests.Bridge
 
             testModule.Initialize();
 
-            var catalystInstance = new TestCatalystInstance();
+            var catalystInstance = new MockCatalystInstance();
             AssertEx.Throws<ArgumentNullException>(
                 () => testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(null, new JArray()),
                 ex => Assert.AreEqual("catalystInstance", ex.ParamName));
@@ -40,7 +39,7 @@ namespace ReactNative.Tests.Bridge
 
             testModule.Initialize();
 
-            var catalystInstance = new TestCatalystInstance();
+            var catalystInstance = new MockCatalystInstance();
             AssertEx.Throws<NativeArgumentsParseException>(
                 () => testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, new JArray()),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
@@ -53,7 +52,7 @@ namespace ReactNative.Tests.Bridge
 
             testModule.Initialize();
 
-            var catalystInstance = new TestCatalystInstance();
+            var catalystInstance = new MockCatalystInstance();
             AssertEx.Throws<NativeArgumentsParseException>(
                 () => testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, JArray.FromObject(new[] { default(object) })),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
@@ -70,7 +69,7 @@ namespace ReactNative.Tests.Bridge
 
             Assert.AreEqual(2, testModule.Methods.Count);
 
-            var catalystInstance = new TestCatalystInstance();
+            var catalystInstance = new MockCatalystInstance();
             testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, new JArray());
             testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, new JArray());
             Assert.AreEqual(2, fooCount);
@@ -90,7 +89,7 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new TestCatalystInstance((i, a) =>
+            var catalystInstance = new MockCatalystInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
@@ -111,7 +110,7 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new TestCatalystInstance((i, a) =>
+            var catalystInstance = new MockCatalystInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
@@ -131,7 +130,7 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new TestCatalystInstance((i, a) =>
+            var catalystInstance = new MockCatalystInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
@@ -225,44 +224,6 @@ namespace ReactNative.Tests.Bridge
             public void Foo(ICallback callback)
             {
                 callback.Invoke(_callbackArgs);
-            }
-        }
-
-        class TestCatalystInstance : ICatalystInstance
-        {
-            private readonly Action<int, JArray> _callback;
-
-            public TestCatalystInstance()
-                : this((_, __) => { })
-            {
-            }
-
-            public TestCatalystInstance(Action<int, JArray> callback)
-            {
-                _callback = callback;
-            }
-
-            public IEnumerable<INativeModule> NativeModules
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public T GetNativeModule<T>() where T : INativeModule
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task InitializeAsync()
-            {
-                return Task.FromResult(true);
-            }
-
-            public void InvokeCallback(int callbackId, JArray arguments)
-            {
-                _callback(callbackId, arguments);
             }
         }
     }

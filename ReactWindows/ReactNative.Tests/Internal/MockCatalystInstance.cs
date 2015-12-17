@@ -1,0 +1,63 @@
+﻿using Newtonsoft.Json.Linq;
+using ReactNative.Bridge;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace ReactNative.Tests
+{
+    class MockCatalystInstance : ICatalystInstance
+    {
+        private readonly Action<int, JArray> _callback;
+        private readonly Action<int, int, JArray, string> _function;
+
+        public MockCatalystInstance()
+            : this((_, __) => { }, (p0, p1, p2, p3) => { })
+        {
+        }
+
+        public MockCatalystInstance(Action<int, JArray> callback)
+            : this(callback, (p0, p1, p2, p3) => { })
+        {
+        }
+
+        public MockCatalystInstance(Action<int, int, JArray, string> function)
+            : this((_, __) => { }, function)
+        {
+        }
+
+        public MockCatalystInstance(Action<int, JArray> callback, Action<int, int, JArray, string> function)
+        {
+            _callback = callback;
+            _function = function;
+        }
+
+        public IEnumerable<INativeModule> NativeModules
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public T GetNativeModule<T>() where T : INativeModule
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task InitializeAsync()
+        {
+            return Task.FromResult(true);
+        }
+
+        public void InvokeCallback(int callbackId, JArray arguments)
+        {
+            _callback(callbackId, arguments);
+        }
+
+        public void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
+        {
+            _function(moduleId, methodId, arguments, tracingName);
+        }
+    }
+}
