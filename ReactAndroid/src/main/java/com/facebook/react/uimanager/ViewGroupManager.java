@@ -24,7 +24,7 @@ public abstract class ViewGroupManager <T extends ViewGroup>
   }
 
   @Override
-  public Class<LayoutShadowNode> getShadowNodeClass() {
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
     return LayoutShadowNode.class;
   }
 
