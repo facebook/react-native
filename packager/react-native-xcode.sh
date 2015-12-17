@@ -41,8 +41,11 @@ elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
   . "$(brew --prefix nvm)/nvm.sh"
 fi
 
-# Initialize nodenv if it exists
-export PATH="$HOME/.nodenv/bin:$PATH"
+# Initialize nodenv if it exists, if installed via git we must modify path
+if [[ -d "$HOME/.nodenv/bin" ]]; then
+  export PATH="$HOME/.nodenv/bin:$PATH"
+fi
+
 if which nodenv > /dev/null; then eval "$(nodenv init -)"; fi
 
 react-native bundle \
