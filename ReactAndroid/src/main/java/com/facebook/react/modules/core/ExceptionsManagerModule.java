@@ -16,15 +16,14 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.common.ReactConstants;
 
 public class ExceptionsManagerModule extends BaseJavaModule {
 
-  private final DevSupportManager mDevSupportManager;
+  private final JavascriptExceptionHandler mJavascriptExceptionHandler;
 
-  public ExceptionsManagerModule(DevSupportManager devSupportManager) {
-    mDevSupportManager = devSupportManager;
+  public ExceptionsManagerModule(JavascriptExceptionHandler exceptionHandler) {
+    mJavascriptExceptionHandler = exceptionHandler;
   }
 
   @Override
@@ -62,17 +61,11 @@ public class ExceptionsManagerModule extends BaseJavaModule {
   }
 
   private void showOrThrowError(String title, ReadableArray details, int exceptionId) {
-    if (mDevSupportManager.getDevSupportEnabled()) {
-      mDevSupportManager.showNewJSError(title, details, exceptionId);
-    } else {
-      throw new JavascriptException(stackTraceToString(details));
-    }
+    mJavascriptExceptionHandler.handleNewError(title, details, exceptionId, stackTraceToString(details));
   }
 
   @ReactMethod
   public void updateExceptionMessage(String title, ReadableArray details, int exceptionId) {
-    if (mDevSupportManager.getDevSupportEnabled()) {
-      mDevSupportManager.updateJSError(title, details, exceptionId);
-    }
+    mJavascriptExceptionHandler.updateError(title, details, exceptionId,stackTraceToString(details));
   }
 }
