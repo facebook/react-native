@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 
+import com.facebook.csslayout.Spacing;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.uimanager.PixelUtil;
@@ -110,11 +111,11 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
   }
 
-  @ReactProp(name = "borderWidth")
-  public void setBorderWidth(float borderWidth) {
-    borderWidth = PixelUtil.toPixelFromDIP(borderWidth);
+  @Override
+  public void setBorder(int spacingType, float borderWidth) {
+    super.setBorder(spacingType, borderWidth);
 
-    if (mDrawImage.getBorderWidth() != borderWidth) {
+    if (spacingType == Spacing.ALL && mDrawImage.getBorderWidth() != borderWidth) {
       getMutableDrawImage().setBorderWidth(borderWidth);
     }
   }
