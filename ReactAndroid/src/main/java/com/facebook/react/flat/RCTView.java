@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ReactPropGroup;
@@ -46,6 +47,13 @@ import com.facebook.react.uimanager.ViewProps;
 
     int type = ViewProps.BORDER_SPACING_TYPES[index];
     getMutableBorder().setBorderWidth(type, PixelUtil.toPixelFromDIP(borderWidth));
+  }
+
+  @ReactProp(name = "nativeBackgroundAndroid")
+  public void setHotspot(@Nullable ReadableMap bg) {
+    if (bg != null) {
+      forceMountToView();
+    }
   }
 
   @ReactPropGroup(names = {

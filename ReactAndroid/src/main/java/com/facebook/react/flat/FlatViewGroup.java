@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -56,6 +57,7 @@ import com.facebook.react.uimanager.ReactCompoundView;
   private int mDrawChildIndex = 0;
   private boolean mIsAttached = false;
   private boolean mIsLayoutRequested = false;
+  private Drawable mHotspot;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -101,6 +103,10 @@ import com.facebook.react.uimanager.ReactCompoundView;
           "Did not draw all children: " + mDrawChildIndex + " / " + getChildCount());
     }
     mDrawChildIndex = 0;
+
+    if (mHotspot != null) {
+      mHotspot.draw(canvas);
+    }
   }
 
   @Override
@@ -138,6 +144,56 @@ import com.facebook.react.uimanager.ReactCompoundView;
 
     super.onDetachedFromWindow();
     dispatchOnDetached(mAttachDetachListeners);
+  }
+
+  @Override
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    if (mHotspot != null) {
+      mHotspot.setBounds(0, 0, w, h);
+      invalidate();
+    }
+  }
+
+  @Override
+  public void dispatchDrawableHotspotChanged(float x, float y) {
+    if (mHotspot != null) {
+      mHotspot.setHotspot(x, y);
+      invalidate();
+    }
+  }
+
+  @Override
+  protected void drawableStateChanged() {
+    super.drawableStateChanged();
+
+    if (mHotspot != null && mHotspot.isStateful()) {
+        mHotspot.setState(getDrawableState());
+    }
+  }
+
+  @Override
+  public void jumpDrawablesToCurrentState() {
+    super.jumpDrawablesToCurrentState();
+    if (mHotspot != null) {
+        mHotspot.jumpToCurrentState();
+    }
+  }
+
+  /* package */ void setHotspot(Drawable hotspot) {
+    if (mHotspot != null) {
+      mHotspot.setCallback(null);
+      unscheduleDrawable(mHotspot);
+    }
+
+    if (hotspot != null) {
+      hotspot.setCallback(this);
+      if (hotspot.isStateful()) {
+        hotspot.setState(getDrawableState());
+      }
+    }
+
+    mHotspot = hotspot;
+    invalidate();
   }
 
   /* package */ void drawNextChild(Canvas canvas) {
