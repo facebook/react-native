@@ -28,7 +28,7 @@ namespace ReactNative.Bridge
                 writer.WriteStartObject();
                 foreach (var method in module.Methods)
                 {
-                    writer.WritePropertyName(method.Name);
+                    writer.WritePropertyName(method);
                     writer.WriteStartObject();
                     writer.WritePropertyName("methodID");
                     writer.WriteValue(module.GetMethodId(method));
