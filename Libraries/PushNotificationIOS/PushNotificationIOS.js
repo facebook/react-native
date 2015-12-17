@@ -63,6 +63,7 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `alertBody` : The message displayed in the notification alert.
+   * - `soundName` : The sound played when the notification is fired (optional).
    *
    */
   static presentLocalNotification(details: Object) {
@@ -76,6 +77,7 @@ class PushNotificationIOS {
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
    * - `alertBody` : The message displayed in the notification alert.
+   * - `soundName` : The sound played when the notification is fired (optional).
    *
    */
   static scheduleLocalNotification(details: Object) {
