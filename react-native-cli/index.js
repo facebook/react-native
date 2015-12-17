@@ -180,36 +180,23 @@ function createProject(name, verbose) {
 
   console.log('Installing react-native package from npm...');
 
-  if (verbose) {
-    runVerbose(root, projectName);
-  } else {
-    run(root, projectName);
+  run(root, projectName, verbose);
+}
+
+function run(root, projectName, verbose) {
+  var args = ['install', '--save'];
+  if (verbose){
+    args.push('--verbose');
   }
-}
-
-function run(root, projectName) {
-  exec('npm install --save react-native', function(e, stdout, stderr) {
-    if (e) {
-      console.log(stdout);
-      console.error(stderr);
-      console.error('`npm install --save react-native` failed');
-      process.exit(1);
-    }
-
-    checkNodeVersion();
-
-    var cli = require(CLI_MODULE_PATH());
-    cli.init(root, projectName);
-  });
-}
-
-function runVerbose(root, projectName) {
-  var proc = spawn('npm', ['install', '--verbose', '--save', 'react-native'], {stdio: 'inherit'});
+  args.push('react-native');
+  var proc = spawn('npm', args, {stdio: 'inherit'});
   proc.on('close', function (code) {
     if (code !== 0) {
       console.error('`npm install --save react-native` failed');
       return;
     }
+
+    checkNodeVersion();
 
     cli = require(CLI_MODULE_PATH());
     cli.init(root, projectName);
