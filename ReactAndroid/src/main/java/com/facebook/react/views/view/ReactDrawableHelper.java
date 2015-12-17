@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.ViewProps;
  * Utility class that helps with converting android drawable description used in JS to an actual
  * instance of {@link Drawable}.
  */
-/* package */ class ReactDrawableHelper {
+public class ReactDrawableHelper {
 
   private static final TypedValue sResolveOutValue = new TypedValue();
 
