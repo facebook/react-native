@@ -15,14 +15,14 @@ namespace ReactNative.Tests.Bridge
         public void JavaScriptModulesConfig_MethodOverrides_ThrowsNotSupported()
         {
             var builder = new JavaScriptModulesConfig.Builder();
-            AssertEx.Throws<NotSupportedException>(() => builder.Add<IOverridesJavaScriptModule>());
+            AssertEx.Throws<NotSupportedException>(() => builder.Add<OverridesJavaScriptModule>());
         }
 
         [TestMethod]
         public void JavaScriptModulesConfig_WriteModuleDefinitions()
         {
             var builder = new JavaScriptModulesConfig.Builder();
-            builder.Add<ITestJavaScriptModule>();
+            builder.Add<TestJavaScriptModule>();
             var config = builder.Build();
 
             using (var stringWriter = new StringWriter())
@@ -37,7 +37,7 @@ namespace ReactNative.Tests.Bridge
                     new Map
                     {
                         {
-                            "ITestJavaScriptModule",
+                            "TestJavaScriptModule",
                             new Map
                             {
                                 { "moduleID", 0 },
@@ -73,16 +73,30 @@ namespace ReactNative.Tests.Bridge
 
     public class Map : Dictionary<string, object> { }
 
-    public interface IOverridesJavaScriptModule : IJavaScriptModule
+    public class OverridesJavaScriptModule : JavaScriptModuleBase
     {
-        void Foo();
+        public void Foo()
+        {
+            Invoke(nameof(Foo));
+        }
 
-        void Foo(int x);
+
+        public void Foo(int x)
+        {
+            Invoke(nameof(Foo), x);
+        }
     }
 
-    public interface ITestJavaScriptModule : IJavaScriptModule
+    public class TestJavaScriptModule : JavaScriptModuleBase
     {
-        void Bar();
-        void Foo();
+        public void Bar()
+        {
+            Invoke(nameof(Bar));
+        }
+
+        public void Foo()
+        {
+            Invoke(nameof(Foo));
+        }
     }
 }
