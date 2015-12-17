@@ -40,6 +40,13 @@ namespace ReactNative.Core
         /// <returns></returns>
         public abstract bool hasStartedCreatingInitialContext();
 
+        public abstract void onBackPressed();
+        public abstract void onPause();
+
+        public abstract void onResume(DefaultHardwareBackBtnHandler defaultBackButtonImpl);
+
+        public abstract void onDestroy();
+        
         /// <summary>
         /// Gets the URL where the last bundle was loaded from.
         /// </summary>

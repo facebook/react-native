@@ -22,6 +22,8 @@ namespace ReactNative.Bridge
         /// </summary>
         void Initialize();
 
+        T GetJSModule<T>(Type jsModuleInterface) where T : IJavaScriptModule;
+        
         /// <summary>
         /// Invokes a JavaScript function.
         /// </summary>
