@@ -109,7 +109,7 @@
   <ItemGroup>
     <Compile Include="Bridge\CatalystInstance.cs" />
     <Compile Include="Bridge\DispatcherHelpers.cs" />
-    <Compile Include="Bridge\IInvokeHandler.cs" />
+    <Compile Include="Bridge\IInvocationHandler.cs" />
     <Compile Include="Bridge\IJavaScriptExecutor.cs" />
     <Compile Include="Bridge\IJavaScriptModule.cs" />
     <Compile Include="Bridge\IReactCallback.cs" />
@@ -135,6 +135,7 @@
     <Compile Include="Bridge\Queue\MessageQueueThreadSpec.cs" />
     <Compile Include="Bridge\ReactBridge.cs" />
     <Compile Include="Bridge\ReactContext.cs" />
+    <Compile Include="Bridge\ReactContextNativeModuleBase.cs" />
     <Compile Include="Common\ReactConstants.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />

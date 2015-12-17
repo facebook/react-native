@@ -45,7 +45,7 @@ namespace ReactNative.Bridge
             }
         }
 
-        public T GetNativeModule<T>(Type nativeModuleInterface) where T : INativeModule
+        public T GetNativeModule<T>() where T : INativeModule
         {
             return _registry.GetModule<T>();
         }

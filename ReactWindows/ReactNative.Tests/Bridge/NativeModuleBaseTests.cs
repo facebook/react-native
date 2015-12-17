@@ -251,7 +251,7 @@ namespace ReactNative.Tests.Bridge
                 }
             }
 
-            public T GetNativeModule<T>(Type nativeModuleInterface) where T : INativeModule
+            public T GetNativeModule<T>() where T : INativeModule
             {
                 throw new NotImplementedException();
             }
