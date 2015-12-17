@@ -63,7 +63,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     float top = node.getLayoutY();
     float right = left + width;
     float bottom = top + height;
-    updateNodeRegion(node, tag, left, top, right, bottom);
+    node.updateNodeRegion(left, top, right, bottom);
 
     mViewsToUpdateBounds.add(node);
 
@@ -170,6 +170,13 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
 
       isAndroidView = true;
       needsCustomLayoutForChildren = androidView.needsCustomLayoutForChildren();
+    } else if (node.isVirtualAnchor()) {
+      // If RCTText is mounted to View, virtual children will not receive any touch events
+      // because they don't get added to nodeRegions, so nodeRegions will be empty and
+      // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
+      // manually add nodeRegion so it will have exactly one NodeRegion, and virtual nodes will
+      // be able to receive touch events.
+      addNodeRegion(node.getNodeRegion());
     }
 
     collectStateRecursively(node, 0, 0, width, height, isAndroidView, needsCustomLayoutForChildren);
@@ -320,7 +327,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     float right = left + width;
     float bottom = top + height;
 
-    updateNodeRegion(node, tag, left, top, right, bottom);
+    node.updateNodeRegion(left, top, right, bottom);
 
     if (node.mountsToView()) {
       ensureBackingViewIsCreated(node, tag, null);

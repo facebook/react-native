@@ -79,9 +79,8 @@ import com.facebook.react.uimanager.ReactCompoundView;
   @Override
   public int reactTagForTouch(float touchX, float touchY) {
     for (NodeRegion nodeRegion : mNodeRegions) {
-      if (nodeRegion.mLeft <= touchX && touchX < nodeRegion.mRight &&
-          nodeRegion.mTop <= touchY && touchY < nodeRegion.mBottom) {
-        return nodeRegion.mTag;
+      if (nodeRegion.withinBounds(touchX, touchY)) {
+        return nodeRegion.getReactTag(touchX, touchY);
       }
     }
 

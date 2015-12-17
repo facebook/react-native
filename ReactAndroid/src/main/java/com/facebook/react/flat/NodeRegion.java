@@ -9,7 +9,7 @@
 
 package com.facebook.react.flat;
 
-/* package */ final class NodeRegion {
+/* package */ class NodeRegion {
   /* package */ static final NodeRegion[] EMPTY_ARRAY = new NodeRegion[0];
   /* package */ static final NodeRegion EMPTY = new NodeRegion(0, 0, 0, 0, -1);
 
@@ -25,5 +25,13 @@ package com.facebook.react.flat;
     mRight = right;
     mBottom = bottom;
     mTag = tag;
+  }
+
+  /* package */ final boolean withinBounds(float touchX, float touchY) {
+      return mLeft <= touchX && touchX < mRight && mTop <= touchY && touchY < mBottom;
+  }
+
+  /* package */ int getReactTag(float touchX, float touchY) {
+    return mTag;
   }
 }

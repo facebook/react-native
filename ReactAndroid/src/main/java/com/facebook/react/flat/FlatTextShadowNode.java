@@ -18,17 +18,9 @@ import com.facebook.react.uimanager.ReactShadowNode;
  */
 /* package */ abstract class FlatTextShadowNode extends FlatShadowNode {
 
-  /**
-   * Recursively visits FlatTextShadowNode and its children,
-   * appending text to SpannableStringBuilder.
-   */
-  protected abstract void collectText(SpannableStringBuilder builder);
-
-  /**
-   * Recursively visits FlatTextShadowNode and its children,
-   * applying spans to SpannableStringBuilder.
-   */
-  protected abstract void applySpans(SpannableStringBuilder builder);
+  // these 2 are only used between collectText() and applySpans() calls.
+  private int mTextBegin;
+  private int mTextEnd;
 
   /**
    * Propagates changes up to RCTText without dirtying current node.
@@ -44,4 +36,27 @@ import com.facebook.react.uimanager.ReactShadowNode;
   public boolean isVirtual() {
     return true;
   }
+
+  /**
+   * Recursively visits FlatTextShadowNode and its children,
+   * appending text to SpannableStringBuilder.
+   */
+  /* package */ final void collectText(SpannableStringBuilder builder) {
+    mTextBegin = builder.length();
+    performCollectText(builder);
+    mTextEnd = builder.length();
+  }
+
+  /**
+   * Recursively visits FlatTextShadowNode and its children,
+   * applying spans to SpannableStringBuilder.
+   */
+  /* package */ final void applySpans(SpannableStringBuilder builder) {
+    if (mTextBegin != mTextEnd) {
+      performApplySpans(builder, mTextBegin, mTextEnd);
+    }
+  }
+
+  protected abstract void performCollectText(SpannableStringBuilder builder);
+  protected abstract void performApplySpans(SpannableStringBuilder builder, int begin, int end);
 }

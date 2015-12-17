@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 
 import com.facebook.react.uimanager.ReactProp;
@@ -23,17 +24,19 @@ import com.facebook.react.uimanager.ReactProp;
   private @Nullable String mText;
 
   @Override
-  protected void collectText(SpannableStringBuilder builder) {
+  protected void performCollectText(SpannableStringBuilder builder) {
     if (mText != null) {
       builder.append(mText);
     }
-
-    // RCTRawText cannot have any children, so no recursive calls needed.
   }
 
   @Override
-  protected void applySpans(SpannableStringBuilder builder) {
-    // no spans and no children so nothing to do here.
+  protected void performApplySpans(SpannableStringBuilder builder, int begin, int end) {
+    builder.setSpan(
+        this,
+        begin,
+        end,
+        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
   }
 
   @ReactProp(name = "text")

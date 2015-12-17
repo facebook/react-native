@@ -171,12 +171,19 @@ import com.facebook.react.uimanager.ViewProps;
     mNodeRegions = nodeRegion;
   }
 
-  /* package */ final NodeRegion getNodeRegion() {
-    return mNodeRegion;
+  /* package */ void updateNodeRegion(float left, float top, float right, float bottom) {
+    if (mNodeRegion.mLeft != left || mNodeRegion.mTop != top ||
+        mNodeRegion.mRight != right || mNodeRegion.mBottom != bottom) {
+      setNodeRegion(new NodeRegion(left, top, right, bottom, getReactTag()));
+    }
   }
 
-  /* package */ final void setNodeRegion(NodeRegion nodeRegion) {
+  protected final void setNodeRegion(NodeRegion nodeRegion) {
     mNodeRegion = nodeRegion;
+  }
+
+  /* package */ final NodeRegion getNodeRegion() {
+    return mNodeRegion;
   }
 
   /**

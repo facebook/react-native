@@ -31,43 +31,29 @@ import com.facebook.react.uimanager.ViewProps;
 
   private FontStylingSpan mFontStylingSpan = new FontStylingSpan();
 
-  // these 2 are only used between collectText() and applySpans() calls.
-  private int mTextBegin;
-  private int mTextEnd;
-
   RCTVirtualText() {
     mFontStylingSpan.setFontSize(getDefaultFontSize());
   }
 
   @Override
-  protected void collectText(SpannableStringBuilder builder) {
-    int childCount = getChildCount();
-
-    mTextBegin = builder.length();
-    for (int i = 0; i < childCount; ++i) {
+  protected void performCollectText(SpannableStringBuilder builder) {
+    for (int i = 0, childCount = getChildCount(); i < childCount; ++i) {
       FlatTextShadowNode child = (FlatTextShadowNode) getChildAt(i);
       child.collectText(builder);
     }
-    mTextEnd = builder.length();
   }
 
   @Override
-  protected void applySpans(SpannableStringBuilder builder) {
-    if (mTextBegin == mTextEnd) {
-      return;
-    }
-
+  protected void performApplySpans(SpannableStringBuilder builder, int begin, int end) {
     mFontStylingSpan.freeze();
 
     builder.setSpan(
         mFontStylingSpan,
-        mTextBegin,
-        mTextEnd,
+        begin,
+        end,
         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 
-    int childCount = getChildCount();
-
-    for (int i = 0; i < childCount; ++i) {
+    for (int i = 0, childCount = getChildCount(); i < childCount; ++i) {
       FlatTextShadowNode child = (FlatTextShadowNode) getChildAt(i);
       child.applySpans(builder);
     }

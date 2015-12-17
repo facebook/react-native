@@ -30,6 +30,10 @@ import android.text.Layout;
     mLayout = layout;
   }
 
+  public Layout getLayout() {
+    return mLayout;
+  }
+
   @Override
   public void draw(FlatViewGroup parent, Canvas canvas) {
     float left = getLeft();

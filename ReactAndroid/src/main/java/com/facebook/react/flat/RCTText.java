@@ -175,6 +175,28 @@ import com.facebook.react.uimanager.ViewProps;
   }
 
   @Override
+  /* package */ void updateNodeRegion(float left, float top, float right, float bottom) {
+    if (mDrawCommand == null) {
+      super.updateNodeRegion(left, top, right, bottom);
+      return;
+    }
+
+    NodeRegion nodeRegion = getNodeRegion();
+    Layout layout = null;
+
+    if (nodeRegion instanceof TextNodeRegion) {
+      layout = ((TextNodeRegion) nodeRegion).getLayout();
+    }
+
+    Layout newLayout = mDrawCommand.getLayout();
+    if (nodeRegion.mLeft != left || nodeRegion.mTop != top ||
+        nodeRegion.mRight != right || nodeRegion.mBottom != bottom ||
+        layout != newLayout) {
+      setNodeRegion(new TextNodeRegion(left, top, right, bottom, getReactTag(), newLayout));
+    }
+  }
+
+  @Override
   protected int getDefaultFontSize() {
     // top-level <Text /> should always specify font size.
     return fontSizeFromSp(ViewDefaults.FONT_SIZE_SP);
