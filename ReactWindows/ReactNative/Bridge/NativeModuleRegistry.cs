@@ -57,6 +57,24 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
+        /// Write the module descriptions to the given <see cref="JsonWriter"/>.
+        /// </summary>
+        /// <param name="writer">The JSON writer.</param>
+        public /* TODO: internal? */ void WriteModuleDescriptions(JsonWriter writer)
+        {
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "CreateJSON"))
+            {
+                writer.WriteStartObject();
+                foreach (var moduleDef in _moduleTable)
+                {
+                    writer.WritePropertyName(moduleDef.Name);
+                    moduleDef.WriteModuleDescription(writer);
+                }
+                writer.WriteEndObject();
+            }
+        }
+
+        /// <summary>
         /// Invoke a method on a native module.
         /// </summary>
         /// <param name="catalystInstance">The catalyst instance.</param>
@@ -106,24 +124,6 @@ namespace ReactNative.Bridge
                 {
                     module.OnCatalystInstanceDispose();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Write the module descriptions to the given <see cref="JsonWriter"/>.
-        /// </summary>
-        /// <param name="writer">The JSON writer.</param>
-        internal /* TODO: public? */ void WriteModuleDescriptions(JsonWriter writer)
-        {
-            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "CreateJSON"))
-            {
-                writer.WriteStartObject();
-                foreach (var moduleDef in _moduleTable)
-                {
-                    writer.WritePropertyName(moduleDef.Name);
-                    moduleDef.WriteModuleDescription(writer);
-                }
-                writer.WriteEndObject();
             }
         }
 
