@@ -32,15 +32,14 @@ var WebViewState = keyMirror({
 });
 
 /**
- * Note that WebView is only supported on iOS for now,
- * see https://facebook.github.io/react-native/docs/known-issues.html
+ * Renders a native WebView.
  */
 var WebView = React.createClass({
 
   propTypes: {
     ...View.propTypes,
-    renderError: PropTypes.func, // view to show if there's an error
-    renderLoading: PropTypes.func, // loading indicator to show
+    renderError: PropTypes.func, 
+    renderLoading: PropTypes.func,
     url: PropTypes.string,
     html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
@@ -48,6 +47,11 @@ var WebView = React.createClass({
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+
+    /**
+     * Used on Android only, JS is enabled by default for WebView on iOS
+     * @platform android
+     */
     javaScriptEnabledAndroid: PropTypes.bool,
 
     /**
@@ -56,10 +60,11 @@ var WebView = React.createClass({
     injectedJavaScript: PropTypes.string,
 
     /**
-     * Sets the user-agent for this WebView. The user-agent can also be set in native through
-     * WebViewConfig, but this can and will overwrite that config.
+     * Sets the user-agent for this WebView. The user-agent can also be set in native using
+     * WebViewConfig. This prop will overwrite that config.
      */
     userAgent: PropTypes.string,
+
     /**
      * Used to locate this view in end-to-end tests.
      */

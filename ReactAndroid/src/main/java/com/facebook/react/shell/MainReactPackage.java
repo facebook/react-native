@@ -42,6 +42,7 @@ import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
+import com.facebook.react.views.webview.ReactWebViewManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 
 /**
@@ -86,6 +87,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactViewPagerManager(),
       new ReactTextInlineImageViewManager(),
       new ReactVirtualTextViewManager(),
-      new SwipeRefreshLayoutManager());
+      new SwipeRefreshLayoutManager(),
+      new ReactWebViewManager());
   }
 }

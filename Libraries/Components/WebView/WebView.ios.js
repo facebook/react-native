@@ -77,9 +77,6 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
 
 /**
  * Renders a native WebView.
- *
- * Note that WebView is only supported on iOS for now,
- * see https://facebook.github.io/react-native/docs/known-issues.html
  */
 var WebView = React.createClass({
   statics: {
@@ -91,9 +88,21 @@ var WebView = React.createClass({
     ...View.propTypes,
     url: PropTypes.string,
     html: PropTypes.string,
+    /**
+     * Function that returns a view to show if there's an error.
+     */
     renderError: PropTypes.func, // view to show if there's an error
-    renderLoading: PropTypes.func, // loading indicator to show
+    /**
+     * Function that returns a loading indicator.
+     */
+    renderLoading: PropTypes.func,
+    /**
+     * @platform ios
+     */
     bounces: PropTypes.bool,
+    /**
+     * @platform ios
+     */
     scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
@@ -102,7 +111,7 @@ var WebView = React.createClass({
     style: View.propTypes.style,
 
     /**
-     * Used for android only, JS is enabled by default for WebView on iOS
+     * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
     javaScriptEnabledAndroid: PropTypes.bool,
