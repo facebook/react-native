@@ -11,12 +11,18 @@ using Windows.UI.Core;
 
 namespace ReactNative.Bridge.Queue
 {
+    /// <summary>
+    /// Encapsulates an action queue.
+    /// </summary>
     public abstract class MessageQueueThread : IMessageQueueThread, IDisposable
     {
         private bool _disposed;
 
         private MessageQueueThread() { }
 
+        /// <summary>
+        /// Flags if the <see cref="MessageQueueThread"/> is disposed.
+        /// </summary>
         protected bool IsDisposed
         {
             get
@@ -25,6 +31,13 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
+        /// <summary>
+        /// Checks if the caller is running on the queue instance.
+        /// </summary>
+        /// <returns>
+        /// <b>true</b> if the caller is calling from the queue, <b>false</b>
+        /// otherwise.
+        /// </returns>
         public bool IsOnThread()
         {
             AssertNotDisposed();
@@ -32,6 +45,10 @@ namespace ReactNative.Bridge.Queue
             return IsOnThreadCore();
         }
 
+        /// <summary>
+        /// Queues an action to run.
+        /// </summary>
+        /// <param name="action">The action.</param>
         public void RunOnQueue(Action action)
         {
             if (action == null)
@@ -42,15 +59,36 @@ namespace ReactNative.Bridge.Queue
             Enqueue(action);
         }
 
+        /// <summary>
+        /// Disposes the action queue.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
         }
 
+        /// <summary>
+        /// Enqueues the action.
+        /// </summary>
+        /// <param name="action">The action.</param>
         protected abstract void Enqueue(Action action);
 
+        /// <summary>
+        /// Checks if the caller is running on the queue instance.
+        /// </summary>
+        /// <returns>
+        /// <b>true</b> if the caller is calling from the queue, <b>false</b>
+        /// otherwise.
+        /// </returns>
         protected abstract bool IsOnThreadCore();
 
+        /// <summary>
+        /// Disposes the action queue.
+        /// </summary>
+        /// <param name="disposing">
+        /// <b>false</b> if dispose was triggered by a finalizer, <b>true</b>
+        /// otherwise.
+        /// </param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -67,6 +105,12 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
+        /// <summary>
+        /// Factory to create the action queue.
+        /// </summary>
+        /// <param name="spec">The action queue specification.</param>
+        /// <param name="handler">The exception handler.</param>
+        /// <returns>The action queue instance.</returns>
         public static MessageQueueThread Create(
             MessageQueueThreadSpec spec,
             Action<Exception> handler)

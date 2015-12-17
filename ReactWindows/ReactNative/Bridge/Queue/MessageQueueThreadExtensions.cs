@@ -3,7 +3,10 @@ using System.Threading.Tasks;
 
 namespace ReactNative.Bridge.Queue
 {
-    static class MessageQueueThreadExtensions
+    /// <summary>
+    /// Extension methods for <see cref="IMessageQueueThread"/>s.
+    /// </summary>
+    public static class MessageQueueThreadExtensions
     {
         /// <summary>
         /// Asserts <see cref="IMessageQueueThread.IsOnThread"/>, throwing if the <b>false</b>.

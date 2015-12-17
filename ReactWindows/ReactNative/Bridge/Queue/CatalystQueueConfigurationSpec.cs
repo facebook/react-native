@@ -2,6 +2,11 @@
 
 namespace ReactNative.Bridge.Queue
 {
+    /// <summary>
+    /// Specification for creating a <see cref="ICatalystQueueConfiguration"/>.
+    /// This exists so the <see cref="ICatalystInstance"/> is able to set
+    /// exception handlers on the <see cref="IMessageQueueThread"/>s it uses.
+    /// </summary>
     public sealed class CatalystQueueConfigurationSpec
     {
         private CatalystQueueConfigurationSpec(
@@ -12,16 +17,25 @@ namespace ReactNative.Bridge.Queue
             JSQueueThreadSpec = jsQueueThreadSpec;
         }
 
+        /// <summary>
+        /// The native modules <see cref="IMessageQueueThread"/> specification.
+        /// </summary>
         public MessageQueueThreadSpec NativeModulesQueueThreadSpec
         {
             get;
         }
 
+        /// <summary>
+        /// The JavaScript <see cref="IMessageQueueThread"/> specification.
+        /// </summary>
         public MessageQueueThreadSpec JSQueueThreadSpec
         {
             get;
         }
-
+        
+        /// <summary>
+        /// The default <see cref="CatalystQueueConfigurationSpec"/> instance.
+        /// </summary>
         public static CatalystQueueConfigurationSpec Default { get; } = CreateDefault();
 
         private static CatalystQueueConfigurationSpec CreateDefault()
@@ -34,11 +48,17 @@ namespace ReactNative.Bridge.Queue
             .Build();
         }
 
+        /// <summary>
+        /// Builder for <see cref="CatalystQueueConfigurationSpec"/>.
+        /// </summary>
         public sealed class Builder
         {
             private MessageQueueThreadSpec _nativeModulesQueueThreadSpec;
             private MessageQueueThreadSpec _jsQueueThreadSpec;
 
+            /// <summary>
+            /// Set the native modules <see cref="MessageQueueThreadSpec"/>.
+            /// </summary>
             public MessageQueueThreadSpec NativeModulesQueueThreadSpec
             {
                 set
@@ -52,6 +72,9 @@ namespace ReactNative.Bridge.Queue
                 }
             }
 
+            /// <summary>
+            /// Set the JavaScript <see cref="MessageQueueThreadSpec"/>.
+            /// </summary>
             public MessageQueueThreadSpec JSQueueThreadSpec
             {
                 set
@@ -65,6 +88,10 @@ namespace ReactNative.Bridge.Queue
                 }
             }
 
+            /// <summary>
+            /// Build the <see cref="CatalystQueueConfigurationSpec"/>.
+            /// </summary>
+            /// <returns>The instance.</returns>
             public CatalystQueueConfigurationSpec Build()
             {
                 if (_nativeModulesQueueThreadSpec == null)

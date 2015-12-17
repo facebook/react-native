@@ -2,11 +2,17 @@
 
 namespace ReactNative.Bridge
 {
+    /// <summary>
+    /// Base class for <see cref="IJavaScriptModule"/>s.
+    /// </summary>
     public abstract class JavaScriptModuleBase : IJavaScriptModule
     {
-        private IInvokeHandler _invokeHandler;
+        private IInvocationHandler _invokeHandler;
 
-        public IInvokeHandler InvokeHandler
+        /// <summary>
+        /// The invocation handler.
+        /// </summary>
+        public IInvocationHandler InvocationHandler
         {
             set
             {
@@ -19,6 +25,17 @@ namespace ReactNative.Bridge
             }
         }
 
+        /// <summary>
+        /// Invoke a method by name.
+        /// </summary>
+        /// <param name="name">The name of the method.</param>
+        /// <param name="args">The arguments.</param>
+        /// <remarks>
+        /// The expectation is that <see cref="IJavaScriptModule"/>s will use
+        /// this method to notify the framework of a JavaScript call to be
+        /// executed. This is to overcome the absense of a performant "proxy"
+        /// implementation in the .NET framework.
+        /// </remarks>
         protected void Invoke(string name, params object[] args)
         {
             if (_invokeHandler == null)
