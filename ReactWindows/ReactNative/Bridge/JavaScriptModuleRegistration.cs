@@ -24,17 +24,17 @@ namespace ReactNative.Bridge
             ModuleId = moduleId;
             ModuleInterface = moduleInterface;
 
-            var methods = moduleInterface.GetMethods();
-            var methodNames = new string[methods.Length];
-            for (var i = 0; i < methods.Length; ++i)
+            var methods = moduleInterface.GetTypeInfo().DeclaredMethods;
+            var methodNames = new List<string>();
+            foreach (var method in methods)
             {
-                methodNames[i] = methods[i].Name;
+                methodNames.Add(method.Name);
             }
 
-            Array.Sort(methodNames, Comparer<string>.Create((s1, s2) => s1.CompareTo(s2)));
+            methodNames.Sort((s1, s2) => s1.CompareTo(s2));
 
-            _methodsToIds = new Dictionary<string, int>(methods.Length);
-            _methodsToTracingStrings = new Dictionary<string, string>(methods.Length);
+            _methodsToIds = new Dictionary<string, int>(methodNames.Count);
+            _methodsToTracingStrings = new Dictionary<string, string>(methodNames.Count);
 
             InitializeMethodTables(methodNames);
         }
@@ -103,10 +103,10 @@ namespace ReactNative.Bridge
             return name;
         }
 
-        private void InitializeMethodTables(string[] methods)
+        private void InitializeMethodTables(IList<string> methods)
         {
             var lastMethod = default(string);
-            for (var i = 0; i < methods.Length; ++i)
+            for (var i = 0; i < methods.Count; ++i)
             {
                 var method = methods[i];
                 if (method == lastMethod)
