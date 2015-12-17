@@ -46,7 +46,9 @@ if [[ -d "$HOME/.nodenv/bin" ]]; then
   export PATH="$HOME/.nodenv/bin:$PATH"
 fi
 
-if which nodenv > /dev/null; then eval "$(nodenv init -)"; fi
+if [[ -x "$(command -v nodenv)" ]]; then
+  eval "$(nodenv init -)"
+fi
 
 react-native bundle \
   --entry-file index.ios.js \
