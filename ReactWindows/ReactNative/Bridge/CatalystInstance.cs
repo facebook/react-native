@@ -87,7 +87,7 @@ namespace ReactNative.Bridge
             });
         }
 
-        public void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
+        public /* TODO: internal? */ void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
         {
             _catalystQueueConfiguration.JSQueueThread.RunOnQueue(() =>
             {
