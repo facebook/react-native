@@ -184,7 +184,7 @@ public abstract class ReactInstanceManager {
     /**
      * Path to the JS bundle file to be loaded from the file system.
      *
-     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle}
+     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle"}
      */
     public Builder setJSBundleFile(String jsBundleFile) {
       mJSBundleFile = jsBundleFile;

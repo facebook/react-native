@@ -14,14 +14,14 @@
 var RCTAlertManager = require('NativeModules').AlertManager;
 var invariant = require('invariant');
 
-type AlertType = $Enum<{
+export type AlertType = $Enum<{
   'default': string;
   'plain-text': string;
   'secure-text': string;
   'login-password': string;
 }>;
 
-type AlertButtonStyle = $Enum<{
+export type AlertButtonStyle = $Enum<{
   'default': string;
   'cancel': string;
   'destructive': string;
@@ -32,20 +32,19 @@ type AlertButtonStyle = $Enum<{
  *
  * Optionally provide a list of buttons. Tapping any button will fire the
  * respective onPress callback and dismiss the alert. By default, the only
- * button will be an 'OK' button
+ * button will be an 'OK' button.
  *
  * ```
  * AlertIOS.alert(
  *   'Foo Title',
  *   'My Alert Msg',
  *   [
- *     {text: 'OK', onPress: () => console.log('OK Pressed!')},
- *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed!'), style: 'cancel'},
+ *     {text: 'OK', onPress: () => console.log('OK Pressed')},
+ *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *   ]
  * )
  * ```
  */
-
 class AlertIOS {
   static alert(
     title: ?string,
