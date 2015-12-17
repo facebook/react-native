@@ -1631,12 +1631,12 @@ module.exports = {
    *  then calls `setValue` on the mapped outputs.  e.g.
    *
    *```javascript
-   *  onScroll={this.AnimatedEvent(
+   *  onScroll={Animated.event(
    *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
    *    {listener},          // Optional async listener
    *  )
    *  ...
-   *  onPanResponderMove: this.AnimatedEvent([
+   *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored
    *    {dx: this._panX},    // gestureState arg
    *  ]),
