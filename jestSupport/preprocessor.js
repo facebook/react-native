@@ -13,12 +13,12 @@ const path = require('path');
 const transformer = require('../packager/transformer.js');
 const fs = require('fs');
 
-var babel_core_location = path.join(__dirname, '../node_modules/babel-core/package.json');
+var babelCoreLocation = path.join(__dirname, '../node_modules/babel-core/package.json');
 try {
-  fs.lstatSync(babel_core_location);
+  fs.lstatSync(babelCoreLocation);
 }
 catch(e) {
-  babel_core_location = path.join(__dirname, '../../babel-core/package.json');
+  babelCoreLocation = path.join(__dirname, '../../babel-core/package.json');
 }
 
 module.exports = {
@@ -35,6 +35,6 @@ module.exports = {
   getCacheKey: createCacheKeyFunction([
     __filename,
     path.join(__dirname, '../packager/transformer.js'),
-    babel_core_location,
+    babelCoreLocation,
   ]),
 };
