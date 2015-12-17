@@ -36,9 +36,9 @@ namespace ReactNative.Core
 
             if (mReactInstanceManager != null)
             {
-               // mReactInstanceManager.getCurrentReactContext()
-               //     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            //.emit(eventName, params);
+                // mReactInstanceManager.getCurrentReactContext()
+                //     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                //.emit(eventName, params);
             }
         }
     }
