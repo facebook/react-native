@@ -2,7 +2,13 @@
 
 namespace ReactNative.Bridge.Queue
 {
-    class CatalystQueueConfiguration : ICatalystQueueConfiguration, IDisposable
+    /// <summary>
+    /// Specifies which <see cref="IMessageQueueThread"/>s must be used to run
+    /// the various contexts of execution within catalyst (dispatcher, native
+    /// modules, and JS). Some of these queue *may* be the same but should be
+    /// coded against as if they are different.
+    /// </summary>
+    class CatalystQueueConfiguration : ICatalystQueueConfiguration
     {
         private readonly MessageQueueThread _dispatcherQueueThread;
         private readonly MessageQueueThread _nativeModulesQueueThread;
@@ -18,6 +24,9 @@ namespace ReactNative.Bridge.Queue
             _jsQueueThread = jsQueueThread;
         }
 
+        /// <summary>
+        /// The main UI thread.
+        /// </summary>
         public IMessageQueueThread DispatcherQueueThread
         {
             get
@@ -26,6 +35,9 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
+        /// <summary>
+        /// The native modules thread.
+        /// </summary>
         public IMessageQueueThread NativeModulesQueueThread
         {
             get
@@ -34,6 +46,9 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
+        /// <summary>
+        /// The JavaScript thread.
+        /// </summary>
         public IMessageQueueThread JSQueueThread
         {
             get
@@ -42,6 +57,13 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
+        /// <summary>
+        /// Disposes the queue configuration.
+        /// </summary>
+        /// <remarks>
+        /// Should be called whenever the corresponding <see cref="ICatalystInstance"/>
+        /// is disposed.
+        /// </remarks>
         public void Dispose()
         {
             _dispatcherQueueThread.Dispose();
@@ -49,6 +71,12 @@ namespace ReactNative.Bridge.Queue
             _jsQueueThread.Dispose();
         }
 
+        /// <summary>
+        /// Factory for the configuration.
+        /// </summary>
+        /// <param name="spec">The configuration specification.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
+        /// <returns>The queue configuration.</returns>
         public static CatalystQueueConfiguration Create(
             CatalystQueueConfigurationSpec spec,
             Action<Exception> exceptionHandler)

@@ -1,7 +1,13 @@
 ﻿namespace ReactNative.Bridge
 {
+    /// <summary>
+    /// An interface for JavaScript modules.
+    /// </summary>
     public interface IJavaScriptModule
     {
-        IInvokeHandler InvokeHandler { set; }
+        /// <summary>
+        /// The invocation handler.
+        /// </summary>
+        IInvocationHandler InvocationHandler { set; }
     }
 }

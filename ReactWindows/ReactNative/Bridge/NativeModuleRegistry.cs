@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace ReactNative.Bridge
 {
+    /// <summary>
+    /// A set of native APIs exposed to a particular JavaScript instance.
+    /// </summary>
     public sealed class NativeModuleRegistry
     {
         private readonly IReadOnlyList<ModuleDefinition> _moduleTable;
@@ -26,6 +29,9 @@ namespace ReactNative.Bridge
                 .ToList();
         }
 
+        /// <summary>
+        /// The set of native modules exposed.
+        /// </summary>
         public IEnumerable<INativeModule> Modules
         {
             get
@@ -34,6 +40,11 @@ namespace ReactNative.Bridge
             }
         }
 
+        /// <summary>
+        /// Gets a module instance of a specific type.
+        /// </summary>
+        /// <typeparam name="T">Type of module instance.</typeparam>
+        /// <returns>The module instance.</returns>
         public T GetModule<T>() where T : INativeModule
         {
             var instance = default(INativeModule);
@@ -45,6 +56,13 @@ namespace ReactNative.Bridge
             throw new InvalidOperationException("No module instance for type '{0}'.");
         }
 
+        /// <summary>
+        /// Invoke a method on a native module.
+        /// </summary>
+        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="moduleId">The module ID.</param>
+        /// <param name="methodId">The method ID.</param>
+        /// <param name="parameters">The parameters.</param>
         internal /* TODO: public? */ void Invoke(
             ICatalystInstance catalystInstance,
             int moduleId,
@@ -59,6 +77,10 @@ namespace ReactNative.Bridge
             _moduleTable[moduleId].Invoke(catalystInstance, methodId, parameters);
         }
 
+        /// <summary>
+        /// Hook to notify modules that the <see cref="ICatalystInstance"/> has
+        /// been initialized.
+        /// </summary>
         internal /* TODO: public? */ void NotifyCatalystInstanceInitialize()
         {
             DispatcherHelpers.AssertOnDispatcher();
@@ -71,6 +93,10 @@ namespace ReactNative.Bridge
             }
         }
 
+        /// <summary>
+        /// Hook to notify modules that the <see cref="ICatalystInstance"/> has
+        /// been disposed.
+        /// </summary>
         internal /* TODO: public? */ void NotifyCatalystInstanceDispose()
         {
             DispatcherHelpers.AssertOnDispatcher();
@@ -83,6 +109,10 @@ namespace ReactNative.Bridge
             }
         }
 
+        /// <summary>
+        /// Write the module descriptions to the given <see cref="JsonWriter"/>.
+        /// </summary>
+        /// <param name="writer">The JSON writer.</param>
         internal /* TODO: public? */ void WriteModuleDescriptions(JsonWriter writer)
         {
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "CreateJSON"))
@@ -171,11 +201,19 @@ namespace ReactNative.Bridge
             }
         }
 
+        /// <summary>
+        /// Builder for <see cref="NativeModuleRegistry"/>.
+        /// </summary>
         public sealed class Builder
         {
             private readonly IDictionary<string, INativeModule> _modules = 
                 new Dictionary<string, INativeModule>();
 
+            /// <summary>
+            /// Add a native module to the builder.
+            /// </summary>
+            /// <param name="module">The native module.</param>
+            /// <returns>The builder instance.</returns>
             public Builder Add(INativeModule module)
             {
                 if (module == null)
@@ -207,6 +245,10 @@ namespace ReactNative.Bridge
                 return this;
             }
 
+            /// <summary>
+            /// Build a <see cref="NativeModuleRegistry"/> instance.
+            /// </summary>
+            /// <returns>The instance.</returns>
             public NativeModuleRegistry Build()
             {
                 var moduleTable = new List<ModuleDefinition>(_modules.Count); 

@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace ReactNative.Reflection
 {
+    /// <summary>
+    /// Helper methods for <see cref="MethodInfo"/>.
+    /// </summary>
     static class MethodInfoHelpers
     {
-        public static bool IsAsync(this MethodInfo methodInfo)
-        {
-            return typeof(Task).IsAssignableFrom(methodInfo.ReturnType);
-        }
+
     }
 }

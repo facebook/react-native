@@ -5,10 +5,22 @@ using System.Globalization;
 
 namespace ReactNative.Bridge
 {
+    /// <summary>
+    /// Class responsible for holding all <see cref="IJavaScriptModule"/>s
+    /// registered to a <see cref="ICatalystInstance"/>. Requires that
+    /// JavaScript modules use the <see cref="JavaScriptModuleBase"/> base
+    /// class, and implement each of it's methods to dispatch through the
+    /// <see cref="JavaScriptModuleBase.Invoke(string, object[])"/> method.
+    /// </summary>
     class JavaScriptModuleRegistry
     {
         private readonly IDictionary<Type, IJavaScriptModule> _moduleInstances;
 
+        /// <summary>
+        /// Instantiates the <see cref="JavaScriptModuleRegistry"/>.
+        /// </summary>
+        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="config">The module configuration.</param>
         public JavaScriptModuleRegistry(
             CatalystInstance catalystInstance,
             JavaScriptModulesConfig config)
@@ -18,12 +30,17 @@ namespace ReactNative.Bridge
             {
                 var type = registration.ModuleInterface;
                 var moduleInstance = (IJavaScriptModule)Activator.CreateInstance(type);
-                var invokeHandler = new JavaScriptModuleInvokeHandler(catalystInstance, registration);
-                moduleInstance.InvokeHandler = invokeHandler;
+                var invokeHandler = new JavaScriptModuleInvocationHandler(catalystInstance, registration);
+                moduleInstance.InvocationHandler = invokeHandler;
                 _moduleInstances.Add(type, moduleInstance);
             }
         }
 
+        /// <summary>
+        /// Gets an instance of a <see cref="IJavaScriptModule"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of JavaScript module.</typeparam>
+        /// <returns>The JavaScript module instance.</returns>
         public T GetJavaScriptModule<T>() where T : IJavaScriptModule
         {
             var instance = default(IJavaScriptModule);
@@ -39,12 +56,12 @@ namespace ReactNative.Bridge
             return (T)instance;
         }
 
-        class JavaScriptModuleInvokeHandler : IInvokeHandler
+        class JavaScriptModuleInvocationHandler : IInvocationHandler
         {
             private readonly CatalystInstance _catalystInstance;
             private readonly JavaScriptModuleRegistration _moduleRegistration;
 
-            public JavaScriptModuleInvokeHandler(
+            public JavaScriptModuleInvocationHandler(
                 CatalystInstance catalystInstance,
                 JavaScriptModuleRegistration moduleRegistration)
             {
