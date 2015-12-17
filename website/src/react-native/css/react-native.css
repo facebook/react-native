@@ -1214,3 +1214,11 @@ div[data-twttr-id] iframe {
     margin: 0;
   }
 }
+
+
+@media only screen and (max-device-width: 840px) {
+  .showcaseSection .inner-content {
+    width: 100%;
+  }
+}
+
