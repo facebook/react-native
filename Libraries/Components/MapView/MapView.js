@@ -11,77 +11,30 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var RCTMap = require('UIManager').RCTMap;
-var RCTMapConstants = RCTMap && RCTMap.Constants;
-var React = require('React');
-var View = require('View');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const Image = require('Image');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const RCTMapConfig = require('UIManager').RCTMap;
+const RCTMapConstants = RCTMapConfig && RCTMapConfig.Constants;
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var processColor = require('processColor');
-var resolveAssetSource = require('resolveAssetSource');
-var requireNativeComponent = require('requireNativeComponent');
+const processColor = require('processColor');
+const resolveAssetSource = require('resolveAssetSource');
+const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 type MapRegion = {
   latitude: number;
   longitude: number;
-  latitudeDelta: number;
-  longitudeDelta: number;
+  latitudeDelta?: ?number;
+  longitudeDelta?: ?number;
 };
 
-var MapView = React.createClass({
+const MapView = React.createClass({
   mixins: [NativeMethodsMixin],
-
-  checkAnnotationIds: function (annotations: Array<Object>) {
-
-    var newAnnotations = annotations.map(function (annotation) {
-      if (!annotation.id) {
-        // TODO: add a base64 (or similar) encoder here
-        annotation.id = encodeURIComponent(JSON.stringify(annotation));
-      }
-      return annotation;
-    });
-
-    this.setState({
-      annotations: newAnnotations
-    });
-  },
-
-  checkOverlayIds: function (overlays: Array<Object>) {
-
-    var newOverlays = overlays.map(function (overlay) {
-      if (!overlay.id) {
-        // TODO: add a base64 (or similar) encoder here
-        overlay.id = encodeURIComponent(JSON.stringify(overlay));
-      }
-      return overlay;
-    });
-
-    this.setState({
-      overlays: newOverlays
-    });
-  },
-
-  componentWillMount: function() {
-    if (this.props.annotations) {
-      this.checkAnnotationIds(this.props.annotations);
-    }
-    if (this.props.overlays) {
-      this.checkOverlayIds(this.props.overlays);
-    }
-  },
-
-  componentWillReceiveProps: function(nextProps: Object) {
-    if (nextProps.annotations) {
-      this.checkAnnotationIds(nextProps.annotations);
-    }
-    if (nextProps.overlays) {
-      this.checkOverlayIds(nextProps.overlays);
-    }
-  },
 
   propTypes: {
     ...View.propTypes,
@@ -151,6 +104,8 @@ var MapView = React.createClass({
      * - standard: standard road map (default)
      * - satellite: satellite view
      * - hybrid: satellite view with roads and points of interest overlaid
+     *
+     * @platform ios
      */
     mapType: React.PropTypes.oneOf([
       'standard',
@@ -175,12 +130,13 @@ var MapView = React.createClass({
        * Distance between the minimum and the maximum latitude/longitude
        * to be displayed.
        */
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+      latitudeDelta: React.PropTypes.number,
+      longitudeDelta: React.PropTypes.number,
     }),
 
     /**
      * Map annotations with title/subtitle.
+     * @platform ios
      */
     annotations: React.PropTypes.arrayOf(React.PropTypes.shape({
       /**
@@ -199,19 +155,14 @@ var MapView = React.createClass({
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
-
+      
       /**
-       * Whether the Annotation has callout buttons.
+       * Callout views.
        */
-      hasLeftCallout: React.PropTypes.bool,
-      hasRightCallout: React.PropTypes.bool,
-
-      /**
-       * Event handlers for callout buttons.
-       */
-      onLeftCalloutPress: React.PropTypes.func,
-      onRightCalloutPress: React.PropTypes.func,
-
+      leftCalloutView: React.PropTypes.element,
+      rightCalloutView: React.PropTypes.element,
+      detailCalloutView: React.PropTypes.element,
+      
       /**
        * The pin color. This can be any valid color string, or you can use one
        * of the predefined PinColors constants. Applies to both standard pins
@@ -220,24 +171,40 @@ var MapView = React.createClass({
        * Note that on iOS 8 and earlier, only the standard PinColor constants
        * are supported for regular pins. For custom pin images, any tintColor
        * value is supported on all iOS versions.
-       * @platform ios
        */
-      tintColor: React.PropTypes.string,
+      tintColor: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.number
+      ]),
 
       /**
        * Custom pin image. This must be a static image resource inside the app.
-       * @platform ios
        */
       image: Image.propTypes.source,
+
+      /**
+       * Custom pin view. If set, this replaces the pin or custom pin image.
+       */
+      view: React.PropTypes.element,
 
       /**
        * annotation id
        */
       id: React.PropTypes.string,
+            
+      /**
+       * Deprecated. Use the left/right/detailsCalloutView props instead.
+       */
+      hasLeftCallout: React.PropTypes.bool,
+      hasRightCallout: React.PropTypes.bool,
+      onLeftCalloutPress: React.PropTypes.func,
+      onRightCalloutPress: React.PropTypes.func,
+
     })),
 
     /**
      * Map overlays
+     * @platform ios
      */
     overlays: React.PropTypes.arrayOf(React.PropTypes.shape({
       /**
@@ -252,8 +219,14 @@ var MapView = React.createClass({
        * Line attributes
        */
       lineWidth: React.PropTypes.number,
-      strokeColor: React.PropTypes.string,
-      fillColor: React.PropTypes.string,
+      strokeColor: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.number
+      ]),
+      fillColor: React.PropTypes.oneOfType([
+        React.PropTypes.string,
+        React.PropTypes.number
+      ]),
 
       /**
        * Overlay id
@@ -263,17 +236,20 @@ var MapView = React.createClass({
 
     /**
      * Maximum size of area that can be displayed.
+     * @platform ios
      */
     maxDelta: React.PropTypes.number,
 
     /**
      * Minimum size of area that can be displayed.
+     * @platform ios
      */
     minDelta: React.PropTypes.number,
 
     /**
      * Insets for the map's legal label, originally at bottom left of the map.
      * See `EdgeInsetsPropType.js` for more information.
+     * @platform ios
      */
     legalLabelInsets: EdgeInsetsPropType,
 
@@ -299,22 +275,81 @@ var MapView = React.createClass({
   },
 
   render: function() {
-
-    let {annotations, overlays} = this.props;
-    annotations = annotations && annotations.map((annotation: Object) => {
-      let {tintColor, image} = annotation;
+    let children = [], {annotations, overlays} = this.props;
+    annotations = annotations && annotations.map((annotation: Object, index: number) => {
+      let {
+        id,
+        image,
+        tintColor,
+        view,
+        leftCalloutView,
+        rightCalloutView,
+        detailCalloutView,
+      } = annotation;
+      
+      if (!view && image && tintColor) {
+        view = <Image
+          style={{
+            tintColor: processColor(tintColor),
+          }}
+          source={image}
+        />;
+      }
+      if (view) {
+        var viewIndex = children.length;
+        children.push(React.cloneElement(view, {
+          style: [styles.annotationView, view.props.style || {}]
+        }));
+      }
+      if (leftCalloutView) {
+        var leftCalloutViewIndex = children.length;
+        children.push(React.cloneElement(leftCalloutView, {
+          style: [styles.calloutView, leftCalloutView.props.style || {}]
+        }));
+      }
+      if (rightCalloutView) {
+        var rightCalloutViewIndex = children.length;
+        children.push(React.cloneElement(rightCalloutView, {
+          style: [styles.calloutView, rightCalloutView.props.style || {}]
+        }));
+      }
+      if (detailCalloutView) {
+        var detailCalloutViewIndex = children.length;
+        children.push(React.cloneElement(detailCalloutView, {
+          style: [styles.calloutView, detailCalloutView.props.style || {}]
+        }));
+      }
+      ['hasLeftCallout', 'onLeftCalloutPress'].forEach(key => {
+        if (annotation[key]) {
+          console.warn('`' + key + '` is deprecated. Use leftCalloutView instead.');
+        }
+      });
+      ['hasRightCallout', 'onRightCalloutPress'].forEach(key => {
+        if (annotation[key]) {
+          console.warn('`' + key + '` is deprecated. Use rightCalloutView instead.');
+        }
+      });
       return {
         ...annotation,
         tintColor: tintColor && processColor(tintColor),
-        image: image && resolveAssetSource(image),
+        viewIndex,
+        leftCalloutViewIndex,
+        rightCalloutViewIndex,
+        detailCalloutViewIndex,
+        view: undefined,
+        leftCalloutView: undefined,
+        rightCalloutView: undefined,
+        detailCalloutView: undefined,
+        id: id || String(index),
       };
     });
-    overlays = overlays && overlays.map((overlay: Object) => {
-      let {strokeColor, fillColor} = overlay;
+    overlays = overlays && overlays.map((overlay: Object, index: number) => {
+      let {id, fillColor, strokeColor} = overlay;
       return {
         ...overlay,
         strokeColor: strokeColor && processColor(strokeColor),
         fillColor: fillColor && processColor(fillColor),
+        id: id || String(index),
       };
     });
 
@@ -364,11 +399,23 @@ var MapView = React.createClass({
       <RCTMap
         {...this.props}
         annotations={annotations}
+        children={children}
         overlays={overlays}
         onPress={onPress}
         onChange={onChange}
       />
     );
+  },
+});
+
+const styles = StyleSheet.create({
+  annotationView: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+  },
+  calloutView: {
+    position: 'absolute',
+    backgroundColor: 'white',
   },
 });
 
@@ -379,14 +426,14 @@ var MapView = React.createClass({
  * you are not obliged to use these, but they are useful for matching
  * the standard iOS look and feel.
  */
-let PinColors = RCTMapConstants && RCTMapConstants.PinColors;
+const PinColors = RCTMapConstants && RCTMapConstants.PinColors;
 MapView.PinColors = PinColors && {
   RED: PinColors.RED,
   GREEN: PinColors.GREEN,
   PURPLE: PinColors.PURPLE,
 };
 
-var RCTMap = requireNativeComponent('RCTMap', MapView, {
+const RCTMap = requireNativeComponent('RCTMap', MapView, {
   nativeOnly: {onChange: true, onPress: true}
 });
 
