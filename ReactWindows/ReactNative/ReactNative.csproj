@@ -150,6 +150,8 @@
     <Compile Include="Bridge\ReactContext.cs" />
     <Compile Include="Bridge\ReactContextNativeModuleBase.cs" />
     <Compile Include="Common\ReactConstants.cs" />
+    <Compile Include="Core\ReactInstanceManager.cs" />
+    <Compile Include="Core\ReactRootView.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -188,6 +190,8 @@
     <Compile Include="Tracing\TraceDisposable.cs" />
     <Compile Include="Tracing\Tracer.cs" />
     <Compile Include="UIManager\AppRegistry.cs" />
+    <Compile Include="UIManager\RootView.cs" />
+    <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>

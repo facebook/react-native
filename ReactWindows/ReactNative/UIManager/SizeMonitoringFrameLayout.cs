@@ -32,10 +32,10 @@ namespace ReactNative.UIManager
         {
             mOnSizeChangedListener = onSizeChangedListener;
         }
-        
+
         protected void onSizeChanged(int w, int h, int oldw, int oldh)
         {
-          //  base.onSizeChanged(w, h, oldw, oldh);
+            //  base.onSizeChanged(w, h, oldw, oldh);
 
             if (mOnSizeChangedListener != null)
             {
