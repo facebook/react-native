@@ -59,3 +59,4 @@ namespace ReactNative.Core
         public abstract void detachRootView(ReactRootView rootView);
     }
 }
+    
