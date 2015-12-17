@@ -10,7 +10,6 @@ namespace ReactNative.Tracing
 {
     public struct TraceDisposable : IDisposable
     {
-        private static readonly EventSource s_eventSource = new EventSource("ReactNative");
         private static readonly Stopwatch s_stopwatch = Stopwatch.StartNew();
 
         private readonly int _source;
@@ -26,7 +25,7 @@ namespace ReactNative.Tracing
 
         public void Dispose()
         {
-            s_eventSource.Write(_title, new EventData(_source, TimeSpan.FromTicks(s_stopwatch.ElapsedTicks - _timestamp)));
+            EventSourceManager.Instance.Write(_title, new EventData(_source, TimeSpan.FromTicks(s_stopwatch.ElapsedTicks - _timestamp)));
         }
 
         [EventData]

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ReactNative.Tests.Bridge
 {
@@ -242,7 +243,7 @@ namespace ReactNative.Tests.Bridge
                 _callback = callback;
             }
 
-            public ICollection<INativeModule> NativeModules
+            public IEnumerable<INativeModule> NativeModules
             {
                 get
                 {
@@ -255,8 +256,9 @@ namespace ReactNative.Tests.Bridge
                 throw new NotImplementedException();
             }
 
-            public void Initialize()
+            public Task InitializeAsync()
             {
+                return Task.FromResult(true);
             }
 
             public void InvokeCallback(int callbackId, JArray arguments)

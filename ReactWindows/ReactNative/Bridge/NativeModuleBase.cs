@@ -54,7 +54,7 @@ namespace ReactNative.Bridge
             _constants = CreateConstants();
         }
 
-        public virtual void OnCatalystInstanceDestroy()
+        public virtual void OnCatalystInstanceDispose()
         {
         }
 
@@ -65,7 +65,7 @@ namespace ReactNative.Bridge
 
         private IReadOnlyDictionary<string, INativeMethod> InitializeMethods()
         {
-            var declaredMethods = GetType().GetTypeInfo().DeclaredMethods;
+            var declaredMethods = GetType().GetMethods();
             var exportedMethods = new List<MethodInfo>();
             foreach (var method in declaredMethods)
             {

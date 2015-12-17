@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace ReactNative.Bridge
 {
-    public interface IReactBridge
+    public interface IReactBridge : IDisposable
     {
         void CallFunction(int moduleId, int methodId, JArray arguments);
 

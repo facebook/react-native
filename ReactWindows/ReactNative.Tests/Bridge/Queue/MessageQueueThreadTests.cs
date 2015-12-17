@@ -18,14 +18,14 @@ namespace ReactNative.Tests.Bridge.Queue
                 ex => Assert.AreEqual("spec", ex.ParamName));
 
             AssertEx.Throws<ArgumentNullException>(
-                () => MessageQueueThread.Create(MessageQueueThreadSpec.MainUiThreadSpec, null),
+                () => MessageQueueThread.Create(MessageQueueThreadSpec.DispatcherThreadSpec, null),
                 ex => Assert.AreEqual("handler", ex.ParamName));
         }
 
         [TestMethod]
         public void MessageQueueThread_CreateUiThread_ThrowsNotSupported()
         {
-            AssertEx.Throws<NotSupportedException>(() => MessageQueueThreadSpec.Create("ui", MessageQueueThreadKind.MainUi));
+            AssertEx.Throws<NotSupportedException>(() => MessageQueueThreadSpec.Create("ui", MessageQueueThreadKind.DispatcherThread));
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace ReactNative.Tests.Bridge.Queue
         {
             var thrown = 0;
             var uiThread = default(IMessageQueueThread);
-            await RunOnDispatcherAsync(() => uiThread = MessageQueueThread.Create(MessageQueueThreadSpec.MainUiThreadSpec, ex => thrown++));
+            await RunOnDispatcherAsync(() => uiThread = MessageQueueThread.Create(MessageQueueThreadSpec.DispatcherThreadSpec, ex => thrown++));
             var backgroundThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("background", MessageQueueThreadKind.BackgroundSingleThread), ex => thrown++);
             var taskPoolThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("any", MessageQueueThreadKind.BackgroundAnyThread), ex => thrown++);
 
@@ -70,7 +70,7 @@ namespace ReactNative.Tests.Bridge.Queue
             });
 
             var uiThread = default(IMessageQueueThread);
-            await RunOnDispatcherAsync(() => uiThread = MessageQueueThread.Create(MessageQueueThreadSpec.MainUiThreadSpec, handler));
+            await RunOnDispatcherAsync(() => uiThread = MessageQueueThread.Create(MessageQueueThreadSpec.DispatcherThreadSpec, handler));
             var backgroundThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("background", MessageQueueThreadKind.BackgroundSingleThread), handler);
             var taskPoolThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("any", MessageQueueThreadKind.BackgroundAnyThread), handler);
 
@@ -93,7 +93,7 @@ namespace ReactNative.Tests.Bridge.Queue
         public async Task MessageQueueThread_OneAtATime()
         {
             var uiThread = default(IMessageQueueThread);
-            await RunOnDispatcherAsync(() => uiThread = MessageQueueThread.Create(MessageQueueThreadSpec.MainUiThreadSpec, ex => { Assert.Fail(); }));
+            await RunOnDispatcherAsync(() => uiThread = MessageQueueThread.Create(MessageQueueThreadSpec.DispatcherThreadSpec, ex => { Assert.Fail(); }));
             var backgroundThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("background", MessageQueueThreadKind.BackgroundSingleThread), ex => { Assert.Fail(); });
             var taskPoolThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("any", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
 
