@@ -257,7 +257,7 @@ dependencies {
     testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
     testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
     testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
-    testCompile("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
+    testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 }
 
 apply from: 'release.gradle'

@@ -17,6 +17,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
@@ -53,6 +54,7 @@ public class MainReactPackage implements ReactPackage {
     return Arrays.<NativeModule>asList(
       new AsyncStorageModule(reactContext),
       new ClipboardModule(reactContext),
+      new DialogModule(reactContext),
       new FrescoModule(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
