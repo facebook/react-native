@@ -14,11 +14,11 @@ namespace ReactNative.Bridge.Queue
 
         internal MessageQueueThreadKind Kind { get; }
 
-        public static MessageQueueThreadSpec MainUiThreadSpec { get; } = new MessageQueueThreadSpec(MessageQueueThreadKind.MainUi, "main_ui");
+        public static MessageQueueThreadSpec DispatcherThreadSpec { get; } = new MessageQueueThreadSpec(MessageQueueThreadKind.DispatcherThread, "main_ui");
 
         public static MessageQueueThreadSpec Create(string name, MessageQueueThreadKind kind)
         {
-            if (kind == MessageQueueThreadKind.MainUi)
+            if (kind == MessageQueueThreadKind.DispatcherThread)
             {
                 throw new NotSupportedException("Use the singleton MainUiThreadSpec instance.");
             }

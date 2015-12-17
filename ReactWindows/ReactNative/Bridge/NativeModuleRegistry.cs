@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,13 +10,13 @@ namespace ReactNative.Bridge
 {
     public sealed class NativeModuleRegistry
     {
-        private readonly IList<ModuleDefinition> _moduleTable;
-        private readonly IDictionary<Type, INativeModule> _moduleInstances;
+        private readonly IReadOnlyList<ModuleDefinition> _moduleTable;
+        private readonly IReadOnlyDictionary<Type, INativeModule> _moduleInstances;
         private readonly IList<IOnBatchCompleteListener> _batchCompleteListenerModules;
 
         private NativeModuleRegistry(
-            IList<ModuleDefinition> moduleTable,
-            IDictionary<Type, INativeModule> moduleInstances)
+            IReadOnlyList<ModuleDefinition> moduleTable,
+            IReadOnlyDictionary<Type, INativeModule> moduleInstances)
         {
             _moduleTable = moduleTable;
             _moduleInstances = moduleInstances;
@@ -24,7 +26,7 @@ namespace ReactNative.Bridge
                 .ToList();
         }
 
-        public ICollection<INativeModule> Modules
+        public IEnumerable<INativeModule> Modules
         {
             get
             {
@@ -43,16 +45,67 @@ namespace ReactNative.Bridge
             throw new InvalidOperationException("No module instance for type '{0}'.");
         }
 
+        internal /* TODO: public? */ void Invoke(
+            ICatalystInstance catalystInstance,
+            int moduleId,
+            int methodId,
+            JArray parameters)
+        {
+            if (moduleId < 0)
+                throw new ArgumentOutOfRangeException("Invalid module ID: " + moduleId, nameof(moduleId));
+            if (_moduleTable.Count < moduleId)
+                throw new ArgumentOutOfRangeException("Call to unknown module: " + moduleId, nameof(moduleId));
+
+            _moduleTable[moduleId].Invoke(catalystInstance, methodId, parameters);
+        }
+
+        internal /* TODO: public? */ void NotifyCatalystInstanceInitialize()
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyCatalystInstanceInitialize"))
+            {
+                foreach (var module in _moduleInstances.Values)
+                {
+                    module.Initialize();
+                }
+            }
+        }
+
+        internal /* TODO: public? */ void NotifyCatalystInstanceDispose()
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyCatalystInstanceDestroy"))
+            {
+                foreach (var module in _moduleInstances.Values)
+                {
+                    module.OnCatalystInstanceDispose();
+                }
+            }
+        }
+
+        internal /* TODO: public? */ void WriteModuleDescriptions(JsonWriter writer)
+        {
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "CreateJSON"))
+            {
+                writer.WriteStartObject();
+                foreach (var moduleDef in _moduleTable)
+                {
+                    writer.WritePropertyName(moduleDef.Name);
+                    moduleDef.WriteModuleDescription(writer);
+                }
+                writer.WriteEndObject();
+            }
+        }
+
         class ModuleDefinition
         {
             private readonly int _id;
-            private readonly string _name;
             private readonly IList<MethodRegistration> _methods;
 
             public ModuleDefinition(int id, string name, INativeModule target)
             {
                 _id = id;
-                _name = name;
+                Name = name;
                 Target = target;
                 _methods = new List<MethodRegistration>(target.Methods.Count);
 
@@ -66,11 +119,39 @@ namespace ReactNative.Bridge
                 }
             }
 
+            public int Id { get; }
+
+            public string Name { get; }
+
             public INativeModule Target { get; }
 
             public void Invoke(ICatalystInstance catalystInstance, int methodId, JArray parameters)
             {
                 _methods[methodId].Method.Invoke(catalystInstance, parameters);
+            }
+
+            public void WriteModuleDescription(JsonWriter writer)
+            {
+                writer.WriteStartObject();
+                writer.WritePropertyName("moduleID");
+                writer.WriteValue(_id);
+                writer.WritePropertyName("methods");
+                writer.WriteStartObject();
+                for (var i = 0; i < _methods.Count; ++i)
+                {
+                    var method = _methods[i];
+                    writer.WritePropertyName(method.Name);
+                    writer.WriteStartObject();
+                    writer.WritePropertyName("methodID");
+                    writer.WriteValue(i);
+                    writer.WritePropertyName("type");
+                    writer.WriteValue(method.Method.Type);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndObject();
+                writer.WritePropertyName("constants");
+                JObject.FromObject(Target.Constants).WriteTo(writer);
+                writer.WriteEndObject();
             }
 
             class MethodRegistration
