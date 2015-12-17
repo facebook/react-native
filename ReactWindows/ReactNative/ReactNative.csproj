@@ -109,10 +109,13 @@
   <ItemGroup>
     <Compile Include="Bridge\CatalystInstance.cs" />
     <Compile Include="Bridge\DispatcherHelpers.cs" />
+    <Compile Include="Bridge\IInvokeHandler.cs" />
     <Compile Include="Bridge\IJavaScriptExecutor.cs" />
     <Compile Include="Bridge\IJavaScriptModule.cs" />
     <Compile Include="Bridge\IReactCallback.cs" />
+    <Compile Include="Bridge\JavaScriptModuleBase.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
+    <Compile Include="Bridge\JavaScriptModuleRegistry.cs" />
     <Compile Include="Bridge\JavaScriptModulesConfig.cs" />
     <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\ICallback.cs" />
@@ -155,8 +158,9 @@
     <Compile Include="Hosting\JavaScriptValue.cs" />
     <Compile Include="Hosting\JavaScriptValueType.cs" />
     <Compile Include="Hosting\Native.cs" />
-    <Compile Include="Imports.cs" />
     <Compile Include="Bridge\INativeModule.cs" />
+    <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
+    <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
     <Compile Include="ReactMethodAttribute.cs" />
@@ -166,12 +170,10 @@
     <Compile Include="Tracing\EventSourceManager.cs" />
     <Compile Include="Tracing\TraceDisposable.cs" />
     <Compile Include="Tracing\Tracer.cs" />
-    <Compile Include="UIManager\RootView.cs" />
+    <Compile Include="UIManager\AppRegistry.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modules\Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
