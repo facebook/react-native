@@ -50,9 +50,14 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   annotation.animateDrop = [RCTConvert BOOL:json[@"animateDrop"]];
   annotation.tintColor = [RCTConvert UIColor:json[@"tintColor"]];
   annotation.image = [RCTConvert UIImage:json[@"image"]];
-  if (annotation.tintColor && annotation.image) {
-    annotation.image = [annotation.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  annotation.viewIndex =
+    [RCTConvert NSInteger:json[@"viewIndex"] ?: @(NSNotFound)];
+  annotation.leftCalloutViewIndex =
+    [RCTConvert NSInteger:json[@"leftCalloutViewIndex"] ?: @(NSNotFound)];
+  annotation.rightCalloutViewIndex =
+    [RCTConvert NSInteger:json[@"rightCalloutViewIndex"] ?: @(NSNotFound)];
+  annotation.detailCalloutViewIndex =
+    [RCTConvert NSInteger:json[@"detailCalloutViewIndex"] ?: @(NSNotFound)];
   return annotation;
 }
 

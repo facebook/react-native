@@ -23,10 +23,7 @@
 + (RCTMapAnnotation *)RCTMapAnnotation:(id)json;
 + (RCTMapOverlay *)RCTMapOverlay:(id)json;
 
-typedef NSArray RCTMapAnnotationArray;
 + (NSArray<RCTMapAnnotation *> *)RCTMapAnnotationArray:(id)json;
-
-typedef NSArray RCTMapOverlayArray;
 + (NSArray<RCTMapOverlay *> *)RCTMapOverlayArray:(id)json;
 
 @end
