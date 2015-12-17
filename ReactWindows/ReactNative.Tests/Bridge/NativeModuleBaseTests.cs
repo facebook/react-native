@@ -14,8 +14,7 @@ namespace ReactNative.Tests.Bridge
         [TestMethod]
         public void NativeModuleBase_MethodOverload_ThrowsNotSupported()
         {
-            var module = new MethodOverloadNativeModule();
-            AssertEx.Throws<NotSupportedException>(() => module.Initialize());
+            AssertEx.Throws<NotSupportedException>(() => new MethodOverloadNativeModule());
         }
 
         [TestMethod]
