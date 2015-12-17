@@ -30,12 +30,6 @@
             @"This method must be called on JS thread")
 
 /**
- * Used by RKAnalyticsCPULogger
- */
-NSString *const RCTEnqueueNotification = @"RCTEnqueueNotification";
-NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
-
-/**
  * Must be kept in sync with `MessageQueue.js`.
  */
 typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
@@ -725,8 +719,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:self userInfo:nil];
-
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
       RCTFatal(error);
@@ -735,7 +727,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     if (!self.isValid) {
       return;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:self userInfo:nil];
     [self handleBuffer:json batchEnded:YES];
   };
 
@@ -750,8 +741,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:self userInfo:nil];
-
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
       RCTFatal(error);
@@ -760,7 +749,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     if (!self.isValid) {
       return;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:self userInfo:nil];
     [self handleBuffer:json batchEnded:YES];
   };
 
