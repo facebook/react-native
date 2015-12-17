@@ -87,23 +87,7 @@ namespace ReactNative.Bridge
             });
         }
 
-        public void Dispose()
-        {
-            DispatcherHelpers.AssertOnDispatcher();
-
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-            _registry.NotifyCatalystInstanceDispose();
-            _catalystQueueConfiguration.Dispose();
-            // TODO: notify bridge idle listeners
-            _bridge.Dispose();
-        }
-
-        internal void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
+        public void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
         {
             _catalystQueueConfiguration.JSQueueThread.RunOnQueue(() =>
             {
@@ -124,6 +108,22 @@ namespace ReactNative.Bridge
                     _bridge.CallFunction(moduleId, methodId, arguments);
                 }
             });
+        }
+
+        public void Dispose()
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            _registry.NotifyCatalystInstanceDispose();
+            _catalystQueueConfiguration.Dispose();
+            // TODO: notify bridge idle listeners
+            _bridge.Dispose();
         }
 
         private Task InitializeBridgeAsync()

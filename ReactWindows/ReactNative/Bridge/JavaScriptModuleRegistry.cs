@@ -12,7 +12,7 @@ namespace ReactNative.Bridge
     /// class, and implement each of it's methods to dispatch through the
     /// <see cref="JavaScriptModuleBase.Invoke(string, object[])"/> method.
     /// </summary>
-    class JavaScriptModuleRegistry
+    public class JavaScriptModuleRegistry
     {
         private readonly IDictionary<Type, IJavaScriptModule> _moduleInstances;
 
@@ -22,9 +22,14 @@ namespace ReactNative.Bridge
         /// <param name="catalystInstance">The catalyst instance.</param>
         /// <param name="config">The module configuration.</param>
         public JavaScriptModuleRegistry(
-            CatalystInstance catalystInstance,
+            ICatalystInstance catalystInstance,
             JavaScriptModulesConfig config)
         {
+            if (catalystInstance == null)
+                throw new ArgumentNullException(nameof(catalystInstance));
+            if (config == null)
+                throw new ArgumentNullException(nameof(config));
+
             _moduleInstances = new Dictionary<Type, IJavaScriptModule>(config.ModuleDefinitions.Count);
             foreach (var registration in config.ModuleDefinitions)
             {
@@ -58,11 +63,11 @@ namespace ReactNative.Bridge
 
         class JavaScriptModuleInvocationHandler : IInvocationHandler
         {
-            private readonly CatalystInstance _catalystInstance;
+            private readonly ICatalystInstance _catalystInstance;
             private readonly JavaScriptModuleRegistration _moduleRegistration;
 
             public JavaScriptModuleInvocationHandler(
-                CatalystInstance catalystInstance,
+                ICatalystInstance catalystInstance,
                 JavaScriptModuleRegistration moduleRegistration)
             {
                 _catalystInstance = catalystInstance;

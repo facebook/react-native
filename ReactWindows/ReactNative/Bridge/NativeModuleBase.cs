@@ -132,7 +132,7 @@ namespace ReactNative.Bridge
 
         private IReadOnlyDictionary<string, INativeMethod> InitializeMethods()
         {
-            var declaredMethods = GetType().GetMethods();
+            var declaredMethods = GetType().GetTypeInfo().DeclaredMethods;
             var exportedMethods = new List<MethodInfo>();
             foreach (var method in declaredMethods)
             {
