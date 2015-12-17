@@ -10,9 +10,9 @@
 package com.facebook.react.flat;
 
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.ViewGroupManager;
 
-abstract class FlatViewManager<C extends FlatShadowNode> extends BaseViewManager<FlatViewGroup, C> {
+abstract class FlatViewManager extends ViewGroupManager<FlatViewGroup> {
 
   @Override
   protected FlatViewGroup createViewInstance(ThemedReactContext reactContext) {
@@ -22,9 +22,5 @@ abstract class FlatViewManager<C extends FlatShadowNode> extends BaseViewManager
   @Override
   public void setBackgroundColor(FlatViewGroup view, int backgroundColor) {
     // suppress
-  }
-
-  @Override
-  public void updateExtraData(FlatViewGroup root, Object extraData) {
   }
 }

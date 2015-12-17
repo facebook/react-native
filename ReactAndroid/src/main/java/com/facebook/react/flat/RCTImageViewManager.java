@@ -9,7 +9,7 @@
 
 package com.facebook.react.flat;
 
-/* package */ final class RCTImageViewManager extends FlatViewManager<RCTImageView> {
+/* package */ final class RCTImageViewManager extends FlatViewManager {
 
   @Override
   public String getName() {
