@@ -14,6 +14,6 @@ namespace ReactNative.Bridge
 
         void Initialize();
 
-        void OnCatalystInstanceDestroy();
+        void OnCatalystInstanceDispose();
     }
 }

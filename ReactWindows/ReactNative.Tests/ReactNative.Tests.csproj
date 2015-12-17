@@ -95,6 +95,7 @@
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bridge\JavaScriptModulesConfigTests.cs" />
     <Compile Include="Bridge\NativeModuleBaseTests.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadTests.cs" />
     <Compile Include="Internal\AssertEx.cs" />

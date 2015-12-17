@@ -108,20 +108,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridge\CatalystInstance.cs" />
+    <Compile Include="Bridge\DispatcherHelpers.cs" />
+    <Compile Include="Bridge\IJavaScriptExecutor.cs" />
+    <Compile Include="Bridge\IJavaScriptModule.cs" />
+    <Compile Include="Bridge\IReactCallback.cs" />
+    <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
+    <Compile Include="Bridge\JavaScriptModulesConfig.cs" />
+    <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
     <Compile Include="Bridge\IOnBatchCompleteListener.cs" />
-    <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\NativeModuleBase.cs" />
     <Compile Include="Bridge\NativeModuleRegistry.cs" />
+    <Compile Include="Bridge\Queue\CatalystQueueConfiguration.cs" />
+    <Compile Include="Bridge\Queue\CatalystQueueConfigurationSpec.cs" />
+    <Compile Include="Bridge\Queue\ICatalystQueueConfiguration.cs" />
     <Compile Include="Bridge\Queue\IMessageQueueThread.cs" />
     <Compile Include="Bridge\Queue\LimitedConcurrencyTaskScheduler.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThread.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadExtensions.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadKind.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadSpec.cs" />
+    <Compile Include="Bridge\ReactBridge.cs" />
     <Compile Include="Bridge\ReactContext.cs" />
+    <Compile Include="Common\ReactConstants.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -152,11 +163,15 @@
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="Reflection\MethodInfoHelpers.cs" />
     <Compile Include="Reflection\ReflectionHelpers.cs" />
+    <Compile Include="Tracing\EventSourceManager.cs" />
     <Compile Include="Tracing\TraceDisposable.cs" />
     <Compile Include="Tracing\Tracer.cs" />
+    <Compile Include="UIManager\RootView.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Modules\Core\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

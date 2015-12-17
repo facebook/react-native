@@ -2,7 +2,7 @@
 {
     public enum MessageQueueThreadKind
     {
-        MainUi,
+        DispatcherThread,
         BackgroundSingleThread,
         BackgroundAnyThread,
     }
