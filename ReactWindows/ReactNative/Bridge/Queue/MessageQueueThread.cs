@@ -79,7 +79,7 @@ namespace ReactNative.Bridge.Queue
 
             switch (spec.Kind)
             {
-                case MessageQueueThreadKind.MainUi:
+                case MessageQueueThreadKind.DispatcherThread:
                     return new DispatcherMessageQueueThread(spec.Name, handler);
                 case MessageQueueThreadKind.BackgroundSingleThread:
                     return new SingleBackgroundMessageQueueThread(spec.Name, handler);

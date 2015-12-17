@@ -17,5 +17,10 @@ namespace ReactNative.Tracing
         {
             return new TraceDisposable(kind, title);
         }
+
+        public static void Write(string tag, string message)
+        {
+            EventSourceManager.Instance.Write(tag, message);
+        }
     }
 }
