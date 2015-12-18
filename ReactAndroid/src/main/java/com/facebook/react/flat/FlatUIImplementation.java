@@ -189,7 +189,7 @@ public class FlatUIImplementation extends UIImplementation {
 
     super.calculateRootLayout(rootNode);
     rootNode.markUpdated(false);
-    mStateBuilder.applyUpdates(rootNode);
+    mStateBuilder.applyUpdates(eventDispatcher, rootNode);
   }
 
   private static @Nullable ReactImageManager findReactImageManager(List<ViewManager> viewManagers) {

@@ -13,8 +13,11 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.Spacing;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Shadow node hierarchy by itself cannot display UI, it is only a representation of what UI should
@@ -41,6 +44,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToUpdateBounds = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDrop = new ArrayList<>();
+  private final ArrayList<OnLayoutEvent> mOnLayoutEvents = new ArrayList<>();
 
   private @Nullable FlatUIViewOperationQueue.DetachAllChildrenFromViews mDetachAllChildrenFromViews;
 
@@ -52,7 +56,7 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
    * Given a root of the laid-out shadow node hierarchy, walks the tree and generates an array of
    * DrawCommands that will then mount in UI thread to a root FlatViewGroup so that it can draw.
    */
-  /* package */ void applyUpdates(FlatShadowNode node) {
+  /* package */ void applyUpdates(EventDispatcher eventDispatcher, FlatShadowNode node) {
     int tag = node.getReactTag();
 
     float width = node.getLayoutWidth();
@@ -79,6 +83,13 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       updateViewBounds(mViewsToUpdateBounds.get(i));
     }
     mViewsToUpdateBounds.clear();
+
+    // This could be more efficient if EventDispatcher had a batch mode
+    // to avoid multiple synchronized calls.
+    for (int i = 0, size = mOnLayoutEvents.size(); i != size; ++i) {
+      eventDispatcher.dispatchEvent(mOnLayoutEvents.get(i));
+    }
+    mOnLayoutEvents.clear();
 
     if (!mViewsToDrop.isEmpty()) {
       mOperationsQueue.enqueueDropViews(collectViewTags(mViewsToDrop));
@@ -285,6 +296,17 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
       node.markLayoutSeen();
     }
 
+    // notify JS about layout event if requested
+    if (node.shouldNotifyOnLayout()) {
+      mOnLayoutEvents.add(
+          OnLayoutEvent.obtain(
+              node.getReactTag(),
+              Math.round(left),
+              Math.round(top),
+              Math.round(right - left),
+              Math.round(bottom - top)));
+    }
+
     node.collectState(this, left, top, right, bottom);
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
@@ -298,13 +320,13 @@ import com.facebook.react.uimanager.CatalystStylesDiffMap;
     }
   }
 
-  private void markLayoutSeenRecursively(FlatShadowNode node) {
+  private void markLayoutSeenRecursively(CSSNode node) {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
-      markLayoutSeenRecursively((FlatShadowNode) node.getChildAt(i));
+      markLayoutSeenRecursively(node.getChildAt(i));
     }
   }
 
