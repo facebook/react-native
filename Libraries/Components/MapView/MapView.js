@@ -294,8 +294,12 @@ const MapView = React.createClass({
           }}
           source={image}
         />;
+        image = undefined;
       }
       if (view) {
+        if (image) {
+          console.warn('`image` and `view` both set on annotation. Image will be ignored.');
+        }
         var viewIndex = children.length;
         children.push(React.cloneElement(view, {
           style: [styles.annotationView, view.props.style || {}]
@@ -319,19 +323,22 @@ const MapView = React.createClass({
           style: [styles.calloutView, detailCalloutView.props.style || {}]
         }));
       }
-      ['hasLeftCallout', 'onLeftCalloutPress'].forEach(key => {
-        if (annotation[key]) {
-          console.warn('`' + key + '` is deprecated. Use leftCalloutView instead.');
-        }
-      });
-      ['hasRightCallout', 'onRightCalloutPress'].forEach(key => {
-        if (annotation[key]) {
-          console.warn('`' + key + '` is deprecated. Use rightCalloutView instead.');
-        }
-      });
+      if (__DEV__) {
+        ['hasLeftCallout', 'onLeftCalloutPress'].forEach(key => {
+          if (annotation[key]) {
+            console.warn('`' + key + '` is deprecated. Use leftCalloutView instead.');
+          }
+        });
+        ['hasRightCallout', 'onRightCalloutPress'].forEach(key => {
+          if (annotation[key]) {
+            console.warn('`' + key + '` is deprecated. Use rightCalloutView instead.');
+          }
+        });
+      }
       return {
         ...annotation,
         tintColor: tintColor && processColor(tintColor),
+        image: image && resolveAssetSource(image),
         viewIndex,
         leftCalloutViewIndex,
         rightCalloutViewIndex,
