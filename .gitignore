@@ -24,7 +24,7 @@ project.xcworkspace
 # Gradle
 /build/
 /Examples/**/android/app/build/
-/ReactAndroid/build
+/ReactAndroid/build/
 
 # Android
 .idea
