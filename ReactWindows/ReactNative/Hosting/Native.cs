@@ -422,25 +422,25 @@
         [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsIdle(out uint nextIdleTick);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsParseScript(string script, JavaScriptSourceContext sourceContext, string sourceUrl, out JavaScriptValue result);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsRunScript(string script, JavaScriptSourceContext sourceContext, string sourceUrl, out JavaScriptValue result);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsSerializeScript(string script, byte[] buffer, ref ulong bufferSize);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsParseSerializedScript(string script, byte[] buffer, JavaScriptSourceContext sourceContext, string sourceUrl, out JavaScriptValue result);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsRunSerializedScript(string script, byte[] buffer, JavaScriptSourceContext sourceContext, string sourceUrl, out JavaScriptValue result);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsGetPropertyIdFromName(string name, out JavaScriptPropertyId propertyId);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsGetPropertyNameFromId(JavaScriptPropertyId propertyId, out string name);
 
         [DllImport("chakra.dll")]
@@ -477,12 +477,15 @@
         internal static extern JavaScriptErrorCode JsNumberToDouble(JavaScriptValue value, out double doubleValue);
 
         [DllImport("chakra.dll")]
+        internal static extern JavaScriptErrorCode JsNumberToInt(JavaScriptValue value, out int doubleValue);
+
+        [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsConvertValueToNumber(JavaScriptValue value, out JavaScriptValue numberValue);
 
         [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsGetStringLength(JavaScriptValue sringValue, out int length);
 
-        [DllImport("chakra.dll")]
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
         internal static extern JavaScriptErrorCode JsPointerToString(string value, UIntPtr stringLength, out JavaScriptValue stringValue);
 
         [DllImport("chakra.dll")]
