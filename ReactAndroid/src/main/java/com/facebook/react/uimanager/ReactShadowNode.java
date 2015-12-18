@@ -264,7 +264,7 @@ public class ReactShadowNode extends CSSNode {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 

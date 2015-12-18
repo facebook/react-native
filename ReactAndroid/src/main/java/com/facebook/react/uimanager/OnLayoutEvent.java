@@ -20,7 +20,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 /**
  * Event used to notify JS component about changes of its position or dimensions
  */
-/* package */ class OnLayoutEvent extends Event<OnLayoutEvent> {
+public class OnLayoutEvent extends Event<OnLayoutEvent> {
 
   private static final Pools.SynchronizedPool<OnLayoutEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(20);
