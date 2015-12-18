@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using ReactNative.Bridge.Queue;
 using ReactNative.Common;
+using ReactNative.Hosting.Bridge;
 using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
@@ -123,7 +124,6 @@ namespace ReactNative.Bridge
             _registry.NotifyCatalystInstanceDispose();
             _catalystQueueConfiguration.Dispose();
             // TODO: notify bridge idle listeners
-            _bridge.Dispose();
         }
 
         private Task InitializeBridgeAsync()

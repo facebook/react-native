@@ -354,24 +354,13 @@
             Native.ThrowIfError(Native.JsSetException(exception));
         }
 
-#if RELEASE64
         /// <summary>
         ///     Starts debugging in the context.
         /// </summary>
         /// <param name="debugApplication">The debug application to use for debugging.</param>
-        public static void StartDebugging(Native.IDebugApplication64 debugApplication)
+        public static void StartDebugging()
         {
-            Native.ThrowIfError(Native.JsStartDebugging(debugApplication));
-        }
-#endif
-
-        /// <summary>
-        ///     Starts debugging in the context.
-        /// </summary>
-        /// <param name="debugApplication">The debug application to use for debugging.</param>
-        public static void StartDebugging(Native.IDebugApplication32 debugApplication)
-        {
-            Native.ThrowIfError(Native.JsStartDebugging(debugApplication));
+            Native.ThrowIfError(Native.JsStartDebugging());
         }
 
         /// <summary>

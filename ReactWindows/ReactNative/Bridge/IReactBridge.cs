@@ -7,7 +7,7 @@ namespace ReactNative.Bridge
     /// Interface to the JavaScript execution environment and means of
     /// transport for messages between JavaScript and the native environment.
     /// </summary>
-    public interface IReactBridge : IDisposable
+    public interface IReactBridge
     {
         /// <summary>
         /// Calls a JavaScript function.
