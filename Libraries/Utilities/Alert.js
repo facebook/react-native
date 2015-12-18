@@ -30,30 +30,33 @@ type Buttons = Array<{
  * respective onPress callback and dismiss the alert. By default, the only
  * button will be an 'OK' button.
  *
- * The last button in the list will be considered the 'Primary' button.
+ * This is an API that works both on iOS and Android and can show static
+ * alerts. To show an alert that prompts the user to enter some information,
+ * see `AlertIOS`; entering text in an alert is common on iOS only.
  *
  * ## iOS
  *
  * On iOS you can specify any number of buttons. Each button can optionally
- * specify a style and you can also specify type of the alert.
- * Refer to `AlertIOS` for details.
+ * specify a style and you can also specify type of the alert. Refer to
+ * `AlertIOS` for details.
  *
  * ## Android
  * 
  * On Android at most three buttons can be specified. Android has a concept
- * of a 'neutral', 'negative' and a 'positive' button:
+ * of a neutral, negative and a positive button:
  *
  *   - If you specify one button, it will be the 'positive' one (such as 'OK')
  *   - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
  *   - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
  *
  * ```
+ * // Works on both iOS and Android
  * Alert.alert(
  *   'Alert Title',
  *   'My Alert Msg',
  *   [
  *     {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
- *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed')},
+ *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
  *     {text: 'OK', onPress: () => console.log('OK Pressed')},
  *   ]
  * )
