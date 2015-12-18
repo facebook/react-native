@@ -12,6 +12,8 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -30,7 +32,20 @@ import com.facebook.react.views.image.ReactImageManager;
  * for faster drawing and interactions.
  */
 public class FlatUIImplementation extends UIImplementation {
+  /**
+   * This Comparator allows sorting FlatShadowNode by order in which they should be added.
+   */
+  private static final Comparator<FlatShadowNode> COMPARATOR = new Comparator<FlatShadowNode>() {
+    public int compare(FlatShadowNode lhs, FlatShadowNode rhs) {
+      return lhs.getMoveToIndexInParent() - rhs.getMoveToIndexInParent();
+    }
+  };
 
+  /**
+   * Temporary storage for elements that need to be moved within a parent.
+   * Only used inside #manageChildren() and always empty outside of it.
+   */ 
+  private final ArrayList<FlatShadowNode> mNodesToMove = new ArrayList<>();
   private final StateBuilder mStateBuilder;
 
   public static FlatUIImplementation createInstance(
@@ -126,50 +141,198 @@ public class FlatUIImplementation extends UIImplementation {
       @Nullable ReadableArray addAtIndices,
       @Nullable ReadableArray removeFrom) {
 
-    if (moveFrom != null) {
-      throw new RuntimeException("Not implemented");
-    }
-    if (moveTo != null) {
-      throw new RuntimeException("Not implemented");
-    }
-
     ReactShadowNode parentNode = resolveShadowNode(viewTag);
-    if (removeFrom != null) {
-      if (moveFrom != null) {
-        // both moveFrom AND removeFrom are present
-        throw new RuntimeException("Not implemented, requires merging");
+
+    // moveFrom and removeFrom are defined in original order before any mutations.
+    removeChildren(parentNode, moveFrom, moveTo, removeFrom);
+
+    // moveTo and addAtIndices are defined in final order after all the mutations applied.
+    addChildren(parentNode, addChildTags, addAtIndices);
+  }
+
+  /**
+   * Removes all children defined by moveFrom and removeFrom from a given parent,
+   * preparing elements in moveFrom to be re-added at proper index.
+   */
+  private void removeChildren(
+      ReactShadowNode parentNode,
+      @Nullable ReadableArray moveFrom,
+      @Nullable ReadableArray moveTo,
+      @Nullable ReadableArray removeFrom) {
+
+    int prevIndex = Integer.MAX_VALUE;
+
+    int moveFromIndex;
+    int moveFromChildIndex;
+    if (moveFrom == null) {
+      moveFromIndex = -1;
+      moveFromChildIndex = -1;
+    } else {
+      moveFromIndex = moveFrom.size() - 1;
+      moveFromChildIndex = moveFrom.getInt(moveFromIndex);
+    }
+
+    int removeFromIndex;
+    int removeFromChildIndex;
+    if (removeFrom == null) {
+      removeFromIndex = -1;
+      removeFromChildIndex = -1;
+    } else {
+      removeFromIndex = removeFrom.size() - 1;
+      removeFromChildIndex = removeFrom.getInt(removeFromIndex);
+    }
+
+    // both moveFrom and removeFrom are already sorted, but combined order is not sorted. Use
+    // a merge step from mergesort to walk over both arrays and extract elements in sorted order.
+
+    while (true) {
+      if (moveFromChildIndex > removeFromChildIndex) {
+        int indexInParent = moveTo.getInt(moveFromIndex);
+        moveChild(removeChildAt(parentNode, moveFromChildIndex, prevIndex), indexInParent);
+        prevIndex = moveFromChildIndex;
+
+        --moveFromIndex;
+        moveFromChildIndex = (moveFromIndex == -1) ? -1 : moveFrom.getInt(moveFromIndex);
+      } else if (removeFromChildIndex > moveFromChildIndex) {
+        removeChild(removeChildAt(parentNode, removeFromChildIndex, prevIndex));
+        prevIndex = removeFromChildIndex;
+
+        --removeFromIndex;
+        removeFromChildIndex = (removeFromIndex == -1) ? -1 : removeFrom.getInt(removeFromIndex);
+      } else {
+        // moveFromChildIndex == removeFromChildIndex can only be if both are equal to -1
+        // which means that we exhausted both arrays, and all children are removed.
+        break;
       }
+    }
+  }
 
-      int numToRemove = removeFrom.size();
-      int prevIndex = Integer.MAX_VALUE;
-      for (int i = numToRemove - 1; i >= 0; --i) {
-        int index = removeFrom.getInt(i);
-        if (index >= prevIndex) {
-          throw new RuntimeException(
-              "Invariant failure, needs sorting! prevIndex: " + prevIndex + " index: " + index);
+  /**
+   * Unregisters given element and all of its children from ShadowNodeRegistry,
+   * and drops all Views used by it and its children.
+   */
+  private void removeChild(FlatShadowNode child) {
+    if (child.mountsToView()) {
+      // this will recursively drop all subviews
+      mStateBuilder.dropView(child);
+    }
+    removeShadowNode(child);
+  }
+
+  /**
+   * Prepares a given element to be moved to a new position.
+   */
+  private void moveChild(FlatShadowNode child, int indexInParent) {
+    child.setMoveToIndexInParent(indexInParent);
+    mNodesToMove.add(child);
+  }
+
+  /**
+   * Adds all children from addChildTags and mNodesToMove, populated by removeChildren.
+   */
+  private void addChildren(
+      ReactShadowNode parentNode,
+      @Nullable ReadableArray addChildTags,
+      @Nullable ReadableArray addAtIndices) {
+
+    int prevIndex = -1;
+
+    int numNodesToMove = mNodesToMove.size();
+    int moveToIndex;
+    int moveToChildIndex;
+    FlatShadowNode moveToChild;
+    if (numNodesToMove == 0) {
+      moveToIndex = Integer.MAX_VALUE;
+      moveToChild = null;
+      moveToChildIndex = Integer.MAX_VALUE;
+    } else {
+      if (numNodesToMove > 1) {
+        // mNodesToMove is not sorted, so do it now.
+        Collections.sort(mNodesToMove, COMPARATOR);
+      }
+      moveToIndex = 0;
+      moveToChild = mNodesToMove.get(0);
+      moveToChildIndex = moveToChild.getMoveToIndexInParent();
+    }
+
+    int numNodesToAdd;
+    int addToIndex;
+    int addToChildIndex;
+    if (addAtIndices == null) {
+      numNodesToAdd = 0;
+      addToIndex = Integer.MAX_VALUE;
+      addToChildIndex = Integer.MAX_VALUE;
+    } else {
+      numNodesToAdd = addAtIndices.size();
+      addToIndex = 0;
+      addToChildIndex = addAtIndices.getInt(0);
+    }
+
+    // both mNodesToMove and addChildTags are already sorted, but combined order is not sorted. Use
+    // a merge step from mergesort to walk over both arrays and extract elements in sorted order.
+
+    while (true) {
+      if (addToChildIndex < moveToChildIndex) {
+        ReactShadowNode addToChild = resolveShadowNode(addChildTags.getInt(addToIndex));
+        addChildAt(parentNode, addToChild, addToChildIndex, prevIndex);
+        prevIndex = addToChildIndex;
+
+        ++addToIndex;
+        if (addToIndex == numNodesToAdd) {
+          addToChildIndex = Integer.MAX_VALUE;  
+        } else {
+          addToChildIndex = addAtIndices.getInt(addToIndex);
         }
+      } else if (moveToChildIndex < addToChildIndex) {
+        addChildAt(parentNode, moveToChild, moveToChildIndex, prevIndex);
+        prevIndex = moveToChildIndex;
 
-        FlatShadowNode child = (FlatShadowNode) parentNode.removeChildAt(index);
-        prevIndex = index;
-
-        if (child.mountsToView()) {
-          mStateBuilder.dropView(child);
+        ++moveToIndex;
+        if (moveToIndex == numNodesToMove) {
+          moveToChildIndex = Integer.MAX_VALUE;
+        } else {
+          moveToChild = mNodesToMove.get(moveToIndex);
+          moveToChildIndex = moveToChild.getMoveToIndexInParent();
         }
-
-        removeShadowNode(child);
+      } else {
+        // moveToChildIndex == addToChildIndex can only be if both are equal to Integer.MAX_VALUE
+        // which means that we exhausted both arrays, and all children are added.
+        break;
       }
     }
 
-    if (addChildTags != null) {
-      int numNodesToAdd = addChildTags.size();
-      for (int i = 0; i < numNodesToAdd; ++i) {
-        int childTag = addChildTags.getInt(i);
-        ReactShadowNode child = resolveShadowNode(childTag);
+    mNodesToMove.clear();
+  }
 
-        int addAtIndex = addAtIndices.getInt(i);
-        parentNode.addChildAt(child, addAtIndex);
-      }
+  /**
+   * Removes a child from parent, verifying that we are removing in descending order.
+   */
+  private static FlatShadowNode removeChildAt(
+      ReactShadowNode parentNode,
+      int index,
+      int prevIndex) {
+    if (index >= prevIndex) {
+      throw new RuntimeException(
+          "Invariant failure, needs sorting! " + index + " >= " + prevIndex);
     }
+
+    return (FlatShadowNode) parentNode.removeChildAt(index);
+  }
+
+  /**
+   * Adds a child to parent, verifying that we are adding in ascending order.
+   */
+  private static void addChildAt(
+      ReactShadowNode parentNode,
+      ReactShadowNode childNode,
+      int index,
+      int prevIndex) {
+    if (index <= prevIndex) {
+      throw new RuntimeException(
+          "Invariant failure, needs sorting! " + index + " <= " + prevIndex);
+    }
+
+    parentNode.addChildAt(childNode, index);
   }
 
   @Override

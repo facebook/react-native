@@ -46,6 +46,7 @@ import com.facebook.react.uimanager.ViewProps;
   private boolean mMountsToView;
   private boolean mBackingViewIsCreated;
   private @Nullable DrawBackgroundColor mDrawBackground;
+  private int mMoveToIndexInParent;
 
   /* package */ void handleUpdateProperties(CatalystStylesDiffMap styles) {
     if (!mountsToView()) {
@@ -169,6 +170,14 @@ import com.facebook.react.uimanager.ViewProps;
 
   /* package */ final void setNodeRegions(NodeRegion[] nodeRegion) {
     mNodeRegions = nodeRegion;
+  }
+
+  /* package */ final void setMoveToIndexInParent(int moveToIndexInParent) {
+    mMoveToIndexInParent = moveToIndexInParent;
+  }
+
+  /* package */ final int getMoveToIndexInParent() {
+    return mMoveToIndexInParent;
   }
 
   /* package */ void updateNodeRegion(float left, float top, float right, float bottom) {
