@@ -1,7 +1,12 @@
-﻿namespace ReactNative.Bridge
+﻿using Newtonsoft.Json.Linq;
+using System;
+
+namespace ReactNative.Bridge
 {
-    public interface IJavaScriptExecutor
+    public interface IJavaScriptExecutor : IDisposable
     {
-        // TODO
+        JToken Call(string moduleName, string methodName, JArray arguments);
+
+        void SetGlobalVariable(string propertyName, JToken value);
     }
 }

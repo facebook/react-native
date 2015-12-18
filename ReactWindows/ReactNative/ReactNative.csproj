@@ -133,7 +133,10 @@
     <Compile Include="Bridge\Queue\MessageQueueThreadExtensions.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadKind.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadSpec.cs" />
-    <Compile Include="Bridge\ReactBridge.cs" />
+    <Compile Include="Hosting\Bridge\ChakraJavaScriptExecutor.cs" />
+    <Compile Include="Hosting\Bridge\JavaScriptValueToJTokenConverter.cs" />
+    <Compile Include="Hosting\Bridge\JTokenToJavaScriptValueConverter.cs" />
+    <Compile Include="Hosting\Bridge\ReactBridge.cs" />
     <Compile Include="Bridge\ReactContext.cs" />
     <Compile Include="Bridge\ReactContextNativeModuleBase.cs" />
     <Compile Include="Common\ReactConstants.cs" />

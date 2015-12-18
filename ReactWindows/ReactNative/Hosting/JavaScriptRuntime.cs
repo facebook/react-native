@@ -98,13 +98,12 @@
         ///     Creates a new runtime.
         /// </summary>
         /// <param name="attributes">The attributes of the runtime to be created.</param>
-        /// <param name="version">The version of the runtime to be created.</param>
         /// <param name="threadServiceCallback">The thread service for the runtime. Can be null.</param>
         /// <returns>The runtime created.</returns>
-        public static JavaScriptRuntime Create(JavaScriptRuntimeAttributes attributes, JavaScriptRuntimeVersion version, JavaScriptThreadServiceCallback threadServiceCallback)
+        public static JavaScriptRuntime Create(JavaScriptRuntimeAttributes attributes, JavaScriptThreadServiceCallback threadServiceCallback)
         {
             JavaScriptRuntime handle;
-            Native.ThrowIfError(Native.JsCreateRuntime(attributes, version, threadServiceCallback, out handle));
+            Native.ThrowIfError(Native.JsCreateRuntime(attributes, threadServiceCallback, out handle));
             return handle;
         }
 
@@ -112,11 +111,10 @@
         ///     Creates a new runtime.
         /// </summary>
         /// <param name="attributes">The attributes of the runtime to be created.</param>
-        /// <param name="version">The version of the runtime to be created.</param>
         /// <returns>The runtime created.</returns>
-        public static JavaScriptRuntime Create(JavaScriptRuntimeAttributes attributes, JavaScriptRuntimeVersion version)
+        public static JavaScriptRuntime Create(JavaScriptRuntimeAttributes attributes)
         {
-            return Create(attributes, version, null);
+            return Create(attributes, null);
         }
 
         /// <summary>
@@ -125,7 +123,7 @@
         /// <returns>The runtime created.</returns>
         public static JavaScriptRuntime Create()
         {
-            return Create(JavaScriptRuntimeAttributes.None, JavaScriptRuntimeVersion.Version11, null);
+            return Create(JavaScriptRuntimeAttributes.None, null);
         }
 
         /// <summary>
@@ -207,44 +205,8 @@
             Native.ThrowIfError(Native.JsSetRuntimeBeforeCollectCallback(this, callbackState, beforeCollectCallback));
         }
 
-#if RELEASE64
         /// <summary>
         ///     Creates a debug script context for running scripts.
-        /// </summary>
-        /// <remarks>
-        ///     Each script context has its own global object that is isolated from all other script 
-        ///     contexts.
-        /// </remarks>
-        /// <param name="debugApplication">The debug application to use.</param>
-        /// <returns>The created script context.</returns>
-        public JavaScriptContext CreateContext(Native.IDebugApplication64 debugApplication)
-        {
-            JavaScriptContext reference;
-            Native.ThrowIfError(Native.JsCreateContext(this, debugApplication, out reference));
-            return reference;
-        }
-#endif
-
-#if !RELEASE64
-        /// <summary>
-        ///     Creates a debug script context for running scripts.
-        /// </summary>
-        /// <remarks>
-        ///     Each script context has its own global object that is isolated from all other script 
-        ///     contexts.
-        /// </remarks>
-        /// <param name="debugApplication">The debug application to use.</param>
-        /// <returns>The created script context.</returns>
-        public JavaScriptContext CreateContext(Native.IDebugApplication32 debugApplication)
-        {
-            JavaScriptContext reference;
-            Native.ThrowIfError(Native.JsCreateContext(this, debugApplication, out reference));
-            return reference;
-        }
-#endif
-
-        /// <summary>
-        ///     Creates a script context for running scripts.
         /// </summary>
         /// <remarks>
         ///     Each script context has its own global object that is isolated from all other script 
@@ -254,11 +216,7 @@
         public JavaScriptContext CreateContext()
         {
             JavaScriptContext reference;
-#if RELEASE64
-            Native.JsCreateContext(this, (Native.IDebugApplication64)null, out reference);
-#else
-            Native.JsCreateContext(this, (Native.IDebugApplication32)null, out reference);
-#endif
+            Native.ThrowIfError(Native.JsCreateContext(this, out reference));
             return reference;
         }
     }

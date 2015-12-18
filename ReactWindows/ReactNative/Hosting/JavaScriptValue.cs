@@ -556,8 +556,7 @@
             UIntPtr length;
             Native.ThrowIfError(Native.JsStringToPointer(this, out buffer, out length));
 
-            //return Marshal.PtrToStringAuto(buffer, (int)length);
-            return /* TODO */ null;
+            return Marshal.PtrToStringUni(buffer, (int)length);
         }
 
         /// <summary>
