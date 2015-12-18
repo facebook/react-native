@@ -315,7 +315,7 @@ var ScrollView = React.createClass({
 
   endRefreshing: function() {
     RCTScrollViewManager.endRefreshing(
-      React.findNodeHandle(this)
+      findNodeHandle(this)
     );
   },
 

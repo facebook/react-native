@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule YellowBox
- * @flow
+ * @noflow (Even)
  */
 
 'use strict';

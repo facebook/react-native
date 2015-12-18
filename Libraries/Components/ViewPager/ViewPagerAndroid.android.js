@@ -16,6 +16,7 @@ var View = require('View');
 
 var dismissKeyboard = require('dismissKeyboard');
 var requireNativeComponent = require('requireNativeComponent');
+var findNodeHandle = require('findNodeHandle');
 
 var VIEWPAGER_REF = 'viewPager';
 
@@ -107,7 +108,7 @@ var ViewPagerAndroid = React.createClass({
     return this.refs[VIEWPAGER_REF].getInnerViewNode();
   },
 
-  _childrenWithOverridenStyle: function(): Array {
+  _childrenWithOverridenStyle: function(): Array<ReactElement> {
     // Override styles so that each page will fill the parent. Native component
     // will handle positioning of elements, so it's not important to offset
     // them correctly.
@@ -156,7 +157,7 @@ var ViewPagerAndroid = React.createClass({
    */
   setPage: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPage,
       [selectedPage],
     );
@@ -168,7 +169,7 @@ var ViewPagerAndroid = React.createClass({
    */
   setPageWithoutAnimation: function(selectedPage: number) {
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      findNodeHandle(this),
       UIManager.AndroidViewPager.Commands.setPageWithoutAnimation,
       [selectedPage],
     );

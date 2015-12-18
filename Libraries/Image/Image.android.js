@@ -28,6 +28,7 @@ var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+var createReactNativeComponentClass = require('createReactNativeComponentClass');
 
 /**
  * <Image> - A react component for displaying different types of images,

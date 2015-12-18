@@ -106,10 +106,10 @@ var AppContainer = React.createClass({
   }
 });
 
-function renderApplication<D, P, S>(
-  RootComponent: ReactClass<D, P, S>,
-  initialProps: P,
-  rootTag: any
+function renderApplication(
+  RootComponent,
+  initialProps,
+  rootTag
 ) {
   invariant(
     rootTag,
