@@ -212,6 +212,8 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
 }
 
+// This test is flaky, and needs to be fixed before re-enabling. See t9456702.
+#if 0
 - (void)testUnderlyingBridgeIsDeallocated
 {
   RCTBridge *bridge;
@@ -228,5 +230,6 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   XCTAssertNotNil(bridge, @"RCTBridge should not have been deallocated");
   XCTAssertNil(batchedBridge, @"RCTBatchedBridge should have been deallocated");
 }
+#endif
 
 @end
