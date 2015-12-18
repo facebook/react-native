@@ -119,8 +119,8 @@ static NSString *RCTJSValueToJSONString(JSContextRef context, JSValueRef value, 
 
 static NSError *RCTNSErrorFromJSError(JSContextRef context, JSValueRef jsError)
 {
-  NSString *errorMessage = jsError ? RCTJSValueToNSString(context, jsError, NULL) : @"unknown JS error";
-  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, NULL, 2) : @"no details";
+  NSString *errorMessage = jsError ? RCTJSValueToNSString(context, jsError, NULL) : @"Unknown JS error";
+  NSString *details = jsError ? RCTJSValueToJSONString(context, jsError, NULL, 2) : @"No details";
   return [NSError errorWithDomain:@"JS" code:1 userInfo:@{NSLocalizedDescriptionKey: errorMessage, NSLocalizedFailureReasonErrorKey: details}];
 }
 
@@ -394,14 +394,12 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     JSStringRelease(moduleNameJSStringRef);
 
     if (moduleJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, moduleJSRef)) {
-
       // get method
       JSStringRef methodNameJSStringRef = JSStringCreateWithCFString((__bridge CFStringRef)method);
       JSValueRef methodJSRef = JSObjectGetProperty(contextJSRef, (JSObjectRef)moduleJSRef, methodNameJSStringRef, &errorJSRef);
       JSStringRelease(methodNameJSStringRef);
 
-      if (methodJSRef != NULL && errorJSRef == NULL) {
-
+      if (methodJSRef != NULL && errorJSRef == NULL && !JSValueIsUndefined(contextJSRef, methodJSRef)) {
         // direct method invoke with no arguments
         if (arguments.count == 0) {
           resultJSRef = JSObjectCallAsFunction(contextJSRef, (JSObjectRef)methodJSRef, (JSObjectRef)moduleJSRef, 0, NULL, &errorJSRef);
@@ -433,11 +431,22 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
             JSStringRelease(argsJSStringRef);
           }
         }
+      } else {
+        if (!errorJSRef && JSValueIsUndefined(contextJSRef, methodJSRef)) {
+          error = RCTErrorWithMessage([NSString stringWithFormat:@"Unable to execute JS call: method %@ is undefined", method]);
+        }
+      }
+    } else {
+      if (!errorJSRef && JSValueIsUndefined(contextJSRef, moduleJSRef)) {
+        error = RCTErrorWithMessage(@"Unable to execute JS call: __fbBatchedBridge is undefined");
       }
     }
 
-    if (errorJSRef) {
-      onComplete(nil, RCTNSErrorFromJSError(contextJSRef, errorJSRef));
+    if (errorJSRef || error) {
+      if (!error) {
+        error = RCTNSErrorFromJSError(contextJSRef, errorJSRef);
+      }
+      onComplete(nil, error);
       return;
     }
 
