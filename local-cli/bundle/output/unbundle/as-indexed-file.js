@@ -12,7 +12,7 @@ const fs = require('fs');
 const Promise = require('promise');
 const writeSourceMap = require('./write-sourcemap');
 
-const MAGIC_UNBUNDLE_FILE_HEADER = 0xFB0BD1E5;
+const MAGIC_UNBUNDLE_FILE_HEADER = require('./magic-number');
 const MAGIC_STARTUP_MODULE_ID = '';
 
 /**
