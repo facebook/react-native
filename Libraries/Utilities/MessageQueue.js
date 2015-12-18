@@ -285,7 +285,7 @@ class MessageQueue {
           MethodTypes.remoteAsync : MethodTypes.remote;
       module[methodName] = this._genMethod(moduleID, methodID, methodType);
     });
-    Object.assign(module, constants);
+    constants && Object.assign(module, constants);
 
     if (!constants && !methods && !asyncMethods) {
       module.moduleID = moduleID;
