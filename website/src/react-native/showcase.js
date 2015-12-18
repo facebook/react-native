@@ -414,7 +414,8 @@ var apps = [
   {
     name: 'WEARVR',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
-    link: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
+    linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.wearvr.app',
     author: 'WEARVR LLC',
   },
   {
