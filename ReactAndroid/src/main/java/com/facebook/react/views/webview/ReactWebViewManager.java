@@ -76,7 +76,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   static {
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      WebView.setWebContentsDebuggingEnabled(true);
+      // TODO(T9455950): re-enable debugging
+      // WebView.setWebContentsDebuggingEnabled(true);
     }
   }
 
