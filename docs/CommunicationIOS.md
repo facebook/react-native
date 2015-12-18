@@ -54,7 +54,7 @@ class ImageBrowserApp extends React.Component {
   render() {
     return (
       <View>
-        {this.props.imageList.map(this.renderImage)}
+        {this.props.images.map(this.renderImage)}
       </View>
     );
   }
