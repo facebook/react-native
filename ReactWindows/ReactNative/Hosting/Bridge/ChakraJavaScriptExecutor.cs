@@ -5,30 +5,50 @@ using System.Diagnostics;
 
 namespace ReactNative.Hosting.Bridge
 {
-    class ChakraJavaScriptExecutor : IJavaScriptExecutor
+    /// <summary>
+    /// JavaScript runtime wrapper.
+    /// </summary>
+    public class ChakraJavaScriptExecutor : IJavaScriptExecutor
     {
         private readonly JavaScriptRuntime _runtime;
         private readonly JavaScriptValue _globalObject;
-        private readonly JavaScriptValue _requireFunction;
 
+        private JavaScriptSourceContext _sourceContext = JavaScriptSourceContext.None;
+
+        /// <summary>
+        /// Instantiates a <see cref="ChakraJavaScriptExecutor"/>.
+        /// </summary>
         public ChakraJavaScriptExecutor()
         {
-            _runtime = JavaScriptRuntime.Create();
-            _globalObject = JavaScriptValue.GlobalObject;
-            var requireId = JavaScriptPropertyId.FromString("require");
-            _requireFunction = _globalObject.GetProperty(requireId);
-
+            _runtime = JavaScriptRuntime.Create(JavaScriptRuntimeAttributes.None, null);
             InitializeChakra();
-
-            // TODO: resolve how to inject React JavaScript library
+            _globalObject = JavaScriptValue.GlobalObject;
         }
 
+        /// <summary>
+        /// Calls a JavaScript function in a module..
+        /// </summary>
+        /// <param name="moduleName">The module name.</param>
+        /// <param name="methodName">The method name.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns>The JavaScript result.</returns>
         public JToken Call(string moduleName, string methodName, JArray arguments)
         {
+            if (moduleName == null)
+                throw new ArgumentNullException(nameof(moduleName));
+            if (methodName == null)
+                throw new ArgumentNullException(nameof(methodName));
+            if (arguments == null)
+                throw new ArgumentNullException(nameof(arguments));
+
+            // Get the require function
+            var requireId = JavaScriptPropertyId.FromString("require");
+            var requireFunction = _globalObject.GetProperty(requireId);
+
             // Get the module
             var moduleString = JavaScriptValue.FromString(moduleName);
             var requireArguments = new[] { _globalObject, moduleString };
-            var module = _requireFunction.CallFunction(requireArguments);
+            var module = requireFunction.CallFunction(requireArguments);
 
             // Get the method
             var propertyId = JavaScriptPropertyId.FromString(methodName);
@@ -50,11 +70,42 @@ namespace ReactNative.Hosting.Bridge
             return JavaScriptValueToJTokenConverter.Convert(result);
         }
 
+        /// <summary>
+        /// Runs the given script.
+        /// </summary>
+        /// <param name="script">The script.</param>
+        public void RunScript(string script)
+        {
+            if (script == null)
+                throw new ArgumentNullException(nameof(script));
+
+            JavaScriptContext.RunScript(script);
+        }
+
+        /// <summary>
+        /// Sets a global variable in the environment.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        /// <param name="value">The property value.</param>
         public void SetGlobalVariable(string propertyName, JToken value)
         {
+            if (propertyName == null)
+                throw new ArgumentNullException(nameof(propertyName));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
             var javaScriptValue = JTokenToJavaScriptValueConverter.Convert(value);
             var propertyId = JavaScriptPropertyId.FromString(propertyName);
             _globalObject.SetProperty(propertyId, javaScriptValue, true);
+        }
+
+        public JToken GetGlobalVariable(string propertyName)
+        {
+            if (propertyName == null)
+                throw new ArgumentNullException(nameof(propertyName));
+
+            var propertyId = JavaScriptPropertyId.FromString(propertyName);
+            return JavaScriptValueToJTokenConverter.Convert(_globalObject.GetProperty(propertyId));
         }
 
         private void InitializeChakra()
@@ -77,7 +128,7 @@ namespace ReactNative.Hosting.Bridge
                 Native.JsGetPropertyIdFromName("console", out consolePropertyId));
 
             var consoleObject = JavaScriptValue.CreateObject();
-            _globalObject.SetProperty(consolePropertyId, consoleObject, true);
+            JavaScriptValue.GlobalObject.SetProperty(consolePropertyId, consoleObject, true);
 
             DefineHostCallback(consoleObject, "log", ConsoleCallback, IntPtr.Zero);
             DefineHostCallback(consoleObject, "warn", ConsoleCallback, IntPtr.Zero);
@@ -111,7 +162,7 @@ namespace ReactNative.Hosting.Bridge
                 // First argument is this-context (? @TODO), ignore...
                 foreach (var argument in arguments)
                 {
-                    Debug.Write(argument.ToString() + " ");
+                    Debug.Write(JavaScriptValueToJTokenConverter.Convert(argument).ToString() + " ");
                 }
 
                 Debug.WriteLine("");
@@ -127,6 +178,7 @@ namespace ReactNative.Hosting.Bridge
 
         public void Dispose()
         {
+            JavaScriptContext.Current = JavaScriptContext.Invalid;
             _runtime.Dispose();
         }
     }

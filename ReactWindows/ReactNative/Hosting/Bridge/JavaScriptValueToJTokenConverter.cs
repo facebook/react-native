@@ -47,20 +47,14 @@ namespace ReactNative.Hosting.Bridge
 
         private JToken VisitArray(JavaScriptValue value)
         {
-            var count = 0;
             var array = new JArray();
-            while (true)
+            var propertyId = JavaScriptPropertyId.FromString("length");
+            var length = (int)value.GetProperty(propertyId).ToDouble();
+            for (var i = 0; i < length; ++i)
             {
-                var index = JavaScriptValue.FromInt32(count++);
-                if (!value.HasIndexedProperty(index))
-                {
-                    var element = value.GetIndexedProperty(index);
-                    array.Add(Visit(element));
-                }
-                else
-                {
-                    break;
-                }
+                var index = JavaScriptValue.FromInt32(i);
+                var element = value.GetIndexedProperty(index);
+                array.Add(Visit(element));
             }
 
             return array;
@@ -78,7 +72,12 @@ namespace ReactNative.Hosting.Bridge
 
         private JToken VisitNumber(JavaScriptValue value)
         {
-            return JToken.FromObject(value.ToObject());
+            var number = value.ToDouble();
+
+            // TODO: resolve integer detection
+            return number % 1 == 0
+                ? new JValue((int)number)
+                : new JValue(number);
         }
 
         private JToken VisitObject(JavaScriptValue value)
