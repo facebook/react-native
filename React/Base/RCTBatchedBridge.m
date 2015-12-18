@@ -278,23 +278,23 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
           [moduleClass instancesRespondToSelector:setBridgeSelector]) {
         module = [moduleClass new];
         if (!module) {
-          module = [NSNull null];
+          module = (id)kCFNull;
         }
       }
     }
 
     // Check for module name collisions.
     // It's OK to have a name collision as long as the second instance is null.
-    if (module != [NSNull class] && _moduleDataByName[moduleName]) {
+    if (module != (id)kCFNull && moduleDataByName[moduleName] && !preregisteredModules[moduleName]) {
       RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the name "
                   "'%@', but name was already registered by class %@", moduleClass,
-                  moduleName, _moduleDataByName[moduleName]);
+                  moduleName, moduleDataByName[moduleName].moduleClass);
     }
 
     // Instantiate moduleData (TODO: defer this until config generation)
     RCTModuleData *moduleData;
     if (module) {
-      if (module != [NSNull null]) {
+      if (module != (id)kCFNull) {
         moduleData = [[RCTModuleData alloc] initWithModuleInstance:module];
       }
     } else {
