@@ -29,8 +29,8 @@ type Event = Object;
 type MapRegion = {
   latitude: number;
   longitude: number;
-  latitudeDelta?: ?number;
-  longitudeDelta?: ?number;
+  latitudeDelta?: number;
+  longitudeDelta?: number;
 };
 
 const MapView = React.createClass({
