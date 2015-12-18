@@ -219,6 +219,7 @@ var components = [
 
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  '../Libraries/Utilities/Alert.js',
   '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
