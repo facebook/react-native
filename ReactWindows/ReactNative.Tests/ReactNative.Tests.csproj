@@ -99,6 +99,8 @@
     <Compile Include="Bridge\JavaScriptModulesConfigTests.cs" />
     <Compile Include="Bridge\NativeModuleBaseTests.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadTests.cs" />
+    <Compile Include="Hosting\Bridge\ChakraJavaScriptExecutorTests.cs" />
+    <Compile Include="Hosting\Bridge\ReactBridgeTests.cs" />
     <Compile Include="Internal\AssertEx.cs" />
     <Compile Include="Bridge\NativeModuleRegistryTests.cs" />
     <Compile Include="Internal\DispatcherHelpers.cs" />
@@ -129,6 +131,9 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Resources\test.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

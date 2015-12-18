@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
+using System;
 
 namespace ReactNative.Hosting.Bridge
 {
@@ -27,6 +28,13 @@ namespace ReactNative.Hosting.Bridge
             IReactCallback reactCallback,
             IMessageQueueThread nativeModulesQueueThread)
         {
+            if (jsExecutor == null)
+                throw new ArgumentNullException(nameof(jsExecutor));
+            if (reactCallback == null)
+                throw new ArgumentNullException(nameof(reactCallback));
+            if (nativeModulesQueueThread == null)
+                throw new ArgumentNullException(nameof(nativeModulesQueueThread));
+
             _jsExecutor = jsExecutor;
             _reactCallback = reactCallback;
             _nativeModulesQueueThread = nativeModulesQueueThread;
@@ -113,14 +121,10 @@ namespace ReactNative.Hosting.Bridge
         /// <param name="jsonEncodedArgument">The JSON-encoded value.</param>
         public void SetGlobalVariable(string propertyName, string jsonEncodedArgument)
         {
+            if (propertyName == null)
+                throw new ArgumentNullException(nameof(propertyName));
+
             _jsExecutor.SetGlobalVariable(propertyName, JToken.Parse(jsonEncodedArgument));
-        }
-        
-        /// <summary>
-        /// Disposes the bridge.
-        /// </summary>
-        public void Dispose()
-        {
         }
 
         private void ProcessResponse(JToken response)
@@ -132,7 +136,7 @@ namespace ReactNative.Hosting.Bridge
             }
 
             var moduleIds = messages[0].ToObject<int[]>();
-            var methodIds = messages[0].ToObject<int[]>();
+            var methodIds = messages[1].ToObject<int[]>();
             var paramsArray = (JArray)messages[2];
 
             _nativeModulesQueueThread.RunOnQueue(() =>
