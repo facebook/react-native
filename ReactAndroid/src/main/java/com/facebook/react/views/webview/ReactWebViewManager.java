@@ -91,7 +91,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (!mLastLoadFailed) {
         ReactWebView reactWebView = (ReactWebView) webView;
         reactWebView.callInjectedJavaScript();
-        emitFinishEvent(webView);
+        emitFinishEvent(webView, url);
       }
     }
 
@@ -107,7 +107,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingStartEvent(
               webView.getId(),
               SystemClock.uptimeMillis(),
-              createWebViewEvent(webView)));
+              createWebViewEvent(webView, url)));
     }
 
     @Override
@@ -120,11 +120,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       mLastLoadFailed = true;
 
       // In case of an error JS side expect to get a finish event first, and then get an error event
-      // Android WebView does it in the oposite way, so we need to simulate that behavior
-      emitFinishEvent(webView);
+      // Android WebView does it in the opposite way, so we need to simulate that behavior
+      emitFinishEvent(webView, failingUrl);
 
       ReactContext reactContext = (ReactContext) ((ReactWebView) webView).getContext();
-      WritableMap eventData = createWebViewEvent(webView);
+      WritableMap eventData = createWebViewEvent(webView, failingUrl);
       eventData.putDouble("code", errorCode);
       eventData.putString("description", description);
 
@@ -145,10 +145,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingStartEvent(
               webView.getId(),
               SystemClock.uptimeMillis(),
-              createWebViewEvent(webView)));
+              createWebViewEvent(webView, url)));
     }
 
-    private void emitFinishEvent(WebView webView) {
+    private void emitFinishEvent(WebView webView, String url) {
       ReactContext reactContext = (ReactContext) webView.getContext();
 
       EventDispatcher eventDispatcher =
@@ -157,13 +157,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           new TopLoadingFinishEvent(
               webView.getId(),
               SystemClock.uptimeMillis(),
-              createWebViewEvent(webView)));
+              createWebViewEvent(webView, url)));
     }
 
-    private WritableMap createWebViewEvent(WebView webView) {
+    private WritableMap createWebViewEvent(WebView webView, String url) {
       WritableMap event = Arguments.createMap();
       event.putDouble("target", webView.getId());
-      event.putString("url", webView.getUrl());
+      // Don't use webView.getUrl() here, the URL isn't updated to the new value yet in callbacks
+      // like onPageFinished
+      event.putString("url", url);
       event.putBoolean("loading", !mLastLoadFailed && webView.getProgress() != 100);
       event.putString("title", webView.getTitle());
       event.putBoolean("canGoBack", webView.canGoBack());
@@ -279,7 +281,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setUrl(WebView view, @Nullable String url) {
     // TODO(8495359): url and html are coupled as they both call loadUrl, therefore in case when
     // property url is removed in favor of property html being added in single transaction we may
-    // end up in a state when blank url is loaded as it depends onthe oreder of update operations!
+    // end up in a state when blank url is loaded as it depends on the order of update operations!
     if (url != null) {
       view.loadUrl(url);
     } else {
