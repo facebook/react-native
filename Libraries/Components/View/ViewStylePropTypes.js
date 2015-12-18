@@ -13,6 +13,7 @@
 
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var ColorPropType = require('ColorPropType');
 var TransformPropTypes = require('TransformPropTypes');
 
 /**
@@ -22,12 +23,12 @@ var ViewStylePropTypes = {
   ...LayoutPropTypes,
   ...TransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ReactPropTypes.string,
-  borderColor: ReactPropTypes.string,
-  borderTopColor: ReactPropTypes.string,
-  borderRightColor: ReactPropTypes.string,
-  borderBottomColor: ReactPropTypes.string,
-  borderLeftColor: ReactPropTypes.string,
+  backgroundColor: ColorPropType,
+  borderColor: ColorPropType,
+  borderTopColor: ColorPropType,
+  borderRightColor: ColorPropType,
+  borderBottomColor: ColorPropType,
+  borderLeftColor: ColorPropType,
   borderRadius: ReactPropTypes.number,
   borderTopLeftRadius: ReactPropTypes.number,
   borderTopRightRadius: ReactPropTypes.number,
@@ -41,7 +42,7 @@ var ViewStylePropTypes = {
   borderLeftWidth: ReactPropTypes.number,
   opacity: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
-  shadowColor: ReactPropTypes.string,
+  shadowColor: ColorPropType,
   shadowOffset: ReactPropTypes.shape(
     {width: ReactPropTypes.number, height: ReactPropTypes.number}
   ),
