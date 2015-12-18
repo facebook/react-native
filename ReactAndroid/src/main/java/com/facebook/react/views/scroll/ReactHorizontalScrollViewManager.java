@@ -53,6 +53,11 @@ public class ReactHorizontalScrollViewManager
     view.setSnapToInterval(interval);
   }
 
+  @ReactProp(name = "pagingEnabled")
+  public void setPagingEnabled(ReactHorizontalScrollView view, boolean pagingEnabled) {
+    view.setPagingEnabled(pagingEnabled);
+  }
+
   @Override
   public void receiveCommand(
       ReactHorizontalScrollView scrollView,
