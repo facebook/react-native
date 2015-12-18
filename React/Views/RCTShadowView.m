@@ -178,13 +178,13 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   // only update those.
 
   if (!_backgroundColor) {
-    UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
-    if (parentBackgroundColor) {
-      [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        UIView *view = viewRegistry[_reactTag];
-        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
-      }];
-    }
+//    UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
+//    if (parentBackgroundColor) {
+//      [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+//        UIView *view = viewRegistry[_reactTag];
+//        [view reactSetInheritedBackgroundColor:parentBackgroundColor];
+//      }];
+//    }
   } else {
     // Update parent properties for children
     NSMutableDictionary<NSString *, id> *properties = [NSMutableDictionary dictionaryWithDictionary:parentProperties];

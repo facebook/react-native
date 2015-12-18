@@ -436,7 +436,7 @@ var ListView = React.createClass({
     // every platform
     RCTScrollViewManager && RCTScrollViewManager.calculateChildFrames &&
       RCTScrollViewManager.calculateChildFrames(
-        scrollNode,
+        findNodeHandle(scrollComponent),
         this._updateChildFrames,
       );
   },
