@@ -33,19 +33,30 @@ var regionText = {
   longitudeDelta: '0',
 };
 
+type MapRegion = {
+  latitude: number,
+  longitude: number,
+  latitudeDelta?: number,
+  longitudeDelta?: number,
+};
+
+type MapRegionInputState = {
+  region: MapRegion,
+};
+
 var MapRegionInput = React.createClass({
 
   propTypes: {
     region: React.PropTypes.shape({
       latitude: React.PropTypes.number.isRequired,
       longitude: React.PropTypes.number.isRequired,
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+      latitudeDelta: React.PropTypes.number,
+      longitudeDelta: React.PropTypes.number,
     }),
     onChange: React.PropTypes.func.isRequired,
   },
 
-  getInitialState() {
+  getInitialState(): MapRegionInputState {
     return {
       region: {
         latitude: 0,
@@ -93,7 +104,9 @@ var MapRegionInput = React.createClass({
             {'Latitude delta'}
           </Text>
           <TextInput
-            value={'' + region.latitudeDelta}
+            value={
+              region.latitudeDelta == null ? '' : String(region.latitudeDelta)
+            }
             style={styles.textInput}
             onChange={this._onChangeLatitudeDelta}
             selectTextOnFocus={true}
@@ -104,7 +117,9 @@ var MapRegionInput = React.createClass({
             {'Longitude delta'}
           </Text>
           <TextInput
-            value={'' + region.longitudeDelta}
+            value={
+              region.longitudeDelta == null ? '' : String(region.longitudeDelta)
+            }
             style={styles.textInput}
             onChange={this._onChangeLongitudeDelta}
             selectTextOnFocus={true}
@@ -149,9 +164,34 @@ var MapRegionInput = React.createClass({
 
 });
 
+type Annotations = Array<{
+  animateDrop?: boolean,
+  latitude: number,
+  longitude: number,
+  title?: string,
+  subtitle?: string,
+  hasLeftCallout?: boolean,
+  hasRightCallout?: boolean,
+  onLeftCalloutPress?: Function,
+  onRightCalloutPress?: Function,
+  tintColor?: number | string,
+  image?: any,
+  id?: string,
+  view?: ReactElement,
+  leftCalloutView?: ReactElement,
+  rightCalloutView?: ReactElement,
+  detailCalloutView?: ReactElement,
+}>;
+type MapViewExampleState = {
+  isFirstLoad: boolean,
+  mapRegion?: MapRegion,
+  mapRegionInput?: MapRegion,
+  annotations?: Annotations,
+};
+
 var MapViewExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): MapViewExampleState {
     return {
       isFirstLoad: true,
     };
@@ -175,7 +215,7 @@ var MapViewExample = React.createClass({
     );
   },
 
-  _getAnnotations(region) {
+  _getAnnotations(region): Annotations {
     return [{
       longitude: region.longitude,
       latitude: region.latitude,
@@ -209,9 +249,14 @@ var MapViewExample = React.createClass({
 
 });
 
+type AnnotationExampleState = {
+  isFirstLoad: boolean,
+  annotations?: Annotations,
+  mapRegion?: MapRegion,
+};
 var AnnotationExample = React.createClass({
 
-  getInitialState() {
+  getInitialState(): AnnotationExampleState {
     return {
       isFirstLoad: true,
     };
