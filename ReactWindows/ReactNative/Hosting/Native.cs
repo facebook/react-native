@@ -369,7 +369,7 @@
         }
 
         [DllImport("chakra.dll")]
-        internal static extern JavaScriptErrorCode JsCreateRuntime(JavaScriptRuntimeAttributes attributes, JavaScriptRuntimeVersion runtimeVersion, JavaScriptThreadServiceCallback threadService, out JavaScriptRuntime runtime);
+        internal static extern JavaScriptErrorCode JsCreateRuntime(JavaScriptRuntimeAttributes attributes, JavaScriptThreadServiceCallback threadService, out JavaScriptRuntime runtime);
 
         [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsCollectGarbage(JavaScriptRuntime handle);
@@ -405,10 +405,7 @@
         internal static extern JavaScriptErrorCode JsRelease(JavaScriptValue reference, out uint count);
 
         [DllImport("chakra.dll")]
-        internal static extern JavaScriptErrorCode JsCreateContext(JavaScriptRuntime runtime, IDebugApplication64 debugSite, out JavaScriptContext newContext);
-
-        [DllImport("chakra.dll")]
-        internal static extern JavaScriptErrorCode JsCreateContext(JavaScriptRuntime runtime, IDebugApplication32 debugSite, out JavaScriptContext newContext);
+        internal static extern JavaScriptErrorCode JsCreateContext(JavaScriptRuntime runtime, out JavaScriptContext newContext);
 
         [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsGetCurrentContext(out JavaScriptContext currentContext);
@@ -420,10 +417,7 @@
         internal static extern JavaScriptErrorCode JsGetRuntime(JavaScriptContext context, out JavaScriptRuntime runtime);
 
         [DllImport("chakra.dll")]
-        internal static extern JavaScriptErrorCode JsStartDebugging(IDebugApplication64 debugApplication);
-
-        [DllImport("chakra.dll")]
-        internal static extern JavaScriptErrorCode JsStartDebugging(IDebugApplication32 debugApplication);
+        internal static extern JavaScriptErrorCode JsStartDebugging();
 
         [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsIdle(out uint nextIdleTick);
@@ -634,6 +628,9 @@
 
         [DllImport("chakra.dll")]
         internal static extern JavaScriptErrorCode JsIsEnumeratingHeap(out bool isEnumeratingHeap);
+
+        [DllImport("chakra.dll", CharSet = CharSet.Unicode)]
+        internal static extern JavaScriptErrorCode JsProjectWinRTNamespace(string namespaceName);
 
         /// <summary>
         ///     ProcessDebugManager COM interface.
