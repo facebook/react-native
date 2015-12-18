@@ -26,12 +26,6 @@ const resolveAssetSource = require('resolveAssetSource');
 const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
-type MapRegion = {
-  latitude: number;
-  longitude: number;
-  latitudeDelta?: number;
-  longitudeDelta?: number;
-};
 
 const MapView = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -155,14 +149,14 @@ const MapView = React.createClass({
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
-      
+
       /**
        * Callout views.
        */
       leftCalloutView: React.PropTypes.element,
       rightCalloutView: React.PropTypes.element,
       detailCalloutView: React.PropTypes.element,
-      
+
       /**
        * The pin color. This can be any valid color string, or you can use one
        * of the predefined PinColors constants. Applies to both standard pins
@@ -191,7 +185,7 @@ const MapView = React.createClass({
        * annotation id
        */
       id: React.PropTypes.string,
-            
+
       /**
        * Deprecated. Use the left/right/detailsCalloutView props instead.
        */
@@ -286,7 +280,7 @@ const MapView = React.createClass({
         rightCalloutView,
         detailCalloutView,
       } = annotation;
-      
+
       if (!view && image && tintColor) {
         view = <Image
           style={{
