@@ -188,7 +188,7 @@ class Bundle {
       const minifyActivity = Activity.startEvent('minify');
       this._minifiedSourceAndMap = UglifyJS.minify(source, {
         fromString: true,
-        outSourceMap: 'bundle.js',
+        outSourceMap: this._sourceMapUrl,
         inSourceMap: this.getSourceMap(),
         output: {ascii_only: true},
       });
