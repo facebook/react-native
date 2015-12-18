@@ -34,14 +34,18 @@ export type AlertButtonStyle = $Enum<{
  * respective onPress callback and dismiss the alert. By default, the only
  * button will be an 'OK' button.
  *
+ * Use this API for iOS-specific features, such as prompting the user to enter
+ * some information. In other cases, especially to show static alerts, use
+ * the cross-platform `Alert` API.
+ *
  * ```
  * AlertIOS.alert(
- *   'Foo Title',
- *   'My Alert Msg',
+ *   'Enter password',
+ *   null,
  *   [
- *     {text: 'OK', onPress: () => console.log('OK Pressed')},
- *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
- *   ]
+ *     {text: 'Submit', onPress: (text) => console.log('Password: ' + text)},
+ *   ],
+ *   'secure-text'
  * )
  * ```
  */
@@ -86,6 +90,9 @@ class AlertIOS {
     });
   }
 
+  /**
+   * Prompt the user to enter some text.
+   */
   static prompt(
     title: string,
     value?: string,
