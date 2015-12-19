@@ -143,7 +143,7 @@ function diffProperties(
   nextProps : Object,
   validAttributes : AttributeConfiguration
 ): ?Object {
-  var attributeConfig : ?AttributeConfiguration;
+  var attributeConfig : ?(CustomAttributeConfiguration | AttributeConfiguration);
   var nextProp;
   var prevProp;
 

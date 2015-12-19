@@ -64,6 +64,7 @@ class FormData {
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       var contentDisposition = 'form-data; name="' + name + '"';
+      /* $FlowIssue(>=0.20.1) #9463928 */
       var headers: Headers = {'content-disposition': contentDisposition};
       if (typeof value === 'string') {
         return {string: value, headers, fieldName: name};
