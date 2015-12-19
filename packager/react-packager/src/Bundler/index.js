@@ -14,7 +14,7 @@ const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
 const BundlesLayout = require('../BundlesLayout');
-const Cache = require('../Cache');
+const Cache = require('../DependencyResolver/Cache');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -23,6 +23,7 @@ const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
+const version = require('../../../../package.json').version;
 
 const sizeOf = Promise.denodeify(imageSize);
 const readFile = Promise.denodeify(fs.readFile);
@@ -88,11 +89,23 @@ class Bundler {
 
     opts.projectRoots.forEach(verifyRootExists);
 
+    let mtime;
+    try {
+      ({mtime} = fs.statSync(opts.transformModulePath));
+      mtime = String(mtime.getTime());
+    } catch (error) {
+      mtime = '';
+    }
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
-      cacheVersion: opts.cacheVersion,
-      projectRoots: opts.projectRoots,
-      transformModulePath: opts.transformModulePath,
+      cacheKey: [
+        'react-packager-cache',
+        version,
+        opts.cacheVersion,
+        opts.projectRoots.join(',').split(path.sep).join('-'),
+        mtime
+      ].join('$'),
     });
 
     this._resolver = new Resolver({
@@ -365,7 +378,7 @@ class Bundler {
   generateAssetModule(bundle, module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = path.join('/assets', path.dirname(relPath));
-    
+
     // On Windows, change backslashes to slashes to get proper URL path from file path.
     if (path.sep === '\\') {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');

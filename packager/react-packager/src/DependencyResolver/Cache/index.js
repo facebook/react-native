@@ -9,50 +9,37 @@
 'use strict';
 
 const Promise = require('promise');
-const _ = require('underscore');
-const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
-const getCacheFilePath = require('../lib/getCacheFilePath');
+const getCacheFilePath = require('./lib/getCacheFilePath');
 const isAbsolutePath = require('absolute-path');
-const loadCacheSync = require('../lib/loadCacheSync');
-const path = require('path');
-const version = require('../../../../package.json').version;
+const loadCacheSync = require('./lib/loadCacheSync');
+const tmpdir = require('os').tmpDir();
 
-const validateOpts = declareOpts({
-  resetCache: {
-    type: 'boolean',
-    default: false,
-  },
-  cacheVersion: {
-    type: 'string',
-    default: '1.0',
-  },
-  projectRoots: {
-    type: 'array',
-    required: true,
-  },
-  transformModulePath: {
-    type:'string',
-    required: true,
-  },
-});
+function getObjectValues(object) {
+  return Object.keys(object).map(key => object[key]);
+}
 
-// TODO: move to Packager directory
+function debounce(fn, delay) {
+  var timeout;
+  return () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(fn, delay);
+  };
+}
+
 class Cache {
-  constructor(options) {
-    var opts = validateOpts(options);
-
-    this._cacheFilePath = this._getCacheFilePath(opts);
-
-    var data;
-    if (!opts.resetCache) {
-      data = this._loadCacheSync(this._cacheFilePath);
+  constructor({
+    resetCache,
+    cacheKey,
+  }) {
+    this._cacheFilePath = getCacheFilePath(tmpdir, cacheKey);
+    if (!resetCache) {
+      this._data = this._loadCacheSync(this._cacheFilePath);
     } else {
-      data = Object.create(null);
+      this._data = Object.create(null);
     }
-    this._data = data;
 
-    this._persistEventually = _.debounce(
+    this._persistEventually = debounce(
       this._persistCache.bind(this),
       2000,
     );
@@ -124,10 +111,10 @@ class Cache {
     var data = this._data;
     var cacheFilepath = this._cacheFilePath;
 
-    var allPromises = _.values(data)
+    var allPromises = getObjectValues(data)
       .map(record => {
         var fieldNames = Object.keys(record.data);
-        var fieldValues = _.values(record.data);
+        var fieldValues = getObjectValues(record.data);
 
         return Promise
           .all(fieldValues)
@@ -186,25 +173,6 @@ class Cache {
     });
 
     return ret;
-  }
-
-  _getCacheFilePath(options) {
-    let mtime;
-    try {
-      ({mtime} = fs.statSync(options.transformModulePath));
-      mtime = String(mtime.getTime());
-    } catch (error) {
-      mtime = '';
-    }
-
-    return getCacheFilePath(
-      'react-packager-cache-',
-      version,
-      options.projectRoots.join(',').split(path.sep).join('-'),
-      options.cacheVersion || '0',
-      options.transformModulePath,
-      mtime
-    );
   }
 }
 

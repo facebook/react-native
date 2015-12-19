@@ -9,38 +9,35 @@
 'use strict';
 
 jest
-  .dontMock('underscore')
   .dontMock('absolute-path')
   .dontMock('../')
-  .dontMock('../../lib/loadCacheSync')
-  .dontMock('../../lib/getCacheFilePath');
+  .dontMock('../lib/loadCacheSync')
+  .dontMock('../lib/getCacheFilePath');
 
 jest
   .mock('fs')
   .setMock('os', {
-    tmpDir() { return 'tmpDir'; }
+    tmpDir() { return 'tmpDir'; },
   });
 
 var Promise = require('promise');
 var fs = require('fs');
-var _ = require('underscore');
 
 var Cache = require('../');
 
-describe('JSTransformer Cache', () => {
+describe('Cache', () => {
   describe('getting/setting', () => {
     pit('calls loader callback for uncached file', () => {
       fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
-            getTime: () => {}
-          }
+            getTime: () => {},
+          },
         });
       });
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var loaderCb = jest.genMockFn().mockImpl(() => Promise.resolve());
 
@@ -55,14 +52,13 @@ describe('JSTransformer Cache', () => {
       fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
-            getTime: () => {}
-          }
+            getTime: () => {},
+          },
         });
       });
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var index = 0;
       var loaderCb = jest.genMockFn().mockImpl(() =>
@@ -83,14 +79,13 @@ describe('JSTransformer Cache', () => {
       fs.stat.mockImpl((file, callback) =>
         callback(null, {
           mtime: {
-            getTime: () => {}
-          }
+            getTime: () => {},
+          },
         })
       );
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var loaderCb = jest.genMockFn().mockImpl(() =>
         Promise.resolve('lol')
@@ -105,14 +100,13 @@ describe('JSTransformer Cache', () => {
       fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
-            getTime: () => {}
-          }
+            getTime: () => {},
+          },
         });
       });
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var loaderCb = jest.genMockFn().mockImpl(() =>
         Promise.resolve('lol')
@@ -135,14 +129,13 @@ describe('JSTransformer Cache', () => {
       fs.stat.mockImpl((file, callback) => {
         callback(null, {
           mtime: {
-            getTime: () => mtime++
-          }
+            getTime: () => mtime++,
+          },
         });
       });
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var loaderCb = jest.genMockFn().mockImpl(() =>
         Promise.resolve('lol' + mtime)
@@ -167,14 +160,14 @@ describe('JSTransformer Cache', () => {
       fileStats = {
         '/rootDir/someFile': {
           mtime: {
-            getTime: () => 22
-          }
+            getTime: () => 22,
+          },
         },
         '/rootDir/foo': {
           mtime: {
-            getTime: () => 11
-          }
-        }
+            getTime: () => 11,
+          },
+        },
       };
 
       fs.existsSync.mockImpl(() => true);
@@ -189,14 +182,13 @@ describe('JSTransformer Cache', () => {
         '/rootDir/foo': {
           metadata: {mtime: 11},
           data: {field: 'lol wat'},
-        }
+        },
       }));
     });
 
     pit('should load cache from disk', () => {
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var loaderCb = jest.genMockFn();
 
@@ -219,16 +211,15 @@ describe('JSTransformer Cache', () => {
       fs.stat.mockImpl((file, callback) =>
         callback(null, {
           mtime: {
-            getTime: () => {}
-          }
+            getTime: () => {},
+          },
         })
       );
 
       fileStats['/rootDir/foo'].mtime.getTime = () => 123;
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
       var loaderCb = jest.genMockFn().mockImpl(() =>
         Promise.resolve('new value')
@@ -254,26 +245,17 @@ describe('JSTransformer Cache', () => {
     it('should write cache to disk', () => {
       var index = 0;
       var mtimes = [10, 20, 30];
-      var debounceIndex = 0;
-      _.debounce = callback => {
-        return () => {
-          if (++debounceIndex === 3) {
-            callback();
-          }
-        };
-      };
 
       fs.stat.mockImpl((file, callback) =>
         callback(null, {
           mtime: {
-            getTime: () => mtimes[index++]
-          }
+            getTime: () => mtimes[index++],
+          },
         })
       );
 
       var cache = new Cache({
-        projectRoots: ['/rootDir'],
-        transformModulePath: 'x.js',
+        cacheKey: 'cache',
       });
 
       cache.get('/rootDir/bar', 'field', () =>
@@ -286,7 +268,10 @@ describe('JSTransformer Cache', () => {
         Promise.resolve('baz value')
       );
 
-      jest.runAllTicks();
+      // jest has some trouble with promises and timeouts within promises :(
+      jest.runAllTimers();
+      jest.runAllTimers();
+
       expect(fs.writeFile).toBeCalled();
     });
   });
