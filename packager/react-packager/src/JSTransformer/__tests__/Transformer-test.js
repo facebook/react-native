@@ -14,7 +14,7 @@ jest
 
 jest.mock('fs');
 
-var Cache = require('../../Cache');
+var Cache = require('../../DependencyResolver/Cache');
 var Transformer = require('../');
 var fs = require('fs');
 

@@ -10,7 +10,7 @@
 
 jest
   .autoMockOff()
-  .mock('../../Cache')
+  .mock('../../DependencyResolver/Cache')
   .mock('../../Activity');
 
 const Promise = require('promise');
@@ -19,7 +19,7 @@ const path = require('path');
 jest.mock('fs');
 
 var BundlesLayout = require('../index');
-var Cache = require('../../Cache');
+var Cache = require('../../DependencyResolver/Cache');
 var Resolver = require('../../Resolver');
 var fs = require('fs');
 
