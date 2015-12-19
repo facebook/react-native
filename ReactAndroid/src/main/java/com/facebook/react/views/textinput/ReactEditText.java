@@ -65,6 +65,7 @@ public class ReactEditText extends EditText {
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   private boolean mContainsImages;
+  private boolean mManualInput;
 
   public ReactEditText(Context context) {
     super(context);
@@ -289,6 +290,25 @@ public class ReactEditText extends EditText {
       gravityVertical = mDefaultGravityVertical;
     }
     setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
+  }
+
+  /* package */ void setManualInput(boolean manualInput) {
+    mManualInput = manualInput;
+    if (manualInput) {
+      setFocusable(false);
+      this.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          hideSoftKeyboard();
+        }
+      });
+      this.setOnLongClickListener(new OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+          return true;
+        }
+      });
+    }
   }
 
   @Override

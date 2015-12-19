@@ -153,14 +153,15 @@ import com.facebook.csslayout.Spacing;
       super.getOutline(outline);
       return;
     }
-    if(!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
-      float extraRadiusFromBorderWidth = (mBorderWidth != null)
-              ? mBorderWidth.get(Spacing.ALL) / 2f
-              : 0;
-      outline.setRoundRect(getBounds(), mBorderRadius + extraRadiusFromBorderWidth);
-    } else {
-      outline.setRect(getBounds());
-    }
+    // TODO (EVEN)
+//    if(!CSSConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+//      float extraRadiusFromBorderWidth = (mBorderWidth != null)
+//              ? mBorderWidth.get(Spacing.ALL) / 2f
+//              : 0;
+//      outline.setRoundRect(getBounds(), mBorderRadius + extraRadiusFromBorderWidth);
+//    } else {
+//      outline.setRect(getBounds());
+//    }
   }
 
   public void setBorderWidth(int position, float width) {
