@@ -270,7 +270,7 @@ const MapView = React.createClass({
 
   render: function() {
     let children = [], {annotations, overlays} = this.props;
-    annotations = annotations && annotations.map((annotation: Object, index: number) => {
+    annotations = annotations && annotations.map((annotation: Object) => {
       let {
         id,
         image,
@@ -329,10 +329,10 @@ const MapView = React.createClass({
           }
         });
       }
-      return {
+      let result = {
         ...annotation,
         tintColor: tintColor && processColor(tintColor),
-        image: image && resolveAssetSource(image),
+        image,
         viewIndex,
         leftCalloutViewIndex,
         rightCalloutViewIndex,
@@ -341,17 +341,20 @@ const MapView = React.createClass({
         leftCalloutView: undefined,
         rightCalloutView: undefined,
         detailCalloutView: undefined,
-        id: id || String(index),
       };
+      result.id = id || encodeURIComponent(JSON.stringify(result));
+      result.image = image && resolveAssetSource(image);
+      return result;
     });
-    overlays = overlays && overlays.map((overlay: Object, index: number) => {
+    overlays = overlays && overlays.map((overlay: Object) => {
       let {id, fillColor, strokeColor} = overlay;
-      return {
+      let result = {
         ...overlay,
         strokeColor: strokeColor && processColor(strokeColor),
         fillColor: fillColor && processColor(fillColor),
-        id: id || String(index),
       };
+      result.id = id || encodeURIComponent(JSON.stringify(result));
+      return result;
     });
 
     // TODO: these should be separate events, to reduce bridge traffic

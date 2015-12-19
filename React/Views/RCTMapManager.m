@@ -41,6 +41,32 @@ RCT_ENUM_CONVERTER(MKPinAnnotationColor, (@{
 
 #endif
 
+@interface RCTMapAnnotationView : MKAnnotationView
+
+@property (nonatomic, strong) UIView *contentView;
+
+@end
+
+@implementation RCTMapAnnotationView
+
+- (void)setContentView:(UIView *)contentView
+{
+  [_contentView removeFromSuperview];
+  _contentView = contentView;
+  [self addSubview:_contentView];
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  self.bounds = (CGRect){
+    CGPointZero,
+    _contentView.frame.size,
+  };
+}
+
+@end
+
 @interface RCTMapManager() <MKMapViewDelegate>
 
 @end
@@ -136,19 +162,14 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   annotationView.clipsToBounds = YES;
   if (annotation.viewIndex != NSNotFound) {
 
-    NSString *const reuseIdentifier = @"RCTCustomViewAnnotation";
+    NSString *reuseIdentifier = NSStringFromClass([RCTMapAnnotationView class]);
     annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];
     if (!annotationView) {
-      annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation
-                                                    reuseIdentifier:reuseIdentifier];
-    }
-
-    for (UIView *view in annotationView.subviews) {
-      [view removeFromSuperview];
+      annotationView = [[RCTMapAnnotationView alloc] initWithAnnotation:annotation
+                                                        reuseIdentifier:reuseIdentifier];
     }
     UIView *reactView = mapView.reactSubviews[annotation.viewIndex];
-    annotationView.bounds = reactView.frame;
-    [annotationView addSubview:reactView];
+    ((RCTMapAnnotationView *)annotationView).contentView = reactView;
 
   } else if (annotation.image) {
 
