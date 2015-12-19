@@ -1,11 +1,11 @@
 package com.facebook.react;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 /**
  * Base Activity for React Native applications.
  */
-public abstract class ReactActivity extends Activity implements DefaultHardwareBackBtnHandler {
+public abstract class ReactActivity extends FragmentActivity implements DefaultHardwareBackBtnHandler {
 
   private static final String REDBOX_PERMISSION_MESSAGE =
       "Overlay permissions needs to be granted in order for react native apps to run in dev mode";
