@@ -476,11 +476,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
 
-  NSString *origin = [_requestedOptions objectForKey: @"origin"];
-  if (!origin) {
-    origin = _url.RCTSR_origin;
-  }
-  CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)origin);
+  CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)(_requestedOptions[@"origin"] ?: _url.RCTSR_origin));
 
   [_urlRequest.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
