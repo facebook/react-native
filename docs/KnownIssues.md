@@ -26,18 +26,14 @@ ART
 Maps
 Modal
 Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
-Webview
 ```
 
 #### Modules
 
 ```
-Alert
 App State
 Camera Roll
-Dialog
 Media
-Pasteboard
 PushNotificationIOS
 ```
 
