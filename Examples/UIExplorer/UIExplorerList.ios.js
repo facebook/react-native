@@ -50,6 +50,7 @@ var COMPONENTS = [
   require('./TextExample.ios'),
   require('./TextInputExample.ios'),
   require('./TouchableExample'),
+  require('./TransparentHitTestExample'),
   require('./ViewExample'),
   require('./WebViewExample'),
 ];
@@ -65,35 +66,20 @@ var APIS = [
   require('./AsyncStorageExample'),
   require('./BorderExample'),
   require('./CameraRollExample.ios'),
+  require('./ClipboardExample'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./PushNotificationIOSExample'),
+  require('./RCTRootViewIOSExample'),
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
   require('./VibrationIOSExample'),
   require('./XHRExample.ios'),
   require('./ImageEditingExample'),
 ];
-
-// Register suitable examples for snapshot tests
-COMPONENTS.concat(APIS).forEach((Example) => {
-  if (Example.displayName) {
-    var Snapshotter = React.createClass({
-      render: function() {
-        var Renderable = UIExplorerListBase.makeRenderable(Example);
-        return (
-          <SnapshotViewIOS>
-            <Renderable />
-          </SnapshotViewIOS>
-        );
-      },
-    });
-    AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
-  }
-});
 
 type Props = {
   navigator: {
@@ -142,6 +128,25 @@ class UIExplorerList extends React.Component {
 
   onPressRow(example: any) {
     this._openExample(example);
+  }
+
+  // Register suitable examples for snapshot tests
+  static registerComponents() {
+    COMPONENTS.concat(APIS).forEach((Example) => {
+      if (Example.displayName) {
+        var Snapshotter = React.createClass({
+          render: function() {
+            var Renderable = UIExplorerListBase.makeRenderable(Example);
+            return (
+              <SnapshotViewIOS>
+                <Renderable />
+              </SnapshotViewIOS>
+            );
+          },
+        });
+        AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
+      }
+    });
   }
 }
 

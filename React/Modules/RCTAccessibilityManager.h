@@ -19,7 +19,7 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 @property (nonatomic, readonly) CGFloat multiplier;
 
 /// map from UIKit categories to multipliers
-@property (nonatomic, copy) NSDictionary *multipliers;
+@property (nonatomic, copy) NSDictionary<NSString *, NSNumber *> *multipliers;
 
 @property (nonatomic, assign) BOOL isVoiceOverEnabled;
 

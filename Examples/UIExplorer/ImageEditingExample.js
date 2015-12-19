@@ -25,10 +25,11 @@ var {
   StyleSheet,
   Text,
   TouchableHighlight,
+  UIManager,
   View,
 } = React;
 var ImageEditingManager = NativeModules.ImageEditingManager;
-var RCTScrollViewConsts = NativeModules.UIManager.RCTScrollView.Constants;
+var RCTScrollViewConsts = UIManager.RCTScrollView.Constants;
 
 var PAGE_SIZE = 20;
 

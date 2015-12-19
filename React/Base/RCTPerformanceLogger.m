@@ -36,7 +36,7 @@ void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
   RCTPLData[tag][1] = value;
 }
 
-NSArray *RCTPerformanceLoggerOutput(void)
+NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
   return @[
     @(RCTPLData[RCTPLScriptDownload][0]),
@@ -56,6 +56,19 @@ NSArray *RCTPerformanceLoggerOutput(void)
   ];
 }
 
+NSArray *RCTPerformanceLoggerLabels(void)
+{
+  return @[
+    @"ScriptDownload",
+    @"ScriptExecution",
+    @"NativeModuleInit",
+    @"NativeModulePrepareConfig",
+    @"NativeModuleInjectConfig",
+    @"TTI",
+    @"BundleSize",
+  ];
+}
+
 @interface RCTPerformanceLogger : NSObject <RCTBridgeModule>
 
 @end
@@ -66,15 +79,14 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sendTimespans)
-                                                 name:RCTContentDidAppearNotification
-                                               object:nil];
-  }
-  return self;
+  _bridge = bridge;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(sendTimespans)
+                                               name:RCTContentDidAppearNotification
+                                             object:nil];
 }
 
 - (void)dealloc
@@ -88,15 +100,7 @@ RCT_EXPORT_MODULE()
 
   [_bridge enqueueJSCall:@"PerformanceLogger.addTimespans" args:@[
     RCTPerformanceLoggerOutput(),
-    @[
-      @"ScriptDownload",
-      @"ScriptExecution",
-      @"NativeModuleInit",
-      @"NativeModulePrepareConfig",
-      @"NativeModuleInjectConfig",
-      @"TTI",
-      @"BundleSize",
-    ],
+    RCTPerformanceLoggerLabels(),
   ]];
 }
 

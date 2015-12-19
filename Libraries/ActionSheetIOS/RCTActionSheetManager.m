@@ -16,7 +16,6 @@
 #import "RCTUIManager.h"
 
 @interface RCTActionSheetManager () <UIActionSheetDelegate>
-
 @end
 
 @implementation RCTActionSheetManager
@@ -62,11 +61,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   NSString *title = [RCTConvert NSString:options[@"title"]];
-  NSArray *buttons = [RCTConvert NSStringArray:options[@"options"]];
+  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
   NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
-  UIViewController *controller = RCTSharedApplication().delegate.window.rootViewController;
+  UIViewController *controller = RCTKeyWindow().rootViewController;
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -139,6 +138,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
       alertController.popoverPresentationController.permittedArrowDirections = 0;
     }
     [controller presentViewController:alertController animated:YES completion:nil];
+
+    alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
   }
 }
 
@@ -151,7 +152,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     return;
   }
 
-  NSMutableArray *items = [NSMutableArray array];
+  NSMutableArray<id /* NSString or NSURL */> *items = [NSMutableArray array];
   NSString *message = [RCTConvert NSString:options[@"message"]];
   if (message) {
     [items addObject:message];
@@ -166,7 +167,18 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-  UIViewController *controller = RCTSharedApplication().delegate.window.rootViewController;
+
+  NSString *subject = [RCTConvert NSString:options[@"subject"]];
+  if (subject) {
+    [shareController setValue:subject forKey:@"subject"];
+  }
+
+  NSArray *excludedActivityTypes = [RCTConvert NSStringArray:options[@"excludedActivityTypes"]];
+  if (excludedActivityTypes) {
+    shareController.excludedActivityTypes = excludedActivityTypes;
+  }
+
+  UIViewController *controller = RCTKeyWindow().rootViewController;
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_0
 
@@ -199,6 +211,8 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   [controller presentViewController:shareController animated:YES completion:nil];
+
+  shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
 }
 
 #pragma mark UIActionSheetDelegate Methods
@@ -212,8 +226,6 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   } else {
     RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
   }
-
-  [RCTSharedApplication().delegate.window makeKeyWindow];
 }
 
 @end

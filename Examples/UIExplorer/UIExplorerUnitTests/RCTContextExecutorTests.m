@@ -123,8 +123,13 @@ static uint64_t _get_time_nanoseconds(void)
         } \
       } \
     }; \
+    var Bridge = { \
+      callFunctionReturnFlushedQueue: function(module, method, args) { \
+        modules[module].apply(modules[module], args); \
+      } \
+    }; \
     function require(module) { \
-      return modules[module]; \
+      return Bridge; \
     } \
   ";
 
@@ -138,12 +143,11 @@ static uint64_t _get_time_nanoseconds(void)
       for (int j = 0; j < runs; j++) {
         @autoreleasepool {
           double start = _get_time_nanoseconds();
-          [_executor executeJSCall:@"module"
-                           method:@"method"
-                        arguments:params
-                         callback:^(id json, __unused NSError *unused) {
-                           XCTAssert([json isEqual:@YES], @"Invalid return");
-                         }];
+          [_executor callFunctionOnModule:@"module"
+                                   method:@"method"
+                                arguments:params
+                                 callback:^(__unused id json, __unused NSError *unused) {
+                                 }];
           double run = _get_time_nanoseconds() - start;
           if ((j % frequency) == frequency - 1) { // Warmup
             total += run;

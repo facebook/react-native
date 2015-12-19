@@ -13,4 +13,8 @@ void installGlobalFunction(
     const char* name,
     JSObjectCallAsFunctionCallback callback);
 
+JSValueRef makeJSCException(
+    JSContextRef ctx,
+    const char* exception_text);
+
 } }

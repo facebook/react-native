@@ -224,7 +224,8 @@ function checkNodeVersion() {
   if (!semver.satisfies(process.version, packageJson.engines.node)) {
     console.error(chalk.red(
         'You are currently running Node %s but React Native requires %s. ' +
-        'Please use a supported version of Node.'
+        'Please use a supported version of Node.\n' +
+        'See https://facebook.github.io/react-native/docs/getting-started.html'
       ),
       process.version,
       packageJson.engines.node);

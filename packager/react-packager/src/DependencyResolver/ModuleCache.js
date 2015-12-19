@@ -47,7 +47,7 @@ class ModuleCache {
 
   getPackage(filePath) {
     filePath = path.resolve(filePath);
-    if (!this._packageCache[filePath]){
+    if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,
         fastfs: this._fastfs,

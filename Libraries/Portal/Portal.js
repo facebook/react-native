@@ -8,8 +8,8 @@
 
 var Platform = require('Platform');
 var React = require('React');
-var RCTUIManager = require('NativeModules').UIManager;
 var StyleSheet = require('StyleSheet');
+var UIManager = require('UIManager');
 var View = require('View');
 
 var findNodeHandle = require('findNodeHandle');
@@ -137,9 +137,9 @@ var Portal = React.createClass({
       // TextViews have no text set at the moment of populating event.
       setTimeout(() => {
         if (this._getOpenModals().length > 0) {
-          RCTUIManager.sendAccessibilityEvent(
+          UIManager.sendAccessibilityEvent(
             findNodeHandle(this),
-            RCTUIManager.AccessibilityEventTypes.typeWindowStateChanged);
+            UIManager.AccessibilityEventTypes.typeWindowStateChanged);
         }
       }, 0);
     }

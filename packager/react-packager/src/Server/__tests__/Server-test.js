@@ -106,13 +106,17 @@ describe('processRequest', () => {
       'index.ios.includeRequire.bundle'
     ).then(response => {
       expect(response).toEqual('this is the source');
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'index.ios.js',
-        true,
-        'index.ios.includeRequire.map',
-        true,
-        undefined
-      );
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.ios.js',
+        inlineSourceMap: false,
+        minify: false,
+        runModule: true,
+        sourceMapUrl: 'index.ios.includeRequire.map',
+        dev: true,
+        platform: undefined,
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        unbundle: false,
+      });
     });
   });
 
@@ -122,13 +126,17 @@ describe('processRequest', () => {
       'index.bundle?platform=ios'
     ).then(function(response) {
       expect(response).toEqual('this is the source');
-      expect(Bundler.prototype.bundle).toBeCalledWith(
-        'index.js',
-        true,
-        'index.map?platform=ios',
-        true,
-        'ios',
-      );
+      expect(Bundler.prototype.bundle).toBeCalledWith({
+        entryFile: 'index.js',
+        inlineSourceMap: false,
+        minify: false,
+        runModule: true,
+        sourceMapUrl: 'index.map?platform=ios',
+        dev: true,
+        platform: 'ios',
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        unbundle: false,
+      });
     });
   });
 
@@ -260,13 +268,16 @@ describe('processRequest', () => {
       return server.buildBundle({
         entryFile: 'foo file'
       }).then(() =>
-        expect(Bundler.prototype.bundle).toBeCalledWith(
-          'foo file',
-          true,
-          undefined,
-          true,
-          undefined
-        )
+        expect(Bundler.prototype.bundle).toBeCalledWith({
+          entryFile: 'foo file',
+          inlineSourceMap: false,
+          minify: false,
+          runModule: true,
+          dev: true,
+          platform: undefined,
+          runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+          unbundle: false,
+        })
       );
     });
   });
@@ -275,13 +286,17 @@ describe('processRequest', () => {
     pit('Calls the bundler with the correct args', () => {
       return server.buildBundleFromUrl('/path/to/foo.bundle?dev=false&runModule=false')
         .then(() =>
-          expect(Bundler.prototype.bundle).toBeCalledWith(
-            'path/to/foo.js',
-            false,
-            '/path/to/foo.map?dev=false&runModule=false',
-            false,
-            undefined
-          )
+          expect(Bundler.prototype.bundle).toBeCalledWith({
+            entryFile: 'path/to/foo.js',
+            inlineSourceMap: false,
+            minify: false,
+            runModule: false,
+            sourceMapUrl: '/path/to/foo.map?dev=false&runModule=false',
+            dev: false,
+            platform: undefined,
+            runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+            unbundle: false,
+          })
         );
     });
   });

@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var UIManager = require('UIManager');
 
 var invariant = require('invariant');
 
-var dimensions = NativeModules.UIManager.Dimensions;
+var dimensions = UIManager.Dimensions;
 
 // We calculate the window dimensions in JS so that we don't encounter loss of
 // precision in transferring the dimensions (which could be non-integers) over

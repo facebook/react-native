@@ -40,7 +40,7 @@ describe('Bundle', function() {
       }));
 
       bundle.finalize({});
-      expect(bundle.getSource()).toBe([
+      expect(bundle.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
         '\/\/@ sourceMappingURL=test_url'
@@ -61,7 +61,7 @@ describe('Bundle', function() {
       }));
 
       p.finalize({});
-      expect(p.getSource()).toBe([
+      expect(p.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
       ].join('\n'));
@@ -81,10 +81,14 @@ describe('Bundle', function() {
       }));
 
       bundle.setMainModuleId('foo');
-      bundle.finalize({runMainModule: true});
-      expect(bundle.getSource()).toBe([
+      bundle.finalize({
+        runBeforeMainModule: ['bar'],
+        runMainModule: true,
+      });
+      expect(bundle.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
+        ';require("bar");',
         ';require("foo");',
         '\/\/@ sourceMappingURL=test_url',
       ].join('\n'));
@@ -106,7 +110,7 @@ describe('Bundle', function() {
         sourcePath: 'foo path'
       }));
       bundle.finalize();
-      expect(bundle.getMinifiedSourceAndMap()).toBe(minified);
+      expect(bundle.getMinifiedSourceAndMap({dev: true})).toBe(minified);
     });
   });
 
@@ -141,8 +145,11 @@ describe('Bundle', function() {
       }));
 
       p.setMainModuleId('foo');
-      p.finalize({runMainModule: true});
-      var s = p.getSourceMap();
+      p.finalize({
+        runBeforeMainModule: [],
+        runMainModule: true,
+      });
+      var s = p.getSourceMap({dev: true});
       expect(s).toEqual(genSourceMap(p.getModules()));
     });
 
@@ -171,9 +178,12 @@ describe('Bundle', function() {
       }));
 
       p.setMainModuleId('foo');
-      p.finalize({runMainModule: true});
+      p.finalize({
+        runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
+        runMainModule: true,
+      });
 
-      var s = p.getSourceMap();
+      var s = p.getSourceMap({dev: true});
       expect(s).toEqual({
         file: 'bundle.js',
         version: 3,
@@ -188,7 +198,7 @@ describe('Bundle', function() {
             map: {
               file: 'image.png',
               mappings: 'AAAA;AACA;',
-              names: {},
+              names: [],
               sources: [ 'image.png' ],
               sourcesContent: ['image module;\nimage module;'],
               version: 3,
@@ -200,14 +210,28 @@ describe('Bundle', function() {
               line: 6
             },
             map: {
-              file: 'RunMainModule.js',
+              file: 'require-InitializeJavaScriptAppEngine.js',
               mappings: 'AAAA;',
-              names: {},
-              sources: [ 'RunMainModule.js' ],
+              names: [],
+              sources: [ 'require-InitializeJavaScriptAppEngine.js' ],
+              sourcesContent: [';require("InitializeJavaScriptAppEngine");'],
+              version: 3,
+            }
+          },
+          {
+            offset: {
+              column: 0,
+              line: 7
+            },
+            map: {
+              file: 'require-foo.js',
+              mappings: 'AAAA;',
+              names: [],
+              sources: [ 'require-foo.js' ],
               sourcesContent: [';require("foo");'],
               version: 3,
             }
-          }
+          },
         ],
       });
     });

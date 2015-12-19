@@ -37,17 +37,17 @@
 
   NSOperatingSystemVersion version = [NSProcessInfo processInfo].operatingSystemVersion;
   RCTAssert((version.majorVersion == 8 && version.minorVersion >= 3) || version.majorVersion >= 9, @"Tests should be run on iOS 8.3+, found %zd.%zd.%zd", version.majorVersion, version.minorVersion, version.patchVersion);
-  _runner = RCTInitRunnerForApp(@"Examples/UIExplorer/UIExplorerIntegrationTests/js/IntegrationTestsApp", nil);
+  _runner = RCTInitRunnerForApp(@"IntegrationTests/IntegrationTestsApp", nil);
 }
 
-#pragma mark Logic Tests
+#pragma mark - Test harness
 
 - (void)testTheTester_waitOneFrame
 {
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
       initialProps:@{@"waitOneFrame": @YES}
-  expectErrorBlock:nil];
+configurationBlock:nil];
 }
 
 - (void)testTheTester_ExpectError
@@ -55,19 +55,21 @@
   [_runner runTest:_cmd
             module:@"IntegrationTestHarnessTest"
       initialProps:@{@"shouldThrow": @YES}
+configurationBlock:nil
   expectErrorRegex:@"because shouldThrow"];
 }
+
+#pragma mark - JS tests
 
 // This list should be kept in sync with IntegrationTestsApp.js
 RCT_TEST(IntegrationTestHarnessTest)
 RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
-RCT_TEST(ImageSnapshotTest)
+//RCT_TEST(ImageSnapshotTest) // Disabled: #8985988
+//RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
 RCT_TEST(SimpleSnapshotTest)
+RCT_TEST(PromiseTest)
 
-// Disable due to flakiness: #8686784
-//RCT_TEST(LayoutEventsTest)
-//RCT_TEST(PromiseTest)
 
 @end

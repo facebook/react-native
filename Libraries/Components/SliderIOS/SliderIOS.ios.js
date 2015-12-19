@@ -11,6 +11,7 @@
  */
 'use strict';
 
+var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
@@ -25,6 +26,7 @@ var SliderIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Used to style and layout the `Slider`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
@@ -40,6 +42,13 @@ var SliderIOS = React.createClass({
      * the value, the component won't be reset to its inital value.
      */
     value: PropTypes.number,
+
+    /**
+     * Step value of the slider. The value should be
+     * between 0 and (maximumValue - minimumValue).
+     * Default value is 0.
+     */
+    step: PropTypes.number,
 
     /**
      * Initial minimum value of the slider. Default value is 0.
@@ -64,6 +73,22 @@ var SliderIOS = React.createClass({
     maximumTrackTintColor: PropTypes.string,
 
     /**
+     * If true the user won't be able to move the slider.
+     * Default value is false.
+     */
+    disabled: PropTypes.bool,
+
+   /**
+     * Sets an image for the track. It only supports images that are included as assets
+     */
+    trackImage: Image.propTypes.source,
+
+    /**
+     * Sets an image for the thumb. It only supports static images.
+     */
+    thumbImage: Image.propTypes.source,
+
+    /**
      * Callback continuously called while the user is dragging the slider.
      */
     onValueChange: PropTypes.func,
@@ -75,27 +100,33 @@ var SliderIOS = React.createClass({
     onSlidingComplete: PropTypes.func,
   },
 
-  _onValueChange: function(event: Event) {
-    this.props.onChange && this.props.onChange(event);
-    if (event.nativeEvent.continuous) {
-      this.props.onValueChange &&
-        this.props.onValueChange(event.nativeEvent.value);
-    } else {
-      this.props.onSlidingComplete && event.nativeEvent.value !== undefined &&
-        this.props.onSlidingComplete(event.nativeEvent.value);
-    }
+  getDefaultProps: function() : any {
+    return {
+      disabled: false,
+    };
   },
 
   render: function() {
+
+    let onValueChange = this.props.onValueChange && ((event: Event) => {
+      this.props.onValueChange &&
+        this.props.onValueChange(event.nativeEvent.value);
+    });
+
+    let onSlidingComplete = this.props.onSlidingComplete && ((event: Event) => {
+      this.props.onSlidingComplete &&
+        this.props.onSlidingComplete(event.nativeEvent.value);
+    });
+
+    let {style, ...props} = this.props;
+    style = [styles.slider, style];
+
     return (
       <RCTSlider
-        style={[styles.slider, this.props.style]}
-        value={this.props.value}
-        maximumValue={this.props.maximumValue}
-        minimumValue={this.props.minimumValue}
-        minimumTrackTintColor={this.props.minimumTrackTintColor}
-        maximumTrackTintColor={this.props.maximumTrackTintColor}
-        onChange={this._onValueChange}
+        {...props}
+        style={style}
+        onValueChange={onValueChange}
+        onSlidingComplete={onSlidingComplete}
       />
     );
   }
@@ -107,8 +138,6 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS, {
-  nativeOnly: { onChange: true },
-});
+var RCTSlider = requireNativeComponent('RCTSlider', SliderIOS);
 
 module.exports = SliderIOS;

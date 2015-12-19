@@ -50,6 +50,15 @@ describe('NavigationContext', () => {
     expect(child.parent).toBe(parent);
   });
 
+  it('has `top`', () => {
+    var top = new NavigationContext();
+    var parent = new NavigationContext();
+    var child = new NavigationContext();
+    top.appendChild(parent);
+    parent.appendChild(child);
+    expect(child.top).toBe(top);
+  });
+
   it('captures event', () => {
     var parent = new NavigationContext();
     var child = new NavigationContext();
@@ -67,8 +76,8 @@ describe('NavigationContext', () => {
       });
     };
 
-    parent.addListener('yo', listener, null, true);
-    child.addListener('yo', listener, null, true);
+    parent.addListener('yo', listener, true);
+    child.addListener('yo', listener, true);
 
     child.emit('yo');
 
@@ -133,8 +142,8 @@ describe('NavigationContext', () => {
 
     var counter = 0;
 
-    parent.addListener('yo', event => event.stopPropagation(), null, true);
-    child.addListener('yo', event => counter++, null, true);
+    parent.addListener('yo', event => event.stopPropagation(), true);
+    child.addListener('yo', event => counter++, true);
 
     child.emit('yo');
 
@@ -162,8 +171,8 @@ describe('NavigationContext', () => {
     parent.appendChild(child);
 
     var val;
-    parent.addListener('yo', event => event.preventDefault(), null, true);
-    child.addListener('yo', event => val = event.defaultPrevented, null, true);
+    parent.addListener('yo', event => event.preventDefault(), true);
+    child.addListener('yo', event => val = event.defaultPrevented, true);
 
     child.emit('yo');
 
@@ -205,9 +214,9 @@ describe('NavigationContext', () => {
       child.emit('didyo');
     });
 
-    parent.addListener('yo', listener, null, true);
-    parent.addListener('didyo', listener, null, true);
-    child.addListener('yo', listener, null, true);
+    parent.addListener('yo', listener, true);
+    parent.addListener('didyo', listener, true);
+    child.addListener('yo', listener, true);
 
     child.emit('yo');
 

@@ -12,24 +12,20 @@
 'use strict';
 
 var Animated = require('Animated');
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var Touchable = require('Touchable');
 
-var merge = require('merge');
-
 type Event = Object;
+
 type State = {
   animationID: ?number;
+  scale: Animated.Value;
 };
 
-/**
- * When the scroll view is disabled, this defines how far your touch may move
- * off of the button, before deactivating the button. Once deactivated, try
- * moving it back and you'll see that the button is once again reactivated!
- * Move it back and forth several times while the scroll view is disabled.
- */
-var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
 /**
  * Example of using the `TouchableMixin` to play well with other responder
  * locking views including `ScrollView`. `TouchableMixin` provides touchable
@@ -50,6 +46,14 @@ var TouchableBounce = React.createClass({
     onPressWithCompletion: React.PropTypes.func,
     // the function passed is called after the animation is complete
     onPressAnimationComplete: React.PropTypes.func,
+    /**
+     * When the scroll view is disabled, this defines how far your touch may
+     * move off of the button, before deactivating the button. Once deactivated,
+     * try moving it back and you'll see that the button is once again
+     * reactivated! Move it back and forth several times while the scroll view
+     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     */
+    pressRetentionOffset: EdgeInsetsPropType,
   },
 
   getInitialState: function(): State {
@@ -100,8 +104,8 @@ var TouchableBounce = React.createClass({
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableGetPressRectOffset: function(): typeof PRESS_RECT_OFFSET {
-    return PRESS_RECT_OFFSET;   // Always make sure to predeclare a constant!
+  touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+    return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
   touchableGetHighlightDelayMS: function(): number {

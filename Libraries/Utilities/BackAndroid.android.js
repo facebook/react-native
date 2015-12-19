@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule BackAndroid
+ * @flow
  */
 
 'use strict';
@@ -42,7 +43,7 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * Example:
  *
  * ```js
- * BackAndroid.addEventListener('hardwareBackPress', function() {
+ * BackAndroid.addEventListener('backPress', function() {
  * 	 if (!this.onMainScreen()) {
  * 	   this.goBack();
  * 	   return true;

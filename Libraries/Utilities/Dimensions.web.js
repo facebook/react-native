@@ -1,5 +1,6 @@
 /**
  * @providesModule Dimensions
+ * @flow
  */
 'use strict';
 
@@ -10,6 +11,8 @@ var dimensions = {
     window: {
         scale: window.devicePixelRatio,
         fontScale: window.devicePixelRatio,
+        width: 0,
+        height: 0,
     },
 
 };

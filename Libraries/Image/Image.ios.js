@@ -69,13 +69,16 @@ var Image = React.createClass({
       PropTypes.number,
     ]),
     /**
-     * A static image to display while downloading the final image off the
-     * network.
+     * A static image to display while loading the image source.
      * @platform ios
      */
-    defaultSource: PropTypes.shape({
-      uri: PropTypes.string,
-    }),
+    defaultSource: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     /**
      * When true, indicates the image is an accessibility element.
      * @platform ios
@@ -113,7 +116,6 @@ var Image = React.createClass({
     onLayout: PropTypes.func,
     /**
      * Invoked on load start
-     * @platform ios
      */
     onLoadStart: PropTypes.func,
     /**
@@ -128,12 +130,10 @@ var Image = React.createClass({
     onError: PropTypes.func,
     /**
      * Invoked when load completes successfully
-     * @platform ios
      */
     onLoad: PropTypes.func,
     /**
      * Invoked when load either succeeds or fails
-     * @platform ios
      */
     onLoadEnd: PropTypes.func,
   },
@@ -158,22 +158,9 @@ var Image = React.createClass({
   },
 
   render: function() {
-    for (var prop in cfg.nativeOnly) {
-      if (this.props[prop] !== undefined) {
-        console.warn('Prop `' + prop + ' = ' + this.props[prop] + '` should ' +
-          'not be set directly on Image.');
-      }
-    }
     var source = resolveAssetSource(this.props.source) || {};
-    var defaultSource = (this.props.defaultSource && resolveAssetSource(this.props.defaultSource)) || {};
-
     var {width, height} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
-
-    if (source.uri === '') {
-      console.warn('source.uri should not be an empty string');
-      return <View {...this.props} style={style} />;
-    }
 
     var isNetwork = source.uri && source.uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
@@ -195,8 +182,7 @@ var Image = React.createClass({
           style={style}
           resizeMode={resizeMode}
           tintColor={tintColor}
-          src={source.uri}
-          defaultImageSrc={defaultSource.uri}
+          source={source}
         />
       );
     }
@@ -209,16 +195,8 @@ var styles = StyleSheet.create({
   },
 });
 
-var cfg = {
-  nativeOnly: {
-    src: true,
-    defaultImageSrc: true,
-    imageTag: true,
-    progressHandlerRegistered: true,
-  },
-};
-var RCTImageView = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTNetworkImageView = NativeModules.NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image, cfg) : RCTImageView;
+var RCTImageView = requireNativeComponent('RCTImageView', Image);
+var RCTNetworkImageView = NativeModules.NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
 var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
 
 module.exports = Image;

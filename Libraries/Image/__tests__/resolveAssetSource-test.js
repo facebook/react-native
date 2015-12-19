@@ -107,7 +107,7 @@ describe('resolveAssetSource', () => {
   describe('bundle was loaded from file on iOS', () => {
     beforeEach(() => {
       NativeModules.SourceCode.scriptURL =
-        'file:///Path/To/Simulator/main.bundle';
+        'file:///Path/To/Sample.app/main.bundle';
       Platform.OS = 'ios';
     });
 
@@ -126,7 +126,7 @@ describe('resolveAssetSource', () => {
         __packager_asset: true,
         width: 100,
         height: 200,
-        uri: 'assets/module/a/logo.png',
+        uri: '/Path/To/Sample.app/assets/module/a/logo.png',
         scale: 1,
       });
     });

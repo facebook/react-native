@@ -12,43 +12,100 @@
 #import "RCTBridge.h"
 #import "RCTModuleMethod.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
+
+@interface RCTBridge (Private)
+
+- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData;
+
+@end
 
 @implementation RCTModuleData
 {
-  NSDictionary *_constants;
-  NSArray *_methods;
   NSString *_queueName;
+  __weak RCTBridge *_bridge;
 }
 
-- (instancetype)initWithExecutor:(id<RCTJavaScriptExecutor>)javaScriptExecutor
-                        moduleID:(NSNumber *)moduleID
-                        instance:(id<RCTBridgeModule>)instance
+@synthesize methods = _methods;
+@synthesize instance = _instance;
+@synthesize methodQueue = _methodQueue;
+
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
 {
   if ((self = [super init])) {
-    _javaScriptExecutor = javaScriptExecutor;
-    _moduleID = moduleID;
+    _moduleClass = moduleClass;
+    _bridge = bridge;
+  }
+  return self;
+}
+
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+{
+  if ((self = [super init])) {
     _instance = instance;
     _moduleClass = [instance class];
-    _name = RCTBridgeModuleNameForClass(_moduleClass);
 
-    // Must be done at init time to ensure it's called on main thread
-    RCTAssertMainThread();
-    if ([_instance respondsToSelector:@selector(constantsToExport)]) {
-      _constants = [_instance constantsToExport];
-    }
-
-    // Must be done at init time due to race conditions
-    (void)self.queue;
+    [self cacheImplementedSelectors];
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
-- (NSArray *)methods
+- (BOOL)hasInstance
+{
+  return _instance != nil;
+}
+
+- (id<RCTBridgeModule>)instance
+{
+  if (!_instance) {
+    _instance = [_moduleClass new];
+
+    // Bridge must be set before methodQueue is set up, as methodQueue
+    // initialization requires it (View Managers get their queue by calling
+    // self.bridge.uiManager.methodQueue)
+    [self setBridgeForInstance:_bridge];
+
+    // Initialize queue
+    [self methodQueue];
+
+    [self cacheImplementedSelectors];
+  }
+  return _instance;
+}
+
+- (void)cacheImplementedSelectors
+{
+  _implementsBatchDidComplete = [_instance respondsToSelector:@selector(batchDidComplete)];
+  _implementsPartialBatchDidFlush = [_instance respondsToSelector:@selector(partialBatchDidFlush)];
+}
+
+- (void)setBridgeForInstance:(RCTBridge *)bridge
+{
+  if ([_instance respondsToSelector:@selector(bridge)]) {
+    @try {
+      [(id)_instance setValue:bridge forKey:@"bridge"];
+    }
+    @catch (NSException *exception) {
+      RCTLogError(@"%@ has no setter or ivar for its bridge, which is not "
+                  "permitted. You must either @synthesize the bridge property, "
+                  "or provide your own setter method.", self.name);
+    }
+  }
+  [bridge registerModuleForFrameUpdates:self];
+}
+
+- (NSString *)name
+{
+  return RCTBridgeModuleNameForClass(_moduleClass);
+}
+
+- (NSArray<id<RCTBridgeMethod>> *)methods
 {
   if (!_methods) {
-    NSMutableArray *moduleMethods = [NSMutableArray new];
+    NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
 
     if ([_instance respondsToSelector:@selector(methodsToExport)]) {
       [moduleMethods addObjectsFromArray:[_instance methodsToExport]];
@@ -62,11 +119,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
       SEL selector = method_getName(method);
       if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
         IMP imp = method_getImplementation(method);
-        NSArray *entries = ((NSArray *(*)(id, SEL))imp)(_moduleClass, selector);
+        NSArray<NSString *> *entries =
+          ((NSArray<NSString *> *(*)(id, SEL))imp)(_moduleClass, selector);
         id<RCTBridgeMethod> moduleMethod =
-        [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
-                                           JSMethodName:entries[0]
-                                            moduleClass:_moduleClass];
+          [[RCTModuleMethod alloc] initWithObjCMethodName:entries[1]
+                                             JSMethodName:entries[0]
+                                              moduleClass:_moduleClass];
 
         [moduleMethods addObject:moduleMethod];
       }
@@ -79,86 +137,79 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return _methods;
 }
 
-- (NSDictionary *)config
+- (NSArray *)config
 {
-  if (_constants.count == 0 && self.methods.count == 0) {
-    return nil; // Nothing to export
+  __block NSDictionary<NSString *, id> *constants;
+  if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
+    [self instance]; // Initialize instance
+    RCTExecuteOnMainThread(^{
+      constants = [_instance constantsToExport];
+    }, YES);
   }
 
-  NSMutableDictionary *config = [NSMutableDictionary new];
-  config[@"moduleID"] = _moduleID;
-
-  if (_constants) {
-    config[@"constants"] = _constants;
+  if (constants.count == 0 && self.methods.count == 0) {
+    return (id)kCFNull; // Nothing to export
   }
 
-  NSMutableDictionary *methodconfig = [NSMutableDictionary new];
-  [self.methods enumerateObjectsUsingBlock:^(id<RCTBridgeMethod> method, NSUInteger idx, __unused BOOL *stop) {
+  NSMutableArray<NSString *> *methods = self.methods.count ? [NSMutableArray new] : nil;
+  NSMutableArray<NSNumber *> *asyncMethods = nil;
+  for (id<RCTBridgeMethod> method in self.methods) {
     if (method.functionType == RCTFunctionTypePromise) {
-      methodconfig[method.JSMethodName] = @{
-        @"methodID": @(idx),
-        @"type": @"remoteAsync",
-      };
-    } else {
-      methodconfig[method.JSMethodName] = @{
-        @"methodID": @(idx),
-      };
+      if (!asyncMethods) {
+        asyncMethods = [NSMutableArray new];
+      }
+      [asyncMethods addObject:@(methods.count)];
     }
-  }];
-  if (methodconfig.count) {
-    config[@"methods"] = [methodconfig copy];
+    [methods addObject:method.JSMethodName];
   }
 
-  return [config copy];
+  NSMutableArray *config = [NSMutableArray new];
+  [config addObject:self.name];
+  if (constants.count) {
+    [config addObject:constants];
+  }
+  if (methods) {
+    [config addObject:methods];
+    if (asyncMethods) {
+      [config addObject:asyncMethods];
+    }
+  }
+  return config;
 }
 
-- (dispatch_queue_t)queue
+- (dispatch_queue_t)methodQueue
 {
-  if (!_queue) {
-    BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
+  if (!_methodQueue) {
+    BOOL implementsMethodQueue = [self.instance respondsToSelector:@selector(methodQueue)];
     if (implementsMethodQueue) {
-      _queue = _instance.methodQueue;
+      _methodQueue = _instance.methodQueue;
     }
-    if (!_queue) {
+    if (!_methodQueue) {
 
       // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", _name];
-      _queue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
+      _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
 
       // assign it to the module
       if (implementsMethodQueue) {
         @try {
-          [(id)_instance setValue:_queue forKey:@"methodQueue"];
+          [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
         }
         @catch (NSException *exception) {
           RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
                       "permitted. You must either return a pre-initialized "
                       "queue, or @synthesize the methodQueue to let the bridge "
-                      "create a queue for you.", _name);
+                      "create a queue for you.", self.name);
         }
       }
     }
   }
-  return _queue;
+  return _methodQueue;
 }
 
-- (void)dispatchBlock:(dispatch_block_t)block
+- (void)invalidate
 {
-  [self dispatchBlock:block dispatchGroup:NULL];
-}
-
-- (void)dispatchBlock:(dispatch_block_t)block
-        dispatchGroup:(dispatch_group_t)group
-{
-  if (self.queue == RCTJSThread) {
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:block];
-  } else if (self.queue) {
-    if (group != NULL) {
-      dispatch_group_async(group, self.queue, block);
-    } else {
-      dispatch_async(self.queue, block);
-    }
-  }
+  _methodQueue = nil;
 }
 
 @end

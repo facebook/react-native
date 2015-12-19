@@ -2,16 +2,26 @@
 
 package com.facebook.react.views.recyclerview;
 
+import javax.annotation.Nullable;
+
+import java.util.Map;
+
 import android.view.View;
 
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.views.scroll.ReactScrollViewCommandHelper;
+import com.facebook.react.views.scroll.ScrollEvent;
 
 /**
  * View manager for {@link RecyclerViewBackedScrollView}.
  */
 public class RecyclerViewBackedScrollViewManager extends
-    ViewGroupManager<RecyclerViewBackedScrollView> {
+    ViewGroupManager<RecyclerViewBackedScrollView>
+    implements ReactScrollViewCommandHelper.ScrollCommandHandler<RecyclerViewBackedScrollView> {
 
   private static final String REACT_CLASS = "AndroidRecyclerViewBackedScrollView";
 
@@ -21,6 +31,11 @@ public class RecyclerViewBackedScrollViewManager extends
   }
 
   // TODO(8624925): Implement removeClippedSubviews support for native ListView
+
+  @ReactProp(name = "onContentSizeChange")
+  public void setOnContentSizeChange(RecyclerViewBackedScrollView view, boolean value) {
+    view.setSendContentSizeChangeEvents(value);
+  }
 
   @Override
   protected RecyclerViewBackedScrollView createViewInstance(ThemedReactContext reactContext) {
@@ -43,7 +58,43 @@ public class RecyclerViewBackedScrollViewManager extends
   }
 
   @Override
-  public void removeView(RecyclerViewBackedScrollView parent, View child) {
-    parent.removeViewFromAdapter(child);
+  public void removeViewAt(RecyclerViewBackedScrollView parent, int index) {
+    parent.removeViewFromAdapter(index);
+  }
+
+  /**
+   * Provides implementation of commands supported by {@link ReactScrollViewManager}
+   */
+  @Override
+  public void receiveCommand(
+      RecyclerViewBackedScrollView view,
+      int commandId,
+      @Nullable ReadableArray args) {
+    ReactScrollViewCommandHelper.receiveCommand(this, view, commandId, args);
+  }
+
+  @Override
+  public void scrollTo(
+      RecyclerViewBackedScrollView view,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    view.scrollTo(data.mDestX, data.mDestY, true);
+  }
+
+  @Override
+  public void scrollWithoutAnimationTo(
+      RecyclerViewBackedScrollView view,
+      ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    view.scrollTo(data.mDestX, data.mDestY, false);
+  }
+
+  @Override
+  public @Nullable
+  Map getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.builder()
+        .put(ScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onScroll"))
+        .put(
+            ContentSizeChangeEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onContentSizeChange"))
+        .build();
   }
 }

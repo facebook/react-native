@@ -14,15 +14,15 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
+var UIManager = require('UIManager');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
 var findNodeHandle = require('findNodeHandle');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
-var RCTUIManager = require('NativeModules').UIManager;
 
 var RCT_WEBVIEW_REF = 'webview';
 
@@ -32,9 +32,14 @@ var WebViewState = keyMirror({
   ERROR: null,
 });
 
+/**
+ * Note that WebView is only supported on iOS for now,
+ * see https://facebook.github.io/react-native/docs/known-issues.html
+ */
 var WebView = React.createClass({
 
   propTypes: {
+    ...View.propTypes,
     renderError: PropTypes.func, // view to show if there's an error
     renderLoading: PropTypes.func, // loading indicator to show
     url: PropTypes.string,
@@ -125,25 +130,25 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this.getWebWiewHandle(),
-      RCTUIManager.RCTWebView.Commands.goForward,
+      UIManager.RCTWebView.Commands.goForward,
       null
     );
   },
 
   goBack: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this.getWebWiewHandle(),
-      RCTUIManager.RCTWebView.Commands.goBack,
+      UIManager.RCTWebView.Commands.goBack,
       null
     );
   },
 
   reload: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this.getWebWiewHandle(),
-      RCTUIManager.RCTWebView.Commands.reload,
+      UIManager.RCTWebView.Commands.reload,
       null
     );
   },
@@ -184,16 +189,7 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = createReactNativeComponentClass({
-  validAttributes: merge(ReactNativeViewAttributes.UIView, {
-    html: true,
-    injectedJavaScript: true,
-    javaScriptEnabledAndroid: true,
-    url: true,
-    userAgent: true,
-  }),
-  uiViewClassName: 'RCTWebView',
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView);
 
 var styles = StyleSheet.create({
   container: {

@@ -22,7 +22,7 @@ typedef void (^RCTURLRequestResponseBlock)(NSURLResponse *response);
 
 @property (nonatomic, readonly) NSURLRequest *request;
 @property (nonatomic, readonly) NSNumber *requestID;
-@property (nonatomic, readonly) id requestToken;
+@property (nonatomic, readonly, weak) id requestToken;
 @property (nonatomic, readonly) NSURLResponse *response;
 @property (nonatomic, readonly) RCTURLRequestCompletionBlock completionBlock;
 

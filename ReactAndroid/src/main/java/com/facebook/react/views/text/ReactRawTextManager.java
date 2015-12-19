@@ -33,11 +33,6 @@ public class ReactRawTextManager extends ReactTextViewManager {
   }
 
   @Override
-  public void updateView(ReactTextView view, CatalystStylesDiffMap props) {
-    throw new IllegalStateException("RKRawText doesn't map into a native view");
-  }
-
-  @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
   }
 

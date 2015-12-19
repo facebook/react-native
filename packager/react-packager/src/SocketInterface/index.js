@@ -27,19 +27,25 @@ const SocketInterface = {
     return new Promise((resolve, reject) => {
       const hash = crypto.createHash('md5');
       Object.keys(options).sort().forEach(key => {
-        if (options[key]) {
-          if (typeof options[key] !== 'string') {
-            hash.update(JSON.stringify(options[key]));
-          } else {
-            hash.update(options[key]);
-          }
+        const value = options[key];
+        if (value) {
+          hash.update(
+            typeof value === 'string' ? value : JSON.stringify(value)
+          );
         }
       });
 
-      const sockPath = path.join(
+      let sockPath = path.join(
         tmpdir,
         'react-packager-' + hash.digest('hex')
       );
+      if (process.platform === 'win32'){
+        // on Windows, use a named pipe, convert sockPath into a valid pipe name
+        // based on https://gist.github.com/domenic/2790533
+        sockPath = sockPath.replace(/^\//, '')
+        sockPath = sockPath.replace(/\//g, '-')
+        sockPath = '\\\\.\\pipe\\' + sockPath
+      }
 
       if (fs.existsSync(sockPath)) {
         var sock = net.connect(sockPath);

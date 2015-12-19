@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Modal
- * @flow
+ * @noflow (Even)
  */
 'use strict';
 
@@ -31,6 +31,8 @@ var RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
  * Navigator instead of Modal. With a top-level Navigator, you have more control
  * over how to present the modal scene over the rest of your app by using the
  * configureScene property.
+ *
+ * This component is only available in iOS at this time.
  */
 class Modal extends React.Component {
   render(): ?ReactElement {
@@ -59,7 +61,12 @@ class Modal extends React.Component {
 Modal.propTypes = {
   animated: PropTypes.bool,
   transparent: PropTypes.bool,
+  visible: PropTypes.bool,
   onDismiss: PropTypes.func,
+};
+
+Modal.defaultProps = {
+  visible: true,
 };
 
 var styles = StyleSheet.create({

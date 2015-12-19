@@ -36,6 +36,7 @@ RCT_EXPORT_MODULE()
     _queue.maxConcurrentOperationCount = 2;
   }
 
+  __weak __block NSBlockOperation *weakOp;
   __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
 
     // Get mime type
@@ -48,7 +49,7 @@ RCT_EXPORT_MODULE()
                                            expectedContentLength:-1
                                                 textEncodingName:nil];
 
-    [delegate URLRequest:op didReceiveResponse:response];
+    [delegate URLRequest:weakOp didReceiveResponse:response];
 
     // Load data
     NSError *error;
@@ -56,11 +57,12 @@ RCT_EXPORT_MODULE()
                                          options:NSDataReadingMappedIfSafe
                                            error:&error];
     if (data) {
-      [delegate URLRequest:op didReceiveData:data];
+      [delegate URLRequest:weakOp didReceiveData:data];
     }
-    [delegate URLRequest:op didCompleteWithError:error];
+    [delegate URLRequest:weakOp didCompleteWithError:error];
   }];
 
+  weakOp = op;
   [_queue addOperation:op];
   return op;
 }

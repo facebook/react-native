@@ -99,3 +99,22 @@ This usually happens when you install a package using one version of Node and th
 
     $ npm uninstall -g sinopia
     $ npm install -g sinopia
+    
+After upgrading to Node 4 you might also need to reinstall npm. What worked for me was:
+
+    $ npm uninstall -g npm
+    $ nvm install npm
+    
+ See the [nvm guide](https://github.com/creationix/nvm#usage) for more info.
+
+### Alternative workflow
+
+If you don't want to install Sinopia you could still test changes done on the cli by creating a sample project and installing your checkout of `react-native` on that project instead of downloading it from npm. The simplest way to do this is by:
+
+    $ npm init AwesomeProject
+    $ cd AwesomeProject
+    $ npm install $REACT_NATIVE_GITHUB
+
+Note that `REACT_NATIVE_GITHUB` should point to the directory where you have a checkout.
+
+Also, if the changes you're making get triggered when running `react-native init AwesomeProject` you will want to tweak the global installed `react-native-cli` library to install the local checkout instead of downloading the module from npm. To do so just change this [line](https://github.com/facebook/react-native/blob/master/react-native-cli/index.js#L191) and refer the local checkout instead.

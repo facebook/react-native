@@ -97,14 +97,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    _paused = YES;
-    _eventQueue = [NSMutableDictionary new];
-    _eventQueueLock = [NSLock new];
-  }
-  return self;
+  _bridge = bridge;
+  _paused = YES;
+  _eventQueue = [NSMutableDictionary new];
+  _eventQueueLock = [NSLock new];
 }
 
 - (void)setPaused:(BOOL)paused
@@ -144,6 +142,7 @@ RCT_EXPORT_MODULE()
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
+                          key:(NSString *)key
                    eventCount:(NSInteger)eventCount
 {
   static NSString *events[] = {
@@ -152,16 +151,36 @@ RCT_EXPORT_MODULE()
     @"change",
     @"submitEditing",
     @"endEditing",
+    @"keyPress"
   };
 
-  [self sendInputEventWithName:events[type] body:text ? @{
-    @"text": text,
-    @"eventCount": @(eventCount),
-    @"target": reactTag
-  } : @{
+  NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"eventCount": @(eventCount),
     @"target": reactTag
   }];
+
+  if (text) {
+    body[@"text"] = text;
+  }
+
+  if (key) {
+    if (key.length == 0) {
+      key = @"Backspace"; // backspace
+    } else {
+      switch ([key characterAtIndex:0]) {
+        case '\t':
+          key = @"Tab";
+          break;
+        case '\n':
+          key = @"Enter";
+        default:
+          break;
+      }
+    }
+    body[@"key"] = key;
+  }
+
+  [self sendInputEventWithName:events[type] body:body];
 }
 
 - (void)sendEvent:(id<RCTEvent>)event
@@ -188,7 +207,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSMutableArray *arguments = [NSMutableArray new];
+  NSMutableArray<id /* any JSON value */> *arguments = [NSMutableArray new];
 
   if (event.viewTag) {
     [arguments addObject:event.viewTag];
@@ -200,8 +219,7 @@ RCT_EXPORT_MODULE()
     [arguments addObject:event.body];
   }
 
-  [_bridge enqueueJSCall:[[event class] moduleDotMethod]
-                    args:arguments];
+  [_bridge enqueueJSCall:[[event class] moduleDotMethod] args:arguments];
 }
 
 - (dispatch_queue_t)methodQueue

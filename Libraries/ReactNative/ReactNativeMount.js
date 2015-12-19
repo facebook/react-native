@@ -11,14 +11,13 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').UIManager;
-
 var ReactElement = require('ReactElement');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactPerf = require('ReactPerf');
 var ReactReconciler = require('ReactReconciler');
 var ReactUpdateQueue = require('ReactUpdateQueue');
 var ReactUpdates = require('ReactUpdates');
+var UIManager = require('UIManager');
 
 var emptyObject = require('emptyObject');
 var instantiateReactComponent = require('instantiateReactComponent');
@@ -34,6 +33,10 @@ function instanceNumberToChildRootID(rootNodeID, instanceNumber) {
  * here.
  */
 var TopLevelWrapper = function() {};
+TopLevelWrapper.prototype.isReactComponent = {};
+if (__DEV__) {
+  TopLevelWrapper.displayName = 'TopLevelWrapper';
+}
 TopLevelWrapper.prototype.render = function() {
   // this.props is actually a ReactElement
   return this.props;
@@ -111,6 +114,8 @@ var ReactNativeMount = {
       null,
       null,
       null,
+      null,
+      null,
       nextElement
     );
 
@@ -185,7 +190,7 @@ var ReactNativeMount = {
       );
       var addChildTags = [mountImage.tag];
       var addAtIndices = [0];
-      RCTUIManager.manageChildren(
+      UIManager.manageChildren(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID),
         null,         // moveFromIndices
         null,         // moveToIndices
@@ -209,7 +214,7 @@ var ReactNativeMount = {
   ) {
     ReactNativeMount.unmountComponentAtNode(containerTag);
     // call back into native to remove all of the subviews from this container
-    RCTUIManager.removeRootView(containerTag);
+    UIManager.removeRootView(containerTag);
   },
 
   /**
@@ -250,7 +255,7 @@ var ReactNativeMount = {
     ReactReconciler.unmountComponent(instance);
     var containerTag =
       ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(containerID);
-    RCTUIManager.removeSubviewsFromContainerWithID(containerTag);
+    UIManager.removeSubviewsFromContainerWithID(containerTag);
   },
 
   getNode: function(rootNodeID: string): number {

@@ -98,7 +98,7 @@ var ScrollView = React.createClass({
         }
     },
 
-    getInnerViewNode: function(): any {
+    getInnerViewNode: function() {
         return this.refs.containerView;
     },
 

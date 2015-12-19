@@ -10,18 +10,19 @@
  */
 'use strict';
 
-var DrawerConsts = require('NativeModules').UIManager.AndroidDrawerLayout.Constants;
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var RCTUIManager = require('NativeModules').UIManager;
 var StyleSheet = require('StyleSheet');
+var UIManager = require('UIManager');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
+
 var dismissKeyboard = require('dismissKeyboard');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var RK_DRAWER_REF = 'drawerlayout';
 var INNERVIEW_REF = 'innerView';
@@ -74,6 +75,7 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
@@ -181,17 +183,17 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   openDrawer: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      RCTUIManager.AndroidDrawerLayout.Commands.openDrawer,
+      UIManager.AndroidDrawerLayout.Commands.openDrawer,
       null
     );
   },
 
   closeDrawer: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      RCTUIManager.AndroidDrawerLayout.Commands.closeDrawer,
+      UIManager.AndroidDrawerLayout.Commands.closeDrawer,
       null
     );
   },
@@ -220,9 +222,6 @@ var styles = StyleSheet.create({
 });
 
 // The View that contains both the actual drawer and the main view
-var AndroidDrawerLayout = createReactNativeComponentClass({
-  validAttributes: merge(ReactNativeViewAttributes.UIView, DrawerLayoutValidAttributes),
-  uiViewClassName: 'AndroidDrawerLayout',
-});
+var AndroidDrawerLayout = requireNativeComponent('AndroidDrawerLayout', DrawerLayoutAndroid);
 
 module.exports = DrawerLayoutAndroid;

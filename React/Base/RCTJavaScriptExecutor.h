@@ -35,13 +35,29 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
 
 /**
- * Executes given method with arguments on JS thread and calls the given callback
- * with JSValue and JSContext as a result of the JS module call.
+ * Executes BatchedBridge.flushedQueue on JS thread and calls the given callback
+ * with JSValue, containing the next queue, and JSContext.
  */
-- (void)executeJSCall:(NSString *)name
-               method:(NSString *)method
-            arguments:(NSArray *)arguments
-             callback:(RCTJavaScriptCallback)onComplete;
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete;
+
+/**
+ * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module name,
+ * method name and optional additional arguments on the JS thread and calls the
+ * given callback with JSValue, containing the next queue, and JSContext.
+ */
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete;
+
+/**
+ * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
+ * and optional additional arguments on the JS thread and calls the
+ * given callback with JSValue, containing the next queue, and JSContext.
+ */
+- (void)invokeCallbackID:(NSNumber *)cbID
+               arguments:(NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete;
 
 /**
  * Runs an application script, and notifies of the script load being complete via `onComplete`.

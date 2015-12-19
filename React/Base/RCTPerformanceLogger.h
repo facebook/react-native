@@ -25,4 +25,5 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
 void RCTPerformanceLoggerStart(RCTPLTag tag);
 void RCTPerformanceLoggerEnd(RCTPLTag tag);
 void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value);
-NSArray *RCTPerformanceLoggerOutput(void);
+NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void);
+NSArray *RCTPerformanceLoggerLabels(void);

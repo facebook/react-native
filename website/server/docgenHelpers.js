@@ -1,5 +1,4 @@
 "use strict";
-var b = require('react-docgen/node_modules/recast').types.builders;
 var docgen = require('react-docgen');
 
 function stylePropTypeHandler(documentation, path) {

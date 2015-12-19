@@ -8,12 +8,18 @@
 #include <fb/log.h>
 #include <folly/json.h>
 #include <folly/String.h>
+#include <jni/fbjni/Exceptions.h>
 #include "Value.h"
+#include "jni/OnLoad.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include <react/JSCTracing.h>
 #include <react/JSCLegacyProfiler.h>
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
+#endif
+
+#ifdef WITH_JSC_MEMORY_PRESSURE
+#include <jsc_memory.h>
 #endif
 
 #ifdef WITH_FBSYSTRACE
@@ -23,6 +29,12 @@ using fbsystrace::FbSystraceSection;
 
 // Add native performance markers support
 #include <react/JSCPerfLogging.h>
+
+#ifdef WITH_FB_JSC_TUNING
+#include <jsc_config_android.h>
+#endif
+
+using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
@@ -53,8 +65,39 @@ static JSValueRef evaluateScriptWithJSC(
     JSValueProtect(ctx, exn);
     std::string exceptionText = Value(ctx, exn).toString().str();
     FBLOGE("Got JS Exception: %s", exceptionText.c_str());
+    auto line = Value(ctx, JSObjectGetProperty(ctx,
+      JSValueToObject(ctx, exn, nullptr),
+      JSStringCreateWithUTF8CString("line"), nullptr
+    ));
+    std::ostringstream lineInfo;
+    if (line != nullptr && line.isNumber()) {
+      lineInfo << " (line " << line.asInteger() << " in the generated bundle)";
+    } else {
+      lineInfo << " (no line info)";
+    }
+    throwNewJavaException("com/facebook/react/bridge/JSExecutionException", (exceptionText + lineInfo.str()).c_str());
   }
   return result;
+}
+
+static std::string executeJSCallWithJSC(
+    JSGlobalContextRef ctx,
+    const std::string& methodName,
+    const std::vector<folly::dynamic>& arguments) {
+  #ifdef WITH_FBSYSTRACE
+  FbSystraceSection s(
+      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.executeJSCall",
+      "method", methodName);
+  #endif
+
+  // Evaluate script with JSC
+  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
+  auto js = folly::to<folly::fbstring>(
+      "__fbBatchedBridge.", methodName, ".apply(null, ",
+      folly::toJson(jsonArgs), ")");
+  auto result = evaluateScriptWithJSC(ctx, String(js.c_str()), nullptr);
+  JSValueProtect(ctx, result);
+  return Value(ctx, result).toJSONString();
 }
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateCallback cb) {
@@ -67,6 +110,11 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
+
+  #ifdef WITH_FB_JSC_TUNING
+  configureJSCForAndroid();
+  #endif
+
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
   addNativeProfilingHooks(m_context);
@@ -82,7 +130,18 @@ JSCExecutor::~JSCExecutor() {
 void JSCExecutor::executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  String jsScript(script.c_str());
+  JNIEnv* env = Environment::current();
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+  jmethodID logMarkerMethod = facebook::react::getLogMarkerMethod();
+  jstring startStringMarker = env->NewStringUTF("executeApplicationScript_startStringConvert");
+  jstring endStringMarker = env->NewStringUTF("executeApplicationScript_endStringConvert");
+
+  env->CallStaticVoidMethod(markerClass, logMarkerMethod, startStringMarker);
+  String jsScript = String::createExpectingAscii(script);
+  env->CallStaticVoidMethod(markerClass, logMarkerMethod, endStringMarker);
+  env->DeleteLocalRef(startStringMarker);
+  env->DeleteLocalRef(endStringMarker);
+
   String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
@@ -91,25 +150,28 @@ void JSCExecutor::executeApplicationScript(
   evaluateScriptWithJSC(m_context, jsScript, jsSourceURL);
 }
 
-std::string JSCExecutor::executeJSCall(
-    const std::string& moduleName,
-    const std::string& methodName,
-    const std::vector<folly::dynamic>& arguments) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor.executeJSCall",
-      "module", moduleName,
-      "method", methodName);
-  #endif
+std::string JSCExecutor::flush() {
+  // TODO: Make this a first class function instead of evaling. #9317773
+  return executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+}
 
-  // Evaluate script with JSC
-  folly::dynamic jsonArgs(arguments.begin(), arguments.end());
-  auto js = folly::to<folly::fbstring>(
-      "require('", moduleName, "').", methodName, ".apply(null, ",
-      folly::toJson(jsonArgs), ")");
-  auto result = evaluateScriptWithJSC(m_context, String(js.c_str()), nullptr);
-  JSValueProtect(m_context, result);
-  return Value(m_context, result).toJSONString();
+std::string JSCExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+  // TODO:  Make this a first class function instead of evaling. #9317773
+  std::vector<folly::dynamic> call{
+    (double) moduleId,
+    (double) methodId,
+    std::move(arguments),
+  };
+  return executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
+}
+
+std::string JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+  // TODO: Make this a first class function instead of evaling. #9317773
+  std::vector<folly::dynamic> call{
+    (double) callbackId,
+    std::move(arguments)
+  };
+  return executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
 }
 
 void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
@@ -133,7 +195,11 @@ bool JSCExecutor::supportsProfiling() {
 void JSCExecutor::startProfiler(const std::string &titleString) {
   #ifdef WITH_JSC_EXTRA_TRACING
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
+  #if WITH_JSC_INTERNAL
+  JSStartProfiling(m_context, title, false);
+  #else
   JSStartProfiling(m_context, title);
+  #endif
   JSStringRelease(title);
   #endif
 }
@@ -143,6 +209,18 @@ void JSCExecutor::stopProfiler(const std::string &titleString, const std::string
   JSStringRef title = JSStringCreateWithUTF8CString(titleString.c_str());
   facebook::react::stopAndOutputProfilingFile(m_context, title, filename.c_str());
   JSStringRelease(title);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureModerate() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::MODERATE);
+  #endif
+}
+
+void JSCExecutor::handleMemoryPressureCritical() {
+  #ifdef WITH_JSC_MEMORY_PRESSURE
+  JSHandleMemoryPressure(this, m_context, JSMemoryPressure::CRITICAL);
   #endif
 }
 
@@ -194,7 +272,7 @@ static JSValueRef nativeLoggingHook(
     // The lowest log level we get from JS is 0. We shift and cap it to be
     // in the range the Android logging method expects.
     logLevel = std::min(
-        static_cast<android_LogPriority>(level + ANDROID_LOG_VERBOSE),
+        static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
         ANDROID_LOG_FATAL);
   }
   if (argumentCount > 0) {

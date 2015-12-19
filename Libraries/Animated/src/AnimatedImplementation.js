@@ -547,7 +547,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   /**
    * Directly set the value.  This will stop any animations running on the value
-   * and udpate all the bound properties.
+   * and update all the bound properties.
    */
   setValue(value: number): void {
     if (this._animation) {
@@ -1094,6 +1094,10 @@ function createAnimatedComponent(Component: any): any {
   }
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
+      if (!Component.propTypes) {
+        return;
+      }
+
       for (var key in ViewStylePropTypes) {
         if (!Component.propTypes[key] && props[key] !== undefined) {
           console.error(

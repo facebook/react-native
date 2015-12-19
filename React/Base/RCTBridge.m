@@ -11,6 +11,7 @@
 
 #import <objc/runtime.h>
 
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
@@ -36,12 +37,13 @@ NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 @interface RCTBridge ()
 
 @property (nonatomic, strong) RCTBatchedBridge *batchedBridge;
+@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
 @end
 
-static NSMutableArray *RCTModuleClasses;
-NSArray *RCTGetModuleClasses(void);
-NSArray *RCTGetModuleClasses(void)
+static NSMutableArray<Class> *RCTModuleClasses;
+NSArray<Class> *RCTGetModuleClasses(void);
+NSArray<Class> *RCTGetModuleClasses(void)
 {
   return RCTModuleClasses;
 }
@@ -86,9 +88,8 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 }
 
 /**
- * Check if class has been registered
+ * This function checks if a class has been registered
  */
-BOOL RCTBridgeModuleClassIsRegistered(Class);
 BOOL RCTBridgeModuleClassIsRegistered(Class cls)
 {
   return [objc_getAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered) ?: @YES boolValue];
@@ -229,9 +230,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 #endif
 }
 
+- (NSArray<Class> *)moduleClasses
+{
+  return _batchedBridge.moduleClasses;
+}
+
+- (id)moduleForName:(NSString *)moduleName
+{
+  return [_batchedBridge moduleForName:moduleName];
+}
+
+- (id)moduleForClass:(Class)moduleClass
+{
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+}
+
 - (RCTEventDispatcher *)eventDispatcher
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTEventDispatcher class])];
+  return [self moduleForClass:[RCTEventDispatcher class]];
 }
 
 - (void)reload
@@ -250,6 +266,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTAssertMainThread();
 
   _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
+
+  // Sanitize the bundle URL
+  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
   _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
@@ -276,16 +296,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [_batchedBridge logMessage:message level:level];
 }
 
-- (NSDictionary *)modules
-{
-  return _batchedBridge.modules;
-}
 
 #define RCT_INNER_BRIDGE_ONLY(...) \
 - (void)__VA_ARGS__ \
 { \
-  RCTLogMustFix(@"Called method \"%@\" on top level bridge. This method should \
-              only be called from bridge instance in a bridge module", @(__func__)); \
+  NSString *errorMessage = [NSString stringWithFormat:@"Called method \"%@\" on top level bridge. \
+    This method should oly be called from bridge instance in a bridge module", @(__func__)]; \
+  RCTFatal(RCTErrorWithMessage(errorMessage)); \
 }
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
@@ -293,7 +310,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
 }
 
-RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
-                      method:(__unused NSString *)method
-                      arguments:(__unused NSArray *)args);
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
+{
+  [self.batchedBridge enqueueCallback:cbID args:args];
+}
+
+@end
+
+@implementation RCTBridge(Deprecated)
+
+- (NSDictionary *)modules
+{
+  return _batchedBridge.modules;
+}
+
 @end

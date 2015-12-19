@@ -3,23 +3,34 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTBridge.h"
-#import "RCTImageLoader.h"
 #import "RCTURLRequestHandler.h"
 
-@interface RCTImageStoreManager : NSObject <RCTImageURLLoader>
+@interface RCTImageStoreManager : NSObject <RCTURLRequestHandler>
 
 /**
- * Set and get cached images. These must be called from the main thread.
+ * Set and get cached image data asynchronously. It is safe to call these from any
+ * thread. The callbacks will be called on an unspecified thread.
  */
-- (NSString *)storeImage:(UIImage *)image;
-- (UIImage *)imageForTag:(NSString *)imageTag;
+- (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block;
+- (void)storeImageData:(NSData *)imageData withBlock:(void (^)(NSString *imageTag))block;
+- (void)getImageDataForTag:(NSString *)imageTag withBlock:(void (^)(NSData *imageData))block;
 
 /**
- * Set and get cached images asynchronously. It is safe to call these from any
- * thread. The callbacks will be called on the main thread.
+ * Convenience method to store an image directly (image is converted to data
+ * internally, so any metadata such as scale or orientation will be lost).
  */
 - (void)storeImage:(UIImage *)image withBlock:(void (^)(NSString *imageTag))block;
-- (void)getImageForTag:(NSString *)imageTag withBlock:(void (^)(UIImage *image))block;
+
+@end
+
+@interface RCTImageStoreManager (Deprecated)
+
+/**
+ * These methods are deprecated - use the data-based alternatives instead.
+ */
+- (NSString *)storeImage:(UIImage *)image __deprecated;
+- (UIImage *)imageForTag:(NSString *)imageTag __deprecated;
+- (void)getImageForTag:(NSString *)imageTag withBlock:(void (^)(UIImage *image))block __deprecated;
 
 @end
 

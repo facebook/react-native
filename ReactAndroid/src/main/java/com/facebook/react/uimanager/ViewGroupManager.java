@@ -44,8 +44,14 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     return parent.getChildAt(index);
   }
 
-  public void removeView(T parent, View child) {
-    parent.removeView(child);
+  public void removeViewAt(T parent, int index) {
+    parent.removeViewAt(index);
+  }
+
+  public void removeAllViews(T parent) {
+    for (int i = getChildCount(parent) - 1; i >= 0; i--) {
+      removeViewAt(parent, i);
+    }
   }
 
   /**

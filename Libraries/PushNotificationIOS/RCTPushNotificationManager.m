@@ -31,7 +31,7 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
 
 + (UILocalNotification *)UILocalNotification:(id)json
 {
-  NSDictionary *details = [self NSDictionary:json];
+  NSDictionary<NSString *, id> *details = [self NSDictionary:json];
   UILocalNotification *notification = [UILocalNotification new];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
@@ -41,28 +41,10 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
 @end
 
 @implementation RCTPushNotificationManager
-{
-  NSDictionary *_initialNotification;
-}
 
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
-
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRemoteNotificationReceived:)
-                                                 name:RCTRemoteNotificationReceived
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRemoteNotificationsRegistered:)
-                                                 name:RCTRemoteNotificationsRegistered
-                                               object:nil];
-  }
-  return self;
-}
 
 - (void)dealloc
 {
@@ -72,7 +54,21 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _initialNotification = [bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRemoteNotificationReceived:)
+                                               name:RCTRemoteNotificationReceived
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRemoteNotificationsRegistered:)
+                                               name:RCTRemoteNotificationsRegistered
+                                             object:nil];
+}
+
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  NSDictionary<NSString *, id> *initialNotification = [_bridge.launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey] copy];
+  return @{@"initialNotification": RCTNullIfNil(initialNotification)};
 }
 
 + (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(__unused UIUserNotificationSettings *)notificationSettings
@@ -90,7 +86,7 @@ RCT_EXPORT_MODULE()
   for (NSUInteger i = 0; i < deviceTokenLength; i++) {
     [hexString appendFormat:@"%02x", bytes[i]];
   }
-  NSDictionary *userInfo = @{
+  NSDictionary<NSString *, id> *userInfo = @{
     @"deviceToken" : [hexString copy]
   };
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistered
@@ -174,7 +170,7 @@ RCT_EXPORT_METHOD(abandonPermissions)
 RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
-    NSDictionary *permissions = @{@"alert": @(NO), @"badge": @(NO), @"sound": @(NO)};
+    NSDictionary<NSString *, NSNumber *> *permissions = @{@"alert": @NO, @"badge": @NO, @"sound": @NO};
     callback(@[permissions]);
     return;
   }
@@ -192,19 +188,12 @@ RCT_EXPORT_METHOD(checkPermissions:(RCTResponseSenderBlock)callback)
 
   }
 
-  NSMutableDictionary *permissions = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSNumber *> *permissions = [NSMutableDictionary new];
   permissions[@"alert"] = @((types & UIUserNotificationTypeAlert) > 0);
   permissions[@"badge"] = @((types & UIUserNotificationTypeBadge) > 0);
   permissions[@"sound"] = @((types & UIUserNotificationTypeSound) > 0);
 
   callback(@[permissions]);
-}
-
-- (NSDictionary *)constantsToExport
-{
-  return @{
-    @"initialNotification": RCTNullIfNil(_initialNotification),
-  };
 }
 
 RCT_EXPORT_METHOD(presentLocalNotification:(UILocalNotification *)notification)

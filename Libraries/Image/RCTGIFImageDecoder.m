@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-  NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
+  NSDictionary<NSString *, id> *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
   NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
 
   UIImage *image = nil;
@@ -42,8 +42,8 @@ RCT_EXPORT_MODULE()
   if (imageCount > 1) {
 
     NSTimeInterval duration = 0;
-    NSMutableArray *delays = [NSMutableArray arrayWithCapacity:imageCount];
-    NSMutableArray *images = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray<NSNumber *> *delays = [NSMutableArray arrayWithCapacity:imageCount];
+    NSMutableArray<id /* CGIMageRef */> *images = [NSMutableArray arrayWithCapacity:imageCount];
     for (size_t i = 0; i < imageCount; i++) {
 
       CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
@@ -51,8 +51,8 @@ RCT_EXPORT_MODULE()
         image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       }
 
-      NSDictionary *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
-      NSDictionary *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
+      NSDictionary<NSString *, id> *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
+      NSDictionary<NSString *, id> *frameGIFProperties = frameProperties[(id)kCGImagePropertyGIFDictionary];
 
       const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
       NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE()
     }
     CFRelease(imageSource);
 
-    NSMutableArray *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
+    NSMutableArray<NSNumber *> *keyTimes = [NSMutableArray arrayWithCapacity:delays.count];
     NSTimeInterval runningDuration = 0;
     for (NSNumber *delayNumber in delays) {
       [keyTimes addObject:@(runningDuration / duration)];

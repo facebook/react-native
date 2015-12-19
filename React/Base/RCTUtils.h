@@ -27,6 +27,10 @@ RCT_EXTERN id RCTJSONClean(id object);
 // Get MD5 hash of a string
 RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 
+// Execute the specified block on the main thread. Unlike dispatch_sync/async
+// this will not context-switch if we're already running on the main thread.
+RCT_EXTERN void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync);
+
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGSize RCTScreenSize(void);
@@ -45,9 +49,9 @@ RCT_EXTERN BOOL RCTClassOverridesClassMethod(Class cls, SEL selector);
 RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 
 // Creates a standardized error object
-RCT_EXTERN NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData);
-RCT_EXTERN NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData);
-RCT_EXTERN NSDictionary *RCTJSErrorFromNSError(NSError *error);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error);
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
@@ -58,9 +62,17 @@ RCT_EXTERN BOOL RCTRunningInAppExtension(void);
 // Returns the shared UIApplication instance, or nil if running in an App Extension
 RCT_EXTERN UIApplication *RCTSharedApplication(void);
 
+// Returns the current main window, useful if you need to access the root view
+// or view controller, e.g. to present a modal view controller or alert.
+RCT_EXTERN UIWindow *RCTKeyWindow(void);
+
 // Return a UIAlertView initialized with the given values
 // or nil if running in an app extension
-RCT_EXTERN UIAlertView *RCTAlertView(NSString *title, NSString *message, id delegate, NSString *cancelButtonTitle, NSArray *otherButtonTitles);
+RCT_EXTERN UIAlertView *RCTAlertView(NSString *title,
+                                     NSString *message,
+                                     id delegate,
+                                     NSString *cancelButtonTitle,
+                                     NSArray<NSString *> *otherButtonTitles);
 
 // Return YES if image has an alpha component
 RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
@@ -71,6 +83,9 @@ RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);
 // Convert nil values to NSNull, and vice-versa
 RCT_EXTERN id RCTNilIfNull(id value);
 RCT_EXTERN id RCTNullIfNil(id value);
+
+// Convert NaN or infinite values to zero, as these aren't JSON-safe
+RCT_EXTERN double RCTZeroIfNaN(double value);
 
 // Convert data to a Base64-encoded data URL
 RCT_EXTERN NSURL *RCTDataURL(NSString *mimeType, NSData *data);
@@ -84,3 +99,9 @@ RCT_EXTERN NSString *RCTBundlePathForURL(NSURL *URL);
 
 // Determines if a given image URL actually refers to an XCAsset
 RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *imageURL);
+
+// Converts a CGColor to a hex string
+RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
+
+// Get standard localized string (if it exists)
+RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);

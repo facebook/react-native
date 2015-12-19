@@ -9,6 +9,8 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ScrollResponder = require('ScrollResponder');
 var ScrollView = require('ScrollView');
+var View = require('View');
+var StyleSheet = require('StyleSheet');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -65,12 +67,13 @@ var RecyclerViewBackedScrollView = React.createClass({
     return this;
   },
 
-  getInnerViewNode: function(): any {
-    return React.findNodeHandle(this.refs[INNERVIEW]);
-  },
-
   setNativeProps: function(props: Object) {
     this.refs[INNERVIEW].setNativeProps(props);
+  },
+
+  _handleContentSizeChange: function(event) {
+    var {width, height} = event.nativeEvent;
+    this.props.onContentSizeChange(width, height);
   },
 
   render: function() {
@@ -93,13 +96,44 @@ var RecyclerViewBackedScrollView = React.createClass({
       style: ([{flex: 1}, this.props.style]: ?Array<any>),
       ref: INNERVIEW,
     };
+
+    if (this.props.onContentSizeChange) {
+      props.onContentSizeChange = this._handleContentSizeChange;
+    }
+
+    var wrappedChildren = React.Children.map(this.props.children, (child) => {
+      if (!child) {
+        return null;
+      }
+      return (
+        <View
+          collapsable={false}
+          style={styles.absolute}>
+          {child}
+        </View>
+      );
+    });
+
     return (
-      <NativeAndroidRecyclerView {...props}/>
+      <NativeAndroidRecyclerView {...props}>
+        {wrappedChildren}
+      </NativeAndroidRecyclerView>
     );
   },
-
 });
 
-var NativeAndroidRecyclerView = requireNativeComponent('AndroidRecyclerViewBackedScrollView', null);
+var styles = StyleSheet.create({
+  absolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+});
+
+var NativeAndroidRecyclerView = requireNativeComponent(
+  'AndroidRecyclerViewBackedScrollView',
+  RecyclerViewBackedScrollView
+);
 
 module.exports = RecyclerViewBackedScrollView;

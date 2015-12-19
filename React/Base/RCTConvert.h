@@ -12,6 +12,7 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTBorderStyle.h"
 #import "RCTTextDecorationLineType.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
@@ -56,12 +57,14 @@ typedef NSURL RCTFileURL;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
++ (NSLineBreakMode)NSLineBreakMode:(id)json;
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
++ (UIKeyboardAppearance)UIKeyboardAppearance:(id)json;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
@@ -82,9 +85,6 @@ typedef NSURL RCTFileURL;
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
-+ (UIImage *)UIImage:(id)json;
-+ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
-
 + (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
@@ -95,25 +95,28 @@ typedef NSURL RCTFileURL;
    scaleMultiplier:(CGFloat)scaleMultiplier;
 
 typedef NSArray NSArrayArray;
-+ (NSArrayArray *)NSArrayArray:(id)json;
++ (NSArray<NSArray *> *)NSArrayArray:(id)json;
 
 typedef NSArray NSStringArray;
-+ (NSStringArray *)NSStringArray:(id)json;
++ (NSArray<NSString *> *)NSStringArray:(id)json;
+
+typedef NSArray NSStringArrayArray;
++ (NSArray<NSArray<NSString *> *> *)NSStringArrayArray:(id)json;
 
 typedef NSArray NSDictionaryArray;
-+ (NSDictionaryArray *)NSDictionaryArray:(id)json;
++ (NSArray<NSDictionary *> *)NSDictionaryArray:(id)json;
 
 typedef NSArray NSURLArray;
-+ (NSURLArray *)NSURLArray:(id)json;
++ (NSArray<NSURL *> *)NSURLArray:(id)json;
 
 typedef NSArray RCTFileURLArray;
-+ (RCTFileURLArray *)RCTFileURLArray:(id)json;
++ (NSArray<NSURL *> *)RCTFileURLArray:(id)json;
 
 typedef NSArray NSNumberArray;
-+ (NSNumberArray *)NSNumberArray:(id)json;
++ (NSArray<NSNumber *> *)NSNumberArray:(id)json;
 
 typedef NSArray UIColorArray;
-+ (UIColorArray *)UIColorArray:(id)json;
++ (NSArray<UIColor *> *)UIColorArray:(id)json;
 
 typedef NSArray CGColorArray;
 + (CGColorArray *)CGColorArray:(id)json;
@@ -135,7 +138,20 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
+
+@end
+
+@interface RCTConvert (Deprecated)
+
+/**
+ * Synchronous image loading is generally a bad idea for performance reasons.
+ * If you need to pass image references, try to use `RCTImageSource` and then
+ * `RCTImageLoader` instead of converting directly to a UIImage.
+ */
++ (UIImage *)UIImage:(id)json;
++ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
 
 @end
 
@@ -222,7 +238,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray *)type##Array:(id)json                      \
++ (NSArray<type *> *)type##Array:(id)json                      \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

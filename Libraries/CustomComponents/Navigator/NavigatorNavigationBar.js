@@ -30,7 +30,6 @@ var React = require('React');
 var NavigatorNavigationBarStylesAndroid = require('NavigatorNavigationBarStylesAndroid');
 var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
 var Platform = require('Platform');
-var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 

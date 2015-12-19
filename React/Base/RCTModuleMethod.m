@@ -37,9 +37,11 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 
 @interface RCTBridge (RCTModuleMethod)
 
-- (void)_invokeAndProcessModule:(NSString *)module
-                         method:(NSString *)method
-                      arguments:(NSArray *)args;
+/**
+ * This method is used to invoke a callback that was registered in the
+ * JavaScript application context. Safe to call from any thread.
+ */
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args;
 
 @end
 
@@ -47,13 +49,14 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
 {
   Class _moduleClass;
   NSInvocation *_invocation;
-  NSArray *_argumentBlocks;
+  NSArray<RCTArgumentBlock> *_argumentBlocks;
   NSString *_objCMethodName;
   SEL _selector;
   NSDictionary *_profileArgs;
 }
 
 @synthesize JSMethodName = _JSMethodName;
+@synthesize functionType = _functionType;
 
 static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
                                 id valueOrType, const char *issue)
@@ -65,8 +68,8 @@ static void RCTLogArgumentError(RCTModuleMethod *method, NSUInteger index,
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-void RCTParseObjCMethodName(NSString **, NSArray **);
-void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
+void RCTParseObjCMethodName(NSString **, NSArray<RCTMethodArgument *> **);
+void RCTParseObjCMethodName(NSString **objCMethodName, NSArray<RCTMethodArgument *> **arguments)
 {
   static NSRegularExpression *typeNameRegex;
   static dispatch_once_t onceToken;
@@ -129,6 +132,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       if (colonRange.location != NSNotFound) {
         methodName = [methodName substringToIndex:colonRange.location];
       }
+      methodName = [methodName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
       RCTAssert(methodName.length, @"%@ is not a valid JS function name, please"
                 " supply an alternative using RCT_REMAP_METHOD()", objCMethodName);
       methodName;
@@ -146,7 +150,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
 - (void)processMethodSignature
 {
-  NSArray *arguments;
+  NSArray<RCTMethodArgument *> *arguments;
   NSString *objCMethodName = _objCMethodName;
   RCTParseObjCMethodName(&objCMethodName, &arguments);
 
@@ -162,7 +166,8 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
   // Process arguments
   NSUInteger numberOfArguments = methodSignature.numberOfArguments;
-  NSMutableArray *argumentBlocks = [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
+  NSMutableArray<RCTArgumentBlock> *argumentBlocks =
+    [[NSMutableArray alloc] initWithCapacity:numberOfArguments - 2];
 
 #define RCT_ARG_BLOCK(_logic) \
 [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
@@ -188,9 +193,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       }
 
       RCT_BLOCK_ARGUMENT(^(NSArray *args) {
-        [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                 method:@"invokeCallbackAndReturnFlushedQueue"
-                              arguments:@[json, args]];
+        [bridge enqueueCallback:json args:args];
       });
     )
   };
@@ -287,9 +290,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
         }
 
         RCT_BLOCK_ARGUMENT(^(NSError *error) {
-          [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                     method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, @[RCTJSErrorFromNSError(error)]]];
+          [bridge enqueueCallback:json args:@[RCTJSErrorFromNSError(error)]];
         });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseResolveBlock"]) {
@@ -303,9 +304,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
         }
 
         RCT_BLOCK_ARGUMENT(^(id result) {
-          [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                   method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, result ? @[result] : @[]]];
+          [bridge enqueueCallback:json args:result ? @[result] : @[]];
         });
       )
     } else if ([typeName isEqualToString:@"RCTPromiseRejectBlock"]) {
@@ -320,9 +319,7 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
 
         RCT_BLOCK_ARGUMENT(^(NSError *error) {
           NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
-          [bridge _invokeAndProcessModule:@"BatchedBridge"
-                                   method:@"invokeCallbackAndReturnFlushedQueue"
-                                arguments:@[json, @[errorJSON]]];
+          [bridge enqueueCallback:json args:@[errorJSON]];
         });
       )
     } else {
@@ -362,12 +359,23 @@ void RCTParseObjCMethodName(NSString **objCMethodName, NSArray **arguments)
       if (nullability == RCTNonnullable) {
         RCTArgumentBlock oldBlock = argumentBlocks[i - 2];
         argumentBlocks[i - 2] = ^(RCTBridge *bridge, NSUInteger index, id json) {
-          if (json == nil) {
-            RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
-            return NO;
-          } else {
-            return oldBlock(bridge, index, json);
+          if (json != nil) {
+            if (!oldBlock(bridge, index, json)) {
+              return NO;
+            }
+            if (isNullableType) {
+              // Check converted value wasn't null either, as method probably
+              // won't gracefully handle a nil vallue for a nonull argument
+              void *value;
+              [invocation getArgument:&value atIndex:index + 2];
+              if (value == NULL) {
+                return NO;
+              }
+            }
+            return YES;
           }
+          RCTLogArgumentError(weakSelf, index, typeName, "must not be null");
+          return NO;
         };
       }
     }

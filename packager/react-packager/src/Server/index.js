@@ -11,6 +11,7 @@
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
 const FileWatcher = require('../FileWatcher');
+const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
@@ -93,6 +94,17 @@ const bundleOpts = declareOpts({
   platform: {
     type: 'string',
     required: true,
+  },
+  runBeforeMainModule: {
+    type: 'array',
+    default: [
+      // Ensures essential globals are available and are patched correctly.
+      'InitializeJavaScriptAppEngine'
+    ],
+  },
+  unbundle: {
+    type: 'boolean',
+    default: false,
   }
 });
 
@@ -173,14 +185,23 @@ class Server {
 
   buildBundle(options) {
     return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
       const opts = bundleOpts(options);
-      return this._bundler.bundle(
-        opts.entryFile,
-        opts.runModule,
-        opts.sourceMapUrl,
-        opts.dev,
-        opts.platform
-      );
+      return this._bundler.bundle(opts);
+    });
+  }
+
+  buildPrepackBundle(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = bundleOpts(options);
+      return this._bundler.prepackBundle(opts);
     });
   }
 
@@ -191,6 +212,10 @@ class Server {
 
   getDependencies(options) {
     return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
       const opts = dependencyOpts(options);
       return this._bundler.getDependencies(
         opts.entryFile,
@@ -230,6 +255,7 @@ class Server {
           p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           return p;
         });
@@ -356,6 +382,7 @@ class Server {
           var bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
           res.end(bundleSource);
@@ -363,6 +390,7 @@ class Server {
         } else if (requestType === 'map') {
           var sourceMap = p.getSourceMap({
             minify: options.minify,
+            dev: options.dev,
           });
 
           if (typeof sourceMap !== 'string') {
@@ -388,7 +416,9 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' || error.type === 'NotFoundError') {
+    if (error.type === 'TransformError' ||
+        error.type === 'NotFoundError' ||
+        error.type === 'UnableToResolveError') {
       error.errors = [{
         description: error.description,
         filename: error.filename,
@@ -430,6 +460,10 @@ class Server {
     const sourceMapUrlObj = _.clone(urlObj);
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
+    // try to get the platform from the url
+    const platform = urlObj.query.platform ||
+      getPlatformExtension(pathname);
+
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
@@ -441,7 +475,7 @@ class Server {
         'inlineSourceMap',
         false
       ),
-      platform: urlObj.query.platform,
+      platform: platform,
     };
   }
 

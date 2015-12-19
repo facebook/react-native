@@ -16,20 +16,6 @@
 #import "RCTUtils.h"
 #import "UIView+React.h"
 
-static UIView *RCTViewHitTest(UIView *view, CGPoint point, UIEvent *event)
-{
-  for (UIView *subview in [view.subviews reverseObjectEnumerator]) {
-    if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
-      CGPoint convertedPoint = [subview convertPoint:point fromView:view];
-      UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
-      if (subviewHitTestView != nil) {
-        return subviewHitTestView;
-      }
-    }
-  }
-  return nil;
-}
-
 @implementation UIView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
@@ -106,7 +92,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 @implementation RCTView
 {
-  NSMutableArray *_reactSubviews;
+  NSMutableArray<UIView *> *_reactSubviews;
   UIColor *_backgroundColor;
 }
 
@@ -122,6 +108,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderTopRightRadius = -1;
     _borderBottomLeftRadius = -1;
     _borderBottomRightRadius = -1;
+    _borderStyle = RCTBorderStyleSolid;
 
     _backgroundColor = super.backgroundColor;
   }
@@ -150,18 +137,46 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
+  if(!canReceiveTouchEvents) {
+    return nil;
+  }
+
+  // `hitSubview` is the topmost subview which was hit. The hit point can
+  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
+  UIView *hitSubview = nil;
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+  BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
+  if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
+    // The default behaviour of UIKit is that if a view does not contain a point,
+    // then no subviews will be returned from hit testing, even if they contain
+    // the hit point. By doing hit testing directly on the subviews, we bypass
+    // the strict containment policy (i.e., UIKit guarantees that every ancestor
+    // of the hit view will return YES from -pointInside:withEvent:). See:
+    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
+    for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+      CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+      hitSubview = [subview hitTest:convertedPoint withEvent:event];
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+  }
+
+  UIView *hitView = (isPointInside ? self : nil);
+
   switch (_pointerEvents) {
     case RCTPointerEventsNone:
       return nil;
     case RCTPointerEventsUnspecified:
-      return RCTViewHitTest(self, point, event) ?: [super hitTest:point withEvent:event];
+      return hitSubview ?: hitView;
     case RCTPointerEventsBoxOnly:
-      return [super hitTest:point withEvent:event] ? self: nil;
+      return hitView;
     case RCTPointerEventsBoxNone:
-      return RCTViewHitTest(self, point, event);
+      return hitSubview;
     default:
       RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
-      return [super hitTest:point withEvent:event];
+      return hitSubview ?: hitView;
   }
 }
 
@@ -399,7 +414,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   [subview removeFromSuperview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   // The _reactSubviews array is only used when we have hidden
   // offscreen views. If _reactSubviews is nil, we can assume
@@ -495,6 +510,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   RCTCornerRadiiAreEqual(cornerRadii) &&
   RCTBorderInsetsAreEqual(borderInsets) &&
   RCTBorderColorsAreEqual(borderColors) &&
+  _borderStyle == RCTBorderStyleSolid &&
 
   // iOS draws borders in front of the content whereas CSS draws them behind
   // the content. For this reason, only use iOS border drawing when clipping
@@ -517,9 +533,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     return;
   }
 
-  UIImage *image = RCTGetBorderImage([self cornerRadii],
-                                     [self bordersAsInsets],
-                                     [self borderColors],
+  UIImage *image = RCTGetBorderImage(cornerRadii,
+                                     borderInsets,
+                                     borderColors,
                                      _backgroundColor.CGColor,
                                      self.clipsToBounds);
 
@@ -616,6 +632,8 @@ setBorderWidth(Right)
 setBorderWidth(Bottom)
 setBorderWidth(Left)
 
+#pragma mark - Border Radius
+
 #define setBorderRadius(side)                     \
   - (void)setBorder##side##Radius:(CGFloat)radius \
   {                                               \
@@ -631,6 +649,20 @@ setBorderRadius(TopLeft)
 setBorderRadius(TopRight)
 setBorderRadius(BottomLeft)
 setBorderRadius(BottomRight)
+
+#pragma mark - Border Style
+
+#define setBorderStyle(side)                                   \
+  - (void)setBorder##side##Style:(RCTBorderStyle)style \
+  {                                                            \
+    if (_border##side##Style == style) {                       \
+      return;                                                  \
+    }                                                          \
+    _border##side##Style = style;                              \
+    [self.layer setNeedsDisplay];                              \
+  }
+
+setBorderStyle()
 
 - (void)dealloc
 {

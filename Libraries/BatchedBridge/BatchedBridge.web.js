@@ -7,6 +7,10 @@ var React = require('React');
 
 var BatchedBridge = {
 
+  registerCallableModule(name, methods) {
+    // noop
+  },
+
   RemoteModules: {
 
     UIManager: {

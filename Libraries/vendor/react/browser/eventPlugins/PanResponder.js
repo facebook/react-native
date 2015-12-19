@@ -246,7 +246,7 @@ var PanResponder = {
    *  - `onPanResponderMove: (e, gestureState) => {...}`
    *  - `onPanResponderTerminate: (e, gestureState) => {...}`
    *  - `onPanResponderTerminationRequest: (e, gestureState) => {...}`
-   *  - 'onShouldBlockNativeResponder: (e, gestureState) => {...}'
+   *  - `onShouldBlockNativeResponder: (e, gestureState) => {...}`
    *
    *  In general, for events that have capture equivalents, we update the
    *  gestureState once in the capture phase and can use it in the bubble phase

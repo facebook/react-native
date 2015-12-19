@@ -20,7 +20,7 @@ jest.mock('fs');
 
 var BundlesLayout = require('../index');
 var Cache = require('../../Cache');
-var DependencyResolver = require('../../DependencyResolver');
+var Resolver = require('../../Resolver');
 var fs = require('fs');
 
 describe('BundlesLayout', () => {
@@ -35,6 +35,8 @@ describe('BundlesLayout', () => {
     'polyfills/error-guard.js',
     'polyfills/String.prototype.es6.js',
     'polyfills/Array.prototype.es6.js',
+    'polyfills/Array.es6.js',
+    'polyfills/babelHelpers.js',
   ];
   const baseFs = getBaseFs();
 
@@ -47,7 +49,7 @@ describe('BundlesLayout', () => {
 
   describe('generate', () => {
     function newBundlesLayout() {
-      const resolver = new DependencyResolver({
+      const resolver = new Resolver({
         projectRoots: ['/root', '/' + __dirname.split('/')[1]],
         fileWatcher: fileWatcher,
         cache: new Cache(),
@@ -577,7 +579,7 @@ describe('BundlesLayout', () => {
   });
 
   function getBaseFs() {
-    const p = path.join(__dirname, '../../../DependencyResolver/polyfills').substring(1);
+    const p = path.join(__dirname, '../../../Resolver/polyfills').substring(1);
     const root = {};
     let currentPath = root;
 

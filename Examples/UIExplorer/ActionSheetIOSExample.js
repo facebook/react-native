@@ -27,7 +27,7 @@ var BUTTONS = [
   'Option 0',
   'Option 1',
   'Option 2',
-  'Destruct',
+  'Delete',
   'Cancel',
 ];
 var DESTRUCTIVE_INDEX = 3;
@@ -65,6 +65,40 @@ var ActionSheetExample = React.createClass({
   }
 });
 
+var ActionSheetTintExample = React.createClass({
+  getInitialState() {
+    return {
+      clicked: 'none',
+    };
+  },
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>
+          Clicked button: {this.state.clicked}
+        </Text>
+      </View>
+    );
+  },
+
+  showActionSheet() {
+    ActionSheetIOS.showActionSheetWithOptions({
+      options: BUTTONS,
+      cancelButtonIndex: CANCEL_INDEX,
+      destructiveButtonIndex: DESTRUCTIVE_INDEX,
+      tintColor: 'green',
+    },
+    (buttonIndex) => {
+      this.setState({ clicked: BUTTONS[buttonIndex] });
+    });
+  }
+});
+
+
 var ShareActionSheetExample = React.createClass({
   getInitialState() {
     return {
@@ -88,6 +122,11 @@ var ShareActionSheetExample = React.createClass({
   showShareActionSheet() {
     ActionSheetIOS.showShareActionSheetWithOptions({
       url: 'https://code.facebook.com',
+      message: 'message to go with the shared url',
+      subject: 'a subject to go in the email heading',
+      excludedActivityTypes: [
+        'com.apple.UIKit.activity.PostToTwitter'
+      ]
     },
     (error) => {
       console.error(error);
@@ -117,6 +156,10 @@ exports.examples = [
   {
     title: 'Show Action Sheet',
     render(): ReactElement { return <ActionSheetExample />; }
+  },
+  {
+    title: 'Show Action Sheet with tinted buttons',
+    render(): ReactElement { return <ActionSheetTintExample />; }
   },
   {
     title: 'Show Share Action Sheet',

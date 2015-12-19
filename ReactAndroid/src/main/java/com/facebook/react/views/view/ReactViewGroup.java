@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.view.animation.Animation;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,18 +119,8 @@ public class ReactViewGroup extends ViewGroup implements
 
   @Override
   public void setBackgroundColor(int color) {
-    if (color == Color.TRANSPARENT) {
-      Drawable backgroundDrawble = getBackground();
-      if (mReactBackgroundDrawable != null && (backgroundDrawble instanceof LayerDrawable)) {
-        // extract translucent background portion from layerdrawable
-        super.setBackground(null);
-        LayerDrawable layerDrawable = (LayerDrawable) backgroundDrawble;
-        super.setBackground(layerDrawable.getDrawable(1));
-      } else if (backgroundDrawble instanceof ReactViewBackgroundDrawable) {
-        // mReactBackground is set for background
-        mReactBackgroundDrawable = null;
-        super.setBackground(null);
-      }
+    if (color == Color.TRANSPARENT && mReactBackgroundDrawable == null) {
+      // don't do anything, no need to allocate ReactBackgroundDrawable for transparent background
     } else {
       getOrCreateReactViewBackground().setColor(color);
     }
@@ -296,7 +287,15 @@ public class ReactViewGroup extends ViewGroup implements
     boolean intersects = clippingRect
         .intersects(sHelperRect.left, sHelperRect.top, sHelperRect.right, sHelperRect.bottom);
     boolean needUpdateClippingRecursive = false;
-    if (!intersects && child.getParent() != null) {
+    // We never want to clip children that are being animated, as this can easily break layout :
+    // when layout animation changes size and/or position of views contained inside a listview that
+    // clips offscreen children, we need to ensure that, when view exits the viewport, final size
+    // and position is set prior to removing the view from its listview parent.
+    // Otherwise, when view gets re-attached again, i.e when it re-enters the viewport after scroll,
+    // it won't be size and located properly.
+    Animation animation = child.getAnimation();
+    boolean isAnimating = animation != null && !animation.hasEnded();
+    if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       super.removeViewsInLayout(idx - clippedSoFar, 1);
@@ -305,8 +304,8 @@ public class ReactViewGroup extends ViewGroup implements
       super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
-    } else if (intersects && !clippingRect.contains(sHelperRect)) {
-      // View is partially clipped.
+    } else if (intersects) {
+      // If there is any intersection we need to inform the child to update its clipping rect
       needUpdateClippingRecursive = true;
     }
     if (needUpdateClippingRecursive) {
@@ -411,6 +410,16 @@ public class ReactViewGroup extends ViewGroup implements
       super.removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
+  }
+
+  /*package*/ void removeAllViewsWithSubviewClippingEnabled() {
+    Assertions.assertCondition(mRemoveClippedSubviews);
+    Assertions.assertNotNull(mAllChildren);
+    for (int i = 0; i < mAllChildrenCount; i++) {
+      mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+    }
+    removeAllViewsInLayout();
+    mAllChildrenCount = 0;
   }
 
   private int indexOfChildInAllChildren(View child) {

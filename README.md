@@ -9,6 +9,7 @@ Supported operating systems are >= Android 4.1 (API 16) and >= iOS 7.0.
 - [Documentation](#documentation)
 - [Examples](#examples)
 - [Extending React Native](#extending-react-native)
+- [Upgrading](#upgrading)
 - [Opening Issues](#opening-issues)
 - [Contributing](#contributing)
 - [License](#license)
@@ -30,9 +31,10 @@ See the official [React Native website](https://facebook.github.io/react-native/
 Please use these community resources for getting help. We use the GitHub issues for tracking bugs and feature requests and have limited bandwidth to address them.
 
 - Ask a question on [StackOverflow](http://stackoverflow.com/) and tag it with `react-native`
+- Chat with us on [Reactiflux](https://discord.gg/0ZcbPKXt5bWJVmUY) in #react-native
+- Articulate your feature request or upvote existing ones on [Product Pains](https://productpains.com/product/react-native/)
 - Start a thread on the [React Discussion Board](https://discuss.reactjs.org/)
 - Join #reactnative on IRC: chat.freenode.net
-- Chat with us on [Reactiflux](https://discord.gg/0ZcbPKXt5bWJVmUY) in #react-native
 - If it turns out that you may have found a bug, please [open an issue](#opening-issues)
 
 ## Documentation
@@ -74,11 +76,15 @@ Note that you'll need the Android NDK installed, see [prerequisites](https://git
 - Making modules helps grow the React Native ecosystem and community. We recommend writing modules for your use cases and sharing them on npm.
 - Read the guides on Native Modules ([iOS](http://facebook.github.io/react-native/docs/native-modules-ios.html), [Android](http://facebook.github.io/react-native/docs/native-modules-android.html)) and Native UI Components ([iOS](http://facebook.github.io/react-native/docs/native-components-ios.html), [Android](http://facebook.github.io/react-native/docs/native-components-android.html)) if you are interested in extending native functionality.
 
+## Upgrading
+
+React Native is under active development. See the guide on [upgrading React Native](https://facebook.github.io/react-native/docs/upgrading.html) to keep your project up-to-date.
+
 ## Opening Issues
 
 If you encounter a bug with React Native we would like to hear about it. Search the [existing issues](https://github.com/facebook/react-native/issues) and try to make sure your problem doesn’t already exist before opening a new issue. It’s helpful if you include the version of React Native and OS you’re using. Please include a stack trace and reduced repro case when appropriate, too.
 
-The GitHub issues are intended for bug reports and feature requests. For help and questions with using React Native please make use of the resources listed in the [Getting Help](#getting-help) section. There are limited resources available for handling issues and by keeping the list of open issues lean we can respond in a timely manner.
+The GitHub issues are intended for bug reports and feature requests. For help and questions with using React Native please make use of the resources listed in the [Getting Help](#getting-help) section. [Product Pains](https://productpains.com/product/react-native/) in particular is a good way to signal your interest in a feature or issue. There are limited resources available for handling issues and by keeping the list of open issues lean we can respond in a timely manner.
 
 ## Contributing
 

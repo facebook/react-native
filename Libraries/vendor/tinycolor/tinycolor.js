@@ -47,8 +47,9 @@ tinycolor.prototype = {
 //
 //     "red"
 //     "#f00" or "f00"
+//     "#f00f" or "f00f"
 //     "#ff0000" or "ff0000"
-//     "#ff000000" or "ff000000"
+//     "#ff0000ff" or "ff0000ff"
 //     "rgb 255 0 0" or "rgb (255, 0, 0)"
 //     "rgb 1.0 0 0" or "rgb (1, 0, 0)"
 //     "rgba (255, 0, 0, 1)" or "rgba 255, 0, 0, 1"
@@ -389,6 +390,11 @@ function convertToPercentage(n) {
     return n;
 }
 
+// Converts a hex value to a decimal
+function convertHexToDecimal(h) {
+    return (parseIntFromHex(h) / 255);
+}
+
 var matchers = (function() {
     // <http://www.w3.org/TR/css3-values/#integers>
     var CSS_INTEGER = "[-\\+]?\\d+%?";
@@ -413,7 +419,9 @@ var matchers = (function() {
         hsv: new RegExp("hsv" + PERMISSIVE_MATCH3),
         hsva: new RegExp("hsva" + PERMISSIVE_MATCH4),
         hex3: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+        hex4: /^([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
         hex6: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
+        hex8: /^([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})$/,
     };
 })();
 
@@ -454,11 +462,29 @@ function stringInputToObject(color) {
     if ((match = matchers.hsva.exec(color))) {
         return { h: match[1], s: match[2], v: match[3], a: match[4] };
     }
+    if ((match = matchers.hex8.exec(color))) {
+        return {
+            r: parseIntFromHex(match[1]),
+            g: parseIntFromHex(match[2]),
+            b: parseIntFromHex(match[3]),
+            a: convertHexToDecimal(match[4]),
+            format: named ? "name" : "hex"
+        };
+    }
     if ((match = matchers.hex6.exec(color))) {
         return {
             r: parseIntFromHex(match[1]),
             g: parseIntFromHex(match[2]),
             b: parseIntFromHex(match[3]),
+            format: named ? "name" : "hex"
+        };
+    }
+    if ((match = matchers.hex4.exec(color))) {
+        return {
+            r: parseIntFromHex(match[1] + '' + match[1]),
+            g: parseIntFromHex(match[2] + '' + match[2]),
+            b: parseIntFromHex(match[3] + '' + match[3]),
+            a: convertHexToDecimal(match[4] + '' + match[4]),
             format: named ? "name" : "hex"
         };
     }

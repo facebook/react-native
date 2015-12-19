@@ -23,6 +23,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @providesModule NavigationContext
+ * @noflow
  */
 'use strict';
 
@@ -30,16 +31,25 @@ var NavigationEvent = require('NavigationEvent');
 var NavigationEventEmitter = require('NavigationEventEmitter');
 var NavigationTreeNode = require('NavigationTreeNode');
 
+var Set = require('Set');
+
 var emptyFunction = require('emptyFunction');
 var invariant = require('invariant');
 
-import type * as EventSubscription from 'EventSubscription';
+import type EventSubscription from 'EventSubscription';
 
 var {
   AT_TARGET,
   BUBBLING_PHASE,
   CAPTURING_PHASE,
 } = NavigationEvent;
+
+// Event types that do not support event bubbling, capturing and
+// reconciliation API (e.g event.preventDefault(), event.stopPropagation()).
+var LegacyEventTypes = new Set([
+  'willfocus',
+  'didfocus',
+]);
 
 /**
  * Class that contains the info and methods for app navigation.
@@ -63,14 +73,25 @@ class NavigationContext {
     this._emitCounter = 0;
     this._emitQueue = [];
 
-    this.addListener('willfocus', this._onFocus, this);
-    this.addListener('didfocus', this._onFocus, this);
+    this.addListener('willfocus', this._onFocus);
+    this.addListener('didfocus', this._onFocus);
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
   get parent(): ?NavigationContext {
     var parent = this.__node.getParent();
     return parent ? parent.getValue() : null;
+  }
+
+  /* $FlowFixMe - get/set properties not yet supported */
+  get top(): ?NavigationContext {
+    var result = null;
+    var parentNode = this.__node.getParent();
+    while (parentNode) {
+      result = parentNode.getValue();
+      parentNode = parentNode.getParent();
+    }
+    return result;
   }
 
   /* $FlowFixMe - get/set properties not yet supported */
@@ -85,14 +106,18 @@ class NavigationContext {
   addListener(
     eventType: string,
     listener: Function,
-    context: ?Object,
     useCapture: ?boolean
   ): EventSubscription {
+    if (LegacyEventTypes.has(eventType)) {
+      useCapture = false;
+    }
+
     var emitter = useCapture ?
       this._captureEventEmitter :
       this._bubbleEventEmitter;
+
     if (emitter) {
-      return emitter.addListener(eventType, listener, context);
+      return emitter.addListener(eventType, listener, this);
     } else {
       return {remove: emptyFunction};
     }
@@ -109,49 +134,64 @@ class NavigationContext {
 
     this._emitCounter++;
 
-    var targets = [this];
-    var parentTarget = this.parent;
-    while (parentTarget) {
-      targets.unshift(parentTarget);
-      parentTarget = parentTarget.parent;
+    if (LegacyEventTypes.has(eventType)) {
+      // Legacy events does not support event bubbling and reconciliation.
+      this.__emit(
+        eventType,
+        data,
+        null,
+        {
+          defaultPrevented: false,
+          eventPhase: AT_TARGET,
+          propagationStopped: true,
+          target: this,
+        }
+      );
+    } else {
+      var targets = [this];
+      var parentTarget = this.parent;
+      while (parentTarget) {
+        targets.unshift(parentTarget);
+        parentTarget = parentTarget.parent;
+      }
+
+      var propagationStopped = false;
+      var defaultPrevented = false;
+      var callback = (event) => {
+        propagationStopped = propagationStopped || event.isPropagationStopped();
+        defaultPrevented = defaultPrevented || event.defaultPrevented;
+      };
+
+      // Capture phase
+      targets.some((currentTarget) => {
+        if (propagationStopped) {
+          return true;
+        }
+
+        var extraInfo = {
+          defaultPrevented,
+          eventPhase: CAPTURING_PHASE,
+          propagationStopped,
+          target: this,
+        };
+
+        currentTarget.__emit(eventType, data, callback, extraInfo);
+      }, this);
+
+      // bubble phase
+      targets.reverse().some((currentTarget) => {
+        if (propagationStopped) {
+          return true;
+        }
+        var extraInfo = {
+          defaultPrevented,
+          eventPhase: BUBBLING_PHASE,
+          propagationStopped,
+          target: this,
+        };
+        currentTarget.__emit(eventType, data, callback, extraInfo);
+      }, this);
     }
-
-    var propagationStopped = false;
-    var defaultPrevented = false;
-    var callback = (event) => {
-      propagationStopped = propagationStopped || event.isPropagationStopped();
-      defaultPrevented = defaultPrevented || event.defaultPrevented;
-    };
-
-    // capture phase
-    targets.some((currentTarget) => {
-      if (propagationStopped) {
-        return true;
-      }
-
-      var extraInfo = {
-        defaultPrevented,
-        eventPhase: CAPTURING_PHASE,
-        propagationStopped,
-        target: this,
-      };
-
-      currentTarget.__emit(eventType, data, callback, extraInfo);
-    }, this);
-
-    // bubble phase
-    targets.reverse().some((currentTarget) => {
-      if (propagationStopped) {
-        return true;
-      }
-      var extraInfo = {
-        defaultPrevented,
-        eventPhase: BUBBLING_PHASE,
-        propagationStopped,
-        target: this,
-      };
-      currentTarget.__emit(eventType, data, callback, extraInfo);
-    }, this);
 
     if (didEmitCallback) {
       var event = NavigationEvent.pool(eventType, this, data);
@@ -189,9 +229,15 @@ class NavigationContext {
       case CAPTURING_PHASE: // phase = 1
         emitter = this._captureEventEmitter;
         break;
+
+      case AT_TARGET: // phase = 2
+        emitter = this._bubbleEventEmitter;
+        break;
+
       case BUBBLING_PHASE: // phase = 3
         emitter = this._bubbleEventEmitter;
         break;
+
       default:
         invariant(false, 'invalid event phase %s', extraInfo.eventPhase);
     }
@@ -214,8 +260,10 @@ class NavigationContext {
   _onFocus(event: NavigationEvent): void {
     invariant(
       event.data && event.data.hasOwnProperty('route'),
-      'didfocus event should provide route'
+      'event type "%s" should provide route',
+      event.type
     );
+
     this._currentRoute = event.data.route;
   }
 }

@@ -11,6 +11,8 @@
  */
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
+
 var invariant = require('invariant');
 
 var levelsMap = {
@@ -18,7 +20,7 @@ var levelsMap = {
   info: 'info',
   warn: 'warn',
   error: 'error',
-  mustfix: 'error',
+  fatal: 'error',
 };
 
 class RCTLog {
@@ -38,5 +40,10 @@ class RCTLog {
     return true;
   }
 }
+
+BatchedBridge.registerCallableModule(
+  'RCTLog',
+  RCTLog
+);
 
 module.exports = RCTLog;

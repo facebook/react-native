@@ -8,6 +8,8 @@
  */
 
 #import "RCTRootView.h"
+#import "RCTRootViewDelegate.h"
+#import "RCTRootViewInternal.h"
 
 #import <objc/runtime.h>
 
@@ -22,7 +24,6 @@
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTWebViewExecutor.h"
 #import "UIView+React.h"
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
@@ -69,9 +70,10 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
     _bridge = bridge;
     _moduleName = moduleName;
-    _initialProperties = [initialProperties copy];
+    _appProperties = [initialProperties copy];
     _loadingViewFadeDelay = 0.25;
     _loadingViewFadeDuration = 0.25;
+    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(javaScriptDidLoad:)
@@ -179,14 +181,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
 
+  [self runApplication:bridge];
+}
+
+- (void)runApplication:(RCTBridge *)bridge
+{
   NSString *moduleName = _moduleName ?: @"";
   NSDictionary *appParameters = @{
     @"rootTag": _contentView.reactTag,
-    @"initialProps": _initialProperties ?: @{},
+    @"initialProps": _appProperties ?: @{},
   };
 
   [bridge enqueueJSCall:@"AppRegistry.runApplication"
                    args:@[moduleName, appParameters]];
+}
+
+- (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+{
+  _sizeFlexibility = sizeFlexibility;
+  [self setNeedsLayout];
 }
 
 - (void)layoutSubviews
@@ -197,6 +210,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidX(self.bounds),
     CGRectGetMidY(self.bounds)
   };
+}
+
+- (void)setAppProperties:(NSDictionary *)appProperties
+{
+  RCTAssertMainThread();
+
+  if ([_appProperties isEqualToDictionary:appProperties]) {
+    return;
+  }
+
+  _appProperties = [appProperties copy];
+
+  if (_contentView && _bridge.valid && !_bridge.loading) {
+    [self runApplication:_bridge.batchedBridge];
+  }
+}
+
+- (void)setIntrinsicSize:(CGSize)intrinsicSize
+{
+  BOOL oldSizeHasAZeroDimension = _intrinsicSize.height == 0 || _intrinsicSize.width == 0;
+  BOOL newSizeHasAZeroDimension = intrinsicSize.height == 0 || intrinsicSize.width == 0;
+  BOOL bothSizesHaveAZeroDimension = oldSizeHasAZeroDimension && newSizeHasAZeroDimension;
+
+  BOOL sizesAreEqual = CGSizeEqualToSize(_intrinsicSize, intrinsicSize);
+
+  _intrinsicSize = intrinsicSize;
+
+  // Don't notify the delegate if the content remains invisible or its size has not changed
+  if (bothSizesHaveAZeroDimension || sizesAreEqual) {
+    return;
+  }
+
+  [_delegate rootViewDidChangeIntrinsicSize:self];
 }
 
 - (NSNumber *)reactTag
@@ -243,7 +289,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     [self setUp];
-    self.frame = frame;
     self.layer.backgroundColor = NULL;
   }
   return self;
@@ -305,7 +350,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   if (self.userInteractionEnabled) {
     self.userInteractionEnabled = NO;
     [(RCTRootView *)self.superview contentViewInvalidated];
-    [_bridge enqueueJSCall:@"ReactNative.unmountComponentAtNodeAndRemoveContainer"
+    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
                       args:@[self.reactTag]];
   }
 }

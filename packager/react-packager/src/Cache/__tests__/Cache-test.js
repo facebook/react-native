@@ -16,21 +16,18 @@ jest
   .dontMock('../../lib/getCacheFilePath');
 
 jest
-  .mock('os')
-  .mock('fs');
+  .mock('fs')
+  .setMock('os', {
+    tmpDir() { return 'tmpDir'; }
+  });
 
 var Promise = require('promise');
 var fs = require('fs');
-var os = require('os');
 var _ = require('underscore');
 
 var Cache = require('../');
 
 describe('JSTransformer Cache', () => {
-  beforeEach(() => {
-    os.tmpDir.mockImpl(() => 'tmpDir');
-  });
-
   describe('getting/setting', () => {
     pit('calls loader callback for uncached file', () => {
       fs.stat.mockImpl((file, callback) => {

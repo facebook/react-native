@@ -11,8 +11,6 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 
 import android.view.View;
@@ -30,26 +28,17 @@ import com.facebook.react.touch.JSResponderHandler;
  */
 public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
 
-  private static final Map<Class, Map<String, UIProp.Type>> CLASS_PROP_CACHE = new HashMap<>();
-
   public final void updateProperties(T viewToUpdate, CatalystStylesDiffMap props) {
     Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
         ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(getClass());
     ReadableMap propMap = props.mBackingMap;
     ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    // TODO(krzysztof): Remove missingSetters code once all views are migrated to @ReactProp
-    boolean missingSetters = false;
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
       if (setter != null) {
         setter.updateViewProp(this, viewToUpdate, props);
-      } else {
-        missingSetters = true;
       }
-    }
-    if (missingSetters) {
-      updateView(viewToUpdate, props);
     }
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -112,18 +101,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
    * to JS (e.g. scroll events).
    */
   protected void addEventEmitters(ThemedReactContext reactContext, T view) {
-  }
-
-  /**
-   * Subclass should use this method to populate native view with updated style properties. In case
-   * when a certain property is present in {@param props} map but the value is null, this property
-   * should be reset to the default value
-   *
-   * TODO(krzysztof) This method should be replaced by updateShadowNode and removed completely after
-   * all view managers adapt @ReactProp
-   */
-  @Deprecated
-  protected void updateView(T root, CatalystStylesDiffMap props) {
   }
 
   /**
@@ -227,42 +204,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
   }
 
   public Map<String, String> getNativeProps() {
-    // TODO(krzysztof): This method will just delegate to ViewManagersPropertyRegistry once
-    // refactoring is finished
-    Class cls = getClass();
-    Map<String, String> nativeProps =
-        ViewManagersPropertyCache.getNativePropsForView(cls, getShadowNodeClass());
-    while (cls.getSuperclass() != null) {
-      Map<String, UIProp.Type> props = getNativePropsForClass(cls);
-      for (Map.Entry<String, UIProp.Type> entry : props.entrySet()) {
-        nativeProps.put(entry.getKey(), entry.getValue().toString());
-      }
-      cls = cls.getSuperclass();
-    }
-    return nativeProps;
-  }
-
-  private Map<String, UIProp.Type> getNativePropsForClass(Class cls) {
-    // TODO(krzysztof): Blow up this method once refactoring is finished
-    Map<String, UIProp.Type> props = CLASS_PROP_CACHE.get(cls);
-    if (props != null) {
-      return props;
-    }
-    props = new HashMap<>();
-    for (Field f : cls.getDeclaredFields()) {
-      UIProp annotation = f.getAnnotation(UIProp.class);
-      if (annotation != null) {
-        UIProp.Type type = annotation.value();
-        try {
-          String name = (String) f.get(this);
-          props.put(name, type);
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException(
-              "UIProp " + cls.getName() + "." + f.getName() + " must be public.");
-        }
-      }
-    }
-    CLASS_PROP_CACHE.put(cls, props);
-    return props;
+    return ViewManagersPropertyCache.getNativePropsForView(getClass(), getShadowNodeClass());
   }
 }

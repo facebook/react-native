@@ -11,6 +11,8 @@
 
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTMapAnnotation.h"
+#import "RCTMapOverlay.h"
 #import "RCTUtils.h"
 
 const CLLocationDegrees RCTMapDefaultSpan = 0.005;
@@ -107,52 +109,91 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [super setRegion:region animated:animated];
 }
 
-- (void)setAnnotations:(RCTPointAnnotationArray *)annotations
+// TODO: this doesn't preserve order. Should it? If so we should change the
+// algorithm. If not, it would be more efficient to use an NSSet
+- (void)setAnnotations:(RCTMapAnnotationArray *)annotations
 {
-  NSMutableArray *newAnnotationIds = [NSMutableArray new];
-  NSMutableArray *annotationsToDelete = [NSMutableArray new];
-  NSMutableArray *annotationsToAdd = [NSMutableArray new];
+  NSMutableArray<NSString *> *newAnnotationIDs = [NSMutableArray new];
+  NSMutableArray<RCTMapAnnotation *> *annotationsToDelete = [NSMutableArray new];
+  NSMutableArray<RCTMapAnnotation *> *annotationsToAdd = [NSMutableArray new];
 
-  for (RCTPointAnnotation *annotation in annotations) {
-    if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+  for (RCTMapAnnotation *annotation in annotations) {
+    if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
       continue;
     }
 
-    [newAnnotationIds addObject:annotation.identifier];
+    [newAnnotationIDs addObject:annotation.identifier];
 
-    // If the current set does not contain the new annotation, mark it as add
-    if (![self.annotationIds containsObject:annotation.identifier]) {
+    // If the current set does not contain the new annotation, mark it to add
+    if (![_annotationIDs containsObject:annotation.identifier]) {
       [annotationsToAdd addObject:annotation];
     }
   }
 
-  for (RCTPointAnnotation *annotation in self.annotations) {
-    if (![annotation isKindOfClass:[RCTPointAnnotation class]]) {
+  for (RCTMapAnnotation *annotation in self.annotations) {
+    if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
       continue;
     }
 
-    // If the new set does not contain an existing annotation, mark it as delete
-    if (![newAnnotationIds containsObject:annotation.identifier]) {
+    // If the new set does not contain an existing annotation, mark it to delete
+    if (![newAnnotationIDs containsObject:annotation.identifier]) {
       [annotationsToDelete addObject:annotation];
     }
   }
 
   if (annotationsToDelete.count) {
-    [self removeAnnotations:annotationsToDelete];
+    [self removeAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToDelete];
   }
 
   if (annotationsToAdd.count) {
-    [self addAnnotations:annotationsToAdd];
+    [self addAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToAdd];
   }
 
-  NSMutableArray *newIds = [NSMutableArray new];
-  for (RCTPointAnnotation *anno in self.annotations) {
-    if ([anno isKindOfClass:[MKUserLocation class]]) {
+  self.annotationIDs = newAnnotationIDs;
+}
+
+// TODO: this doesn't preserve order. Should it? If so we should change the
+// algorithm. If not, it would be more efficient to use an NSSet
+- (void)setOverlays:(RCTMapOverlayArray *)overlays
+{
+  NSMutableArray *newOverlayIDs = [NSMutableArray new];
+  NSMutableArray *overlaysToDelete = [NSMutableArray new];
+  NSMutableArray *overlaysToAdd = [NSMutableArray new];
+
+  for (RCTMapOverlay *overlay in overlays) {
+    if (![overlay isKindOfClass:[RCTMapOverlay class]]) {
       continue;
     }
-    [newIds addObject:anno.identifier];
+
+    [newOverlayIDs addObject:overlay.identifier];
+
+    // If the current set does not contain the new annotation, mark it to add
+    if (![_annotationIDs containsObject:overlay.identifier]) {
+      [overlaysToAdd addObject:overlay];
+    }
   }
-  self.annotationIds = newIds;
+
+  for (RCTMapOverlay *overlay in self.overlays) {
+    if (![overlay isKindOfClass:[RCTMapOverlay class]]) {
+      continue;
+    }
+
+    // If the new set does not contain an existing annotation, mark it to delete
+    if (![newOverlayIDs containsObject:overlay.identifier]) {
+      [overlaysToDelete addObject:overlay];
+    }
+  }
+
+  if (overlaysToDelete.count) {
+    [self removeOverlays:(NSArray<id<MKOverlay>> *)overlaysToDelete];
+  }
+
+  if (overlaysToAdd.count) {
+    [self addOverlays:(NSArray<id<MKOverlay>> *)overlaysToAdd
+                level:MKOverlayLevelAboveRoads];
+  }
+
+  self.overlayIDs = newOverlayIDs;
 }
 
 @end

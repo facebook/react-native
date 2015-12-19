@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                = "React"
-  s.version             = "0.14.2"
+  s.version             = "0.17.0-rc"
   s.summary             = "Build high quality mobile apps using React."
   s.description         = <<-DESC
                             React Native apps are built using the React JS
@@ -22,11 +22,10 @@ Pod::Spec.new do |s|
   s.default_subspec     = 'Core'
   s.requires_arc        = true
   s.platform            = :ios, "7.0"
-  s.prepare_command     = 'npm install --production'
   s.preserve_paths      = "cli.js", "Libraries/**/*.js", "lint", "linter.js", "node_modules", "package.json", "packager", "PATENTS", "react-native-cli"
 
   s.subspec 'Core' do |ss|
-    ss.source_files     = "React/**/*.{c,h,m}"
+    ss.source_files     = "React/**/*.{c,h,m,S}"
     ss.exclude_files    = "**/__tests__/*", "IntegrationTests/*"
     ss.frameworks       = "JavaScriptCore"
   end
@@ -47,6 +46,12 @@ Pod::Spec.new do |s|
     ss.dependency         'React/Core'
     ss.source_files     = "Libraries/AdSupport/*.{h,m}"
     ss.preserve_paths   = "Libraries/AdSupport/*.js"
+  end
+
+  s.subspec 'RCTCameraRoll' do |ss|
+    ss.dependency         'React/Core'
+    ss.source_files     = "Libraries/CameraRoll/*.{h,m}"
+    ss.preserve_paths   = "Libraries/CameraRoll/*.js"
   end
 
   s.subspec 'RCTGeolocation' do |ss|

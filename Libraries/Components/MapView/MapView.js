@@ -12,16 +12,20 @@
 'use strict';
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var Image = require('Image');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
+var RCTMap = require('UIManager').RCTMap;
+var RCTMapConstants = RCTMap && RCTMap.Constants;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var deepDiffer = require('deepDiffer');
 var insetsDiffer = require('insetsDiffer');
 var merge = require('merge');
+var processColor = require('processColor');
+var resolveAssetSource = require('resolveAssetSource');
 var requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
@@ -42,7 +46,6 @@ var MapView = React.createClass({
         // TODO: add a base64 (or similar) encoder here
         annotation.id = encodeURIComponent(JSON.stringify(annotation));
       }
-
       return annotation;
     });
 
@@ -51,9 +54,27 @@ var MapView = React.createClass({
     });
   },
 
+  checkOverlayIds: function (overlays: Array<Object>) {
+
+    var newOverlays = overlays.map(function (overlay) {
+      if (!overlay.id) {
+        // TODO: add a base64 (or similar) encoder here
+        overlay.id = encodeURIComponent(JSON.stringify(overlay));
+      }
+      return overlay;
+    });
+
+    this.setState({
+      overlays: newOverlays
+    });
+  },
+
   componentWillMount: function() {
     if (this.props.annotations) {
       this.checkAnnotationIds(this.props.annotations);
+    }
+    if (this.props.overlays) {
+      this.checkOverlayIds(this.props.overlays);
     }
   },
 
@@ -61,9 +82,13 @@ var MapView = React.createClass({
     if (nextProps.annotations) {
       this.checkAnnotationIds(nextProps.annotations);
     }
+    if (nextProps.overlays) {
+      this.checkOverlayIds(nextProps.overlays);
+    }
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Used to style and layout the `MapView`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
@@ -79,6 +104,20 @@ var MapView = React.createClass({
      * to *fail silently*!
      */
     showsUserLocation: React.PropTypes.bool,
+
+    /**
+     * If `false` points of interest won't be displayed on the map.
+     * Default value is `true`.
+     * @platform ios
+     */
+    showsPointsOfInterest: React.PropTypes.bool,
+
+    /**
+     * If `false` compass won't be displayed on the map.
+     * Default value is `true`.
+     * @platform ios
+     */
+    showsCompass: React.PropTypes.bool,
 
     /**
      * If `false` the user won't be able to pinch/zoom the map.
@@ -178,10 +217,52 @@ var MapView = React.createClass({
       onRightCalloutPress: React.PropTypes.func,
 
       /**
+       * The pin color. This can be any valid color string, or you can use one
+       * of the predefined PinColors constants. Applies to both standard pins
+       * and custom pin images.
+       *
+       * Note that on iOS 8 and earlier, only the standard PinColor constants
+       * are supported for regualr pins. For custom pin images, any tintColor
+       * value is supported on all iOS versions.
+       * @platform ios
+       */
+      tintColor: React.PropTypes.string,
+
+      /**
+       * Custom pin image. This must be a static image resource inside the app.
+       * @platform ios
+       */
+      image: Image.propTypes.source,
+
+      /**
        * annotation id
        */
-      id: React.PropTypes.string
+      id: React.PropTypes.string,
+    })),
 
+    /**
+     * Map overlays
+     */
+    overlays: React.PropTypes.arrayOf(React.PropTypes.shape({
+      /**
+       * Polyline coordinates
+       */
+      coordinates: React.PropTypes.arrayOf(React.PropTypes.shape({
+        latitude: React.PropTypes.number.isRequired,
+        longitude: React.PropTypes.number.isRequired
+      })),
+
+      /**
+       * Line attributes
+       */
+      lineWidth: React.PropTypes.number,
+      strokeColor: React.PropTypes.string,
+      fillColor: React.PropTypes.string,
+
+      /**
+       * Overlay id
+       */
+      id: React.PropTypes.string
     })),
 
     /**
@@ -214,72 +295,103 @@ var MapView = React.createClass({
      * Callback that is called once, when the user taps an annotation.
      */
     onAnnotationPress: React.PropTypes.func,
-  },
 
-  _onChange: function(event: Event) {
-    if (event.nativeEvent.continuous) {
-      this.props.onRegionChange &&
-        this.props.onRegionChange(event.nativeEvent.region);
-    } else {
-      this.props.onRegionChangeComplete &&
-        this.props.onRegionChangeComplete(event.nativeEvent.region);
-    }
-  },
-
-  _onPress: function(event: Event) {
-    if (event.nativeEvent.action === 'annotation-click') {
-      this.props.onAnnotationPress && this.props.onAnnotationPress(event.nativeEvent.annotation);
-    }
-
-    if (event.nativeEvent.action === 'callout-click') {
-      if (!this.props.annotations) {
-        return;
-      }
-
-      // Find the annotation with the id of what has been pressed
-      for (var i = 0; i < this.props.annotations.length; i++) {
-        var annotation = this.props.annotations[i];
-        if (annotation.id === event.nativeEvent.annotationId) {
-          // Pass the right function
-          if (event.nativeEvent.side === 'left') {
-            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
-          } else if (event.nativeEvent.side === 'right') {
-            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
-          }
-        }
-      }
-
-    }
+    /**
+     * @platform android
+     */
+    active: React.PropTypes.bool,
   },
 
   render: function() {
-    return <RCTMap {...this.props} onPress={this._onPress} onChange={this._onChange} />;
+
+    let {annotations, overlays} = this.props;
+    annotations = annotations && annotations.map((annotation: Object) => {
+      let {tintColor, image} = annotation;
+      return {
+        ...annotation,
+        tintColor: tintColor && processColor(tintColor),
+        image: image && resolveAssetSource(image),
+      };
+    });
+    overlays = overlays && overlays.map((overlay: Object) => {
+      let {strokeColor, fillColor} = overlay;
+      return {
+        ...overlay,
+        strokeColor: strokeColor && processColor(strokeColor),
+        fillColor: fillColor && processColor(fillColor),
+      };
+    });
+
+    // TODO: these should be separate events, to reduce bridge traffic
+    if (annotations) {
+      var onPress = (event: Event) => {
+        if (!annotations) {
+          return;
+        }
+        if (event.nativeEvent.action === 'annotation-click') {
+          this.props.onAnnotationPress &&
+            this.props.onAnnotationPress(event.nativeEvent.annotation);
+        } else if (event.nativeEvent.action === 'callout-click') {
+          // Find the annotation with the id that was pressed
+          for (let i = 0, l = annotations.length; i < l; i++) {
+            let annotation = annotations[i];
+            if (annotation.id === event.nativeEvent.annotationId) {
+              // Pass the right function
+              if (event.nativeEvent.side === 'left') {
+                annotation.onLeftCalloutPress &&
+                  annotation.onLeftCalloutPress(event.nativeEvent);
+              } else if (event.nativeEvent.side === 'right') {
+                annotation.onRightCalloutPress &&
+                  annotation.onRightCalloutPress(event.nativeEvent);
+              }
+              break;
+            }
+          }
+        }
+      };
+    }
+
+    // TODO: these should be separate events, to reduce bridge traffic
+    if (this.props.onRegionChange || this.props.onRegionChangeComplete) {
+      var onChange = (event: Event) => {
+        if (event.nativeEvent.continuous) {
+          this.props.onRegionChange &&
+            this.props.onRegionChange(event.nativeEvent.region);
+        } else {
+          this.props.onRegionChangeComplete &&
+            this.props.onRegionChangeComplete(event.nativeEvent.region);
+        }
+      };
+    }
+
+    return (
+      <RCTMap
+        {...this.props}
+        annotations={annotations}
+        overlays={overlays}
+        onPress={onPress}
+        onChange={onChange}
+      />
+    );
   },
 });
 
-if (Platform.OS === 'android') {
-  var RCTMap = createReactNativeComponentClass({
-    validAttributes: merge(
-      ReactNativeViewAttributes.UIView, {
-        active: true,
-        showsUserLocation: true,
-        zoomEnabled: true,
-        rotateEnabled: true,
-        pitchEnabled: true,
-        scrollEnabled: true,
-        region: {diff: deepDiffer},
-        annotations: {diff: deepDiffer},
-        maxDelta: true,
-        minDelta: true,
-        legalLabelInsets: {diff: insetsDiffer},
-      }
-    ),
-    uiViewClassName: 'RCTMap',
-  });
-} else {
-  var RCTMap = requireNativeComponent('RCTMap', MapView, {
-    nativeOnly: {onChange: true, onPress: true}
-  });
-}
+/**
+ * Standard iOS MapView pin color constants, to be used with the
+ * `annotation.tintColor` property. On iOS 8 and earlier these are the
+ * only supported values when using regular pins. On iOS 9 and later
+ * you are not obliged to use these, but they are useful for matching
+ * the standard iOS look and feel.
+ */
+let PinColors = RCTMapConstants && RCTMapConstants.PinColors;
+MapView.PinColors = PinColors && {
+  RED: PinColors.RED,
+  GREEN: PinColors.GREEN,
+  PURPLE: PinColors.PURPLE,
+};
+
+var RCTMap = requireNativeComponent('RCTMap', MapView, {
+  nativeOnly: {onChange: true, onPress: true}
+});
 
 module.exports = MapView;

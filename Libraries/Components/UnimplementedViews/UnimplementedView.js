@@ -9,7 +9,6 @@
 
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var View = require('View');
 
 var UnimplementedView = React.createClass({
   setNativeProps: function() {
@@ -18,6 +17,8 @@ var UnimplementedView = React.createClass({
     // See ensureComponentIsNative.js for more info
   },
   render: function() {
+    // Workaround require cycle from requireNativeComponent
+    var View = require('View');
     return (
       <View style={[styles.unimplementedView, this.props.style]}>
         {this.props.children}

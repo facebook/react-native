@@ -4,7 +4,7 @@ title: Generating Signed APK
 layout: docs
 category: Guides (Android)
 permalink: docs/signed-apk-android.html
-next: activityindicatorios
+next: android-ui-performance
 ---
 
 To distribute your Android application via [Google Play store](https://play.google.com/store), you'll need to generate a signed release APK. The [Signing Your Applications](https://developer.android.com/tools/publishing/app-signing.html) page on Android Developers documentation describes the topic in detail. This guide covers the process in brief, as well as lists the steps required to packaging the JavaScript bundle.
@@ -41,7 +41,7 @@ _Note: Once you publish the app on the Play Store, you will need to republish yo
 
 Edit the file `android/app/build.gradle` in your project folder and add the signing config,
 
-```
+```gradle
 ...
 android {
     ...
@@ -110,7 +110,7 @@ _**IMPORTANT**: Make sure to thoroughly test your app if you've enabled Proguard
 
 To enable Proguard, set `minifyEnabled` to `true`:
 
-```
+```gradle
 ...
 android {
     ...

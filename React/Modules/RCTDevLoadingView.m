@@ -34,23 +34,6 @@ RCT_EXPORT_MODULE()
   isEnabled = enabled;
 }
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hide)
-                                                 name:RCTJavaScriptDidLoadNotification
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hide)
-                                                 name:RCTJavaScriptDidFailToLoadNotification
-                                               object:nil];
-  }
-  return self;
-}
-
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -59,6 +42,16 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(hide)
+                                               name:RCTJavaScriptDidLoadNotification
+                                             object:nil];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(hide)
+                                               name:RCTJavaScriptDidFailToLoadNotification
+                                             object:nil];
   [self showWithURL:bridge.bundleURL];
 }
 

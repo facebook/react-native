@@ -9,7 +9,8 @@
 
 #import "RCTConvert+MapKit.h"
 #import "RCTConvert+CoreLocation.h"
-#import "RCTPointAnnotation.h"
+#import "RCTMapAnnotation.h"
+#import "RCTMapOverlay.h"
 
 @implementation RCTConvert(MapKit)
 
@@ -30,40 +31,52 @@
   };
 }
 
-+ (MKShape *)MKShape:(id)json
-{
-  json = [self NSDictionary:json];
-
-  // TODO: more shape types
-  MKShape *shape = [MKPointAnnotation new];
-  shape.coordinate = [self CLLocationCoordinate2D:json];
-  shape.title = [RCTConvert NSString:json[@"title"]];
-  shape.subtitle = [RCTConvert NSString:json[@"subtitle"]];
-  return shape;
-}
-
-RCT_ARRAY_CONVERTER(MKShape)
-
 RCT_ENUM_CONVERTER(MKMapType, (@{
   @"standard": @(MKMapTypeStandard),
   @"satellite": @(MKMapTypeSatellite),
   @"hybrid": @(MKMapTypeHybrid),
 }), MKMapTypeStandard, integerValue)
 
-+ (RCTPointAnnotation *)RCTPointAnnotation:(id)json
++ (RCTMapAnnotation *)RCTMapAnnotation:(id)json
 {
   json = [self NSDictionary:json];
-  RCTPointAnnotation *shape = [RCTPointAnnotation new];
-  shape.coordinate = [self CLLocationCoordinate2D:json];
-  shape.title = [RCTConvert NSString:json[@"title"]];
-  shape.subtitle = [RCTConvert NSString:json[@"subtitle"]];
-  shape.identifier = [RCTConvert NSString:json[@"id"]];
-  shape.hasLeftCallout = [RCTConvert BOOL:json[@"hasLeftCallout"]];
-  shape.hasRightCallout = [RCTConvert BOOL:json[@"hasRightCallout"]];
-  shape.animateDrop = [RCTConvert BOOL:json[@"animateDrop"]];
-  return shape;
+  RCTMapAnnotation *annotation = [RCTMapAnnotation new];
+  annotation.coordinate = [self CLLocationCoordinate2D:json];
+  annotation.title = [RCTConvert NSString:json[@"title"]];
+  annotation.subtitle = [RCTConvert NSString:json[@"subtitle"]];
+  annotation.identifier = [RCTConvert NSString:json[@"id"]];
+  annotation.hasLeftCallout = [RCTConvert BOOL:json[@"hasLeftCallout"]];
+  annotation.hasRightCallout = [RCTConvert BOOL:json[@"hasRightCallout"]];
+  annotation.animateDrop = [RCTConvert BOOL:json[@"animateDrop"]];
+  annotation.tintColor = [RCTConvert UIColor:json[@"tintColor"]];
+  annotation.image = [RCTConvert UIImage:json[@"image"]];
+  if (annotation.tintColor && annotation.image) {
+    annotation.image = [annotation.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+  return annotation;
 }
 
-RCT_ARRAY_CONVERTER(RCTPointAnnotation)
+RCT_ARRAY_CONVERTER(RCTMapAnnotation)
+
++ (RCTMapOverlay *)RCTMapOverlay:(id)json
+{
+  json = [self NSDictionary:json];
+  NSArray<NSDictionary *> *locations = [RCTConvert NSDictionaryArray:json[@"coordinates"]];
+  CLLocationCoordinate2D coordinates[locations.count];
+  NSUInteger index = 0;
+  for (NSDictionary *location in locations) {
+    coordinates[index++] = [RCTConvert CLLocationCoordinate2D:location];
+  }
+
+  RCTMapOverlay *overlay = [RCTMapOverlay polylineWithCoordinates:coordinates
+                                                            count:locations.count];
+
+  overlay.strokeColor = [RCTConvert UIColor:json[@"strokeColor"]];
+  overlay.identifier = [RCTConvert NSString:json[@"id"]];
+  overlay.lineWidth = [RCTConvert CGFloat:json[@"lineWidth"] ?: @1];
+  return overlay;
+}
+
+RCT_ARRAY_CONVERTER(RCTMapOverlay)
 
 @end
