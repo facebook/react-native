@@ -41,7 +41,7 @@ $ npm install rnpm -g
 
 Install a library with native dependencies:
 ```bash
-$ npm install library-with-native-dependencies --save
+$ npm install <library-with-native-dependencies> --save
 ```
 
 **Note:** _`--save` or `--save-dev` flag is very important for this step. `rnpm` will link
