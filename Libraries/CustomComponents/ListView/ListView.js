@@ -248,7 +248,6 @@ var ListView = React.createClass({
   getInitialState: function() {
     return {
       curRenderedRowsCount: this.props.initialListSize,
-      prevRenderedRowsCount: 0,
       highlightedRow: {},
     };
   },
@@ -266,6 +265,7 @@ var ListView = React.createClass({
     };
     this._childFrames = [];
     this._visibleRows = {};
+    this._prevRenderedRowsCount = 0;
   },
 
   componentDidMount: function() {
@@ -283,8 +283,8 @@ var ListView = React.createClass({
           state.curRenderedRowsCount + props.pageSize,
           props.dataSource.getRowCount()
         );
+        this._prevRenderedRowsCount = 0;
         return {
-          prevRenderedRowsCount: 0,
           curRenderedRowsCount: rowsToRender,
         };
       });
@@ -321,7 +321,7 @@ var ListView = React.createClass({
       }
 
       if (this.props.renderSectionHeader) {
-        var shouldUpdateHeader = rowCount >= this.state.prevRenderedRowsCount &&
+        var shouldUpdateHeader = rowCount >= this._prevRenderedRowsCount &&
           dataSource.sectionHeaderShouldUpdate(sectionIdx);
         bodyComponents.push(
           <StaticRenderer
@@ -340,7 +340,7 @@ var ListView = React.createClass({
       for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
         var rowID = rowIDs[rowIdx];
         var comboID = sectionID + '_' + rowID;
-        var shouldUpdateRow = rowCount >= this.state.prevRenderedRowsCount &&
+        var shouldUpdateRow = rowCount >= this._prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
         var row =
           <StaticRenderer
@@ -427,7 +427,7 @@ var ListView = React.createClass({
     RCTScrollViewManager && RCTScrollViewManager.calculateChildFrames &&
       RCTScrollViewManager.calculateChildFrames(
         React.findNodeHandle(scrollComponent),
-        this._updateChildFrames,
+        this._updateVisibleRows,
       );
   },
 
@@ -457,10 +457,6 @@ var ListView = React.createClass({
       height : width;
     this._updateVisibleRows();
     this._renderMoreRowsIfNeeded();
-  },
-
-  _updateChildFrames: function(childFrames) {
-    this._updateVisibleRows(childFrames);
   },
 
   _maybeCallOnEndReached: function(event) {
@@ -495,15 +491,13 @@ var ListView = React.createClass({
         state.curRenderedRowsCount + props.pageSize,
         props.dataSource.getRowCount()
       );
+      this._prevRenderedRowsCount = state.curRenderedRowsCount;
       return {
-        prevRenderedRowsCount: state.curRenderedRowsCount,
         curRenderedRowsCount: rowsToRender
       };
     }, () => {
       this._measureAndUpdateScrollProps();
-      this.setState(state => ({
-        prevRenderedRowsCount: state.curRenderedRowsCount,
-      }));
+      this._prevRenderedRowsCount = this.state.curRenderedRowsCount;
     });
   },
 
