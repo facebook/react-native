@@ -2,18 +2,17 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  */
-'use strict';
-
-var React = require('react-native');
-var {
+import React, {
   AppRegistry,
   StyleSheet,
+  Component,
   Text,
-  View,
-} = React;
+  View
+} from 'react-native';
 
-var <%= name %> = React.createClass({
-  render: function() {
+
+class <%= name %> extends Component {
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
@@ -29,7 +28,7 @@ var <%= name %> = React.createClass({
       </View>
     );
   }
-});
+};
 
 var styles = StyleSheet.create({
   container: {
