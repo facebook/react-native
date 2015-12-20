@@ -14,7 +14,7 @@ const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
 const Activity = require('../Activity');
 
-const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
+const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 const minifyCode = code =>
   UglifyJS.minify(code, {fromString: true, ascii_only: true}).code;
