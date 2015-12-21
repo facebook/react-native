@@ -73,7 +73,7 @@ namespace ReactNative.Tests
 
         private static MessageQueueThread CreateJavaScriptThread()
         {
-            return MessageQueueThread.Create(MessageQueueThreadSpec.Create("js", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
+            return MessageQueueThread.Create(MessageQueueThreadSpec.Create("js", MessageQueueThreadKind.BackgroundSingleThread), ex => { Assert.Fail(); });
         }
     }
 }
