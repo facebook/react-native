@@ -20,7 +20,7 @@ namespace ReactNative.Hosting.Bridge
         /// </summary>
         public ChakraJavaScriptExecutor()
         {
-            _runtime = JavaScriptRuntime.Create(JavaScriptRuntimeAttributes.None, null);
+            _runtime = JavaScriptRuntime.Create();
             InitializeChakra();
             _globalObject = JavaScriptValue.GlobalObject;
         }
@@ -112,6 +112,7 @@ namespace ReactNative.Hosting.Bridge
         {
             // Set the current context
             var context = _runtime.CreateContext();
+            //context.AddRef();
             JavaScriptContext.Current = context;
 
             // Set the WinRT namespace (TODO: needed?)
@@ -178,8 +179,17 @@ namespace ReactNative.Hosting.Bridge
 
         public void Dispose()
         {
-            JavaScriptContext.Current = JavaScriptContext.Invalid;
-            _runtime.Dispose();
+            var context = JavaScriptContext.Current;
+            if (context.IsValid)
+            {
+                //context.Release();
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
+                _runtime.Dispose();
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid context on current thread.");
+            }
         }
     }
 }
