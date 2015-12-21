@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactDrawableHelper;
 
 /**
