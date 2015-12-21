@@ -274,6 +274,20 @@ var TextExample = React.createClass({
             right right right right right right right right right right right right right
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Text DecorationLine">
+          <Text style={{textDecorationLine: 'none'}}>
+            none
+          </Text>
+          <Text style={{textDecorationLine: 'underline'}}>
+            underline
+          </Text>
+          <Text style={{textDecorationLine: 'line-through'}}>
+            line-through
+          </Text>
+          <Text style={{textDecorationLine: 'underline line-through'}}>
+            underline line-through
+          </Text>
+        </UIExplorerBlock>
         <UIExplorerBlock title="Unicode">
           <View style={{flex: 1}}>
             <View style={{flexDirection: 'row'}}>
