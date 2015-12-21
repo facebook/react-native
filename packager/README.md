@@ -112,6 +112,8 @@ middleware. Takes the following options:
   should be used as a persistent deamon to watch files and update
   itself
 * `assetRoots` array: Where should the packager look for assets
+* `getTransformOptions` function: Middleware to get custom options for the
+  transformer based on the bundle and module being transformed.
 
 ### ReactPackager.buildPackageFromUrl(options, url)
 

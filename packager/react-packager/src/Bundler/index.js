@@ -135,6 +135,8 @@ class Bundler {
 
     this._projectRoots = opts.projectRoots;
     this._assetServer = opts.assetServer;
+
+    this._getTransformOptions = opts.getTransformOptions;
   }
 
   kill() {
@@ -322,7 +324,8 @@ class Bundler {
       return generateJSONModule(module);
     } else {
       return this._transformer.loadFileAndTransform(
-        path.resolve(module.path)
+        path.resolve(module.path),
+        this._getTransformOptions({bundle, module, platform})
       );
     }
   }
