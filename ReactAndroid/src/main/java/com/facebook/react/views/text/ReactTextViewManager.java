@@ -69,6 +69,21 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
       throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
     }
   }
+  
+  @ReactProp(name = "textDecorationLine")
+    public void setTextDecorationLine(ReactTextView view, @Nullable String textDecorationLine) {
+        if (textDecorationLine == null || "none".equals(textDecorationLine)) {
+            view.getPaint().setFlags(0);
+        } else if ("underline".equals(textDecorationLine)) {
+            view.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+        } else if ("line-through".equals(textDecorationLine)) {
+            view.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+        } else if ("underline line-through".equals(textDecorationLine)) {
+            view.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG | Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+        } else {
+            throw new JSApplicationIllegalArgumentException("Invalid textDecorationLine: " + textDecorationLine);
+        }
+    }
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = Float.NaN)
   public void setLineHeight(ReactTextView view, float lineHeight) {
