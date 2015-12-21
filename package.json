@@ -8,7 +8,7 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=5"
   },
   "jest": {
     "scriptPreprocessor": "jestSupport/preprocessor.js",
