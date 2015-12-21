@@ -27,7 +27,7 @@ class <%= name %> extends Component {
       </View>
     );
   }
-};
+}
 
 var styles = StyleSheet.create({
   container: {
