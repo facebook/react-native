@@ -1,6 +1,8 @@
 ﻿using ReactNative.Hosting;
+using ReactNative.Hosting.Bridge;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -34,12 +36,14 @@ namespace Playground
 
             try
             {
-                var runtime = new JavaScriptRuntime();
-                var context = runtime.CreateContext();
+                var executor = new ChakraJavaScriptExecutor();
+                executor.RunScript("var __value = 42;");
+                var value = executor.GetGlobalVariable("__value");
+                Output.Text = value.ToString();
             }
             catch (Exception ex)
             {
-                
+                Output.Text = ex.ToString();
             }
         }
     }

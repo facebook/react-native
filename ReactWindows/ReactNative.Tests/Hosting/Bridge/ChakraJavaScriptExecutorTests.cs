@@ -16,10 +16,8 @@ namespace ReactNative.Tests.Hosting.Bridge
         [TestMethod]
         public async Task ChakraJavaScriptExecutor_ArgumentChecks()
         {
-            using (var jsThread = CreateJavaScriptThread())
+            await JavaScriptHelpers.Run((executor, jsQueueThread) =>
             {
-                var executor = await CreateTestExecutor(jsThread);
-
                 AssertEx.Throws<ArgumentNullException>(
                     () => executor.Call(null, "foo", new JArray()),
                     ex => Assert.AreEqual("moduleName", ex.ParamName));
@@ -47,54 +45,6 @@ namespace ReactNative.Tests.Hosting.Bridge
                 AssertEx.Throws<ArgumentNullException>(
                     () => executor.GetGlobalVariable(null),
                     ex => Assert.AreEqual("propertyName", ex.ParamName));
-
-                await DisposeTestExecutor(executor, jsThread);
-            }
-        }
-        
-        private static MessageQueueThread CreateJavaScriptThread()
-        {
-            return MessageQueueThread.Create(MessageQueueThreadSpec.Create("js", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
-        }
-
-        private static async Task<ChakraJavaScriptExecutor> CreateTestExecutor(IMessageQueueThread jsQueueThread)
-        {
-            var scriptUris = new[]
-            {
-                new Uri(@"ms-appx:///Resources/test.js"),
-            };
-
-            var scripts = new string[scriptUris.Length];
-
-            for (var i = 0; i < scriptUris.Length; ++i)
-            {
-                var uri = scriptUris[i];
-                var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                using (var stream = await storageFile.OpenStreamForReadAsync())
-                using (var reader = new StreamReader(stream))
-                {
-                    scripts[i] = reader.ReadToEnd();
-                }
-            }
-
-            return await jsQueueThread.CallOnQueue(() =>
-            {
-                var executor = new ChakraJavaScriptExecutor();
-                foreach (var script in scripts)
-                {
-                    executor.RunScript(script);
-                }
-
-                return executor;
-            });
-        }
-
-        private static Task DisposeTestExecutor(IJavaScriptExecutor executor, IMessageQueueThread jsQueueThread)
-        {
-            return jsQueueThread.CallOnQueue(() =>
-            {
-                executor.Dispose();
-                return default(object);
             });
         }
     }

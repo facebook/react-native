@@ -140,6 +140,38 @@ namespace ReactNative.Tests.Bridge
             Assert.AreEqual(0, args.Count);
         }
 
+        [TestMethod]
+        public void NativeModuleBase_CompiledDelegateFactory_Perf()
+        {
+            var module = new PerfNativeModule(CompiledReactDelegateFactory.Instance);
+            var catalystInstance = new MockCatalystInstance();
+            var args = JArray.FromObject(new[] { 42 });
+
+            module.Initialize();
+
+            var n = 100000;
+            for (var i = 0; i < n; ++i)
+            {
+                module.Methods[nameof(PerfNativeModule.Foo)].Invoke(catalystInstance, args);
+            }
+        }
+
+        [TestMethod]
+        public void NativeModuleBase_ReflectionDelegateFactory_Perf()
+        {
+            var module = new PerfNativeModule(ReflectionReactDelegateFactory.Instance);
+            var catalystInstance = new MockCatalystInstance();
+            var args = JArray.FromObject(new[] { 42 });
+
+            module.Initialize();
+
+            var n = 100000;
+            for (var i = 0; i < n; ++i)
+            {
+                module.Methods[nameof(PerfNativeModule.Foo)].Invoke(catalystInstance, args);
+            }
+        }
+
         class MethodOverloadNativeModule : NativeModuleBase
         {
             public override string Name
@@ -225,6 +257,25 @@ namespace ReactNative.Tests.Bridge
             {
                 callback.Invoke(_callbackArgs);
             }
+        }
+
+        class PerfNativeModule : NativeModuleBase
+        {
+            public PerfNativeModule(IReactDelegateFactory delegateFactory)
+                : base(delegateFactory)
+            {
+            }
+
+            public override string Name
+            {
+                get
+                {
+                    return "Perf";
+                }
+            }
+
+            [ReactMethod]
+            public void Foo(int x) { }
         }
     }
 }
