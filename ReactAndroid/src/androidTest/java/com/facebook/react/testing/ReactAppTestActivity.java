@@ -36,7 +36,8 @@ public class ReactAppTestActivity extends FragmentActivity implements
 
   private static final String DEFAULT_BUNDLE_NAME = "AndroidTestBundle.js";
   private static final int ROOT_VIEW_ID = 8675309;
-  private static final long IDLE_TIMEOUT_MS = 15000;
+  // we need a bigger timeout for CI builds because they run on a slow emulator
+  private static final long IDLE_TIMEOUT_MS = 60000;
 
   private CountDownLatch mLayoutEvent = new CountDownLatch(1);
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;
