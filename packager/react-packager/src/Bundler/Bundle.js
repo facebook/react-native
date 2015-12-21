@@ -58,6 +58,10 @@ class Bundle {
     return this._modules;
   }
 
+  getMainModuleId() {
+    return this._mainModuleId;
+  }
+
   setNumPrependedModules(n) {
     this._numPrependedModules = n;
   }

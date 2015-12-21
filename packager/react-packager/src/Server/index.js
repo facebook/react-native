@@ -64,6 +64,10 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  getTransformOptions: {
+    type: 'function',
+    default: () => ({}),
+  }
 });
 
 const bundleOpts = declareOpts({

@@ -81,6 +81,7 @@ describe('Bundler', function() {
     bundler = new Bundler({
       projectRoots: ['/root'],
       assetServer: assetServer,
+      getTransformOptions: () => ({}),
     });
 
     modules = [
