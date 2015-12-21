@@ -60,7 +60,8 @@
   CGFloat scale = 1.0;
   BOOL packagerAsset = NO;
   if ([json isKindOfClass:[NSDictionary class]]) {
-    if (!(imageURL = [self NSURL:json[@"uri"]])) {
+    id uri = json[@"uri"];
+    if (!([uri isKindOfClass:[NSString class]]) || !(imageURL = [self NSURL:uri])) {
       return nil;
     }
     size = [self CGSize:json];
