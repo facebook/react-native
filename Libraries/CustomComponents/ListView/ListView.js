@@ -37,6 +37,7 @@ var TimerMixin = require('react-timer-mixin');
 var isEmpty = require('isEmpty');
 var logError = require('logError');
 var merge = require('merge');
+var shallowEqual = require('shallowEqual');
 
 var PropTypes = React.PropTypes;
 
@@ -266,6 +267,8 @@ var ListView = React.createClass({
     this._childFrames = [];
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
+    this._sentEndForContentLength = null;
+    this._lastScrollPropertiesCheckedForPaging = null;
   },
 
   componentDidMount: function() {
@@ -452,13 +455,6 @@ var ListView = React.createClass({
     }
   },
 
-  _setScrollVisibleLength: function(left, top, width, height) {
-    this.scrollProperties.visibleLength = !this.props.horizontal ?
-      height : width;
-    this._updateVisibleRows();
-    this._renderMoreRowsIfNeeded();
-  },
-
   _maybeCallOnEndReached: function(event) {
     if (this.props.onEndReached &&
         this.scrollProperties.contentLength !== this._sentEndForContentLength &&
@@ -478,6 +474,12 @@ var ListView = React.createClass({
       this._maybeCallOnEndReached();
       return;
     }
+
+    if (shallowEqual(this._lastScrollPropertiesCheckedForPaging, this.scrollProperties)) {
+      // distance from end of feed hasn't changed since last check, avoid paging twice..
+      return;
+    }
+    this._lastScrollPropertiesCheckedForPaging = {...this.scrollProperties};
 
     var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
