@@ -50,11 +50,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <DefineConstants>TRACE;d</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -107,12 +107,15 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bridge\Queue\Callback.cs" />
     <Compile Include="Bridge\CatalystInstance.cs" />
+    <Compile Include="Bridge\CompiledReactDelegateFactory.cs" />
     <Compile Include="Bridge\DispatcherHelpers.cs" />
     <Compile Include="Bridge\IInvocationHandler.cs" />
     <Compile Include="Bridge\IJavaScriptExecutor.cs" />
     <Compile Include="Bridge\IJavaScriptModule.cs" />
     <Compile Include="Bridge\IReactCallback.cs" />
+    <Compile Include="Bridge\IReactDelegateFactory.cs" />
     <Compile Include="Bridge\JavaScriptModuleBase.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistry.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Bridge\Queue\MessageQueueThreadExtensions.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadKind.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadSpec.cs" />
+    <Compile Include="Bridge\ReflectionReactDelegateFactory.cs" />
     <Compile Include="Hosting\Bridge\ChakraJavaScriptExecutor.cs" />
     <Compile Include="Hosting\Bridge\JavaScriptValueToJTokenConverter.cs" />
     <Compile Include="Hosting\Bridge\JTokenToJavaScriptValueConverter.cs" />

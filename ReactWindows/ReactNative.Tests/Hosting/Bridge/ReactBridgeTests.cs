@@ -5,9 +5,7 @@ using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
 using ReactNative.Hosting.Bridge;
 using System;
-using System.IO;
 using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace ReactNative.Tests.Hosting.Bridge
 {
@@ -17,179 +15,129 @@ namespace ReactNative.Tests.Hosting.Bridge
         [TestMethod]
         public async Task ReactBridge_Ctor_ArgumentChecks()
         {
-            using (var jsThread = CreateJavaScriptThread())
-            using (var nativeThread = CreateNativeModulesThread())
+            await JavaScriptHelpers.Run((executor, jsQueueThread) =>
             {
-                var executor = await CreateTestExecutor(jsThread);
-                var reactCallback = new MockReactCallback();
+                using (var nativeThread = CreateNativeModulesThread())
+                {
+                    var reactCallback = new MockReactCallback();
 
-                AssertEx.Throws<ArgumentNullException>(
-                    () => new ReactBridge(null, reactCallback, nativeThread),
-                    ex => Assert.AreEqual("jsExecutor", ex.ParamName));
+                    AssertEx.Throws<ArgumentNullException>(
+                        () => new ReactBridge(null, reactCallback, nativeThread),
+                        ex => Assert.AreEqual("jsExecutor", ex.ParamName));
 
-                AssertEx.Throws<ArgumentNullException>(
-                    () => new ReactBridge(executor, null, nativeThread),
-                    ex => Assert.AreEqual("reactCallback", ex.ParamName));
+                    AssertEx.Throws<ArgumentNullException>(
+                        () => new ReactBridge(executor, null, nativeThread),
+                        ex => Assert.AreEqual("reactCallback", ex.ParamName));
 
-                AssertEx.Throws<ArgumentNullException>(
-                    () => new ReactBridge(executor, reactCallback, null),
-                    ex => Assert.AreEqual("nativeModulesQueueThread", ex.ParamName));
-
-                await DisposeTestExecutor(executor, jsThread);
-            }
+                    AssertEx.Throws<ArgumentNullException>(
+                        () => new ReactBridge(executor, reactCallback, null),
+                        ex => Assert.AreEqual("nativeModulesQueueThread", ex.ParamName));
+                }
+            });
         }
 
         [TestMethod]
         public async Task ReactBridge_Method_ArgumentChecks()
         {
-            using (var jsThread = CreateJavaScriptThread())
-            using (var nativeThread = CreateNativeModulesThread())
+            await JavaScriptHelpers.Run((executor, jsQueueThread) =>
             {
-                var executor = await CreateTestExecutor(jsThread);
-                var reactCallback = new MockReactCallback();
-                var bridge = new ReactBridge(executor, reactCallback, nativeThread);
+                using (var nativeThread = CreateNativeModulesThread())
+                {
+                    var reactCallback = new MockReactCallback();
+                    var bridge = new ReactBridge(executor, reactCallback, nativeThread);
 
-                AssertEx.Throws<ArgumentNullException>(
-                    () => bridge.SetGlobalVariable(null, null),
-                    ex => Assert.AreEqual("propertyName", ex.ParamName));
-
-                await DisposeTestExecutor(executor, jsThread);
-            }
+                    AssertEx.Throws<ArgumentNullException>(
+                        () => bridge.SetGlobalVariable(null, null),
+                        ex => Assert.AreEqual("propertyName", ex.ParamName));
+                }
+            });
         }
 
         [TestMethod]
         public async Task ReactBridge_CallFunction()
         {
-            using (var jsThread = CreateJavaScriptThread())
-            using (var nativeThread = CreateNativeModulesThread())
+            await JavaScriptHelpers.Run(async (executor, jsQueueThread) =>
             {
-                var executor = await CreateTestExecutor(jsThread);
-                var reactCallback = new MockReactCallback();
-                var bridge = new ReactBridge(executor, new MockReactCallback(), nativeThread);
-                var token = await jsThread.CallOnQueue(() =>
+                using (var nativeThread = CreateNativeModulesThread())
                 {
-                    bridge.CallFunction(1, 1, new JArray());
-                    return executor.GetGlobalVariable("BatchProcessCalls");
-                });
-
-                var expected = new JArray
-                {
-                    new JArray
+                    var reactCallback = new MockReactCallback();
+                    var bridge = new ReactBridge(executor, new MockReactCallback(), nativeThread);
+                    var token = await jsQueueThread.CallOnQueue(() =>
                     {
-                        new JObject
+                        bridge.CallFunction(1, 1, new JArray());
+                        return executor.GetGlobalVariable("BatchProcessCalls");
+                    });
+
+                    var expected = new JArray
+                    {
+                        new JArray
                         {
-                            { "module", "BatchedBridge" },
-                            { "method", "callFunctionReturnFlushedQueue" },
-                            { "context", 15 },
+                            new JObject
                             {
-                                "args",
-                                new JArray
+                                { "module", "BatchedBridge" },
+                                { "method", "callFunctionReturnFlushedQueue" },
+                                { "context", 15 },
                                 {
-                                    1,
-                                    1,
-                                    new JArray(),
-                                }
-                            },
+                                    "args",
+                                    new JArray
+                                    {
+                                        1,
+                                        1,
+                                        new JArray(),
+                                    }
+                                },
+                            }
                         }
-                    }
-                };
+                    };
 
-                Assert.AreEqual(expected.ToString(Formatting.None), token.ToString(Formatting.None));
-
-                await DisposeTestExecutor(executor, jsThread);
-            }
+                    Assert.AreEqual(expected.ToString(Formatting.None), token.ToString(Formatting.None));
+                }
+            });
         }
 
         [TestMethod]
         public async Task ReactBridge_InvokeCallback()
         {
-            using (var jsThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("js", MessageQueueThreadKind.BackgroundSingleThread), ex => { Assert.Fail(); }))
-            using (var nativeThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("native", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); }))
+            await JavaScriptHelpers.Run(async (executor, jsQueueThread) =>
             {
-                var executor = await CreateTestExecutor(jsThread);
-                var reactCallback = new MockReactCallback();
-                var bridge = new ReactBridge(executor, new MockReactCallback(), nativeThread);
-                var token = await jsThread.CallOnQueue(() =>
+                using (var nativeThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("native", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); }))
                 {
-                    bridge.InvokeCallback(1, new JArray());
-                    return executor.GetGlobalVariable("BatchProcessCalls");
-                });
-
-                var expected = new JArray
-                {
-                    new JArray
+                    var reactCallback = new MockReactCallback();
+                    var bridge = new ReactBridge(executor, new MockReactCallback(), nativeThread);
+                    var token = await jsQueueThread.CallOnQueue(() =>
                     {
-                        new JObject
+                        bridge.InvokeCallback(1, new JArray());
+                        return executor.GetGlobalVariable("BatchProcessCalls");
+                    });
+
+                    var expected = new JArray
+                    {
+                        new JArray
                         {
-                            { "module", "BatchedBridge" },
-                            { "method", "invokeCallbackAndReturnFlushedQueue" },
+                            new JObject
                             {
-                                "args",
-                                new JArray
+                                { "module", "BatchedBridge" },
+                                { "method", "invokeCallbackAndReturnFlushedQueue" },
                                 {
-                                    1,
-                                    new JArray(),
-                                }
-                            },
+                                    "args",
+                                    new JArray
+                                    {
+                                        1,
+                                        new JArray(),
+                                    }
+                                },
+                            }
                         }
-                    }
-                };
+                    };
 
-                Assert.AreEqual(expected.ToString(Formatting.None), token.ToString(Formatting.None));
-
-                await DisposeTestExecutor(executor, jsThread);
-            }
+                    Assert.AreEqual(expected.ToString(Formatting.None), token.ToString(Formatting.None));
+                }
+            });
         }
 
         private static MessageQueueThread CreateNativeModulesThread()
         {
             return MessageQueueThread.Create(MessageQueueThreadSpec.Create("native", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
-        }
-
-        private static MessageQueueThread CreateJavaScriptThread()
-        {
-            return MessageQueueThread.Create(MessageQueueThreadSpec.Create("js", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
-        }
-
-        private static async Task<ChakraJavaScriptExecutor> CreateTestExecutor(IMessageQueueThread jsQueueThread)
-        {
-            var scriptUris = new[]
-            {
-                new Uri(@"ms-appx:///Resources/test.js"),
-            };
-
-            var scripts = new string[scriptUris.Length];
-
-            for (var i = 0; i < scriptUris.Length; ++i)
-            {
-                var uri = scriptUris[i];
-                var storageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
-                using (var stream = await storageFile.OpenStreamForReadAsync())
-                using (var reader = new StreamReader(stream))
-                {
-                    scripts[i] = reader.ReadToEnd();
-                }
-            }
-
-            return await jsQueueThread.CallOnQueue(() =>
-            {
-                var executor = new ChakraJavaScriptExecutor();
-                foreach (var script in scripts)
-                {
-                    executor.RunScript(script);
-                }
-
-                return executor;
-            });
-        }
-
-        private static Task DisposeTestExecutor(IJavaScriptExecutor executor, IMessageQueueThread jsQueueThread)
-        {
-            return jsQueueThread.CallOnQueue(() =>
-            {
-                executor.Dispose();
-                return default(object);
-            });
         }
 
         class MockReactCallback : IReactCallback
