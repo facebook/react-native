@@ -62,6 +62,7 @@ import com.facebook.react.uimanager.ReactCompoundView;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
+    setClipChildren(false);
   }
 
   @Override

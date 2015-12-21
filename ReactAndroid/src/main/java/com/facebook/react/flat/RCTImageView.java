@@ -54,15 +54,32 @@ import com.facebook.react.views.image.ImageResizeMode;
       float left,
       float top,
       float right,
-      float bottom) {
-    super.collectState(stateBuilder, left, top, right, bottom);
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    super.collectState(
+        stateBuilder,
+        left,
+        top,
+        right,
+        bottom,
+        clipLeft,
+        clipTop,
+        clipRight,
+        clipBottom);
 
     if (mDrawImage.hasImageRequest()) {
       mDrawImage = (T) mDrawImage.updateBoundsAndFreeze(
           left,
           top,
           right,
-          bottom);
+          bottom,
+          clipLeft,
+          clipTop,
+          clipRight,
+          clipBottom);
       stateBuilder.addDrawCommand(mDrawImage);
       stateBuilder.addAttachDetachListener(mDrawImage);
     }

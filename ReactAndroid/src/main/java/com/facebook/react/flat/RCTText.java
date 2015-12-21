@@ -137,8 +137,22 @@ import com.facebook.react.uimanager.ViewProps;
       float left,
       float top,
       float right,
-      float bottom) {
-    super.collectState(stateBuilder, left, top, right, bottom);
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+
+    super.collectState(
+        stateBuilder,
+        left,
+        top,
+        right,
+        bottom,
+        clipLeft,
+        clipRight,
+        clipTop,
+        clipBottom);
 
     if (mText == null) {
       // nothing to draw (empty text).
@@ -158,7 +172,15 @@ import com.facebook.react.uimanager.ViewProps;
           INCLUDE_PADDING));
     }
 
-    mDrawCommand = (DrawTextLayout) mDrawCommand.updateBoundsAndFreeze(left, top, right, bottom);
+    mDrawCommand = (DrawTextLayout) mDrawCommand.updateBoundsAndFreeze(
+        left,
+        top,
+        right,
+        bottom,
+        clipLeft,
+        clipTop,
+        clipRight,
+        clipBottom);
     stateBuilder.addDrawCommand(mDrawCommand);
   }
 

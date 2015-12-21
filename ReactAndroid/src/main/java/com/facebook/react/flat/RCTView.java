@@ -27,11 +27,32 @@ import com.facebook.react.uimanager.ViewProps;
       float left,
       float top,
       float right,
-      float bottom) {
-    super.collectState(stateBuilder, left, top, right, bottom);
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    super.collectState(
+        stateBuilder,
+        left,
+        top,
+        right,
+        bottom,
+        clipLeft,
+        clipTop,
+        clipRight,
+        clipBottom);
 
     if (mDrawBorder != null) {
-      mDrawBorder = (DrawBorder) mDrawBorder.updateBoundsAndFreeze(left, top, right, bottom);
+      mDrawBorder = (DrawBorder) mDrawBorder.updateBoundsAndFreeze(
+          left,
+          top,
+          right,
+          bottom,
+          clipLeft,
+          clipTop,
+          clipRight,
+          clipBottom);
       stateBuilder.addDrawCommand(mDrawBorder);
     }
   }

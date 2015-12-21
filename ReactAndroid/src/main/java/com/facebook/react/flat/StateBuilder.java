@@ -61,12 +61,23 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     float width = node.getLayoutWidth();
     float height = node.getLayoutHeight();
-    collectStateForMountableNode(node, tag, width, height);
-
     float left = node.getLayoutX();
     float top = node.getLayoutY();
     float right = left + width;
     float bottom = top + height;
+
+    collectStateForMountableNode(
+        node,
+        tag,
+        left,
+        top,
+        right,
+        bottom,
+        Float.NEGATIVE_INFINITY,
+        Float.NEGATIVE_INFINITY,
+        Float.POSITIVE_INFINITY,
+        Float.POSITIVE_INFINITY);
+
     node.updateNodeRegion(left, top, right, bottom);
 
     mViewsToUpdateBounds.add(node);
@@ -166,8 +177,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   private void collectStateForMountableNode(
       FlatShadowNode node,
       int tag,
-      float width,
-      float height) {
+      float left,
+      float top,
+      float right,
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
     mDrawCommands.start(node.getDrawCommands());
     mAttachDetachListeners.start(node.getAttachDetachListeners());
     mNodeRegions.start(node.getNodeRegions());
@@ -181,6 +198,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
       isAndroidView = true;
       needsCustomLayoutForChildren = androidView.needsCustomLayoutForChildren();
+
+      // AndroidView might scroll (e.g. ScrollView) so we need to reset clip bounds here
+      // Otherwise, we might scroll clipped content. If AndroidView doesn't scroll, this is still
+      // harmless, because AndroidView will do its own clipping anyway.
+      clipLeft = Float.NEGATIVE_INFINITY;
+      clipTop = Float.NEGATIVE_INFINITY;
+      clipRight = Float.POSITIVE_INFINITY;
+      clipBottom = Float.POSITIVE_INFINITY;
     } else if (node.isVirtualAnchor()) {
       // If RCTText is mounted to View, virtual children will not receive any touch events
       // because they don't get added to nodeRegions, so nodeRegions will be empty and
@@ -190,7 +215,18 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       addNodeRegion(node.getNodeRegion());
     }
 
-    collectStateRecursively(node, 0, 0, width, height, isAndroidView, needsCustomLayoutForChildren);
+    collectStateRecursively(
+        node,
+        left,
+        top,
+        right,
+        bottom,
+        clipLeft,
+        clipTop,
+        clipRight,
+        clipBottom,
+        isAndroidView,
+        needsCustomLayoutForChildren);
 
     boolean shouldUpdateMountState = false;
     final DrawCommand[] drawCommands = mDrawCommands.finish();
@@ -290,6 +326,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float top,
       float right,
       float bottom,
+      float parentClipLeft,
+      float parentClipTop,
+      float parentClipRight,
+      float parentClipBottom,
       boolean isAndroidView,
       boolean needsCustomLayoutForChildren) {
     if (node.hasNewLayout()) {
@@ -307,7 +347,19 @@ import com.facebook.react.uimanager.events.EventDispatcher;
               Math.round(bottom - top)));
     }
 
-    node.collectState(this, left, top, right, bottom);
+    float clipLeft = Math.max(left, parentClipLeft);
+    float clipTop = Math.max(top, parentClipTop);
+    float clipRight = Math.min(right, parentClipRight);
+    float clipBottom = Math.min(bottom, parentClipBottom);
+
+    node.collectState(this, left, top, right, bottom, clipLeft, clipTop, clipRight, clipBottom);
+
+    if (node.isOverflowVisible()) {
+      clipLeft = parentClipLeft;
+      clipTop = parentClipTop;
+      clipRight = parentClipRight;
+      clipBottom = parentClipBottom;
+    }
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       FlatShadowNode child = (FlatShadowNode) node.getChildAt(i);
@@ -316,7 +368,16 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         continue;
       }
 
-      processNodeAndCollectState(child, left, top, isAndroidView, needsCustomLayoutForChildren);
+      processNodeAndCollectState(
+          child,
+          left,
+          top,
+          clipLeft,
+          clipTop,
+          clipRight,
+          clipBottom,
+          isAndroidView,
+          needsCustomLayoutForChildren);
     }
   }
 
@@ -337,6 +398,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       FlatShadowNode node,
       float parentLeft,
       float parentTop,
+      float parentClipLeft,
+      float parentClipTop,
+      float parentClipRight,
+      float parentClipBottom,
       boolean parentIsAndroidView,
       boolean needsCustomLayout) {
     int tag = node.getReactTag();
@@ -359,13 +424,34 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         mDrawCommands.add(DrawView.INSTANCE);
       }
 
-      collectStateForMountableNode(node, tag, width, height);
+      collectStateForMountableNode(
+          node,
+          tag,
+          left - left,
+          top - top,
+          right - left,
+          bottom - top,
+          parentClipLeft - left,
+          parentClipTop - top,
+          parentClipRight - left,
+          parentClipBottom - top);
 
       if (!needsCustomLayout) {
         mViewsToUpdateBounds.add(node);
       }
     } else {
-      collectStateRecursively(node, left, top, right, bottom, false, false);
+      collectStateRecursively(
+          node,
+          left,
+          top,
+          right,
+          bottom,
+          parentClipLeft,
+          parentClipTop,
+          parentClipRight,
+          parentClipBottom,
+          false,
+          false);
       addNodeRegion(node.getNodeRegion());
     }
   }

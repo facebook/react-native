@@ -80,18 +80,13 @@ import com.facebook.react.views.image.ImageResizeMode;
   }
 
   @Override
-  public void draw(FlatViewGroup parent, Canvas canvas) {
+  protected void onDraw(Canvas canvas) {
     Bitmap bitmap = Assertions.assumeNotNull(mBitmapRequestHelper).getBitmap();
     if (bitmap == null) {
       return;
     }
 
     PAINT.setColorFilter(mColorFilter);
-
-    if (mForceClip) {
-      canvas.save();
-      canvas.clipRect(getLeft(), getTop(), getRight(), getBottom());
-    }
 
     if (getBorderRadius() < 0.5f) {
       canvas.drawBitmap(bitmap, mTransform, PAINT);
@@ -105,10 +100,11 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
 
     drawBorders(canvas);
+  }
 
-    if (mForceClip) {
-      canvas.restore();
-    }
+  @Override
+  protected boolean shouldClip() {
+    return mForceClip || super.shouldClip();
   }
 
   @Override

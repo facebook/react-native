@@ -47,6 +47,7 @@ import com.facebook.react.uimanager.ViewProps;
   private boolean mBackingViewIsCreated;
   private @Nullable DrawBackgroundColor mDrawBackground;
   private int mMoveToIndexInParent;
+  private boolean mIsOverflowVisible = true;
 
   /* package */ void handleUpdateProperties(CatalystStylesDiffMap styles) {
     if (!mountsToView()) {
@@ -72,13 +73,21 @@ import com.facebook.react.uimanager.ViewProps;
       float left,
       float top,
       float right,
-      float bottom) {
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
     if (mDrawBackground != null) {
       mDrawBackground = (DrawBackgroundColor) mDrawBackground.updateBoundsAndFreeze(
           left,
           top,
           right,
-          bottom);
+          bottom,
+          clipLeft,
+          clipTop,
+          clipRight,
+          clipBottom);
       stateBuilder.addDrawCommand(mDrawBackground);
     }
   }
@@ -87,6 +96,16 @@ import com.facebook.react.uimanager.ViewProps;
   public void setBackgroundColor(int backgroundColor) {
     mDrawBackground = (backgroundColor == 0) ? null : new DrawBackgroundColor(backgroundColor);
     invalidate();
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(String overflow) {
+    mIsOverflowVisible = "visible".equals(overflow);
+    invalidate();
+  }
+
+  public final boolean isOverflowVisible() {
+    return mIsOverflowVisible;
   }
 
   @Override

@@ -9,6 +9,8 @@
 
 package com.facebook.react.flat;
 
+import android.graphics.Canvas;
+
 /**
  * Base class for all DrawCommands. Becomes immutable once it has its bounds set. Until then, a
  * subclass is able to mutate any of its properties (e.g. updating Layout in DrawTextLayout).
@@ -22,7 +24,23 @@ package com.facebook.react.flat;
   private float mTop;
   private float mRight;
   private float mBottom;
+  private float mClipLeft;
+  private float mClipTop;
+  private float mClipRight;
+  private float mClipBottom;
   private boolean mFrozen;
+
+  @Override
+  public final void draw(FlatViewGroup parent, Canvas canvas) {
+    if (shouldClip()) {
+      canvas.save();
+      canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
+      onDraw(canvas);
+      canvas.restore();
+    } else {
+      onDraw(canvas);
+    }
+  }
 
   /**
    * Updates boundaries of the AbstractDrawCommand and freezes it.
@@ -32,16 +50,27 @@ package com.facebook.react.flat;
       float left,
       float top,
       float right,
-      float bottom) {
+      float bottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
     if (mFrozen) {
       // see if we can reuse it
-      if (boundsMatch(left, top, right, bottom)) {
+      boolean boundsMatch = boundsMatch(left, top, right, bottom);
+      boolean clipBoundsMatch = clipBoundsMatch(clipLeft, clipTop, clipRight, clipBottom);
+      if (boundsMatch && clipBoundsMatch) {
         return this;
       }
 
       try {
         AbstractDrawCommand copy = (AbstractDrawCommand) clone();
-        copy.setBounds(left, top, right, bottom);
+        if (!boundsMatch) {
+          copy.setBounds(left, top, right, bottom);
+        }
+        if (!clipBoundsMatch) {
+          copy.setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
+        }
         return copy;
       } catch (CloneNotSupportedException e) {
         // This should not happen since AbstractDrawCommand implements Cloneable
@@ -50,6 +79,7 @@ package com.facebook.react.flat;
     }
 
     setBounds(left, top, right, bottom);
+    setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
     mFrozen = true;
     return this;
   }
@@ -103,6 +133,12 @@ package com.facebook.react.flat;
     return mBottom;
   }
 
+  protected abstract void onDraw(Canvas canvas);
+
+  protected boolean shouldClip() {
+    return mLeft != mClipLeft || mTop != mClipTop || mRight != mClipRight || mBottom != mClipBottom;
+  }
+
   protected void onBoundsChanged() {
   }
 
@@ -118,10 +154,26 @@ package com.facebook.react.flat;
     onBoundsChanged();
   }
 
+  private void setClipBounds(float clipLeft, float clipTop, float clipRight, float clipBottom) {
+    mClipLeft = clipLeft;
+    mClipTop = clipTop;
+    mClipRight = clipRight;
+    mClipBottom = clipBottom;
+  }
+
   /**
    * Returns true if boundaries match and don't need to be updated. False otherwise.
    */
   private boolean boundsMatch(float left, float top, float right, float bottom) {
     return mLeft == left && mTop == top && mRight == right && mBottom == bottom;
+  }
+
+  private boolean clipBoundsMatch(
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    return mClipLeft == clipLeft && mClipTop == clipTop &&
+        mClipRight == clipRight && mClipBottom == clipBottom;
   }
 }
