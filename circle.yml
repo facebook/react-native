@@ -9,4 +9,8 @@ dependencies:
 test:
   override:
     # gradle is flaky in CI envs, found a solution here http://stackoverflow.com/questions/28409608/gradle-assembledebug-and-predexdebug-fail-with-circleci
-    - TERM=dumb ./gradlew cleanTest test -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
+    - TERM=dumb ./gradlew testDebugUnitTest -PpreDexEnable=false -Pcom.android.build.threadPoolSize=1 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs="-Xms512m -Xmx512m" -Dorg.gradle.daemon=false
+    # build JS bundle
+    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    # run instrumentation tests on device
+    - TERM=dumb ./gradlew connectedCheck
