@@ -217,6 +217,8 @@ android {
         }
 
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+        testApplicationId "com.facebook.react.tests"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.main {
@@ -258,6 +260,8 @@ dependencies {
     testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
     testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
     testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+
+    androidTestCompile "com.android.support.test:testing-support-lib:0.1"
 }
 
 apply from: 'release.gradle'
