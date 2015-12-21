@@ -26,12 +26,12 @@ namespace ReactNative.Hosting.Bridge
         }
 
         /// <summary>
-        /// Calls a JavaScript function in a module..
+        /// Call the JavaScript method from the given module.
         /// </summary>
         /// <param name="moduleName">The module name.</param>
         /// <param name="methodName">The method name.</param>
         /// <param name="arguments">The arguments.</param>
-        /// <returns>The JavaScript result.</returns>
+        /// <returns>The result of the call.</returns>
         public JToken Call(string moduleName, string methodName, JArray arguments)
         {
             if (moduleName == null)
@@ -83,10 +83,10 @@ namespace ReactNative.Hosting.Bridge
         }
 
         /// <summary>
-        /// Sets a global variable in the environment.
+        /// Sets a global variable in the JavaScript runtime.
         /// </summary>
-        /// <param name="propertyName">The property name.</param>
-        /// <param name="value">The property value.</param>
+        /// <param name="propertyName">The global variable name.</param>
+        /// <param name="value">The value.</param>
         public void SetGlobalVariable(string propertyName, JToken value)
         {
             if (propertyName == null)
@@ -99,6 +99,11 @@ namespace ReactNative.Hosting.Bridge
             _globalObject.SetProperty(propertyId, javaScriptValue, true);
         }
 
+        /// <summary>
+        /// Gets a global variable from the JavaScript runtime.
+        /// </summary>
+        /// <param name="propertyName">The global variable name.</param>
+        /// <returns>The value.</returns>
         public JToken GetGlobalVariable(string propertyName)
         {
             if (propertyName == null)

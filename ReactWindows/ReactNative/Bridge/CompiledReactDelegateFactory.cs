@@ -7,6 +7,9 @@ using System.Reflection;
 
 namespace ReactNative.Bridge
 {
+    /// <summary>
+    /// A delegate factory that will compile a delegate to call the native method.
+    /// </summary>
     public sealed class CompiledReactDelegateFactory : IReactDelegateFactory
     {
         private static readonly ConstructorInfo s_newArgumentNullException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentNullException(default(string)));
@@ -21,9 +24,17 @@ namespace ReactNative.Bridge
 
         private CompiledReactDelegateFactory() { }
 
+        /// <summary>
+        /// The <see cref="CompiledReactDelegateFactory"/> instance.
+        /// </summary>
         public static CompiledReactDelegateFactory Instance { get; } 
             = new CompiledReactDelegateFactory();
 
+        /// <summary>
+        /// Create an invocation delegate from the given method.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <returns>The invocation delegate.</returns>
         public Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method)
         {
             return GenerateExpression(module, method).Compile();
