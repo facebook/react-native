@@ -123,6 +123,11 @@ import com.facebook.react.uimanager.ReactCompoundView;
   }
 
   @Override
+  protected boolean verifyDrawable(Drawable who) {
+    return who == mHotspot || super.verifyDrawable(who);
+  }
+
+  @Override
   protected void onAttachedToWindow() {
     if (mIsAttached) {
       // this is possible, unfortunately.
