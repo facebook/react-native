@@ -113,11 +113,19 @@ namespace ReactNative.Hosting.Bridge
             return JavaScriptValueToJTokenConverter.Convert(_globalObject.GetProperty(propertyId));
         }
 
+        /// <summary>
+        /// Disposes the <see cref="ChakraJavaScriptExecutor"/> instance.
+        /// </summary>
+        public void Dispose()
+        {
+            JavaScriptContext.Current = JavaScriptContext.Invalid;
+            _runtime.Dispose();
+        }
+
         private void InitializeChakra()
         {
             // Set the current context
             var context = _runtime.CreateContext();
-            //context.AddRef();
             JavaScriptContext.Current = context;
 
             // Set the WinRT namespace (TODO: needed?)
@@ -180,21 +188,6 @@ namespace ReactNative.Hosting.Bridge
             }
 
             return JavaScriptValue.Invalid;
-        }
-
-        public void Dispose()
-        {
-            var context = JavaScriptContext.Current;
-            if (context.IsValid)
-            {
-                //context.Release();
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
-                _runtime.Dispose();
-            }
-            else
-            {
-                throw new InvalidOperationException("Invalid context on current thread.");
-            }
         }
     }
 }
