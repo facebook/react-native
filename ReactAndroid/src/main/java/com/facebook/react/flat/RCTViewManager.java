@@ -90,4 +90,11 @@ import com.facebook.react.views.view.ReactDrawableHelper;
       }
     }
   }
+
+  @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
+  public void setNeedsOffscreenAlphaCompositing(
+      FlatViewGroup view,
+      boolean needsOffscreenAlphaCompositing) {
+    view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
+  }
 }

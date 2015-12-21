@@ -57,6 +57,7 @@ import com.facebook.react.uimanager.ReactCompoundView;
   private int mDrawChildIndex = 0;
   private boolean mIsAttached = false;
   private boolean mIsLayoutRequested = false;
+  private boolean mNeedsOffscreenAlphaCompositing = false;
   private Drawable mHotspot;
 
   /* package */ FlatViewGroup(Context context) {
@@ -177,6 +178,22 @@ import com.facebook.react.uimanager.ReactCompoundView;
     if (mHotspot != null) {
         mHotspot.jumpToCurrentState();
     }
+  }
+
+  /**
+   * We override this to allow developers to determine whether they need offscreen alpha compositing
+   * or not. See the documentation of needsOffscreenAlphaCompositing in View.js.
+   */
+  @Override
+  public boolean hasOverlappingRendering() {
+    return mNeedsOffscreenAlphaCompositing;
+  }
+
+  /**
+   * See the documentation of needsOffscreenAlphaCompositing in View.js.
+   */
+  /* package */ void setNeedsOffscreenAlphaCompositing(boolean needsOffscreenAlphaCompositing) {
+    mNeedsOffscreenAlphaCompositing = needsOffscreenAlphaCompositing;
   }
 
   /* package */ void setHotspot(Drawable hotspot) {
