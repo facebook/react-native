@@ -81,7 +81,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainThread();
 
-  UIView *view = (UIView *)(props ? [self.manager viewWithProps:props] : [_manager view]);
+  UIView *view = [_manager view];
   view.reactTag = tag;
   view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
