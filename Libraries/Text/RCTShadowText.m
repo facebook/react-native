@@ -30,7 +30,7 @@ NSString *const RCTReactTagAttributeName = @"ReactTagAttributeName";
   CGFloat _effectiveLetterSpacing;
 }
 
-static css_dim_t RCTMeasure(void *context, float width)
+static css_dim_t RCTMeasure(void *context, float width, float height)
 {
   RCTShadowText *shadowText = (__bridge RCTShadowText *)context;
   NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
