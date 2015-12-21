@@ -8,6 +8,7 @@
  */
 
 #import "RCTImageSource.h"
+#import "RCTUtils.h"
 
 @interface RCTImageSource ()
 
@@ -60,7 +61,7 @@
   CGFloat scale = 1.0;
   BOOL packagerAsset = NO;
   if ([json isKindOfClass:[NSDictionary class]]) {
-    if (!(imageURL = [self NSURL:json[@"uri"]])) {
+    if (!(imageURL = [self NSURL:RCTNilIfNull(json[@"uri"])])) {
       return nil;
     }
     size = [self CGSize:json];
