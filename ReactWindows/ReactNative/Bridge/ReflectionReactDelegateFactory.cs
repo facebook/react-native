@@ -7,13 +7,24 @@ using System.Reflection;
 
 namespace ReactNative.Bridge
 {
+    /// <summary>
+    /// A delegate factory that uses reflection to create the native method.
+    /// </summary>
     public sealed class ReflectionReactDelegateFactory : IReactDelegateFactory
     {
         private ReflectionReactDelegateFactory() { }
 
+        /// <summary>
+        /// The <see cref="ReflectionReactDelegateFactory"/> instance.
+        /// </summary>
         public static ReflectionReactDelegateFactory Instance { get; } 
             = new ReflectionReactDelegateFactory();
 
+        /// <summary>
+        /// Create an invocation delegate from the given method.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <returns>The invocation delegate.</returns>
         public Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method)
         {
             var extractors = CreateExtractors(module, method);
