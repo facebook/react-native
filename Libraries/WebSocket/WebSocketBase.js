@@ -44,6 +44,10 @@ class WebSocketBase extends EventTarget {
       protocols = [protocols];
     }
 
+    if (!Array.isArray(protocols)) {
+      protocols = null;
+    }
+
     this.readyState = this.CONNECTING;
     this.connectToSocketImpl(url, protocols, options);
   }

@@ -30,7 +30,7 @@ class WebSocket extends WebSocketBase {
   _socketId: number;
   _subs: any;
 
-  connectToSocketImpl(url: string, protocols: ?any, options: ?any): void {
+  connectToSocketImpl(url: string, protocols: ?Array<string>, options: ?{origin?: string}): void {
     this._socketId = WebSocketId++;
 
     RCTWebSocketModule.connect(url, protocols, options, this._socketId);
