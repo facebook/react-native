@@ -34,17 +34,33 @@
 
 - (void)setTrackImage:(UIImage *)trackImage
 {
-  if (trackImage != _trackImage) {
-    _trackImage = trackImage;
+  [self setMinimumTrackImage:trackImage forState:UIControlStateNormal];
+  [self setMaximumTrackImage:trackImage forState:UIControlStateNormal];
+}
 
-    CGFloat width = trackImage.size.width;
+- (UIImage *)trackImage
+{
+  return [self thumbImageForState:UIControlStateNormal];
+}
 
-    UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, 0}];
-    UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, width}];
+- (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
+{
+  [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
+}
 
-    [super setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
-    [super setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
-  }
+- (UIImage *)minimumTrackImage
+{
+  return [self thumbImageForState:UIControlStateNormal];
+}
+
+- (void)setMaximumTrackImage:(UIImage *)maximumTrackImage
+{
+  [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
+}
+
+- (UIImage *)maximumTrackImage
+{
+  return [self thumbImageForState:UIControlStateNormal];
 }
 
 - (void)setThumbImage:(UIImage *)thumbImage

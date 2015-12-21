@@ -87,7 +87,25 @@ exports.examples = [
   {
     title: 'Custom thumb image',
     render(): ReactElement {
-      return <SliderExample thumbImage={require('image!uie_thumb_big')} />;
+      return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
     }
-  }
+  },
+  {
+    title: 'Custom min/max track tint color',
+    render(): ReactElement {
+      return <SliderExample minimumTrackTintColor={'red'} maximumTrackTintColor={'green'} />;
+    }
+  },
+  {
+    title: 'Custom track image',
+    render(): ReactElement {
+      return <SliderExample trackImage={require('image!red_square')} />;
+    }
+  },
+  {
+    title: 'Custom min/max track image',
+    render(): ReactElement {
+      return <SliderExample minimumTrackImage={require('image!red_square')} maximumTrackImage={require('image!blue_square')} />;
+    }
+  },
 ];
