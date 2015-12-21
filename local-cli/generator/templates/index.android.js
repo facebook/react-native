@@ -22,8 +22,7 @@ class <%= name %> extends Component {
           To get started, edit index.android.js
         </Text>
         <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
+          Shake or press menu button for dev menu
         </Text>
       </View>
     );
