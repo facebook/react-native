@@ -18,6 +18,8 @@ var ReactNative = {
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get Image() { return require('Image'); },
+  get ImageEditor() { return require('ImageEditor'); },
+  get ImageStore() { return require('ImageStore'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },

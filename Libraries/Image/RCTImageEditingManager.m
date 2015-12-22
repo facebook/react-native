@@ -39,27 +39,18 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
                   errorCallback:(RCTResponseErrorBlock)errorCallback)
 {
-  NSDictionary *offset = cropData[@"offset"];
-  NSDictionary *size = cropData[@"size"];
-  NSDictionary *displaySize = cropData[@"displaySize"];
-  NSString *resizeMode = cropData[@"resizeMode"] ?: @"contain";
+  CGRect rect = {
+    [RCTConvert CGPoint:cropData[@"offset"]],
+    [RCTConvert CGSize:cropData[@"size"]]
+  };
 
-  if (!offset[@"x"] || !offset[@"y"] || !size[@"width"] || !size[@"height"]) {
-    NSString *errorMessage = [NSString stringWithFormat:@"Invalid cropData: %@", cropData];
-    RCTLogError(@"%@", errorMessage);
-    errorCallback(RCTErrorWithMessage(errorMessage));
-    return;
-  }
+  NSString *resizeMode = cropData[@"resizeMode"] ?: @"contain";
 
   [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *error, UIImage *image) {
     if (error) {
       errorCallback(error);
       return;
     }
-    CGRect rect = (CGRect){
-      [RCTConvert CGPoint:offset],
-      [RCTConvert CGSize:size]
-    };
 
     // Crop image
     CGRect rectToDrawIn = {{-rect.origin.x, -rect.origin.y}, image.size};
@@ -68,8 +59,8 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
     UIImage *croppedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
-    if (displaySize && displaySize[@"width"] && displaySize[@"height"]) {
-      CGSize targetSize = [RCTConvert CGSize:displaySize];
+    if (cropData[@"displaySize"]) {
+      CGSize targetSize = [RCTConvert CGSize:cropData[@"displaySize"]];
       croppedImage = [self scaleImage:croppedImage targetSize:targetSize resizeMode:resizeMode];
     }
 
