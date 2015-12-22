@@ -5,8 +5,8 @@
 'use strict';
 import React, {
   AppRegistry,
-  StyleSheet,
   Component,
+  StyleSheet,
   Text,
   View
 } from 'react-native';
