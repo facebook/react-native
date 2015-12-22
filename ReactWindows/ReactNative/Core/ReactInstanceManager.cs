@@ -1,6 +1,7 @@
 ﻿
 namespace ReactNative.Core
 {
+    using Modules.Core;
     using ReactNative.Bridge;
 
     /// <summary>
