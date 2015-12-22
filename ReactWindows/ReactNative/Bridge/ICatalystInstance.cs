@@ -20,8 +20,7 @@ namespace ReactNative.Bridge
         /// <summary>
         /// Initializes the instance.
         /// </summary>
-        /// <returns>A task to await initialization.</returns>
-        Task InitializeAsync();
+        void Initialize();
 
         /// <summary>
         /// Invokes a JavaScript function.
