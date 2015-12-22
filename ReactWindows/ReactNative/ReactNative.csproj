@@ -117,6 +117,11 @@
     <Compile Include="Bridge\IReactCallback.cs" />
     <Compile Include="Bridge\IReactDelegateFactory.cs" />
     <Compile Include="Bridge\JavaScriptModuleBase.cs" />
+    <Compile Include="Bridge\JavaScriptModuleBase.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JavaScriptModuleBase.Generated.tt</DependentUpon>
+    </Compile>
     <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistry.cs" />
     <Compile Include="Bridge\JavaScriptModulesConfig.cs" />
@@ -182,7 +187,15 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Bridge\JavaScriptModuleBase.Generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>JavaScriptModuleBase.Generated.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

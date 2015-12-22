@@ -80,17 +80,17 @@ namespace ReactNative.Tests.Bridge
         {
             public void Bar()
             {
-                Invoke(nameof(Bar));
+                Invoke();
             }
 
             public void Baz()
             {
-                Invoke(nameof(Baz));
+                Invoke();
             }
 
             public void Foo(int x)
             {
-                Invoke(nameof(Foo), x);
+                Invoke(x);
             }
         }
     }
