@@ -99,6 +99,11 @@ import com.facebook.react.uimanager.ViewProps;
     getMutableBorder().setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "pointerEvents")
+  public void setPointerEvents(@Nullable String pointerEventsStr) {
+    forceMountToView();
+  }
+
   private DrawBorder getMutableBorder() {
     if (mDrawBorder == null) {
       mDrawBorder = new DrawBorder();

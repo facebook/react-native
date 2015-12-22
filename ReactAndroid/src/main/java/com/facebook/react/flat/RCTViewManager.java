@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactDrawableHelper;
@@ -94,5 +95,27 @@ import com.facebook.react.views.view.ReactDrawableHelper;
       FlatViewGroup view,
       boolean needsOffscreenAlphaCompositing) {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing);
+  }
+
+  @ReactProp(name = "pointerEvents")
+  public void setPointerEvents(FlatViewGroup view, @Nullable String pointerEventsStr) {
+    view.setPointerEvents(parsePointerEvents(pointerEventsStr));
+  }
+
+  private static PointerEvents parsePointerEvents(@Nullable String pointerEventsStr) {
+    if (pointerEventsStr != null) {
+      switch (pointerEventsStr) {
+        case "none":
+          return PointerEvents.NONE;
+        case "auto":
+          return PointerEvents.AUTO;
+        case "box-none":
+          return PointerEvents.BOX_NONE;
+        case "box-only":
+          return PointerEvents.BOX_ONLY;
+      }
+    }
+    // default or invalid
+    return PointerEvents.AUTO;
   }
 }

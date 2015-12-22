@@ -17,17 +17,24 @@ import javax.annotation.Nullable;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.OnInterceptTouchEventListener;
+import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.ReactPointerEventsView;
 
 /**
  * A view that FlatShadowNode hierarchy maps to. Performs drawing by iterating over
  * array of DrawCommands, executing them one by one.
  */
-/* package */ final class FlatViewGroup extends ViewGroup implements ReactCompoundView {
+/* package */ final class FlatViewGroup extends ViewGroup
+    implements CatalystInterceptingViewGroup, ReactCompoundView, ReactPointerEventsView {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */
@@ -59,6 +66,8 @@ import com.facebook.react.uimanager.ReactCompoundView;
   private boolean mIsLayoutRequested = false;
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private Drawable mHotspot;
+  private PointerEvents mPointerEvents = PointerEvents.AUTO;
+  private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
 
   /* package */ FlatViewGroup(Context context) {
     super(context);
@@ -82,11 +91,29 @@ import com.facebook.react.uimanager.ReactCompoundView;
 
   @Override
   public int reactTagForTouch(float touchX, float touchY) {
-    for (NodeRegion nodeRegion : mNodeRegions) {
-      if (nodeRegion.withinBounds(touchX, touchY)) {
+    /**
+     * Make sure we don't find any children if the pointer events are set to BOX_ONLY.
+     * There is no need to special-case any other modes, because if PointerEvents are set to:
+     * a) PointerEvents.AUTO - all children are included, nothing to exclude
+     * b) PointerEvents.NONE - this method will NOT be executed, because the View will be filtered
+     *    out by TouchTargetHelper.
+     * c) PointerEvents.BOX_NONE - TouchTargetHelper will make sure that {@link #reactTagForTouch()}
+    *     doesn't return getId().
+     */
+    SoftAssertions.assertCondition(
+        mPointerEvents != PointerEvents.NONE,
+        "TouchTargetHelper should not allow calling this method when pointer events are NONE");
+
+    if (mPointerEvents != PointerEvents.BOX_ONLY) {
+      NodeRegion nodeRegion = nodeRegionWithinBounds(touchX, touchY);
+      if (nodeRegion != null) {
         return nodeRegion.getReactTag(touchX, touchY);
       }
     }
+
+    SoftAssertions.assertCondition(
+        mPointerEvents != PointerEvents.BOX_NONE,
+        "TouchTargetHelper should not allow returning getId() when pointer events are BOX_NONE");
 
     // no children found
     return getId();
@@ -195,6 +222,57 @@ import com.facebook.react.uimanager.ReactCompoundView;
     return mNeedsOffscreenAlphaCompositing;
   }
 
+  @Override
+  public void setOnInterceptTouchEventListener(OnInterceptTouchEventListener listener) {
+    mOnInterceptTouchEventListener = listener;
+  }
+
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (mOnInterceptTouchEventListener != null &&
+        mOnInterceptTouchEventListener.onInterceptTouchEvent(this, ev)) {
+      return true;
+    }
+    // We intercept the touch event if the children are not supposed to receive it.
+    if (mPointerEvents == PointerEvents.NONE || mPointerEvents == PointerEvents.BOX_ONLY) {
+      return true;
+    }
+    return super.onInterceptTouchEvent(ev);
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    // We do not accept the touch event if this view is not supposed to receive it.
+    if (mPointerEvents == PointerEvents.NONE) {
+      return false;
+    }
+
+    if (mPointerEvents == PointerEvents.BOX_NONE) {
+      // We cannot always return false here because some child nodes could be flatten into this View
+      NodeRegion nodeRegion = nodeRegionWithinBounds(ev.getX(), ev.getY());
+      if (nodeRegion == null) {
+        // no child to handle this touch event, bailing out.
+        return false;
+      }
+    }
+
+    // The root view always assumes any view that was tapped wants the touch
+    // and sends the event to JS as such.
+    // We don't need to do bubbling in native (it's already happening in JS).
+    // For an explanation of bubbling and capturing, see
+    // http://javascript.info/tutorial/bubbling-and-capturing#capturing
+    return true;
+  }
+
+  @Override
+  public PointerEvents getPointerEvents() {
+    return mPointerEvents;
+  }
+
+  /*package*/ void setPointerEvents(PointerEvents pointerEvents) {
+    mPointerEvents = pointerEvents;
+  }
+
   /**
    * See the documentation of needsOffscreenAlphaCompositing in View.js.
    */
@@ -292,6 +370,16 @@ import com.facebook.react.uimanager.ReactCompoundView;
       flatViewGroup.processLayoutRequest();
     }
     LAYOUT_REQUESTS.clear();
+  }
+
+  private NodeRegion nodeRegionWithinBounds(float touchX, float touchY) {
+    for (NodeRegion nodeRegion : mNodeRegions) {
+      if (nodeRegion.withinBounds(touchX, touchY)) {
+        return nodeRegion;
+      }
+    }
+
+    return null;
   }
 
   private View ensureViewHasNoParent(View view) {
