@@ -45,9 +45,14 @@ namespace ReactNative.Tests
             throw new NotImplementedException();
         }
 
-        public Task InitializeAsync()
+        public T GetJavaScriptModule<T>() where T : IJavaScriptModule
         {
-            return Task.FromResult(true);
+            throw new NotImplementedException();
+        }
+
+        public void Initialize()
+        {
+            throw new NotImplementedException();
         }
 
         public void InvokeCallback(int callbackId, JArray arguments)
