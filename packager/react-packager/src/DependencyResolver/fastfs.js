@@ -293,11 +293,11 @@ class File {
   }
 
   getFiles() {
-    const files = [];
+    let files = [];
     Object.keys(this.children).forEach(key => {
       const file = this.children[key];
       if (file.isDir) {
-        files.push(...file.getFiles());
+        files = files.concat(file.getFiles());
       } else {
         files.push(file);
       }

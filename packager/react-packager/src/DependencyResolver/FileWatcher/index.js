@@ -13,7 +13,7 @@ const sane = require('sane');
 const Promise = require('promise');
 const exec = require('child_process').exec;
 
-const MAX_WAIT_TIME = 25000;
+const MAX_WAIT_TIME = 120000;
 
 // TODO(amasad): can we use watchman version command instead?
 const detectingWatcherClass = new Promise(function(resolve) {
