@@ -179,24 +179,17 @@ namespace ReactNative.Bridge
 
         class NativeMethod : INativeMethod
         {
-            const string METHOD_TYPE_REMOTE = "remote";
-            const string METHOD_TYPE_REMOTE_ASYNC = "remoteAsync";
-
             private readonly NativeModuleBase _instance;
-
             private readonly Lazy<Action<INativeModule, ICatalystInstance, JArray>> _invokeDelegate;
 
             public NativeMethod(NativeModuleBase instance, MethodInfo method)
             {
                 _instance = instance;
-                _invokeDelegate = new Lazy<Action<INativeModule, ICatalystInstance, JArray>>(() => instance._delegateFactory.Create(instance, method));
 
-                if (method.IsAsync())
-                {
-                    throw new NotImplementedException("Async methods not yet supported.");
-                }
-
-                Type = METHOD_TYPE_REMOTE;
+                var delegateFactory = instance._delegateFactory;
+                delegateFactory.Validate(method);
+                _invokeDelegate = new Lazy<Action<INativeModule, ICatalystInstance, JArray>>(() => delegateFactory.Create(instance, method));
+                Type = delegateFactory.GetMethodType(method);
             }
 
             public string Type
