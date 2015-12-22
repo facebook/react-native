@@ -14,7 +14,7 @@ namespace ReactNative.Modules.Core
         /// <param name="data">The event data.</param>
         public void emit(string eventName, object data)
         {
-            Invoke(nameof(emit), eventName, data);
+            Invoke(eventName, data);
         }
     }
 }
