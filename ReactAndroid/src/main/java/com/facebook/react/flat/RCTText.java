@@ -20,6 +20,7 @@ import android.text.TextUtils;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
+import com.facebook.fbui.widget.text.staticlayouthelper.StaticLayoutHelper;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -45,6 +46,7 @@ import com.facebook.react.uimanager.ViewProps;
   private @Nullable BoringLayout.Metrics mBoringLayoutMetrics;
   private float mSpacingMult = 1.0f;
   private float mSpacingAdd = 0.0f;
+  private int mNumberOfLines = Integer.MAX_VALUE;
 
   public RCTText() {
     setMeasureFunction(this);
@@ -105,14 +107,20 @@ import com.facebook.react.uimanager.ViewProps;
     int maximumWidth = Float.isNaN(width) ? Integer.MAX_VALUE : (int) width;
 
     // at this point we need to create a StaticLayout to measure the text
-    StaticLayout layout = new StaticLayout(
+    StaticLayout layout = StaticLayoutHelper.make(
         text,
+        0,
+        text.length(),
         PAINT,
         maximumWidth,
         Layout.Alignment.ALIGN_NORMAL,
         mSpacingMult,
         mSpacingAdd,
-        INCLUDE_PADDING);
+        INCLUDE_PADDING,
+        TextUtils.TruncateAt.END,
+        maximumWidth,
+        mNumberOfLines,
+        false);
 
     // determine how wide we actually are
     float maxLineWidth = 0;
@@ -193,6 +201,12 @@ import com.facebook.react.uimanager.ViewProps;
       mSpacingMult = 0.0f;
       mSpacingAdd = PixelUtil.toPixelFromSP((float) lineHeight);
     }
+    notifyChanged(true);
+  }
+
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = Integer.MAX_VALUE)
+  public void setNumberOfLines(int numberOfLines) {
+    mNumberOfLines = numberOfLines;
     notifyChanged(true);
   }
 
