@@ -10,9 +10,6 @@ package com.facebook.react.testing;
 
 import com.facebook.react.modules.debug.DeveloperSettings;
 
-/**
- * Default ReactSettings for tests.
- */
 public class ReactSettingsForTests implements DeveloperSettings {
 
   @Override
@@ -28,5 +25,10 @@ public class ReactSettingsForTests implements DeveloperSettings {
   @Override
   public boolean isJSDevModeEnabled() {
     return true;
+  }
+
+  @Override
+  public boolean isElementInspectorEnabled() {
+    return false;
   }
 }

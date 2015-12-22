@@ -12,5 +12,5 @@
     <string name="catalyst_jsload_title">โปรดรอ...</string>
     <string name="catalyst_jsload_message">Fetching JS bundle</string>
     <string name="catalyst_jsload_error">Unable to download JS bundle</string>
-    <string name="catalyst_inspect_element">ตรวจสอบอิลิเมนต์</string>
+    <string name="catalyst_element_inspector">ตรวจสอบอิลิเมนต์</string>
 </resources>
