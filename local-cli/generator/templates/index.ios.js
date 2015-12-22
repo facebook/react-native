@@ -4,16 +4,20 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React from 'react-native';
+const {
   AppRegistry,
   StyleSheet,
   Text,
   View,
 } = React;
 
-var <%= name %> = React.createClass({
-  render: function() {
+class <%= name %> extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
@@ -29,9 +33,9 @@ var <%= name %> = React.createClass({
       </View>
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
