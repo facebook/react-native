@@ -13,18 +13,18 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="appKey">The app key.</param>
         /// <param name="appParameters">The app parameters.</param>
-        void runApplication(string appKey, JObject appParameters)
+        public void runApplication(string appKey, JObject appParameters)
         {
-            Invoke(nameof(runApplication), appKey, appParameters);
+            Invoke(appKey, appParameters);
         }
 
         /// <summary>
         /// Unmount the application.
         /// </summary>
         /// <param name="rootTagNode">The root tag node.</param>
-        void unmountApplicationComponentAtRootTag(int rootTagNode)
+        public void unmountApplicationComponentAtRootTag(int rootTagNode)
         {
-            Invoke(nameof(unmountApplicationComponentAtRootTag), rootTagNode);
+            Invoke(rootTagNode);
         }
     }
 }
