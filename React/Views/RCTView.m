@@ -533,11 +533,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     return;
   }
 
-  UIImage *image = RCTGetBorderImage(cornerRadii,
+  UIImage *image = RCTGetBorderImage(_borderStyle,
+                                     layer.bounds.size,
+                                     cornerRadii,
                                      borderInsets,
                                      borderColors,
                                      _backgroundColor.CGColor,
                                      self.clipsToBounds);
+
+  layer.backgroundColor = NULL;
+
+  if (image == nil) {
+    layer.contents = nil;
+    layer.needsDisplayOnBoundsChange = NO;
+    return;
+  }
 
   CGRect contentsCenter = ({
     CGSize size = image.size;
@@ -559,12 +569,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
-  layer.backgroundColor = NULL;
   layer.contents = (id)image.CGImage;
-  layer.contentsCenter = contentsCenter;
   layer.contentsScale = image.scale;
-  layer.magnificationFilter = kCAFilterNearest;
   layer.needsDisplayOnBoundsChange = YES;
+  layer.magnificationFilter = kCAFilterNearest;
+
+  const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+  if (isResizable) {
+    layer.contentsCenter = contentsCenter;
+  } else {
+    layer.contentsCenter = CGRectMake(0.0, 0.0, 1.0, 1.0);
+  }
 
   [self updateClippingForLayer:layer];
 }
