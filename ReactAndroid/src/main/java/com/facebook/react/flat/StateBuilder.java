@@ -52,6 +52,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mOperationsQueue = operationsQueue;
   }
 
+  /* package */ FlatUIViewOperationQueue getOperationsQueue() {
+    return mOperationsQueue;
+  }
+
   /**
    * Given a root of the laid-out shadow node hierarchy, walks the tree and generates an array of
    * DrawCommands that will then mount in UI thread to a root FlatViewGroup so that it can draw.

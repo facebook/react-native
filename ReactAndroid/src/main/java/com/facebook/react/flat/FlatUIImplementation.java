@@ -355,6 +355,25 @@ public class FlatUIImplementation extends UIImplementation {
     mStateBuilder.applyUpdates(eventDispatcher, rootNode);
   }
 
+  @Override
+  public void setJSResponder(int possiblyVirtualReactTag, boolean blockNativeResponder) {
+    ReactShadowNode node = resolveShadowNode(possiblyVirtualReactTag);
+    while (node.isVirtual()) {
+      node = node.getParent();
+    }
+
+    FlatShadowNode nonVirtualNode = (FlatShadowNode) node;
+    int nonVirtualTag = nonVirtualNode.getReactTag();
+    nonVirtualNode.forceMountToView();
+    mStateBuilder.ensureBackingViewIsCreated(nonVirtualNode, nonVirtualTag, null);
+
+    FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
+    operationsQueue.enqueueSetJSResponder(
+        nonVirtualTag,
+        possiblyVirtualReactTag,
+        blockNativeResponder);
+  }
+
   private static @Nullable ReactImageManager findReactImageManager(List<ViewManager> viewManagers) {
     for (int i = 0, size = viewManagers.size(); i != size; ++i) {
       if (viewManagers.get(i) instanceof ReactImageManager) {
