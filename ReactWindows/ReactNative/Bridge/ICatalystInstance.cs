@@ -40,6 +40,13 @@ namespace ReactNative.Bridge
         void InvokeCallback(int callbackId, JArray arguments);
 
         /// <summary>
+        /// Gets a JavaScript module instance.
+        /// </summary>
+        /// <typeparam name="T">Type of JavaScript module.</typeparam>
+        /// <returns>The JavaScript module instance.</returns>
+        T GetJavaScriptModule<T>() where T : IJavaScriptModule;
+
+        /// <summary>
         /// Gets a native module instance.
         /// </summary>
         /// <typeparam name="T">Type of native module.</typeparam>
