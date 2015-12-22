@@ -553,7 +553,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
-        if (callback && completionsCalled == frames.count - 1) {
+        if (callback && completionsCalled == frames.count) {
           callback(@[@(finished)]);
         }
       };
