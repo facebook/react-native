@@ -2,6 +2,7 @@
 using ReactNative.Reflection;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -10,13 +11,14 @@ namespace ReactNative.Bridge
     /// <summary>
     /// A delegate factory that will compile a delegate to call the native method.
     /// </summary>
-    public sealed class CompiledReactDelegateFactory : IReactDelegateFactory
+    public sealed class CompiledReactDelegateFactory : ReactDelegateFactoryBase
     {
         private static readonly ConstructorInfo s_newArgumentNullException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentNullException(default(string)));
         private static readonly ConstructorInfo s_newArgumentException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentException(default(string), default(string)));
         private static readonly ConstructorInfo s_newNativeArgumentParseException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new NativeArgumentsParseException(default(string), default(string)));
         private static readonly ConstructorInfo s_newNativeArgumentParseExceptionInner = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new NativeArgumentsParseException(default(string), default(string), default(Exception)));
-        private static readonly ConstructorInfo s_newCallback = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new Callback(default(int), default(ICatalystInstance)));
+        private static readonly MethodInfo s_createCallback = ((MethodInfo)ReflectionHelpers.InfoOf(() => CreateCallback(default(JToken), default(ICatalystInstance))));
+        private static readonly MethodInfo s_createPromise = ((MethodInfo)ReflectionHelpers.InfoOf(() => CreatePromise(default(JToken), default(JToken), default(ICatalystInstance))));
         private static readonly MethodInfo s_toObject = ((MethodInfo)ReflectionHelpers.InfoOf((JToken token) => token.ToObject(typeof(Type))));
         private static readonly MethodInfo s_stringFormat = (MethodInfo)ReflectionHelpers.InfoOf(() => string.Format(default(IFormatProvider), default(string), default(object)));
         private static readonly MethodInfo s_getIndex = (MethodInfo)ReflectionHelpers.InfoOf((JArray arr) => arr[0]);
@@ -35,7 +37,7 @@ namespace ReactNative.Bridge
         /// </summary>
         /// <param name="method">The method.</param>
         /// <returns>The invocation delegate.</returns>
-        public Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method)
+        public override Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method)
         {
             return GenerateExpression(module, method).Compile();
         }
@@ -43,7 +45,9 @@ namespace ReactNative.Bridge
         private static Expression<Action<INativeModule, ICatalystInstance, JArray>> GenerateExpression(INativeModule module, MethodInfo method)
         {
             var parameterInfos = method.GetParameters();
+
             var n = parameterInfos.Length;
+            var argc = n > 0 && parameterInfos.Last().ParameterType == typeof(IPromise) ? n + 1 : n;
 
             var parameterExpressions = new ParameterExpression[n];
             var extractExpressions = new Expression[n];
@@ -61,7 +65,7 @@ namespace ReactNative.Bridge
                 extractExpressions[i] = GenerateExtractExpression(
                     parameterInfo.ParameterType,
                     parameterExpression,
-                    Expression.Call(jsArgumentsParameter, s_getIndex, Expression.Constant(i)),
+                    jsArgumentsParameter,
                     catalystInstanceParameter,
                     jsArgumentsParameter.Name,
                     module.Name,
@@ -69,7 +73,7 @@ namespace ReactNative.Bridge
                     i);
             }
 
-            var blockStatements = new Expression[parameterInfos.Length + 5];
+            var blockStatements = new Expression[n + 5];
 
             //
             // if (moduleInstance == null)
@@ -90,7 +94,7 @@ namespace ReactNative.Bridge
             blockStatements[2] = CreateNullCheckExpression<JArray>(jsArgumentsParameter);
 
             //
-            // if (jsArguments.Count != valueOf(parameterInfos.Count))
+            // if (jsArguments.Count != argc)
             //     throw new NativeArgumentsParseException(
             //         string.Format(
             //             CultureInfo.InvariantCulture,
@@ -100,7 +104,7 @@ namespace ReactNative.Bridge
             blockStatements[3] = Expression.IfThen(
                 Expression.NotEqual(
                     Expression.MakeMemberAccess(jsArgumentsParameter, s_countProperty),
-                    Expression.Constant(parameterInfos.Length)
+                    Expression.Constant(argc)
                 ),
                 Expression.Throw(
                     Expression.New(
@@ -114,7 +118,7 @@ namespace ReactNative.Bridge
                                     "Module '{0}' method '{1}' got '{{0}}' arguments, expected '{2}'.",
                                     module.Name,
                                     method.Name,
-                                    parameterInfos.Length)
+                                    argc)
                             ),
                             Expression.Convert(
                                 Expression.MakeMemberAccess(jsArgumentsParameter, s_countProperty),
@@ -132,7 +136,7 @@ namespace ReactNative.Bridge
             // ...
             // pn = Extract<T>(jsArguments[n]);
             //
-            Array.Copy(extractExpressions, 0, blockStatements, 4, parameterInfos.Length);
+            Array.Copy(extractExpressions, 0, blockStatements, 4, n);
 
             blockStatements[blockStatements.Length - 1] = Expression.Call(
                 Expression.Convert(moduleInstanceParameter, method.DeclaringType),
@@ -150,7 +154,7 @@ namespace ReactNative.Bridge
         private static Expression GenerateExtractExpression(
             Type type,
             Expression leftExpression,
-            Expression tokenExpression,
+            Expression argumentsExpression,
             Expression catalystInstanceExpression,
             string parameterName,
             string moduleName,
@@ -165,10 +169,7 @@ namespace ReactNative.Bridge
             // catch (Exception ex)
             // {
             //     throw new NativeArgumentParseException(
-            //         string.Format(
-            //             CultureInfo.InvariantCulture,
-            //             "Error extracting argument for module 'moduleName' method 'methodName' at index '{0}'.",
-            //             argumentIndex),
+            //         "Error extracting argument for module 'moduleName' method 'methodName' at index 'argumentIndex'."),
             //         paramName,
             //         ex);
             // }
@@ -179,17 +180,13 @@ namespace ReactNative.Bridge
                     Expression.Throw(
                         Expression.New(
                             s_newNativeArgumentParseExceptionInner,
-                            Expression.Call(
-                                s_stringFormat,
-                                Expression.Constant(CultureInfo.InvariantCulture),
-                                Expression.Constant(
-                                    string.Format(
-                                        CultureInfo.InvariantCulture,
-                                        "Error extracting argument for module '{0}' method '{1}' at index '{{0}}'.",
-                                        moduleName,
-                                        methodName)
-                                ),
-                                Expression.Constant(argumentIndex, typeof(object))
+                            Expression.Constant(
+                                string.Format(
+                                    CultureInfo.InvariantCulture,
+                                    "Error extracting argument for module '{0}' method '{1}' at index '{2}'.",
+                                    moduleName,
+                                    methodName,
+                                    argumentIndex)
                             ),
                             Expression.Constant(parameterName),
                             ex
@@ -201,29 +198,80 @@ namespace ReactNative.Bridge
             var valueExpression = default(Expression);
             if (type == typeof(ICallback))
             {
-                valueExpression = Expression.Parameter(typeof(int), "id").Let(id =>
-                    Expression.Block(
-                        new[] { id },
-                        Expression.Assign(
-                            id,
-                            Expression.Convert(
-                                Expression.Call(
-                                    tokenExpression, 
-                                    s_toObject, 
-                                    Expression.Constant(typeof(int))
-                                ),
-                                typeof(int)
-                            )
+                //
+                // CreateCallback(jsArguments[i], catalystInstance);
+                //
+                valueExpression = Expression.Call(
+                    s_createCallback,
+                    Expression.Call(
+                        argumentsExpression,
+                        s_getIndex,
+                        Expression.Constant(argumentIndex)
+                    ),
+                    catalystInstanceExpression);
+            }
+            else if (type == typeof(IPromise))
+            {
+                //
+                // if (i > jsArguments.Count - 2)
+                //     throw new NativeArgumentsParseException(...);
+                //
+                // CreatePromise(jsArguments[i], jsArguments[i + 1], catalystInstance);
+                //
+                valueExpression = Expression.Condition(
+                    Expression.Equal(
+                        Expression.Constant(argumentIndex),
+                        Expression.Subtract(
+                            Expression.Property(
+                                argumentsExpression,
+                                s_countProperty
+                            ),
+                            Expression.Constant(2)
+                        )
+                    ),
+                    Expression.Call(
+                        s_createPromise,
+                        Expression.Call(
+                            argumentsExpression,
+                            s_getIndex,
+                            Expression.Constant(argumentIndex)
                         ),
-                        Expression.New(s_newCallback, id, catalystInstanceExpression)
+                        Expression.Call(
+                            argumentsExpression,
+                            s_getIndex,
+                            Expression.Constant(argumentIndex + 1)
+                        ),
+                        catalystInstanceExpression
+                    ),
+                    Expression.Throw(
+                        Expression.New(
+                            s_newNativeArgumentParseException,
+                            Expression.Constant(
+                                string.Format(
+                                    CultureInfo.InvariantCulture,
+                                    "Error extracting argument for module '{0}' method '{1}' at index '{2}'.",
+                                    moduleName,
+                                    methodName,
+                                    argumentIndex + " and " + (argumentIndex + 1))
+                            ),
+                            Expression.Constant(parameterName)
+                        ),
+                        type
                     )
                 );
             }
             else
             {
+                //
+                // (T)jsArguments[i].ToObject(typeof(T));
+                //
                 valueExpression = Expression.Convert(
                     Expression.Call(
-                        tokenExpression, 
+                        Expression.Call(
+                            argumentsExpression,
+                            s_getIndex,
+                            Expression.Constant(argumentIndex)
+                        ),
                         s_toObject, 
                         Expression.Constant(type)
                     ),
@@ -231,6 +279,16 @@ namespace ReactNative.Bridge
                 );
             }
 
+            //
+            // try
+            // {
+            //     arg = ...
+            // }
+            // catch (Exception ex)
+            // {
+            //     ...
+            // }
+            // 
             return Expression.TryCatch(
                 Expression.Block(
                     typeof(void),
