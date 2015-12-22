@@ -32,6 +32,7 @@ var ReactNative = {
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
   get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
+  get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
   get SwitchAndroid() { return require('SwitchAndroid'); },
   get SwitchIOS() { return require('SwitchIOS'); },
   get TabBarIOS() { return require('TabBarIOS'); },
@@ -101,7 +102,7 @@ var ReactNative = {
     get createFragment() { return require('ReactFragment').create; },
     get update() { return require('update'); },
   },
-  
+
   // Note: this must be placed last to prevent eager
   // evaluation of the getter-wrapped submodules above
   ...require('React'),
@@ -109,11 +110,11 @@ var ReactNative = {
 
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactDefaultPerf'),
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactTestUtils'),
   });
 }
