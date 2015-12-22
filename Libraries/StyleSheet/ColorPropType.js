@@ -28,6 +28,6 @@ var colorValidator = function (selectedColor, propName) {
   );
 };
 
-var ColorPropType = ReactPropTypes.oneOfType([colorValidator]);
+var ColorPropType = ReactPropTypes.oneOfType([colorValidator, ReactPropTypes.number]);
 
 module.exports = ColorPropType;
