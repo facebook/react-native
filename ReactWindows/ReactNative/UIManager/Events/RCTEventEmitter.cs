@@ -16,7 +16,7 @@ namespace ReactNative.Modules.Core
         /// <param name="event">The event data.</param>
         public void receiveEvent(int targetTag, string eventName, JObject @event)
         {
-            Invoke(nameof(receiveEvent), targetTag, eventName, @event);
+            Invoke(targetTag, eventName, @event);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace ReactNative.Modules.Core
         /// <param name="changedIndices">The changed indices.</param>
         public void receiveTouches(string eventName, JArray touches, JArray changedIndices)
         {
-            Invoke(nameof(receiveTouches), touches, changedIndices);
+            Invoke(eventName, touches, changedIndices);
         }
     }
 }
