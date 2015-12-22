@@ -30,6 +30,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
+import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
@@ -78,6 +79,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactImageManager(),
       new ReactProgressBarViewManager(),
       new ReactRawTextManager(),
+      new RecyclerViewBackedScrollViewManager(),
       new ReactScrollViewManager(),
       new ReactSwitchManager(),
       new ReactTextInputManager(),
