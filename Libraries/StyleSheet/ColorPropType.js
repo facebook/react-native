@@ -12,7 +12,8 @@
 var ReactPropTypes = require('ReactPropTypes');
 var tinycolor = require('tinycolor');
 
-var colorValidator = function (selectedColor, propName) {
+var colorValidator = function (props, propName) {
+  var selectedColor = props[propName];
   if (selectedColor === null || selectedColor === undefined || selectedColor.toString().trim() === '') {
     return new Error(
       `Invalid argument supplied to ${propName}.Expected a string like #123ADF or 'red'.`
