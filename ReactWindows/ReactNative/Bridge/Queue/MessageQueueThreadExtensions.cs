@@ -34,13 +34,13 @@ namespace ReactNative.Bridge.Queue
         {
             var taskCompletionSource = new TaskCompletionSource<T>();
 
-            actionQueue.RunOnQueue(async () =>
+            actionQueue.RunOnQueue(() =>
             {
                 var result = func();
 
                 // TaskCompletionSource<T>.SetResult can call continuations
                 // on the awaiter of the task completion source.
-                await Task.Run(() => taskCompletionSource.SetResult(result));
+                Task.Run(() => taskCompletionSource.SetResult(result));
             });
 
             return taskCompletionSource.Task;

@@ -6,6 +6,7 @@ using ReactNative.Hosting.Bridge;
 using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -14,7 +15,6 @@ namespace ReactNative.Bridge
     class CatalystInstance : ICatalystInstance, IDisposable
     {
         private readonly NativeModuleRegistry _registry;
-        private readonly ICatalystQueueConfiguration _catalystQueueConfiguration;
         private readonly IJavaScriptExecutor _jsExecutor;
         private readonly JavaScriptModulesConfig _jsModulesConfig;
         private readonly Action<Exception> _nativeModuleCallsExceptionHandler;
@@ -23,9 +23,8 @@ namespace ReactNative.Bridge
         private IReactBridge _bridge;
 
         private bool _initialized;
-        private bool _disposed;
 
-        public CatalystInstance(
+        private CatalystInstance(
             CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
             IJavaScriptExecutor jsExecutor,
             NativeModuleRegistry registry,
@@ -41,6 +40,12 @@ namespace ReactNative.Bridge
             QueueConfiguration = CatalystQueueConfiguration.Create(
                 catalystQueueConfigurationSpec,
                 HandleException);
+        }
+
+        public bool IsDisposed
+        {
+            get;
+            private set;
         }
 
         public IEnumerable<INativeModule> NativeModules
@@ -66,7 +71,7 @@ namespace ReactNative.Bridge
             return _registry.GetModule<T>();
         }
 
-        public async Task InitializeAsync()
+        public void Initialize()
         {
             DispatcherHelpers.AssertOnDispatcher();
             if (_initialized)
@@ -74,24 +79,22 @@ namespace ReactNative.Bridge
                 throw new InvalidOperationException("This catalyst instance has already been initialized.");
             }
 
-            await InitializeBridgeAsync();
-
             _initialized = true;
             _registry.NotifyCatalystInstanceInitialize();
         }
 
         public void InvokeCallback(int callbackId, JArray arguments)
         {
-            if (_disposed)
+            if (IsDisposed)
             {
                 Tracer.Write(ReactConstants.Tag, "Invoking JS callback after bridge has been destroyed.");
                 return;
             }
 
-            _catalystQueueConfiguration.JSQueueThread.RunOnQueue(() =>
+            QueueConfiguration.JSQueueThread.RunOnQueue(() =>
             {
-                _catalystQueueConfiguration.JSQueueThread.AssertIsOnThread();
-                if (_disposed)
+                QueueConfiguration.JSQueueThread.AssertIsOnThread();
+                if (IsDisposed)
                 {
                     return;
                 }
@@ -105,11 +108,11 @@ namespace ReactNative.Bridge
 
         public /* TODO: internal? */ void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
         {
-            _catalystQueueConfiguration.JSQueueThread.RunOnQueue(() =>
+            QueueConfiguration.JSQueueThread.RunOnQueue(() =>
             {
-                _catalystQueueConfiguration.JSQueueThread.AssertIsOnThread();
+                QueueConfiguration.JSQueueThread.AssertIsOnThread();
 
-                if (_disposed)
+                if (IsDisposed)
                 {
                     return;
                 }
@@ -130,29 +133,29 @@ namespace ReactNative.Bridge
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            if (_disposed)
+            if (IsDisposed)
             {
                 return;
             }
 
-            _disposed = true;
+            IsDisposed = true;
             _registry.NotifyCatalystInstanceDispose();
-            _catalystQueueConfiguration.Dispose();
+            QueueConfiguration.Dispose();
             // TODO: notify bridge idle listeners
         }
 
-        private Task InitializeBridgeAsync()
+        public Task InitializeBridgeAsync()
         {
-            return _catalystQueueConfiguration.JSQueueThread.CallOnQueue(() =>
+            return QueueConfiguration.JSQueueThread.CallOnQueue(() =>
             {
-                _catalystQueueConfiguration.JSQueueThread.AssertIsOnThread();
+                QueueConfiguration.JSQueueThread.AssertIsOnThread();
 
                 using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactBridgeCtor"))
                 {
                     _bridge = new ReactBridge(
                         _jsExecutor,
                         new NativeModulesReactCallback(this),
-                        _catalystQueueConfiguration.NativeModulesQueueThread);
+                        QueueConfiguration.NativeModulesQueueThread);
                 }
 
                 using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "setBatchedBridgeConfig"))
@@ -188,6 +191,81 @@ namespace ReactNative.Bridge
             QueueConfiguration.DispatcherQueueThread.RunOnQueue(Dispose);
         }
 
+        public sealed class Builder
+        {
+            private CatalystQueueConfigurationSpec _catalystQueueConfigurationSpec;
+            private NativeModuleRegistry _registry;
+            private JavaScriptModulesConfig _jsModulesConfig;
+            private IJavaScriptExecutor _jsExecutor;
+            private Action<Exception> _nativeModuleCallExceptionHandler;
+
+            public CatalystQueueConfigurationSpec QueueConfigurationSpec
+            {
+                set
+                {
+                    _catalystQueueConfigurationSpec = value;
+                }
+            }
+
+            public NativeModuleRegistry Registry
+            {
+                set
+                {
+                    _registry = value;
+                }
+            }
+
+            public JavaScriptModulesConfig JavaScriptModulesConfig
+            {
+                set
+                {
+                    _jsModulesConfig = value;
+                }
+            }
+
+            public IJavaScriptExecutor JavaScriptExecutor
+            {
+                set
+                {
+                    _jsExecutor = value;
+                }
+            }
+
+            public Action<Exception> NativeModuleCallExceptionHandler
+            {
+                set
+                {
+                    _nativeModuleCallExceptionHandler = value;
+                }
+            }
+
+            public CatalystInstance Build()
+            {
+                AssertNotNull(_catalystQueueConfigurationSpec, nameof(QueueConfigurationSpec));
+                AssertNotNull(_jsExecutor, nameof(IJavaScriptExecutor));
+                AssertNotNull(_registry, nameof(Registry));
+                AssertNotNull(_jsModulesConfig, nameof(JavaScriptModulesConfig));
+                AssertNotNull(_nativeModuleCallExceptionHandler, nameof(NativeModuleCallExceptionHandler));
+
+                return new CatalystInstance(
+                    _catalystQueueConfigurationSpec,
+                    _jsExecutor,
+                    _registry,
+                    _jsModulesConfig,
+                    _nativeModuleCallExceptionHandler);
+            }
+
+            private void AssertNotNull(object value, string name)
+            {
+                if (value == null)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0} has not been set.",
+                            name));
+            }
+        }
+
         class NativeModulesReactCallback : IReactCallback
         {
             private readonly CatalystInstance _parent;
@@ -199,9 +277,9 @@ namespace ReactNative.Bridge
 
             public void Invoke(int moduleId, int methodId, JArray parameters)
             {
-                _parent._catalystQueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
+                _parent.QueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
 
-                if (_parent._disposed)
+                if (_parent.IsDisposed)
                 {
                     return;
                 }
@@ -211,7 +289,7 @@ namespace ReactNative.Bridge
 
             public void OnBatchComplete()
             {
-                _parent._catalystQueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
+                _parent.QueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
             }
         }
     }

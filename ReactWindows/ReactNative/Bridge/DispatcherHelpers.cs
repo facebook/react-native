@@ -7,7 +7,7 @@ namespace ReactNative.Bridge
     {
         public static void AssertOnDispatcher()
         {
-            if (CoreWindow.GetForCurrentThread().Dispatcher != null)
+            if (CoreWindow.GetForCurrentThread()?.Dispatcher == null)
             {
                 throw new InvalidOperationException("Thread does not have dispatcher access.");
             }
