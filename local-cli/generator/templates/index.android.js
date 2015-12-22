@@ -11,6 +11,24 @@ import React, {
   View
 } from 'react-native';
 
+class <%= name %> extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>
+          Welcome to React Native!
+        </Text>
+        <Text style={styles.instructions}>
+          To get started, edit index.android.js
+        </Text>
+        <Text style={styles.instructions}>
+          Shake or press menu button for dev menu
+        </Text>
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -29,23 +47,5 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
-
-class <%= name %> extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
-  }
-}
 
 AppRegistry.registerComponent('<%= name %>', () => <%= name %>);
