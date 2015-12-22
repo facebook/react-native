@@ -14,10 +14,12 @@ namespace ReactNative.Bridge
     class CatalystInstance : ICatalystInstance, IDisposable
     {
         private readonly NativeModuleRegistry _registry;
-        private readonly CatalystQueueConfiguration _catalystQueueConfiguration;
+        private readonly ICatalystQueueConfiguration _catalystQueueConfiguration;
         private readonly IJavaScriptExecutor _jsExecutor;
-
         private readonly JavaScriptModulesConfig _jsModulesConfig;
+        private readonly Action<Exception> _nativeModuleCallsExceptionHandler;
+        private readonly JavaScriptModuleRegistry _jsRegistry;
+        
         private IReactBridge _bridge;
 
         private bool _initialized;
@@ -27,13 +29,16 @@ namespace ReactNative.Bridge
             CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
             IJavaScriptExecutor jsExecutor,
             NativeModuleRegistry registry,
-            JavaScriptModulesConfig jsModulesConfig)
+            JavaScriptModulesConfig jsModulesConfig,
+            Action<Exception> nativeModuleCallsExceptionHandler)
         {
             _registry = registry;
             _jsExecutor = jsExecutor;
             _jsModulesConfig = jsModulesConfig;
+            _nativeModuleCallsExceptionHandler = nativeModuleCallsExceptionHandler;
+            _jsRegistry = new JavaScriptModuleRegistry(this, _jsModulesConfig);
 
-            _catalystQueueConfiguration = CatalystQueueConfiguration.Create(
+            QueueConfiguration = CatalystQueueConfiguration.Create(
                 catalystQueueConfigurationSpec,
                 HandleException);
         }
@@ -44,6 +49,16 @@ namespace ReactNative.Bridge
             {
                 return _registry.Modules;
             }
+        }
+
+        public ICatalystQueueConfiguration QueueConfiguration
+        {
+            get;
+        } 
+
+        public T GetJavaScriptModule<T>() where T : IJavaScriptModule
+        {
+            return _jsRegistry.GetJavaScriptModule<T>();
         }
 
         public T GetNativeModule<T>() where T : INativeModule
@@ -169,7 +184,8 @@ namespace ReactNative.Bridge
 
         private void HandleException(Exception ex)
         {
-            // TODO
+            _nativeModuleCallsExceptionHandler(ex);
+            QueueConfiguration.DispatcherQueueThread.RunOnQueue(Dispose);
         }
 
         class NativeModulesReactCallback : IReactCallback
