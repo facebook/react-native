@@ -84,6 +84,7 @@
     "babel-polyfill": "^6.0.16",
     "babel-types": "^6.1.2",
     "babylon": "^6.1.2",
+    "base64-js": "^0.0.8",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "connect": "^2.8.3",
