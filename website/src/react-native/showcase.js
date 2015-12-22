@@ -164,6 +164,12 @@ var apps = [
     author: 'Rishabh Mehan',
   },
   {
+    name: 'DockMan',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
+    link: 'http://www.s21g.com/DockMan.html',
+    author: 'Genki Takiuchi (s21g Inc.)',
+  },
+  {
     name: 'DropBot',
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/fb/df/73/fbdf73e0-22d2-c936-3115-1defa195acba/icon175x175.png',
     link:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
