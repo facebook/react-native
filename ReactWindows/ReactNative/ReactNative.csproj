@@ -180,6 +180,7 @@
     <Compile Include="Modules\Core\RCTDeviceEventEmitter.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
+    <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
@@ -202,7 +203,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-    <Folder Include="Bridge\Executors\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
