@@ -173,7 +173,23 @@ public class TouchTargetHelper {
       // This view can't be the target, but its children might
       if (view instanceof ViewGroup) {
         View targetView = findTouchTargetView(eventCoords, (ViewGroup) view);
-        return targetView != view ? targetView : null;
+        if (targetView != view) {
+          return targetView;
+        }
+
+        // PointerEvents.BOX_NONE means that this react element cannot receive pointer events.
+        // However, there might be virtual children that can receive pointer events, in which case
+        // we still want to return this View and dispatch a pointer event to the virtual element.
+        // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
+        // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
+        // ViewGroup).
+        if (view instanceof ReactCompoundView) {
+          int reactTag = ((ReactCompoundView)view).reactTagForTouch(eventCoords[0], eventCoords[1]);
+          if (reactTag != view.getId()) {
+            // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
+            return view;
+          }
+        }
       }
       return null;
 
