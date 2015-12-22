@@ -1937,6 +1937,74 @@ describe('DependencyGraph', function() {
           ]);
       });
     });
+
+    pit('should support browser mapping for packages to files', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              browser: {
+                'node-package': './browser.js',
+              }
+            }),
+            'index.js': 'require("node-package")',
+            'browser.js': 'some code',
+            'node-package': {
+              'package.json': JSON.stringify({
+                'name': 'node-package',
+              }),
+              'index.js': 'some node code',
+            }
+          }
+        }
+      });
+
+      var dgraph = new DependencyGraph({
+        roots: [root],
+        fileWatcher: fileWatcher,
+        assetExts: ['png', 'jpg'],
+      });
+      return dgraph.getOrderedDependencies('/root/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            { id: 'index',
+              path: '/root/index.js',
+              dependencies: ['aPackage'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            { id: 'aPackage/index.js',
+              path: '/root/aPackage/index.js',
+              dependencies: ['node-package'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            { id: 'aPackage/browser.js',
+              path: '/root/aPackage/browser.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
   });
 
   describe('node_modules', function() {
