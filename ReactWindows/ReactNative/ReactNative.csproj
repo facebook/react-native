@@ -126,12 +126,14 @@
     <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistry.cs" />
     <Compile Include="Bridge\JavaScriptModulesConfig.cs" />
+    <Compile Include="Bridge\LifecycleEventListener.cs" />
     <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
     <Compile Include="Bridge\IOnBatchCompleteListener.cs" />
     <Compile Include="Bridge\NativeModuleBase.cs" />
+    <Compile Include="Bridge\NativeModuleCallExceptionHandler.cs" />
     <Compile Include="Bridge\NativeModuleRegistry.cs" />
     <Compile Include="Bridge\Queue\CatalystQueueConfiguration.cs" />
     <Compile Include="Bridge\Queue\CatalystQueueConfigurationSpec.cs" />
