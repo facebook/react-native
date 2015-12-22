@@ -237,6 +237,7 @@ import com.facebook.csslayout.Spacing;
     float rightOfTheLeft = getLeft() + leftWidth;
     int leftColor = resolveBorderColor(BORDER_LEFT_COLOR_SET, mBorderLeftColor, defaultColor);
     if (Color.alpha(leftColor) != 0 && leftWidth != 0) {
+      PAINT.setColor(leftColor);
       canvas.drawRect(getLeft(), bottomOfTheTop, rightOfTheLeft, topOfTheBottom, PAINT);
     }
 
