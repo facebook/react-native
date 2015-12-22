@@ -243,6 +243,12 @@ var apps = [
     author: 'Daniel Levitt',
   },
   {
+    name: 'Koza Gujarati Dictionary',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/77/95/83/77958377-05ae-4754-684a-3c9dbb67b517/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/in/app/koza-english-to-gujarati-dictionary/id982752928?mt=8',
+    author: 'KozaApps',
+  },
+  {
     name: 'Leanpub',
     icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/9f/4a/6f/9f4a6f8c-8951-ed89-4083-74ace23df9ef/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/leanpub/id913517110?ls=1&mt=8',
