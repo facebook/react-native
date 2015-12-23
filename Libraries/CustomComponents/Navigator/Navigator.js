@@ -1089,7 +1089,7 @@ var Navigator = React.createClass({
     return React.cloneElement(this.props.navigationBar, {
       ref: (navBar) => {
         var navigationBar = this.props.navigationBar;
-        if (navigationBar && navigationBar.ref instanceof Function) {
+        if (navigationBar && typeof navigationBar.ref === "function") {
           navigationBar.ref(navBar);
         }
         this._navBar = navBar;
