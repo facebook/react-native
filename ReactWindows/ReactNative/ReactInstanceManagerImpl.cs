@@ -9,6 +9,7 @@ using System;
 using ReactNative.Bridge.Queue;
 using System.Threading.Tasks;
 using ReactNative.Tracing;
+using ReactNative.Hosting.Bridge;
 
 namespace ReactNative
 {
@@ -72,9 +73,8 @@ namespace ReactNative
         /// </summary>
         public override async void RecreateReactContextInBackgroundFromBundleFileAsync()
         {
-            var jsExecutor = default(IJavaScriptExecutor);
-            var jsBundler = await JavaScriptBundleLoader.Builder.Build(new Uri[] { new Uri(_jsBundleFile) });
-            //TODO: Instantiate chakraJSExecutor following Erics rebase.
+            var jsExecutor = new ChakraJavaScriptExecutor();
+            var jsBundler = JavaScriptBundleLoader.CreateFileLoader(_jsBundleFile);
             await CreateReactContextAsync(jsExecutor, jsBundler);
         }
 
@@ -134,7 +134,7 @@ namespace ReactNative
 
             reactContext.InitializeWithInstance(javascriptRuntime);
 
-            await javascriptRuntime.RunJSBundleAsync();
+            await javascriptRuntime.InitializeBridgeAsync();
             
             return var;
         }

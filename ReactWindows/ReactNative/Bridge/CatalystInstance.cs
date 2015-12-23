@@ -152,14 +152,6 @@ namespace ReactNative.Bridge
             });
         }
 
-        /// <summary>
-        /// Executes the main javascript bundle script
-        /// </summary>
-        public async Task RunJSBundleAsync()
-        {
-            await _bundleLoader.invokeJavaScripts(_jsExecutor, QueueConfiguration.JSQueueThread);
-        }
-
         public void Dispose()
         {
             DispatcherHelpers.AssertOnDispatcher();
@@ -175,11 +167,15 @@ namespace ReactNative.Bridge
             // TODO: notify bridge idle listeners
         }
 
-        public Task InitializeBridgeAsync()
+        public async Task InitializeBridgeAsync()
         {
-            return QueueConfiguration.JSQueueThread.CallOnQueue(() =>
+            await _bundleLoader.InitializeAsync();
+
+            await QueueConfiguration.JSQueueThread.CallOnQueue(() =>
             {
                 QueueConfiguration.JSQueueThread.AssertIsOnThread();
+
+                _bundleLoader.LoadScript(_jsExecutor);
 
                 using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactBridgeCtor"))
                 {

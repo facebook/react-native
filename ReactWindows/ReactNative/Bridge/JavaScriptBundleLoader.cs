@@ -1,6 +1,4 @@
-﻿using ReactNative.Bridge.Queue;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -8,61 +6,75 @@ using Windows.Storage;
 namespace ReactNative.Bridge
 {
     /// <summary>
-    /// This class is responsible for reading and invoking the contents of a list of scripts on the JS engine 
+    /// A class that stores JavaScript bundle information and allows the
+    /// <see cref="ICatalystInstance"/> to load a correct bundle through the
+    /// <see cref="IReactBridge"/>.
     /// </summary>
-    public class JavaScriptBundleLoader
+    public abstract class JavaScriptBundleLoader
     {
-        private readonly List<string> scriptContentList;
+        /// <summary>
+        /// The source URL of the bundle.
+        /// </summary>
+        public abstract string SourceUrl { get; }
 
-        public static class Builder
+        /// <summary>
+        /// Initializes the JavaScript bundle loader, typically making an
+        /// asynchronous call to cache the bundle in memory.
+        /// </summary>
+        /// <returns>A task to await initialization.</returns>
+        public abstract Task InitializeAsync();
+
+        /// <summary>
+        /// Loads the bundle into a JavaScript executor.
+        /// </summary>
+        /// <param name="executor">The JavaScript executor.</param>
+        public abstract void LoadScript(IJavaScriptExecutor executor);
+
+        /// <summary>
+        /// This loader will read the file from the project directory.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <returns>The JavaScript bundle loader.</returns>
+        public static JavaScriptBundleLoader CreateFileLoader(string fileName)
         {
-            /// <summary>
-            /// The instance builder for <see cref="JavaScriptBundleLoader" />
-            /// </summary>
-            /// <param name="scripts">The array of URI scripts to read</param>
-            /// <returns></returns>
-            public static async Task<JavaScriptBundleLoader> Build(Uri[] scripts)
-            {
-                var jsBuilder = new JavaScriptBundleLoader();
-                await jsBuilder.readScript(scripts);
+            return new FileJavaScriptBundleLoader(fileName);
+        }
 
-                return jsBuilder;
+        class FileJavaScriptBundleLoader : JavaScriptBundleLoader
+        {
+            private string _script;
+
+            public FileJavaScriptBundleLoader(string fileName)
+            {
+                SourceUrl = fileName;
             }
-        }
 
-        /// <summary>
-        /// Executes the script contents on the JS engine 
-        /// </summary>
-        /// <param name="executor">The Javascript engine</param>
-        /// <param name="jsQueueThread">The message queue thread to incoke the scripts on</param>
-        /// <returns></returns>
-        public async Task invokeJavaScripts(IJavaScriptExecutor executor, IMessageQueueThread jsQueueThread)
-        {
-            await jsQueueThread.CallOnQueue(() =>
+            public override string SourceUrl
             {
-                foreach (var script in scriptContentList)
-                {
-                    executor.RunScript(script);
-                }
+                get;
+            }
 
-                return true;
-            });
-        }
+            public override async Task InitializeAsync()
+            {
+                var storageFile = SourceUrl.StartsWith("ms-appx:///")
+                    ? await StorageFile.GetFileFromApplicationUriAsync(new Uri(SourceUrl))
+                    : await StorageFile.GetFileFromPathAsync(SourceUrl);
 
-        /// <summary>
-        /// Reads an array of URI's and loads the contents into the scriptContentList
-        /// </summary>
-        /// <param name="scripts">The array of URIs</param>
-        /// <returns></returns>
-        private async Task readScript(Uri[] scripts)
-        {
-            foreach(var script in scripts) {
-                var storageFile = await StorageFile.GetFileFromApplicationUriAsync(script);
                 using (var stream = await storageFile.OpenStreamForReadAsync())
                 using (var reader = new StreamReader(stream))
                 {
-                    scriptContentList.Add(reader.ReadToEnd());
+                    _script = await reader.ReadToEndAsync();
                 }
+            }
+
+            public override void LoadScript(IJavaScriptExecutor executor)
+            {
+                if (_script == null)
+                {
+                    throw new InvalidOperationException("Bundle loader has not yet been initialized.");
+                }
+
+                executor.RunScript(_script);
             }
         }
     }
