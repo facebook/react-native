@@ -32,7 +32,7 @@ namespace ReactNative.Tests.Bridge
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutor = executor,
-                BundleLoader = new JavaScriptBundleLoader(),
+                BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = _ => { }
             };
 
@@ -64,7 +64,7 @@ namespace ReactNative.Tests.Bridge
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutor = executor,
-                BundleLoader = new JavaScriptBundleLoader(),
+                BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = _ => { },
             };
 
@@ -110,7 +110,7 @@ namespace ReactNative.Tests.Bridge
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutor = executor,
-                BundleLoader = new JavaScriptBundleLoader(),
+                BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = handler,
             };
 
