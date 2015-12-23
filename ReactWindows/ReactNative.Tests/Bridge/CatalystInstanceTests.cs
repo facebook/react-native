@@ -32,6 +32,7 @@ namespace ReactNative.Tests.Bridge
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutor = executor,
+                BundleLoader = new JavaScriptBundleLoader(),
                 NativeModuleCallExceptionHandler = _ => { }
             };
 
@@ -63,6 +64,7 @@ namespace ReactNative.Tests.Bridge
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutor = executor,
+                BundleLoader = new JavaScriptBundleLoader(),
                 NativeModuleCallExceptionHandler = _ => { },
             };
 
@@ -108,6 +110,7 @@ namespace ReactNative.Tests.Bridge
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutor = executor,
+                BundleLoader = new JavaScriptBundleLoader(),
                 NativeModuleCallExceptionHandler = handler,
             };
 

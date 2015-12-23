@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
     /// <summary>
     /// Interface for the root native view of a React native application.
     /// </summary>
-    public interface RootView
+    public interface IRootView
     {
         /// <summary>
         /// Called when a child starts a native gesture (e.g. a scroll in a ScrollView).
         /// </summary>
         /// <param name="androidEvent"></param>
-        //void onChildStartedNativeGesture(CalibrationEventArgs wpEvent);
+        void OnChildStartedNativeGesture(RoutedEventArgs ev);
     }
 }

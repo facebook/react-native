@@ -23,5 +23,11 @@ namespace ReactNative.Bridge
         /// <param name="propertyName">The global variable name.</param>
         /// <param name="value">The value.</param>
         void SetGlobalVariable(string propertyName, JToken value);
+
+        /// <summary>
+        /// Runs the given script.
+        /// </summary>
+        /// <param name="script">The script.</param>
+        void RunScript(string script);
     }
 }

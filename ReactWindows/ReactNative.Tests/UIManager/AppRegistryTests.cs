@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
+using System.Collections.Generic;
 
 namespace ReactNative.Tests.UIManager
 {
@@ -21,7 +21,7 @@ namespace ReactNative.Tests.UIManager
             });
 
             var appKey = "foo";
-            var appParameters = new JObject();
+            var appParameters = new Dictionary<string, object>();
             module.runApplication(appKey, appParameters);
             Assert.AreEqual(nameof(AppRegistry.runApplication), name);
             Assert.AreEqual(2, args.Length);
