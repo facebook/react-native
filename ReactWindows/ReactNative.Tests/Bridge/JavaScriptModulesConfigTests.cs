@@ -21,9 +21,9 @@ namespace ReactNative.Tests.Bridge
         [TestMethod]
         public void JavaScriptModulesConfig_WriteModuleDefinitions()
         {
-            var builder = new JavaScriptModulesConfig.Builder();
-            builder.Add<TestJavaScriptModule>();
-            var config = builder.Build();
+            var config = new JavaScriptModulesConfig.Builder()
+                .Add<TestJavaScriptModule>()
+                .Build();
 
             using (var stringWriter = new StringWriter())
             {
@@ -69,6 +69,81 @@ namespace ReactNative.Tests.Bridge
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        [TestMethod]
+        public void JavaScriptModulesConfig_NonGenericAdd_WriteModuleDefinitions()
+        {
+            var config = new JavaScriptModulesConfig.Builder()
+                .Add(typeof(TestJavaScriptModule))
+                .Build();
+
+            using (var stringWriter = new StringWriter())
+            {
+                using (var writer = new JsonTextWriter(stringWriter))
+                {
+                    config.WriteModuleDescriptions(writer);
+                }
+
+                var actual = stringWriter.ToString();
+                var expected = JObject.FromObject(
+                    new Map
+                    {
+                        {
+                            "TestJavaScriptModule",
+                            new Map
+                            {
+                                { "moduleID", 0 },
+                                {
+                                    "methods",
+                                    new Map
+                                    {
+                                        {
+                                            "Bar",
+                                            new Map
+                                            {
+                                                { "methodID", 0 },
+                                            }
+                                        },
+                                        {
+                                            "Foo",
+                                            new Map
+                                            {
+                                                { "methodID", 1 },
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ).ToString(Formatting.None);
+
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+
+        [TestMethod]
+        public void JavaScriptModulesConfig_NonGenericAdd()
+        {
+            var builder = new JavaScriptModulesConfig.Builder();
+
+            AssertEx.Throws<ArgumentException>(
+                () => builder.Add(typeof(JavaScriptModuleBase)),
+                ex => Assert.AreEqual("moduleType", ex.ParamName));
+
+            AssertEx.Throws<ArgumentException>(
+                () => builder.Add(typeof(IDerivedJavaScriptModule)),
+                ex => Assert.AreEqual("moduleType", ex.ParamName));
+
+            AssertEx.Throws<ArgumentException>(
+                () => builder.Add(typeof(object)),
+                ex => Assert.AreEqual("moduleType", ex.ParamName));
+
+            AssertEx.Throws<ArgumentException>(
+                () => builder.Add(typeof(NoConstructorJavaScriptModule)),
+                ex => Assert.AreEqual("moduleType", ex.ParamName));
+        }
     }
 
     public class Map : Dictionary<string, object> { }
@@ -85,6 +160,16 @@ namespace ReactNative.Tests.Bridge
         {
             Invoke(nameof(Foo), x);
         }
+    }
+
+    public interface IDerivedJavaScriptModule : IJavaScriptModule
+    {
+
+    }
+
+    public class NoConstructorJavaScriptModule : JavaScriptModuleBase
+    {
+        private NoConstructorJavaScriptModule() { }
     }
 
     public class TestJavaScriptModule : JavaScriptModuleBase

@@ -10,7 +10,8 @@ namespace ReactNative.UIManager
     {
         private readonly Dictionary<string, ViewManager<FrameworkElement, ReactShadowNode>> mViewManagers = new Dictionary<string, ViewManager<FrameworkElement, ReactShadowNode>>();
 
-        public ViewManagerRegistry(List<ViewManager<FrameworkElement, ReactShadowNode>> viewManagerList)
+        public ViewManagerRegistry(
+            IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagerList)
         {
             foreach (var viewManager in viewManagerList)
             {

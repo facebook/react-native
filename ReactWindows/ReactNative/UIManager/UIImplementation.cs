@@ -22,8 +22,9 @@ namespace ReactNative.UIManager
         private readonly UIViewOperationQueue _OperationsQueue;
         private readonly ShadowNodeRegistry _ShadowNodeRegistry = new ShadowNodeRegistry();
 
-        public UIImplementation(ReactApplicationContext reactContext, 
-                                List<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
+        public UIImplementation(
+            ReactApplicationContext reactContext, 
+            IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
         {
             _ViewManagers = new ViewManagerRegistry(viewManagers);
             _OperationsQueue = new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(_ViewManagers));

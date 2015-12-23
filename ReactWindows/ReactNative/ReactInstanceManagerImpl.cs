@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 using ReactNative.Bridge.Queue;
 using System.Threading.Tasks;
+using ReactNative.Tracing;
 
 namespace ReactNative
 {
@@ -30,28 +31,34 @@ namespace ReactNative
     /// </summary>
     public class ReactInstanceManagerImpl : ReactInstanceManager
     {
-        private readonly List<ReactRootView> _AttachedRootViews = new List<ReactRootView>();
-        private LifecycleState _LifecycleState;
+        private readonly List<ReactRootView> _attachedRootViews = new List<ReactRootView>();
+        private LifecycleState _lifecycleState;
         private readonly string _jsBundleFile;
-        private readonly List<IReactPackage> _reactPackages;
-        private volatile ReactApplicationContext _CurrentReactContext;
+        private readonly List<IReactPackage> _packages;
+        private volatile ReactApplicationContext var;
         private readonly string _jsMainModuleName;
-        private readonly UIImplementationProvider _UIImplementationProvider;
+        private readonly UIImplementationProvider _uiImplementationProvider;
+        private readonly IDefaultHardwareBackButtonHandler _defaultHardwareBackButtonHandler;
 
-        public ReactInstanceManagerImpl(string jsMainModuleName, List<IReactPackage> packages, LifecycleState initialLifecycleState,
-                                        UIImplementationProvider uiImplementationProvider, string jsBundleFile)
+        public ReactInstanceManagerImpl(
+            string jsMainModuleName, 
+            List<IReactPackage> packages, 
+            LifecycleState initialLifecycleState,
+            UIImplementationProvider uiImplementationProvider,
+            string jsBundleFile)
         {
             _jsBundleFile = jsBundleFile;
             _jsMainModuleName = jsMainModuleName;
-            _reactPackages = packages;
-            _LifecycleState = initialLifecycleState;
-            _UIImplementationProvider = uiImplementationProvider;
+            _packages = packages;
+            _lifecycleState = initialLifecycleState;
+            _uiImplementationProvider = uiImplementationProvider;
+            _defaultHardwareBackButtonHandler = new DefaultHardwareBackButtonHandlerImpl(this);
         }
 
-        public override List<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
+        public override IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
         {
             var allViewManagers = default(List<ViewManager<FrameworkElement, ReactShadowNode>>);
-            foreach (var reactPackage in _reactPackages)
+            foreach (var reactPackage in _packages)
             {
                 var viewManagers = reactPackage.CreateViewManagers(catalystApplicationContext);
                 allViewManagers.Concat(viewManagers);
@@ -73,24 +80,80 @@ namespace ReactNative
 
         private async Task<ReactContext> CreateReactContextAsync(IJavaScriptExecutor jsExecutor, JavaScriptBundleLoader jsBundleLoader)
         {
-            _CurrentReactContext = new ReactApplicationContext();
-            var coreModulesPackage = new CoreModulesPackage(this, _UIImplementationProvider);
-            var queueConfig = CatalystQueueConfigurationSpec.Default;
+            var reactContext = new ReactApplicationContext();
+            var nativeRegistryBuilder = new NativeModuleRegistry.Builder();
+            var jsModulesBuilder = new JavaScriptModulesConfig.Builder();
+
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createAndProcessCoreModulesPackage"))
+            {
+                var coreModulesPackage = new CoreModulesPackage(
+                    this,
+                    _defaultHardwareBackButtonHandler,
+                    _uiImplementationProvider);
+
+                ProcessPackage(
+                    coreModulesPackage,
+                    reactContext,
+                    nativeRegistryBuilder,
+                    jsModulesBuilder);
+            }
+
+            foreach (var reactPackage in _packages)
+            {
+                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createAndProcessCustomReactPackage"))
+                {
+                    ProcessPackage(
+                        reactPackage,
+                        reactContext,
+                        nativeRegistryBuilder,
+                        jsModulesBuilder);
+                }
+            }
+
+            var nativeModuleRegistry = default(NativeModuleRegistry);
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "buildNativeModuleRegistry"))
+            {
+                nativeModuleRegistry = nativeRegistryBuilder.Build();
+            }
+
+            var javaScriptModulesConfig = default(JavaScriptModulesConfig);
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "buildJSModuleConfig"))
+            {
+                javaScriptModulesConfig = jsModulesBuilder.Build();
+            }
 
             var javascriptRuntime = new CatalystInstance.Builder
             {
-                QueueConfigurationSpec = queueConfig,
+                QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
                 JavaScriptExecutor = jsExecutor,
-                Registry = coreModulesPackage.createNativeModules(_CurrentReactContext),
-                JavaScriptModulesConfig = coreModulesPackage.createJSModules(),
+                Registry = nativeModuleRegistry,
+                JavaScriptModulesConfig = javaScriptModulesConfig,
                 BundleLoader = jsBundleLoader,
                 NativeModuleCallExceptionHandler = ex => { } /* TODO */,
             }.Build();
 
-            _CurrentReactContext.InitializeWithInstance(javascriptRuntime);
+            reactContext.InitializeWithInstance(javascriptRuntime);
+
             await javascriptRuntime.RunJSBundleAsync();
             
-            return _CurrentReactContext;
+            return var;
+        }
+
+        private void ProcessPackage(
+            IReactPackage reactPackage,
+            ReactApplicationContext reactContext,
+            NativeModuleRegistry.Builder nativeRegistryBuilder,
+            JavaScriptModulesConfig.Builder jsModulesBuilder)
+        {
+            foreach (var nativeModule in reactPackage.CreateNativeModules(reactContext))
+            {
+                nativeRegistryBuilder.Add(nativeModule);
+            }
+
+            foreach (var type in reactPackage.CreateJavaScriptModulesConfig())
+            {
+                jsModulesBuilder.Add(type);
+            }
         }
 
         /// <summary>
@@ -99,11 +162,11 @@ namespace ReactNative
         /// <param name="rootView">The root view for the ReactJS app</param>
         public override void AttachMeasuredRootView(ReactRootView rootView)
         {
-            _AttachedRootViews.Add(rootView);
+            _attachedRootViews.Add(rootView);
             
-            if (_CurrentReactContext != null)
+            if (var != null)
             {
-                AttachMeasuredRootViewToInstance(rootView, _CurrentReactContext.CatalystInstance);
+                AttachMeasuredRootViewToInstance(rootView, var.CatalystInstance);
             }
         }
 
@@ -113,11 +176,11 @@ namespace ReactNative
         /// <param name="rootView">The root view for the ReactJS app</param>
         public override void DetachRootView(ReactRootView rootView)
         {
-            if (_AttachedRootViews.Remove(rootView))
+            if (_attachedRootViews.Remove(rootView))
             {
-                if (_CurrentReactContext != null)
+                if (var != null)
                 {
-                    DetachViewFromInstance(rootView, _CurrentReactContext.CatalystInstance);
+                    DetachViewFromInstance(rootView, var.CatalystInstance);
                 }
             }
         }
@@ -148,6 +211,27 @@ namespace ReactNative
             catch (InvalidOperationException ex)
             {
                 throw new InvalidOperationException("Unable to load AppRegistry JS module. Error message: " + ex.Message);
+            }
+        }
+
+        private void InvokeDefaultOnBackPressed()
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+            // TODO: implement
+        }
+
+        class DefaultHardwareBackButtonHandlerImpl : IDefaultHardwareBackButtonHandler
+        {
+            private readonly ReactInstanceManagerImpl _parent;
+
+            public DefaultHardwareBackButtonHandlerImpl(ReactInstanceManagerImpl parent)
+            {
+                _parent = parent;
+            }
+
+            public void InvokeDefaultOnBackPressed()
+            {
+                _parent.InvokeDefaultOnBackPressed();
             }
         }
     }

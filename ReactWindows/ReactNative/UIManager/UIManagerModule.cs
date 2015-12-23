@@ -15,7 +15,7 @@ namespace ReactNative.UIManager
         private int nextRootTag = 1;
 
         public UIManagerModule(ReactApplicationContext reactContext,
-                               List<ViewManager<FrameworkElement, ReactShadowNode>> viewManagerList,
+                               IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagerList,
                                UIImplementation uiImplementation)
         {
             _UIImplementation = uiImplementation;

@@ -21,7 +21,6 @@ namespace ReactNative.Bridge
         private readonly NativeModuleRegistry _registry;
         private readonly JavaScriptModuleRegistry _jsRegistry;
         private readonly IJavaScriptExecutor _jsExecutor;
-        private readonly JavaScriptModuleRegistry _jsModuleRegistry;
         private readonly JavaScriptBundleLoader _bundleLoader;
         private readonly JavaScriptModulesConfig _jsModulesConfig;
         private readonly Action<Exception> _nativeModuleCallExceptionHandler;
