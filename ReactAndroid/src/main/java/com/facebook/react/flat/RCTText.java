@@ -106,6 +106,12 @@ import com.facebook.react.uimanager.ViewProps;
 
     int maximumWidth = Float.isNaN(width) ? Integer.MAX_VALUE : (int) width;
 
+    // Make sure we update the paint's text size. If we don't do this, ellipsis might be measured
+    // incorrecly (but drawn correctly, which almost feels like an Android bug, because width of the
+    // created layout may exceed the requested width). This is safe to do without making a copy per
+    // RCTText instance because that size is ONLY used to measure the ellipsis but not to draw it.
+    PAINT.setTextSize(getFontSize());
+
     // at this point we need to create a StaticLayout to measure the text
     StaticLayout layout = StaticLayoutHelper.make(
         text,

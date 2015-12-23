@@ -152,6 +152,14 @@ import com.facebook.react.uimanager.ViewProps;
     }
   }
 
+  /**
+   * Returns font size for this node.
+   * When called on RCTText, this value is never -1 (unset).
+   */
+  protected final int getFontSize() {
+    return mFontStylingSpan.getFontSize();
+  }
+
   protected int getDefaultFontSize() {
     return -1;
   }
