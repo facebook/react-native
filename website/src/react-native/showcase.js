@@ -149,6 +149,12 @@ var apps = [
     author: 'CANDDi LTD.',
   },
   {
+    name: 'CBS Sports Franchise Football',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
+    link: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
+    author: 'CBS Sports',
+  },  
+  {
     name: 'Company name search',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
