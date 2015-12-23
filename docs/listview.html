@@ -64,6 +64,7 @@ pixels.</p></div></div></div></div><div><h3><a class="anchor" name="examples"></
   ListView<span class="token punctuation">,</span>
   TouchableHighlight<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
+  RecyclerViewBackedScrollView<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
@@ -98,6 +99,7 @@ pixels.</p></div></div></div></div><div><h3><a class="anchor" name="examples"></
         &lt;ListView
           dataSource<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>dataSource<span class="token punctuation">}</span>
           renderRow<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderRow<span class="token punctuation">}</span>
+          renderScrollComponent<span class="token operator">=</span><span class="token punctuation">{</span>props <span class="token operator">=</span><span class="token operator">&gt;</span> &lt;RecyclerViewBackedScrollView <span class="token punctuation">{</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>UIExplorerPage<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -105,9 +107,7 @@ pixels.</p></div></div></div></div><div><h3><a class="anchor" name="examples"></
 
   _renderRow<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rowData<span class="token punctuation">:</span> string<span class="token punctuation">,</span> sectionID<span class="token punctuation">:</span> number<span class="token punctuation">,</span> rowID<span class="token punctuation">:</span> number<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> rowHash <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">abs<span class="token punctuation">(</span></span><span class="token function">hashCode<span class="token punctuation">(</span></span>rowData<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">var</span> imgSource <span class="token operator">=</span> <span class="token punctuation">{</span>
-      uri<span class="token punctuation">:</span> THUMB_URLS<span class="token punctuation">[</span>rowHash <span class="token operator">%</span> THUMB_URLS<span class="token punctuation">.</span>length<span class="token punctuation">]</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> imgSource <span class="token operator">=</span> THUMB_URLS<span class="token punctuation">[</span>rowHash <span class="token operator">%</span> THUMB_URLS<span class="token punctuation">.</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;TouchableHighlight onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_pressRow<span class="token punctuation">(</span></span>rowID<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;View<span class="token operator">&gt;</span>
@@ -141,18 +141,18 @@ pixels.</p></div></div></div></div><div><h3><a class="anchor" name="examples"></
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 <span class="token keyword">var</span> THUMB_URLS <span class="token operator">=</span> <span class="token punctuation">[</span>
-  <span class="token string">&#x27;Thumbnails/like.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/dislike.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/call.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/fist.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/bandaged.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/flowers.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/heart.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/liking.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/party.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/poke.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/superlike.png&#x27;</span><span class="token punctuation">,</span>
-  <span class="token string">&#x27;Thumbnails/victory.png&#x27;</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/like.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/dislike.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/call.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/fist.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/bandaged.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/flowers.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/heart.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/liking.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/party.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/poke.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/superlike.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./Thumbnails/victory.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> LOREM_IPSUM <span class="token operator">=</span> <span class="token string">&#x27;Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.&#x27;</span><span class="token punctuation">;</span>
 
