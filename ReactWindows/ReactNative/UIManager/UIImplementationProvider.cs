@@ -11,7 +11,9 @@ namespace ReactNative.UIManager
     /// </summary>
     public class UIImplementationProvider
     {
-        public UIImplementation createUIImplementation(ReactApplicationContext reactContext, List<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
+        public UIImplementation CreateUIImplementation(
+            ReactApplicationContext reactContext, 
+            IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
         {
             return new UIImplementation(reactContext, viewManagers);
         }

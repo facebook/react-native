@@ -25,7 +25,8 @@ namespace ReactNative
     /// </summary>
     public abstract class ReactInstanceManager
     {
-       public abstract List<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext);
+       public abstract IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext);
+
         /// <summary>
         /// Trigger react context initialization asynchronously in a background async task.
         /// </summary>

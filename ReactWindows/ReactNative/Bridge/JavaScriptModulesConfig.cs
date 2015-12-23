@@ -1,5 +1,10 @@
 ﻿using Newtonsoft.Json;
+using ReactNative.Reflection;
+using ReactNative.UIManager;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 
 namespace ReactNative.Bridge
 {
@@ -56,6 +61,8 @@ namespace ReactNative.Bridge
         /// </summary>
         public sealed class Builder
         {
+            private static readonly Type[] s_emptyArray = new Type[0];
+
             private readonly List<JavaScriptModuleRegistration> _modules =
                 new List<JavaScriptModuleRegistration>();
 
@@ -68,6 +75,49 @@ namespace ReactNative.Bridge
             {
                 var moduleId = _modules.Count;
                 _modules.Add(new JavaScriptModuleRegistration(moduleId, typeof(T)));
+                return this;
+            }
+
+            /// <summary>
+            /// Adds a JavaScript module of the given type.
+            /// </summary>
+            /// <param name="moduleType">The module type.</param>
+            /// <returns>The builder instance.</returns>
+            public Builder Add(Type moduleType)
+            {
+                if (moduleType.GetTypeInfo().IsAbstract)
+                {
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "JavaScript module '{0}' must not be abstract.",
+                            moduleType),
+                        nameof(moduleType));
+                }
+
+                if (!typeof(IJavaScriptModule).IsAssignableFrom(moduleType))
+                {
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "JavaScript module '{0}' must derive from IJavaScriptModule.",
+                            moduleType),    
+                        nameof(moduleType));
+                }
+
+                var defaultConstructor = moduleType.GetConstructor(s_emptyArray);
+                if (defaultConstructor == null || !defaultConstructor.IsPublic)
+                {
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "JavaScript module '{0}' must have a public default constructor.",
+                            moduleType),
+                        nameof(moduleType));
+                }
+
+                var moduleId = _modules.Count;
+                _modules.Add(new JavaScriptModuleRegistration(moduleId, moduleType));
                 return this;
             }
 
