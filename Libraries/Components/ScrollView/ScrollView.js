@@ -191,7 +191,7 @@ var ScrollView = React.createClass({
      * Called when a scrolling animation ends.
      * @platform ios
      */
-    onScrollAnimationEnd: PropTypes.func,
+    onMomentumScrollEnd: PropTypes.func,
     /**
      * Called when scrollable content view of the ScrollView changes. It's
      * implemented using onLayout handler attached to the content container
