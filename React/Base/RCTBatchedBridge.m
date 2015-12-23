@@ -585,7 +585,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
-  if (RCT_DEBUG) {
+  if (RCT_DEBUG && [_javaScriptExecutor isValid]) {
     [self enqueueJSCall:@"RCTLog.logIfNoNativeHook"
                    args:@[level, message]];
   }
