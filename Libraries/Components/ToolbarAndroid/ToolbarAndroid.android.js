@@ -126,6 +126,24 @@ var ToolbarAndroid = React.createClass({
      */
     titleColor: ReactPropTypes.string,
     /**
+     * Sets the content inset for the toolbar starting edge.
+     *
+     * The content inset affects the valid area for Toolbar content other than
+     * the navigation button and menu. Insets define the minimum margin for
+     * these components and can be used to effectively align Toolbar content
+     * along well-known gridlines.
+     */
+    contentInsetStart: ReactPropTypes.number,
+    /**
+     * Sets the content inset for the toolbar ending edge.
+     *
+     * The content inset affects the valid area for Toolbar content other than
+     * the navigation button and menu. Insets define the minimum margin for
+     * these components and can be used to effectively align Toolbar content
+     * along well-known gridlines.
+     */
+    contentInsetEnd: ReactPropTypes.number,
+    /**
      * Used to set the toolbar direction to RTL.
      * In addition to this property you need to add
      *
