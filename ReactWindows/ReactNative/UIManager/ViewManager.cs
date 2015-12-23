@@ -1,11 +1,10 @@
-﻿
+﻿using Windows.UI.Xaml;
+
 namespace ReactNative.UIManager
 {
-    using System.Collections.Generic;
-    using Windows.UI.Xaml;
-
-    public abstract class ViewManager<T, C> where T : FrameworkElement 
-                                            where C: ReactShadowNode
+    public abstract class ViewManager<T, C> 
+        where T : FrameworkElement
+        where C : ReactShadowNode
     {
         /// <summary>
         /// Creates a view and installs event emitters on it.

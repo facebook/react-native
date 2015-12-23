@@ -8,7 +8,7 @@ namespace ReactNative.Bridge.Queue
     /// modules, and JS). Some of these queue *may* be the same but should be
     /// coded against as if they are different.
     /// </summary>
-    public class CatalystQueueConfiguration : ICatalystQueueConfiguration
+    class CatalystQueueConfiguration : ICatalystQueueConfiguration
     {
         private readonly MessageQueueThread _dispatcherQueueThread;
         private readonly MessageQueueThread _nativeModulesQueueThread;

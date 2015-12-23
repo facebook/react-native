@@ -187,7 +187,7 @@
     <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
-    <Compile Include="Modules\Core\IReactPackage.cs" />
+    <Compile Include="IReactPackage.cs" />
     <Compile Include="touch\JSResponderHandler.cs" />
     <Compile Include="touch\OnInterceptTouchEventListener.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />

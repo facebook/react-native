@@ -1,58 +1,75 @@
-﻿
-using ReactNative.Bridge;
+﻿using ReactNative.Bridge;
 using ReactNative.Modules.Core;
+using ReactNative.Tracing;
 using ReactNative.UIManager;
+using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 
 namespace ReactNative
 {
     /// <summary>
-    /// Package defining core framework modules (e.g. UIManager). It should be used for modules that
-    /// require special integration with other framework parts (e.g. with the list of packages to load
-    /// view managers from).
+    /// Package defining core framework modules (e.g., <see cref="UIManagerModule"/>). 
+    /// It should be used for modules that require special integration with
+    /// other framework parts (e.g., with the list of packages to load view
+    /// managers from).
     /// 
-    /// TODO
-    /// 1.add DefaultHardwareBackBtnHandler functoinality
-    /// 2.Add Core native modules
-    /// 3.Implement UIManagerModule
+    /// TODO:
+    /// 1. Add Core native modules
+    /// 2. Implement UIManagerModule
+    /// 3. Add remaining JavaScript modules
     /// </summary>
-    public class CoreModulesPackage : IReactPackage
+    class CoreModulesPackage : IReactPackage
     {
-        private readonly ReactInstanceManager _ReactInstanceManager;
-        private readonly UIImplementationProvider _UIImplementationProvider;
+        private readonly ReactInstanceManager _reactInstanceManager;
+        private readonly IDefaultHardwareBackButtonHandler _hardwareBackButtonHandler;
+        private readonly UIImplementationProvider _uiImplementationProvider;
 
-        public CoreModulesPackage(ReactInstanceManager reactInstanceManager, UIImplementationProvider uiImplementationProvider)
+        public CoreModulesPackage(
+            ReactInstanceManager reactInstanceManager,
+            IDefaultHardwareBackButtonHandler hardwareBackButtonHandler,
+            UIImplementationProvider uiImplementationProvider)
         {
-            _ReactInstanceManager = reactInstanceManager;
-            _UIImplementationProvider = uiImplementationProvider;
+            _reactInstanceManager = reactInstanceManager;
+            _hardwareBackButtonHandler = hardwareBackButtonHandler;
+            _uiImplementationProvider = uiImplementationProvider;
         }
 
-        public NativeModuleRegistry createNativeModules(ReactApplicationContext reactContext)
+        public IReadOnlyList<INativeModule> CreateNativeModules(ReactApplicationContext reactContext)
         {
-            var uiManagerModule = default(UIManagerModule);
-            List<ViewManager<FrameworkElement, ReactShadowNode>> viewManagersList = _ReactInstanceManager.CreateAllViewManagers(reactContext);
+            var uiManagerModule = default(INativeModule);
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createUIManagerModule"))
+            {
+                var viewManagerList = _reactInstanceManager.CreateAllViewManagers(reactContext);
+                uiManagerModule = new UIManagerModule(
+                    reactContext, 
+                    viewManagerList,
+                    _uiImplementationProvider.CreateUIImplementation(
+                        reactContext, 
+                        viewManagerList));
+            }
 
-            uiManagerModule = new UIManagerModule(reactContext, viewManagersList, _UIImplementationProvider.createUIImplementation(reactContext, viewManagersList));
-
-            var builder = new NativeModuleRegistry.Builder();
-
-            return builder.Build();
+            return new List<INativeModule>
+            {
+                uiManagerModule,
+            };
         }
 
-        public JavaScriptModulesConfig createJSModules()
+        public IReadOnlyList<Type> CreateJavaScriptModulesConfig()
         {
-            var builder = new JavaScriptModulesConfig.Builder();
-                builder.Add<RCTEventEmitter>();
-                builder.Add<RCTNativeAppEventEmitter>();
-                builder.Add<AppRegistry>();
-
-            return builder.Build();
+            return new List<Type>
+            {
+                typeof(RCTDeviceEventEmitter),
+                typeof(RCTEventEmitter),
+                typeof(RCTNativeAppEventEmitter),
+                typeof(AppRegistry),
+            };
         }
 
-        public List<ViewManager<FrameworkElement, ReactShadowNode>> CreateViewManagers(ReactApplicationContext reactContext)
+        public IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateViewManagers(
+            ReactApplicationContext reactContext)
         {
-            return new List<ViewManager<FrameworkElement, ReactShadowNode>>(0);
+            return new List<ViewManager<FrameworkElement, ReactShadowNode>>();
         }
     }
 }
