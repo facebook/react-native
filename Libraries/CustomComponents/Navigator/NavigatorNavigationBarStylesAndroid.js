@@ -45,10 +45,9 @@ var BASE_STYLES = {
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     height: NAV_ELEMENT_HEIGHT,
     backgroundColor: 'transparent',
-    marginLeft: TITLE_LEFT,
   },
   LeftButton: {
     position: 'absolute',
