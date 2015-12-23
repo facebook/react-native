@@ -126,14 +126,13 @@
     <Compile Include="Bridge\JavaScriptModuleRegistration.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistry.cs" />
     <Compile Include="Bridge\JavaScriptModulesConfig.cs" />
-    <Compile Include="Bridge\LifecycleEventListener.cs" />
+    <Compile Include="Bridge\JavaScriptBundleLoader.cs" />
     <Compile Include="Bridge\NativeArgumentsParseException.cs" />
     <Compile Include="Bridge\ICallback.cs" />
     <Compile Include="Bridge\ICatalystInstance.cs" />
     <Compile Include="Bridge\INativeMethod.cs" />
     <Compile Include="Bridge\IOnBatchCompleteListener.cs" />
     <Compile Include="Bridge\NativeModuleBase.cs" />
-    <Compile Include="Bridge\NativeModuleCallExceptionHandler.cs" />
     <Compile Include="Bridge\NativeModuleRegistry.cs" />
     <Compile Include="Bridge\Queue\CatalystQueueConfiguration.cs" />
     <Compile Include="Bridge\Queue\CatalystQueueConfigurationSpec.cs" />
@@ -152,8 +151,13 @@
     <Compile Include="Bridge\ReactContext.cs" />
     <Compile Include="Bridge\ReactContextNativeModuleBase.cs" />
     <Compile Include="Common\ReactConstants.cs" />
-    <Compile Include="Core\ReactInstanceManager.cs" />
-    <Compile Include="Core\ReactRootView.cs" />
+    <Compile Include="Bridge\ReactApplicationContext.cs" />
+    <Compile Include="CoreModulesPackage.cs" />
+    <Compile Include="LifecycleState.cs" />
+    <Compile Include="ReactInstanceManager.cs" />
+    <Compile Include="ReactInstanceManagerImpl.cs" />
+    <Compile Include="ReactRootView.cs" />
+    <Compile Include="csslayout\CSSNode.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -183,6 +187,9 @@
     <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
+    <Compile Include="Modules\Core\IReactPackage.cs" />
+    <Compile Include="touch\JSResponderHandler.cs" />
+    <Compile Include="touch\OnInterceptTouchEventListener.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
@@ -193,8 +200,20 @@
     <Compile Include="Tracing\TraceDisposable.cs" />
     <Compile Include="Tracing\Tracer.cs" />
     <Compile Include="UIManager\AppRegistry.cs" />
-    <Compile Include="UIManager\RootView.cs" />
     <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
+    <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
+    <Compile Include="UIManager\ReactProp.cs" />
+    <Compile Include="UIManager\ReactShadowNode.cs" />
+    <Compile Include="UIManager\IRootView.cs" />
+    <Compile Include="UIManager\ShadowNodeRegistry.cs" />
+    <Compile Include="UIManager\ThemedReactContext.cs" />
+    <Compile Include="UIManager\UIImplementation.cs" />
+    <Compile Include="UIManager\UIImplementationProvider.cs" />
+    <Compile Include="UIManager\UIManagerModule.cs" />
+    <Compile Include="UIManager\UIViewOperationQueue.cs" />
+    <Compile Include="UIManager\ViewManager.cs" />
+    <Compile Include="UIManager\ViewManagerRegistry.cs" />
+    <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -31,6 +31,11 @@ namespace ReactNative.Tests
             return _onCall(moduleName, methodName, arguments);
         }
 
+        public void RunScript(string script)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetGlobalVariable(string propertyName, JToken value)
         {
             _onSetGlobalVariable(propertyName, value);
@@ -40,6 +45,5 @@ namespace ReactNative.Tests
         {
             _onDispose();
         }
-
     }
 }
