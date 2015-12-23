@@ -333,7 +333,6 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 - (void)mapViewWillStartRenderingMap:(RCTMap *)mapView
 {
   mapView.hasStartedRendering = YES;
-  [self _emitRegionChangeEvent:mapView continuous:NO];
 }
 
 #pragma mark Private
