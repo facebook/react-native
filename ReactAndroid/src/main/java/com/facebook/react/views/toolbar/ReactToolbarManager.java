@@ -100,6 +100,22 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     }
   }
 
+  @ReactProp(name = "contentInsetStart", defaultFloat = Float.NaN)
+  public void setContentInsetStart(ReactToolbar view, float insetStart) {
+    int inset = Float.isNaN(insetStart) ?
+            getDefaultContentInsets(view.getContext())[0] :
+            Math.round(PixelUtil.toPixelFromDIP(insetStart));
+    view.setContentInsetsRelative(inset, view.getContentInsetEnd());
+  }
+
+  @ReactProp(name = "contentInsetEnd", defaultFloat = Float.NaN)
+  public void setContentInsetEnd(ReactToolbar view, float insetEnd) {
+    int inset = Float.isNaN(insetEnd) ?
+            getDefaultContentInsets(view.getContext())[1] :
+            Math.round(PixelUtil.toPixelFromDIP(insetEnd));
+    view.setContentInsetsRelative(view.getContentInsetStart(), inset);
+  }
+
   @ReactProp(name = "nativeActions")
   public void setActions(ReactToolbar view, @Nullable ReadableArray actions) {
     view.setActions(actions);
@@ -146,6 +162,34 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
+  }
+
+  private int[] getDefaultContentInsets(Context context) {
+    Resources.Theme theme = context.getTheme();
+    TypedArray toolbarStyle = null;
+    TypedArray contentInsets = null;
+
+    try {
+      toolbarStyle = theme
+              .obtainStyledAttributes(new int[]{R.attr.toolbarStyle});
+
+      int toolbarStyleResId = toolbarStyle.getResourceId(0, 0);
+
+      contentInsets = theme.obtainStyledAttributes(
+              toolbarStyleResId, new int[]{
+                      R.attr.contentInsetStart,
+                      R.attr.contentInsetEnd,
+              });
+
+      int contentInsetStart = contentInsets.getDimensionPixelSize(0, 0);
+      int contentInsetEnd = contentInsets.getDimensionPixelSize(1, 0);
+
+      return new int[] {contentInsetStart, contentInsetEnd};
+    } finally {
+      recycleQuietly(toolbarStyle);
+      recycleQuietly(contentInsets);
+    }
+
   }
 
   private static int[] getDefaultColors(Context context) {
