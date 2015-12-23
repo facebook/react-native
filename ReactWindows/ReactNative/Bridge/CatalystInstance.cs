@@ -15,11 +15,11 @@ namespace ReactNative.Bridge
     class CatalystInstance : ICatalystInstance, IDisposable
     {
         private readonly NativeModuleRegistry _registry;
+        private readonly JavaScriptModuleRegistry _jsRegistry;
         private readonly IJavaScriptExecutor _jsExecutor;
         private readonly JavaScriptModulesConfig _jsModulesConfig;
-        private readonly Action<Exception> _nativeModuleCallsExceptionHandler;
-        private readonly JavaScriptModuleRegistry _jsRegistry;
-        
+        private readonly Action<Exception> _nativeModuleCallExceptionHandler;
+
         private IReactBridge _bridge;
 
         private bool _initialized;
