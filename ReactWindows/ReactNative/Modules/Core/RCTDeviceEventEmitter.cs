@@ -3,12 +3,12 @@
 namespace ReactNative.Modules.Core
 {
     /// <summary>
-    /// Native app event emitter.
+    /// JavaScript module for emitting device events.
     /// </summary>
-    public sealed class RCTNativeAppEventEmitter : JavaScriptModuleBase
+    public sealed class RCTDeviceEventEmitter : JavaScriptModuleBase
     {
         /// <summary>
-        /// Emit a native app event.
+        /// Emits an event to the JavaScript instance.
         /// </summary>
         /// <param name="eventName">The event name.</param>
         /// <param name="data">The event data.</param>

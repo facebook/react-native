@@ -23,17 +23,17 @@ namespace ReactNative.Bridge
         bool CanOverrideExistingModule { get; }
 
         /// <summary>
-        /// Get the constants exported by this module.
+        /// The constants exported by this module.
         /// </summary>
         IReadOnlyDictionary<string, object> Constants { get; }
 
         /// <summary>
-        /// Get the methods callabke from JavaScript on this module.
+        /// The methods callabke from JavaScript on this module.
         /// </summary>
         IReadOnlyDictionary<string, INativeMethod> Methods { get; }
 
         /// <summary>
-        /// Get the name of the module.
+        /// The name of the module.
         /// </summary>
         /// <remarks>
         /// This will be the name used to <code>require()</code> this module
