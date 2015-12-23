@@ -76,8 +76,18 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
+
+  NSString * type;
+  if ([message isKindOfClass:[NSData class]]) {
+    type = @"binary";
+    message = [message base64EncodedStringWithOptions:0];
+  } else {
+    type = @"text";
+  }
+
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketMessage" body:@{
     @"data": message,
+    @"type": type,
     @"id": webSocket.reactTag
   }];
 }
