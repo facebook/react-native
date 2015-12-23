@@ -6,6 +6,7 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var Platform = require('Platform');
 var React = require('React');
@@ -43,22 +44,22 @@ var Switch = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: React.PropTypes.string,
-
+    
     /**
      * Background color when the switch is turned off.
      * @platform ios
      */
-    tintColor: React.PropTypes.string,
+    tintColor: ColorPropType,
     /**
      * Background color when the switch is turned on.
      * @platform ios
      */
-    onTintColor: React.PropTypes.string,
+    onTintColor: ColorPropType,
     /**
      * Color of the foreground switch grip.
      * @platform ios
      */
-    thumbTintColor: React.PropTypes.string,
+    thumbTintColor: ColorPropType,
   },
 
   getDefaultProps: function(): DefaultProps {

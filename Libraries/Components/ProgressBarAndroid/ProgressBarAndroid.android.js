@@ -15,6 +15,7 @@ var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -88,7 +89,7 @@ var ProgressBarAndroid = React.createClass({
     /**
      * Color of the progress bar.
      */
-    color: ReactPropTypes.string,
+    color: ColorPropType,
     /**
      * Used to locate this view in end-to-end tests.
      */

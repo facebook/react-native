@@ -18,6 +18,7 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -116,7 +117,7 @@ var ToolbarAndroid = React.createClass({
     /**
      * Sets the toolbar subtitle color.
      */
-    subtitleColor: ReactPropTypes.string,
+    subtitleColor: ColorPropType,
     /**
      * Sets the toolbar title.
      */
@@ -124,7 +125,7 @@ var ToolbarAndroid = React.createClass({
     /**
      * Sets the toolbar title color.
      */
-    titleColor: ReactPropTypes.string,
+    titleColor: ColorPropType,
     /**
      * Sets the content inset for the toolbar starting edge.
      *

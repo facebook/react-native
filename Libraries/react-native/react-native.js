@@ -89,6 +89,7 @@ var ReactNative = {
   get requireNativeComponent() { return require('requireNativeComponent'); },
 
   // Prop Types
+  get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
 
