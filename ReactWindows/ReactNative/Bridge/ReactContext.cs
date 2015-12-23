@@ -15,7 +15,7 @@ namespace ReactNative.Bridge
         private readonly List<ILifecycleEventListener> _lifecycleEventListeners =
             new List<ILifecycleEventListener>();
 
-        private CatalystInstance _catalystInstance;
+        private ICatalystInstance _catalystInstance;
 
         /// <summary>
         /// The catalyst instance associated with the context.
@@ -286,7 +286,7 @@ namespace ReactNative.Bridge
         /// <remarks>
         /// This method should be called exactly once.
         /// </remarks>
-        internal void InitializeWithInstance(CatalystInstance instance)
+        internal void InitializeWithInstance(ICatalystInstance instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));

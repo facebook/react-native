@@ -129,7 +129,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
       return UIManagerModuleConstantsHelper.createConstants(
-          displayMetrics,
+          displayMetrics,addMeasuredRootView
           viewManagerList);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);

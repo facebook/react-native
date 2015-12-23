@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
+using ReactNative.Bridge.Queue;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Reactive.Disposables;
 
 namespace ReactNative.Bridge
 {
@@ -10,12 +10,20 @@ namespace ReactNative.Bridge
     /// environment allowing the invocation of JavaScript methods and lets a
     /// set of native APIs be invokable from JavaScript as well.
     /// </summary>
-    public interface ICatalystInstance
+    public interface ICatalystInstance : ICancelable
     {
         /// <summary>
         /// Enumerates the available native modules.
         /// </summary>
         IEnumerable<INativeModule> NativeModules { get; }
+
+        /// <summary>
+        /// The catalyst queue configuration.
+        /// </summary>
+        /// <remarks>
+        /// TODO: is it okay for this to be public?
+        /// </remarks>
+        ICatalystQueueConfiguration QueueConfiguration { get; }
 
         /// <summary>
         /// Initializes the instance.
@@ -51,12 +59,5 @@ namespace ReactNative.Bridge
         /// <typeparam name="T">Type of native module.</typeparam>
         /// <returns>The native module instance.</returns>
         T GetNativeModule<T>() where T : INativeModule;
-
-        /// <summary>
-        /// Gets a JavaScript module instance.
-        /// </summary>
-        /// <typeparam name="T">Type of JavaScript module.</typeparam>
-        /// <returns>The JavaScript module instance.</returns>
-        T GetJavaScriptModule<T>() where T : IJavaScriptModule;
     }
 }

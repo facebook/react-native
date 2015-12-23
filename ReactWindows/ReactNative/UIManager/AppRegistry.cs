@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using ReactNative.Bridge;
+﻿using ReactNative.Bridge;
+using System.Collections.Generic;
 
 namespace ReactNative.UIManager
 {
@@ -13,7 +13,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="appKey">The app key.</param>
         /// <param name="appParameters">The app parameters.</param>
-        public void runApplication(string appKey, JObject appParameters)
+        public void runApplication(string appKey, IDictionary<string, object> appParameters)
         {
             Invoke(appKey, appParameters);
         }
