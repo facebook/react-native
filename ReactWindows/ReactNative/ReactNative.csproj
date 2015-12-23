@@ -107,6 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bridge\ILifecycleEventListener.cs" />
     <Compile Include="Bridge\IPromise.cs" />
     <Compile Include="Bridge\CatalystInstance.cs" />
     <Compile Include="Bridge\CompiledReactDelegateFactory.cs" />
@@ -172,6 +173,9 @@
     <Compile Include="Hosting\JavaScriptValueType.cs" />
     <Compile Include="Hosting\Native.cs" />
     <Compile Include="Bridge\INativeModule.cs" />
+    <Compile Include="Modules\Core\DeviceEventManagerModule.cs" />
+    <Compile Include="Modules\Core\IDefaultHardwareBackButtonHandler.cs" />
+    <Compile Include="Modules\Core\RCTDeviceEventEmitter.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />

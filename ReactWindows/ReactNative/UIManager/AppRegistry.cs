@@ -6,7 +6,7 @@ namespace ReactNative.UIManager
     /// <summary>
     /// The application registry.
     /// </summary>
-    public class AppRegistry : JavaScriptModuleBase
+    public sealed class AppRegistry : JavaScriptModuleBase
     {
         /// <summary>
         /// Run the application.
