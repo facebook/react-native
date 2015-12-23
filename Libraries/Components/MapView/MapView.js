@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
@@ -166,10 +167,7 @@ const MapView = React.createClass({
        * are supported for regular pins. For custom pin images, any tintColor
        * value is supported on all iOS versions.
        */
-      tintColor: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.number
-      ]),
+      tintColor: ColorPropType,
 
       /**
        * Custom pin image. This must be a static image resource inside the app.
@@ -213,14 +211,8 @@ const MapView = React.createClass({
        * Line attributes
        */
       lineWidth: React.PropTypes.number,
-      strokeColor: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.number
-      ]),
-      fillColor: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.number
-      ]),
+      strokeColor: ColorPropType,
+      fillColor: ColorPropType,
 
       /**
        * Overlay id
