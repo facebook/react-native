@@ -122,21 +122,14 @@ import com.facebook.react.uimanager.ViewProps;
         mNumberOfLines,
         false);
 
-    // determine how wide we actually are
-    float maxLineWidth = 0;
-    int lineCount = layout.getLineCount();
-    for (int i = 0; i != lineCount; ++i) {
-      maxLineWidth = Math.max(maxLineWidth, layout.getLineMax(i));
-    }
-
-    measureOutput.width = maxLineWidth;
-    measureOutput.height = layout.getHeight();
-
     if (mDrawCommand != null && !mDrawCommand.isFrozen()) {
       mDrawCommand.setLayout(layout);
     } else {
       mDrawCommand = new DrawTextLayout(layout);
     }
+
+    measureOutput.width = mDrawCommand.getLayoutWidth();
+    measureOutput.height = mDrawCommand.getLayoutHeight();
   }
 
   @Override
@@ -179,6 +172,18 @@ import com.facebook.react.uimanager.ViewProps;
           mBoringLayoutMetrics,
           INCLUDE_PADDING));
     }
+
+    // these are actual right/bottom coordinates where this DrawCommand will draw.
+    float layoutRight = left + mDrawCommand.getLayoutWidth();
+    float layoutBottom = top + mDrawCommand.getLayoutHeight();
+
+    // We need to adjust right/bottom because Layout size is in many cases different than the
+    // current node's size. We could use layoutRight/layoutBottom instead of taking the minumum of
+    // (right,layoutRight) and that would work correctly, but it will also make AbstractDrawCommand
+    // clip when the clipping is not really necessary (because it doesn't like draw bounds smaller
+    // than clip bounds).
+    right = Math.max(right, layoutRight);
+    bottom = Math.max(bottom, layoutBottom);
 
     mDrawCommand = (DrawTextLayout) mDrawCommand.updateBoundsAndFreeze(
         left,

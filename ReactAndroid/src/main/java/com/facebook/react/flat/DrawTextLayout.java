@@ -18,9 +18,10 @@ import android.text.Layout;
 /* package */ final class DrawTextLayout extends AbstractDrawCommand {
 
   private Layout mLayout;
+  private float mLayoutWidth;
 
   /* package */ DrawTextLayout(Layout layout) {
-    mLayout = layout;
+    setLayout(layout);
   }
 
   /**
@@ -28,10 +29,28 @@ import android.text.Layout;
    */
   public void setLayout(Layout layout) {
     mLayout = layout;
+
+    // determine how wide we actually are
+    float maxLineWidth = 0;
+    int lineCount = layout.getLineCount();
+    for (int i = 0; i != lineCount; ++i) {
+      maxLineWidth = Math.max(maxLineWidth, layout.getLineMax(i));
+    }
+
+    mLayoutWidth = maxLineWidth;
   }
 
   public Layout getLayout() {
     return mLayout;
+  }
+
+  public float getLayoutWidth() {
+    // mLayout.getWidth() doesn't return correct width of the text Layout
+    return mLayoutWidth;
+  }
+
+  public float getLayoutHeight() {
+    return mLayout.getHeight();
   }
 
   @Override
