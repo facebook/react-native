@@ -19,10 +19,28 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 1. Fork the repo and create your branch from `master`.
 2. If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
-4. Ensure tests pass on Travis.
-5. Make sure your code lints (`node linter.js <files touched>`).
-6. Squash your commits (`git rebase -i`).
-7. If you haven't already, complete the CLA.
+4. Add the copyright notice to the top of any new files you've added.
+5. Ensure tests pass on Travis and Circle CI.
+6. Make sure your code lints (`node linter.js <files touched>`).
+7. Squash your commits (`git rebase -i`).
+8. If you haven't already, sign the [CLA](https://code.facebook.com/cla).
+
+#### Copyright Notice for files
+
+Copy and paste this to the top of your new file(s):
+
+```JS
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+```
+
+If you've added a new module, add a `@providesModule <moduleName>` at the end of the comment. This will allow the haste package manager to find it.
 
 ### Contributor License Agreement (CLA)
 
