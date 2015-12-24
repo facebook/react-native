@@ -113,6 +113,7 @@
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReactInstanceManagerTests.cs" />
     <Compile Include="UIManager\AppRegistryTests.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitterTests.cs" />
     <Compile Include="UnitTestApp.xaml.cs">
@@ -140,6 +141,9 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Resources\index.windows.bundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\test.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

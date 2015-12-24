@@ -148,19 +148,26 @@ namespace ReactNative.Bridge.Queue
             {
                 _name = name;
                 _actionObservable = new Subject<Action>();
-                _subscription = _actionObservable
-                    .ObserveOnDispatcher()
-                    .Subscribe(action =>
-                    {
-                        try
-                        {
-                            action();
-                        }
-                        catch (Exception ex)
-                        {
-                            handler(ex);
-                        }
-                    });
+                try
+                {
+                    _subscription = _actionObservable
+                                    .ObserveOnDispatcher()
+                                    .Subscribe(action =>
+                                    {
+                                        try
+                                        {
+                                            action();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            handler(ex);
+                                        }
+                                    });
+                                    }
+                catch (Exception ex)
+                {
+                    handler(ex);
+                }
             }
 
             protected override void Enqueue(Action action)

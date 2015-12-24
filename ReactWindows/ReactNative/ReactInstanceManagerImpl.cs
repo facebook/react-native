@@ -10,6 +10,7 @@ using ReactNative.Bridge.Queue;
 using System.Threading.Tasks;
 using ReactNative.Tracing;
 using ReactNative.Hosting.Bridge;
+using System.Globalization;
 
 namespace ReactNative
 {
@@ -30,7 +31,7 @@ namespace ReactNative
     /// 5.Implement the ViewGroupManager as well as the main ReactViewManager
     /// 6.Create DevManager functionality to manage things like exceptions.
     /// </summary>
-    public class ReactInstanceManagerImpl : ReactInstanceManager
+    public class ReactInstanceManagerImpl : IReactInstanceManager
     {
         private readonly List<ReactRootView> _attachedRootViews = new List<ReactRootView>();
         private LifecycleState _lifecycleState;
@@ -56,9 +57,10 @@ namespace ReactNative
             _defaultHardwareBackButtonHandler = new DefaultHardwareBackButtonHandlerImpl(this);
         }
 
-        public override IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
+        public IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
         {
-            var allViewManagers = default(List<ViewManager<FrameworkElement, ReactShadowNode>>);
+            var allViewManagers = new List<ViewManager<FrameworkElement, ReactShadowNode>>();
+
             foreach (var reactPackage in _packages)
             {
                 var viewManagers = reactPackage.CreateViewManagers(catalystApplicationContext);
@@ -71,11 +73,12 @@ namespace ReactNative
         /// <summary>
         /// Loads the <see cref="ReactApplicationContext" /> based on the user configured bundle <see cref="ReactApplicationContext#_jsBundleFile" />
         /// </summary>
-        public override async void RecreateReactContextInBackgroundFromBundleFileAsync()
+        public async void RecreateReactContextInBackgroundFromBundleFileAsync()
         {
             var jsExecutor = new ChakraJavaScriptExecutor();
             var jsBundler = JavaScriptBundleLoader.CreateFileLoader(_jsBundleFile);
-            await CreateReactContextAsync(jsExecutor, jsBundler);
+            var contextInstance = await CreateReactContextAsync(jsExecutor, jsBundler);
+
         }
 
         private async Task<ReactContext> CreateReactContextAsync(IJavaScriptExecutor jsExecutor, JavaScriptBundleLoader jsBundleLoader)
@@ -160,7 +163,7 @@ namespace ReactNative
         /// Attaches the <see cref="ReactRootView" /> to the list of tracked root views
         /// </summary>
         /// <param name="rootView">The root view for the ReactJS app</param>
-        public override void AttachMeasuredRootView(ReactRootView rootView)
+        public void AttachMeasuredRootView(ReactRootView rootView)
         {
             _attachedRootViews.Add(rootView);
             
@@ -174,7 +177,7 @@ namespace ReactNative
         /// Detach given <see cref="rootView" /> from current catalyst instance. 
         /// </summary>
         /// <param name="rootView">The root view for the ReactJS app</param>
-        public override void DetachRootView(ReactRootView rootView)
+        public void DetachRootView(ReactRootView rootView)
         {
             if (_attachedRootViews.Remove(rootView))
             {
@@ -199,8 +202,8 @@ namespace ReactNative
 
         private void AttachMeasuredRootViewToInstance(ReactRootView rootView, ICatalystInstance catalystInstance)
         {
-            UIManagerModule uiManagerModule = catalystInstance.GetNativeModule<UIManagerModule>();
-            int rootTag = uiManagerModule.AddMeasuredRootView(rootView);
+            var uiManagerModule = catalystInstance.GetNativeModule<UIManagerModule>();
+            var rootTag = uiManagerModule.AddMeasuredRootView(rootView);
             var initialProps = new Dictionary<string, object>();
                 initialProps.Add("rootTag", rootTag);
 
@@ -232,6 +235,99 @@ namespace ReactNative
             public void InvokeDefaultOnBackPressed()
             {
                 _parent.InvokeDefaultOnBackPressed();
+            }
+        }
+
+        public sealed class Builder
+        {
+            private readonly List<IReactPackage> _reactPackages = new List<IReactPackage>();
+            private LifecycleState _LifecycleState;
+            private UIImplementationProvider _UIImplementationProvider;
+            private string _jsBundleFile;
+            private string _jsMainModuleName;
+
+            /// <summary>
+            /// Sets a provider of <see cref="UIImplementation" />.
+            /// </summary>
+            public UIImplementationProvider UIImplementationProvider
+            {
+                set
+                {
+                    _UIImplementationProvider = value;
+                }
+            }
+
+            /// <summary>
+            /// Path to the JS bundle file to be loaded from the file system.
+            /// </summary>
+            public string JSBundleFile
+            {
+                set
+                {
+                    _jsBundleFile = value;
+                }
+            }
+
+            /// <summary>
+            /// Path to your app's main module on the packager server. This is used when
+            /// reloading JS during development. All paths are relative to the root folder
+            /// the packager is serving files from.
+            /// </summary>
+            public string JSMainModuleName
+            {
+                set
+                {
+                    _jsMainModuleName = value;
+                }
+            }
+
+            public Builder AddPackage(IReactPackage reactPackage)
+            {
+                _reactPackages.Add(reactPackage);
+                return this;
+            }
+
+            /// <summary>
+            /// Instantiates a new {@link ReactInstanceManagerImpl}.
+            /// </summary>
+            /// <returns></returns>
+            public LifecycleState InitialLifecycleState
+            {
+                set
+                {
+                    _LifecycleState = value;
+                }
+            }
+
+            /// <summary>
+            /// Instantiates a new <see cref="ReactInstanceManagerImpl"/> .
+            /// Before calling <see mref="build"/>, the following must be called: setApplication then setJSMainModuleName
+            /// </summary>
+            /// <returns>A IReactInstanceManager instance</returns>
+            public IReactInstanceManager Build()
+            {
+                AssertNotNull(_LifecycleState, nameof(LifecycleState));
+                AssertNotNull(_jsMainModuleName, "string");
+                AssertNotNull(_jsBundleFile, "string");
+
+                if (_UIImplementationProvider == null)
+                {
+                    // create default UIImplementationProvider if the provided one is null.
+                    _UIImplementationProvider = new UIImplementationProvider();
+                }
+
+                return new ReactInstanceManagerImpl(_jsMainModuleName, _reactPackages,
+                                                    _LifecycleState, _UIImplementationProvider, _jsBundleFile);
+            }
+
+            private void AssertNotNull(object value, string name)
+            {
+                if (value == null)
+                    throw new InvalidOperationException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0} has not been set.",
+                            name));
             }
         }
     }

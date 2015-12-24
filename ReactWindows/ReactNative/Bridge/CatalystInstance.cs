@@ -283,7 +283,7 @@ namespace ReactNative.Bridge
                 AssertNotNull(_jsModulesConfig, nameof(JavaScriptModulesConfig));
                 AssertNotNull(_bundleLoader, nameof(BundleLoader));
                 AssertNotNull(_nativeModuleCallExceptionHandler, nameof(NativeModuleCallExceptionHandler));
-
+                 
                 return new CatalystInstance(
                     _catalystQueueConfigurationSpec,
                     _jsExecutor,
