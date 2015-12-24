@@ -64,9 +64,9 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
-  getTransformOptions: {
-    type: 'function',
-    default: () => ({}),
+  getTransformOptionsModulePath: {
+    type: 'string',
+    required: false,
   }
 });
 
