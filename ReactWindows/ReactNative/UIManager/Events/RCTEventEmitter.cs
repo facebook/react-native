@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 
-namespace ReactNative.Modules.Core
+namespace ReactNative.UIManager.Events
 {
     /// <summary>
     /// JavaScript event emitter.

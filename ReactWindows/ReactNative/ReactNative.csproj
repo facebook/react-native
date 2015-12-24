@@ -201,6 +201,9 @@
     <Compile Include="Tracing\TraceDisposable.cs" />
     <Compile Include="Tracing\Tracer.cs" />
     <Compile Include="UIManager\AppRegistry.cs" />
+    <Compile Include="UIManager\Events\TouchEventType.cs" />
+    <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
+    <Compile Include="UIManager\PointerEvents.cs" />
     <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
     <Compile Include="UIManager\ReactProp.cs" />
@@ -211,6 +214,7 @@
     <Compile Include="UIManager\UIImplementation.cs" />
     <Compile Include="UIManager\UIImplementationProvider.cs" />
     <Compile Include="UIManager\UIManagerModule.cs" />
+    <Compile Include="UIManager\UIManagerModule.Constants.cs" />
     <Compile Include="UIManager\UIViewOperationQueue.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
