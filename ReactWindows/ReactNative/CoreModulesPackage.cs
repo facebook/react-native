@@ -21,12 +21,12 @@ namespace ReactNative
     /// </summary>
     class CoreModulesPackage : IReactPackage
     {
-        private readonly ReactInstanceManager _reactInstanceManager;
+        private readonly IReactInstanceManager _reactInstanceManager;
         private readonly IDefaultHardwareBackButtonHandler _hardwareBackButtonHandler;
         private readonly UIImplementationProvider _uiImplementationProvider;
 
         public CoreModulesPackage(
-            ReactInstanceManager reactInstanceManager,
+            IReactInstanceManager reactInstanceManager,
             IDefaultHardwareBackButtonHandler hardwareBackButtonHandler,
             UIImplementationProvider uiImplementationProvider)
         {

@@ -14,7 +14,7 @@ namespace ReactNative
     /// </summary>
     public class ReactRootView : IRootView
     {
-        private ReactInstanceManager _ReactInstanceManager;
+        private IReactInstanceManager _ReactInstanceManager;
         private string _JSModuleName;
         private int _rootTageNode;
         private bool _IsAttachedToWindow;
@@ -59,7 +59,7 @@ namespace ReactNative
         /// </summary>
         /// <param name="reactInstanceManager">The React Instance Manager</param>
         /// <param name="moduleName">module to load</param>
-        public void StartReactApplication(ReactInstanceManager reactInstanceManager, string moduleName)
+        public void StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
         {
             _ReactInstanceManager = reactInstanceManager;
             _JSModuleName = moduleName;

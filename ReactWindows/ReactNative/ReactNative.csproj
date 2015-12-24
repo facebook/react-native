@@ -157,7 +157,7 @@
     <Compile Include="ReactInstanceManager.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
     <Compile Include="ReactRootView.cs" />
-    <Compile Include="csslayout\CSSNode.cs" />
+    <Compile Include="CSSlayout\CSSNode.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -188,8 +188,9 @@
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="IReactPackage.cs" />
-    <Compile Include="touch\JSResponderHandler.cs" />
-    <Compile Include="touch\OnInterceptTouchEventListener.cs" />
+    <Compile Include="Shell\MainReactPackage.cs" />
+    <Compile Include="Touch\JSResponderHandler.cs" />
+    <Compile Include="Touch\OnInterceptTouchEventListener.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
