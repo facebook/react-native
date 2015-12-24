@@ -5,9 +5,8 @@
 'use strict';
 
 jest
-  .dontMock('InteractionManager')
-  .dontMock('TaskQueue')
-  .dontMock('invariant');
+  .autoMockOff()
+  .mock('BatchedBridge');
 
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
