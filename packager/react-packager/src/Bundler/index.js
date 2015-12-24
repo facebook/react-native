@@ -136,7 +136,9 @@ class Bundler {
     this._projectRoots = opts.projectRoots;
     this._assetServer = opts.assetServer;
 
-    this._getTransformOptions = opts.getTransformOptions;
+    if (opts.getTransformOptionsModulePath) {
+      this._getTransformOptions = require(opts.getTransformOptionsModulePath);
+    }
   }
 
   kill() {
@@ -325,7 +327,8 @@ class Bundler {
     } else {
       return this._transformer.loadFileAndTransform(
         path.resolve(module.path),
-        this._getTransformOptions({bundle, module, platform})
+        this._getTransformOptions ?
+          this._getTransformOptions({bundle, module, platform}) : {}
       );
     }
   }

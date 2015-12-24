@@ -66,6 +66,7 @@ function getAppMiddleware(args, config) {
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
     assetRoots: args.assetRoots,
     assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
