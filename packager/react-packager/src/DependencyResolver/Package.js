@@ -5,7 +5,7 @@ const path = require('path');
 
 class Package {
 
-  constructor(file, fastfs, cache) {
+  constructor({ file, fastfs, cache }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this._fastfs = fastfs;
@@ -14,7 +14,7 @@ class Package {
   }
 
   getMain() {
-    return this._read().then(json => {
+    return this.read().then(json => {
       var replacements = getReplacements(json);
       if (typeof replacements === 'string') {
         return path.join(this.root, replacements);
@@ -36,13 +36,13 @@ class Package {
 
   isHaste() {
     return this._cache.get(this.path, 'package-haste', () =>
-      this._read().then(json => !!json.name)
+      this.read().then(json => !!json.name)
     );
   }
 
   getName() {
     return this._cache.get(this.path, 'package-name', () =>
-      this._read().then(json => json.name)
+      this.read().then(json => json.name)
     );
   }
 
@@ -51,7 +51,7 @@ class Package {
   }
 
   redirectRequire(name) {
-    return this._read().then(json => {
+    return this.read().then(json => {
       var replacements = getReplacements(json);
 
       if (!replacements || typeof replacements !== 'object') {
@@ -81,7 +81,7 @@ class Package {
     });
   }
 
-  _read() {
+  read() {
     if (!this._reading) {
       this._reading = this._fastfs.readFile(this.path)
         .then(jsonStr => JSON.parse(jsonStr));

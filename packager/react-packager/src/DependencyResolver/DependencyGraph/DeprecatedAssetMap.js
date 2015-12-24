@@ -92,7 +92,7 @@ class DeprecatedAssetMap {
         debug('Conflcting assets', name);
       }
 
-      this._map[name] = new AssetModule_DEPRECATED(file);
+      this._map[name] = new AssetModule_DEPRECATED({ file });
     }
   }
 
