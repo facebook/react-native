@@ -320,7 +320,6 @@ var styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: 'grey',
     borderWidth: 1,
-    height: 30,
     paddingLeft: 8,
   },
   equalSign: {
