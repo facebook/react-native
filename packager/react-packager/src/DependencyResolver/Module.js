@@ -31,14 +31,14 @@ class Module {
   }
 
   isHaste() {
-    return this._read().then(data => !!data.id);
+    return this.read().then(data => !!data.id);
   }
 
   getName() {
     return this._cache.get(
       this.path,
       'name',
-      () => this._read().then(data => {
+      () => this.read().then(data => {
         if (data.id) {
           return data.id;
         }
@@ -67,18 +67,18 @@ class Module {
   }
 
   getDependencies() {
-    return this._read().then(data => data.dependencies);
+    return this.read().then(data => data.dependencies);
   }
 
   getAsyncDependencies() {
-    return this._read().then(data => data.asyncDependencies);
+    return this.read().then(data => data.asyncDependencies);
   }
 
   invalidate() {
     this._cache.invalidate(this.path);
   }
 
-  _read() {
+  read() {
     if (!this._reading) {
       this._reading = this._fastfs.readFile(this.path).then(content => {
         const data = {};
