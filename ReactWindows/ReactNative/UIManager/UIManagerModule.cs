@@ -9,16 +9,19 @@ namespace ReactNative.UIManager
     /// <summary>
     /// Native module to allow JS to create and update native Views.
     /// </summary>
-    public class UIManagerModule : NativeModuleBase
+    public partial class UIManagerModule : NativeModuleBase
     {
-        private readonly UIImplementation _UIImplementation;
+        private readonly UIImplementation _uiImplementation;
+        private readonly IDictionary<string, object> _moduleConstants;
+
         private int nextRootTag = 1;
 
         public UIManagerModule(ReactApplicationContext reactContext,
                                IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagerList,
                                UIImplementation uiImplementation)
         {
-            _UIImplementation = uiImplementation;
+            _uiImplementation = uiImplementation;
+            _moduleConstants = CreateConstants(viewManagerList);
         }
 
         public override string Name
