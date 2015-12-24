@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
-using ReactNative.Modules.Core;
+using ReactNative.UIManager.Events;
 
 namespace ReactNative.Tests.UIManager.Events
 {

@@ -1,0 +1,260 @@
+﻿using ReactNative.UIManager.Events;
+using System.Collections.Generic;
+
+namespace ReactNative.UIManager
+{
+    using Windows.UI.Xaml;
+    using Map = Dictionary<string, object>;
+
+    public partial class UIManagerModule
+    {
+        private const string CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
+        private const string CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
+
+        public const string ACTION_DISMISSED = "dismissed";
+        public const string ACTION_ITEM_SELECTED = "itemSelected";
+
+        public static IDictionary<string, object> CreateConstants(IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
+        {
+            var constants = GetConstants();
+            var bubblingEventTypesConstants = GetBubblingEventTypeConstants();
+            var directEventTypesConstants = GetDirectEventTypeConstants();
+
+            foreach (var viewManager in viewManagers)
+            {
+                // TODO: add view manager exports
+            }
+
+            constants.Add(CUSTOM_BUBBLING_EVENT_TYPES_KEY, bubblingEventTypesConstants);
+            constants.Add(CUSTOM_DIRECT_EVENT_TYPES_KEY, directEventTypesConstants);
+
+            return constants;
+        }
+
+        public static IDictionary<string, object> GetBubblingEventTypeConstants()
+        {
+            return new Map
+            {
+                {
+                    "topChange",
+                    new Map
+                    {
+                        {
+                            "phasedRegistrationNames",
+                            new Map
+                            {
+                                { "bubbled", "onChange" },
+                                { "captured", "onChangeCapture" },
+                            }
+                        }
+                    }
+                },
+                {
+                    "topSelect",
+                    new Map
+                    {
+                        {
+                            "phasedRegistrationNames",
+                            new Map
+                            {
+                                { "bubbled", "onSelect" },
+                                { "captured", "onSelectCapture" },
+                            }
+                        }
+                    }
+                },
+                {
+                    TouchEventType.Start.GetJavaScriptEventName(),
+                    new Map
+                    {
+                        {
+                            "phasedRegistrationName",
+                            new Map
+                            {
+                                { "bubbled", "onTouchStart" },
+                                { "captured", "onTouchStartCapture" },
+                            }
+                        }
+                    }
+                },
+                                {
+                    TouchEventType.Move.GetJavaScriptEventName(),
+                    new Map
+                    {
+                        {
+                            "phasedRegistrationName",
+                            new Map
+                            {
+                                { "bubbled", "onTouchMove" },
+                                { "captured", "onTouchMoveCapture" },
+                            }
+                        }
+                    }
+                },
+                {
+                    TouchEventType.Start.GetJavaScriptEventName(),
+                    new Map
+                    {
+                        {
+                            "phasedRegistrationName",
+                            new Map
+                            {
+                                { "bubbled", "onTouchEnd" },
+                                { "captured", "onTouchEndCapture" },
+                            }
+                        }
+                    }
+                },
+            };
+        }
+
+        public static IDictionary<string, object> GetDirectEventTypeConstants()
+        {
+            return new Map
+            {
+                {
+                    "topSelectionChange",
+                    new Map
+                    {
+                        { "registrationName", "onSelectionChange" },
+                    }
+                },
+                {
+                    "topLoadingStart",
+                    new Map
+                    {
+                        { "registrationName", "onLoadingStart" },
+                    }
+                },
+                {
+                    "topLoadingFinish",
+                    new Map
+                    {
+                        { "registrationName", "onLoadingFinish" },
+                    }
+                },
+                {
+                    "topLoadingError",
+                    new Map
+                    {
+                        { "registrationName", "onLoadingError" },
+                    }
+                },
+                {
+                    "topLayout",
+                    new Map
+                    {
+                        { "registrationName", "onLayout" },
+                    }
+                },
+            };
+        }
+
+        public static IDictionary<string, object> GetConstants()
+        {
+            return new Map
+            {
+                {
+                    "UIView",
+                    new Map
+                    {
+                        {
+                            "ContentMode",
+                            new Map
+                            {
+                                /* TODO: declare content mode properties */
+                            }
+                        },
+                    }
+                },
+                {
+                    "UIText",
+                    new Map
+                    {
+                        {
+                            "AutocapitalizationType",
+                            new Map
+                            {
+                                /* TODO: declare capitalization types */
+                            }   
+                        },
+                    }
+                },
+                {
+                    "Dimensions",
+                    new Map
+                    {
+                        {
+                            "window",
+                            new Dictionary<string, object>
+                            {
+                                { "width", 100 },
+                                { "height", 100 },
+                                { "scale", 1 },
+                                /* TODO: verify values? */
+                                /* TODO: density and DPI needed? */
+                            }
+                        },
+                    }
+                },
+                {
+                    "StyleConstants",
+                    new Map
+                    {
+                        {
+                            "PointerEventsValues",
+                            new Map
+                            {
+                                { "none", PointerEvents.None.ToString() },
+                                { "boxNone", PointerEvents.BoxNone.ToString() },
+                                { "boxOnly", PointerEvents.BoxOnly.ToString() },
+                                { "unspecified", PointerEvents.Auto.ToString() },
+                            }
+                        },
+                    }
+                },
+                {
+                    "PopupMenu",
+                    new Map
+                    {
+                        { ACTION_DISMISSED, ACTION_DISMISSED },
+                        { ACTION_ITEM_SELECTED, ACTION_ITEM_SELECTED },
+                    }
+                },
+                {
+                    "AccessibilityEventTypes",
+                    new Map
+                    {
+                        /* TODO: declare accessibility event types */
+                    }
+                },
+            };
+        }
+
+        private static void RecursiveMerge(IDictionary<string, object> sink, IDictionary<string, object> source)
+        {
+            foreach (var pair in source)
+            {
+                var existing = default(object);
+                if (sink.TryGetValue(pair.Key, out existing))
+                {
+                    var sourceAsMap = pair.Value as IDictionary<string, object>;
+                    var sinkAsMap = existing as IDictionary<string, object>;
+                    if (sourceAsMap != null && sinkAsMap != null)
+                    {
+                        RecursiveMerge(sinkAsMap, sourceAsMap);
+                    }
+                    else
+                    {
+                        // TODO: replace with exception?
+                        sink.Add(pair.Key, pair.Value);
+                    }
+                }
+                else
+                {
+                    sink.Add(pair.Key, pair.Value);
+                }
+            }
+        }
+    }
+}
