@@ -62,7 +62,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private static final String REACT_CLASS = "RCTWebView";
 
   private static final String HTML_ENCODING = "UTF-8";
-  private static final String HTML_MIME_TYPE = "text/html";
+  private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
 
   public static final int COMMAND_GO_BACK = 1;
   public static final int COMMAND_GO_FORWARD = 2;
