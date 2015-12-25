@@ -210,6 +210,7 @@ import com.facebook.systrace.Systrace;
     // TODO(6803830): Don't instantiate devsupport manager when useDeveloperSupport is false
     mDevSupportManager = new DevSupportManager(
         applicationContext,
+        mCurrentActivity,
         mDevInterface,
         mJSMainModuleName,
         useDeveloperSupport);
@@ -395,6 +396,9 @@ import com.facebook.systrace.Systrace;
     mCurrentActivity = activity;
     if (mCurrentReactContext != null) {
       mCurrentReactContext.onResume(activity);
+    }
+    if (mDevSupportManager != null) {
+      mDevSupportManager.setActivityContext(mCurrentActivity);
     }
   }
 
