@@ -131,8 +131,8 @@ const _isConnectedSubscriptions = new Map();
  * ### isConnectionExpensive
  *
  * Available on Android. Detect if the current active connection is metered or not. A network is
- * classified as metered when the user is sensitive to heavy data usage on that connection due to
- * monetary costs, data limitations or battery/performance issues.
+ * classified as metered when the user is on a cellular network or a wifi hotspot based on a 
+ * cellular network.
  *
  * ```
  * NetInfo.isConnectionExpensive((isConnectionExpensive) => {
