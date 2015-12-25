@@ -35,10 +35,9 @@ export type Task = Function | SimpleTask | PromiseTask;
  * function is supplied, then the promise it returns will block execution of
  * tasks already in the queue until it resolves. This can be used to make sure
  * the first task is fully resolved (including asynchronous dependencies that
- * also schedule more tasks via `enqueue`) before starting on the next task that
- * might have been queued up earlier. The `onMoreTasks` constructor argument is
- * used to inform the owner that an async task has resolved and that the queue
- * should be processed again.
+ * also schedule more tasks via `enqueue`) before starting on the next task. 
+ * The `onMoreTasks` constructor argument is used to inform the owner that an 
+ * async task has resolved and that the queue should be processed again.
  *
  * Note: Tasks are only actually executed with explicit calls to `processNext`.
  */
