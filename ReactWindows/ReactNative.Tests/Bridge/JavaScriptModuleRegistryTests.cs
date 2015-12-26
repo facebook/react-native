@@ -2,8 +2,8 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
-using ReactNative.Modules.Core;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
 using System.Threading;
