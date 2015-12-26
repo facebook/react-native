@@ -1,6 +1,7 @@
 ﻿
 using ReactNative.Bridge;
 using ReactNative.UIManager;
+using ReactNative.Views;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 

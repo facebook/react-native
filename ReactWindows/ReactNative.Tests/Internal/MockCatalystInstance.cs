@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
+using ReactNative.Bridge.Queue;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ReactNative.Bridge.Queue;
 
 namespace ReactNative.Tests
 {
