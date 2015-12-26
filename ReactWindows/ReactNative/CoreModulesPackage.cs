@@ -2,6 +2,7 @@
 using ReactNative.Modules.Core;
 using ReactNative.Tracing;
 using ReactNative.UIManager;
+using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
