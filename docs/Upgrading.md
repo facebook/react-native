@@ -15,15 +15,14 @@ version of React Native:
 
 ## 1. Upgrade the `react-native` dependency
 
-Note the latest version of the `react-native` npm package from here:
+Note the latest version of the `react-native` npm package from here (or use `npm info react-native` to check):
 
 * https://www.npmjs.com/package/react-native
 
-Open your `package.json` file and update the version of `react-native` under `dependencies` to the
-latest version. Now, in a terminal run:
+Now install that version of `react-native` in your project with `npm install --save`. For example, to upgrade to the version `0.18`, in a terminal run:
 
 ```sh
-$ npm install
+$ npm install --save react-native@0.18
 ```
 
 ## 2. Upgrade your project templates
