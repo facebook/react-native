@@ -28,6 +28,12 @@ var support = React.createClass({
               questions.
             </p>
 
+            <H2>Community translation</H2>
+            <p>The following is a list of translated docs offered by community volunteers. Send a pull request to fill the list!</p>
+            <ul>
+              <li><a href="http://reactnative.cn">Chinese</a> (<a href="https://github.com/reactnativecn/react-native-docs-cn">source</a>)</li>
+            </ul>
+            
             <H2>Stack Overflow</H2>
             <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with <strong>react-native</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
 
