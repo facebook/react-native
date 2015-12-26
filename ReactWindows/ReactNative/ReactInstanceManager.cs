@@ -1,6 +1,7 @@
 using ReactNative.Bridge;
 using ReactNative.Modules.Core;
 using ReactNative.UIManager;
+using ReactNative.Views;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

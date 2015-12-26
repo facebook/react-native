@@ -74,16 +74,21 @@ namespace ReactNative.Bridge
             public Builder Add<T>() where T : IJavaScriptModule, new()
             {
                 var moduleId = _modules.Count;
-                _modules.Add(new JavaScriptModuleRegistration(moduleId, typeof(T)));
+                if (ValidJavaScriptModuleType(typeof(T)))
+                {
+                    _modules.Add(new JavaScriptModuleRegistration(moduleId, typeof(T)));
+                }
+                    
                 return this;
             }
 
             /// <summary>
-            /// Adds a JavaScript module of the given type.
+            /// Validates the module type is a proper javascript module type, 
+            /// and will throw the proper exception if 
             /// </summary>
-            /// <param name="moduleType">The module type.</param>
-            /// <returns>The builder instance.</returns>
-            public Builder Add(Type moduleType)
+            /// <param name="moduleType">The object type</param>
+            /// <returns>true: if the type is a valid JS module type</returns>
+            public static bool ValidJavaScriptModuleType(Type moduleType)
             {
                 if (moduleType.GetTypeInfo().IsAbstract)
                 {
@@ -101,7 +106,7 @@ namespace ReactNative.Bridge
                         string.Format(
                             CultureInfo.InvariantCulture,
                             "JavaScript module '{0}' must derive from IJavaScriptModule.",
-                            moduleType),    
+                            moduleType),
                         nameof(moduleType));
                 }
 
@@ -116,8 +121,23 @@ namespace ReactNative.Bridge
                         nameof(moduleType));
                 }
 
+                return true;
+            }
+
+            /// <summary>
+            /// Adds a JavaScript module of the given type.
+            /// </summary>
+            /// <param name="moduleType">The module type.</param>
+            /// <returns>The builder instance.</returns>
+            public Builder Add(Type moduleType)
+            {
                 var moduleId = _modules.Count;
-                _modules.Add(new JavaScriptModuleRegistration(moduleId, moduleType));
+
+                if (ValidJavaScriptModuleType(moduleType))
+                {
+                    _modules.Add(new JavaScriptModuleRegistration(moduleId, moduleType));
+                }
+
                 return this;
             }
 

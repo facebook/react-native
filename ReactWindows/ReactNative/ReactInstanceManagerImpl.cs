@@ -1,16 +1,16 @@
-﻿
-using ReactNative.Bridge;
-using ReactNative.Modules.Core;
-using ReactNative.UIManager;
-using System.Collections.Generic;
-using Windows.UI.Xaml;
-using System.Linq;
-using System;
+﻿using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
-using System.Threading.Tasks;
-using ReactNative.Tracing;
 using ReactNative.Hosting.Bridge;
+using ReactNative.Modules.Core;
+using ReactNative.Tracing;
+using ReactNative.UIManager;
+using ReactNative.Views;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace ReactNative
 {
@@ -21,7 +21,7 @@ namespace ReactNative
     /// of the framework.
     ///
     /// An instance of this manager is required to start JS application in <see cref="ReactRootView" /> (see
-    /// <see cref="ReactRootView#startReactApplication" /> for more info).
+    /// <see cref="ReactRootView.StartReactApplication(IReactInstanceManager, string)" /> for more info).
     ///
     /// TODO:
     /// 1.Implement background task functionality and ReactContextInitAsyncTask class hierarchy.
@@ -37,7 +37,7 @@ namespace ReactNative
         private LifecycleState _lifecycleState;
         private readonly string _jsBundleFile;
         private readonly List<IReactPackage> _packages;
-        private volatile ReactApplicationContext var;
+        private ReactApplicationContext _reactContext;
         private readonly string _jsMainModuleName;
         private readonly UIImplementationProvider _uiImplementationProvider;
         private readonly IDefaultHardwareBackButtonHandler _defaultHardwareBackButtonHandler;
@@ -57,6 +57,11 @@ namespace ReactNative
             _defaultHardwareBackButtonHandler = new DefaultHardwareBackButtonHandlerImpl(this);
         }
 
+        /// <summary>
+        /// Uses configured <see cref="IReactPackage" /> instances to create all view managers.
+        /// </summary>
+        /// <param name="catalystApplicationContext">react application instance</param>
+        /// <returns></returns>
         public IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
         {
             var allViewManagers = new List<ViewManager<FrameworkElement, ReactShadowNode>>();
@@ -71,7 +76,7 @@ namespace ReactNative
         }
 
         /// <summary>
-        /// Loads the <see cref="ReactApplicationContext" /> based on the user configured bundle <see cref="ReactApplicationContext#_jsBundleFile" />
+        /// Loads the <see cref="ReactApplicationContext" /> based on the user configured bundle.
         /// </summary>
         public async void RecreateReactContextInBackgroundFromBundleFileAsync()
         {
@@ -81,6 +86,12 @@ namespace ReactNative
 
         }
 
+        /// <summary>
+        /// Creates the react context instance which is based off the <see cref="CatalystInstance" />.
+        /// </summary>
+        /// <param name="jsExecutor">The Javascript Executor instance</param>
+        /// <param name="jsBundleLoader">The Javascript bundle loader responsible for loading the assembly</param>
+        /// <returns>An async task containing the created react context</returns>
         private async Task<ReactContext> CreateReactContextAsync(IJavaScriptExecutor jsExecutor, JavaScriptBundleLoader jsBundleLoader)
         {
             var reactContext = new ReactApplicationContext();
@@ -139,9 +150,9 @@ namespace ReactNative
 
             await javascriptRuntime.InitializeBridgeAsync();
             
-            return var;
+            return _reactContext;
         }
-
+        
         private void ProcessPackage(
             IReactPackage reactPackage,
             ReactApplicationContext reactContext,
@@ -155,21 +166,24 @@ namespace ReactNative
 
             foreach (var type in reactPackage.CreateJavaScriptModulesConfig())
             {
-                jsModulesBuilder.Add(type);
+                if (JavaScriptModulesConfig.Builder.ValidJavaScriptModuleType(type))
+                {
+                    jsModulesBuilder.Add(type);
+                } 
             }
         }
-
+        
         /// <summary>
-        /// Attaches the <see cref="ReactRootView" /> to the list of tracked root views
+        /// Attaches the <see cref="ReactRootView" /> to the list of tracked root views.
         /// </summary>
         /// <param name="rootView">The root view for the ReactJS app</param>
         public void AttachMeasuredRootView(ReactRootView rootView)
         {
             _attachedRootViews.Add(rootView);
             
-            if (var != null)
+            if (_reactContext != null)
             {
-                AttachMeasuredRootViewToInstance(rootView, var.CatalystInstance);
+                AttachMeasuredRootViewToInstance(rootView, _reactContext.CatalystInstance);
             }
         }
 
@@ -181,9 +195,9 @@ namespace ReactNative
         {
             if (_attachedRootViews.Remove(rootView))
             {
-                if (var != null)
+                if (_reactContext != null)
                 {
-                    DetachViewFromInstance(rootView, var.CatalystInstance);
+                    DetachViewFromInstance(rootView, _reactContext.CatalystInstance);
                 }
             }
         }
@@ -196,7 +210,7 @@ namespace ReactNative
             }
             catch (InvalidOperationException ex)
             {
-                throw new InvalidOperationException("Unable to load AppRegistry JS module. Error message: " + ex.Message);
+                throw new InvalidOperationException("Unable to load AppRegistry JS module. Error message: " + ex.Message, ex);
             }
         }
 
@@ -213,7 +227,7 @@ namespace ReactNative
             }
             catch (InvalidOperationException ex)
             {
-                throw new InvalidOperationException("Unable to load AppRegistry JS module. Error message: " + ex.Message);
+                throw new InvalidOperationException("Unable to load AppRegistry JS module. Error message: " + ex.Message, ex);
             }
         }
 
@@ -238,6 +252,9 @@ namespace ReactNative
             }
         }
 
+        /// <summary>
+        /// A Builder responsible for creating a React Instance Manager.
+        /// </summary>
         public sealed class Builder
         {
             private readonly List<IReactPackage> _reactPackages = new List<IReactPackage>();
@@ -281,9 +298,25 @@ namespace ReactNative
                 }
             }
 
+            /// <summary>
+            /// Adds a specified <see cref="IReactPackage" /> to the package list.
+            /// </summary>
+            /// <param name="reactPackage">Client requested package to load.</param>
+            /// <returns></returns>
             public Builder AddPackage(IReactPackage reactPackage)
             {
                 _reactPackages.Add(reactPackage);
+                return this;
+            }
+
+            /// <summary>
+            /// Concats a list of packages to the builder list.
+            /// </summary>
+            /// <param name="packages">Client requested package list to include</param>
+            /// <returns></returns>
+            public Builder AddPackages(List<IReactPackage> packages)
+            {
+                _reactPackages.Concat(packages);
                 return this;
             }
 

@@ -156,7 +156,6 @@
     <Compile Include="LifecycleState.cs" />
     <Compile Include="ReactInstanceManager.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
-    <Compile Include="ReactRootView.cs" />
     <Compile Include="CSSlayout\CSSNode.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
@@ -219,6 +218,9 @@
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
+    <Compile Include="Views\ReactRootView.xaml.cs">
+      <DependentUpon>ReactRootView.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +231,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Views\ReactRootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

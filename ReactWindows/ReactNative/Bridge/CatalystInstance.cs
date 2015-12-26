@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReactNative.Bridge.Queue;
 using ReactNative.Common;
@@ -67,22 +67,6 @@ namespace ReactNative.Bridge
         {
             get;
         } 
-
-        public JavaScriptModulesConfig JSModule
-        {
-            get
-            {
-                return _jsModulesConfig;
-            }
-        }
-
-        public IReactBridge Bridge
-        {
-            get
-            {
-                return _bridge;
-            }
-        }
 
         public T GetJavaScriptModule<T>() where T : IJavaScriptModule
         {
