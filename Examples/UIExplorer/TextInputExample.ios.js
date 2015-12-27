@@ -103,7 +103,7 @@ class RewriteExample extends React.Component {
   }
   render() {
     var limit = 20;
-    var remainder = limit - this.state.text.length;
+    var remainder = limit - Array.from(this.state.text).length;
     var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
