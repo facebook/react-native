@@ -148,15 +148,15 @@ exports.examples = [
   },
   {
     title: 'Plain Static Image',
-    description: 'Static assets should be required by prefixing with `image!` ' +
-      'and are located in the app bundle.',
+    description: 'Static assets should be placed in the source code tree, and ' +
+    'required in the same way as JavaScript modules.',
     render: function() {
       return (
         <View style={styles.horizontal}>
-          <Image source={require('image!uie_thumb_normal')} style={styles.icon} />
-          <Image source={require('image!uie_thumb_selected')} style={styles.icon} />
-          <Image source={require('image!uie_comment_normal')} style={styles.icon} />
-          <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
+          <Image source={require('./uie_thumb_normal.png')} style={styles.icon} />
+          <Image source={require('./uie_thumb_selected.png')} style={styles.icon} />
+          <Image source={require('./uie_comment_normal.png')} style={styles.icon} />
+          <Image source={require('./uie_comment_highlighted.png')} style={styles.icon} />
         </View>
       );
     },
@@ -320,19 +320,19 @@ exports.examples = [
         <View>
           <View style={styles.horizontal}>
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa' }]}
             />
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#4cd964' }]}
             />
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#ff2d55' }]}
             />
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#8e8e93' }]}
             />
           </View>
