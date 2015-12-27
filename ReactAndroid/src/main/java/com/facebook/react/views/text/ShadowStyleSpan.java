@@ -14,16 +14,10 @@ import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 
 public class ShadowStyleSpan extends CharacterStyle {
-  private final float mDx;
-  private final float mDy;
-  private final float mRadius;
+  private final float mDx, mDy, mRadius;
   private final int mColor;
 
-  public ShadowStyleSpan(
-    float dx,
-    float dy,
-    float radius,
-    int color) {
+  public ShadowStyleSpan(float dx, float dy, float radius, int color) {
     mDx = dx;
     mDy = dy;
     mRadius = radius;
