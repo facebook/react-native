@@ -360,14 +360,14 @@ var TextExample = React.createClass({
             No maximum lines specified no matter now much I write here. If I keep writing it{"'"}ll just keep going and going
           </Text>
         </UIExplorerBlock>
-        <UIExplorerBlock title="Text shadow">
-          <Text style={{fontSize: 20, textShadowOffset: {width: 10, height: 10}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
-            Demo text shadow
-          </Text>
-        </UIExplorerBlock>
         <UIExplorerBlock title="Inline images">
           <Text>
             This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Text shadow">
+          <Text style={{fontSize: 20, textShadowOffset: {width: 2, height: 2}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
+            Demo text shadow
           </Text>
         </UIExplorerBlock>
       </UIExplorerPage>

@@ -437,8 +437,8 @@ public class ReactTextShadowNode extends LayoutShadowNode {
       mTextShadowOffsetDx = 0;
       mTextShadowOffsetDy = 0;
     } else {
-      mTextShadowOffsetDx = (float) offsetMap.getDouble("width");
-      mTextShadowOffsetDy = (float) offsetMap.getDouble("height");
+      mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(offsetMap.getDouble("width"));
+      mTextShadowOffsetDy = PixelUtil.toPixelFromDIP(offsetMap.getDouble("height"));
     }
 
     markUpdated();
