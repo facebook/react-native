@@ -37,27 +37,68 @@ RCT_EXPORT_MODULE()
     [textField sendKeyValueForString:string];
   }
 
-  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+  
+  // "Marked text, which is part of multistage text input represents
+  // provisionally inserted text the user has yet to confirm".
+  // So it may be not appropriate to count them up until they have
+  // been confirmed by user.
+  if (textField.maxLength == nil ||
+      textField.markedTextRange ||
+      [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
     return YES;
   }
-  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
-  if (string.length > allowedLength) {
-    if (string.length > 1) {
+  
+  NSUInteger allowedLength = textField.maxLength.integerValue - [self _apparentLengthOfText:textField.text] + [self _apparentLengthOfText:[textField.text substringWithRange:range]];
+  NSUInteger replacementTextLength = [self _apparentLengthOfText:string];
+  
+  if (replacementTextLength > allowedLength) {
+    if (allowedLength > 0) {
       // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [string substringToIndex:allowedLength];
+      NSRange allowedRange = [self _rangeOfText:string allowedLength:allowedLength];
+      NSString *limitedString = [string substringWithRange:allowedRange];
       NSMutableString *newString = textField.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textField.text = newString;
       // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
+      [self _textInput:textField placeCaretAtOffset:range.location + allowedRange.length];
       [textField textFieldDidChange];
     }
     return NO;
-  } else {
-    return YES;
   }
+  return YES;
+}
+
+- (void)_textInput:(id<UITextInput>)textInput placeCaretAtOffset:(NSUInteger)offset
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+  
+}
+
+- (NSUInteger)_apparentLengthOfText:(NSString *)text
+{
+  // Composed character sequences like surrogate-pair('é'), emoiji('😛'), etc., are treated
+  // as one symbol, as we human would count.
+  __block NSUInteger length = 0;
+  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    length++;
+  }];
+  return length;
+}
+
+- (NSRange)_rangeOfText:(NSString *)text allowedLength:(NSUInteger)length
+{
+  __block NSUInteger limitedLength = 0;
+  __block NSRange range = NSMakeRange(0, 0);
+  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    limitedLength++;
+    if (limitedLength == length) {
+      range.length = substringRange.location + substringRange.length;
+      *stop = YES;
+    }
+  }];
+  return range;
 }
 
 // This method allows us to detect a `Backspace` keyPress

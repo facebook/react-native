@@ -320,27 +320,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
 
-  if (_maxLength == nil) {
+  
+  // "Marked text, which is part of multistage text input represents
+  // provisionally inserted text the user has yet to confirm".
+  // So it may be not appropriate to count them up until they have
+  // been confirmed by user.
+  if (_maxLength == nil || textView.markedTextRange) {
     return YES;
   }
-  NSUInteger allowedLength = _maxLength.integerValue - textView.text.length + range.length;
-  if (text.length > allowedLength) {
-    if (text.length > 1) {
+  
+  NSUInteger allowedLength = _maxLength.integerValue - [self _apparentLengthOfText:textView.text] + [self _apparentLengthOfText:[textView.text substringWithRange:range]];
+  NSUInteger replacementTextLength = [self _apparentLengthOfText:text];
+  
+  if (replacementTextLength > allowedLength) {
+    if (allowedLength > 0) {
       // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [text substringToIndex:allowedLength];
+      NSRange allowedRange = [self _rangeOfText:text allowedLength:allowedLength];
+      NSString *limitedString = [text substringWithRange:allowedRange];
       NSMutableString *newString = textView.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textView.text = newString;
       // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textView positionFromPosition:textView.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textView.selectedTextRange = [textView textRangeFromPosition:insertEnd toPosition:insertEnd];
+      [self _textInput:textView placeCaretAtOffset:range.location + allowedRange.length];
       [self textViewDidChange:textView];
     }
     return NO;
-  } else {
-    return YES;
   }
+  return YES;
 }
 
 - (void)textViewDidChangeSelection:(RCTUITextView *)textView
@@ -432,9 +438,43 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+  // Code in `-textView:shouldChangeTextInRange:replacementText` could handle most of
+  // cases. But there are exceptions. For instance, multistage input like Hanzi(Chinese),
+  // won't trigger `-textView:shouldChangeTextInRange:replacementText` when users confirm
+  // the marked text they have input by tapping the candidate bar of the keyboard. In
+  // these cases, truncating input string should happen in `-textViewDidChange:`.
+  // As we have done in `-textView:shouldChangeTextInRange:replacementText`, we won't
+  // do anything when `markedTextRange` is not nil, which means users have not confirmed
+  // what text to input.
+  if (!textView.markedTextRange) {
+    NSRange selectedTextRange = textView.selectedRange;
+    // It seems that it's impossible to have a textView which has some text selected after  
+    // its text have just changed, unless we set it programmatically.
+    if (self.maxLength && selectedTextRange.length == 0) {
+      __block NSInteger exceededLength = [self _apparentLengthOfText:textView.text] - _maxLength.integerValue;
+      if (exceededLength > 0) {
+        NSString *text = [textView.text substringWithRange:NSMakeRange(0, selectedTextRange.location)];
+        __block NSRange rangeToRemove;
+        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences|NSStringEnumerationReverse usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+          exceededLength--;
+          if (exceededLength == 0) {
+            rangeToRemove.location = substringRange.location;
+            rangeToRemove.length = selectedTextRange.location - substringRange.location;
+            *stop = YES;
+          }
+        }];
+        
+        NSMutableString *newString = [textView.text mutableCopy];
+        [newString replaceCharactersInRange:rangeToRemove withString:@""];
+        textView.text = newString;
+        [self _textInput:textView placeCaretAtOffset:rangeToRemove.location];
+      }
+    }
+  }
+
   [self updateContentSize];
   [self _setPlaceholderVisibility];
-  _nativeEventCount++;
+    _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
                                      text:textView.text
@@ -503,6 +543,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UIColor *)defaultPlaceholderTextColor
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
+}
+
+- (void)_textInput:(id<UITextInput>)textInput placeCaretAtOffset:(NSUInteger)offset
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
+- (NSUInteger)_apparentLengthOfText:(NSString *)text
+{
+  // Composed character sequences like surrogate-pair('é'), emoiji('😛'), etc., are treated
+  // as one symbol, as we human would count.
+  __block NSUInteger length = 0;
+  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    length++;
+  }];
+  return length;
+}
+
+- (NSRange)_rangeOfText:(NSString *)text allowedLength:(NSUInteger)length
+{
+  __block NSUInteger limitedLength = 0;
+  __block NSRange range = NSMakeRange(0, 0);
+  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    limitedLength++;
+    if (limitedLength == length) {
+      range.length = substringRange.location + substringRange.length;
+      *stop = YES;
+    }
+  }];
+  return range;
 }
 
 @end

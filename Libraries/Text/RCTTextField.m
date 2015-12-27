@@ -167,6 +167,48 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 
 - (void)textFieldDidChange
 {
+  // Code in `-textField:shouldChangeCharactersInRange:replacementString` could handle most of
+  // cases. But there are exceptions. For instance, multistage input like Hanzi(Chinese),
+  // won't trigger `-textField:shouldChangeCharactersInRange:replacementString` when users
+  // confirm the marked text they have input by tapping the candidate bar of the keyboard. In
+  // these cases, truncating input string should happen in `-textFieldDidChange`.
+  // As we have done in `-textField:shouldChangeCharactersInRange:replacementString`, we won't
+  // do anything when `markedTextRange` is not nil, which means users have not confirmed
+  // what text to input.
+  if (!self.markedTextRange) {
+    UITextRange *selectedRange = self.selectedTextRange;
+    // It seems that it's impossible to have a textField which has some text selected after
+    // its text have just changed, unless we set it programmatically.
+    if (self.maxLength && selectedRange && selectedRange.isEmpty) {
+      __block NSInteger exceededLength = [self _apparentLengthOfText:self.text] - self.maxLength.integerValue;
+      if (exceededLength > 0) {
+        UITextRange *textRange = [self textRangeFromPosition:self.beginningOfDocument toPosition:selectedRange.end];
+        NSString *text = [self textInRange:textRange];
+        __block NSRange rangeToRemove;
+        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences|NSStringEnumerationReverse usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+          exceededLength--;
+          if (exceededLength == 0) {
+            rangeToRemove.location = substringRange.location;
+            rangeToRemove.length = text.length - substringRange.location;
+            *stop = YES;
+          }
+        }];
+        
+        NSMutableString *newString = [self.text mutableCopy];
+        [newString replaceCharactersInRange:rangeToRemove withString:@""];
+        
+        // It's a workaround to set text without considering the event lag. Because when multistage input
+        // has been confirmed, `-textFieldDidChange` will be triggered serveral times in succession,
+        // with the same text. The only difference is that the `markedTextRange` is nil the last
+        // time. `-setText:` will fail because the native event count will increase 2 or more instantaneously
+        // and JS code cannot catch up. So we have to resort to call super's `-setText:`.
+        super.text = newString;
+        [self _textInput:self placeCaretAtOffset:rangeToRemove.location];
+      }
+    }
+    
+  }
+
   _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
@@ -277,6 +319,24 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
                                  eventCount:_nativeEventCount];
   }
   return result;
+}
+
+- (void)_textInput:(id<UITextInput>)textInput placeCaretAtOffset:(NSUInteger)offset
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
+- (NSUInteger)_apparentLengthOfText:(NSString *)text
+{
+  // Composed character sequences like surrogate-pair('é'), emoiji('😛'), etc., are treated
+  // as one symbol, as we human would count.
+  __block NSUInteger length = 0;
+  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    length++;
+  }];
+  return length;
 }
 
 @end
