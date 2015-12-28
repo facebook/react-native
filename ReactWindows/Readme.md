@@ -10,28 +10,21 @@ This setup has only been tested on Windows 10 so far. The target environment is 
 
 Assuming you have [Visual Studio 2015 Enterprise](\\products\PUBLIC\Products\Developers) installed, you will also need to have Windows 10 SDK installed. 
 
-Make sure you have the following installed:
-
-- Android SDK version 23 (compileSdkVersion in [`build.gradle`](build.gradle))
-- SDK build tools version 23.0.1 (buildToolsVersion in [`build.gradle`](build.gradle))
-- Android Support Repository >= 17 (for Android Support Library)
-- Android NDK (download & extraction instructions [here](http://developer.android.com/ndk/downloads/index.html))
-
-Point Gradle to your Android SDK: either have `$ANDROID_SDK` and `$ANDROID_NDK` defined, or create a `local.properties` file in the root of your `react-native` checkout with the following contents:
-
-    sdk.dir=absolute_path_to_android_sdk
-    ndk.dir=absolute_path_to_android_ndk
-
-Example:
-
-    sdk.dir=/Users/your_unix_name/android-sdk-macosx
-    ndk.dir=/Users/your_unix_name/android-ndk/android-ndk-r10e
-
-## Run `npm install`
-
-This is needed to fetch the dependencies for the packager.
-
-```bash
-cd react-native
-npm install
+Clone this repo onto your local machine.
 ```
+git clone https://github.com/CatalystCode/react-native.git
+cd react-native
+git checkout -b ReactWindows
+git checkout -b "YOUR PERSONAL BRANCH"
+```
+
+Build your environment :
+
+- Open up the ReactNative solution file in Visual Studio Enterprise. The solution file can be found in {CWD}/ReactWindows/ReactNative.sln.
+- If this is your first time using UWP, you will have to install the SDK. Right click on the solution file in the solution explorer and select the option labeled "Install Missing Components". You'll likely have to shutdown visual studio to continue the installation.
+- You can start building the solution once all the packges are installed Build->Rebuild Solution. 
+
+Unit Tests:
+
+- Open up the Test Explorer Tests->Windows->Test Explorer, then select Run All. You can reach out to eric or myself if you're experiencing any test failures. 
+
