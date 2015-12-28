@@ -203,7 +203,7 @@ var Navigator = React.createClass({
      *
      * ```
      * (route, navigator) =>
-     *   <MySceneComponent title={route.title} />
+     *   <MySceneComponent title={route.title} navigator={navigator} />
      * ```
      */
     renderScene: PropTypes.func.isRequired,
