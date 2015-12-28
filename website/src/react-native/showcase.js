@@ -172,7 +172,11 @@ var apps = [
   {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
-    link: 'http://www.s21g.com/DockMan.html',
+    linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.s21g.DockMan',
+    blogs: [
+      'http://www.s21g.com/DockMan.html',
+    ],
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
