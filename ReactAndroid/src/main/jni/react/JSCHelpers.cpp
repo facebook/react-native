@@ -19,4 +19,13 @@ void installGlobalFunction(
   JSStringRelease(jsName);
 }
 
+JSValueRef makeJSCException(
+    JSContextRef ctx,
+    const char* exception_text) {
+  JSStringRef message = JSStringCreateWithUTF8CString(exception_text);
+  JSValueRef exceptionString = JSValueMakeString(ctx, message);
+  JSStringRelease(message);
+  return JSValueToObject(ctx, exceptionString, NULL);
+}
+
 } }

@@ -5,6 +5,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,11 +73,13 @@ import com.facebook.react.bridge.ReadableMap;
           VIEW_MGR_ARGS[0] = viewToUpdate;
           VIEW_MGR_ARGS[1] = extractProperty(props);
           mSetter.invoke(viewManager, VIEW_MGR_ARGS);
+          Arrays.fill(VIEW_MGR_ARGS, null);
         } else {
           VIEW_MGR_GROUP_ARGS[0] = viewToUpdate;
           VIEW_MGR_GROUP_ARGS[1] = mIndex;
           VIEW_MGR_GROUP_ARGS[2] = extractProperty(props);
           mSetter.invoke(viewManager, VIEW_MGR_GROUP_ARGS);
+          Arrays.fill(VIEW_MGR_GROUP_ARGS, null);
         }
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
@@ -92,10 +95,12 @@ import com.facebook.react.bridge.ReadableMap;
         if (mIndex == null) {
           SHADOW_ARGS[0] = extractProperty(props);
           mSetter.invoke(nodeToUpdate, SHADOW_ARGS);
+          Arrays.fill(SHADOW_ARGS, null);
         } else {
           SHADOW_GROUP_ARGS[0] = mIndex;
           SHADOW_GROUP_ARGS[1] = extractProperty(props);
           mSetter.invoke(nodeToUpdate, SHADOW_GROUP_ARGS);
+          Arrays.fill(SHADOW_GROUP_ARGS, null);
         }
       } catch (Throwable t) {
         FLog.e(ViewManager.class, "Error while updating prop " + mPropName, t);
@@ -133,6 +138,11 @@ import com.facebook.react.bridge.ReadableMap;
 
     public DoublePropSetter(ReactProp prop, Method setter, double defaultValue) {
       super(prop, "number", setter);
+      mDefaultValue = defaultValue;
+    }
+
+    public DoublePropSetter(ReactPropGroup prop, Method setter, int index, double defaultValue) {
+      super(prop, "number", setter, index);
       mDefaultValue = defaultValue;
     }
 
@@ -360,6 +370,12 @@ import com.facebook.react.bridge.ReadableMap;
         props.put(
             names[i],
             new FloatPropSetter(annotation, method, i, annotation.defaultFloat()));
+      }
+    } else if (propTypeClass == double.class) {
+      for (int i = 0; i < names.length; i++) {
+        props.put(
+            names[i],
+            new DoublePropSetter(annotation, method, i, annotation.defaultDouble()));
       }
     } else if (propTypeClass == Integer.class) {
       for (int i = 0; i < names.length; i++) {

@@ -547,7 +547,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   /**
    * Directly set the value.  This will stop any animations running on the value
-   * and udpate all the bound properties.
+   * and update all the bound properties.
    */
   setValue(value: number): void {
     if (this._animation) {
@@ -578,7 +578,7 @@ class AnimatedValue extends AnimatedWithChildren {
   /**
    * Adds an asynchronous listener to the value so you can observe updates from
    * animations or whathaveyou.  This is useful because there is no way to
-   * syncronously read the value because it might be driven natively.
+   * synchronously read the value because it might be driven natively.
    */
   addListener(callback: ValueListenerCallback): string {
     var id = String(_uniqueId++);
@@ -840,6 +840,64 @@ class AnimatedInterpolation extends AnimatedWithChildren {
   }
 }
 
+class AnimatedAddition extends AnimatedWithChildren {
+  _a: Animated;
+  _b: Animated;
+
+  constructor(a: Animated, b: Animated) {
+    super();
+    this._a = a;
+    this._b = b;
+  }
+
+  __getValue(): number {
+    return this._a.__getValue() + this._b.__getValue();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+    this._b.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+    this._b.__removeChild(this);
+  }
+}
+
+class AnimatedMultiplication extends AnimatedWithChildren {
+  _a: Animated;
+  _b: Animated;
+
+  constructor(a: Animated, b: Animated) {
+    super();
+    this._a = a;
+    this._b = b;
+  }
+
+  __getValue(): number {
+    return this._a.__getValue() * this._b.__getValue();
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+    this._b.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+    this._b.__removeChild(this);
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
@@ -1094,6 +1152,10 @@ function createAnimatedComponent(Component: any): any {
   }
   AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
+      if (!Component.propTypes) {
+        return;
+      }
+
       for (var key in ViewStylePropTypes) {
         if (!Component.propTypes[key] && props[key] !== undefined) {
           console.error(
@@ -1155,6 +1217,20 @@ class AnimatedTracking extends Animated {
 type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void;
   stop: () => void;
+};
+
+var add = function(
+  a: Animated,
+  b: Animated
+): AnimatedAddition {
+  return new AnimatedAddition(a, b);
+};
+
+var multiply = function(
+  a: Animated,
+  b: Animated
+): AnimatedMultiplication {
+  return new AnimatedMultiplication(a, b);
 };
 
 var maybeVectorAnim = function(
@@ -1409,7 +1485,7 @@ var event = function(
  * The simplest workflow is to create an `Animated.Value`, hook it up to one or
  * more style attributes of an animated component, and then drive updates either
  * via animations, such as `Animated.timing`, or by hooking into gestures like
- * panning or scolling via `Animated.event`.  `Animated.Value` can also bind to
+ * panning or scrolling via `Animated.event`.  `Animated.Value` can also bind to
  * props other than style, and can be interpolated as well.  Here is a basic
  * example of a container view that will fade in when it's mounted:
  *
@@ -1441,7 +1517,7 @@ var event = function(
  * Note that only animatable components can be animated.  `View`, `Text`, and
  * `Image` are already provided, and you can create custom ones with
  * `createAnimatedComponent`.  These special components do the magic of binding
- * the animated values to the properties, and do targetted native updates to
+ * the animated values to the properties, and do targeted native updates to
  * avoid the cost of the react render and reconciliation process on every frame.
  * They also handle cleanup on unmount so they are safe by default.
  *
@@ -1483,7 +1559,7 @@ var event = function(
  * Animation App, and [Animations documentation guide](http://facebook.github.io/react-native/docs/animations.html).
  *
  * Note that `Animated` is designed to be fully serializable so that animations
- * can be run in a high performace way, independent of the normal JavaScript
+ * can be run in a high performance way, independent of the normal JavaScript
  * event loop. This does influence the API, so keep that in mind when it seems a
  * little trickier to do something compared to a fully synchronous system.
  * Checkout `Animated.Value.addListener` as a way to work around some of these
@@ -1518,6 +1594,17 @@ module.exports = {
   spring,
 
   /**
+   * Creates a new Animated value composed from two Animated values added
+   * together.
+   */
+  add,
+  /**
+   * Creates a new Animated value composed from two Animated values multiplied
+   * together.
+   */
+  multiply,
+
+  /**
    * Starts an animation after the given delay.
    */
   delay,
@@ -1544,12 +1631,12 @@ module.exports = {
    *  then calls `setValue` on the mapped outputs.  e.g.
    *
    *```javascript
-   *  onScroll={this.AnimatedEvent(
+   *  onScroll={Animated.event(
    *    [{nativeEvent: {contentOffset: {x: this._scrollX}}}]
    *    {listener},          // Optional async listener
    *  )
    *  ...
-   *  onPanResponderMove: this.AnimatedEvent([
+   *  onPanResponderMove: Animated.event([
    *    null,                // raw event arg ignored
    *    {dx: this._panX},    // gestureState arg
    *  ]),

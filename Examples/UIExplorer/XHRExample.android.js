@@ -18,6 +18,7 @@
 var React = require('react-native');
 var {
   PixelRatio,
+  ProgressBarAndroid,
   StyleSheet,
   Text,
   TextInput,
@@ -26,8 +27,10 @@ var {
 } = React;
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
+var XHRExampleCookies = require('./XHRExampleCookies');
 
-// TODO t7093728 This is a simlified XHRExample.ios.js.
+
+// TODO t7093728 This is a simplified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
 // we should make this consistent with iOS.
 
@@ -61,7 +64,6 @@ class Downloader extends React.Component {
         this.setState({
           downloaded: xhr.responseText.length,
         });
-        console.log(xhr.responseText.length);
       } else if (xhr.readyState === xhr.DONE) {
         if (this.cancelled) {
           this.cancelled = false;
@@ -83,6 +85,8 @@ class Downloader extends React.Component {
       }
     };
     xhr.open('GET', 'http://www.gutenberg.org/cache/epub/100/pg100.txt');
+    // Avoid gzip so we can actually show progress
+    xhr.setRequestHeader('Accept-Encoding', '');
     xhr.send();
     this.xhr = xhr;
 
@@ -114,6 +118,8 @@ class Downloader extends React.Component {
     return (
       <View>
         {button}
+        <ProgressBarAndroid progress={(this.state.downloaded / this.state.contentSize)}
+          styleAttr="Horizontal" indeterminate={false} />
         <Text>{this.state.status}</Text>
       </View>
     );
@@ -280,6 +286,11 @@ exports.examples = [{
   render() {
     return <XHRExampleHeaders/>;
   }
+}, {
+  title: 'Cookies',
+  render() {
+    return <XHRExampleCookies/>;
+  }
 }];
 
 var styles = StyleSheet.create({
@@ -309,7 +320,6 @@ var styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: 'grey',
     borderWidth: 1,
-    height: 30,
     paddingLeft: 8,
   },
   equalSign: {

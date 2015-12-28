@@ -366,25 +366,29 @@
   };
 
   function setupConsole(global) {
-
-    var originalConsole = global.console;
-
     if (!global.nativeLoggingHook) {
       return;
     }
 
     function getNativeLogFunction(level) {
       return function() {
-        var str = Array.prototype.map.call(arguments, function(arg) {
-          return inspect(arg, {depth: 10});
-        }).join(', ');
-        if (str.slice(0, 10) === "'Warning: " && level >= LOG_LEVELS.error) {
+        var str;
+        if (arguments.length === 1 && typeof arguments[0] === 'string') {
+          str = arguments[0];
+        } else {
+          str = Array.prototype.map.call(arguments, function(arg) {
+            return inspect(arg, {depth: 10});
+          }).join(', ');
+        }
+
+        var logLevel = level;
+        if (str.slice(0, 9) === 'Warning: ' && logLevel >= LOG_LEVELS.error) {
           // React warnings use console.error so that a stack trace is shown,
           // but we don't (currently) want these to show a redbox
           // (Note: Logic duplicated in ExceptionsManager.js.)
-          level = LOG_LEVELS.warn;
+          logLevel = LOG_LEVELS.warn;
         }
-        global.nativeLoggingHook(str, level);
+        global.nativeLoggingHook(str, logLevel);
       };
     }
 
@@ -455,7 +459,14 @@
       global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.info);
     }
 
-    global.console = {
+    // Preserve the original `console` as `originalConsole`
+    var originalConsole = global.console;
+    var descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+    if (descriptor) {
+      Object.defineProperty(global, 'originalConsole', descriptor);
+    }
+
+    var console = {
       error: getNativeLogFunction(LOG_LEVELS.error),
       info: getNativeLogFunction(LOG_LEVELS.info),
       log: getNativeLogFunction(LOG_LEVELS.info),
@@ -464,16 +475,24 @@
       table: consoleTablePolyfill
     };
 
+    // don't reassign to the original descriptor. breaks on ios7
+    Object.defineProperty(global, 'console', {
+      value: console,
+      configurable: descriptor ? descriptor.configurable : true,
+      enumerable: descriptor ? descriptor.enumerable : true,
+      writable: descriptor ? descriptor.writable : true,
+    });
+
     // If available, also call the original `console` method since that is
     // sometimes useful. Ex: on OS X, this will let you see rich output in
     // the Safari Web Inspector console.
     if (__DEV__ && originalConsole) {
-      Object.keys(global.console).forEach(methodName => {
-        var reactNativeMethod = global.console[methodName];
+      Object.keys(console).forEach(methodName => {
+        var reactNativeMethod = console[methodName];
         if (originalConsole[methodName]) {
-          global.console[methodName] = function() {
+          console[methodName] = function() {
             originalConsole[methodName](...arguments);
-            reactNativeMethod.apply(global.console, arguments);
+            reactNativeMethod.apply(console, arguments);
           };
         }
       });

@@ -7,11 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule TouchableHighlight
+ * @noflow
  */
 'use strict';
 
 // Note (avik): add @flow when Flow supports spread properties in propTypes
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -75,7 +77,7 @@ var TouchableHighlight = React.createClass({
      * The color of the underlay that will show through when the touch is
      * active.
      */
-    underlayColor: React.PropTypes.string,
+    underlayColor: ColorPropType,
     style: View.propTypes.style,
     /**
      * Called immediately after the underlay is shown

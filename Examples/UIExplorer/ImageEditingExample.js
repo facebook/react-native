@@ -20,15 +20,17 @@ var React = require('react-native');
 var {
   CameraRoll,
   Image,
+  ImageEditor,
   NativeModules,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
+  UIManager,
   View,
 } = React;
-var ImageEditingManager = NativeModules.ImageEditingManager;
-var RCTScrollViewConsts = NativeModules.UIManager.RCTScrollView.Constants;
+
+var RCTScrollViewConsts = UIManager.RCTScrollView.Constants;
 
 var PAGE_SIZE = 20;
 
@@ -42,14 +44,16 @@ type ImageSize = {
   height: number;
 };
 
-type TransformData = {
+type ImageCropData = {
   offset: ImageOffset;
   size: ImageSize;
-}
+  displaySize?: ?ImageSize;
+  resizeMode?: ?any; 
+};
 
 class SquareImageCropper extends React.Component {
   _isMounted: boolean;
-  _transformData: TransformData;
+  _transformData: ImageCropData;
 
   constructor(props) {
     super(props);
@@ -166,7 +170,7 @@ class SquareImageCropper extends React.Component {
   }
 
   _crop() {
-    ImageEditingManager.cropImage(
+    ImageEditor.cropImage(
       this.state.randomPhoto.uri,
       this._transformData,
       (croppedImageURI) => this.setState({croppedImageURI}),
@@ -230,7 +234,7 @@ class ImageCropper extends React.Component {
     var sizeRatioX = croppedImageSize.width / scaledImageSize.width;
     var sizeRatioY = croppedImageSize.height / scaledImageSize.height;
 
-    this.props.onTransformDataChange && this.props.onTransformDataChange({
+    var cropData: ImageCropData = {
       offset: {
         x: this.props.image.width * offsetRatioX,
         y: this.props.image.height * offsetRatioY,
@@ -239,7 +243,8 @@ class ImageCropper extends React.Component {
         width: this.props.image.width * sizeRatioX,
         height: this.props.image.height * sizeRatioY,
       },
-    });
+    };
+    this.props.onTransformDataChange && this.props.onTransformDataChange(cropData);
   }
 
   render() {
@@ -270,8 +275,8 @@ class ImageCropper extends React.Component {
 }
 
 exports.framework = 'React';
-exports.title = 'ImageEditingManager';
-exports.description = 'Cropping and scaling with ImageEditingManager';
+exports.title = 'ImageEditor';
+exports.description = 'Cropping and scaling with ImageEditor';
 exports.examples = [{
   title: 'Image Cropping',
   render() {

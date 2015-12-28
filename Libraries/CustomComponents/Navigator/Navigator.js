@@ -50,7 +50,7 @@ var rebound = require('rebound');
 var PropTypes = React.PropTypes;
 
 // TODO: this is not ideal because there is no guarantee that the navigator
-// is full screen, hwoever we don't have a good way to measure the actual
+// is full screen, however we don't have a good way to measure the actual
 // size of the navigator right now, so this is the next best thing.
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -329,7 +329,6 @@ var Navigator = React.createClass({
     });
     this.panGesture = PanResponder.create({
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-      onPanResponderGrant: this._handlePanResponderGrant,
       onPanResponderRelease: this._handlePanResponderRelease,
       onPanResponderMove: this._handlePanResponderMove,
       onPanResponderTerminate: this._handlePanResponderTerminate,
@@ -376,6 +375,7 @@ var Navigator = React.createClass({
       transitionQueue: [],
     }, () => {
       this._handleSpringUpdate();
+      this._navBar && this._navBar.immediatelyRefresh();
     });
   },
 
@@ -609,7 +609,8 @@ var Navigator = React.createClass({
     if (!sceneConfig) {
       return false;
     }
-    this._expectingGestureGrant = this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
+    this._expectingGestureGrant =
+      this._matchGestureAction(this._eligibleGestures, sceneConfig.gestures, gestureState);
     return !!this._expectingGestureGrant;
   },
 
@@ -619,16 +620,6 @@ var Navigator = React.createClass({
     var wouldOverswipeForward = this.state.presentedIndex >= this.state.routeStack.length - 1 &&
       gestureName === 'jumpForward';
     return wouldOverswipeForward || wouldOverswipeBack;
-  },
-
-  _handlePanResponderGrant: function(e, gestureState) {
-    invariant(
-      this._expectingGestureGrant,
-      'Responder granted unexpectedly.'
-    );
-    this._attachGesture(this._expectingGestureGrant);
-    this._onAnimationStart();
-    this._expectingGestureGrant = null;
   },
 
   _deltaForGestureAction: function(gestureAction) {
@@ -685,7 +676,7 @@ var Navigator = React.createClass({
         this.state.presentedIndex = destIndex;
         this._transitionTo(
           transitionBackToPresentedIndex,
-          - transitionVelocity,
+          -transitionVelocity,
           1 - this.spring.getCurrentValue()
         );
       }
@@ -735,6 +726,16 @@ var Navigator = React.createClass({
   },
 
   _handlePanResponderMove: function(e, gestureState) {
+    if (this._isMoveGestureAttached !== undefined) {
+      invariant(
+        this._expectingGestureGrant,
+        'Responder granted unexpectedly.'
+      );
+      this._attachGesture(this._expectingGestureGrant);
+      this._onAnimationStart();
+      this._expectingGestureGrant = undefined;
+    }
+
     var sceneConfig = this.state.sceneConfigStack[this.state.presentedIndex];
     if (this.state.activeGesture) {
       var gesture = sceneConfig.gestures[this.state.activeGesture];
@@ -750,7 +751,7 @@ var Navigator = React.createClass({
     var isTravelVertical = gesture.direction === 'top-to-bottom' || gesture.direction === 'bottom-to-top';
     var isTravelInverted = gesture.direction === 'right-to-left' || gesture.direction === 'bottom-to-top';
     var distance = isTravelVertical ? gestureState.dy : gestureState.dx;
-    distance = isTravelInverted ? - distance : distance;
+    distance = isTravelInverted ? -distance : distance;
     var gestureDetectMovement = gesture.gestureDetectMovement;
     var nextProgress = (distance - gestureDetectMovement) /
       (gesture.fullDistance - gestureDetectMovement);
@@ -825,7 +826,7 @@ var Navigator = React.createClass({
         this._eligibleGestures = this._eligibleGestures.slice().splice(gestureIndex, 1);
       }
     });
-    return matchedGesture;
+    return matchedGesture || null;
   },
 
   _transitionSceneStyle: function(fromIndex, toIndex, progress, index) {
@@ -1087,7 +1088,10 @@ var Navigator = React.createClass({
       return null;
     }
     return React.cloneElement(this.props.navigationBar, {
-      ref: (navBar) => { this._navBar = navBar; },
+      ref: (navBar) => {
+        this.props.navigationBar.ref instanceof Function && this.props.navigationBar.ref(navBar);
+        this._navBar = navBar;
+      },
       navigator: this._navigationBarNavigator,
       navState: this.state,
     });

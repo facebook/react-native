@@ -16,6 +16,7 @@ var debug = require('debug');
 var omit = require('underscore').omit;
 var Activity = require('./src/Activity');
 
+exports.createServer = createServer;
 exports.middleware = function(options) {
   var server = createServer(options);
   return server.processRequest.bind(server);
@@ -29,6 +30,15 @@ exports.buildPackage =
 exports.buildBundle = function(options, bundleOptions) {
   var server = createNonPersistentServer(options);
   return server.buildBundle(bundleOptions)
+    .then(function(p) {
+      server.end();
+      return p;
+    });
+};
+
+exports.buildPrepackBundle = function(options, bundleOptions) {
+  var server = createNonPersistentServer(options);
+  return server.buildPrepackBundle(bundleOptions)
     .then(function(p) {
       server.end();
       return p;

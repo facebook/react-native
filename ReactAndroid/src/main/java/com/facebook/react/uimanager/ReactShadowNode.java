@@ -137,20 +137,22 @@ public class ReactShadowNode extends CSSNode {
   }
 
   public void removeAllChildren() {
+    int decrease = 0;
     for (int i = getChildCount() - 1; i >= 0; i--) {
-      super.removeChildAt(i);
+      ReactShadowNode removed = (ReactShadowNode) super.removeChildAt(i);
+      decrease += removed.mIsLayoutOnly ? removed.mTotalNativeChildren : 1;
     }
     markUpdated();
 
-    updateNativeChildrenCountInParent(-mTotalNativeChildren);
-    mTotalNativeChildren = 0;
+    mTotalNativeChildren -= decrease;
+    updateNativeChildrenCountInParent(-decrease);
   }
 
   private void updateNativeChildrenCountInParent(int delta) {
     if (mIsLayoutOnly) {
       ReactShadowNode parent = getParent();
       while (parent != null) {
-        parent.mTotalNativeChildren -= delta;
+        parent.mTotalNativeChildren += delta;
         if (!parent.mIsLayoutOnly) {
           break;
         }
@@ -254,7 +256,7 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
@@ -262,7 +264,7 @@ public class ReactShadowNode extends CSSNode {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 
@@ -287,6 +289,15 @@ public class ReactShadowNode extends CSSNode {
     ReactShadowNode removed = mNativeChildren.remove(i);
     removed.mNativeParent = null;
     return removed;
+  }
+
+  public void removeAllNativeChildren() {
+    if (mNativeChildren != null) {
+      for (int i = mNativeChildren.size() - 1; i >= 0; i--) {
+        mNativeChildren.get(i).mNativeParent = null;
+      }
+      mNativeChildren.clear();
+    }
   }
 
   public int getNativeChildCount() {

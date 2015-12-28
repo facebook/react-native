@@ -60,6 +60,7 @@ function _dependencies(argv, config, resolve, reject) {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: args.transformer,
     verbose: config.verbose,
   };
@@ -104,7 +105,9 @@ function _dependencies(argv, config, resolve, reject) {
             outStream.write(modulePath + '\n');
           }
         });
-        writeToFile && outStream.end();
+        return writeToFile
+          ? Promise.denodeify(outStream.end).bind(outStream)()
+          : Promise.resolve();
         // log('Wrote dependencies to output file');
       });
   }));

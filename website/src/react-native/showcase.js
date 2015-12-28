@@ -11,12 +11,123 @@ var React = require('React');
 var Site = require('Site');
 var center = require('center');
 
-var apps = [
+var featured = [
   {
-    name: 'AIGA Design Conference 2015: New Orleans',
+    name: 'Facebook Groups',
+    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple69/v4/57/f8/4c/57f84c0c-793d-5f9a-95ee-c212d0369e37/mzl.ugjwfhzx.png',
+    link: 'https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8',
+    author: 'Facebook',
+  },
+  {
+    name: 'Facebook Ads Manager',
+    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
+    author: 'Facebook',
+    blogs: [
+      "https://code.facebook.com/posts/1014532261909640/react-native-bringing-modern-web-techniques-to-mobile/",
+      "https://code.facebook.com/posts/1189117404435352/react-native-for-android-how-we-built-the-first-cross-platform-react-native-app/",
+      "https://code.facebook.com/posts/435862739941212/making-react-native-apps-accessible/",
+    ],
+  },
+  {
+    name: 'AIGA Design Conference 2015',
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/b0/4b/29/b04b2939-88d2-f61f-dec9-24fae083d8b3/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/aiga-design-conference-2015/id1038145272?ls=1&mt=8',
     author: 'W&Co',
+  },
+  {
+    name: 'Discord',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
+    author: 'Hammer & Chisel',
+  },
+  {
+    name: 'Discovery VR',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
+    link:  'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
+    author: 'Discovery Communications',
+    blog: [
+      "https://medium.com/ios-os-x-development/an-ios-developer-on-react-native-1f24786c29f0",
+    ],
+  },
+  {
+    name: 'Exponent',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
+    link:  'http://exponentjs.com/',
+    author: 'Exponent',
+  },
+  {
+    name: 'Lrn',
+    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
+    link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
+    author: 'Lrn Labs, Inc',
+  },
+  {
+    name: 'Movie Trailers by MovieLaLa',
+    icon: 'https://lh3.googleusercontent.com/16aug4m_6tvJB7QZden9w1SOMqpZgNp7rHqDhltZNvofw1a4V_ojGGXUMPGiK0dDCqzL=w300',
+    linkAppStore: 'https://itunes.apple.com/us/app/movie-trailers-by-movielala/id1001416601?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.movielala.trailers',
+    author: 'MovieLaLa'
+  },
+  {
+    name: 'Myntra',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
+    link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
+    author: 'Myntra Designs',
+  },
+  {
+    name: 'React Native Playground',
+    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
+    author: 'Joshua Sierles',
+  },
+  {
+    name: 'Running',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/33/eb/4f/33eb4f73-c7e3-8659-9285-f758e403485b/icon175x175.jpeg',
+    link: 'https://gyrosco.pe/running/',
+    author: 'Gyroscope Innovations',
+    blogs: [
+      'https://blog.gyrosco.pe/the-making-of-gyroscope-running-a4ad10acc0d0',
+    ],
+  },
+  {
+    name: 'Squad',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/e8/5b/3f/e85b3f52-72f3-f427-a32e-a73efe2e9682/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/squad-snaps-for-groups-friends/id1043626975?mt=8',
+    author: 'Tackk Inc.',
+  },
+  {
+    name: 'Start - medication manager for depression',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
+    author: 'Iodine Inc.',
+  },
+  {
+    name: 'Townske',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
+    author: 'Townske PTY LTD',
+  },
+  {
+    name: 'Tucci',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/c0/0c/95/c00c95ce-4cc5-e516-db77-5c5164b89189/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/app/apple-store/id1039661754?mt=8',
+    author: 'Clay Allsopp & Tiffany Young',
+    blogs: [
+      'https://medium.com/@clayallsopp/making-tucci-what-is-it-and-why-eaa2bf94c1df#.lmm3dmkaf',
+      'https://medium.com/@clayallsopp/making-tucci-the-technical-details-cc7aded6c75f#.wf72nq372',
+    ],
+  },
+];
+
+var apps = [
+  {
+    name: 'Accio',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
+    author: 'Accio Delivery Inc.',
   },
   {
     name: 'Beetroot',
@@ -38,22 +149,31 @@ var apps = [
     author: 'CANDDi LTD.',
   },
   {
+    name: 'CBS Sports Franchise Football',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
+    link: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
+    author: 'CBS Sports',
+  },  
+  {
     name: 'Company name search',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
     author: 'The Formations Factory Ltd',
+    blogs: [
+      'https://medium.com/formations-factory/creating-company-name-search-app-with-react-native-36a049b0848d',
+    ],
   },
   {
-    name: 'Discord',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple5/v4/c1/2f/4c/c12f4cba-1d9a-f6bf-2240-04085d3470ec/icon175x175.jpeg',
-    link:  'https://itunes.apple.com/us/app/discord-chat-for-gamers/id985746746?mt=8',
-    author: 'Hammer & Chisel',
+    name: 'DareU',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple6/v4/10/fb/6a/10fb6a50-57c8-061a-d865-503777bf7f00/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/dareu-dare-your-friends-dare/id1046434563?mt=8',
+    author: 'Rishabh Mehan',
   },
   {
-    name: 'Discovery VR',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple6/v4/d1/d5/f4/d1d5f437-9f6b-b5aa-5fe7-47bd19f934bf/icon175x175.png',
-    link:  'https://itunes.apple.com/us/app/discovery-vr/id1030815031?mt=8',
-    author: 'Discovery Communications',
+    name: 'DockMan',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
+    link: 'http://www.s21g.com/DockMan.html',
+    author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
     name: 'DropBot',
@@ -62,29 +182,16 @@ var apps = [
     author: 'Peach Labs',
   },
   {
-    name: 'Exponent',
-    icon: 'http://a4.mzstatic.com/us/r30/Purple2/v4/3a/d3/c9/3ad3c96c-5e14-f988-4bdd-0fdc95efd140/icon175x175.png',
-    link:  'https://itunes.apple.com/ca/app/exponent/id982107779?mt=8',
-    author: 'Exponent',
+    name: 'Due',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a2/41/5d/a2415d5f-407a-c565-ffb4-4f27f23d8ac2/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/due-countdown-reminders-for/id1050909468?mt=8',
+    author: 'Dotan Nahum',
   },
   {
-    name: 'F8',
-    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple5/v4/bf/d9/50/bfd9504e-a1bd-67c5-b50b-24e97016dae9/pr_source.jpg',
-    link: 'https://itunes.apple.com/us/app/f8/id853467066?mt=8',
-    author: 'Facebook',
-  },
-  {
-    name: 'Facebook Groups',
-    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple69/v4/57/f8/4c/57f84c0c-793d-5f9a-95ee-c212d0369e37/mzl.ugjwfhzx.png',
-    link: 'https://itunes.apple.com/us/app/facebook-groups/id931735837?mt=8',
-    author: 'Facebook',
-  },
-  {
-    name: 'Facebook Ads Manager',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple5/v4/9e/16/86/9e1686ef-cc55-805a-c977-538ddb5e6832/mzl.gqbhwitj.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/facebook-ads-manager/id964397083?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.facebook.adsmanager',
-    author: 'Facebook',
+    name: 'Eat or Not',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple5/v4/51/be/34/51be3462-b015-ebf2-11c5-69165b37fadc/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
+    author: 'Sharath Prabhal',
   },
   {
     name: 'Fan of it',
@@ -135,11 +242,23 @@ var apps = [
     author: 'HS Schaaf',
   },
   {
+    name: 'Hubhopper',
+    icon: 'http://hubhopper.com/images/h_logo.jpg',
+    link: 'https://play.google.com/store/apps/details?id=com.hubhopper',
+    author: 'Soch Technologies',
+  },
+  {
     name: 'Kakapo',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple3/v4/12/ab/2a/12ab2a01-3a3c-9482-b8df-ab38ad281165/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/kakapo/id1046673139?ls=1&mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.kakaponative',
     author: 'Daniel Levitt',
+  },
+  {
+    name: 'Koza Gujarati Dictionary',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/77/95/83/77958377-05ae-4754-684a-3c9dbb67b517/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/in/app/koza-english-to-gujarati-dictionary/id982752928?mt=8',
+    author: 'KozaApps',
   },
   {
     name: 'Leanpub',
@@ -154,10 +273,10 @@ var apps = [
     author: 'LoadDocs',
   },
   {
-    name: 'Lrn',
-    icon: 'http://is4.mzstatic.com/image/pf/us/r30/Purple1/v4/41/a9/e9/41a9e9b6-7801-aef7-2400-2eca14923321/mzl.adyswxad.png',
-    link: 'https://itunes.apple.com/us/app/lrn-learn-to-code-at-your/id1019622677',
-    author: 'Lrn Labs, Inc',
+    name: 'Lugg – Your On-Demand Mover',
+    icon: 'http://lh3.googleusercontent.com/EV9z7kRRME2KPMBRNHnje7bBNEl_Why2CFq-MfKzBC88uSFJTYr1HO3-nPt-JuVJwKFb=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.lugg',
+    author: 'Lugg',
   },
   {
     name: 'Lumpen Radio',
@@ -174,13 +293,8 @@ var apps = [
   {
     name: 'MaxReward - Android',
     icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
-    link: 'https://play.google.com/store/apps/details?id=com.bitstrek.maxreward&hl=en',
-    author: 'Neil Ma',
-  },
-  {
-    name: 'MaxReward - iOS',
-    icon: 'https://lh3.googleusercontent.com/yynCUCdEnyW6T96xCto8KzWQr4Yeiy0M6c2p8auYMIyFgAZVBsjf4JCEX7QkPijhBg=w175-rw',
-    link: 'https://itunes.apple.com/us/app/maxreward/id1050479192?ls=1&mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/maxreward/id1050479192?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.bitstrek.maxreward&hl=en',
     author: 'Neil Ma',
   },
   {
@@ -190,16 +304,28 @@ var apps = [
     author: 'Peter Cottle',
   },
   {
+    name: 'Mobabuild',
+    icon: 'http://mobabuild.co/images/applogo.png',
+    link: 'http://mobabuild.co',
+    author: 'Sercan Demircan ( @sercanov )',
+  },
+  {
+    name: 'MockingBot',
+    icon: 'https://s3.cn-north-1.amazonaws.com.cn/modao/downloads/images/MockingBot175.png',
+    link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
+    author: 'YuanYi Zhang (@mockingbot)',
+  },
+  {
     name: 'Mr. Dapper',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple4/v4/e8/3f/7c/e83f7cb3-2602-f8e8-de9a-ce0a775a4a14/mzl.hmdjhfai.png',
     link: 'https://itunes.apple.com/us/app/mr.-dapper-men-fashion-app/id989735184?ls=1&mt=8',
     author: 'wei ping woon',
   },
   {
-    name: 'Myntra',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
-    link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
-    author: 'Myntra Designs',
+    name: 'Nalathe Kerala',
+    icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
+    author: 'Rhyble',
   },
   {
     name: 'Ncredible',
@@ -224,6 +350,12 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/aa/93/17/aa93171e-d0ed-7e07-54a1-be27490e210c/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/okanagan-news-reader-for-viewing/id1049147148?mt=8',
     author: 'Levi Cabral',
+  },
+  {
+    name: 'Pimmr',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/99/da/0e/99da0ee6-bc87-e1a6-1d95-7027c78f50e1/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/nl/app/pimmr/id1023343303?mt=8',
+    author: 'Pimmr'
   },
   {
     name: 'Posyt - Tinder for ideas',
@@ -256,13 +388,6 @@ var apps = [
     author: 'Jed Tiotuico',
   },
   {
-    name: 'RN Playground',
-    icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
-    linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
-    author: 'Joshua Sierles',
-  },
-  {
     name: 'Rota Employer - Hire On Demand',
     link: 'https://itunes.apple.com/us/app/rota-employer-hire-on-demand/id1042270305?mt=8',
     icon: 'https://avatars2.githubusercontent.com/u/15051833?v=3&s=200',
@@ -287,22 +412,29 @@ var apps = [
     author: 'Spero.io',
   },
   {
-    name: 'Start - medication manager for depression',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
-    author: 'Iodine Inc.',
-  },
-  {
     name: 'Tabtor Parent',
     icon: 'http://a1.mzstatic.com/us/r30/Purple4/v4/80/50/9d/80509d05-18f4-a0b8-0cbb-9ba927d04477/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/tabtor-math/id1018651199?utm_source=ParentAppLP',
     author: 'PrazAs Learning Inc.',
   },
   {
+    name: 'Thai Tone',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
+    author: 'Alexey Ledak',
+  },
+  {
     name: 'Tong Xing Wang',
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'WEARVR',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.wearvr.app',
+    author: 'WEARVR LLC',
   },
   {
     name: 'WOOP',
@@ -342,39 +474,102 @@ var apps = [
   },
 ];
 
-var showcase = React.createClass({
-  renderLinks: function(app) {
+var AppList = React.createClass({
+
+  render: function() {
     return (
-      <p><a href={app.linkAppStore} target="blank">iOS</a> - <a href={app.linkPlayStore} target="blank">Android</a></p>
+      <div>
+        {this.props.apps.map(this._renderApp)}
+      </div>
+    )
+  },
+
+  _renderApp: function(app, i) {
+    var inner = (
+      <div>
+        <img src={app.icon} alt={app.name} />
+        <h3>{app.name}</h3>
+        {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
+        <p>By {app.author}</p>
+        {this._renderBlogPosts(app)}
+      </div>
+    );
+
+    if (app.linkAppStore && app.linkPlayStore) {
+      return (<div className="showcase" key={i}>{inner}</div>);
+    }
+
+    return (
+      <div className="showcase" key={i}>
+        <a href={app.link} target="blank">
+          {inner}
+        </a>
+      </div>
     );
   },
+
+  _renderBlogPosts: function(app) {
+    if (!app.blogs) {
+      return;
+    }
+
+    if (app.blogs.length === 1) {
+      return (
+        <p><a href={app.blogs[0]} target="blank">Blog post</a></p>
+      );
+    } else if (app.blogs.length > 1) {
+      return (
+        <p>Blog posts: {app.blogs.map(this._renderBlogPost)}</p>
+      );
+    }
+  },
+
+  _renderBlogPost: function(url, i) {
+    return (
+      <a href={url} target="blank">
+        {i + 1}&nbsp;
+      </a>
+    );
+  },
+
+  _renderLinks: function(app) {
+    return (
+      <p>
+        <a href={app.linkAppStore} target="blank">iOS</a> -
+        <a href={app.linkPlayStore} target="blank">Android</a>
+      </p>
+    );
+  },
+});
+
+var showcase = React.createClass({
   render: function() {
     return (
       <Site section="showcase" title="Showcase">
-        <section className="content wrap documentationContent nosidebar">
+        <section className="content wrap documentationContent nosidebar showcaseSection">
           <div className="inner-content showcaseHeader">
-            <h1>Apps using React Native</h1>
+            <h1 style={{textAlign: 'center'}}>Apps using React Native</h1>
             <div className="subHeader"></div>
-            <p>
-              Here is a list of apps using <strong>React Native</strong>. Submit a pull request on <a href="https://github.com/facebook/react-native">GitHub</a> to list your app.
-            </p>
+            <p>The following is a list of some of the public apps using <strong>React Native</strong> and are published on the Apple App Store or the Google Play Store. Not all are implemented 100% in React Native -- many are hybrid native/React Native. Can you tell which parts are which? :)</p>
+            <p>Want to add your app? Found an app that no longer works or no longer uses React Native? Please submit a pull request on <a href="https://github.com/facebook/react-native">GitHub</a> to update this page!</p>
           </div>
-          {
-            apps.map((app, i) => {
-              var inner = (
-                <div>
-                  <img src={app.icon} alt={app.name} />
-                  <h3>{app.name}</h3>
-                  {app.linkAppStore && app.linkPlayStore ? this.renderLinks(app) : null}
-                  <p>By {app.author}</p>
-                </div>
-              );
-              if (app.linkAppStore && app.linkPlayStore) {
-                return (<div className="showcase" key={i}>{inner}</div>);
-              }
-              return (<a href={app.link} className="showcase" key={i} target="blank">{inner}</a>);
-            })
-          }
+
+          <div className="inner-content showcaseHeader">
+            <h1 style={{textAlign: 'center'}}>Featured Apps</h1>
+            <div className="subHeader"></div>
+            <p>These are some of the most well-crafted React Native apps that we have come across.<br/>Be sure to check them out to get a feel for what React Native is capable of!</p>
+          </div>
+          <div className="inner-content">
+            <AppList apps={featured} />
+          </div>
+
+          <div className="inner-content showcaseHeader">
+            <h1 style={{textAlign: 'center'}}>All Apps</h1>
+            <p>Not all apps can be featured, otherwise we would have to create some other category like &quot;super featured&quot; and that's just silly. But that doesn't mean you shouldn't check these apps out!</p>
+          </div>
+          <div className="inner-content">
+            <AppList apps={apps} />
+          </div>
         </section>
       </Site>
     );

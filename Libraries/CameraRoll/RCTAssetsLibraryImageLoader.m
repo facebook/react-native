@@ -151,7 +151,7 @@ RCT_EXPORT_MODULE()
 
 - (ALAssetsLibrary *)assetsLibrary
 {
-  return [self.modules[RCTBridgeModuleNameForClass([RCTAssetsLibraryImageLoader class])] assetsLibrary];
+  return [[self moduleForClass:[RCTAssetsLibraryImageLoader class]] assetsLibrary];
 }
 
 @end

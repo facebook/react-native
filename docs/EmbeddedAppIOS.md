@@ -4,7 +4,7 @@ title: Integrating with Existing Apps
 layout: docs
 category: Guides (iOS)
 permalink: docs/embedded-app-ios.html
-next: native-modules-android
+next: communication-ios
 ---
 
 Since React makes no assumptions about the rest of your technology stack – it’s commonly noted as simply the `V` in `MVC` – it’s easily embeddable within an existing non-React Native app. In fact, it integrates with other best practice community tools like [CocoaPods](http://cocoapods.org/).
@@ -14,6 +14,7 @@ Since React makes no assumptions about the rest of your technology stack – it�
 - [CocoaPods](http://cocoapods.org/) – `gem install cocoapods`
 - [Node.js](http://nodejs.org)
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`.  With nvm you can install multiple versions of Node.js and easily switch between them.
+  - If you are using Node 5.0 or newer, we recommend installing npm 2, which is much faster than npm 3. After installing Node, run `npm install -g npm@2`
 - Install your copy of React Native under your `node_modules` directory where your JS resides.
 
 ## Install React Native Using CocoaPods
@@ -135,6 +136,7 @@ NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.b
 //   curl http://localhost:8081/index.ios.bundle -o main.jsbundle
 RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                     moduleName: @"SimpleApp"
+                                             initialProperties:nil
                                                  launchOptions:nil];
 ```
 

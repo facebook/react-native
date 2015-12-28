@@ -12,7 +12,6 @@
 'use strict';
 
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var View = require('View');
 
 export type ComponentInterface = ReactClass<any, any, any> | {
   name?: string;
@@ -40,14 +39,18 @@ function verifyPropTypes(
   var nativeProps = viewConfig.NativeProps;
   for (var prop in nativeProps) {
     if (!componentInterface.propTypes[prop] &&
-        !View.propTypes[prop] &&
         !ReactNativeStyleAttributes[prop] &&
         (!nativePropsToIgnore || !nativePropsToIgnore[prop])) {
-      throw new Error(
-        '`' + componentName + '` has no propType for native prop `' +
+      var message;
+      if (componentInterface.propTypes.hasOwnProperty(prop)) {
+        message = '`' + componentName + '` has incorrectly defined propType for native prop `' +
+        viewConfig.uiViewClassName + '.' + prop + '` of native type `' + nativeProps[prop];
+      } else {
+        message = '`' + componentName + '` has no propType for native prop `' +
         viewConfig.uiViewClassName + '.' + prop + '` of native type `' +
-        nativeProps[prop] + '`'
-      );
+        nativeProps[prop] + '`';
+      };
+      throw new Error(message);
     }
   }
 }

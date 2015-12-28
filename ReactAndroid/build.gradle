@@ -29,17 +29,11 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     dest new File(downloadsDir, 'boost_1_57_0.zip')
 }
 
-task prepareBoost(dependsOn: downloadBoost) {
-    inputs.files downloadBoost.dest, 'src/main/jni/third-party/boost/Android.mk'
-    outputs.dir "$thirdPartyNdkDir/boost"
-    doLast {
-        copy {
-            from { zipTree(downloadBoost.dest) }
-            from 'src/main/jni/third-party/boost/Android.mk'
-            include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
-            into "$thirdPartyNdkDir/boost"
-        }
-    }
+task prepareBoost(dependsOn: downloadBoost, type: Copy) {
+    from zipTree(downloadBoost.dest)
+    from 'src/main/jni/third-party/boost/Android.mk'
+    include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+    into "$thirdPartyNdkDir/boost"
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -193,7 +187,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', Runtime.runtime.availableProcessors()
+            '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
 }
 
 task cleanReactNdkLib(type: Exec) {
@@ -223,6 +217,8 @@ android {
         }
 
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+        testApplicationId "com.facebook.react.tests"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.main {
@@ -248,12 +244,24 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.8.1'
     compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
+    compile 'com.facebook.stetho:stetho:1.2.0'
+    compile 'com.facebook.stetho:stetho-okhttp:1.2.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.2.3'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'com.squareup.okhttp:okhttp-ws:2.5.0'
     compile 'com.squareup.okio:okio:1.6.0'
     compile 'org.webkit:android-jsc:r174650'
+
+    testCompile "junit:junit:${JUNIT_VERSION}"
+    testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
+    testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
+    testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
+    testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
+    testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+
+    androidTestCompile "com.android.support.test:testing-support-lib:0.1"
 }
 
 apply from: 'release.gradle'

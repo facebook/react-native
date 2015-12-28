@@ -20,9 +20,9 @@ var INNERVIEW = 'InnerView';
  * Wrapper around android native recycler view.
  *
  * It simply renders rows passed as children in a separate recycler view cells
- * similarily to how `ScrollView` is doing it. Thanks to the fact that it uses
+ * similarly to how `ScrollView` is doing it. Thanks to the fact that it uses
  * native `RecyclerView` though, rows that are out of sight are going to be
- * automatically detached (similarily on how this would work with
+ * automatically detached (similarly on how this would work with
  * `removeClippedSubviews = true` on a `ScrollView.js`).
  *
  * CAUTION: This is an experimental component and should only be used together
@@ -71,6 +71,11 @@ var RecyclerViewBackedScrollView = React.createClass({
     this.refs[INNERVIEW].setNativeProps(props);
   },
 
+  _handleContentSizeChange: function(event) {
+    var {width, height} = event.nativeEvent;
+    this.props.onContentSizeChange(width, height);
+  },
+
   render: function() {
     var props = {
       ...this.props,
@@ -91,6 +96,10 @@ var RecyclerViewBackedScrollView = React.createClass({
       style: ([{flex: 1}, this.props.style]: ?Array<any>),
       ref: INNERVIEW,
     };
+
+    if (this.props.onContentSizeChange) {
+      props.onContentSizeChange = this._handleContentSizeChange;
+    }
 
     var wrappedChildren = React.Children.map(this.props.children, (child) => {
       if (!child) {
@@ -122,6 +131,9 @@ var styles = StyleSheet.create({
   },
 });
 
-var NativeAndroidRecyclerView = requireNativeComponent('AndroidRecyclerViewBackedScrollView', null);
+var NativeAndroidRecyclerView = requireNativeComponent(
+  'AndroidRecyclerViewBackedScrollView',
+  RecyclerViewBackedScrollView
+);
 
 module.exports = RecyclerViewBackedScrollView;

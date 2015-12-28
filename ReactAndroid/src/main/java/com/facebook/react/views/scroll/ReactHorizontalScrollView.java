@@ -23,8 +23,17 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
+  private boolean mSendMomentumEvents;
+  private boolean mDragging;
+  private boolean mFlinging;
+  private boolean mDoneFlinging;
+
   public ReactHorizontalScrollView(Context context) {
     super(context);
+  }
+
+  public void setSendMomentumEvents(boolean sendMomentumEvents) {
+    mSendMomentumEvents = sendMomentumEvents;
   }
 
   @Override
@@ -47,7 +56,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
     super.onScrollChanged(x, y, oldX, oldY);
 
     if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
-      ReactScrollViewHelper.emitScrollEvent(this, x, y);
+      if (mFlinging) {
+        mDoneFlinging = false;
+      }
+      ReactScrollViewHelper.emitScrollEvent(this);
     }
   }
 
@@ -55,9 +67,43 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+      ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+      mDragging = true;
       return true;
     }
 
     return false;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    int action = ev.getAction() & MotionEvent.ACTION_MASK;
+    if (action == MotionEvent.ACTION_UP && mDragging) {
+      ReactScrollViewHelper.emitScrollEndDragEvent(this);
+      mDragging = false;
+    }
+    return super.onTouchEvent(ev);
+  }
+
+  @Override
+  public void fling(int velocityX) {
+    super.fling(velocityX);
+    if (mSendMomentumEvents) {
+      mFlinging = true;
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          if (mDoneFlinging) {
+            mFlinging = false;
+            ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
+          } else {
+            mDoneFlinging = true;
+            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+          }
+        }
+      };
+      postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+    }
   }
 }

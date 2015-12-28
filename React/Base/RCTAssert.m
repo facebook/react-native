@@ -128,8 +128,9 @@ void RCTFatal(NSError *error)
 #if DEBUG
     @try {
 #endif
+      NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, [error localizedDescription]];
       NSString *message = RCTFormatError([error localizedDescription], error.userInfo[RCTJSStackTraceKey], 75);
-      [NSException raise:RCTFatalExceptionName format:@"%@", message];
+      [NSException raise:name format:@"%@", message];
 #if DEBUG
     } @catch (NSException *e) {}
 #endif
@@ -160,5 +161,5 @@ NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id>
     }
   }
 
-  return [NSString stringWithFormat:@"Message: %@%@", message, prettyStack];
+  return [NSString stringWithFormat:@"%@%@", message, prettyStack];
 }

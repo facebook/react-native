@@ -233,7 +233,7 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   }
 }
 
-- (void)collectRootUpdatedFrames:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames
 {
   RCTAssert(RCTIsReactRootView(self.reactTag),
             @"The method has been called on a view with react tag %@, which is not a root view", self.reactTag);
@@ -241,8 +241,11 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   [self applySizeConstraints];
 
   [self fillCSSNode:_cssNode];
-  layoutNode(_cssNode, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
+  layoutNode(_cssNode, CSS_UNDEFINED, CSS_UNDEFINED, CSS_DIRECTION_INHERIT);
+
+  NSMutableSet<RCTShadowView *> *viewsWithNewFrame = [NSMutableSet set];
   [self applyLayoutNode:_cssNode viewsWithNewFrame:viewsWithNewFrame absolutePosition:CGPointZero];
+  return viewsWithNewFrame;
 }
 
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
@@ -491,19 +494,23 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 // Dimensions
 
-#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp) \
-- (void)set##setProp:(CGFloat)value                        \
-{                                                          \
-  _cssNode->style.dimensions[CSS_##cssProp] = value;       \
-  [self dirtyLayout];                                      \
-}                                                          \
-- (CGFloat)getProp                                         \
-{                                                          \
-  return _cssNode->style.dimensions[CSS_##cssProp];        \
+#define RCT_DIMENSIONS_PROPERTY(setProp, getProp, cssProp, dimensions) \
+- (void)set##setProp:(CGFloat)value                                    \
+{                                                                      \
+  _cssNode->style.dimensions[CSS_##cssProp] = value;                   \
+  [self dirtyLayout];                                                  \
+}                                                                      \
+- (CGFloat)getProp                                                     \
+{                                                                      \
+  return _cssNode->style.dimensions[CSS_##cssProp];                    \
 }
 
-RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH)
-RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT)
+RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH, dimensions)
+RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT, dimensions)
+RCT_DIMENSIONS_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
+RCT_DIMENSIONS_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
+RCT_DIMENSIONS_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
+RCT_DIMENSIONS_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 
@@ -573,7 +580,7 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   [self dirtyPropagation];
 }
 
-- (void)updateLayout
+- (void)didSetProps:(__unused NSArray<NSString *> *)changedProps
 {
   if (_recomputePadding) {
     RCTProcessMetaProps(_paddingMetaProps, _cssNode->style.padding);

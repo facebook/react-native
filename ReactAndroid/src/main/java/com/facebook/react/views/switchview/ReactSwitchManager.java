@@ -45,7 +45,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+    public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
       if (!mMeasured) {
         // Create a switch with the default config and measure it; since we don't (currently)
         // support setting custom switch text, this is fine, as all switches will measure the same

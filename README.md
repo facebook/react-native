@@ -1,4 +1,4 @@
-# React Native [![Build Status](https://travis-ci.org/facebook/react-native.svg?branch=master)](https://travis-ci.org/facebook/react-native)  [![npm version](https://badge.fury.io/js/react-native.svg)](http://badge.fury.io/js/react-native)
+# React Native [![Build Status](https://travis-ci.org/facebook/react-native.svg?branch=master)](https://travis-ci.org/facebook/react-native) [![Circle CI](https://circleci.com/gh/facebook/react-native.svg?style=svg)](https://circleci.com/gh/facebook/react-native) [![npm version](https://badge.fury.io/js/react-native.svg)](http://badge.fury.io/js/react-native)
 
 React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and [React](http://facebook.github.io/react). The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.
 
@@ -31,9 +31,10 @@ See the official [React Native website](https://facebook.github.io/react-native/
 Please use these community resources for getting help. We use the GitHub issues for tracking bugs and feature requests and have limited bandwidth to address them.
 
 - Ask a question on [StackOverflow](http://stackoverflow.com/) and tag it with `react-native`
+- Chat with us on [Reactiflux](https://discord.gg/0ZcbPKXt5bWJVmUY) in #react-native
+- Articulate your feature request or upvote existing ones on [Product Pains](https://productpains.com/product/react-native/)
 - Start a thread on the [React Discussion Board](https://discuss.reactjs.org/)
 - Join #reactnative on IRC: chat.freenode.net
-- Chat with us on [Reactiflux](https://discord.gg/0ZcbPKXt5bWJVmUY) in #react-native
 - If it turns out that you may have found a bug, please [open an issue](#opening-issues)
 
 ## Documentation
@@ -83,7 +84,7 @@ React Native is under active development. See the guide on [upgrading React Nati
 
 If you encounter a bug with React Native we would like to hear about it. Search the [existing issues](https://github.com/facebook/react-native/issues) and try to make sure your problem doesn’t already exist before opening a new issue. It’s helpful if you include the version of React Native and OS you’re using. Please include a stack trace and reduced repro case when appropriate, too.
 
-The GitHub issues are intended for bug reports and feature requests. For help and questions with using React Native please make use of the resources listed in the [Getting Help](#getting-help) section. There are limited resources available for handling issues and by keeping the list of open issues lean we can respond in a timely manner.
+The GitHub issues are intended for bug reports and feature requests. For help and questions with using React Native please make use of the resources listed in the [Getting Help](#getting-help) section. [Product Pains](https://productpains.com/product/react-native/) in particular is a good way to signal your interest in a feature or issue. There are limited resources available for handling issues and by keeping the list of open issues lean we can respond in a timely manner.
 
 ## Contributing
 

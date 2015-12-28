@@ -19,4 +19,11 @@
 @property (nonatomic, assign) float step;
 @property (nonatomic, assign) float lastValue;
 
+@property (nonatomic, strong) UIImage *trackImage;
+@property (nonatomic, strong) UIImage *minimumTrackImage;
+@property (nonatomic, strong) UIImage *maximumTrackImage;
+
+@property (nonatomic, strong) UIImage *thumbImage;
+
+
 @end

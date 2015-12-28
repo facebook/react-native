@@ -12,7 +12,7 @@
 'use strict';
 
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var keyMirror = require('keyMirror');
@@ -71,7 +71,7 @@ type Config = {
 
 function configureNext(config: Config, onAnimationDidEnd?: Function) {
   configChecker({config}, 'config', 'LayoutAnimation.configureNext');
-  RCTUIManager.configureNextLayoutAnimation(
+  UIManager.configureNextLayoutAnimation(
     config, onAnimationDidEnd || function() {}, function() { /* unused */ }
   );
 }

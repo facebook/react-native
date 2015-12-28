@@ -25,7 +25,7 @@ class AssetModule extends Module {
     return Promise.resolve([]);
   }
 
-  _read() {
+  read() {
     return Promise.resolve({});
   }
 

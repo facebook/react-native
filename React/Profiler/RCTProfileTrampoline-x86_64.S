@@ -1,11 +1,17 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
 #if RCT_DEV && defined(__x86_64__)
 
-/**
- * Define both symbols for compatibility with other assemblers
- */
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
 
@@ -136,20 +142,13 @@ SYMBOL_NAME(RCTProfileTrampoline):
   // call the actual function and save the return value
   callq *%r11
   pushq %rax
-  subq $0x10+8, %rsp //16-bytes xmm register + 8-bytes for alignment
-  movdqa %xmm0, (%rsp)
-
-  // align stack
-  pushq %r12
-  movq %rsp, %r12
-  andq $-0x10, %rsp
+  pushq %rdx
+  subq $0x20, %rsp // 2 16-bytes xmm register
+  movdqa %xmm0, 0x00(%rsp)
+  movdqa %xmm1, 0x10(%rsp)
 
   // void RCTProfileTrampolineEnd(void) in RCTProfile.m - just ends this profile
   callq SYMBOL_NAME(RCTProfileTrampolineEnd)
-
-  // unalign stack and restore %r12
-  movq %r12, %rsp
-  popq %r12
 
   /**
    * Restore the initial value of the callee saved registers, saved in the
@@ -161,7 +160,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   movq 0x8(%r14), %r14
 
   /**
-   * Save caller address and actual function return (previously in the allocated
+   * save caller address and actual function return (previously in the allocated
    * memory) and align the stack
    */
   pushq %rcx
@@ -177,12 +176,14 @@ SYMBOL_NAME(RCTProfileTrampoline):
   popq %r12
 
   /**
-   * pop the caller address to %rcx and the actual function return value to
-   * %rax, so it's the return value of RCTProfileTrampoline
+   * pop the caller address to %rcx and the actual function return value(s)
+   * so it's the return value of RCTProfileTrampoline
    */
   popq %rcx
-  movdqa (%rsp), %xmm0
-  addq $0x10+8, %rsp
+  movdqa 0x00(%rsp), %xmm0
+  movdqa 0x10(%rsp), %xmm1
+  addq $0x20, %rsp
+  popq %rdx
   popq %rax
 
   // jump to caller

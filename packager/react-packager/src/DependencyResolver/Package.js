@@ -5,7 +5,7 @@ const path = require('path');
 
 class Package {
 
-  constructor(file, fastfs, cache) {
+  constructor({ file, fastfs, cache }) {
     this.path = path.resolve(file);
     this.root = path.dirname(this.path);
     this._fastfs = fastfs;
@@ -14,18 +14,19 @@ class Package {
   }
 
   getMain() {
-    return this._read().then(json => {
-      if (typeof json.browser === 'string') {
-        return path.join(this.root, json.browser);
+    return this.read().then(json => {
+      var replacements = getReplacements(json);
+      if (typeof replacements === 'string') {
+        return path.join(this.root, replacements);
       }
 
       let main = json.main || 'index';
 
-      if (json.browser && typeof json.browser === 'object') {
-        main = json.browser[main] ||
-          json.browser[main + '.js'] ||
-          json.browser[main + '.json'] ||
-          json.browser[main.replace(/(\.js|\.json)$/, '')] ||
+      if (replacements && typeof replacements === 'object') {
+        main = replacements[main] ||
+          replacements[main + '.js'] ||
+          replacements[main + '.json'] ||
+          replacements[main.replace(/(\.js|\.json)$/, '')] ||
           main;
       }
 
@@ -35,13 +36,13 @@ class Package {
 
   isHaste() {
     return this._cache.get(this.path, 'package-haste', () =>
-      this._read().then(json => !!json.name)
+      this.read().then(json => !!json.name)
     );
   }
 
   getName() {
     return this._cache.get(this.path, 'package-name', () =>
-      this._read().then(json => json.name)
+      this.read().then(json => json.name)
     );
   }
 
@@ -50,15 +51,15 @@ class Package {
   }
 
   redirectRequire(name) {
-    return this._read().then(json => {
-      const {browser} = json;
+    return this.read().then(json => {
+      var replacements = getReplacements(json);
 
-      if (!browser || typeof browser !== 'object') {
+      if (!replacements || typeof replacements !== 'object') {
         return name;
       }
 
       if (name[0] !== '/') {
-        return browser[name] || name;
+        return replacements[name] || name;
       }
 
       if (!isAbsolutePath(name)) {
@@ -66,9 +67,9 @@ class Package {
       }
 
       const relPath = './' + path.relative(this.root, name);
-      const redirect = browser[relPath] ||
-              browser[relPath + '.js'] ||
-              browser[relPath + '.json'];
+      const redirect = replacements[relPath] ||
+              replacements[relPath + '.js'] ||
+              replacements[relPath + '.json'];
       if (redirect) {
         return path.join(
           this.root,
@@ -80,7 +81,7 @@ class Package {
     });
   }
 
-  _read() {
+  read() {
     if (!this._reading) {
       this._reading = this._fastfs.readFile(this.path)
         .then(jsonStr => JSON.parse(jsonStr));
@@ -88,6 +89,12 @@ class Package {
 
     return this._reading;
   }
+}
+
+function getReplacements(pkg) {
+  return pkg['react-native'] == null
+    ? pkg.browser
+    : pkg['react-native'];
 }
 
 module.exports = Package;

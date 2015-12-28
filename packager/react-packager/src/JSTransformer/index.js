@@ -82,16 +82,18 @@ class Transformer {
     this._cache.invalidate(filePath);
   }
 
-  loadFileAndTransform(filePath) {
+  loadFileAndTransform(filePath, options) {
     if (this._transform == null) {
       return Promise.reject(new Error('No transfrom module'));
     }
 
     debug('transforming file', filePath);
 
+    const optionsJSON = JSON.stringify(options);
+
     return this._cache.get(
       filePath,
-      'transformedSource',
+      'transformedSource-' + optionsJSON,
       // TODO: use fastfs to avoid reading file from disk again
       () => readFile(filePath).then(
         buffer => {
@@ -100,6 +102,7 @@ class Transformer {
           return this._transform({
             sourceCode,
             filename: filePath,
+            options,
           }).then(res => {
             if (res.error) {
               console.warn(

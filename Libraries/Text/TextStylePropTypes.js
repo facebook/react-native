@@ -12,11 +12,12 @@
 'use strict';
 
 var ReactPropTypes = require('ReactPropTypes');
+var ColorPropType = require('ColorPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 // TODO: use spread instead of Object.assign/create after #6560135 is fixed
 var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
-  color: ReactPropTypes.string,
+  color: ColorPropType,
   fontFamily: ReactPropTypes.string,
   fontSize: ReactPropTypes.number,
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
@@ -55,7 +56,7 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   /**
    * @platform ios
    */
-  textDecorationColor: ReactPropTypes.string,
+  textDecorationColor: ColorPropType,
   /**
    * @platform ios
    */

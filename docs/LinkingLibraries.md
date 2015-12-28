@@ -24,7 +24,41 @@ error as soon as you try to use the library._
 
 ## Here the few steps to link your libraries that contain native code
 
-### Step 1
+### Automatic linking
+
+"[rnpm](http://github.com/rnpm/rnpm)" is a community project that allows linking of native dependencies automatically:
+
+#### Step 1
+
+Install `rnpm`:
+```bash
+$ npm install rnpm -g
+```
+
+**Note:** _`rnpm` requires `node` version 4.1 or higher_
+
+#### Step 2
+
+Install a library with native dependencies:
+```bash
+$ npm install <library-with-native-dependencies> --save
+```
+
+**Note:** _`--save` or `--save-dev` flag is very important for this step. `rnpm` will link
+your libs based on `dependencies` and `devDependencies` in your `package.json` file._
+
+#### Step 3
+
+Link your native dependencies:
+```bash
+$ rnpm link
+```
+
+Done! All libraries with a native dependencies should be successfully linked to your iOS/Android project.
+
+### Manual linking
+
+#### Step 1
 
 If the library has native code, there must be a `.xcodeproj` file inside it's
 folder.
@@ -33,7 +67,7 @@ on Xcode);
 
 ![](/react-native/img/AddToLibraries.png)
 
-### Step 2
+#### Step 2
 
 Click on your main project file (the one that represents the `.xcodeproj`)
 select `Build Phases` and drag the static library from the `Products` folder
@@ -41,7 +75,7 @@ inside the Library you are importing to `Link Binary With Libraries`
 
 ![](/react-native/img/AddToBuildPhases.png)
 
-### Step 3
+#### Step 3
 
 Not every library will need this step, what you need to consider is:
 
@@ -54,7 +88,7 @@ This step is not necessary for libraries that we ship with React Native with the
 exception of `PushNotificationIOS` and `LinkingIOS`.
 
 In the case of the `PushNotificationIOS` for example, you have to call a method
-on the library from your `AppDelegate` every time a new push notifiation is
+on the library from your `AppDelegate` every time a new push notification is
 received.
 
 For that we need to know the library's headers. To achieve that you have to go

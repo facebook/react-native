@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule AsyncStorage
+ * @noflow
  * @flow-weak
  */
 'use strict';
@@ -32,6 +33,10 @@ var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyn
  * method returns a `Promise` object.
  */
 var AsyncStorage = {
+  _getRequests: ([]: Array<any>),
+  _getKeys: ([]: Array<string>),
+  _immediate: (null: ?number),
+
   /**
    * Fetches `key` and passes the result to `callback`, along with an `Error` if
    * there is any. Returns a `Promise` object.
@@ -163,6 +168,32 @@ var AsyncStorage = {
    * indicate which key caused the error.
    */
 
+  /** Flushes any pending requests using a single multiget */
+  flushGetRequests: function(): void {
+    const getRequests = this._getRequests;
+    const getKeys = this._getKeys;
+
+    this._getRequests = [];
+    this._getKeys = [];
+
+    RCTAsyncStorage.multiGet(getKeys, function(errors, result) {
+      // Even though the runtime complexity of this is theoretically worse vs if we used a map,
+      // it's much, much faster in practice for the data sets we deal with (we avoid
+      // allocating result pair arrays). This was heavily benchmarked.
+      const reqLength = getRequests.length;
+      for (let i = 0; i < reqLength; i++) {
+        const request = getRequests[i];
+        const requestKeys = request.keys;
+        var requestResult = result.filter(function(resultPair) {
+          return requestKeys.indexOf(resultPair[0]) !== -1;
+        });
+
+        request.callback && request.callback(null, requestResult);
+        request.resolve && request.resolve(requestResult);
+      }
+    });
+  },
+
   /**
    * multiGet invokes callback with an array of key-value pair arrays that
    * matches the input format of multiSet. Returns a `Promise` object.
@@ -173,17 +204,30 @@ var AsyncStorage = {
     keys: Array<string>,
     callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void
   ): Promise {
-    return new Promise((resolve, reject) => {
-      RCTAsyncStorage.multiGet(keys, function(errors, result) {
-        var error = convertErrors(errors);
-        callback && callback(error, result);
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
+    if (!this._immediate) {
+      this._immediate = setImmediate(() => {
+        this._immediate = null;
+        this.flushGetRequests();
       });
+    }
+
+    var getRequest = {
+      keys: keys,
+      callback: callback,
+      keyIndex: this._getKeys.length,
+      resolve: null,
+      reject: null,
+    };
+
+    var promiseResult = new Promise((resolve, reject) => {
+      getRequest.resolve = resolve;
+      getRequest.reject = reject;
     });
+
+    this._getRequests.push(getRequest);
+    this._getKeys.push.apply(this._getKeys, keys);
+
+    return promiseResult;
   },
 
   /**

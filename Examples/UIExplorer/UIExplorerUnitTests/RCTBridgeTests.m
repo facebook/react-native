@@ -16,18 +16,10 @@
 #import <XCTest/XCTest.h>
 
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTJavaScriptExecutor.h"
 #import "RCTUtils.h"
-
-@interface RCTBridge (Testing)
-
-@property (nonatomic, strong, readonly) RCTBridge *batchedBridge;
-
-- (void)handleBuffer:(id)buffer;
-- (void)setUp;
-
-@end
 
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 
@@ -54,10 +46,22 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-- (void)executeJSCall:(__unused NSString *)name
-               method:(__unused NSString *)method
-            arguments:(__unused NSArray *)arguments
-             callback:(RCTJavaScriptCallback)onComplete
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+{
+  onComplete(nil, nil);
+}
+
+- (void)callFunctionOnModule:(__unused NSString *)module
+                      method:(__unused NSString *)method
+                   arguments:(__unused NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete
+{
+  onComplete(nil, nil);
+}
+
+- (void)invokeCallbackID:(__unused NSNumber *)cbID
+               arguments:(__unused NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
 {
   onComplete(nil, nil);
 }
@@ -117,7 +121,9 @@ RCT_EXPORT_MODULE(TestModule)
 - (void)tearDown
 {
   [super tearDown];
+
   [_bridge invalidate];
+  _testMethodCalled = NO;
 }
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
@@ -165,21 +171,22 @@ _Pragma("clang diagnostic pop")
   RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
 
   __block NSNumber *testModuleID = nil;
-  __block NSDictionary<NSString *, id> *testConstants = nil;
   __block NSNumber *testMethodID = nil;
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
     if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
       testModuleID = @(i);
-      testConstants = moduleConfig[1];
       testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
 
+  XCTAssertNotNil(testModuleID);
+  XCTAssertNotNil(testMethodID);
+
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
-  NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args], @[], @1234567];
+  NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
 
   [_bridge.batchedBridge handleBuffer:buffer];
 

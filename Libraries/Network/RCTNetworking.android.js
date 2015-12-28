@@ -25,7 +25,7 @@ var generateRequestId = function() {
  */
 class RCTNetworking {
 
-  static sendRequest(method, url, headers, data, callback) {
+  static sendRequest(method, url, headers, data, useIncrementalUpdates) {
     var requestId = generateRequestId();
     RCTNetworkingNative.sendRequest(
       method,
@@ -33,12 +33,16 @@ class RCTNetworking {
       requestId,
       headers,
       data,
-      callback);
+      useIncrementalUpdates);
     return requestId;
   }
 
   static abortRequest(requestId) {
     RCTNetworkingNative.abortRequest(requestId);
+  }
+
+  static clearCookies(callback) {
+    RCTNetworkingNative.clearCookies(callback);
   }
 }
 

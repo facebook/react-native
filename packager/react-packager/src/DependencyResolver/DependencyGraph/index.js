@@ -16,7 +16,7 @@ const getPlatformExtension = require('../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
 const util = require('util');
-const Helpers = require('./Helpers');
+const DependencyGraphHelpers = require('./DependencyGraphHelpers');
 const ResolutionRequest = require('./ResolutionRequest');
 const ResolutionResponse = require('./ResolutionResponse');
 const HasteMap = require('./HasteMap');
@@ -57,7 +57,7 @@ class DependencyGraph {
       extractRequires,
     };
     this._cache = this._opts.cache;
-    this._helpers = new Helpers(this._opts);
+    this._helpers = new DependencyGraphHelpers(this._opts);
     this.load().catch((err) => {
       // This only happens at initialization. Live errors are easier to recover from.
       console.error('Error building DependencyGraph:\n', err.stack);
@@ -97,7 +97,8 @@ class DependencyGraph {
     this._moduleCache = new ModuleCache(
       this._fastfs,
       this._cache,
-      this._opts.extractRequires
+      this._opts.extractRequires,
+      this._helpers
     );
 
     this._hasteMap = new HasteMap({

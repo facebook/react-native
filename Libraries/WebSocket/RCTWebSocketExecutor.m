@@ -36,19 +36,11 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-  NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-  NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
-  return [self initWithURL:[RCTConvert NSURL:URLString]];
-}
-
 - (instancetype)initWithURL:(NSURL *)URL
 {
   RCTAssertParam(URL);
 
-  if ((self = [super init])) {
+  if ((self = [self init])) {
     _url = URL;
   }
   return self;
@@ -56,6 +48,13 @@ RCT_EXPORT_MODULE()
 
 - (void)setUp
 {
+  if (!_url) {
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
+    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
+    _url = [RCTConvert NSURL:URLString];
+  }
+
   _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
@@ -67,9 +66,9 @@ RCT_EXPORT_MODULE()
   [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
   if (![self connectToProxy]) {
-    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If \
-                you are running on the device, check if you have the right IP \
-                address in `RCTWebSocketExecutor.m`.", _url);
+    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If "
+                 "you are running on the device, check if you have the right IP "
+                 "address in `RCTWebSocketExecutor.m`.", _url);
     [self invalidate];
     return;
   }
@@ -82,7 +81,7 @@ RCT_EXPORT_MODULE()
   }
   if (!runtimeIsReady) {
     RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
-                "paused on a breakpoint or exception and try reloading again.");
+                 "paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
     return;
   }
@@ -126,7 +125,11 @@ RCT_EXPORT_MODULE()
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-  RCTLogError(@"WebSocket connection failed with error %@", error);
+  dispatch_semaphore_signal(_socketOpenSemaphore);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Give the setUp method an opportunity to report an error first
+    RCTLogError(@"WebSocket connection failed with error %@", error);
+  });
 }
 
 - (void)sendMessage:(NSDictionary<NSString *, id> *)message waitForReply:(RCTWSMessageCallback)callback
@@ -162,13 +165,31 @@ RCT_EXPORT_MODULE()
   }];
 }
 
-- (void)executeJSCall:(NSString *)name method:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+{
+  [self _executeJSCall:@"flushedQueue" arguments:@[] callback:onComplete];
+}
+
+- (void)callFunctionOnModule:(NSString *)module
+                      method:(NSString *)method
+                   arguments:(NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete
+{
+  [self _executeJSCall:@"callFunctionReturnFlushedQueue" arguments:@[module, method, args] callback:onComplete];
+}
+
+- (void)invokeCallbackID:(NSNumber *)cbID
+               arguments:(NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
+{
+  [self _executeJSCall:@"invokeCallbackAndReturnFlushedQueue" arguments:@[cbID, args] callback:onComplete];
+}
+
+- (void)_executeJSCall:(NSString *)method arguments:(NSArray *)arguments callback:(RCTJavaScriptCallback)onComplete
 {
   RCTAssert(onComplete != nil, @"callback was missing for exec JS call");
   NSDictionary<NSString *, id> *message = @{
-    @"method": @"executeJSCall",
-    @"moduleName": name,
-    @"moduleMethod": method,
+    @"method": method,
     @"arguments": arguments
   };
   [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
@@ -193,11 +214,7 @@ RCT_EXPORT_MODULE()
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  if ([NSThread isMainThread]) {
-    block();
-  } else {
-    dispatch_async(dispatch_get_main_queue(), block);
-  }
+  RCTExecuteOnMainThread(block, NO);
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

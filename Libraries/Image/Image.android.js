@@ -22,10 +22,10 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 
 /**
@@ -53,14 +53,18 @@ var resolveAssetSource = require('resolveAssetSource');
 
 var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
   src: true,
+  loadingIndicatorSrc: true,
   resizeMode: true,
   progressiveRenderingEnabled: true,
   fadeDuration: true,
+  shouldNotifyLoadEvents: true,
 });
 
 var Image = React.createClass({
   propTypes: {
-    /**
+    ...View.propTypes,
+    style: StyleSheetPropType(ImageStylePropTypes), 
+   /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
      * resource (which should be wrapped in the `require('image!name')` function).
@@ -72,9 +76,32 @@ var Image = React.createClass({
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
     ]).isRequired,
+    /**
+     * similarly to `source`, this property represents the resource used to render
+     * the loading indicator for the image, displayed until image is ready to be
+     * displayed, typically after when it got downloaded from network.
+     */
+    loadingIndicatorSource: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     progressiveRenderingEnabled: PropTypes.bool,
     fadeDuration: PropTypes.number,
-    style: StyleSheetPropType(ImageStylePropTypes),
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load completes successfully
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -125,6 +152,7 @@ var Image = React.createClass({
 
   render: function() {
     var source = resolveAssetSource(this.props.source);
+    var loadingIndicatorSource = resolveAssetSource(this.props.loadingIndicatorSource);
 
     // As opposed to the ios version, here it render `null`
     // when no source or source.uri... so let's not break that.
@@ -136,10 +164,13 @@ var Image = React.createClass({
     if (source && source.uri) {
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
+      var {onLoadStart, onLoad, onLoadEnd} = this.props;
 
       var nativeProps = merge(this.props, {
         style,
+        shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd),
         src: source.uri,
+        loadingIndicatorSrc: loadingIndicatorSource ? loadingIndicatorSource.uri : null,
       });
 
       if (nativeProps.children) {
@@ -179,13 +210,17 @@ var styles = StyleSheet.create({
   }
 });
 
-var RKImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTImageView',
-});
-var RCTTextInlineImage = createReactNativeComponentClass({
-  validAttributes: ImageViewAttributes,
-  uiViewClassName: 'RCTTextInlineImage',
-});
+var cfg = {
+  nativeOnly: {
+    src: true,
+    loadingIndicatorSrc: true,
+    defaultImageSrc: true,
+    imageTag: true,
+    progressHandlerRegistered: true,
+    shouldNotifyLoadEvents: true,
+  },
+};
+var RKImage = requireNativeComponent('RCTImageView', Image, cfg);
+var RCTTextInlineImage = requireNativeComponent('RCTTextInlineImage', Image, cfg);
 
 module.exports = Image;

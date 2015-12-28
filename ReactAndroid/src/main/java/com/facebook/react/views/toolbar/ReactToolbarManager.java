@@ -18,6 +18,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.SystemClock;
+import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -25,6 +26,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -64,6 +66,11 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     view.setOverflowIconSource(overflowIcon);
   }
 
+  @ReactProp(name = "rtl")
+  public void setRtl(ReactToolbar view, boolean rtl) {
+    view.setLayoutDirection(rtl ? LayoutDirection.LTR : LayoutDirection.RTL);
+  }
+
   @ReactProp(name = "subtitle")
   public void setSubtitle(ReactToolbar view, @Nullable String subtitle) {
     view.setSubtitle(subtitle);
@@ -94,7 +101,23 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
     }
   }
 
-  @ReactProp(name = "actions")
+  @ReactProp(name = "contentInsetStart", defaultFloat = Float.NaN)
+  public void setContentInsetStart(ReactToolbar view, float insetStart) {
+    int inset = Float.isNaN(insetStart) ?
+        getDefaultContentInsets(view.getContext())[0] :
+        Math.round(PixelUtil.toPixelFromDIP(insetStart));
+    view.setContentInsetsRelative(inset, view.getContentInsetEnd());
+  }
+
+  @ReactProp(name = "contentInsetEnd", defaultFloat = Float.NaN)
+  public void setContentInsetEnd(ReactToolbar view, float insetEnd) {
+    int inset = Float.isNaN(insetEnd) ?
+        getDefaultContentInsets(view.getContext())[1] :
+        Math.round(PixelUtil.toPixelFromDIP(insetEnd));
+    view.setContentInsetsRelative(view.getContentInsetStart(), inset);
+  }
+
+  @ReactProp(name = "nativeActions")
   public void setActions(ReactToolbar view, @Nullable ReadableArray actions) {
     view.setActions(actions);
   }
@@ -140,6 +163,34 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
+  }
+
+  private int[] getDefaultContentInsets(Context context) {
+    Resources.Theme theme = context.getTheme();
+    TypedArray toolbarStyle = null;
+    TypedArray contentInsets = null;
+
+    try {
+      toolbarStyle = theme
+              .obtainStyledAttributes(new int[]{R.attr.toolbarStyle});
+
+      int toolbarStyleResId = toolbarStyle.getResourceId(0, 0);
+
+      contentInsets = theme.obtainStyledAttributes(
+              toolbarStyleResId, new int[]{
+                      R.attr.contentInsetStart,
+                      R.attr.contentInsetEnd,
+              });
+
+      int contentInsetStart = contentInsets.getDimensionPixelSize(0, 0);
+      int contentInsetEnd = contentInsets.getDimensionPixelSize(1, 0);
+
+      return new int[] {contentInsetStart, contentInsetEnd};
+    } finally {
+      recycleQuietly(toolbarStyle);
+      recycleQuietly(contentInsets);
+    }
+
   }
 
   private static int[] getDefaultColors(Context context) {

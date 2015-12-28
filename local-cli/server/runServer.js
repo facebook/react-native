@@ -25,6 +25,7 @@ function runServer(args, config, readyCallback) {
   var wsProxy = null;
   const app = connect()
     .use(loadRawBodyMiddleware)
+    .use(connect.compress())
     .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
     .use(openStackFrameInEditorMiddleware)
     .use(statusPageMiddleware)
@@ -37,7 +38,6 @@ function runServer(args, config, readyCallback) {
   args.projectRoots.forEach(root => app.use(connect.static(root)));
 
   app.use(connect.logger())
-    .use(connect.compress())
     .use(connect.errorHandler());
 
   const serverInstance = http.createServer(app).listen(
@@ -49,6 +49,10 @@ function runServer(args, config, readyCallback) {
       readyCallback();
     }
   );
+  // Disable any kind of automatic timeout behavior for incoming
+  // requests in case it takes the packager more than the default
+  // timeout of 120 seconds to respond to a request.
+  serverInstance.timeout = 0;
 }
 
 function getAppMiddleware(args, config) {
@@ -62,6 +66,7 @@ function getAppMiddleware(args, config) {
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
     assetRoots: args.assetRoots,
     assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],

@@ -54,9 +54,13 @@
       // require cycles inside the factory from causing an infinite require loop.
       mod.isInitialized = true;
 
+      __DEV__ && Systrace().beginEvent('JS_require_' + id);
+
       // keep args in sync with with defineModuleCode in
       // packager/react-packager/src/Resolver/index.js
       mod.factory.call(global, global, require, mod.module, mod.module.exports);
+
+      __DEV__ && Systrace().endEvent();
     } catch (e) {
       mod.hasError = true;
       mod.isInitialized = false;
@@ -65,6 +69,16 @@
 
     return mod.module.exports;
   }
+
+  const Systrace = __DEV__ && (() => {
+    var _Systrace;
+    try {
+      _Systrace = require('Systrace');
+    } catch(e) {}
+
+    return _Systrace && _Systrace.beginEvent ?
+      _Systrace : { beginEvent: () => {}, endEvent: () => {} };
+  });
 
   global.__d = define;
   global.require = require;

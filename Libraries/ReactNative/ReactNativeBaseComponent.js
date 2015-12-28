@@ -14,10 +14,9 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
 var warning = require('warning');
@@ -45,31 +44,6 @@ var ReactNativeBaseComponent = function(
 ) {
   this.viewConfig = viewConfig;
 };
-
-/**
- * Generates and caches arrays of the form:
- *
- *    [0, 1, 2, 3]
- *    [0, 1, 2, 3, 4]
- *    [0, 1]
- *
- * @param {number} size Size of array to generate.
- * @return {Array<number>} Array with values that mirror the index.
- */
-var cachedIndexArray = function(size) {
-  var cachedResult = cachedIndexArray._cache[size];
-  if (!cachedResult) {
-    var arr = [];
-    for (var i = 0; i < size; i++) {
-      arr[i] = i;
-    }
-    cachedIndexArray._cache[size] = arr;
-    return arr;
-  } else {
-    return cachedResult;
-  }
-};
-cachedIndexArray._cache = {};
 
 /**
  * Mixin for containers that contain UIViews. NOTE: markup is rendered markup
@@ -105,11 +79,11 @@ ReactNativeBaseComponent.Mixin = {
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
     if (mountImages.length) {
-      var indexes = cachedIndexArray(mountImages.length);
+      
       // TODO: Pool these per platform view class. Reusing the `mountImages`
       // array would likely be a jit deopt.
       var createdTags = [];
-      for (var i = 0; i < mountImages.length; i++) {
+      for (var i = 0, l = mountImages.length; i < l; i++) {
         var mountImage = mountImages[i];
         var childTag = mountImage.tag;
         var childID = mountImage.rootNodeID;
@@ -123,8 +97,7 @@ ReactNativeBaseComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      RCTUIManager
-        .manageChildren(containerTag, null, null, createdTags, indexes, null);
+      UIManager.setChildren(containerTag, createdTags);
     }
   },
 
@@ -151,7 +124,7 @@ ReactNativeBaseComponent.Mixin = {
     );
 
     if (updatePayload) {
-      RCTUIManager.updateView(
+      UIManager.updateView(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
         this.viewConfig.uiViewClassName,
         updatePayload
@@ -216,7 +189,7 @@ ReactNativeBaseComponent.Mixin = {
     );
 
     var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
-    RCTUIManager.createView(
+    UIManager.createView(
       tag,
       this.viewConfig.uiViewClassName,
       nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,

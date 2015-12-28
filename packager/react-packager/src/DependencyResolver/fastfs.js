@@ -109,7 +109,7 @@ class Fastfs extends EventEmitter {
   readFile(filePath) {
     const file = this._getFile(filePath);
     if (!file) {
-      throw new Error(`Unable to find file with path: ${file}`);
+      throw new Error(`Unable to find file with path: ${filePath}`);
     }
     return file.read();
   }
@@ -293,11 +293,11 @@ class File {
   }
 
   getFiles() {
-    const files = [];
+    let files = [];
     Object.keys(this.children).forEach(key => {
       const file = this.children[key];
       if (file.isDir) {
-        files.push(...file.getFiles());
+        files = files.concat(file.getFiles());
       } else {
         files.push(file);
       }

@@ -10,7 +10,7 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../FileWatcher');
+const FileWatcher = require('../DependencyResolver/FileWatcher');
 const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
 const Bundler = require('../Bundler');
 const Promise = require('promise');
@@ -64,6 +64,10 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  getTransformOptionsModulePath: {
+    type: 'string',
+    required: false,
+  }
 });
 
 const bundleOpts = declareOpts({
@@ -102,6 +106,10 @@ const bundleOpts = declareOpts({
       'InitializeJavaScriptAppEngine'
     ],
   },
+  unbundle: {
+    type: 'boolean',
+    default: false,
+  }
 });
 
 const dependencyOpts = declareOpts({
@@ -187,6 +195,17 @@ class Server {
 
       const opts = bundleOpts(options);
       return this._bundler.bundle(opts);
+    });
+  }
+
+  buildPrepackBundle(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = bundleOpts(options);
+      return this._bundler.prepackBundle(opts);
     });
   }
 
