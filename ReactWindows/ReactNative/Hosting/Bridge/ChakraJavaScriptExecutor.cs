@@ -10,16 +10,24 @@ namespace ReactNative.Hosting.Bridge
     /// </summary>
     public class ChakraJavaScriptExecutor : IJavaScriptExecutor
     {
-        private readonly JavaScriptRuntime _runtime;
-        private readonly JavaScriptValue _globalObject;
+        private JavaScriptRuntime _runtime;
+        private JavaScriptValue _globalObject;
 
         private JavaScriptSourceContext _sourceContext = JavaScriptSourceContext.None;
 
         /// <summary>
-        /// Instantiates a <see cref="ChakraJavaScriptExecutor"/>.
+        /// Initializes the JavaScript runtime.
         /// </summary>
-        public ChakraJavaScriptExecutor()
+        /// <remarks>
+        /// Must be called from the JavaScript thread.
+        /// </remarks>
+        public void Initialize()
         {
+            if (_runtime.IsValid)
+            {
+                throw new InvalidOperationException("JavaScript runtime already initialized for this thread.");
+            }
+
             _runtime = JavaScriptRuntime.Create();
             InitializeChakra();
             _globalObject = JavaScriptValue.GlobalObject;

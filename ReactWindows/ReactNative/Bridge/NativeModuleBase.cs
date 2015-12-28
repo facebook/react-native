@@ -132,18 +132,6 @@ namespace ReactNative.Bridge
         {
         }
 
-        /// <summary>
-        /// Create the set of constants to configure the global environment.
-        /// </summary>
-        /// <returns>The set of constants.</returns>
-        /// <remarks>
-        /// This virtual method will be called during <see cref="Initialize"/>.
-        /// </remarks>
-        protected virtual IReadOnlyDictionary<string, object> CreateConstants()
-        {
-            return new Dictionary<string, object>();
-        }
-
         private IReadOnlyDictionary<string, INativeMethod> InitializeMethods()
         {
             var declaredMethods = GetType().GetTypeInfo().DeclaredMethods;

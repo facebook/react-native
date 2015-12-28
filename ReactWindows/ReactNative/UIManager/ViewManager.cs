@@ -1,8 +1,11 @@
-﻿using Windows.UI.Xaml;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
-    public abstract class ViewManager<T, C> 
+    public abstract class ViewManager<T, C> : IViewManager
         where T : FrameworkElement
         where C : ReactShadowNode
     {
@@ -19,6 +22,8 @@ namespace ReactNative.UIManager
             return view;
         }*/
 
+        public abstract void ReceiveCommand(T root, int commandId, JArray args);
+
         /// <summary>
         /// Subclasses should return a new View instance of the proper type.
         /// </summary>
@@ -27,10 +32,30 @@ namespace ReactNative.UIManager
         protected abstract T createViewInstance(ThemedReactContext reactContext);
 
         /// <summary>
-        /// the name of this view manager. This will be the name used to reference this view manager from JavaScript in createReactNativeComponentClass.
+        /// The name of this view manager. This will be the name used to 
+        /// reference this view manager from JavaScript.
         /// </summary>
-        /// <returns></returns>
-        public abstract string getName();
+        public abstract string Name { get; }
+
+        /// <summary>
+        /// The commands map for the view manager.
+        /// </summary>
+        /// <remarks>
+        /// Subclasses of <see cref="ViewManager{T, C}"/> that expect to
+        /// receive commands through commands dispatched from
+        /// <see cref="UIManagerModule"/> should override this method returning
+        /// the map between names of the commands and identifiers that are then
+        /// used in the <see cref="R"/>
+        /// </remarks>
+        public abstract IReadOnlyDictionary<string, object> CommandsMap { get; }
+
+        public abstract IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants { get; }
+
+        public abstract IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants { get; }
+
+        public abstract IReadOnlyDictionary<string, object> ExportedViewConstants { get; }
+
+        public abstract IReadOnlyDictionary<string, string> NativeProperties { get; }
 
         /// <summary>
         /// Called when view is detached from view hierarchy and allows for some additional cleanup by the {@link ViewManager} subclass.
@@ -49,14 +74,5 @@ namespace ReactNative.UIManager
         protected void addEventEmitters(ThemedReactContext reactContext, T view)
         {
         }
-
-        /// <summary>
-        /// Returns a dictoinary of view-specific constants that are injected to JavaScript. These constants are made accessible via UIManager.<ViewName>.Constants.
-        /// </summary>
-        /// <returns></returns>
-        /*public Dictionary<string, string> getNativeProps()
-        {
-            return ViewManagersPropertyCache.getNativePropsForView(getClass(), getShadowNodeClass());
-        }*/
     }
 }

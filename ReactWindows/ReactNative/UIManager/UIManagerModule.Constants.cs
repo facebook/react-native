@@ -14,7 +14,8 @@ namespace ReactNative.UIManager
         public const string ACTION_DISMISSED = "dismissed";
         public const string ACTION_ITEM_SELECTED = "itemSelected";
 
-        public static IDictionary<string, object> CreateConstants(IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
+        public static Dictionary<string, object> CreateConstants(
+            IReadOnlyList<IViewManager> viewManagers)
         {
             var constants = GetConstants();
             var bubblingEventTypesConstants = GetBubblingEventTypeConstants();
@@ -22,12 +23,45 @@ namespace ReactNative.UIManager
 
             foreach (var viewManager in viewManagers)
             {
-                // TODO: add view manager exports
+                var viewManagerBubblingEvents = viewManager.ExportedCustomBubblingEventTypeConstants;
+                if (viewManagerBubblingEvents != null)
+                {
+                    RecursiveMerge(bubblingEventTypesConstants, viewManagerBubblingEvents);
+                }
+
+                var viewManagerDirectEvents = viewManager.ExportedCustomDirectEventTypeConstants;
+                if (viewManagerDirectEvents != null)
+                {
+                    RecursiveMerge(directEventTypesConstants, viewManagerDirectEvents);
+                }
+
+                var viewManagerConstants = new Dictionary<string, object>();
+                var customViewConstants = viewManager.ExportedViewConstants;
+                if (customViewConstants != null)
+                {
+                    viewManagerConstants.Add("Constants", customViewConstants);
+                }
+
+                var viewManagerCommands = viewManager.CommandsMap;
+                if (viewManagerCommands != null)
+                {
+                    viewManagerConstants.Add("Commands", viewManagerCommands);
+                }
+
+                var viewManagerNativeProps = viewManager.NativeProperties;
+                if (viewManagerNativeProps != null && viewManagerNativeProps.Count > 0)
+                {
+                    viewManagerConstants.Add("NativeProps", viewManagerNativeProps);
+                }
+
+                if (viewManagerConstants.Count > 0)
+                {
+                    constants.Add(viewManager.Name, viewManagerConstants);
+                }
             }
 
             constants.Add(CUSTOM_BUBBLING_EVENT_TYPES_KEY, bubblingEventTypesConstants);
             constants.Add(CUSTOM_DIRECT_EVENT_TYPES_KEY, directEventTypesConstants);
-
             return constants;
         }
 
@@ -68,7 +102,7 @@ namespace ReactNative.UIManager
                     new Map
                     {
                         {
-                            "phasedRegistrationName",
+                            "phasedRegistrationNames",
                             new Map
                             {
                                 { "bubbled", "onTouchStart" },
@@ -77,12 +111,12 @@ namespace ReactNative.UIManager
                         }
                     }
                 },
-                                {
+                {
                     TouchEventType.Move.GetJavaScriptEventName(),
                     new Map
                     {
                         {
-                            "phasedRegistrationName",
+                            "phasedRegistrationNames",
                             new Map
                             {
                                 { "bubbled", "onTouchMove" },
@@ -92,11 +126,11 @@ namespace ReactNative.UIManager
                     }
                 },
                 {
-                    TouchEventType.Start.GetJavaScriptEventName(),
+                    TouchEventType.End.GetJavaScriptEventName(),
                     new Map
                     {
                         {
-                            "phasedRegistrationName",
+                            "phasedRegistrationNames",
                             new Map
                             {
                                 { "bubbled", "onTouchEnd" },
@@ -108,7 +142,7 @@ namespace ReactNative.UIManager
             };
         }
 
-        public static IDictionary<string, object> GetDirectEventTypeConstants()
+        public static Dictionary<string, object> GetDirectEventTypeConstants()
         {
             return new Map
             {
@@ -150,7 +184,7 @@ namespace ReactNative.UIManager
             };
         }
 
-        public static IDictionary<string, object> GetConstants()
+        public static Dictionary<string, object> GetConstants()
         {
             return new Map
             {
@@ -231,14 +265,14 @@ namespace ReactNative.UIManager
             };
         }
 
-        private static void RecursiveMerge(IDictionary<string, object> sink, IDictionary<string, object> source)
+        private static void RecursiveMerge(IDictionary<string, object> sink, IReadOnlyDictionary<string, object> source)
         {
             foreach (var pair in source)
             {
                 var existing = default(object);
                 if (sink.TryGetValue(pair.Key, out existing))
                 {
-                    var sourceAsMap = pair.Value as IDictionary<string, object>;
+                    var sourceAsMap = pair.Value as IReadOnlyDictionary<string, object>;
                     var sinkAsMap = existing as IDictionary<string, object>;
                     if (sourceAsMap != null && sinkAsMap != null)
                     {
@@ -246,8 +280,8 @@ namespace ReactNative.UIManager
                     }
                     else
                     {
-                        // TODO: replace with exception?
-                        sink.Add(pair.Key, pair.Value);
+                        // TODO: confirm that exports should be allowed to override.
+                        sink[pair.Key] = pair.Value;
                     }
                 }
                 else
