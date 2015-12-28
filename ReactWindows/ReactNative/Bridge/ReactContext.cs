@@ -11,7 +11,7 @@ namespace ReactNative.Bridge
     /// </summary>
     public abstract class ReactContext
     {
-        private readonly ReaderWriterLockSlim _lock;
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly List<ILifecycleEventListener> _lifecycleEventListeners =
             new List<ILifecycleEventListener>();
 
