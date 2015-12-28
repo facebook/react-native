@@ -1,4 +1,6 @@
-﻿namespace ReactNative.Bridge
+﻿using System;
+
+namespace ReactNative.Bridge
 {
     /// <summary>
     /// Base class for catalyst native modules that require access to the 
@@ -9,10 +11,13 @@
         /// <summary>
         /// Instantiates the <see cref="ReactContextNativeModuleBase"/>.
         /// </summary>
-        /// <param name="context">The context.</param>
-        protected ReactContextNativeModuleBase(ReactContext context)
+        /// <param name="reactContext">The React context.</param>
+        protected ReactContextNativeModuleBase(ReactContext reactContext)
         {
-            Context = context;
+            if (reactContext == null)
+                throw new ArgumentNullException(nameof(reactContext));
+
+            Context = reactContext;
         }
 
         /// <summary>

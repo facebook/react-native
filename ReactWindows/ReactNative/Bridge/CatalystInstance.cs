@@ -159,6 +159,7 @@ namespace ReactNative.Bridge
             {
                 QueueConfiguration.JSQueueThread.AssertIsOnThread();
 
+                _jsExecutor.Initialize();
                 _bundleLoader.LoadScript(_jsExecutor);
 
                 using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactBridgeCtor"))
