@@ -156,7 +156,7 @@
     <Compile Include="LifecycleState.cs" />
     <Compile Include="ReactInstanceManager.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
-    <Compile Include="CSSlayout\CSSNode.cs" />
+    <Compile Include="CSSLayout\CSSNode.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -190,6 +190,8 @@
     <Compile Include="Shell\MainReactPackage.cs" />
     <Compile Include="Touch\JSResponderHandler.cs" />
     <Compile Include="Touch\OnInterceptTouchEventListener.cs" />
+    <Compile Include="UIManager\Events\Event.cs" />
+    <Compile Include="UIManager\Events\EventDispatcher.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bridge\IReactBridge.cs" />
@@ -202,6 +204,7 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
+    <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\PointerEvents.cs" />
     <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />

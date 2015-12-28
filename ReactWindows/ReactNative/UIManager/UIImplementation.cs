@@ -1,7 +1,8 @@
-﻿
+﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
+using ReactNative.UIManager.Events;
+using System;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
@@ -18,17 +19,120 @@ namespace ReactNative.UIManager
     /// </summary>
     public class UIImplementation
     {
-        private readonly ViewManagerRegistry _ViewManagers;
-        private readonly UIViewOperationQueue _OperationsQueue;
-        private readonly ShadowNodeRegistry _ShadowNodeRegistry = new ShadowNodeRegistry();
+        private readonly ViewManagerRegistry _viewManagers;
+        private readonly UIViewOperationQueue _operationsQueue;
+        private readonly ShadowNodeRegistry _shadowNodeRegistry = new ShadowNodeRegistry();
 
         public UIImplementation(
             ReactApplicationContext reactContext, 
-            IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
+            IReadOnlyList<IViewManager> viewManagers)
         {
-            _ViewManagers = new ViewManagerRegistry(viewManagers);
-            _OperationsQueue = new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(_ViewManagers));
+            _viewManagers = new ViewManagerRegistry(viewManagers);
+            _operationsQueue = new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(_viewManagers));
         }
-        
+
+        /// <summary>
+        /// Called when the host receives the suspend event.
+        /// </summary>
+        public void OnSuspend()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Called when the host receives the resume event.
+        /// </summary>
+        public void OnResume()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Called when the host is shutting down.
+        /// </summary>
+        public void OnShutdown()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void DispatchViewUpdates(EventDispatcher _eventDispatcher, int batchId)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void ConfigureNextLayoutAnimation(Dictionary<string, object> config, ICallback success, ICallback error)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetLayoutAnimationEnabledExperimental(bool enabled)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void ShowPopupMenu(int reactTag, JArray items, ICallback error, ICallback success)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void DispatchViewManagerCommand(int reactTag, int commandId, JArray commandArgs)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void RemoveRootView(int rootViewTag)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void ClearJavaScriptResponder()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetJavaScriptResponder(int reactTag, bool blockNativeResponder)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void CreateView(int tag, string className, int rootViewTag, JObject props)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void UpdateView(int tag, string className, JObject props)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void ManageChildren(int viewTag, JArray moveFrom, JArray moveTo, JArray addChildTags, JArray addAtIndices, JArray removeFrom)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void ReplaceExistingNonRootView(int oldTag, int newTag)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void RemoveSubviewsFromContainerWithID(int containerTag)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Measure(int reactTag, ICallback callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void MeasureLayout(int tag, int ancestorTag, ICallback errorCallback, ICallback successCallback)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void MeasureLayoutRelativeToParent(int tag, ICallback errorCallback, ICallback successCallback)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
