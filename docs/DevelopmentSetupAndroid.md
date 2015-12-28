@@ -11,7 +11,7 @@ This guide describes basic steps of the Android development environment setup th
 
 ### Install Git
 
-  - **On Mac**, if you have installed [XCode](https://developer.apple.com/xcode/), Git is already installed, otherwise run the following:
+  - **On Mac**, Install [XCode](https://developer.apple.com/xcode/). If Git is not already installed, run the following:
 
          brew install git
 
@@ -19,7 +19,7 @@ This guide describes basic steps of the Android development environment setup th
 
   - **On Windows**, download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.  
   
-### Install the Android SDK (unless you have it)
+### Install the Android SDK (unless you already have it)
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 2. Install the Android SDK:
@@ -45,7 +45,7 @@ __NOTE__: You need to restart the Command Prompt (Windows) / Terminal Emulator (
 
 ### Use gradle daemon
 
-React Native Android use [gradle](https://docs.gradle.org) as a build system. We recommend to enable gradle daemon functionality which may result in up to 50% improvement in incremental build times for changes in java code. Learn [here](https://docs.gradle.org/2.9/userguide/gradle_daemon.html) how to enable it for your platform.
+React Native Android use [gradle](https://docs.gradle.org) as a build system. We recommend to enable gradle daemon functionality which may result in up to 50% improvement in incremental build times for changes in java code. Learn how to enable it for your platform [here](https://docs.gradle.org/2.9/userguide/gradle_daemon.html).
 
 ### Configure your SDK
 
