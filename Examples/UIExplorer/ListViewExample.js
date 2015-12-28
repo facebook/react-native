@@ -98,20 +98,6 @@ var ListViewSimpleExample = React.createClass({
 });
 
 var THUMB_URLS = [
-<<<<<<< HEAD
-  'Thumbnails/like.png',
-  'Thumbnails/dislike.png',
-  'Thumbnails/call.png',
-  'Thumbnails/fist.png',
-  'Thumbnails/bandaged.png',
-  'Thumbnails/flowers.png',
-  'Thumbnails/heart.png',
-  'Thumbnails/liking.png',
-  'Thumbnails/party.png',
-  'Thumbnails/poke.png',
-  'Thumbnails/superlike.png',
-  'Thumbnails/victory.png',
-=======
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -124,7 +110,6 @@ var THUMB_URLS = [
   require('./Thumbnails/poke.png'),
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
->>>>>>> upstream/master
   ];
 var LOREM_IPSUM = 'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
 
