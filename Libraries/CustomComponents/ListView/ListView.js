@@ -199,9 +199,9 @@ var ListView = React.createClass({
      */
     onChangeVisibleRows: React.PropTypes.func,
     /**
-     * An experimental performance optimization for improving scroll perf of
+     * A performance optimization for improving scroll perf of
      * large lists, used in conjunction with overflow: 'hidden' on the row
-     * containers.  Use at your own risk.
+     * containers.  This is enabled by default.
      */
     removeClippedSubviews: React.PropTypes.bool,
   },
