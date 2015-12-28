@@ -22,7 +22,7 @@ namespace ReactNative.UIManager
                                UIImplementation uiImplementation)
         {
             _uiImplementation = uiImplementation;
-            _moduleConstants = CreateConstants(viewManagerList);
+            //_moduleConstants = CreateConstants(viewManagerList);
         }
 
         public override string Name
