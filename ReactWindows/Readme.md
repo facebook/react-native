@@ -14,7 +14,7 @@ Clone this repo onto your local machine.
 ```
 git clone https://github.com/CatalystCode/react-native.git
 cd react-native
-git checkout -b ReactWindows
+git checkout ReactWindows
 git checkout -b "YOUR PERSONAL BRANCH"
 ```
 
@@ -26,5 +26,5 @@ Build your environment :
 
 Unit Tests:
 
-- Open up the Test Explorer Tests->Windows->Test Explorer, then select Run All. You can reach out to eric or myself if you're experiencing any test failures. 
+- Open up the Test Explorer Tests->Windows->Test Explorer, then select Run All. You can reach out to Erik Schlegel or Eric Rozellif you experience any test failures. 
 
