@@ -204,7 +204,7 @@ namespace ReactNative
         /// <param name="rootView">The root view for the ReactJS app</param>
         public void DetachRootView(ReactRootView rootView)
         {
-            if (_attachedRootViews.Remove(rootView))
+            if (_attachedRootViews.RemoveAll(view => view.TagId == rootView.TagId) > -1)
             {
                 if (_reactContext != null)
                 {
@@ -372,6 +372,20 @@ namespace ReactNative
                             CultureInfo.InvariantCulture,
                             "{0} has not been set.",
                             name));
+            }
+        }
+        
+        /// <summary>
+        /// Dispose the instance of <see cref="IReactInstanceManager"/>, which entails disposing
+        /// <see cref="ICatalystInstance"/> and detaching all <see cref="ReactRootView"/> from the instance. 
+        /// </summary>
+        public void Dispose()
+        {
+            _reactContext.CatalystInstance.Dispose();
+
+            foreach (var rootView in _attachedRootViews)
+            {
+                this.DetachRootView(rootView);
             }
         }
     }

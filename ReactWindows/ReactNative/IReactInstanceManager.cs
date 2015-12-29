@@ -27,7 +27,7 @@ namespace ReactNative
     /// 1.Add lifecycle event hooks
     /// 2.Add background mode 
     /// </summary>
-    public interface IReactInstanceManager
+    public interface IReactInstanceManager : IDisposable
     {
         IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext);
 
@@ -47,7 +47,7 @@ namespace ReactNative
 
         //public abstract void onResume(DefaultHardwareBackBtnHandler defaultBackButtonImpl);
 
-        //public abstract void onDestroy();
+        void Dispose();
 
         /// <summary>
         /// Attach given {@param rootView} to a catalyst instance manager and start JS application
