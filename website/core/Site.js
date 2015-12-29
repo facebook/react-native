@@ -29,6 +29,8 @@ var Site = React.createClass({
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
           <meta property="og:description" content="A framework for building native apps using React" />
 
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css" />
+
           <link rel="shortcut icon" href="/react-native/img/favicon.png?2" />
           <link rel="stylesheet" href="/react-native/css/react-native.css" />
 
@@ -68,6 +70,7 @@ var Site = React.createClass({
             ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
             fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
           `}} />
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
           <script src="/react-native/js/scripts.js" />
         </body>
       </html>
