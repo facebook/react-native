@@ -25,6 +25,11 @@ const JSTimersExecution = require('JSTimersExecution');
 BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
 
+if (__DEV__) {
+  const HMRClient = require('HMRClient');
+  BatchedBridge.registerCallableModule('HMRClient', HMRClient);
+}
+
 // Wire up the batched bridge on the global object so that we can call into it.
 // Ideally, this would be the inverse relationship. I.e. the native environment
 // provides this global directly with its script embedded. Then this module
