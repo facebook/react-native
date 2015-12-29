@@ -10,6 +10,17 @@
       isInitialized: false,
       hasError: false,
     };
+
+    if (__DEV__) { // HMR
+      Object.assign(modules[id].module, {
+        hot: {
+          acceptCallback: null,
+          accept: function(callback) {
+            this.acceptCallback = callback;
+          }
+        }
+      });
+    }
   }
 
   function require(id) {
@@ -82,4 +93,24 @@
 
   global.__d = define;
   global.require = require;
+
+  if (__DEV__) { // HMR
+    function accept(id, factory) {
+      var mod = modules[id];
+      if (mod.module.hot.acceptCallback) {
+        mod.factory = factory;
+        mod.isInitialized = false;
+        require(id);
+
+        mod.hot.acceptCallback();
+      } else {
+        console.log(
+          '[HMR] Module `' + id + '` cannot be accepted. ' +
+          'Please reload bundle to get the updates.'
+        );
+      }
+    }
+
+    global.__accept = accept;
+  }
 })(this);
