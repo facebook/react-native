@@ -5,6 +5,7 @@ using ReactNative.Views;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 
 namespace ReactNative
@@ -63,7 +64,7 @@ namespace ReactNative
         /// <summary>
         /// Loads the <see cref="ReactApplicationContext" /> based on the user configured bundle <see cref="ReactApplicationContext#_jsBundleFile" /
         /// </summary>
-        void RecreateReactContextInBackgroundFromBundleFileAsync();
+        Task<ReactContext> RecreateReactContextInBackgroundFromBundleFileAsync();
         
     }
 }

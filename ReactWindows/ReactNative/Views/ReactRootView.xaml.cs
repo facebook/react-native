@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -55,14 +56,14 @@ namespace ReactNative.Views
         /// </summary>
         /// <param name="bundleAssetName">The Javascript Bundle location</param>
         /// <param name="jsModuleName">The core Javascript module name</param>
-        public void Lift(string bundleAssetName, string jsModuleName)
+        public async Task Lift(string bundleAssetName, string jsModuleName)
         {
             var defaultPackageList = new List<IReactPackage>()
             {
                 new MainReactPackage()
             };
 
-            this.Lift(bundleAssetName, jsModuleName, defaultPackageList);
+            await this.Lift(bundleAssetName, jsModuleName, defaultPackageList);
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace ReactNative.Views
         /// <param name="bundleAssetName">The Javascript Bundle location</param>
         /// <param name="jsModuleName">The core Javascript module name</param>
         /// <param name="packages">The list of react packges to initialize</param>
-        public void Lift(string bundleAssetName, string jsModuleName, 
+        public async Task Lift(string bundleAssetName, string jsModuleName, 
                          List<IReactPackage> packages)
         {
             var builder = new ReactInstanceManagerImpl.Builder()
@@ -83,7 +84,7 @@ namespace ReactNative.Views
             .AddPackages(packages)
             .Build();
 
-            this.StartReactApplication(builder, jsModuleName);
+            await this.StartReactApplication(builder, jsModuleName);
         }
 
         /// <summary>
@@ -120,12 +121,12 @@ namespace ReactNative.Views
         /// </summary>
         /// <param name="reactInstanceManager">The React Instance Manager</param>
         /// <param name="moduleName">module to load</param>
-        public void StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
+        public async Task StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
         {
             _ReactInstanceManager = reactInstanceManager;
             _JSModuleName = moduleName;
 
-            _ReactInstanceManager.RecreateReactContextInBackgroundFromBundleFileAsync();
+            await _ReactInstanceManager.RecreateReactContextInBackgroundFromBundleFileAsync();
 
             // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
             // mAttachScheduled flag, which will make this view startReactApplication itself to instance
