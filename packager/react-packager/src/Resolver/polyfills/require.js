@@ -121,8 +121,8 @@
         mod.module.hot.acceptCallback();
       } else {
         console.log(
-          '[HMR] Module `' + id + '` cannot be accepted. ' +
-          'Please reload bundle to get the updates.'
+          '[HMR] Module `' + id + '` can\'t be hot reloaded because it ' +
+          'doesn\'t provide accept callback hook. Reload the app to get the updates.'
         );
       }
     }
