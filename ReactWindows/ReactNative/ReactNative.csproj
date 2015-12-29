@@ -154,7 +154,7 @@
     <Compile Include="Bridge\ReactApplicationContext.cs" />
     <Compile Include="CoreModulesPackage.cs" />
     <Compile Include="LifecycleState.cs" />
-    <Compile Include="ReactInstanceManager.cs" />
+    <Compile Include="IReactInstanceManager.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
     <Compile Include="CSSLayout\CSSNode.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />

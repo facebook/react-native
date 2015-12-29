@@ -37,7 +37,7 @@ namespace ReactNative
         private LifecycleState _lifecycleState;
         private readonly string _jsBundleFile;
         private readonly List<IReactPackage> _packages;
-        private ReactApplicationContext _reactContext;
+        private ReactContext _reactContext;
         private readonly string _jsMainModuleName;
         private readonly UIImplementationProvider _uiImplementationProvider;
         private readonly IDefaultHardwareBackButtonHandler _defaultHardwareBackButtonHandler;
@@ -52,6 +52,7 @@ namespace ReactNative
             _jsBundleFile = jsBundleFile;
             _jsMainModuleName = jsMainModuleName;
             _packages = packages;
+            _reactContext = new ReactApplicationContext();
             _lifecycleState = initialLifecycleState;
             _uiImplementationProvider = uiImplementationProvider;
             _defaultHardwareBackButtonHandler = new DefaultHardwareBackButtonHandlerImpl(this);
@@ -78,12 +79,22 @@ namespace ReactNative
         /// <summary>
         /// Loads the <see cref="ReactApplicationContext" /> based on the user configured bundle.
         /// </summary>
-        public async void RecreateReactContextInBackgroundFromBundleFileAsync()
+        public async Task<ReactContext> RecreateReactContextInBackgroundFromBundleFileAsync()
         {
             var jsExecutor = new ChakraJavaScriptExecutor();
             var jsBundler = JavaScriptBundleLoader.CreateFileLoader(_jsBundleFile);
-            var contextInstance = await CreateReactContextAsync(jsExecutor, jsBundler);
 
+            try
+            {
+                _reactContext = await CreateReactContextAsync(jsExecutor, jsBundler);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            return _reactContext;
         }
 
         /// <summary>
@@ -150,7 +161,7 @@ namespace ReactNative
 
             await javascriptRuntime.InitializeBridgeAsync();
             
-            return _reactContext;
+            return reactContext;
         }
         
         private void ProcessPackage(
