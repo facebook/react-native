@@ -25,6 +25,7 @@
 #import "RCTJSCProfiler.h"
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
+static NSString *const RCTHotLoadingEnabledDefaultsKey = @"RCTHotLoadingEnabled";
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
@@ -141,6 +142,15 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       }
     }]];
   }
+}
+
+static void RCTInstallHotLoading(RCTBridge *bridge, RCTJSCExecutor *executor)
+{
+  [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTHotLoadingEnabledDefaultsKey title:@"Enable Hot Loading" selectedTitle:@"Disable Hot Loading" handler:^(BOOL enabled) {
+    [executor executeBlockOnJavaScriptQueue:^{
+      [bridge enqueueJSCall:@"HMRClient.setEnabled" args:@[enabled ? @YES : @NO]];
+    }];
+  }]];
 }
 
 #endif
@@ -296,6 +306,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     };
 
     RCTInstallJSCProfiler(_bridge, strongSelf->_context.ctx);
+    RCTInstallHotLoading(_bridge, strongSelf);
 
     for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
       [[NSNotificationCenter defaultCenter] addObserver:strongSelf

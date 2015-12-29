@@ -134,6 +134,7 @@ class Server {
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
+    this._fileChangeListeners = [];
 
     const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
 
@@ -175,6 +176,7 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
+      this._fileChangeListeners.forEach(listener => listener(filePath));
       this._rebuildBundles(filePath);
       this._informChangeWatchers();
     }, 50);
@@ -185,6 +187,10 @@ class Server {
       this._fileWatcher.end(),
       this._bundler.kill(),
     ]);
+  }
+
+  addFileChangeListener(listener) {
+    this._fileChangeListeners.push(listener);
   }
 
   buildBundle(options) {
