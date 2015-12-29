@@ -19,6 +19,12 @@ var requireNativeComponent = require('requireNativeComponent');
 
 var VIEWPAGER_REF = 'viewPager';
 
+var VIEWPAGER_PAGE_SCROLL_STATES = [
+  'idle',
+  'dragging',
+  'settling',
+];
+
 /**
  * Container that allows to flip left and right between child views. Each
  * child view of the `ViewPagerAndroid` will be treated as a separate page
@@ -77,6 +83,16 @@ var ViewPagerAndroid = React.createClass({
      *    visible, and x fraction of the next page is visible.
      */
     onPageScroll: ReactPropTypes.func,
+
+    /**
+     * Function called when the page scrolling state has changed.
+     * The page scrolling state can be in 3 states:
+     * - idle, meaning there is no interaction with the page scroller happening at the time
+     * - dragging, meaning there is currently an interaction with the page scroller
+     * - settling, meaning that there was an interaction with the page scroller, and the
+     *   page scroller is now finishing it's closing or opening animation
+     */
+    onPageScrollStateChanged: ReactPropTypes.func,
 
     /**
      * This callback will be called once ViewPager finish navigating to selected page
@@ -144,6 +160,12 @@ var ViewPagerAndroid = React.createClass({
     }
   },
 
+  _onPageScrollStateChanged: function(e: Event) {
+    if (this.props.onPageScrollStateChanged) {
+      this.props.onPageScrollStateChanged(VIEWPAGER_PAGE_SCROLL_STATES[e.nativeEvent.pageScrollState]);
+    }
+  },
+
   _onPageSelected: function(e: Event) {
     if (this.props.onPageSelected) {
       this.props.onPageSelected(e);
@@ -180,6 +202,7 @@ var ViewPagerAndroid = React.createClass({
         ref={VIEWPAGER_REF}
         style={this.props.style}
         onPageScroll={this._onPageScroll}
+        onPageScrollStateChanged={this._onPageScrollStateChanged}
         onPageSelected={this._onPageSelected}
         children={this._childrenWithOverridenStyle()}
       />

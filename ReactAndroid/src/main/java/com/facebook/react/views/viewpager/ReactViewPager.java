@@ -104,7 +104,8 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
     @Override
     public void onPageScrollStateChanged(int state) {
-      // don't send events
+      mEventDispatcher.dispatchEvent(
+        new PageScrollStateChangedEvent(getId(), SystemClock.uptimeMillis(), state));
     }
   }
 
