@@ -318,7 +318,10 @@ static void RCTInstallHotLoading(RCTBridge *bridge, RCTJSCExecutor *executor)
     };
 
     RCTInstallJSCProfiler(_bridge, strongSelf->_context.ctx);
-    RCTInstallHotLoading(_bridge, strongSelf);
+
+    if ([self.bridge.delegate respondsToSelector:@selector(isHotLoadingEnabled)] && [self.bridge.delegate isHotLoadingEnabled]) {
+      RCTInstallHotLoading(_bridge, strongSelf);
+    }
 
     for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
       [[NSNotificationCenter defaultCenter] addObserver:strongSelf
