@@ -125,6 +125,11 @@ namespace ReactNative.Tests.UIManager
                     return null;
                 }
             }
+
+            public ReactShadowNode CreateShadowNodeInstance()
+            {
+                return null;
+            }
         }
     }
 }

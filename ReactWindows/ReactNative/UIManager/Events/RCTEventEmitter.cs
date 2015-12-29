@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
+using System.Collections.Generic;
 
 namespace ReactNative.UIManager.Events
 {
