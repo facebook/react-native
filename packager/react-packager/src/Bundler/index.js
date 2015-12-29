@@ -277,6 +277,29 @@ class Bundler {
     });
   }
 
+  bundleForHMR({
+    entryFile,
+    platform,
+  }) {
+    return this.getDependencies(entryFile, /*isDev*/true, platform).then(response => {
+      const module = response.dependencies.filter(module => module.path === entryFile)[0];
+
+      return Promise.all([
+        module.getName(),
+        this._transformer.loadFileAndTransform(path.resolve(entryFile)),
+      ]).then(([moduleName, transformedSource]) => {
+        return (`
+          __accept(
+            '${moduleName}', 
+            function(global, require, module, exports) { 
+              ${transformedSource.code}
+            }
+          );
+        `);
+      });
+    });
+  }
+
   invalidateFile(filePath) {
     this._transformer.invalidateFile(filePath);
   }

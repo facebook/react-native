@@ -19,7 +19,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
       return;
     }
 
-    // TODO(martinb): send HMR update
+    packagerServer.buildBundleForHMR({
+      entryFile: filename,
+      // TODO(martinb): receive platform on query string when client connects
+      platform: 'ios',
+    })
+    .then(bundle => activeWS.send(bundle));
   });
 
   const WebSocketServer = require('ws').Server;

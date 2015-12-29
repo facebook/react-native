@@ -112,6 +112,17 @@ const bundleOpts = declareOpts({
   }
 });
 
+const hmrBundleOpts = declareOpts({
+  entryFile: {
+    type: 'string',
+    required: true,
+  },
+  platform: {
+    type: 'string',
+    required: true,
+  },
+});
+
 const dependencyOpts = declareOpts({
   platform: {
     type: 'string',
@@ -218,6 +229,17 @@ class Server {
   buildBundleFromUrl(reqUrl) {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
+  }
+
+  buildBundleForHMR(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = hmrBundleOpts(options);
+      return this._bundler.bundleForHMR(opts);
+    });
   }
 
   getDependencies(options) {
