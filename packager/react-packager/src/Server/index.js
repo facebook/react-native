@@ -109,7 +109,11 @@ const bundleOpts = declareOpts({
   unbundle: {
     type: 'boolean',
     default: false,
-  }
+  },
+  hot: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const hmrBundleOpts = declareOpts({
@@ -501,6 +505,7 @@ class Server {
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
       minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
+      hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
         urlObj.query,

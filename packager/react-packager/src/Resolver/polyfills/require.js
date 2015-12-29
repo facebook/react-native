@@ -16,7 +16,7 @@
         hot: {
           acceptCallback: null,
           accept: function(callback) {
-            this.acceptCallback = callback;
+            modules[id].module.hot.acceptCallback = callback;
           }
         }
       });
@@ -97,12 +97,28 @@
   if (__DEV__) { // HMR
     function accept(id, factory) {
       var mod = modules[id];
+
+      if (!mod) {
+        console.error(
+          'Cannot accept unknown module `' + id + '`. Make sure you\'re not ' +
+          'trying to modify something else other than a module ' +
+          '(i.e.: a polyfill).'
+        );
+      }
+
+      if (!mod.module.hot) {
+        console.error(
+          'Cannot accept module because Hot Module Replacement ' +
+          'API was not installed.'
+        );
+      }
+
       if (mod.module.hot.acceptCallback) {
         mod.factory = factory;
         mod.isInitialized = false;
         require(id);
 
-        mod.hot.acceptCallback();
+        mod.module.hot.acceptCallback();
       } else {
         console.log(
           '[HMR] Module `' + id + '` cannot be accepted. ' +

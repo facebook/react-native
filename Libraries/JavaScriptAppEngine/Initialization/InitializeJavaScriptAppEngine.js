@@ -216,3 +216,8 @@ if (__DEV__) {
 }
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
+
+if (__DEV__) {
+  // include this transform and it's dependencies on the bundle on dev mode
+  require('react-transform-hmr');
+}

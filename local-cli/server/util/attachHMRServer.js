@@ -14,6 +14,11 @@
  */
 function attachHMRServer({httpServer, path, packagerServer}) {
   let activeWS;
+
+  function disconnect() {
+    activeWS = null;
+  }
+
   packagerServer.addFileChangeListener(filename => {
     if (!activeWS) {
       return;
@@ -40,12 +45,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
     ws.on('error', e => {
       console.error('[Hot Module Replacement] Unexpected error', e);
+      disconnect();
     });
 
-    ws.on('close', () => {
-      console.log('[Hot Module Replacement] Client disconnected');
-      activeWS = null;
-    });
+    ws.on('close', () => disconnect());
   });
 }
 

@@ -137,7 +137,7 @@ class Bundler {
     this._assetServer = opts.assetServer;
 
     if (opts.getTransformOptionsModulePath) {
-      this._getTransformOptions = require(opts.getTransformOptionsModulePath);
+      this._getTransformOptionsModule = require(opts.getTransformOptionsModulePath);
     }
   }
 
@@ -158,6 +158,7 @@ class Bundler {
     dev: isDev,
     platform,
     unbundle: isUnbundle,
+    hot: hot,
   }) {
     // Const cannot have the same name as the method (babel/babel#2834)
     const bbundle = new Bundle(sourceMapUrl);
@@ -194,7 +195,8 @@ class Bundler {
             bbundle,
             response,
             module,
-            platform
+            platform,
+            hot,
           ).then(transformed => {
             if (bar) {
               bar.tick();
@@ -286,12 +288,16 @@ class Bundler {
 
       return Promise.all([
         module.getName(),
-        this._transformer.loadFileAndTransform(path.resolve(entryFile)),
+        this._transformer.loadFileAndTransform(
+          path.resolve(entryFile),
+          // TODO(martinb): pass non null main (t9527509)
+          this._getTransformOptions({main: null}, {hot: true}),
+        ),
       ]).then(([moduleName, transformedSource]) => {
         return (`
           __accept(
-            '${moduleName}', 
-            function(global, require, module, exports) { 
+            '${moduleName}',
+            function(global, require, module, exports) {
               ${transformedSource.code}
             }
           );
@@ -340,7 +346,7 @@ class Bundler {
     );
   }
 
-  _transformModule(bundle, response, module, platform = null) {
+  _transformModule(bundle, response, module, platform = null, hot = false) {
     if (module.isAsset_DEPRECATED()) {
       return this.generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
@@ -350,8 +356,10 @@ class Bundler {
     } else {
       return this._transformer.loadFileAndTransform(
         path.resolve(module.path),
-        this._getTransformOptions ?
-          this._getTransformOptions({bundle, module, platform}) : {}
+        this._getTransformOptions(
+          {bundleEntry: bundle.getMainModuleId(), modulePath: module.path},
+          {hot: hot},
+        ),
       );
     }
   }
@@ -444,6 +452,14 @@ class Bundler {
         virtual: true,
       });
     });
+  }
+
+  _getTransformOptions(config, options) {
+    const transformerOptions = this._getTransformOptionsModule
+      ? this._getTransformOptionsModule(config)
+      : null;
+
+    return {...options, ...transformerOptions};
   }
 }
 

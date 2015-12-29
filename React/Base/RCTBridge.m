@@ -17,6 +17,7 @@
 #import "RCTLog.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
+#import "RCTBundleURLProcessor.h"
 
 NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
@@ -257,6 +258,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTAssertMainThread();
 
   _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
+  _bundleURL = [[RCTBundleURLProcessor sharedProcessor] process: _bundleURL];
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
