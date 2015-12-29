@@ -36,5 +36,11 @@ namespace ReactNative.UIManager
         /// The native properties.
         /// </summary>
         IReadOnlyDictionary<string, string> NativeProperties { get; }
+
+        /// <summary>
+        /// Creates a shadow node for the view manager.
+        /// </summary>
+        /// <returns>The shadow node instance.</returns>
+        ReactShadowNode CreateShadowNodeInstance();
     }
 }

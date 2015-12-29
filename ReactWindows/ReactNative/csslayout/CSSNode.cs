@@ -1,5 +1,5 @@
 ﻿
-namespace ReactNative.csslayout
+namespace ReactNative.CSSLayout
 {
     public class CSSNode
     {
