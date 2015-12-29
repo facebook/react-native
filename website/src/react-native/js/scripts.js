@@ -8,6 +8,8 @@
 
   function init() {
     var backdrop = document.querySelector('.modal-backdrop');
+    if (!backdrop) return;
+
     var modalButtonOpenList = document.querySelectorAll('.modal-button-open');
     var modalButtonClose = document.querySelector('.modal-button-close');
 
@@ -22,6 +24,8 @@
 
   function showModal(e) {
     var backdrop = document.querySelector('.modal-backdrop');
+    if (!backdrop) return;
+
     var modal = document.querySelector('.modal');
 
     backdrop.classList.add('modal-open');
@@ -30,6 +34,8 @@
 
   function hideModal(e) {
     var backdrop = document.querySelector('.modal-backdrop');
+    if (!backdrop) return;
+
     var modal = document.querySelector('.modal');
 
     backdrop.classList.remove('modal-open');
