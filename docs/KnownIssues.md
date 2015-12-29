@@ -26,6 +26,7 @@ ART
 Maps
 Modal
 Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
+Slider (known as SeekBar)
 ```
 
 #### Modules
