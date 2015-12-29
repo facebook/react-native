@@ -370,7 +370,7 @@ var ScrollResponderMixin = {
    * Like `scrollResponderScrollTo` but immediately scrolls to the given
    * position
    */
-  scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
+  scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
     if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),

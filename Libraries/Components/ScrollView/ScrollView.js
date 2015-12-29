@@ -346,7 +346,7 @@ var ScrollView = React.createClass({
 
   scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
     // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollWithouthAnimationTo(
+    this.getScrollResponder().scrollResponderScrollWithoutAnimationTo(
       destX || 0,
       destY || 0,
     );
