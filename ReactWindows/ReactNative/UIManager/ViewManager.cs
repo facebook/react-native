@@ -57,6 +57,8 @@ namespace ReactNative.UIManager
 
         public abstract IReadOnlyDictionary<string, string> NativeProperties { get; }
 
+        public abstract ReactShadowNode CreateShadowNodeInstance();
+
         /// <summary>
         /// Called when view is detached from view hierarchy and allows for some additional cleanup by the {@link ViewManager} subclass.
         /// </summary>

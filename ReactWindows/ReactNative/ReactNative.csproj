@@ -190,6 +190,8 @@
     <Compile Include="Shell\MainReactPackage.cs" />
     <Compile Include="Touch\JSResponderHandler.cs" />
     <Compile Include="Touch\OnInterceptTouchEventListener.cs" />
+    <Compile Include="UIManager\CatalystStylesDiffMap.cs" />
+    <Compile Include="CSSLayout\CSSLayoutContext.cs" />
     <Compile Include="UIManager\Events\Event.cs" />
     <Compile Include="UIManager\Events\EventDispatcher.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
@@ -205,6 +207,8 @@
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
     <Compile Include="UIManager\IViewManager.cs" />
+    <Compile Include="UIManager\NativeViewHierarchyOptimizer.cs" />
+    <Compile Include="UIManager\OnLayoutEvent.cs" />
     <Compile Include="UIManager\PointerEvents.cs" />
     <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
@@ -218,6 +222,7 @@
     <Compile Include="UIManager\UIManagerModule.cs" />
     <Compile Include="UIManager\UIManagerModule.Constants.cs" />
     <Compile Include="UIManager\UIViewOperationQueue.cs" />
+    <Compile Include="UIManager\ViewAtIndex.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />

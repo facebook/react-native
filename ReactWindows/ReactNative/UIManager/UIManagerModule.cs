@@ -160,11 +160,11 @@ namespace ReactNative.UIManager
         [ReactMethod]
         public void manageChildren(
             int viewTag,
-            JArray moveFrom,
-            JArray moveTo,
-            JArray addChildTags,
-            JArray addAtIndices,
-            JArray removeFrom)
+            int[] moveFrom,
+            int[] moveTo,
+            int[] addChildTags,
+            int[] addAtIndices,
+            int[] removeFrom)
         {
             _uiImplementation.ManageChildren(
                 viewTag,
