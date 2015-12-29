@@ -23,6 +23,7 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 #import "RCTJSCProfiler.h"
+#import "RCTBundleURLProcessor.h"
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 static NSString *const RCTHotLoadingEnabledDefaultsKey = @"RCTHotLoadingEnabled";
@@ -146,9 +147,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 static void RCTInstallHotLoading(RCTBridge *bridge, RCTJSCExecutor *executor)
 {
-  [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTHotLoadingEnabledDefaultsKey title:@"Enable Hot Loading" selectedTitle:@"Disable Hot Loading" handler:^(BOOL enabled) {
+  [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTHotLoadingEnabledDefaultsKey title:@"Enable Hot Loading" selectedTitle:@"Disable Hot Loading" handler:^(BOOL enabledOnCurrentBundle) {
     [executor executeBlockOnJavaScriptQueue:^{
-      [bridge enqueueJSCall:@"HMRClient.setEnabled" args:@[enabled ? @YES : @NO]];
+      NSString *enabledQS = [[RCTBundleURLProcessor sharedProcessor] getQueryStringValue:@"hot"];
+      BOOL enabledOnConfig = (enabledQS != nil && [enabledQS isEqualToString:@"true"]) ? YES : NO;
+
+      // reload bundle when user change Hot Loading setting
+      if (enabledOnConfig != enabledOnCurrentBundle) {
+        [[RCTBundleURLProcessor sharedProcessor] setQueryStringValue:enabledOnCurrentBundle ? @"true" : @"false" forAttribute:@"hot"];
+        [bridge reload];
+      }
+
+      if (enabledOnCurrentBundle) {
+        [bridge enqueueJSCall:@"HMRClient.enable" args:@[@YES]];
+      }
     }];
   }]];
 }

@@ -26,8 +26,7 @@ BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
 
 if (__DEV__) {
-  const HMRClient = require('HMRClient');
-  BatchedBridge.registerCallableModule('HMRClient', HMRClient);
+  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
 }
 
 // Wire up the batched bridge on the global object so that we can call into it.
