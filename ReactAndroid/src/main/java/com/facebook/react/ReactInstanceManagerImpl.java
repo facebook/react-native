@@ -732,7 +732,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       CatalystInstance catalystInstance) {
     UiThreadUtil.assertOnUiThread();
     catalystInstance.getJSModule(AppRegistry.class)
-        .unmountApplicationComponentAtRootTag(rootView.getId());
+            .unmountApplicationComponentAtRootTag(rootView.getId());
   }
 
   private void tearDownReactContext(ReactContext reactContext) {

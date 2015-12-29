@@ -39,6 +39,12 @@ namespace ReactNative.Views
         {
             this.InitializeComponent();
             this.SizeChanged += ReactRootView_SizeChanged;
+            this.Unloaded += onDetachedFromWindow;
+        }
+
+        private void onDetachedFromWindow(object sender, RoutedEventArgs e)
+        {
+            _ReactInstanceManager.DetachRootView(this);
         }
 
         private void ReactRootView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -72,8 +78,7 @@ namespace ReactNative.Views
         /// <param name="bundleAssetName">The Javascript Bundle location</param>
         /// <param name="jsModuleName">The core Javascript module name</param>
         /// <param name="packages">The list of react packges to initialize</param>
-        public async Task Lift(string bundleAssetName, string jsModuleName, 
-                         List<IReactPackage> packages)
+        public async Task Lift(string bundleAssetName, string jsModuleName, List<IReactPackage> packages)
         {
             var builder = new ReactInstanceManagerImpl.Builder()
             {
