@@ -313,7 +313,7 @@ namespace ReactNative.UIManager
         /// argument, or no arguments if the menu is dismissed.
         /// </param>
         [ReactMethod]
-        public void showPopupMenu(int reactTag, JArray items, ICallback error, ICallback success)
+        public void showPopupMenu(int reactTag, string[] items, ICallback error, ICallback success)
         {
             _uiImplementation.ShowPopupMenu(reactTag, items, error, success);
         }

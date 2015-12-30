@@ -191,6 +191,7 @@
     <Compile Include="Shell\MainReactPackage.cs" />
     <Compile Include="Touch\JSResponderHandler.cs" />
     <Compile Include="Touch\OnInterceptTouchEventListener.cs" />
+    <Compile Include="UIManager\Animation\AnimationRegistry.cs" />
     <Compile Include="UIManager\CatalystStylesDiffMap.cs" />
     <Compile Include="CSSLayout\CSSLayoutContext.cs" />
     <Compile Include="UIManager\Events\Event.cs" />
@@ -207,6 +208,9 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
+    <Compile Include="UIManager\RootViewHelper.cs" />
+    <Compile Include="UIManager\TouchTargetHelper.cs" />
+    <Compile Include="UIManager\FrameworkElementExtensions.cs" />
     <Compile Include="UIManager\ICatalystInterceptingViewGroup.cs" />
     <Compile Include="UIManager\IPropertySetter.cs" />
     <Compile Include="UIManager\IViewManager.cs" />

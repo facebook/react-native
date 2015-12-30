@@ -1,11 +1,12 @@
 ﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager
 { 
     /// <summary>
     /// allows registering for size change events. The main purpose for this class is to hide complexity of ReactRootView
     /// </summary>
-    public class SizeMonitoringFrameLayout
+    public class SizeMonitoringFrameLayout : Panel
     {
         public interface OnSizeChangedListener
         {

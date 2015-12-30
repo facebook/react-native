@@ -12,9 +12,9 @@ namespace ReactNative.Tests.UIManager
             var v1 = new ViewAtIndex(17, 6);
             var v2 = new ViewAtIndex(42, 17);
 
-            Assert.IsTrue(ViewAtIndex.Comparer.Compare(v1, v2) < 0);
-            Assert.IsTrue(ViewAtIndex.Comparer.Compare(v2, v1) > 0);
-            Assert.AreEqual(0, ViewAtIndex.Comparer.Compare(v1, v1));
+            Assert.IsTrue(ViewAtIndex.IndexComparer.Compare(v1, v2) < 0);
+            Assert.IsTrue(ViewAtIndex.IndexComparer.Compare(v2, v1) > 0);
+            Assert.AreEqual(0, ViewAtIndex.IndexComparer.Compare(v1, v1));
         }
 
         [TestMethod]

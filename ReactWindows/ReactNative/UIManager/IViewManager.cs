@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
@@ -43,6 +44,34 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <returns>The shadow node instance.</returns>
         ReactShadowNode CreateShadowNodeInstance();
+
+        /// <summary>
+        /// Creates a view and installs event emitters on it.
+        /// </summary>
+        /// <param name="reactContext">The context.</param>
+        /// <param name="jsResponderHandler">The responder handler.</param>
+        /// <returns>The view.</returns>
+        FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler);
+
+        /// <summary>
+        /// Called when view is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ViewManager{TFrameworkElement, TShadowNode}"/>
+        /// subclass.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The view.</param>
+        void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view);
+
+        /// <summary>
+        /// Implement this method to receive events/commands directly from
+        /// JavaScript through the <see cref="UIManager"/>.
+        /// </summary>
+        /// <param name="view">
+        /// The view instance that should receive the command.
+        /// </param>
+        /// <param name="commandId">Identifer for the command.</param>
+        /// <param name="args">Optional arguments for the command.</param>
+        void ReceiveCommand(FrameworkElement view, int commandId, JArray args);
 
         /// <summary>
         /// Update the properties of the given view.
