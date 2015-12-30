@@ -146,11 +146,6 @@
           "version": "2.2.0",
           "from": "debug@>=2.1.1 <3.0.0"
         },
-        "globals": {
-          "version": "6.4.1",
-          "from": "globals@>=6.4.0 <7.0.0",
-          "resolved": "https://registry.npmjs.org/globals/-/globals-6.4.1.tgz"
-        },
         "js-tokens": {
           "version": "1.0.1",
           "from": "js-tokens@1.0.1",
@@ -160,6 +155,11 @@
           "version": "0.10.33",
           "from": "recast@0.10.33",
           "resolved": "https://registry.npmjs.org/recast/-/recast-0.10.33.tgz"
+        },
+        "globals": {
+          "version": "6.4.1",
+          "from": "globals@>=6.4.0 <7.0.0",
+          "resolved": "https://registry.npmjs.org/globals/-/globals-6.4.1.tgz"
         },
         "regenerator": {
           "version": "0.8.40",
@@ -274,15 +274,20 @@
           "from": "babylon@>=5.8.29 <6.0.0",
           "resolved": "https://registry.npmjs.org/babylon/-/babylon-5.8.29.tgz"
         },
+        "globals": {
+          "version": "6.4.1",
+          "from": "globals@>=6.4.0 <7.0.0",
+          "resolved": "https://registry.npmjs.org/globals/-/globals-6.4.1.tgz"
+        },
         "esprima-fb": {
           "version": "15001.1001.0-dev-harmony-fb",
           "from": "esprima-fb@>=15001.1001.0-dev-harmony-fb <15001.1002.0",
           "resolved": "https://registry.npmjs.org/esprima-fb/-/esprima-fb-15001.1001.0-dev-harmony-fb.tgz"
         },
-        "globals": {
-          "version": "6.4.1",
-          "from": "globals@>=6.4.0 <7.0.0",
-          "resolved": "https://registry.npmjs.org/globals/-/globals-6.4.1.tgz"
+        "js-tokens": {
+          "version": "1.0.1",
+          "from": "js-tokens@1.0.1",
+          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-1.0.1.tgz"
         },
         "recast": {
           "version": "0.10.33",
@@ -293,11 +298,6 @@
           "version": "0.8.40",
           "from": "regenerator@0.8.40",
           "resolved": "https://registry.npmjs.org/regenerator/-/regenerator-0.8.40.tgz"
-        },
-        "js-tokens": {
-          "version": "1.0.1",
-          "from": "js-tokens@1.0.1",
-          "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-1.0.1.tgz"
         },
         "source-map": {
           "version": "0.5.3",
@@ -1854,35 +1854,40 @@
             }
           }
         },
-        "ansi": {
-          "version": "0.3.0",
-          "from": "ansi@~0.3.0",
-          "resolved": "https://registry.npmjs.org/ansi/-/ansi-0.3.0.tgz"
-        },
         "abbrev": {
           "version": "1.0.7",
           "from": "abbrev@1",
           "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.7.tgz"
         },
-        "ansi-styles": {
-          "version": "2.1.0",
-          "from": "ansi-styles@^2.1.0",
-          "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-2.1.0.tgz"
+        "ansi": {
+          "version": "0.3.0",
+          "from": "ansi@~0.3.0",
+          "resolved": "https://registry.npmjs.org/ansi/-/ansi-0.3.0.tgz"
         },
         "ansi-regex": {
           "version": "2.0.0",
           "from": "ansi-regex@^2.0.0",
           "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.0.0.tgz"
         },
-        "are-we-there-yet": {
-          "version": "1.0.4",
-          "from": "are-we-there-yet@~1.0.0",
-          "resolved": "https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.0.4.tgz"
+        "ansi-styles": {
+          "version": "2.1.0",
+          "from": "ansi-styles@^2.1.0",
+          "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-2.1.0.tgz"
         },
         "asn1": {
           "version": "0.1.11",
           "from": "asn1@0.1.11",
           "resolved": "https://registry.npmjs.org/asn1/-/asn1-0.1.11.tgz"
+        },
+        "are-we-there-yet": {
+          "version": "1.0.4",
+          "from": "are-we-there-yet@~1.0.0",
+          "resolved": "https://registry.npmjs.org/are-we-there-yet/-/are-we-there-yet-1.0.4.tgz"
+        },
+        "async": {
+          "version": "1.5.0",
+          "from": "async@^1.4.0",
+          "resolved": "https://registry.npmjs.org/async/-/async-1.5.0.tgz"
         },
         "assert-plus": {
           "version": "0.1.5",
@@ -1893,11 +1898,6 @@
           "version": "0.6.0",
           "from": "aws-sign2@~0.6.0",
           "resolved": "https://registry.npmjs.org/aws-sign2/-/aws-sign2-0.6.0.tgz"
-        },
-        "async": {
-          "version": "1.5.0",
-          "from": "async@^1.4.0",
-          "resolved": "https://registry.npmjs.org/async/-/async-1.5.0.tgz"
         },
         "balanced-match": {
           "version": "0.2.1",
@@ -2154,15 +2154,15 @@
           "from": "node-uuid@~1.4.3",
           "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.3.tgz"
         },
-        "npmlog": {
-          "version": "1.2.1",
-          "from": "npmlog@~1.2.0",
-          "resolved": "https://registry.npmjs.org/npmlog/-/npmlog-1.2.1.tgz"
-        },
         "oauth-sign": {
           "version": "0.8.0",
           "from": "oauth-sign@~0.8.0",
           "resolved": "https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.8.0.tgz"
+        },
+        "npmlog": {
+          "version": "1.2.1",
+          "from": "npmlog@~1.2.0",
+          "resolved": "https://registry.npmjs.org/npmlog/-/npmlog-1.2.1.tgz"
         },
         "once": {
           "version": "1.1.1",
@@ -2174,15 +2174,15 @@
           "from": "path-is-absolute@>=1.0.0 <2.0.0",
           "resolved": "https://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.0.tgz"
         },
-        "pinkie": {
-          "version": "1.0.0",
-          "from": "pinkie@^1.0.0",
-          "resolved": "https://registry.npmjs.org/pinkie/-/pinkie-1.0.0.tgz"
-        },
         "pinkie-promise": {
           "version": "1.0.0",
           "from": "pinkie-promise@^1.0.0",
           "resolved": "https://registry.npmjs.org/pinkie-promise/-/pinkie-promise-1.0.0.tgz"
+        },
+        "pinkie": {
+          "version": "1.0.0",
+          "from": "pinkie@^1.0.0",
+          "resolved": "https://registry.npmjs.org/pinkie/-/pinkie-1.0.0.tgz"
         },
         "qs": {
           "version": "5.2.0",
@@ -2199,15 +2199,15 @@
           "from": "request@2.x",
           "resolved": "https://registry.npmjs.org/request/-/request-2.65.0.tgz"
         },
-        "sntp": {
-          "version": "1.0.9",
-          "from": "sntp@1.x.x",
-          "resolved": "https://registry.npmjs.org/sntp/-/sntp-1.0.9.tgz"
-        },
         "semver": {
           "version": "5.0.3",
           "from": "semver@~5.0.1",
           "resolved": "https://registry.npmjs.org/semver/-/semver-5.0.3.tgz"
+        },
+        "sntp": {
+          "version": "1.0.9",
+          "from": "sntp@1.x.x",
+          "resolved": "https://registry.npmjs.org/sntp/-/sntp-1.0.9.tgz"
         },
         "string_decoder": {
           "version": "0.10.31",
@@ -2219,11 +2219,6 @@
           "from": "stringstream@~0.0.4",
           "resolved": "https://registry.npmjs.org/stringstream/-/stringstream-0.0.5.tgz"
         },
-        "supports-color": {
-          "version": "2.0.0",
-          "from": "supports-color@^2.0.0",
-          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
-        },
         "strip-ansi": {
           "version": "3.0.0",
           "from": "strip-ansi@^3.0.0",
@@ -2233,6 +2228,11 @@
           "version": "0.1.3",
           "from": "strip-json-comments@0.1.x",
           "resolved": "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-0.1.3.tgz"
+        },
+        "supports-color": {
+          "version": "2.0.0",
+          "from": "supports-color@^2.0.0",
+          "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
         },
         "tar": {
           "version": "2.2.1",
@@ -4170,7 +4170,7 @@
     "react": {
       "version": "0.14.5",
       "from": "react@>=0.14.5 <0.15.0",
-      "resolved": "file:build/packages/react.tgz",
+      "resolved": "https://registry.npmjs.org/react/-/react-0.14.5.tgz",
       "dependencies": {
         "envify": {
           "version": "3.4.0",
