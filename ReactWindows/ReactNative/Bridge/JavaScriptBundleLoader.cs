@@ -56,14 +56,22 @@ namespace ReactNative.Bridge
 
             public override async Task InitializeAsync()
             {
-                var storageFile = SourceUrl.StartsWith("ms-appx:///")
-                    ? await StorageFile.GetFileFromApplicationUriAsync(new Uri(SourceUrl))
-                    : await StorageFile.GetFileFromPathAsync(SourceUrl);
-
-                using (var stream = await storageFile.OpenStreamForReadAsync())
-                using (var reader = new StreamReader(stream))
+                try
                 {
-                    _script = await reader.ReadToEndAsync();
+                    var storageFile = SourceUrl.StartsWith("ms-appx:///")
+                        ? await StorageFile.GetFileFromApplicationUriAsync(new Uri(SourceUrl))
+                        : await StorageFile.GetFileFromPathAsync(SourceUrl);
+
+                    using (var stream = await storageFile.OpenStreamForReadAsync())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        _script = await reader.ReadToEndAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var exceptionMessage = String.Format("File read exception for asset {0}", SourceUrl);
+                    throw new InvalidOperationException(exceptionMessage, ex);
                 }
             }
 
