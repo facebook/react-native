@@ -310,6 +310,10 @@ class Bundler {
     this._transformer.invalidateFile(filePath);
   }
 
+  getShallowDependencies(entryFile) {
+    return this._resolver.getShallowDependencies(entryFile);
+  }
+
   getDependencies(main, isDev, platform) {
     return this._resolver.getDependencies(main, { dev: isDev, platform });
   }
