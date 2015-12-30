@@ -20,8 +20,40 @@ var {
   ScrollView,
   StyleSheet,
   View,
-  Image
+  Image,
+  Text
 } = React;
+
+var RefreshScrollView = React.createClass({
+  getInitialState: function() {
+    return {
+      refreshing:false,
+    };
+  },
+
+  render: function() {
+    return (
+      <View>
+        <ScrollView
+          refreshing={this.state.refreshing}
+          onRefreshStart={(endRefreshing) => {
+            this.setState({refreshing: true});
+          }}
+          automaticallyAdjustContentInsets={false}
+          onScroll={() => { console.log('onScroll!'); }}
+          scrollEventThrottle={200}
+          style={styles.scrollView}>
+          {THUMBS.map(createThumbRow)}
+        </ScrollView>
+        <Text style={styles.trigger} onPress={()=>{
+          this.setState({refreshing: !this.state.refreshing});
+        }}>
+          {this.state.refreshing ? 'Tap to End Refreshing' : 'Tap to Begin Refreshing'}
+        </Text>
+      </View>
+    );
+  }
+});
 
 exports.displayName = (undefined: ?string);
 exports.title = '<ScrollView>';
@@ -31,15 +63,7 @@ exports.examples = [
   title: '<ScrollView>',
   description: 'To make content scrollable, wrap it within a <ScrollView> component',
   render: function() {
-    return (
-      <ScrollView
-        automaticallyAdjustContentInsets={false}
-        onScroll={() => { console.log('onScroll!'); }}
-        scrollEventThrottle={200}
-        style={styles.scrollView}>
-        {THUMBS.map(createThumbRow)}
-      </ScrollView>
-    );
+    return (<RefreshScrollView/>);
   }
 }, {
   title: '<ScrollView> (horizontal = true)',
@@ -109,5 +133,9 @@ var styles = StyleSheet.create({
   img: {
     width: 64,
     height: 64,
-  }
+  },
+  trigger: {
+    height: 20,
+    textAlign: 'center',
+  },
 });

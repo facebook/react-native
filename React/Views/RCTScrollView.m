@@ -863,11 +863,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
   }
   _onRefreshStart = [onRefreshStart copy];
 
-  if (!_scrollView.refreshControl) {
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
-    _scrollView.refreshControl = refreshControl;
-  }
+  [self setupRefreshControl];
 }
 
 - (void)refreshControlValueChanged
@@ -880,6 +876,35 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
 - (void)endRefreshing
 {
   [_scrollView.refreshControl endRefreshing];
+}
+
+- (void)setupRefreshControl {
+  if (!_scrollView.refreshControl) {
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
+    _scrollView.refreshControl = refreshControl;
+  }
+}
+
+- (void)setRefreshing:(BOOL)refreshing {
+  if (refreshing) {
+    [self setupRefreshControl];
+    
+    if (!_scrollView.refreshControl.isRefreshing) {
+      [self scrollToOffset:CGPointMake(0, -_scrollView.refreshControl.frame.size.height) animated:YES];
+      [_scrollView.refreshControl beginRefreshing];
+    }
+  } else if (_scrollView.refreshControl) {
+    [_scrollView.refreshControl endRefreshing];
+  }
+}
+
+- (BOOL)refreshing {
+  if (!_scrollView.refreshControl) {
+    return NO;
+  }
+  
+  return _scrollView.refreshControl.isRefreshing;
 }
 
 @end
