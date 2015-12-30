@@ -26,18 +26,18 @@ var {
 } = React;
 
 var THUMB_URLS = [
-  'Thumbnails/like.png',
-  'Thumbnails/dislike.png',
-  'Thumbnails/call.png',
-  'Thumbnails/fist.png',
-  'Thumbnails/bandaged.png',
-  'Thumbnails/flowers.png',
-  'Thumbnails/heart.png',
-  'Thumbnails/liking.png',
-  'Thumbnails/party.png',
-  'Thumbnails/poke.png',
-  'Thumbnails/superlike.png',
-  'Thumbnails/victory.png',
+  require('./Thumbnails/like.png'),
+  require('./Thumbnails/dislike.png'),
+  require('./Thumbnails/call.png'),
+  require('./Thumbnails/fist.png'),
+  require('./Thumbnails/bandaged.png'),
+  require('./Thumbnails/flowers.png'),
+  require('./Thumbnails/heart.png'),
+  require('./Thumbnails/liking.png'),
+  require('./Thumbnails/party.png'),
+  require('./Thumbnails/poke.png'),
+  require('./Thumbnails/superlike.png'),
+  require('./Thumbnails/victory.png'),
 ];
 
 var ListViewGridLayoutExample = React.createClass({
@@ -74,9 +74,7 @@ var ListViewGridLayoutExample = React.createClass({
 
   _renderRow: function(rowData: string, sectionID: number, rowID: number) {
     var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = {
-      uri: THUMB_URLS[rowHash % THUMB_URLS.length],
-    };
+    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight onPress={() => this._pressRow(rowID)} underlayColor="transparent">
         <View>
