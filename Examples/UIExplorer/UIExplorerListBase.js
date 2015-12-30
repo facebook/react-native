@@ -40,7 +40,7 @@ class UIExplorerListBase extends React.Component {
         components: [],
         apis: [],
       }),
-      searchText: this.props.searchText,
+      searchText: this.props.searchText || '',
     };
   }
 
