@@ -20,6 +20,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
   function disconnect() {
     client = null;
+    packagerServer.setHMRFileChangeListener(null);
   }
 
   // Returns a promise with the full list of dependencies and the shallow
@@ -59,41 +60,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     });
   }
 
-  packagerServer.addFileChangeListener(filename => {
-    if (!client) {
-      return;
-    }
-
-    packagerServer.getShallowDependencies(filename)
-      .then(deps => {
-        // if the file dependencies have change we need to invalidate the
-        // dependencies caches because the list of files we need to send to the
-        // client may have changed
-        if (arrayEquals(deps, client.shallowDependencies[filename])) {
-          return Promise.resolve();
-        }
-        return getDependencies(client.platform, client.bundleEntry)
-          .then(({dependenciesCache, shallowDependencies}) => {
-            // invalidate caches
-            client.dependenciesCache = dependenciesCache;
-            client.shallowDependencies = shallowDependencies;
-          });
-      })
-      .then(() => {
-        // make sure the file was modified is part of the bundle
-        if (!client.shallowDependencies[filename]) {
-          return;
-        }
-
-        return packagerServer.buildBundleForHMR({
-          platform: client.platform,
-          entryFile: filename,
-        })
-        .then(bundle => client.ws.send(bundle));
-      })
-      .done();
-  });
-
   const WebSocketServer = require('ws').Server;
   const wss = new WebSocketServer({
     server: httpServer,
@@ -114,6 +80,40 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           dependenciesCache,
           shallowDependencies,
         };
+
+        packagerServer.setHMRFileChangeListener(filename => {
+          if (!client) {
+            return Promise.resolve();
+          }
+
+          return packagerServer.getShallowDependencies(filename)
+            .then(deps => {
+              // if the file dependencies have change we need to invalidate the
+              // dependencies caches because the list of files we need to send
+              // to the client may have changed
+              if (arrayEquals(deps, client.shallowDependencies[filename])) {
+                return Promise.resolve();
+              }
+              return getDependencies(client.platform, client.bundleEntry)
+                .then(({dependenciesCache, shallowDependencies}) => {
+                  // invalidate caches
+                  client.dependenciesCache = dependenciesCache;
+                  client.shallowDependencies = shallowDependencies;
+                });
+            })
+            .then(() => {
+              // make sure the file was modified is part of the bundle
+              if (!client.shallowDependencies[filename]) {
+                return;
+              }
+
+              return packagerServer.buildBundleForHMR({
+                platform: client.platform,
+                entryFile: filename,
+              })
+              .then(bundle => client.ws.send(bundle));
+            });
+        });
 
         client.ws.on('error', e => {
           console.error('[Hot Module Replacement] Unexpected error', e);
