@@ -34,18 +34,18 @@ var {
 
 var PAGE_SIZE = 4;
 var THUMB_URLS = [
-  'Thumbnails/like.png',
-  'Thumbnails/dislike.png',
-  'Thumbnails/call.png',
-  'Thumbnails/fist.png',
-  'Thumbnails/bandaged.png',
-  'Thumbnails/flowers.png',
-  'Thumbnails/heart.png',
-  'Thumbnails/liking.png',
-  'Thumbnails/party.png',
-  'Thumbnails/poke.png',
-  'Thumbnails/superlike.png',
-  'Thumbnails/victory.png',
+  require('./Thumbnails/like.png'),
+  require('./Thumbnails/dislike.png'),
+  require('./Thumbnails/call.png'),
+  require('./Thumbnails/fist.png'),
+  require('./Thumbnails/bandaged.png'),
+  require('./Thumbnails/flowers.png'),
+  require('./Thumbnails/heart.png'),
+  require('./Thumbnails/liking.png'),
+  require('./Thumbnails/party.png'),
+  require('./Thumbnails/poke.png'),
+  require('./Thumbnails/superlike.png'),
+  require('./Thumbnails/victory.png'),
   ];
 var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
