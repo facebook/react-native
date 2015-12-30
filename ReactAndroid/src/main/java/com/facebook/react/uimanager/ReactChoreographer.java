@@ -46,6 +46,11 @@ public class ReactChoreographer {
      * Events that make JS do things.
      */
     TIMERS_EVENTS(3),
+
+    /**
+     * Event used to dispatch the idle callback. Called after all other work is done for the frame.
+     */
+    IDLE_EVENT(4),
     ;
 
     private final int mOrder;

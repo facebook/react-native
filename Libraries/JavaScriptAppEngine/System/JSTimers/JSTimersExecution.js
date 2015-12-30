@@ -31,6 +31,7 @@ const JSTimersExecution = {
     setInterval: null,
     requestAnimationFrame: null,
     setImmediate: null,
+    requestIdleCallback: null,
   }),
 
   // Parallel arrays:
@@ -38,13 +39,14 @@ const JSTimersExecution = {
   types: [],
   timerIDs: [],
   immediates: [],
+  requestIdleCallbacks: [],
 
   /**
    * Calls the callback associated with the ID. Also unregister that callback
    * if it was a one time timer (setTimeout), and not unregister it if it was
    * recurring (setInterval).
    */
-  callTimer(timerID) {
+  callTimer(timerID, frameTime) {
     warning(
       timerID <= JSTimersExecution.GUID,
       'Tried to call timer with ID %s but no such timer exists.',
@@ -65,7 +67,8 @@ const JSTimersExecution = {
     // Clear the metadata
     if (type === JSTimersExecution.Type.setTimeout ||
         type === JSTimersExecution.Type.setImmediate ||
-        type === JSTimersExecution.Type.requestAnimationFrame) {
+        type === JSTimersExecution.Type.requestAnimationFrame ||
+        type === JSTimersExecution.Type.requestIdleCallback) {
       JSTimersExecution._clearIndex(timerIndex);
     }
 
@@ -77,6 +80,12 @@ const JSTimersExecution = {
       } else if (type === JSTimersExecution.Type.requestAnimationFrame) {
         const currentTime = performanceNow();
         callback(currentTime);
+      } else if (type === JSTimersExecution.Type.requestIdleCallback) {
+        callback({
+          timeRemaining: function() {
+            return Math.max(0, 17 - (performanceNow() - frameTime));
+          },
+        });
       } else {
         console.error('Tried to call a callback with invalid type: ' + type);
         return;
@@ -99,7 +108,7 @@ const JSTimersExecution = {
     );
 
     JSTimersExecution.errors = null;
-    timerIDs.forEach(JSTimersExecution.callTimer);
+    timerIDs.forEach((id) => { JSTimersExecution.callTimer(id); });
 
     const errors = JSTimersExecution.errors;
     if (errors) {
@@ -115,6 +124,34 @@ const JSTimersExecution = {
         }
       }
       throw errors[0];
+    }
+  },
+
+  callIdleCallbacks: function(frameTime) {
+    // Arbitrary threshold: 10ms remaining in frame.
+    if (17 - (performanceNow() - frameTime) < 10) {
+      return;
+    }
+
+    JSTimersExecution.errors = null;
+
+    if (JSTimersExecution.requestIdleCallbacks.length > 0) {
+      var passIdleCallbacks = JSTimersExecution.requestIdleCallbacks.slice();
+      JSTimersExecution.requestIdleCallbacks = [];
+
+      for (var i = 0; i < passIdleCallbacks.length; ++i) {
+        JSTimersExecution.callTimer(passIdleCallbacks[i], frameTime);
+      }
+    }
+
+    if (JSTimersExecution.requestIdleCallbacks.length === 0) {
+      require('NativeModules').Timing.sendIdleEvents(false);
+    }
+
+    if (JSTimersExecution.errors) {
+      JSTimersExecution.errors.forEach((error) =>
+        require('JSTimers').setTimeout(() => { throw error; }, 0)
+      );
     }
   },
 

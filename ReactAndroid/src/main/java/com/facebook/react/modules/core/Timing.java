@@ -9,14 +9,6 @@
 
 package com.facebook.react.modules.core;
 
-import javax.annotation.Nullable;
-
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.util.SparseArray;
 import android.view.Choreographer;
 
@@ -28,10 +20,23 @@ import com.facebook.react.bridge.OnExecutorUnregisteredListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.uimanager.ReactChoreographer;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.Nullable;
 
 /**
  * Native module for JS timer execution. Timers fire on frame boundaries.
@@ -63,7 +68,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
-  private class FrameCallback implements Choreographer.FrameCallback {
+  private class TimerFrameCallback implements Choreographer.FrameCallback {
 
     // Temporary map for constructing the individual arrays of timers per ExecutorToken
     private final HashMap<ExecutorToken, WritableArray> mTimersToCall = new HashMap<>();
@@ -107,13 +112,78 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     }
   }
 
+  private class IdleFrameCallback implements Choreographer.FrameCallback {
+
+    @Override
+    public void doFrame(long frameTimeNanos) {
+      if (isPaused.get()) {
+        return;
+      }
+
+      // If the JS thread is busy for multiple frames we cancel any other pending runnable.
+      if (mCurrentIdleCallbackRunnable != null) {
+        mCurrentIdleCallbackRunnable.cancel();
+      }
+
+      long frameTimeMillis = frameTimeNanos / 1000000;
+      long timeSinceBoot = SystemClock.uptimeMillis();
+      long frameTimeElapsed = timeSinceBoot - frameTimeMillis;
+      long time = SystemClock.currentTimeMillis();
+      long absoluteFrameStartTime = time - frameTimeElapsed;
+
+      mCurrentIdleCallbackRunnable = new IdleCallbackRunnable(absoluteFrameStartTime);
+      getReactApplicationContext().runOnJSQueueThread(mCurrentIdleCallbackRunnable);
+
+      Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
+          ReactChoreographer.CallbackType.IDLE_EVENT,
+          this);
+    }
+  }
+
+  private class IdleCallbackRunnable implements Runnable {
+    private volatile boolean mCanceled = false;
+    private final long mFrameStartTime;
+
+    public IdleCallbackRunnable(long frameStartTime) {
+      mFrameStartTime = frameStartTime;
+    }
+
+    @Override
+    public void run() {
+      if (mCanceled) {
+        return;
+      }
+
+      List<ExecutorToken> contextsToCall;
+      synchronized (mIdleCallbackGuard) {
+        contextsToCall = new ArrayList<>(mSendIdleEventsExecutorTokens);
+      }
+
+      for (ExecutorToken context : contextsToCall) {
+        getReactApplicationContext().getJSModule(context, JSTimersExecution.class)
+            .callIdleCallbacks(mFrameStartTime);
+      }
+
+      mCurrentIdleCallbackRunnable = null;
+    }
+
+    public void cancel() {
+      mCanceled = true;
+    }
+  }
+
   private final Object mTimerGuard = new Object();
+  private final Object mIdleCallbackGuard = new Object();
   private final PriorityQueue<Timer> mTimers;
-  private final HashMap<ExecutorToken, SparseArray<Timer>> mTimerIdsToTimers;
+  private final Map<ExecutorToken, SparseArray<Timer>> mTimerIdsToTimers;
   private final AtomicBoolean isPaused = new AtomicBoolean(true);
-  private final FrameCallback mFrameCallback = new FrameCallback();
+  private final TimerFrameCallback mTimerFrameCallback = new TimerFrameCallback();
+  private final IdleFrameCallback mIdleFrameCallback = new IdleFrameCallback();
+  private @Nullable IdleCallbackRunnable mCurrentIdleCallbackRunnable;
   private @Nullable ReactChoreographer mReactChoreographer;
   private boolean mFrameCallbackPosted = false;
+  private boolean mFrameIdleCallbackPosted = false;
+  private final Set<ExecutorToken> mSendIdleEventsExecutorTokens;
 
   public Timing(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
     super(reactContext);
@@ -135,6 +205,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
           }
         });
     mTimerIdsToTimers = new HashMap<>();
+    mSendIdleEventsExecutorTokens = new HashSet<>();
   }
 
   @Override
@@ -148,11 +219,13 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   public void onHostPause() {
     isPaused.set(true);
     clearChoreographerCallback();
+    clearChoreographerIdleCallback();
   }
 
   @Override
   public void onHostDestroy() {
     clearChoreographerCallback();
+    clearChoreographerIdleCallback();
   }
 
   @Override
@@ -161,18 +234,25 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     // TODO(5195192) Investigate possible problems related to restarting all tasks at the same
     // moment
     setChoreographerCallback();
+
+    synchronized (mIdleCallbackGuard) {
+      if (mSendIdleEventsExecutorTokens.size() > 0) {
+        setChoreographerIdleCallback();
+      }
+    }
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
     clearChoreographerCallback();
+    clearChoreographerIdleCallback();
   }
 
   private void setChoreographerCallback() {
     if (!mFrameCallbackPosted) {
       Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
           ReactChoreographer.CallbackType.TIMERS_EVENTS,
-          mFrameCallback);
+          mTimerFrameCallback);
       mFrameCallbackPosted = true;
     }
   }
@@ -181,14 +261,32 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     if (mFrameCallbackPosted) {
       Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
           ReactChoreographer.CallbackType.TIMERS_EVENTS,
-          mFrameCallback);
+          mTimerFrameCallback);
       mFrameCallbackPosted = false;
+    }
+  }
+
+  private void setChoreographerIdleCallback() {
+    if (!mFrameIdleCallbackPosted) {
+      Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
+          ReactChoreographer.CallbackType.IDLE_EVENT,
+          mIdleFrameCallback);
+      mFrameIdleCallbackPosted = true;
+    }
+  }
+
+  private void clearChoreographerIdleCallback() {
+    if (mFrameIdleCallbackPosted) {
+      Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
+        ReactChoreographer.CallbackType.IDLE_EVENT,
+          mIdleFrameCallback);
+      mFrameIdleCallbackPosted = false;
     }
   }
 
   @Override
   public String getName() {
-    return "RKTiming";
+    return "RCTTiming";
   }
 
   @Override
@@ -207,6 +305,10 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
         Timer timer = timersForContext.get(timersForContext.keyAt(i));
         mTimers.remove(timer);
       }
+    }
+
+    synchronized (mIdleCallbackGuard) {
+      mSendIdleEventsExecutorTokens.remove(executorToken);
     }
   }
 
@@ -271,5 +373,29 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       mTimerIdsToTimers.remove(timerId);
       mTimers.remove(timer);
     }
+  }
+
+  @ReactMethod
+  public void sendIdleEvents(ExecutorToken executorToken, boolean shouldSend) {
+    synchronized (mIdleCallbackGuard) {
+      if (shouldSend) {
+        mSendIdleEventsExecutorTokens.add(executorToken);
+      } else {
+        mSendIdleEventsExecutorTokens.remove(executorToken);
+      }
+    }
+
+    UiThreadUtil.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        synchronized (mIdleCallbackGuard) {
+          if (mSendIdleEventsExecutorTokens.size() > 0) {
+            setChoreographerIdleCallback();
+          } else {
+            clearChoreographerIdleCallback();
+          }
+        }
+      }
+    });
   }
 }
