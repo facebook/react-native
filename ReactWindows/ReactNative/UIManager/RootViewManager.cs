@@ -1,4 +1,3 @@
-﻿
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
@@ -9,7 +8,7 @@ namespace ReactNative.UIManager
     class RootViewManager : ViewGroupManager
     {
         private readonly string REACT_CLASS = "ReactView";
-        
+
 
         /// <summary>
         /// Get the name of the react root view

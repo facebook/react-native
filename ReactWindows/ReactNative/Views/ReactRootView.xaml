@@ -1,4 +1,4 @@
-﻿<Panel
+﻿<src:SizeMonitoringFrameLayout
     x:Class="ReactNative.Views.ReactRootView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,4 +10,4 @@
     <Grid Name="Root">
         <Canvas Name="ContentView" />
     </Grid>
-</Panel>
+</src:SizeMonitoringFrameLayout>
