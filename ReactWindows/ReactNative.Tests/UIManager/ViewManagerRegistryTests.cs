@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,21 @@ namespace ReactNative.Tests.UIManager
             }
 
             public ReactShadowNode CreateShadowNodeInstance()
+            {
+                throw new NotImplementedException();
+            }
+
+            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
             {
                 throw new NotImplementedException();
             }

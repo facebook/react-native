@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using ReactNative.Tests.Constants;
 using ReactNative.UIManager;
@@ -130,6 +131,21 @@ namespace ReactNative.Tests.UIManager
             public ReactShadowNode CreateShadowNodeInstance()
             {
                 return null;
+            }
+
+            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+            {
+                throw new NotImplementedException();
             }
 
             public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)

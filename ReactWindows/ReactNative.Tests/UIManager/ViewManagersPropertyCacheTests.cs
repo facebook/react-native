@@ -190,6 +190,16 @@ namespace ReactNative.Tests.UIManager
 
         class EmptyTest : IViewManager
         {
+            #region IViewManager
+
+            public string Name
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
             public IReadOnlyDictionary<string, object> CommandsMap
             {
                 get
@@ -222,14 +232,6 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
             public IReadOnlyDictionary<string, string> NativeProperties
             {
                 get
@@ -243,7 +245,17 @@ namespace ReactNative.Tests.UIManager
                 throw new NotImplementedException();
             }
 
-            public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
+            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
             {
                 throw new NotImplementedException();
             }
@@ -252,6 +264,13 @@ namespace ReactNative.Tests.UIManager
             {
                 throw new NotImplementedException();
             }
+
+            public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
         }
 
         class ViewManagerValueTest : IViewManager
@@ -272,7 +291,7 @@ namespace ReactNative.Tests.UIManager
                 BarValues[index] = value;
             }
 
-            #region IViewManager Implementation
+            #region IViewManager
 
             public string Name
             {
@@ -323,6 +342,21 @@ namespace ReactNative.Tests.UIManager
             }
 
             public ReactShadowNode CreateShadowNodeInstance()
+            {
+                throw new NotImplementedException();
+            }
+
+            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
             {
                 throw new NotImplementedException();
             }
@@ -536,6 +570,21 @@ namespace ReactNative.Tests.UIManager
             }
 
             public ReactShadowNode CreateShadowNodeInstance()
+            {
+                throw new NotImplementedException();
+            }
+
+            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
             {
                 throw new NotImplementedException();
             }
