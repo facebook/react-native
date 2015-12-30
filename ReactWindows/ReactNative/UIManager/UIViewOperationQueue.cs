@@ -96,7 +96,7 @@ namespace ReactNative.UIManager
             EnqueueOperation(() => _nativeViewHierarchyManager.DispatchCommand(tag, command, args));
         }
 
-        public void EnqueueShowPopupMenu(int tag, JArray items, ICallback error, ICallback success)
+        public void EnqueueShowPopupMenu(int tag, string[] items, ICallback error, ICallback success)
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.ShowPopupMenu(tag, items, success));
         }
@@ -134,7 +134,7 @@ namespace ReactNative.UIManager
         public void EnqueueUpdateProperties(int tag, string className, CatalystStylesDiffMap properties)
         {
             EnqueueOperation(() =>
-                _nativeViewHierarchyManager.UpdateProperties(tag, className, properties));
+                _nativeViewHierarchyManager.UpdateProperties(tag, properties));
         }
 
         internal void EnqueueManageChildren(

@@ -95,7 +95,7 @@ namespace ReactNative.UIManager
         /// <param name="reactContext">The context.</param>
         /// <param name="jsResponderHandler">The responder handler.</param>
         /// <returns>The view.</returns>
-        public TFrameworkElement CreateView(
+        public FrameworkElement CreateView(
             ThemedReactContext reactContext,
             JavaScriptResponderHandler jsResponderHandler)
         {
@@ -120,7 +120,7 @@ namespace ReactNative.UIManager
         /// <remarks>
         /// Derived classes do not need to call this base method.
         /// </remarks>
-        public virtual void OnDropViewInstance(ThemedReactContext reactContext, TFrameworkElement view)
+        public virtual void OnDropViewInstance(ThemedReactContext reactContext, FrameworkElement view)
         {
         }
 
@@ -154,7 +154,7 @@ namespace ReactNative.UIManager
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public abstract void ReceiveCommand(TFrameworkElement root, int commandId, JArray args);
+        public abstract void ReceiveCommand(FrameworkElement root, int commandId, JArray args);
 
         /// <summary>
         /// Creates a new view instance of type <typeparamref name="TFrameworkElement"/>.

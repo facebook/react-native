@@ -280,7 +280,7 @@ namespace ReactNative.UIManager
             //    them. Like the view removal, iteration direction is important
             //    to preserve the correct index.
 
-            Array.Sort(viewsToAdd, ViewAtIndex.Comparer);
+            Array.Sort(viewsToAdd, ViewAtIndex.IndexComparer);
             Array.Sort(indicesToRemove);
 
             // Apply changes to the ReactShadowNode hierarchy.
@@ -493,7 +493,7 @@ namespace ReactNative.UIManager
         /// Callback used with the position of the selected item as the first
         /// argument, or no arguments if the menu is dismissed.
         /// </param>
-        public void ShowPopupMenu(int reactTag, JArray items, ICallback error, ICallback success)
+        public void ShowPopupMenu(int reactTag, string[] items, ICallback error, ICallback success)
         {
             AssertViewExists(reactTag);
             _operationsQueue.EnqueueShowPopupMenu(reactTag, items, error, success);

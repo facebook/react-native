@@ -82,9 +82,9 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="index">The index.</param>
         /// <returns>The child view.</returns>
-        public UIElement GetChildAt(Panel parent, int index)
+        public FrameworkElement GetChildAt(Panel parent, int index)
         {
-            return parent.Children[index];
+            return (FrameworkElement)parent.Children[index];
         }
 
         /// <summary>

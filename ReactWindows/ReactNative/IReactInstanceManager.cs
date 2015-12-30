@@ -47,8 +47,6 @@ namespace ReactNative
 
         //public abstract void onResume(DefaultHardwareBackBtnHandler defaultBackButtonImpl);
 
-        void Dispose();
-
         /// <summary>
         /// Attach given {@param rootView} to a catalyst instance manager and start JS application
         /// </summary>
