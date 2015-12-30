@@ -133,6 +133,14 @@ class DependencyGraph {
     return this._loading;
   }
 
+  /**
+   * Returns a promise with the direct dependencies the module associated to
+   * the given entryPath has.
+   */
+  getShallowDependencies(entryPath) {
+    return this._moduleCache.getModule(entryPath).getDependencies();
+  }
+
   getDependencies(entryPath, platform) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);

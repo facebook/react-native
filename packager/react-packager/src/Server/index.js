@@ -246,6 +246,10 @@ class Server {
     });
   }
 
+  getShallowDependencies(entryFile) {
+    return this._bundler.getShallowDependencies(entryFile);
+  }
+
   getDependencies(options) {
     return Promise.resolve().then(() => {
       if (!options.platform) {

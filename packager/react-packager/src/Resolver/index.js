@@ -99,6 +99,10 @@ class Resolver {
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
   }
 
+  getShallowDependencies(entryFile) {
+    return this._depGraph.getShallowDependencies(entryFile);
+  }
+
   getDependencies(main, options) {
     const opts = getDependenciesValidateOpts(options);
 
