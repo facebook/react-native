@@ -191,6 +191,16 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
+      // if Hot Loading is enabled avoid rebuilding bundles and sending live
+      // updates. Instead, send the HMR updates right away and once that
+      // finishes, invoke any other file change listener.
+      if (this._hmrFileChangeListener) {
+        this._hmrFileChangeListener(filePath).then(() => {
+          this._fileChangeListeners.forEach(listener => listener(filePath));
+        }).done();
+        return;
+      }
+
       this._fileChangeListeners.forEach(listener => listener(filePath));
       this._rebuildBundles(filePath);
       this._informChangeWatchers();
@@ -206,6 +216,10 @@ class Server {
 
   addFileChangeListener(listener) {
     this._fileChangeListeners.push(listener);
+  }
+
+  setHMRFileChangeListener(listener) {
+    this._hmrFileChangeListener = listener;
   }
 
   buildBundle(options) {
