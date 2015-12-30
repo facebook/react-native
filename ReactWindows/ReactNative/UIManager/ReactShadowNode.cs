@@ -51,6 +51,14 @@ namespace ReactNative.UIManager
             set;
         }
 
+        internal ReactShadowNode NativeParent
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public ThemedReactContext ThemedContext
         {
             get;
@@ -81,6 +89,7 @@ namespace ReactNative.UIManager
         public int ScreenWidth { get; internal set; }
         public int ScreenHeight { get; internal set; }
         public int ScreenY { get; internal set; }
+        public IList<ReactShadowNode> NativeChildren { get; internal set; }
 
         internal int IndexOf(ReactShadowNode oldNode)
         {
@@ -105,6 +114,31 @@ namespace ReactNative.UIManager
         internal void MarkUpdateSeen()
         {
             _nodeUpdated = true;
+        }
+
+        internal void RemoveAllNativeChildren()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal ReactShadowNode GetChildAt(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal int GetNativeOffsetForChild(object v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal int GetIndexOfNativeChild(ReactShadowNode nodeToRemove)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void RemoveNativeChildAt(object index)
+        {
+            throw new NotImplementedException();
         }
     }
 }
