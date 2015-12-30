@@ -96,11 +96,7 @@ function createWatcher(rootConfig) {
 
     return new Promise(function(resolve, reject) {
       const rejectTimeout = setTimeout(function() {
-        reject(new Error([
-          'Watcher took too long to load',
-          'Try running `watchman version` from your terminal',
-          'https://facebook.github.io/watchman/docs/troubleshooting.html',
-        ].join('\n')));
+        reject(new Error(timeoutMessage(Watcher)));
       }, MAX_WAIT_TIME);
 
       watcher.once('ready', function() {
@@ -109,6 +105,19 @@ function createWatcher(rootConfig) {
       });
     });
   });
+}
+
+function timeoutMessage(Watcher) {
+  const lines = [
+    'Watcher took too long to load (' + Watcher.name + ')',
+  ];
+  if (Watcher === sane.WatchmanWatcher) {
+    lines.push(
+      'Try running `watchman version` from your terminal',
+      'https://facebook.github.io/watchman/docs/troubleshooting.html',
+    );
+  }
+  return lines.join('\n');
 }
 
 module.exports = FileWatcher;
