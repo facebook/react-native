@@ -11,7 +11,7 @@ namespace ReactNative.Tests
         public async Task ReactInstanceManagerInitializationSuccess()
         {
             var jsModuleName = "index.windows";
-            var bundleAssetName = "ms-appx:///Resources/index.windows.bundle.js";
+            var bundleAssetName = "ms-appx:///Resources/main.jsbundle";
             var rootView = await DispatcherHelpers.CallOnDispatcherAsync(() => new ReactRootView());
             await DispatcherHelpers.CallOnDispatcherAsync(() => rootView.Lift(bundleAssetName, jsModuleName));
             Assert.AreEqual(rootView.TagId, 0);

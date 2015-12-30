@@ -1,5 +1,6 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
+using ReactNative.Common;
 using ReactNative.Hosting.Bridge;
 using ReactNative.Modules.Core;
 using ReactNative.Tracing;
@@ -147,6 +148,11 @@ namespace ReactNative
                 javaScriptModulesConfig = jsModulesBuilder.Build();
             }
 
+            var exceptionHandler = new Action<Exception>(ex =>
+            {
+                Tracer.Write(ReactConstants.Tag, String.Format("Exception Occured {0}", ex.Message));
+            });
+            
             var javascriptRuntime = new CatalystInstance.Builder
             {
                 QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
@@ -154,7 +160,7 @@ namespace ReactNative
                 Registry = nativeModuleRegistry,
                 JavaScriptModulesConfig = javaScriptModulesConfig,
                 BundleLoader = jsBundleLoader,
-                NativeModuleCallExceptionHandler = ex => { } /* TODO */,
+                NativeModuleCallExceptionHandler = exceptionHandler
             }.Build();
 
             reactContext.InitializeWithInstance(javascriptRuntime);
