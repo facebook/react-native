@@ -10,12 +10,17 @@
  */
 'use strict';
 
+const invariant = require('invariant');
+
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
 const HMRClient = {
-  enable() {
+  enable(platform, bundleEntry) {
+    invariant(platform, 'Missing required parameter `platform`');
+    invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
+
     // need to require WebSocket inside of `enable` function because the
     // this module is defined as a `polyfillGlobal`.
     // See `InitializeJavascriptAppEngine.js`
@@ -23,7 +28,10 @@ const HMRClient = {
 
     // TODO(martinb): parametrize the url and receive entryFile to minimize
     // the number of updates we want to receive from the server.
-    const activeWS = new WebSocket('ws://localhost:8081/hot');
+    const activeWS = new WebSocket(
+      'ws://localhost:8081/hot?platform=' + platform + '&bundleEntry=' +
+      bundleEntry.replace('.bundle', '.js')
+    );
     activeWS.onerror = (e) => {
       console.error('[Hot Module Replacement] Unexpected error', e);
     };

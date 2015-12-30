@@ -90,6 +90,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
+  NSURL *_bundleURL;
 }
 
 @synthesize valid = _valid;
@@ -145,21 +146,21 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }
 }
 
+static BOOL isHotLoadingEnabled()
+{
+  NSString *enabledQS = [[RCTBundleURLProcessor sharedProcessor] getQueryStringValue:@"hot"];
+  return (enabledQS != nil && [enabledQS isEqualToString:@"true"]) ? YES : NO;
+}
+
 static void RCTInstallHotLoading(RCTBridge *bridge, RCTJSCExecutor *executor)
 {
   [bridge.devMenu addItem:[RCTDevMenuItem toggleItemWithKey:RCTHotLoadingEnabledDefaultsKey title:@"Enable Hot Loading" selectedTitle:@"Disable Hot Loading" handler:^(BOOL enabledOnCurrentBundle) {
     [executor executeBlockOnJavaScriptQueue:^{
-      NSString *enabledQS = [[RCTBundleURLProcessor sharedProcessor] getQueryStringValue:@"hot"];
-      BOOL enabledOnConfig = (enabledQS != nil && [enabledQS isEqualToString:@"true"]) ? YES : NO;
-
+      BOOL enabledOnConfig = isHotLoadingEnabled();
       // reload bundle when user change Hot Loading setting
       if (enabledOnConfig != enabledOnCurrentBundle) {
         [[RCTBundleURLProcessor sharedProcessor] setQueryStringValue:enabledOnCurrentBundle ? @"true" : @"false" forAttribute:@"hot"];
         [bridge reload];
-      }
-
-      if (enabledOnCurrentBundle) {
-        [bridge enqueueJSCall:@"HMRClient.enable" args:@[@YES]];
       }
     }];
   }]];
@@ -534,6 +535,13 @@ static void RCTInstallHotLoading(RCTBridge *bridge, RCTJSCExecutor *executor)
       onComplete(error);
     }
   }), 0, @"js_call", (@{ @"url": sourceURL.absoluteString }))];
+
+  #if RCT_DEV
+  if (isHotLoadingEnabled()) {
+    // strip initial slash
+    [_bridge enqueueJSCall:@"HMRClient.enable" args:@[@"ios", [sourceURL.path substringFromIndex: 1]]];
+  }
+  #endif
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block

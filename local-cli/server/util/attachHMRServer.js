@@ -8,28 +8,30 @@
  */
 'use strict';
 
+const querystring = require('querystring');
+const url = require('url');
+
 /**
  * Attaches a WebSocket based connection to the Packager to expose
  * Hot Module Replacement updates to the simulator.
  */
 function attachHMRServer({httpServer, path, packagerServer}) {
-  let activeWS;
+  let client = null;
 
   function disconnect() {
-    activeWS = null;
+    client = null;
   }
 
   packagerServer.addFileChangeListener(filename => {
-    if (!activeWS) {
+    if (!client) {
       return;
     }
 
     packagerServer.buildBundleForHMR({
       entryFile: filename,
-      // TODO(martinb): receive platform on query string when client connects
-      platform: 'ios',
+      platform: client.platform,
     })
-    .then(bundle => activeWS.send(bundle));
+    .then(bundle => client.ws.send(bundle));
   });
 
   const WebSocketServer = require('ws').Server;
@@ -41,14 +43,19 @@ function attachHMRServer({httpServer, path, packagerServer}) {
   console.log('[Hot Module Replacement] Server listening on', path);
   wss.on('connection', ws => {
     console.log('[Hot Module Replacement] Client connected');
-    activeWS = ws;
+    const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
+    client = {
+      ws,
+      platform: params.platform,
+      bundleEntry: params.bundleEntry,
+    };
 
-    ws.on('error', e => {
+    client.ws.on('error', e => {
       console.error('[Hot Module Replacement] Unexpected error', e);
       disconnect();
     });
 
-    ws.on('close', () => disconnect());
+    client.ws.on('close', () => disconnect());
   });
 }
 
