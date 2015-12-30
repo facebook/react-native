@@ -223,6 +223,7 @@
     <Compile Include="UIManager\ReactPropertyBaseAttribute.cs" />
     <Compile Include="UIManager\ReactPropertyGroupAttribute.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
+    <Compile Include="UIManager\ISizeChangedListener.cs" />
     <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
     <Compile Include="UIManager\ReactPropertyAttribute.cs" />

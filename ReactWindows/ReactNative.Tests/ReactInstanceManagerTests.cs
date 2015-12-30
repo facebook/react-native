@@ -14,7 +14,7 @@ namespace ReactNative.Tests
             var bundleAssetName = "ms-appx:///Resources/main.jsbundle";
             var rootView = await DispatcherHelpers.CallOnDispatcherAsync(() => new ReactRootView());
             await DispatcherHelpers.CallOnDispatcherAsync(() => rootView.Lift(bundleAssetName, jsModuleName));
-            Assert.AreEqual(rootView.TagId, 0);
+            Assert.AreEqual(rootView.TagId, 0); 
         }
     }
 }
