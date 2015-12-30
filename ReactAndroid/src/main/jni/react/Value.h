@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <sstream>
+#include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSRetainPtr.h>
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
@@ -15,6 +16,7 @@
 namespace facebook {
 namespace react {
 
+class Value;
 class Context;
 
 class String : public noncopyable {
@@ -84,6 +86,58 @@ private:
   JSRetainPtr<JSStringRef> m_string;
 };
 
+class Object : public noncopyable {
+public:
+  Object(JSContextRef context, JSObjectRef obj) :
+    m_context(context),
+    m_obj(obj)
+  {}
+
+  Object(Object&& other) :
+      m_context(other.m_context),
+      m_obj(other.m_obj),
+      m_isProtected(other.m_isProtected) {
+    other.m_obj = nullptr;
+    other.m_isProtected = false;
+  }
+
+  ~Object() {
+    if (m_isProtected && m_obj) {
+      JSValueUnprotect(m_context, m_obj);
+    }
+  }
+
+  operator JSObjectRef() const {
+    return m_obj;
+  }
+
+  bool isFunction() const {
+    return JSObjectIsFunction(m_context, m_obj);
+  }
+
+  Value callAsFunction(int nArgs, JSValueRef args[]);
+
+  Value getProperty(String propName) const;
+  Value getProperty(const char *propName) const;
+
+  void makeProtected() {
+    if (!m_isProtected && m_obj) {
+      JSValueProtect(m_context, m_obj);
+      m_isProtected = true;
+    }
+  }
+
+  static Object getGlobalObject(JSContextRef ctx) {
+    auto globalObj = JSContextGetGlobalObject(ctx);
+    return Object(ctx, globalObj);
+  }
+
+private:
+  JSContextRef m_context;
+  JSObjectRef m_obj;
+  bool m_isProtected = false;
+};
+
 class Value : public noncopyable {
 public:
   Value(JSContextRef context, JSValueRef value);
@@ -110,6 +164,10 @@ public:
     return JSValueIsNull(context(), m_value);
   }
 
+  bool isUndefined() const {
+    return JSValueIsUndefined(context(), m_value);
+  }
+
   double asNumber() const {
     if (isNumber()) {
       return JSValueToNumber(context(), m_value, nullptr);
@@ -130,6 +188,8 @@ public:
     return JSValueIsObject(context(), m_value);
   }
 
+  Object asObject();
+
   bool isString() const {
     return JSValueIsString(context(), m_value);
   }
@@ -139,7 +199,7 @@ public:
   }
 
   std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef& ctx, const String& json);
+  static Value fromJSON(JSContextRef ctx, const String& json);
 protected:
   JSContextRef context() const;
   JSContextRef m_context;
