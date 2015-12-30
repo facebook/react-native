@@ -12,12 +12,20 @@ const getPlatformExtension = require('../lib/getPlatformExtension');
 const Promise = require('promise');
 
 const GENERIC_PLATFORM = 'generic';
+const NATIVE_PLATFORM = 'native';
 
 class HasteMap {
-  constructor({ extensions, fastfs, moduleCache, helpers }) {
+  constructor({
+    extensions,
+    fastfs,
+    moduleCache,
+    preferNativePlatform,
+    helpers,
+  }) {
     this._extensions = extensions;
     this._fastfs = fastfs;
     this._moduleCache = moduleCache;
+    this._preferNativePlatform = preferNativePlatform;
     this._helpers = helpers;
   }
 
@@ -73,18 +81,19 @@ class HasteMap {
       return null;
     }
 
-    // If no platform is given we choose the generic platform module list.
-    // If a platform is given and no modules exist we fallback
-    // to the generic platform module list.
-    if (platform == null) {
-      return modulesMap[GENERIC_PLATFORM];
-    } else {
-      let module = modulesMap[platform];
-      if (module == null) {
-        module = modulesMap[GENERIC_PLATFORM];
-      }
-      return module;
+    // If platform is 'ios', we prefer .ios.js to .native.js which we prefer to
+    // a plain .js file.
+    let module = undefined;
+    if (module == null && platform != null) {
+      module = modulesMap[platform];
     }
+    if (module == null && this._preferNativePlatform) {
+      module = modulesMap[NATIVE_PLATFORM];
+    }
+    if (module == null) {
+      module = modulesMap[GENERIC_PLATFORM];
+    }
+    return module;
   }
 
   _processHasteModule(file) {

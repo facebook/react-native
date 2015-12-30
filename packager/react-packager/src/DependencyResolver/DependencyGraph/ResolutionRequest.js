@@ -18,6 +18,7 @@ const Promise = require('promise');
 class ResolutionRequest {
   constructor({
     platform,
+    preferNativePlatform,
     entryPath,
     hasteMap,
     deprecatedAssetMap,
@@ -26,6 +27,7 @@ class ResolutionRequest {
     fastfs,
   }) {
     this._platform = platform;
+    this._preferNativePlatform = preferNativePlatform;
     this._entryPath = entryPath;
     this._hasteMap = hasteMap;
     this._deprecatedAssetMap = deprecatedAssetMap;
@@ -329,6 +331,9 @@ class ResolutionRequest {
       } else if (this._platform != null &&
                  this._fastfs.fileExists(potentialModulePath + '.' + this._platform + '.js')) {
         file = potentialModulePath + '.' + this._platform + '.js';
+      } else if (this._preferNativePlatform &&
+                 this._fastfs.fileExists(potentialModulePath + '.native.js')) {
+        file = potentialModulePath + '.native.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
         file = potentialModulePath + '.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {

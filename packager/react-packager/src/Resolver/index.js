@@ -81,8 +81,8 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'fbjs-haste',
-        'react-haste',
+        'fbjs',
+        'react',
         'react-native',
         // Parse requires AsyncStorage. They will
         // change that to require('react-native') which
@@ -92,6 +92,7 @@ class Resolver {
         'react-transform-hmr',
       ],
       platforms: ['ios', 'android'],
+      preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
     });

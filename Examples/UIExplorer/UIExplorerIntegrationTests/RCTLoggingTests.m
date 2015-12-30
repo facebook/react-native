@@ -89,7 +89,7 @@
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
-  XCTAssertEqualObjects(_lastLogMessage, @"Invariant Violation: Invariant failed");
+  XCTAssertEqualObjects(_lastLogMessage, @"Invariant failed");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[@"Invoking console.error"]];
   dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
