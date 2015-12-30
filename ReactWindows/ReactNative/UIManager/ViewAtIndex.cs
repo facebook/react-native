@@ -11,11 +11,7 @@ namespace ReactNative.UIManager
         }
 
         public static IComparer<ViewAtIndex> Comparer { get; } =
-            Comparer<ViewAtIndex>.Create((x, y) =>
-            {
-                return x.Index - y.Index;
-
-            });
+            Comparer<ViewAtIndex>.Create((x, y) => x.Index - y.Index);
 
         public int Index { get; }
 

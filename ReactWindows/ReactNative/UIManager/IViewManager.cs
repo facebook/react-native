@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
@@ -42,5 +43,21 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <returns>The shadow node instance.</returns>
         ReactShadowNode CreateShadowNodeInstance();
+
+        /// <summary>
+        /// Update the properties of the given view.
+        /// </summary>
+        /// <param name="viewToUpdate">The view to update.</param>
+        /// <param name="properties">The properties.</param>
+        void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties);
+
+        /// <summary>
+        /// Implement this method to receive optional extra data enqueued from
+        /// the corresponding instance of <see cref="ReactShadowNode"/> in
+        /// <see cref="ReactShadowNode.OnCollectExtraUpdates"/>.
+        /// </summary>
+        /// <param name="root">The root view.</param>
+        /// <param name="extraData">The extra data.</param>
+        void UpdateExtraData(FrameworkElement viewToUpdate, object extraData);
     }
 }
