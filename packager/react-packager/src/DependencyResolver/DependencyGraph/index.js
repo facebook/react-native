@@ -37,6 +37,7 @@ class DependencyGraph {
     assetExts,
     providesModuleNodeModules,
     platforms,
+    preferNativePlatform,
     cache,
     extensions,
     mocksPattern,
@@ -51,6 +52,7 @@ class DependencyGraph {
       assetExts: assetExts || [],
       providesModuleNodeModules,
       platforms: platforms || [],
+      preferNativePlatform: preferNativePlatform || false,
       cache,
       extensions: extensions || ['js', 'json'],
       mocksPattern,
@@ -105,7 +107,7 @@ class DependencyGraph {
       fastfs: this._fastfs,
       extensions: this._opts.extensions,
       moduleCache: this._moduleCache,
-      assetExts: this._opts.exts,
+      preferNativePlatform: this._opts.preferNativePlatform,
       helpers: this._helpers,
     });
 
@@ -147,6 +149,7 @@ class DependencyGraph {
       const absPath = this._getAbsolutePath(entryPath);
       const req = new ResolutionRequest({
         platform,
+        preferNativePlatform: this._opts.preferNativePlatform,
         entryPath: absPath,
         deprecatedAssetMap: this._deprecatedAssetMap,
         hasteMap: this._hasteMap,
