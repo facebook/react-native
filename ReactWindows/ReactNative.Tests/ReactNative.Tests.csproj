@@ -118,10 +118,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactInstanceManagerTests.cs" />
     <Compile Include="UIManager\AppRegistryTests.cs" />
+    <Compile Include="UIManager\CatalystStylesDiffMapTests.cs" />
     <Compile Include="UIManager\Events\EventDispatcherTests.cs" />
     <Compile Include="UIManager\Events\EventTests.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitterTests.cs" />
+    <Compile Include="UIManager\PropertySetterTests.cs" />
+    <Compile Include="UIManager\ShadowNodeRegistryTests.cs" />
     <Compile Include="UIManager\UIManagerModuleTests.cs" />
+    <Compile Include="UIManager\ViewAtIndexTests.cs" />
+    <Compile Include="UIManager\ViewManagersPropertyCacheTests.cs" />
+    <Compile Include="UIManager\ViewManagerRegistryTests.cs" />
     <Compile Include="UnitTestApp.xaml.cs">
       <DependentUpon>UnitTestApp.xaml</DependentUpon>
     </Compile>

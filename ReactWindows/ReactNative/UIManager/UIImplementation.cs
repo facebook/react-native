@@ -15,11 +15,12 @@ namespace ReactNative.UIManager
     /// translate them into a shadow node hierarchy that is then mapped to a
     /// native view hierarchy.
     /// 
-    /// TODOS
+    /// TODO:
     /// 1. CSSLayoutContext
     /// 2. View registration for root and children
     /// 3. Shadow DOM item updates
     /// 4. Animation support
+    /// 5. Anything related to measurement and resizing
     /// </summary>
     public class UIImplementation
     {
@@ -27,7 +28,7 @@ namespace ReactNative.UIManager
         private readonly UIViewOperationQueue _operationsQueue;
         private readonly ShadowNodeRegistry _shadowNodeRegistry;
         private readonly NativeViewHierarchyOptimizer _nativeViewHierarchyOptimizer;
-        private readonly CSSLayoutContext _layoutContext; 
+        private readonly CSSLayoutContext _layoutContext = new CSSLayoutContext(); 
 
         /// <summary>
         /// Instantiates the <see cref="UIImplementation"/>.
@@ -473,7 +474,7 @@ namespace ReactNative.UIManager
         public void DispatchViewManagerCommand(int reactTag, int commandId, JArray commandArgs)
         {
             AssertViewExists(reactTag);
-            _operationsQueue.EnqueueDispatchViewManagerCommand(reactTag, commandId, commandArgs);
+            _operationsQueue.EnqueueDispatchCommand(reactTag, commandId, commandArgs);
         }
 
         /// <summary>

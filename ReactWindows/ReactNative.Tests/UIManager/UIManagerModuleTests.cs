@@ -4,6 +4,7 @@ using ReactNative.Tests.Constants;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
+using Windows.UI.Xaml;
 
 namespace ReactNative.Tests.UIManager
 {
@@ -129,6 +130,16 @@ namespace ReactNative.Tests.UIManager
             public ReactShadowNode CreateShadowNodeInstance()
             {
                 return null;
+            }
+
+            public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties)
+            {
+                throw new NotImplementedException();
             }
         }
     }

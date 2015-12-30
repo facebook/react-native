@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ReactNative.UIManager
 {
@@ -37,13 +38,21 @@ namespace ReactNative.UIManager
         /// <returns>The view manager.</returns>
         public IViewManager Get(string className)
         {
+            if (className == null)
+                throw new ArgumentNullException(nameof(className));
+
             var viewManager = default(IViewManager);
             if (_registry.TryGetValue(className, out viewManager))
             {
                 return viewManager;
             }
 
-            throw new ArgumentException("No view manager defined for class " + className, nameof(className));
+            throw new ArgumentException(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "No view manager defined for class '{0}'.",
+                    className),
+                nameof(className));
         }
     }
 }

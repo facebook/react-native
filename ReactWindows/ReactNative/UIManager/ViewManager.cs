@@ -5,32 +5,18 @@ using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
-    public abstract class ViewManager<T, C> : IViewManager
-        where T : FrameworkElement
-        where C : ReactShadowNode
+    /// <summary>
+    /// Class responsible for knowing how to create and update views of a given
+    /// type. It is also responsible for creating and updating
+    /// <see cref="ReactShadowNode"/> subclasses used for calculating position
+    /// and size for the corresponding native view.
+    /// </summary>
+    /// <typeparam name="TFrameworkElement">Type of view.</typeparam>
+    /// <typeparam name="TShadowNode">Type of shadow node.</typeparam>
+    public abstract class ViewManager<TFrameworkElement, TShadowNode> : IViewManager
+        where TFrameworkElement : FrameworkElement
+        where TShadowNode : ReactShadowNode
     {
-        /// <summary>
-        /// Creates a view and installs event emitters on it.
-        /// </summary>
-        /*public sealed T createView(ThemedReactContext reactContext, JSResponderHandler jsResponderHandler)
-        {
-            T view = createViewInstance(reactContext);
-            addEventEmitters(reactContext, view);
-            if (view instanceof CatalystInterceptingViewGroup) {
-                ((CatalystInterceptingViewGroup)view).setOnInterceptTouchEventListener(jsResponderHandler);
-            }
-            return view;
-        }*/
-
-        public abstract void ReceiveCommand(T root, int commandId, JArray args);
-
-        /// <summary>
-        /// Subclasses should return a new View instance of the proper type.
-        /// </summary>
-        /// <param name="reactContext"></param>
-        /// <returns></returns>
-        protected abstract T createViewInstance(ThemedReactContext reactContext);
-
         /// <summary>
         /// The name of this view manager. This will be the name used to 
         /// reference this view manager from JavaScript.
@@ -38,42 +24,166 @@ namespace ReactNative.UIManager
         public abstract string Name { get; }
 
         /// <summary>
-        /// The commands map for the view manager.
+        /// The <see cref="Type"/> instance that represents the type of shadow
+        /// node that this manager will return from
+        /// <see cref="CreateShadowNodeInstance"/>.
+        /// 
+        /// This method will be used in the bridge initialization phase to
+        /// collect properties exposed using the <see cref="ReactPropertyAttribute"/>
+        /// annotation from the <see cref="ReactShadowNode"/> subclass.
         /// </summary>
-        /// <remarks>
-        /// Subclasses of <see cref="ViewManager{T, C}"/> that expect to
-        /// receive commands through commands dispatched from
-        /// <see cref="UIManagerModule"/> should override this method returning
-        /// the map between names of the commands and identifiers that are then
-        /// used in the <see cref="R"/>
-        /// </remarks>
-        public abstract IReadOnlyDictionary<string, object> CommandsMap { get; }
-
-        public abstract IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants { get; }
-
-        public abstract IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants { get; }
-
-        public abstract IReadOnlyDictionary<string, object> ExportedViewConstants { get; }
-
-        public abstract IReadOnlyDictionary<string, string> NativeProperties { get; }
-
-        public abstract ReactShadowNode CreateShadowNodeInstance();
+        public abstract Type ShadowNodeType { get; }
 
         /// <summary>
-        /// Called when view is detached from view hierarchy and allows for some additional cleanup by the {@link ViewManager} subclass.
+        /// The commands map for the view manager.
         /// </summary>
-        /// <param name="reactContext"></param>
-        /// <param name="view"></param>
-        public void onDropViewInstance(ThemedReactContext reactContext, T view)
+        public abstract IReadOnlyDictionary<string, object> CommandsMap { get; }
+
+        /// <summary>
+        /// The exported custom bubbling event types.
+        /// </summary>
+        public abstract IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants { get; }
+
+        /// <summary>
+        /// The exported custom direct event types.
+        /// </summary>
+        public abstract IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants { get; }
+
+        /// <summary>
+        /// The exported view constants.
+        /// </summary>
+        public abstract IReadOnlyDictionary<string, object> ExportedViewConstants { get; }
+
+        /// <summary>
+        /// Creates a shadow node for the view manager.
+        /// </summary>
+        /// <returns>The shadow node instance.</returns>
+        public IReadOnlyDictionary<string, string> NativeProperties
+        {
+            get
+            {
+                return ViewManagersPropertyCache.GetNativePropertiesForView(GetType(), ShadowNodeType);
+            }
+        }
+
+        /// <summary>
+        /// Update the properties of the given view.
+        /// </summary>
+        /// <param name="viewToUpdate">The view to update.</param>
+        /// <param name="properties">The properties.</param>
+        public void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties)
+        {
+            var propertySetters =
+                ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(GetType());
+
+            var keys = properties.Keys;
+            foreach (var key in keys)
+            {
+                var setter = default(IPropertySetter);
+                if (propertySetters.TryGetValue(key, out setter))
+                {
+                    setter.SetViewManagerProperty(this, viewToUpdate, properties);
+                }
+            }
+
+            OnAfterUpdateTransaction(viewToUpdate);
+        }
+
+        /// <summary>
+        /// Creates a view and installs event emitters on it.
+        /// </summary>
+        /// <param name="reactContext">The context.</param>
+        /// <param name="jsResponderHandler">The responder handler.</param>
+        /// <returns>The view.</returns>
+        public TFrameworkElement CreateView(
+            ThemedReactContext reactContext,
+            JavaScriptResponderHandler jsResponderHandler)
+        {
+            var view = CreateViewInstance(reactContext);
+            AddEventEmitters(reactContext, view);
+            var interceptor = view as ICatalystInterceptingViewGroup;
+            if (interceptor != null)
+            {
+                interceptor.SetOnInterceptTouchEventListener(jsResponderHandler);
+            }
+
+            return view;
+        }
+
+        /// <summary>
+        /// Called when view is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ViewManager{TFrameworkElement, TShadowNode}"/>
+        /// subclass.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The view.</param>
+        /// <remarks>
+        /// Derived classes do not need to call this base method.
+        /// </remarks>
+        public virtual void OnDropViewInstance(ThemedReactContext reactContext, TFrameworkElement view)
         {
         }
 
         /// <summary>
-        /// Subclasses can override this method to install custom event emitters on the given View. You might want to override this method if your view needs to emit events besides basic touch events * to JS (e.g.scroll events).
+        /// This method should return the subclass of <see cref="ReactShadowNode"/>
+        /// which will be then used for measuring the position and size of the
+        /// view. 
         /// </summary>
-        /// <param name="reactContext"></param>
-        /// <param name="view"></param>
-        protected void addEventEmitters(ThemedReactContext reactContext, T view)
+        /// <remarks>
+        /// In most cases, this will just return an instance of
+        /// <see cref="ReactShadowNode"/>.
+        /// </remarks>
+        /// <returns>The shadow node instance.</returns>
+        public abstract ReactShadowNode CreateShadowNodeInstance();
+
+        /// <summary>
+        /// Implement this method to receive optional extra data enqueued from
+        /// the corresponding instance of <see cref="ReactShadowNode"/> in
+        /// <see cref="ReactShadowNode.OnCollectExtraUpdates"/>.
+        /// </summary>
+        /// <param name="root">The root view.</param>
+        /// <param name="extraData">The extra data.</param>
+        public abstract void UpdateExtraData(FrameworkElement root, object extraData);
+
+        /// <summary>
+        /// Implement this method to receive events/commands directly from
+        /// JavaScript through the <see cref="UIManager"/>.
+        /// </summary>
+        /// <param name="root">
+        /// The view instance that should receive the command.
+        /// </param>
+        /// <param name="commandId">Identifer for the command.</param>
+        /// <param name="args">Optional arguments for the command.</param>
+        public abstract void ReceiveCommand(TFrameworkElement root, int commandId, JArray args);
+
+        /// <summary>
+        /// Creates a new view instance of type <typeparamref name="TFrameworkElement"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <returns>The view instance.</returns>
+        protected abstract TFrameworkElement CreateViewInstance(ThemedReactContext reactContext);
+
+        /// <summary>
+        /// Subclasses can override this method to install custom event 
+        /// emitters on the given view.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The view instance.</param>
+        /// <remarks>
+        /// Consider overriding this method if your view needs to emit events
+        /// besides basic touch events to JavaScript (e.g., scroll events).
+        /// </remarks>
+        protected virtual void AddEventEmitters(ThemedReactContext reactContext, TFrameworkElement view)
+        {
+        }
+
+        /// <summary>
+        /// Callback that will be triggered after all properties are updated in
+        /// the current update transation (all <see cref="ReactPropertyAttribute"/> handlers
+        /// for properties updated in the current transaction have been called).
+        /// </summary>
+        /// <param name="view">The view.</param>
+        protected virtual void OnAfterUpdateTransaction(FrameworkElement view)
         {
         }
     }

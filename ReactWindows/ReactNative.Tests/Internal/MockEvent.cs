@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager.Events;
 using System;
-using System.Collections.Generic;
 
 namespace ReactNative.Tests
 {

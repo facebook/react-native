@@ -7,19 +7,23 @@ namespace ReactNative.UIManager
 {
     public class ReactShadowNode : CSSNode
     {
-        private int _reactTag;
+        private bool _nodeUpdated = true;
+
         private float _AbsoluteLeft;
         private float _AbsoluteTop;
         private float _AbsoluteRight;
         private float _AbsoluteBottom;
         private bool _ShouldNotifyOnLayout;
-        private bool _NodeUpdated = true;
 
-        // layout-only nodes
-        private ReactShadowNode mNativeParent;
         private List<ReactShadowNode> mNativeChildren;
 
         public int ReactTag
+        {
+            get;
+            set;
+        }
+
+        public ReactShadowNode Parent
         {
             get;
             set;
@@ -42,12 +46,6 @@ namespace ReactNative.UIManager
             set;
         }
         public ReactShadowNode RootNode
-        {
-            get;
-            set;
-        }
-
-        public ReactShadowNode Parent
         {
             get;
             set;
@@ -106,7 +104,7 @@ namespace ReactNative.UIManager
 
         internal void MarkUpdateSeen()
         {
-            throw new NotImplementedException();
+            _nodeUpdated = true;
         }
     }
 }

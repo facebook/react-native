@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -27,6 +26,9 @@ namespace ReactNative.UIManager
 
         public void AddRootNode(ReactShadowNode node)
         {
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
+
             var tag = node.ReactTag;
             _tagsToCssNodes[tag] = node;
             _rootTags[tag] = true;
@@ -36,8 +38,11 @@ namespace ReactNative.UIManager
         {
             if (!_rootTags.ContainsKey(tag))
             {
-                throw new InvalidOperationException(
-                    "View with tag " + tag + " is not registered as a root view.");
+                throw new KeyNotFoundException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "View with tag {0} is not registered as a root view.",
+                        tag));
             }
 
             _tagsToCssNodes.Remove(tag);
@@ -46,6 +51,9 @@ namespace ReactNative.UIManager
 
         public void AddNode(ReactShadowNode node)
         {
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
+
             _tagsToCssNodes[node.ReactTag] = node;
         }
 
@@ -54,8 +62,11 @@ namespace ReactNative.UIManager
             var isRoot = default(bool);
             if (_rootTags.TryGetValue(tag, out isRoot) && isRoot)
             {
-                throw new InvalidOperationException(
-                    "Trying to remove root node " + tag + " without using RemoveRootNode.");
+                throw new KeyNotFoundException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Trying to remove root node {0} without using RemoveRootNode.",
+                        tag));
             }
 
             _tagsToCssNodes.Remove(tag);
