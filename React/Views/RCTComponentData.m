@@ -77,7 +77,7 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (UIView *)createViewWithTag:(NSNumber *)tag props:(NSDictionary<NSString *, id> *)props
+- (UIView *)createViewWithTag:(NSNumber *)tag
 {
   RCTAssertMainThread();
 
@@ -296,7 +296,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   if (!_defaultView) {
-    _defaultView = [self createViewWithTag:nil props:nil];
+    _defaultView = [self createViewWithTag:nil];
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {

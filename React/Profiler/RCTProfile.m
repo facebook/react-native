@@ -305,7 +305,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
       RCTProfileHookInstance([bridge.uiManager viewForReactTag:view]);
     }
 
-    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:props:));
+    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:));
 
     if (method_getImplementation(createView) != (IMP)RCTProfileCreateView) {
       originalCreateView = (typeof(originalCreateView))method_getImplementation(createView);
