@@ -1,88 +1,34 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager
 {
-    internal class RootViewManager : IViewManager
+    class RootViewManager : ViewGroupManager
     {
-        public IReadOnlyDictionary<string, object> CommandsMap
+        private readonly string REACT_CLASS = "ReactView";
+        
+
+        /// <summary>
+        /// Get the name of the react root view
+        /// </summary>
+        public override string Name
         {
             get
             {
-                throw new NotImplementedException();
+                return REACT_CLASS;
             }
         }
 
-        public IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
+        /// <summary>
+        /// Creates a new view instance of type <typeparamref name="Panel"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <returns>The view instance.</returns>
+        protected override Panel CreateViewInstance(ThemedReactContext reactContext)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IReadOnlyDictionary<string, object> ExportedViewConstants
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IReadOnlyDictionary<string, string> NativeProperties
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public ReactShadowNode CreateShadowNodeInstance()
-        {
-            throw new NotImplementedException();
-        }
-
-        public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties)
-        {
-            throw new NotImplementedException();
+            return new SizeMonitoringFrameLayout();
         }
     }
 }

@@ -37,22 +37,22 @@ namespace ReactNative.UIManager
         /// <summary>
         /// The commands map for the view manager.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> CommandsMap { get; }
+        public virtual IReadOnlyDictionary<string, object> CommandsMap { get; }
 
         /// <summary>
         /// The exported custom bubbling event types.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants { get; }
+        public virtual IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants { get; }
 
         /// <summary>
         /// The exported custom direct event types.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants { get; }
+        public virtual IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants { get; }
 
         /// <summary>
         /// The exported view constants.
         /// </summary>
-        public abstract IReadOnlyDictionary<string, object> ExportedViewConstants { get; }
+        public virtual IReadOnlyDictionary<string, object> ExportedViewConstants { get; }
 
         /// <summary>
         /// Creates a shadow node for the view manager.
@@ -154,7 +154,7 @@ namespace ReactNative.UIManager
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public abstract void ReceiveCommand(FrameworkElement root, int commandId, JArray args);
+        public virtual void ReceiveCommand(TFrameworkElement root, int commandId, JArray args) { }
 
         /// <summary>
         /// Creates a new view instance of type <typeparamref name="TFrameworkElement"/>.

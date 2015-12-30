@@ -28,7 +28,7 @@ namespace ReactNative.Views
     /// 1. Add support for events(i.e. define the sendEvents method)
     /// 2. Add lifecycle functions to ensure the bundle is only loaded once
     /// </summary>
-    public sealed partial class ReactRootView : UserControl, IRootView
+    public sealed partial class ReactRootView : SizeMonitoringFrameLayout, IRootView
     {
         private IReactInstanceManager _ReactInstanceManager;
         private string _JSModuleName;
@@ -38,18 +38,12 @@ namespace ReactNative.Views
         public ReactRootView()
         {
             this.InitializeComponent();
-            this.SizeChanged += ReactRootView_SizeChanged;
-            this.Unloaded += onDetachedFromWindow;
+            base.Unloaded += onDetachedFromWindow;
         }
 
         private void onDetachedFromWindow(object sender, RoutedEventArgs e)
         {
             _ReactInstanceManager.DetachRootView(this);
-        }
-
-        private void ReactRootView_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         public void OnChildStartedNativeGesture(RoutedEventArgs ev)
