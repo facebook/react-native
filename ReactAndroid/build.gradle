@@ -25,6 +25,7 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     // Use ZIP version as it's faster this way to selectively extract some parts of the archive
     src 'https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip'
     onlyIfNewer true
+    acceptAnyCertificate false // set to true if there are temporary certificate problems
     overwrite false
     dest new File(downloadsDir, 'boost_1_57_0.zip')
 }
