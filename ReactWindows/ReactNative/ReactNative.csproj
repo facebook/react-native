@@ -211,6 +211,7 @@
     <Compile Include="UIManager\IPropertySetter.cs" />
     <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\JavaScriptResponderHandler.cs" />
+    <Compile Include="UIManager\LayoutShadowNode.cs" />
     <Compile Include="UIManager\NativeViewHierarchyOptimizer.cs" />
     <Compile Include="UIManager\OnLayoutEvent.cs" />
     <Compile Include="UIManager\PointerEvents.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="UIManager\UIManagerModule.Constants.cs" />
     <Compile Include="UIManager\UIViewOperationQueue.cs" />
     <Compile Include="UIManager\ViewAtIndex.cs" />
+    <Compile Include="UIManager\ViewGroupManager.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
