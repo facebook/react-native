@@ -37,7 +37,6 @@ var TimerMixin = require('react-timer-mixin');
 var isEmpty = require('isEmpty');
 var logError = require('logError');
 var merge = require('merge');
-var shallowEqual = require('shallowEqual');
 
 var PropTypes = React.PropTypes;
 
@@ -268,7 +267,6 @@ var ListView = React.createClass({
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
     this._sentEndForContentLength = null;
-    this._lastScrollPropertiesCheckedForPaging = null;
   },
 
   componentDidMount: function() {
@@ -435,24 +433,24 @@ var ListView = React.createClass({
   },
 
   _onContentSizeChange: function(width, height) {
-    this.scrollProperties.contentLength = !this.props.horizontal ?
-      height : width;
-    this._updateVisibleRows();
-    this._renderMoreRowsIfNeeded();
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(width, height);
+    var contentLength = !this.props.horizontal ? height : width;
+    if (contentLength !== this.scrollProperties.contentLength) {
+      this.scrollProperties.contentLength = contentLength;
+      this._updateVisibleRows();
+      this._renderMoreRowsIfNeeded();
     }
+    this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
   },
 
   _onLayout: function(event) {
     var {width, height} = event.nativeEvent.layout;
-    this.scrollProperties.visibleLength = !this.props.horizontal ?
-      height : width;
-    this._updateVisibleRows();
-    this._renderMoreRowsIfNeeded();
-    if (this.props.onLayout) {
-      this.props.onLayout(event);
-    }
+    var visibleLength = !this.props.horizontal ? height : width;
+    if (visibleLength !== this.scrollProperties.visibleLength) {
+      this.scrollProperties.visibleLength = visibleLength;
+      this._updateVisibleRows();
+      this._renderMoreRowsIfNeeded();
+    } 
+    this.props.onLayout && this.props.onLayout(event);
   },
 
   _maybeCallOnEndReached: function(event) {
@@ -474,13 +472,7 @@ var ListView = React.createClass({
       this._maybeCallOnEndReached();
       return;
     }
-
-    if (shallowEqual(this._lastScrollPropertiesCheckedForPaging, this.scrollProperties)) {
-      // distance from end of feed hasn't changed since last check, avoid paging twice..
-      return;
-    }
-    this._lastScrollPropertiesCheckedForPaging = {...this.scrollProperties};
-
+ 
     var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
       this._pageInNewRows();
