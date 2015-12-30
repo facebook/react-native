@@ -1,72 +1,95 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ReactNative.UIManager
 {
     /// <summary>
-    /// Simple container class to keep track of <see cref="ReactShadowNode" />s associated with a particular
-    /// <see cref="UIManagerModule" /> instance.
+    /// Simple container class to keep track of <see cref="ReactShadowNode"/>s
+    /// associated with a particular <see cref="UIManagerModule"/> instance.
     /// </summary>
     class ShadowNodeRegistry
     {
-        private readonly Dictionary<int, ReactShadowNode> _TagsToCSSNodes;
-        private readonly Dictionary<int, bool> _RootTags;
+        private readonly IDictionary<int, ReactShadowNode> _tagsToCssNodes =
+            new Dictionary<int, ReactShadowNode>();
 
-        public ShadowNodeRegistry()
-        {
-            _TagsToCSSNodes = new Dictionary<int, ReactShadowNode>();
-            _RootTags = new Dictionary<int, bool>();
-        }
+        private readonly IDictionary<int, bool> _rootTags =
+            new Dictionary<int, bool>();
 
-        public void addRootNode(ReactShadowNode node)
+        public ICollection<int> RootNodeTags
         {
-            int tag = node.getReactTag();
-            _TagsToCSSNodes.Add(tag, node);
-            _RootTags.Add(tag, true);
-        }
-
-        public void removeRootNode(int tag)
-        {
-            if (!_RootTags.ContainsKey(tag))
+            get
             {
-                throw new InvalidOperationException(
-                    "View with tag " + tag + " is not registered as a root view");
+                return _rootTags.Keys;
+            }
+        }  
+
+        public void AddRootNode(ReactShadowNode node)
+        {
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
+
+            var tag = node.ReactTag;
+            _tagsToCssNodes[tag] = node;
+            _rootTags[tag] = true;
+        }
+
+        public void RemoveRootNode(int tag)
+        {
+            if (!_rootTags.ContainsKey(tag))
+            {
+                throw new KeyNotFoundException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "View with tag {0} is not registered as a root view.",
+                        tag));
             }
 
-            _TagsToCSSNodes.Remove(tag);
-            _RootTags.Remove(tag);
+            _tagsToCssNodes.Remove(tag);
+            _rootTags.Remove(tag);
         }
 
-        public void addNode(ReactShadowNode node)
+        public void AddNode(ReactShadowNode node)
         {
-            _TagsToCSSNodes.Add(node.getReactTag(), node);
+            if (node == null)
+                throw new ArgumentNullException(nameof(node));
+
+            _tagsToCssNodes[node.ReactTag] = node;
         }
 
-        public void removeNode(int tag)
+        public void RemoveNode(int tag)
         {
-            if (_RootTags[tag])
+            var isRoot = default(bool);
+            if (_rootTags.TryGetValue(tag, out isRoot) && isRoot)
             {
-                throw new InvalidOperationException(
-                    "Trying to remove root node " + tag + " without using removeRootNode!");
+                throw new KeyNotFoundException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Trying to remove root node {0} without using RemoveRootNode.",
+                        tag));
             }
-            _TagsToCSSNodes.Remove(tag);
+
+            _tagsToCssNodes.Remove(tag);
         }
 
-        public ReactShadowNode getNode(int tag)
+        public ReactShadowNode GetNode(int tag)
         {
-            return _TagsToCSSNodes[tag];
+            var result = default(ReactShadowNode);
+            if (_tagsToCssNodes.TryGetValue(tag, out result))
+            {
+                return result;
+            }
+
+            throw new KeyNotFoundException(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Shadow node for tag '{0}' does not exist.",
+                    tag));
         }
 
-        public bool isRootNode(int tag)
+        public bool IsRootNode(int tag)
         {
-            return _RootTags.ContainsKey(tag);
+            return _rootTags.ContainsKey(tag);
         }
-
-        public int getRootNodeCount()
-        {
-            return _RootTags.Count;
-        }
-
     }
 }
