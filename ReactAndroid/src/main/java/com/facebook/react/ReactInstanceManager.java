@@ -31,7 +31,7 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
 
 /**
- * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
+ * This class is managing instances of {@link CatalystInstance}. It exposes a way to configure
  * catalyst instance using {@link ReactPackage} and keeps track of the lifecycle of that
  * instance. It also sets up connection between the instance and developers support functionality
  * of the framework.

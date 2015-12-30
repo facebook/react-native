@@ -28,6 +28,7 @@ var JSTimersExecution = {
     setInterval: null,
     requestAnimationFrame: null,
     setImmediate: null,
+    requestIdleCallback: null,
   }),
 
   // Parallel arrays:
@@ -41,7 +42,7 @@ var JSTimersExecution = {
    * if it was a one time timer (setTimeout), and not unregister it if it was
    * recurring (setInterval).
    */
-  callTimer: function(timerID) {
+  callTimer: function(timerID, frameTime) {
     warning(timerID <= JSTimersExecution.GUID, 'Tried to call timer with ID ' + timerID + ' but no such timer exists');
     var timerIndex = JSTimersExecution.timerIDs.indexOf(timerID);
     // timerIndex of -1 means that no timer with that ID exists. There are
@@ -70,6 +71,10 @@ var JSTimersExecution = {
       } else if (type === JSTimersExecution.Type.requestAnimationFrame) {
         var currentTime = performanceNow();
         callback(currentTime);
+      } else if (type === JSTimersExecution.Type.requestIdleCallback) {
+        callback({timeRemaining: function() {
+          return Math.max(0, 17 - (performanceNow() - frameTime));
+        }});
       } else {
         console.error('Tried to call a callback with invalid type: ' + type);
         return;
@@ -89,7 +94,30 @@ var JSTimersExecution = {
     invariant(timerIDs.length !== 0, 'Probably shouldn\'t call "callTimers" with no timerIDs');
 
     JSTimersExecution.errors = null;
-    timerIDs.forEach(JSTimersExecution.callTimer);
+    timerIDs.forEach((id) => { JSTimersExecution.callTimer(id); });
+
+    var errors = JSTimersExecution.errors;
+    if (errors) {
+      var errorCount = errors.length;
+      if (errorCount > 1) {
+        // Throw all the other errors in a setTimeout, which will throw each
+        // error one at a time
+        for (var ii = 1; ii < errorCount; ii++) {
+          require('JSTimers').setTimeout(
+            ((error) => { throw error; }).bind(null, errors[ii]),
+            0
+          );
+        }
+      }
+      throw errors[0];
+    }
+  },
+
+  callIdleCallbacks: function(callbackIDs, frameTime) {
+    invariant(callbackIDs.length !== 0, 'Probably shouldn\'t call "callIdleCallbacks" with no callbackIDs');
+
+    JSTimersExecution.errors = null;
+    callbackIDs.forEach((id) => { JSTimersExecution.callTimer(id, frameTime); });
 
     var errors = JSTimersExecution.errors;
     if (errors) {
