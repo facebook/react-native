@@ -70,31 +70,6 @@ static JSValueRef nativePerformanceNow(
     const JSValueRef arguments[],
     JSValueRef *exception);
 
-static JSValueRef evaluateScriptWithJSC(
-    JSGlobalContextRef ctx,
-    JSStringRef script,
-    JSStringRef sourceURL) {
-  JSValueRef exn;
-  auto result = JSEvaluateScript(ctx, script, nullptr, sourceURL, 0, &exn);
-  if (result == nullptr) {
-    JSValueProtect(ctx, exn);
-    std::string exceptionText = Value(ctx, exn).toString().str();
-    FBLOGE("Got JS Exception: %s", exceptionText.c_str());
-    auto line = Value(ctx, JSObjectGetProperty(ctx,
-      JSValueToObject(ctx, exn, nullptr),
-      JSStringCreateWithUTF8CString("line"), nullptr
-    ));
-    std::ostringstream lineInfo;
-    if (line != nullptr && line.isNumber()) {
-      lineInfo << " (line " << line.asInteger() << " in the generated bundle)";
-    } else {
-      lineInfo << " (no line info)";
-    }
-    throwNewJavaException("com/facebook/react/bridge/JSExecutionException", (exceptionText + lineInfo.str()).c_str());
-  }
-  return result;
-}
-
 static std::string executeJSCallWithJSC(
     JSGlobalContextRef ctx,
     const std::string& methodName,
@@ -110,7 +85,7 @@ static std::string executeJSCallWithJSC(
   auto js = folly::to<folly::fbstring>(
       "__fbBatchedBridge.", methodName, ".apply(null, ",
       folly::toJson(jsonArgs), ")");
-  auto result = evaluateScriptWithJSC(ctx, String(js.c_str()), nullptr);
+  auto result = evaluateScript(ctx, String(js.c_str()), nullptr);
   JSValueProtect(ctx, result);
   return Value(ctx, result).toJSONString();
 }
@@ -167,7 +142,7 @@ void JSCExecutor::executeApplicationScript(
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
     "sourceURL", sourceURL);
   #endif
-  evaluateScriptWithJSC(m_context, jsScript, jsSourceURL);
+  evaluateScript(m_context, jsScript, jsSourceURL);
 }
 
 std::string JSCExecutor::flush() {
