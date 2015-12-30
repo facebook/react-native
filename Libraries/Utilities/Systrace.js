@@ -92,6 +92,18 @@ var Systrace = {
     }
   },
 
+  /**
+   * counterEvent registers the value to the profileName on the systrace timeline
+  **/
+  counterEvent(profileName?: any, value?: any) {
+    if (_enabled) {
+      profileName = typeof profileName === 'function' ?
+        profileName() : profileName;
+      global.nativeTraceCounter &&
+        global.nativeTraceCounter(TRACE_TAG_REACT_APPS, profileName, value);
+    }
+  },
+
   reactPerfMeasure(objName: string, fnName: string, func: any): any {
     return function (component) {
       if (!_enabled) {

@@ -147,6 +147,7 @@ class MessageQueue {
       this._queue = [[],[],[]];
       this._lastFlush = now;
     }
+    Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && SPY_MODE && isFinite(module)) {
       console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
         this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
