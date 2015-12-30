@@ -35,6 +35,17 @@ namespace ReactNative.Reflection
         /// <summary>
         /// Gets the <see cref="MemberInfo"/> at the root of the expression.
         /// </summary>
+        /// <typeparam name="T">Type of input.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns>The reflected member.</returns>
+        public static MemberInfo InfoOf<T>(Expression<Action<T>> expression)
+        {
+            return _InfoOf(expression.Body);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="MemberInfo"/> at the root of the expression.
+        /// </summary>
         /// <typeparam name="T">Type of result.</typeparam>
         /// <param name="expression">The expression.</param>
         /// <returns>The reflected member.</returns>
