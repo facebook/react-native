@@ -99,18 +99,20 @@
       var mod = modules[id];
 
       if (!mod) {
-        console.error(
+        console.warn(
           'Cannot accept unknown module `' + id + '`. Make sure you\'re not ' +
           'trying to modify something else other than a module ' +
           '(i.e.: a polyfill).'
         );
+        return;
       }
 
       if (!mod.module.hot) {
-        console.error(
+        console.warn(
           'Cannot accept module because Hot Module Replacement ' +
           'API was not installed.'
         );
+        return;
       }
 
       if (mod.module.hot.acceptCallback) {
@@ -120,7 +122,7 @@
 
         mod.module.hot.acceptCallback();
       } else {
-        console.log(
+        console.warn(
           '[HMR] Module `' + id + '` can\'t be hot reloaded because it ' +
           'doesn\'t provide accept callback hook. Reload the app to get the updates.'
         );
