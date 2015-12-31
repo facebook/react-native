@@ -37,7 +37,7 @@ var SCREEN_HEIGHT = Dimensions.get('window').height;
 var ToTheLeftIOS = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
-    to: {x: -SCREEN_WIDTH*0.3, y: 0, z: 0},
+    to: {x: -SCREEN_WIDTH * 0.3, y: 0, z: 0},
     min: 0,
     max: 1,
     type: 'linear',
