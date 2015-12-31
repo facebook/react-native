@@ -17,7 +17,7 @@ namespace ReactNative.Tests.UIManager
                 () => new ViewManagerRegistry(null),
                 ex => Assert.AreEqual("viewManagers", ex.ParamName));
 
-            var registry = new ViewManagerRegistry(new List<IViewManager>());
+            var registry = new ViewManagerRegistry(new List<ViewManager>());
 
             AssertEx.Throws<ArgumentNullException>(
                 () => registry.Get(null),
@@ -32,45 +32,13 @@ namespace ReactNative.Tests.UIManager
         public void ViewManagerRegistry_Simple()
         {
             var viewManager = new TestViewManager();
-            var registry = new ViewManagerRegistry(new List<IViewManager> { viewManager });
+            var registry = new ViewManagerRegistry(new List<ViewManager> { viewManager });
             Assert.AreSame(viewManager, registry.Get(viewManager.Name));
         }
 
-        class TestViewManager : IViewManager
+        class TestViewManager : ViewManager
         {
-            public IReadOnlyDictionary<string, object> CommandsMap
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> ExportedViewConstants
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public string Name
+            public override string Name
             {
                 get
                 {
@@ -78,7 +46,7 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public IReadOnlyDictionary<string, string> NativeProperties
+            public override Type ShadowNodeType
             {
                 get
                 {
@@ -86,32 +54,17 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public ReactShadowNode CreateShadowNodeInstance()
+            public override ReactShadowNode CreateShadowNodeInstance()
             {
                 throw new NotImplementedException();
             }
 
-            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            public override void UpdateExtraData(FrameworkElement root, object extraData)
             {
                 throw new NotImplementedException();
             }
 
-            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties)
+            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
             {
                 throw new NotImplementedException();
             }

@@ -46,7 +46,7 @@ namespace ReactNative.UIManager
     /// </remarks>
     public class NativeViewHierarchyManager
     {
-        private readonly IDictionary<int, IViewManager> _tagsToViewManagers;
+        private readonly IDictionary<int, ViewManager> _tagsToViewManagers;
         private readonly IDictionary<int, FrameworkElement> _tagsToViews;
         private readonly IDictionary<int, bool> _rootTags;
         private readonly ViewManagerRegistry _viewManagers;
@@ -62,7 +62,7 @@ namespace ReactNative.UIManager
         {
             _viewManagers = viewManagers;
             _tagsToViews = new Dictionary<int, FrameworkElement>();
-            _tagsToViewManagers = new Dictionary<int, IViewManager>();
+            _tagsToViewManagers = new Dictionary<int, ViewManager>();
             _rootTags = new Dictionary<int, bool>();
             _jsResponderHandler = new JavaScriptResponderHandler();
             _rootViewManager = new RootViewManager();
@@ -177,7 +177,7 @@ namespace ReactNative.UIManager
         /// <param name="tagsToDelete">Tags to delete.</param>
         public void ManageChildren(int tag, int[] indicesToRemove, ViewAtIndex[] viewsToAdd, int[] tagsToDelete)
         {
-            var viewManager = default(IViewManager);
+            var viewManager = default(ViewManager);
             if (!_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 throw new InvalidOperationException(
@@ -453,9 +453,9 @@ namespace ReactNative.UIManager
             return view;
         }
 
-        private IViewManager ResolveViewManager(int tag)
+        private ViewManager ResolveViewManager(int tag)
         {
-            var viewManager = default(IViewManager);
+            var viewManager = default(ViewManager);
             if (!_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 throw new InvalidOperationException(
@@ -488,7 +488,7 @@ namespace ReactNative.UIManager
                 mgr.OnDropViewInstance(view.GetReactContext(), view);
             }
 
-            var viewManager = default(IViewManager);
+            var viewManager = default(ViewManager);
             if (_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 var viewGroup = view as Panel;
