@@ -5,6 +5,7 @@ using ReactNative.UIManager.Events;
 using ReactNative.Views;
 using System;
 using System.Collections.Generic;
+using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
@@ -96,7 +97,8 @@ namespace ReactNative.UIManager
             var tag = _nextRootTag;
             _nextRootTag += 10;
             rootView.BindTagToView(_nextRootTag);
-
+            rootView.setOnSizeChangedListener(new RootViewSizeChangedListener());
+            
             return tag;
         }
 
@@ -398,5 +400,17 @@ namespace ReactNative.UIManager
         }
 
         #endregion
+
+        sealed class RootViewSizeChangedListener : ISizeChangedListener
+        {
+            public void onSizeChanged(object sender, SizeChangedEventArgs e)
+            {
+                //TODO: Need to adjust the styling of the panel based on the new
+                //width and height(e.NewSize). The adjustment needs to run on the 
+                //Native Modules thread off the react context(this.Context.RunOnNativeModulesThread)
+                throw new NotImplementedException("Size change behavior for root view still needs to be implemented");
+            }
+        }
+
     }
 }
