@@ -43,7 +43,7 @@ describe('Bundle', function() {
       expect(bundle.getSource({dev: true})).toBe([
         'transformed foo;',
         'transformed bar;',
-        '\/\/@ sourceMappingURL=test_url'
+        '\/\/# sourceMappingURL=test_url'
       ].join('\n'));
     });
 
@@ -90,7 +90,7 @@ describe('Bundle', function() {
         'transformed bar;',
         ';require("bar");',
         ';require("foo");',
-        '\/\/@ sourceMappingURL=test_url',
+        '\/\/# sourceMappingURL=test_url',
       ].join('\n'));
     });
 

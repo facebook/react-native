@@ -76,6 +76,7 @@ var APIS = [
   require('./RCTRootViewIOSExample'),
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
+  require('./TransformExample'),
   require('./VibrationIOSExample'),
   require('./XHRExample.ios'),
   require('./ImageEditingExample'),

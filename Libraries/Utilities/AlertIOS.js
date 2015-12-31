@@ -14,14 +14,14 @@
 var RCTAlertManager = require('NativeModules').AlertManager;
 var invariant = require('invariant');
 
-type AlertType = $Enum<{
+export type AlertType = $Enum<{
   'default': string;
   'plain-text': string;
   'secure-text': string;
   'login-password': string;
 }>;
 
-type AlertButtonStyle = $Enum<{
+export type AlertButtonStyle = $Enum<{
   'default': string;
   'cancel': string;
   'destructive': string;
@@ -32,20 +32,23 @@ type AlertButtonStyle = $Enum<{
  *
  * Optionally provide a list of buttons. Tapping any button will fire the
  * respective onPress callback and dismiss the alert. By default, the only
- * button will be an 'OK' button
+ * button will be an 'OK' button.
+ *
+ * Use this API for iOS-specific features, such as prompting the user to enter
+ * some information. In other cases, especially to show static alerts, use
+ * the cross-platform `Alert` API.
  *
  * ```
  * AlertIOS.alert(
- *   'Foo Title',
- *   'My Alert Msg',
+ *   'Enter password',
+ *   null,
  *   [
- *     {text: 'OK', onPress: () => console.log('OK Pressed!')},
- *     {text: 'Cancel', onPress: () => console.log('Cancel Pressed!'), style: 'cancel'},
- *   ]
+ *     {text: 'Submit', onPress: (text) => console.log('Password: ' + text)},
+ *   ],
+ *   'secure-text'
  * )
  * ```
  */
-
 class AlertIOS {
   static alert(
     title: ?string,
@@ -87,6 +90,9 @@ class AlertIOS {
     });
   }
 
+  /**
+   * Prompt the user to enter some text.
+   */
   static prompt(
     title: string,
     value?: string,

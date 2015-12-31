@@ -30,6 +30,8 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   DatePickerIOS: require('DatePickerIOS'),
   DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
   Image: require('Image'),
+  ImageEditor: require('ImageEditor'),
+  ImageStore: require('ImageStore'),
   ListView: require('ListView'),
   MapView: require('MapView'),
   Modal: require('Modal'),
@@ -44,6 +46,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   SnapshotViewIOS: require('SnapshotViewIOS'),
   Switch: require('Switch'),
   PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
+  RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
   SwitchAndroid: require('SwitchAndroid'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
@@ -97,6 +100,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   requireNativeComponent: require('requireNativeComponent'),
 
   // Prop Types
+  ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
 

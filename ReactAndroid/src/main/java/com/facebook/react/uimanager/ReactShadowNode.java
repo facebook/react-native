@@ -256,7 +256,7 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
@@ -264,7 +264,7 @@ public class ReactShadowNode extends CSSNode {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 

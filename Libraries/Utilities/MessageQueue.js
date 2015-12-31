@@ -53,6 +53,7 @@ class MessageQueue {
     this._callbacks = [];
     this._callbackID = 0;
     this._lastFlush = 0;
+    this._eventLoopStartTime = new Date().getTime();
 
     [
       'invokeCallbackAndReturnFlushedQueue',
@@ -109,6 +110,10 @@ class MessageQueue {
     return module;
   }
 
+  getEventLoopRunningTime() {
+    return new Date().getTime() - this._eventLoopStartTime;
+  }
+
   /**
    * "Private" methods
    */
@@ -142,6 +147,7 @@ class MessageQueue {
       this._queue = [[],[],[]];
       this._lastFlush = now;
     }
+    Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && SPY_MODE && isFinite(module)) {
       console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
         this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
@@ -150,11 +156,12 @@ class MessageQueue {
 
   __callFunction(module, method, args) {
     this._lastFlush = new Date().getTime();
+    this._eventLoopStartTime = this._lastFlush;
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
     }
-    Systrace.beginEvent(() => `${module}.${method}(${stringifySafe(args)})`);
+    Systrace.beginEvent(`${module}.${method}()`);
     if (__DEV__ && SPY_MODE) {
       console.log('N->JS : ' + module + '.' + method + '(' + JSON.stringify(args) + ')');
     }
@@ -169,9 +176,9 @@ class MessageQueue {
   }
 
   __invokeCallback(cbID, args) {
-    Systrace.beginEvent(
-      () => `MessageQueue.invokeCallback(${cbID}, ${stringifySafe(args)})`);
+    Systrace.beginEvent(`MessageQueue.invokeCallback(${cbID})`);
     this._lastFlush = new Date().getTime();
+    this._eventLoopStartTime = this._lastFlush;
     let callback = this._callbacks[cbID];
     if (!callback || __DEV__) {
       let debug = this._debugInfo[cbID >> 1];

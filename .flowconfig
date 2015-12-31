@@ -14,17 +14,19 @@
 
 # Ignore react and fbjs where there are overlaps, but don't ignore
 # anything that react-native relies on
-.*/node_modules/fbjs-haste/.*/__tests__/.*
-.*/node_modules/fbjs-haste/__forks__/Map.js
-.*/node_modules/fbjs-haste/__forks__/Promise.js
-.*/node_modules/fbjs-haste/__forks__/fetch.js
-.*/node_modules/fbjs-haste/core/ExecutionEnvironment.js
-.*/node_modules/fbjs-haste/core/isEmpty.js
-.*/node_modules/fbjs-haste/crypto/crc32.js
-.*/node_modules/fbjs-haste/stubs/ErrorUtils.js
-.*/node_modules/react-haste/React.js
-.*/node_modules/react-haste/renderers/dom/ReactDOM.js
-.*/node_modules/react-haste/renderers/shared/event/eventPlugins/ResponderEventPlugin.js
+.*/node_modules/fbjs/lib/Map.js
+.*/node_modules/fbjs/lib/Promise.js
+.*/node_modules/fbjs/lib/fetch.js
+.*/node_modules/fbjs/lib/ExecutionEnvironment.js
+.*/node_modules/fbjs/lib/isEmpty.js
+.*/node_modules/fbjs/lib/crc32.js
+.*/node_modules/fbjs/lib/ErrorUtils.js
+
+# Flow has a built-in definition for the 'react' module which we prefer to use
+# over the currently-untyped source
+.*/node_modules/react/react.js
+.*/node_modules/react/lib/React.js
+.*/node_modules/react/lib/ReactDOM.js
 
 # Ignore commoner tests
 .*/node_modules/commoner/test/.*
@@ -55,9 +57,9 @@ suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FixMe
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)? #[0-9]+
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(>=0\\.\\(2[0-0]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(>=0\\.\\(2[0-0]\\|1[0-9]\\|[0-9]\\).[0-9]\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 
 [version]
-0.19.0
+0.20.1

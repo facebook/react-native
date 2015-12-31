@@ -202,8 +202,7 @@ var components = [
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
-  '../Libraries/Components/SwitchAndroid/SwitchAndroid.android.js',
-  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
+  '../Libraries/Components/Switch/Switch.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
@@ -220,6 +219,7 @@ var components = [
 
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  '../Libraries/Utilities/Alert.js',
   '../Libraries/Utilities/AlertIOS.js',
   '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
@@ -228,6 +228,7 @@ var apis = [
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
   '../Libraries/Utilities/Dimensions.js',
+  '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',

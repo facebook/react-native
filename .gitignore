@@ -21,8 +21,10 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
-# Xcode, Gradle
-build/
+# Gradle
+/build/
+/Examples/**/android/app/build/
+/ReactAndroid/build/
 
 # Android
 .idea

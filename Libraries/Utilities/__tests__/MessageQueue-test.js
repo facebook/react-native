@@ -55,15 +55,15 @@ describe('MessageQueue', () => {
   });
 
   it('should call a local function with id', () => {
-    expect(TestModule.testHook1.callCount).toEqual(0);
+    expect(TestModule.testHook1.calls.count()).toEqual(0);
     queue.__callFunction(0, 0, [1]);
-    expect(TestModule.testHook1.callCount).toEqual(1);
+    expect(TestModule.testHook1.calls.count()).toEqual(1);
   });
 
   it('should call a local function with the function name', () => {
-    expect(TestModule.testHook2.callCount).toEqual(0);
+    expect(TestModule.testHook2.calls.count()).toEqual(0);
     queue.__callFunction('one', 'testHook2', [2]);
-    expect(TestModule.testHook2.callCount).toEqual(1);
+    expect(TestModule.testHook2.calls.count()).toEqual(1);
   });
 
   it('should generate native modules', () => {
@@ -78,7 +78,7 @@ describe('MessageQueue', () => {
     assertQueue(flushedQueue, 0, 0, 1, ['foo', 0, 1]);
   });
 
-  it('should call the stored callback', (done) => {
+  it('should call the stored callback', () => {
     var done = false;
     queue.RemoteModules.one.remoteMethod1(() => { done = true; });
     queue.__invokeCallback(1);

@@ -235,7 +235,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * You will never need to instansiate `PushNotificationIOS` yourself.
+   * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
    * `popInitialNotification` is sufficient
    */

@@ -40,6 +40,7 @@ import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -503,7 +504,8 @@ import com.facebook.systrace.Systrace;
     recreateReactContextInBackground(
         new ProxyJavaScriptExecutor(jsExecutor),
         JSBundleLoader.createRemoteDebuggerBundleLoader(
-            mDevSupportManager.getJSBundleURLForRemoteDebugging()));
+            mDevSupportManager.getJSBundleURLForRemoteDebugging(),
+            mDevSupportManager.getSourceUrl()));
   }
 
   private void onJSBundleLoadedFromServer() {
@@ -604,6 +606,7 @@ import com.facebook.systrace.Systrace;
       JavaScriptExecutor jsExecutor,
       JSBundleLoader jsBundleLoader) {
     FLog.i(ReactConstants.TAG, "Creating react context.");
+    ReactMarker.logMarker("CREATE_REACT_CONTEXT_START");
     mSourceUrl = jsBundleLoader.getSourceUrl();
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
     JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
@@ -681,6 +684,7 @@ import com.facebook.systrace.Systrace;
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
+    ReactMarker.logMarker("CREATE_REACT_CONTEXT_END");
     return reactContext;
   }
 

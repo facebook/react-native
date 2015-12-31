@@ -85,9 +85,37 @@ exports.examples = [
     }
   },
   {
+    title: 'Custom min/max track tint color',
+    render(): ReactElement {
+      return (
+        <SliderExample
+          minimumTrackTintColor={'red'}
+          maximumTrackTintColor={'green'}
+        />
+      );
+    }
+  },
+  {
     title: 'Custom thumb image',
     render(): ReactElement {
-      return <SliderExample thumbImage={require('image!uie_thumb_big')} />;
+      return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
     }
-  }
+  },
+  {
+    title: 'Custom track image',
+    render(): ReactElement {
+      return <SliderExample trackImage={require('./slider.png')} />;
+    }
+  },
+  {
+    title: 'Custom min/max track image',
+    render(): ReactElement {
+      return (
+        <SliderExample
+          minimumTrackImage={require('./slider-left.png')}
+          maximumTrackImage={require('./slider-right.png')}
+        />
+      );
+    }
+  },
 ];

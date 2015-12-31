@@ -13,6 +13,7 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTParserUtils.h"
@@ -33,16 +34,6 @@ typedef BOOL (^RCTArgumentBlock)(RCTBridge *, NSUInteger, id);
   }
   return self;
 }
-
-@end
-
-@interface RCTBridge (RCTModuleMethod)
-
-/**
- * This method is used to invoke a callback that was registered in the
- * JavaScript application context. Safe to call from any thread.
- */
-- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args;
 
 @end
 

@@ -11,9 +11,10 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridgeMethod.h"
 #import "RCTConvert.h"
-#import "RCTContextExecutor.h"
+#import "RCTJSCExecutor.h"
 #import "RCTFrameUpdate.h"
 #import "RCTJavaScriptLoader.h"
 #import "RCTLog.h"
@@ -24,12 +25,9 @@
 #import "RCTUtils.h"
 
 #define RCTAssertJSThread() \
-  RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTContextExecutor"] || \
+  RCTAssert(![NSStringFromClass([_javaScriptExecutor class]) isEqualToString:@"RCTJSCExecutor"] || \
               [[[NSThread currentThread] name] isEqualToString:@"com.facebook.React.JavaScript"], \
             @"This method must be called on JS thread")
-
-NSString *const RCTEnqueueNotification = @"RCTEnqueueNotification";
-NSString *const RCTDequeueNotification = @"RCTDequeueNotification";
 
 /**
  * Must be kept in sync with `MessageQueue.js`.
@@ -41,15 +39,6 @@ typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
 };
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
-
-@interface RCTBridge ()
-
-+ (instancetype)currentBridge;
-+ (void)setCurrentBridge:(RCTBridge *)bridge;
-
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
-
-@end
 
 @interface RCTBatchedBridge : RCTBridge
 
@@ -98,9 +87,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
     [RCTBridge setCurrentBridge:self];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptWillStartLoadingNotification
-                                                        object:self
-                                                      userInfo:@{ @"bridge": self }];
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:RCTJavaScriptWillStartLoadingNotification
+     object:_parentBridge userInfo:@{@"bridge": self}];
 
     [self start];
   }
@@ -216,9 +205,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     // Allow testing without a script
     dispatch_async(dispatch_get_main_queue(), ^{
       [self didFinishLoading];
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                          object:_parentBridge
-                                                        userInfo:@{ @"bridge": self }];
+      [[NSNotificationCenter defaultCenter]
+       postNotificationName:RCTJavaScriptDidLoadNotification
+       object:_parentBridge userInfo:@{@"bridge": self}];
     });
     onSourceLoad(nil, nil);
   }
@@ -289,23 +278,23 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
           [moduleClass instancesRespondToSelector:setBridgeSelector]) {
         module = [moduleClass new];
         if (!module) {
-          module = [NSNull null];
+          module = (id)kCFNull;
         }
       }
     }
 
     // Check for module name collisions.
     // It's OK to have a name collision as long as the second instance is null.
-    if (module != [NSNull class] && _moduleDataByName[moduleName]) {
+    if (module != (id)kCFNull && moduleDataByName[moduleName] && !preregisteredModules[moduleName]) {
       RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the name "
                   "'%@', but name was already registered by class %@", moduleClass,
-                  moduleName, _moduleDataByName[moduleName]);
+                  moduleName, moduleDataByName[moduleName].moduleClass);
     }
 
     // Instantiate moduleData (TODO: defer this until config generation)
     RCTModuleData *moduleData;
     if (module) {
-      if (module != [NSNull null]) {
+      if (module != (id)kCFNull) {
         moduleData = [[RCTModuleData alloc] initWithModuleInstance:module];
       }
     } else {
@@ -339,8 +328,15 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     }
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidCreateNativeModules
-                                                      object:self];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+  [[NSNotificationCenter defaultCenter]
+   postNotificationName:RCTDidCreateNativeModules
+   object:self userInfo:@{@"bridge": self}];
+
+#pragma clang diagnostic pop
+
   RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
 }
 
@@ -368,7 +364,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 {
   NSMutableArray<NSArray *> *config = [NSMutableArray new];
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (self.executorClass == [RCTContextExecutor class]) {
+    if (self.executorClass == [RCTJSCExecutor class]) {
       [config addObject:@[moduleData.name]];
     } else {
       [config addObject:RCTNullIfNil(moduleData.config)];
@@ -430,17 +426,16 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     }
 
     // Register the display link to start sending js calls after everything is setup
-    NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTContextExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
+    NSRunLoop *targetRunLoop = [_javaScriptExecutor isKindOfClass:[RCTJSCExecutor class]] ? [NSRunLoop currentRunLoop] : [NSRunLoop mainRunLoop];
     [_jsDisplayLink addToRunLoop:targetRunLoop forMode:NSRunLoopCommonModes];
 
     // Perform the state update and notification on the main thread, so we can't run into
     // timing issues with RCTRootView
     dispatch_async(dispatch_get_main_queue(), ^{
       [self didFinishLoading];
-
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidLoadNotification
-                                                          object:_parentBridge
-                                                        userInfo:@{ @"bridge": self }];
+      [[NSNotificationCenter defaultCenter]
+       postNotificationName:RCTJavaScriptDidLoadNotification
+       object:_parentBridge userInfo:@{@"bridge": self}];
     });
   }];
 }
@@ -465,9 +460,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   _loading = NO;
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptDidFailToLoadNotification
-                                                      object:_parentBridge
-                                                    userInfo:@{@"bridge": self, @"error": error}];
+  [[NSNotificationCenter defaultCenter]
+   postNotificationName:RCTJavaScriptDidFailToLoadNotification
+   object:_parentBridge userInfo:@{@"bridge": self, @"error": error}];
+
   RCTFatal(error);
 }
 
@@ -488,7 +484,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (Class)executorClass
 {
-  return _parentBridge.executorClass ?: [RCTContextExecutor class];
+  return _parentBridge.executorClass ?: [RCTJSCExecutor class];
 }
 
 - (void)setExecutorClass:(Class)executorClass
@@ -589,7 +585,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)logMessage:(NSString *)message level:(NSString *)level
 {
-  if (RCT_DEBUG) {
+  if (RCT_DEBUG && [_javaScriptExecutor isValid]) {
     [self enqueueJSCall:@"RCTLog.logIfNoNativeHook"
                    args:@[level, message]];
   }
@@ -723,8 +719,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
-
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
       RCTFatal(error);
@@ -733,7 +727,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     if (!self.isValid) {
       return;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
     [self handleBuffer:json batchEnded:YES];
   };
 
@@ -748,8 +741,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 {
   RCTAssertJSThread();
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTEnqueueNotification object:nil userInfo:nil];
-
   RCTJavaScriptCallback processResponse = ^(id json, NSError *error) {
     if (error) {
       RCTFatal(error);
@@ -758,7 +749,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     if (!self.isValid) {
       return;
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDequeueNotification object:nil userInfo:nil];
     [self handleBuffer:json batchEnded:YES];
   };
 
@@ -828,10 +818,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     dispatch_block_t block = ^{
       RCTProfileEndFlowEvent();
 
-#if RCT_DEV
-      NSString *_threadName = RCTCurrentThreadName();
-      RCT_PROFILE_BEGIN_EVENT(0, _threadName, nil);
-#endif
+      RCT_PROFILE_BEGIN_EVENT(0, RCTCurrentThreadName(), nil);
 
       NSOrderedSet *calls = [buckets objectForKey:queue];
       @autoreleasepool {
@@ -906,8 +893,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     return NO;
   }
 
-  RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ %@]", moduleData.name, method.JSMethodName], nil);
-
   @try {
     [method invokeWithBridge:self module:moduleData.instance arguments:params];
   }
@@ -921,13 +906,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                          @"Exception '%@' was thrown while invoking %@ on target %@ with params %@",
                          exception, method.JSMethodName, moduleData.name, params];
     RCTFatal(RCTErrorWithMessage(message));
-  }
-
-  if (RCTProfileIsProfiling()) {
-    NSMutableDictionary *args = [method.profileArgs mutableCopy];
-    args[@"method"] = method.JSMethodName;
-    args[@"args"] = RCTJSONStringify(RCTNullIfNil(params), NULL);
-    RCT_PROFILE_END_EVENT(0, @"objc_call", args);
   }
 
   return YES;
@@ -946,9 +924,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
       [self dispatchBlock:^{
         RCTProfileEndFlowEvent();
-        RCT_PROFILE_BEGIN_EVENT(0, [NSString stringWithFormat:@"[%@ didUpdateFrame:%f]", observer, displayLink.timestamp], nil);
         [observer didUpdateFrame:frameUpdate];
-        RCT_PROFILE_END_EVENT(0, @"objc_call,fps", nil);
       } queue:moduleData.methodQueue];
     }
   }

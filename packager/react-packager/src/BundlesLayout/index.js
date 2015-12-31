@@ -13,10 +13,11 @@ const Activity = require('../Activity');
 const _ = require('underscore');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
-const getCacheFilePath = require('../lib/getCacheFilePath');
-const loadCacheSync = require('../lib/loadCacheSync');
+const getCacheFilePath = require('../DependencyResolver/Cache/lib/getCacheFilePath');
+const loadCacheSync = require('../DependencyResolver/Cache/lib/loadCacheSync');
 const version = require('../../../../package.json').version;
 const path = require('path');
+const tmpdir = require('os').tmpDir();
 
 const validateOpts = declareOpts({
   dependencyResolver: {
@@ -189,6 +190,7 @@ class BundlesLayout {
 
   _getCacheFilePath(options) {
     return getCacheFilePath(
+      tmpdir,
       'react-packager-bundles-cache-',
       version,
       options.projectRoots.join(',').split(path.sep).join('-'),

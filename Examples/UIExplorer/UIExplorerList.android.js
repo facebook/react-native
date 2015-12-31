@@ -24,6 +24,7 @@ var UIExplorerListBase = require('./UIExplorerListBase');
 
 var COMPONENTS = [
   require('./ImageExample'),
+  require('./ListViewExample'),
   require('./ProgressBarAndroidExample'),
   require('./ScrollViewSimpleExample'),
   require('./SwitchAndroidExample'),
@@ -34,10 +35,12 @@ var COMPONENTS = [
   require('./TouchableExample'),
   require('./ViewExample'),
   require('./ViewPagerAndroidExample.android'),
+  require('./WebViewExample'),
 ];
 
 var APIS = [
   require('./AccessibilityAndroidExample.android'),
+  require('./AlertExample').AlertExample,
   require('./BorderExample'),
   require('./ClipboardExample'),
   require('./GeolocationExample'),

@@ -48,7 +48,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     super.setThemedContext(themedContext);
 
     // TODO #7120264: cache this stuff better
@@ -68,7 +68,7 @@ public class ReactTextInputShadowNode extends ReactTextShadowNode implements
   }
 
   @Override
-  public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+  public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
     // measure() should never be called before setThemedContext()
     EditText editText = Assertions.assertNotNull(mEditText);
 

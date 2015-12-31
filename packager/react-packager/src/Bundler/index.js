@@ -14,7 +14,7 @@ const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
 const BundlesLayout = require('../BundlesLayout');
-const Cache = require('../Cache');
+const Cache = require('../DependencyResolver/Cache');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -23,6 +23,7 @@ const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
 const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
+const version = require('../../../../package.json').version;
 
 const sizeOf = Promise.denodeify(imageSize);
 const readFile = Promise.denodeify(fs.readFile);
@@ -88,11 +89,23 @@ class Bundler {
 
     opts.projectRoots.forEach(verifyRootExists);
 
+    let mtime;
+    try {
+      ({mtime} = fs.statSync(opts.transformModulePath));
+      mtime = String(mtime.getTime());
+    } catch (error) {
+      mtime = '';
+    }
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
-      cacheVersion: opts.cacheVersion,
-      projectRoots: opts.projectRoots,
-      transformModulePath: opts.transformModulePath,
+      cacheKey: [
+        'react-packager-cache',
+        version,
+        opts.cacheVersion,
+        opts.projectRoots.join(',').split(path.sep).join('-'),
+        mtime
+      ].join('$'),
     });
 
     this._resolver = new Resolver({
@@ -122,6 +135,10 @@ class Bundler {
 
     this._projectRoots = opts.projectRoots;
     this._assetServer = opts.assetServer;
+
+    if (opts.getTransformOptionsModulePath) {
+      this._getTransformOptionsModule = require(opts.getTransformOptionsModulePath);
+    }
   }
 
   kill() {
@@ -141,6 +158,7 @@ class Bundler {
     dev: isDev,
     platform,
     unbundle: isUnbundle,
+    hot: hot,
   }) {
     // Const cannot have the same name as the method (babel/babel#2834)
     const bbundle = new Bundle(sourceMapUrl);
@@ -177,7 +195,8 @@ class Bundler {
             bbundle,
             response,
             module,
-            platform
+            platform,
+            hot,
           ).then(transformed => {
             if (bar) {
               bar.tick();
@@ -260,8 +279,39 @@ class Bundler {
     });
   }
 
+  bundleForHMR({
+    entryFile,
+    platform,
+  }) {
+    return this.getDependencies(entryFile, /*isDev*/true, platform).then(response => {
+      const module = response.dependencies.filter(module => module.path === entryFile)[0];
+
+      return Promise.all([
+        module.getName(),
+        this._transformer.loadFileAndTransform(
+          path.resolve(entryFile),
+          // TODO(martinb): pass non null main (t9527509)
+          this._getTransformOptions({main: null}, {hot: true}),
+        ),
+      ]).then(([moduleName, transformedSource]) => {
+        return (`
+          __accept(
+            '${moduleName}',
+            function(global, require, module, exports) {
+              ${transformedSource.code}
+            }
+          );
+        `);
+      });
+    });
+  }
+
   invalidateFile(filePath) {
     this._transformer.invalidateFile(filePath);
+  }
+
+  getShallowDependencies(entryFile) {
+    return this._resolver.getShallowDependencies(entryFile);
   }
 
   getDependencies(main, isDev, platform) {
@@ -300,7 +350,7 @@ class Bundler {
     );
   }
 
-  _transformModule(bundle, response, module, platform = null) {
+  _transformModule(bundle, response, module, platform = null, hot = false) {
     if (module.isAsset_DEPRECATED()) {
       return this.generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
@@ -309,7 +359,11 @@ class Bundler {
       return generateJSONModule(module);
     } else {
       return this._transformer.loadFileAndTransform(
-        path.resolve(module.path)
+        path.resolve(module.path),
+        this._getTransformOptions(
+          {bundleEntry: bundle.getMainModuleId(), modulePath: module.path},
+          {hot: hot},
+        ),
       );
     }
   }
@@ -365,7 +419,7 @@ class Bundler {
   generateAssetModule(bundle, module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = path.join('/assets', path.dirname(relPath));
-    
+
     // On Windows, change backslashes to slashes to get proper URL path from file path.
     if (path.sep === '\\') {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');
@@ -402,6 +456,14 @@ class Bundler {
         virtual: true,
       });
     });
+  }
+
+  _getTransformOptions(config, options) {
+    const transformerOptions = this._getTransformOptionsModule
+      ? this._getTransformOptionsModule(config)
+      : null;
+
+    return {...options, ...transformerOptions};
   }
 }
 

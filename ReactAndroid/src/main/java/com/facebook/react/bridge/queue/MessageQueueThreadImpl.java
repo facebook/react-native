@@ -10,8 +10,10 @@
 package com.facebook.react.bridge.queue;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import android.os.Looper;
 
@@ -170,8 +172,8 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
           name,
           simpleSettableFuture.get(5000, TimeUnit.MILLISECONDS),
           exceptionHandler);
-    } catch (Throwable t) {
-      throw new RuntimeException(t);
+    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+      throw new RuntimeException(e);
     }
   }
 }

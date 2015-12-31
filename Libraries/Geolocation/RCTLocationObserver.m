@@ -130,7 +130,6 @@ RCT_EXPORT_MODULE()
     _locationManager = [CLLocationManager new];
     _locationManager.distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
     _locationManager.delegate = self;
-    _pendingRequests = [NSMutableArray new];
   }
 
   // Request location access permission
@@ -234,6 +233,9 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
                                                         selector:@selector(timeout:)
                                                         userInfo:request
                                                          repeats:NO];
+  if (!_pendingRequests) {
+    _pendingRequests = [NSMutableArray new];
+  }
   [_pendingRequests addObject:request];
 
   // Configure location manager and begin updating location

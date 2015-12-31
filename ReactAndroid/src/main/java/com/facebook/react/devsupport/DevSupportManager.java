@@ -265,10 +265,13 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
           }
         });
     options.put(
-        mApplicationContext.getString(R.string.catalyst_inspect_element),
+        mDevSettings.isElementInspectorEnabled()
+          ? mApplicationContext.getString(R.string.catalyst_element_inspector_off)
+          : mApplicationContext.getString(R.string.catalyst_element_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
+            mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
             mReactInstanceCommandsHandler.toggleElementInspector();
           }
         });

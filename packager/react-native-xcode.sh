@@ -41,6 +41,11 @@ elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
   . "$(brew --prefix nvm)/nvm.sh"
 fi
 
+# Set up the nodenv node version manager if present
+if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
+  eval "$($HOME/.nodenv/bin/nodenv init -)"
+fi
+
 react-native bundle \
   --entry-file index.ios.js \
   --platform ios \

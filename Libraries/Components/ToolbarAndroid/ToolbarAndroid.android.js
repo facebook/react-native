@@ -18,6 +18,7 @@ var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ReactPropTypes = require('ReactPropTypes');
 var UIManager = require('UIManager');
 var View = require('View');
+var ColorPropType = require('ColorPropType');
 
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -49,9 +50,9 @@ var optionalImageSource = ReactPropTypes.oneOfType([
  * render: function() {
  *   return (
  *     <ToolbarAndroid
- *       logo={require('image!app_logo')}
+ *       logo={require('./app_logo.png')}
  *       title="AwesomeApp"
- *       actions={[{title: 'Settings', icon: require('image!icon_settings'), show: 'always'}]}
+ *       actions={[{title: 'Settings', icon: require('./icon_settings.png'), show: 'always'}]}
  *       onActionSelected={this.onActionSelected} />
  *   )
  * },
@@ -77,7 +78,7 @@ var ToolbarAndroid = React.createClass({
      * This property takes an array of objects, where each object has the following keys:
      *
      * * `title`: **required**, the title of this action
-     * * `icon`: the icon for this action, e.g. `require('image!some_icon')`
+     * * `icon`: the icon for this action, e.g. `require('./some_icon.png')`
      * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
      * `ifRoom` or `never`
      * * `showWithText`: boolean, whether to show text alongside the icon or not
@@ -97,7 +98,7 @@ var ToolbarAndroid = React.createClass({
      */
     navIcon: optionalImageSource,
     /**
-     * Callback that is called when an action is selected. The only argument that is passeed to the
+     * Callback that is called when an action is selected. The only argument that is passed to the
      * callback is the position of the action in the actions array.
      */
     onActionSelected: ReactPropTypes.func,
@@ -116,7 +117,7 @@ var ToolbarAndroid = React.createClass({
     /**
      * Sets the toolbar subtitle color.
      */
-    subtitleColor: ReactPropTypes.string,
+    subtitleColor: ColorPropType,
     /**
      * Sets the toolbar title.
      */
@@ -124,7 +125,25 @@ var ToolbarAndroid = React.createClass({
     /**
      * Sets the toolbar title color.
      */
-    titleColor: ReactPropTypes.string,
+    titleColor: ColorPropType,
+    /**
+     * Sets the content inset for the toolbar starting edge.
+     *
+     * The content inset affects the valid area for Toolbar content other than
+     * the navigation button and menu. Insets define the minimum margin for
+     * these components and can be used to effectively align Toolbar content
+     * along well-known gridlines.
+     */
+    contentInsetStart: ReactPropTypes.number,
+    /**
+     * Sets the content inset for the toolbar ending edge.
+     *
+     * The content inset affects the valid area for Toolbar content other than
+     * the navigation button and menu. Insets define the minimum margin for
+     * these components and can be used to effectively align Toolbar content
+     * along well-known gridlines.
+     */
+    contentInsetEnd: ReactPropTypes.number,
     /**
      * Used to set the toolbar direction to RTL.
      * In addition to this property you need to add

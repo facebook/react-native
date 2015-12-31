@@ -17,10 +17,12 @@
 
 var React = require('react-native');
 var {
+  Image,
   MapView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } = React;
 
@@ -34,8 +36,8 @@ var regionText = {
 type MapRegion = {
   latitude: number,
   longitude: number,
-  latitudeDelta: number,
-  longitudeDelta: number,
+  latitudeDelta?: number,
+  longitudeDelta?: number,
 };
 
 type MapRegionInputState = {
@@ -48,8 +50,8 @@ var MapRegionInput = React.createClass({
     region: React.PropTypes.shape({
       latitude: React.PropTypes.number.isRequired,
       longitude: React.PropTypes.number.isRequired,
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+      latitudeDelta: React.PropTypes.number,
+      longitudeDelta: React.PropTypes.number,
     }),
     onChange: React.PropTypes.func.isRequired,
   },
@@ -102,7 +104,9 @@ var MapRegionInput = React.createClass({
             {'Latitude delta'}
           </Text>
           <TextInput
-            value={'' + region.latitudeDelta}
+            value={
+              region.latitudeDelta == null ? '' : String(region.latitudeDelta)
+            }
             style={styles.textInput}
             onChange={this._onChangeLatitudeDelta}
             selectTextOnFocus={true}
@@ -113,7 +117,9 @@ var MapRegionInput = React.createClass({
             {'Longitude delta'}
           </Text>
           <TextInput
-            value={'' + region.longitudeDelta}
+            value={
+              region.longitudeDelta == null ? '' : String(region.longitudeDelta)
+            }
             style={styles.textInput}
             onChange={this._onChangeLongitudeDelta}
             selectTextOnFocus={true}
@@ -168,9 +174,13 @@ type Annotations = Array<{
   hasRightCallout?: boolean,
   onLeftCalloutPress?: Function,
   onRightCalloutPress?: Function,
-  tintColor?: string,
+  tintColor?: number | string,
   image?: any,
   id?: string,
+  view?: ReactElement,
+  leftCalloutView?: ReactElement,
+  rightCalloutView?: ReactElement,
+  detailCalloutView?: ReactElement,
 }>;
 type MapViewExampleState = {
   isFirstLoad: boolean,
@@ -239,14 +249,14 @@ var MapViewExample = React.createClass({
 
 });
 
-type CalloutMapViewExampleState = {
+type AnnotationExampleState = {
   isFirstLoad: boolean,
   annotations?: Annotations,
   mapRegion?: MapRegion,
 };
-var CalloutMapViewExample = React.createClass({
+var AnnotationExample = React.createClass({
 
-  getInitialState(): CalloutMapViewExampleState {
+  getInitialState(): AnnotationExampleState {
     return {
       isFirstLoad: true,
     };
@@ -260,11 +270,7 @@ var CalloutMapViewExample = React.createClass({
           annotations: [{
             longitude: region.longitude,
             latitude: region.latitude,
-            title: 'More Info...',
-            hasRightCallout: true,
-            onRightCalloutPress: () => {
-              alert('You Are Here');
-            },
+            ...this.props.annotation,
           }],
         });
       };
@@ -276,141 +282,6 @@ var CalloutMapViewExample = React.createClass({
         onRegionChangeComplete={onRegionChangeComplete}
         region={this.state.mapRegion}
         annotations={this.state.annotations}
-      />
-    );
-  },
-
-});
-
-type CustomPinColorMapViewExampleState = {
-  isFirstLoad: boolean,
-  annotations?: Annotations,
-  mapRegion?: MapRegion,
-};
-var CustomPinColorMapViewExample = React.createClass({
-
-  getInitialState(): CustomPinColorMapViewExampleState {
-    return {
-      isFirstLoad: true,
-    };
-  },
-
-  render() {
-    if (this.state.isFirstLoad) {
-      var onRegionChangeComplete = (region) => {
-        this.setState({
-          isFirstLoad: false,
-          annotations: [{
-            longitude: region.longitude,
-            latitude: region.latitude,
-            title: 'You Are Purple',
-            tintColor: MapView.PinColors.PURPLE,
-          }],
-        });
-      };
-    }
-
-    return (
-      <MapView
-        style={styles.map}
-        onRegionChangeComplete={onRegionChangeComplete}
-        region={this.state.mapRegion}
-        annotations={this.state.annotations}
-      />
-    );
-  },
-
-});
-
-type CustomPinImageMapViewExampleState = {
-  isFirstLoad: boolean,
-  annotations?: Annotations,
-  mapRegion?: MapRegion,
-};
-var CustomPinImageMapViewExample = React.createClass({
-
-  getInitialState(): CustomPinImageMapViewExampleState {
-    return {
-      isFirstLoad: true,
-    };
-  },
-
-  render() {
-    if (this.state.isFirstLoad) {
-      var onRegionChangeComplete = (region) => {
-        this.setState({
-          isFirstLoad: false,
-          annotations: [{
-            longitude: region.longitude,
-            latitude: region.latitude,
-            title: 'Thumbs Up!',
-            image: require('image!uie_thumb_big'),
-          }],
-        });
-      };
-    }
-
-    return (
-      <MapView
-        style={styles.map}
-        onRegionChangeComplete={onRegionChangeComplete}
-        region={this.state.mapRegion}
-        annotations={this.state.annotations}
-      />
-    );
-  },
-
-});
-
-type Overlays = Array<{
-  coordinates?: Array<{
-    latitude: number,
-    longitude: number,
-  }>,
-  lineWidth?: number,
-  strokeColor?: string,
-  fillColor?: string,
-  id?: string,
-}>;
-type CustomOverlayMapViewExampleState = {
-  isFirstLoad: boolean,
-  overlays?: Overlays,
-  annotations?: Annotations,
-  mapRegion?: MapRegion,
-};
-var CustomOverlayMapViewExample = React.createClass({
-
-  getInitialState(): CustomOverlayMapViewExampleState {
-    return {
-      isFirstLoad: true,
-    };
-  },
-
-  render() {
-    if (this.state.isFirstLoad) {
-      var onRegionChangeComplete = (region) => {
-        this.setState({
-          isFirstLoad: false,
-          overlays: [{
-            coordinates:[
-              {latitude: 32.47, longitude: -107.85},
-              {latitude: 45.13, longitude: -94.48},
-              {latitude: 39.27, longitude: -83.25},
-              {latitude: 32.47, longitude: -107.85},
-            ],
-            strokeColor: '#f007',
-            lineWidth: 3,
-          }],
-        });
-      };
-    }
-
-    return (
-      <MapView
-        style={styles.map}
-        onRegionChangeComplete={onRegionChangeComplete}
-        region={this.state.mapRegion}
-        overlays={this.state.overlays}
       />
     );
   },
@@ -451,36 +322,92 @@ exports.description = 'Base component to display maps';
 exports.examples = [
   {
     title: 'Map',
-    render(): ReactElement { return <MapViewExample />; }
+    render() {
+      return <MapViewExample />;
+    }
   },
   {
     title: 'Map shows user location',
     render() {
-      return  <MapView style={styles.map} showsUserLocation={true} />;
+      return <MapView style={styles.map} showsUserLocation={true} />;
     }
   },
   {
     title: 'Callout example',
     render() {
-      return  <CalloutMapViewExample style={styles.map} />;
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'More Info...',
+        rightCalloutView: (
+          <TouchableOpacity
+            onPress={() => {
+              alert('You Are Here');
+            }}>
+            <Image
+              style={{width:30, height:30}}
+              source={require('image!uie_thumb_selected')}
+            />
+          </TouchableOpacity>
+        ),
+      }}/>;
     }
   },
   {
     title: 'Custom pin color',
     render() {
-      return  <CustomPinColorMapViewExample style={styles.map} />;
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'You Are Purple',
+        tintColor: MapView.PinColors.PURPLE,
+      }}/>;
     }
   },
   {
     title: 'Custom pin image',
     render() {
-      return  <CustomPinImageMapViewExample style={styles.map} />;
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'Thumbs Up!',
+        image: require('image!uie_thumb_big'),
+      }}/>;
+    }
+  },
+  {
+    title: 'Custom pin view',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'Thumbs Up!',
+        view: <View style={{
+          alignItems: 'center',
+        }}>
+          <Text style={{fontWeight: 'bold', color: '#f007'}}>
+            Thumbs Up!
+          </Text>
+          <Image
+            style={{width: 90, height: 65, resizeMode: 'cover'}}
+            source={require('image!uie_thumb_big')}
+          />
+        </View>,
+      }}/>;
     }
   },
   {
     title: 'Custom overlay',
     render() {
-      return  <CustomOverlayMapViewExample style={styles.map} />;
+      return <MapView
+        style={styles.map}
+        region={{
+          latitude: 39.06,
+          longitude: -95.22,
+        }}
+        overlays={[{
+          coordinates:[
+            {latitude: 32.47, longitude: -107.85},
+            {latitude: 45.13, longitude: -94.48},
+            {latitude: 39.27, longitude: -83.25},
+            {latitude: 32.47, longitude: -107.85},
+          ],
+          strokeColor: '#f007',
+          lineWidth: 3,
+        }]}
+      />;
     }
   },
 ];
