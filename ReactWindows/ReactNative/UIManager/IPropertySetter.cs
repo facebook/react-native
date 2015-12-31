@@ -8,8 +8,8 @@ namespace ReactNative.UIManager
 
         string PropertyType { get; }
 
-        void SetShadowNodeProperty(ReactShadowNode shadowNode, CatalystStylesDiffMap value);
+        void UpdateShadowNodeProperty(ReactShadowNode shadowNode, CatalystStylesDiffMap value);
 
-        void SetViewManagerProperty(IViewManager viewManager, FrameworkElement view, CatalystStylesDiffMap value);
+        void UpdateViewManagerProperty(IViewManager viewManager, FrameworkElement view, CatalystStylesDiffMap value);
     }
 }

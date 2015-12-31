@@ -157,7 +157,6 @@
     <Compile Include="LifecycleState.cs" />
     <Compile Include="IReactInstanceManager.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
-    <Compile Include="CSSLayout\CSSNode.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -193,7 +192,7 @@
     <Compile Include="Touch\OnInterceptTouchEventListener.cs" />
     <Compile Include="UIManager\Animation\AnimationRegistry.cs" />
     <Compile Include="UIManager\CatalystStylesDiffMap.cs" />
-    <Compile Include="CSSLayout\CSSLayoutContext.cs" />
+    <Compile Include="UIManager\CatalystStylesDiffMapExtensions.cs" />
     <Compile Include="UIManager\Events\Event.cs" />
     <Compile Include="UIManager\Events\EventDispatcher.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitter.cs" />
@@ -241,6 +240,7 @@
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
+    <Compile Include="UIManager\ViewProperties.cs" />
     <Compile Include="Views\ReactRootView.xaml.cs">
       <DependentUpon>ReactRootView.xaml</DependentUpon>
     </Compile>
@@ -264,6 +264,11 @@
   <ItemGroup>
     <Folder Include="JavaScript\lib\" />
     <Folder Include="JavaScript\uwp-native\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Facebook.CSSLayout">
+      <HintPath>..\References\Facebook.CSSLayout.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
