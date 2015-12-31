@@ -33,7 +33,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <param name="viewManagers">The view managers.</param>
-        public UIImplementation(ReactApplicationContext reactContext, IReadOnlyList<IViewManager> viewManagers)
+        public UIImplementation(ReactApplicationContext reactContext, IReadOnlyList<ViewManager> viewManagers)
             : this(reactContext, new ViewManagerRegistry(viewManagers))
         {
         }
@@ -568,7 +568,7 @@ namespace ReactNative.UIManager
             nodeToRemove.RemoveAllChildren();
         }
 
-        private IViewManager ResolveViewManager(string className)
+        private ViewManager ResolveViewManager(string className)
         {
             return _viewManagers.Get(className);
         }

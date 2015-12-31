@@ -212,7 +212,6 @@
     <Compile Include="UIManager\FrameworkElementExtensions.cs" />
     <Compile Include="UIManager\ICatalystInterceptingViewGroup.cs" />
     <Compile Include="UIManager\IPropertySetter.cs" />
-    <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\JavaScriptResponderHandler.cs" />
     <Compile Include="UIManager\LayoutShadowNode.cs" />
     <Compile Include="UIManager\NativeViewHierarchyOptimizer.cs" />
@@ -237,7 +236,9 @@
     <Compile Include="UIManager\UIViewOperationQueue.cs" />
     <Compile Include="UIManager\ViewAtIndex.cs" />
     <Compile Include="UIManager\ViewGroupManager.cs" />
+    <Compile Include="UIManager\ViewGroupManager.Generic.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
+    <Compile Include="UIManager\ViewManager.Generic.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />

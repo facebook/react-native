@@ -11,11 +11,7 @@ namespace ReactNative.UIManager
     /// <see cref="ReactShadowNode"/> subclasses used for calculating position
     /// and size for the corresponding native view.
     /// </summary>
-    /// <typeparam name="TFrameworkElement">Type of view.</typeparam>
-    /// <typeparam name="TShadowNode">Type of shadow node.</typeparam>
-    public abstract class ViewManager<TFrameworkElement, TShadowNode> : IViewManager
-        where TFrameworkElement : FrameworkElement
-        where TShadowNode : ReactShadowNode
+    public abstract class ViewManager
     {
         /// <summary>
         /// The name of this view manager. This will be the name used to 
@@ -161,7 +157,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected abstract TFrameworkElement CreateViewInstance(ThemedReactContext reactContext);
+        protected abstract FrameworkElement CreateViewInstance(ThemedReactContext reactContext);
 
         /// <summary>
         /// Subclasses can override this method to install custom event 
@@ -173,7 +169,7 @@ namespace ReactNative.UIManager
         /// Consider overriding this method if your view needs to emit events
         /// besides basic touch events to JavaScript (e.g., scroll events).
         /// </remarks>
-        protected virtual void AddEventEmitters(ThemedReactContext reactContext, TFrameworkElement view)
+        protected virtual void AddEventEmitters(ThemedReactContext reactContext, FrameworkElement view)
         {
         }
 
