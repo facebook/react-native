@@ -26,7 +26,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected override Panel CreateViewInstance(ThemedReactContext reactContext)
+        protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
         {
             return new SizeMonitoringFrameLayout();
         }

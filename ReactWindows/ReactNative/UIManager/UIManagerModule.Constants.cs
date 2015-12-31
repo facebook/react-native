@@ -15,7 +15,7 @@ namespace ReactNative.UIManager
         public const string ACTION_ITEM_SELECTED = "itemSelected";
 
         public static Dictionary<string, object> CreateConstants(
-            IReadOnlyList<IViewManager> viewManagers)
+            IReadOnlyList<ViewManager> viewManagers)
         {
             var constants = GetConstants();
             var bubblingEventTypesConstants = GetBubblingEventTypeConstants();

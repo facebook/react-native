@@ -149,7 +149,7 @@ namespace ReactNative.Tests.UIManager
         {
             var setters = PropertySetter.CreateShadowNodeSetters(
                 (MethodInfo)ReflectionHelpers.InfoOf(
-                    (Test t) => t.TestArray(null)));
+                    (TestShadowNode t) => t.TestArray(null)));
 
             foreach (var setter in setters)
             {
@@ -162,7 +162,7 @@ namespace ReactNative.Tests.UIManager
         {
             var setters = PropertySetter.CreateShadowNodeSetters(
                 (MethodInfo)ReflectionHelpers.InfoOf(
-                    (Test t) => t.TestGroup(0, null))).ToList();
+                    (TestShadowNode t) => t.TestGroup(0, null))).ToList();
 
             Assert.AreEqual(3, setters.Count);
             Assert.IsNotNull(setters.FirstOrDefault(s => s.Name == "foo"));
@@ -180,14 +180,14 @@ namespace ReactNative.Tests.UIManager
         {
             var setter = PropertySetter.CreateShadowNodeSetters(
                 (MethodInfo)ReflectionHelpers.InfoOf(
-                    (Test t) => t.TestCustom(0))).Single();
+                    (TestShadowNode t) => t.TestCustom(0))).Single();
 
             Assert.AreEqual("myInt", setter.PropertyType);
         }
 
-        class Test : ReactShadowNode, IViewManager
+        class Test : ViewManager
         {
-            #region IViewManager Test Methods
+            #region ViewManager Test Methods
 
             [ReactProperty("TestByte")]
             public void TestByte(FrameworkElement element, byte value)
@@ -276,6 +276,44 @@ namespace ReactNative.Tests.UIManager
 
             #endregion
 
+            #region ViewManager Implementation
+
+            public override string Name
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public override Type ShadowNodeType
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public override ReactShadowNode CreateShadowNodeInstance()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void UpdateExtraData(FrameworkElement root, object extraData)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
+
+        class TestShadowNode : ReactShadowNode
+        {
             #region ReactShadowNode Test Methods
 
             [ReactProperty("TestArray")]
@@ -294,88 +332,7 @@ namespace ReactNative.Tests.UIManager
             }
 
             #endregion
-
-            #region IViewManager
-
-            public string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> CommandsMap
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, object> ExportedViewConstants
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public IReadOnlyDictionary<string, string> NativeProperties
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public ReactShadowNode CreateShadowNodeInstance()
-            {
-                throw new NotImplementedException();
-            }
-
-            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            #endregion
         }
+
     }
 }

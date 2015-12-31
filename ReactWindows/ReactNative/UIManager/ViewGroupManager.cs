@@ -8,8 +8,16 @@ namespace ReactNative.UIManager
     /// Class providing child management API for view managers of classes
     /// extending <see cref="Panel"/>.
     /// </summary>
-    public abstract class ViewGroupManager : ViewManager<Panel, LayoutShadowNode>
+    public abstract class ViewGroupManager : ViewManager
     {
+        public sealed override Type ShadowNodeType
+        {
+            get
+            {
+                return typeof(LayoutShadowNode);
+            }
+        }
+
         /// <summary>
         /// Signals whether the view type needs to handle laying out its own
         /// children instead of deferring to the standard CSS layout algorithm.
@@ -22,24 +30,12 @@ namespace ReactNative.UIManager
             }
         }
 
-        /// <summary>
-        /// The <see cref="Type"/> instance that represents the type of shadow
-        /// node that this manager will return from
-        /// <see cref="CreateShadowNodeInstance"/>.
-        /// </summary>
-        public override Type ShadowNodeType
-        {
-            get
-            {
-                return typeof(LayoutShadowNode);
-            }
-        }
 
         /// <summary>
         /// Creates a shadow node instance for the view manager.
         /// </summary>
         /// <returns>The shadow node instance.</returns>
-        public override ReactShadowNode CreateShadowNodeInstance()
+        public sealed override ReactShadowNode CreateShadowNodeInstance()
         {
             return new LayoutShadowNode();
         }

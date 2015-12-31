@@ -16,7 +16,7 @@ namespace ReactNative.Tests.UIManager
         public void UIManagerModule_ArgumentChecks()
         {
             var context = new ReactApplicationContext();
-            var viewManagers = new List<IViewManager>();
+            var viewManagers = new List<ViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
             AssertEx.Throws<ArgumentNullException>(
@@ -32,7 +32,7 @@ namespace ReactNative.Tests.UIManager
         public void UIManagerModule_CustomEvents_Constants()
         {
             var context = new ReactApplicationContext();
-            var viewManagers = new List<IViewManager>();
+            var viewManagers = new List<ViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
             var module = new UIManagerModule(context, viewManagers, uiImplementation);
@@ -60,7 +60,7 @@ namespace ReactNative.Tests.UIManager
         public void UIManagerModule_Constants_ViewManagerOverrides()
         {
             var context = new ReactApplicationContext();
-            var viewManagers = new List<IViewManager> { new TestViewManager() };
+            var viewManagers = new List<ViewManager> { new TestViewManager() };
             var uiImplementation = new UIImplementation(context, viewManagers);
 
             var module = new UIManagerModule(context, viewManagers, uiImplementation);
@@ -72,9 +72,9 @@ namespace ReactNative.Tests.UIManager
             Assert.AreEqual(42, constants.GetMap("customDirectEventTypes").GetValue("topLoadingError"));
         }
 
-        class TestViewManager : IViewManager
+        class TestViewManager : ViewManager
         {
-            public IReadOnlyDictionary<string, object> CommandsMap
+            public override IReadOnlyDictionary<string, object> CommandsMap
             {
                 get
                 {
@@ -82,7 +82,7 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
+            public override IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
             {
                 get
                 {
@@ -90,7 +90,7 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants
+            public override IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants
             {
                 get
                 {
@@ -104,7 +104,7 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public IReadOnlyDictionary<string, object> ExportedViewConstants
+            public override IReadOnlyDictionary<string, object> ExportedViewConstants
             {
                 get
                 {
@@ -112,7 +112,7 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public string Name
+            public override string Name
             {
                 get
                 {
@@ -120,40 +120,25 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
-            public IReadOnlyDictionary<string, string> NativeProperties
+            public override Type ShadowNodeType
             {
                 get
                 {
-                    return null;
+                    return typeof(ReactShadowNode);
                 }
             }
 
-            public ReactShadowNode CreateShadowNodeInstance()
+            public override ReactShadowNode CreateShadowNodeInstance()
             {
                 return null;
             }
 
-            public FrameworkElement CreateView(ThemedReactContext themedContext, JavaScriptResponderHandler jsResponderHandler)
+            public override void UpdateExtraData(FrameworkElement root, object extraData)
             {
                 throw new NotImplementedException();
             }
 
-            public void OnDropViewInstance(ThemedReactContext themedReactContext, FrameworkElement view)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void UpdateExtraData(FrameworkElement viewToUpdate, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void UpdateProperties(FrameworkElement viewToUpdate, CatalystStylesDiffMap properties)
+            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
             {
                 throw new NotImplementedException();
             }
