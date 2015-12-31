@@ -245,6 +245,10 @@
     <Compile Include="Views\ReactRootView.xaml.cs">
       <DependentUpon>ReactRootView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Touch\CatalystInterceptingViewGroup.cs" />
+    <Compile Include="Views\View\ReactClippingViewGroup.cs" />
+    <Compile Include="Views\View\ReactViewGroup.cs" />
+    <Compile Include="Views\View\ReactViewManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
