@@ -6,7 +6,7 @@ namespace ReactNative.UIManager
     /// <summary>
     /// allows registering for size change events. The main purpose for this class is to hide complexity of ReactRootView
     /// </summary>
-    public partial class SizeMonitoringFrameLayout : Panel
+    public partial class SizeMonitoringFrameLayout : ContentControl
     {
         public SizeMonitoringFrameLayout() : base()
         {

@@ -8,7 +8,7 @@ namespace ReactNative.UIManager
     /// Class providing child management API for view managers of classes
     /// extending <see cref="Panel"/>.
     /// </summary>
-    public abstract class ViewGroupManager : ViewManager<Panel, LayoutShadowNode>
+    public abstract class ViewGroupManager : ViewManager<FrameworkElement, LayoutShadowNode>
     {
         /// <summary>
         /// Signals whether the view type needs to handle laying out its own

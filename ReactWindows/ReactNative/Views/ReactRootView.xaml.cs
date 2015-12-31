@@ -28,7 +28,7 @@ namespace ReactNative.Views
     /// 1. Add support for events(i.e. define the sendEvents method)
     /// 2. Add lifecycle functions to ensure the bundle is only loaded once
     /// </summary>
-    public sealed partial class ReactRootView : SizeMonitoringFrameLayout, IRootView
+    public sealed partial class ReactRootView : IRootView
     {
         private IReactInstanceManager _ReactInstanceManager;
         private string _JSModuleName;
