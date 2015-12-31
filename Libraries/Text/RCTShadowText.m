@@ -321,6 +321,14 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
     [self _addAttribute:NSUnderlineColorAttributeName withValue:_textDecorationColor
      toAttributedString:attributedString];
   }
+
+  if (!CGSizeEqualToSize(_textShadowOffset, CGSizeMake(0, 0))) {
+    NSShadow *shadow = [NSShadow new];
+    shadow.shadowOffset = _textShadowOffset;
+    shadow.shadowBlurRadius = _textShadowRadius;
+    shadow.shadowColor = _textShadowColor;
+    [self _addAttribute:NSShadowAttributeName withValue:shadow toAttributedString:attributedString];
+  }
 }
 
 - (void)fillCSSNode:(css_node_t *)node
@@ -371,6 +379,9 @@ RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLine
 RCT_TEXT_PROPERTY(TextDecorationStyle, _textDecorationStyle, NSUnderlineStyle);
 RCT_TEXT_PROPERTY(WritingDirection, _writingDirection, NSWritingDirection)
 RCT_TEXT_PROPERTY(Opacity, _opacity, CGFloat)
+RCT_TEXT_PROPERTY(TextShadowOffset, _textShadowOffset, CGSize);
+RCT_TEXT_PROPERTY(TextShadowRadius, _textShadowRadius, CGFloat);
+RCT_TEXT_PROPERTY(TextShadowColor, _textShadowColor, UIColor *);
 
 - (void)setAllowFontScaling:(BOOL)allowFontScaling
 {
