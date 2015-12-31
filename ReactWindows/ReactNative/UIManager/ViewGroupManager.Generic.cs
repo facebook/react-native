@@ -100,18 +100,6 @@ namespace ReactNative.UIManager
         protected abstract TPanel CreateViewInstanceCore(ThemedReactContext reactContext);
 
         /// <summary>
-        /// This method should return the subclass of <see cref="ReactShadowNode"/>
-        /// which will be then used for measuring the position and size of the
-        /// view. 
-        /// </summary>
-        /// <remarks>
-        /// In most cases, this will just return an instance of
-        /// <see cref="ReactShadowNode"/>.
-        /// </remarks>
-        /// <returns>The shadow node instance.</returns>
-        protected abstract TPanel CreateShadowNodeInstanceCore();
-
-        /// <summary>
         /// Callback that will be triggered after all properties are updated in
         /// the current update transation (all <see cref="ReactPropertyAttribute"/> handlers
         /// for properties updated in the current transaction have been called).
@@ -166,6 +154,8 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="root">The root view.</param>
         /// <param name="extraData">The extra data.</param>
-        protected abstract void UpdateExtraData(TPanel root, object extraData);
+        protected virtual void UpdateExtraData(TPanel root, object extraData)
+        {
+        }
     }
 }
