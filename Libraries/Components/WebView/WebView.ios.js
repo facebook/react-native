@@ -117,6 +117,12 @@ var WebView = React.createClass({
     javaScriptEnabledAndroid: PropTypes.bool,
 
     /**
+     * Used on Android only, controls whether DOM Storage is enabled or not
+     * @platform android
+     */
+    domStorageEnabledAndroid: PropTypes.bool,
+
+    /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
