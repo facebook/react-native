@@ -2,6 +2,9 @@
 
 namespace ReactNative.UIManager
 {
+    /// <summary>
+    /// Property keys for React views.
+    /// </summary>
     public static class ViewProperties
     {
         public const string ViewClassName = "RCTView";
@@ -97,6 +100,13 @@ namespace ReactNative.UIManager
                 Width,
             };
 
+        /// <summary>
+        /// Checks if the property key is layout-only.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        /// <b>true</b> if the property is layout-only, <b>false</b> otherwise.
+        /// </returns>
         public static bool IsLayoutOnly(string key)
         {
             return s_layoutOnlyProperties.Contains(key);

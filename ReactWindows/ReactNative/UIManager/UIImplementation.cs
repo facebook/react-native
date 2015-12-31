@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
-using ReactNative.CSSLayout;
 using ReactNative.Tracing;
 using ReactNative.UIManager.Events;
 using System;
@@ -28,7 +27,6 @@ namespace ReactNative.UIManager
         private readonly UIViewOperationQueue _operationsQueue;
         private readonly ShadowNodeRegistry _shadowNodeRegistry;
         private readonly NativeViewHierarchyOptimizer _nativeViewHierarchyOptimizer;
-        private readonly CSSLayoutContext _layoutContext = new CSSLayoutContext(); 
 
         /// <summary>
         /// Instantiates the <see cref="UIImplementation"/>.
@@ -81,8 +79,8 @@ namespace ReactNative.UIManager
         {
             var rootCssNode = CreateRootShadowNode();
             rootCssNode.ReactTag = tag;
-            rootCssNode.StyleWidth = width;
-            rootCssNode.StyleHeight = height;
+            rootCssNode.Width = width;
+            rootCssNode.Height = height;
             _shadowNodeRegistry.AddRootNode(rootCssNode);
 
             // Register it with the NativeViewHierarchyManager.
@@ -114,8 +112,8 @@ namespace ReactNative.UIManager
             EventDispatcher eventDispatcher)
         {
             var rootCssNode = _shadowNodeRegistry.GetNode(rootViewTag);
-            rootCssNode.StyleWidth = newWidth;
-            rootCssNode.StyleHeight = newHeight;
+            rootCssNode.Width = newWidth;
+            rootCssNode.Height = newHeight;
 
             // If we're in the middle of a batch, the change will be
             // automatically dispatched at the end of the batch. The event
@@ -140,7 +138,7 @@ namespace ReactNative.UIManager
             var cssNode = CreateShadowNode(className);
             var rootNode = _shadowNodeRegistry.GetNode(rootViewTag);
             cssNode.ReactTag = tag;
-            cssNode.ViewClassName = className;
+            cssNode.ViewClass = className;
             cssNode.RootNode = rootNode;
             cssNode.ThemedContext = rootNode.ThemedContext;
 
@@ -227,7 +225,6 @@ namespace ReactNative.UIManager
             }
 
             var cssNodeToManage = _shadowNodeRegistry.GetNode(viewTag);
-            var children = cssNodeToManage.Children;
 
             var numToMove = moveFrom?.Length ?? 0;
             var numToAdd = addChildTags?.Length ?? 0;
@@ -242,7 +239,7 @@ namespace ReactNative.UIManager
                 for (var i = 0; i < numToMove; ++i)
                 {
                     var moveFromIndex = moveFrom[i];
-                    var tagToMove = children[moveFromIndex].ReactTag;
+                    var tagToMove = cssNodeToManage.GetChildAt(i).ReactTag;
                     viewsToAdd[i] = new ViewAtIndex(tagToMove, moveTo[i]);
                     indicesToRemove[i] = moveFromIndex;
                     tagsToRemove[i] = tagToMove;
@@ -262,7 +259,7 @@ namespace ReactNative.UIManager
                 for (var i = 0; i < numToRemove; ++i)
                 {
                     var indexToRemove = removeFrom[i];
-                    var tagToRemove = children[indexToRemove].ReactTag;
+                    var tagToRemove = cssNodeToManage.GetChildAt(i).ReactTag;
                     indicesToRemove[numToRemove + i] = indexToRemove;
                     tagsToRemove[numToRemove + i] = tagToRemove;
                     tagsToDelete[i] = tagToRemove;
@@ -297,7 +294,7 @@ namespace ReactNative.UIManager
                             viewTag));
                 }
 
-                children.RemoveAt(indexToRemove);
+                cssNodeToManage.RemoveChildAt(indexToRemove);
                 lastIndexRemoved = indexToRemove;
             }
 
@@ -314,7 +311,7 @@ namespace ReactNative.UIManager
                             viewAtIndex.Tag));
                 }
 
-                children.Insert(viewAtIndex.Index, cssNodeToAdd);
+                cssNodeToManage.AddChildAt(cssNodeToAdd, viewAtIndex.Index);
             }
 
             if (!cssNodeToManage.IsVirtual && !cssNodeToManage.IsVirtualAnchor)
@@ -379,7 +376,7 @@ namespace ReactNative.UIManager
         public void RemoveSubviewsFromContainerWithID(int containerTag)
         {
             var containerNode = _shadowNodeRegistry.GetNode(containerTag);
-            var n = containerNode.Children.Count;
+            var n = containerNode.ChildCount;
             var indicesToRemove = new int[n];
             for (var i = 0; i < n; ++i)
             {
@@ -544,7 +541,7 @@ namespace ReactNative.UIManager
         private ReactShadowNode CreateRootShadowNode()
         {
             var rootCssNode = new ReactShadowNode();
-            rootCssNode.ViewClassName = "Root";
+            rootCssNode.ViewClass = "Root";
             return rootCssNode;
         }
 
@@ -563,12 +560,12 @@ namespace ReactNative.UIManager
         {
             _nativeViewHierarchyOptimizer.HandleRemoveNode(nodeToRemove);
             _shadowNodeRegistry.RemoveNode(nodeToRemove.ReactTag);
-            foreach (var child in nodeToRemove.Children)
+            for (var i = nodeToRemove.ChildCount - 1; i >= 0; --i)
             {
-                RemoveShadowNode(child);
+                RemoveShadowNode(nodeToRemove.GetChildAt(i));
             }
 
-            nodeToRemove.Children.Clear();
+            nodeToRemove.RemoveAllChildren();
         }
 
         private IViewManager ResolveViewManager(string className)
@@ -578,9 +575,14 @@ namespace ReactNative.UIManager
 
         private void NotifyBeforeOnLayoutRecursive(ReactShadowNode cssNode)
         {
-            foreach (var child in cssNode.Children)
+            if (!cssNode.HasUpdates)
             {
-                NotifyBeforeOnLayoutRecursive(child);
+                return;
+            }
+
+            for (var i = 0; i < cssNode.ChildCount; ++i)
+            {
+                NotifyBeforeOnLayoutRecursive(cssNode.GetChildAt(i));
             }
 
             cssNode.OnBeforeLayout();
@@ -591,7 +593,7 @@ namespace ReactNative.UIManager
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactShadowNode.CalculateLayout")
                 .With("RootTag", cssRoot.ReactTag))
             {
-                cssRoot.CalculateLayout(_layoutContext);
+                cssRoot.CalculateLayout();
             }
         }
 
@@ -608,10 +610,10 @@ namespace ReactNative.UIManager
 
             if (!cssNode.IsVirtualAnchor)
             {
-                foreach (var child in cssNode.Children)
+                for (var i = 0; i < cssNode.ChildCount; ++i)
                 {
                     ApplyUpdatesRecursive(
-                        child,
+                        cssNode.GetChildAt(i),
                         absoluteX + cssNode.LayoutX,
                         absoluteY + cssNode.LayoutY,
                         eventDispatcher);
@@ -624,7 +626,7 @@ namespace ReactNative.UIManager
                 cssNode.DispatchUpdates(
                     absoluteX,
                     absoluteY,
-                    eventDispatcher,
+                    _operationsQueue,
                     _nativeViewHierarchyOptimizer);
 
                 if (cssNode.ShouldNotifyOnLayout)

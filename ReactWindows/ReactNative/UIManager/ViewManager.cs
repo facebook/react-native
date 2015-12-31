@@ -82,7 +82,7 @@ namespace ReactNative.UIManager
                 var setter = default(IPropertySetter);
                 if (propertySetters.TryGetValue(key, out setter))
                 {
-                    setter.SetViewManagerProperty(this, viewToUpdate, properties);
+                    setter.UpdateViewManagerProperty(this, viewToUpdate, properties);
                 }
             }
 

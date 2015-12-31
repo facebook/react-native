@@ -82,7 +82,7 @@ namespace ReactNative.UIManager
                     node.ViewClassName,
                     initialProperties);
 #else
-            var isLayoutOnly = node.ViewClassName == ViewProperties.ViewClassName
+            var isLayoutOnly = node.ViewClass == ViewProperties.ViewClassName
                 && IsLayoutOnlyAndCollapsible(initialProperties);
 
             node.IsLayoutOnly = isLayoutOnly;
@@ -92,7 +92,7 @@ namespace ReactNative.UIManager
                 _uiViewOperationQueue.EnqueueCreateView(
                     themedContext,
                     node.ReactTag,
-                    node.ViewClassName,
+                    node.ViewClass,
                     initialProperties);
             }
 #endif
@@ -211,7 +211,7 @@ namespace ReactNative.UIManager
         /// from the hierarchy.
         /// </summary>
         /// <param name="node">The node to cleanup.</param>
-        public static void HandleRemoveNode(ReactShadowNode node)
+        public void HandleRemoveNode(ReactShadowNode node)
         {
             node.RemoveAllNativeChildren();
         }
@@ -255,7 +255,7 @@ namespace ReactNative.UIManager
             }
             else
             {
-                for (var i = nodeToRemove.Children.Count - 1; i >= 0; --i)
+                for (var i = nodeToRemove.ChildCount - 1; i >= 0; --i)
                 {
                     RemoveNodeFromParent(nodeToRemove.GetChildAt(i), shouldDelete);
                 }
@@ -311,17 +311,17 @@ namespace ReactNative.UIManager
         private void AddLayoutOnlyNodeToNonLayoutOnlyNode(ReactShadowNode parent, ReactShadowNode child, int index)
         {
             var currentIndex = index;
-            for (var i = 0; i < child.Children.Count; ++i)
+            for (var i = 0; i < child.ChildCount; ++i)
             {
                 var childToAdd = child.GetChildAt(i);
                 if (childToAdd.IsLayoutOnly)
                 {
-                    var childCountBefore = parent.NativeChildren.Count;
+                    var childCountBefore = parent.NativeChildCount;
                     AddLayoutOnlyNodeToNonLayoutOnlyNode(
                         parent,
                         childToAdd,
                         currentIndex);
-                    var childCountAfter = parent.NativeChildren.Count;
+                    var childCountAfter = parent.NativeChildCount;
                     currentIndex += childCountAfter - childCountBefore;
                 }
                 else
@@ -333,7 +333,7 @@ namespace ReactNative.UIManager
 
         private void AddNonLayoutOnlyNodeToNonLayoutOnlyNode(ReactShadowNode parent, ReactShadowNode child, int index)
         {
-            parent.NativeChildren.Insert(index, child);
+            parent.AddNativeChildAt(child, index);
             _uiViewOperationQueue.EnqueueManageChildren(
                 parent.ReactTag,
                 null,
@@ -386,8 +386,9 @@ namespace ReactNative.UIManager
                 return;
             }
 
-            foreach (var child in node.Children)
+            for (var i = 0; i < node.ChildCount; ++i)
             {
+                var child = node.GetChildAt(i);
                 var visited = default(bool);
                 if (_tagsWithLayoutVisited.TryGetValue(child.ReactTag, out visited) && visited)
                 {
@@ -428,13 +429,13 @@ namespace ReactNative.UIManager
             _uiViewOperationQueue.EnqueueCreateView(
                 node.RootNode.ThemedContext,
                 node.ReactTag,
-                node.ViewClassName,
+                node.ViewClass,
                 properties);
 
             // Add the node and all its children as if adding new nodes.
             parent.AddChildAt(node, childIndex);
             AddNodeToNode(parent, node, childIndex);
-            for (var i = 0; i < node.Children.Count; ++i)
+            for (var i = 0; i < node.ChildCount; ++i)
             {
                 AddNodeToNode(node, node.GetChildAt(i), i);
             }
@@ -445,9 +446,9 @@ namespace ReactNative.UIManager
             // longer layout-only, but we may still receive more layout updates
             // at the end of this batch that we don't want to ignore.
             ApplyLayoutBase(node);
-            foreach (var child in node.Children)
+            for (var i = 0; i < node.ChildCount; ++i)
             {
-                ApplyLayoutBase(child);
+                ApplyLayoutBase(node.GetChildAt(i));
             }
 
             _tagsWithLayoutVisited.Clear();

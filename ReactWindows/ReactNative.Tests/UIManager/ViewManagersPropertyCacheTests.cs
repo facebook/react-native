@@ -60,17 +60,17 @@ namespace ReactNative.Tests.UIManager
                 { "Bar2", "v3" },
             });
 
-            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].SetShadowNodeProperty(new ShadowNodeValueTest(), properties));
+            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].UpdateShadowNodeProperty(new ShadowNodeValueTest(), properties));
             AssertEx.Throws<ArgumentNullException>(
-                () => setters["Foo"].SetViewManagerProperty(null, null, properties),
+                () => setters["Foo"].UpdateViewManagerProperty(null, null, properties),
                 ex => Assert.AreEqual("viewManager", ex.ParamName));
             AssertEx.Throws<ArgumentNullException>(
-                () => setters["Foo"].SetViewManagerProperty(instance, null, null),
+                () => setters["Foo"].UpdateViewManagerProperty(instance, null, null),
                 ex => Assert.AreEqual("properties", ex.ParamName));
 
-            setters["Foo"].SetViewManagerProperty(instance, null, properties);
-            setters["Bar1"].SetViewManagerProperty(instance, null, properties);
-            setters["Bar2"].SetViewManagerProperty(instance, null, properties);
+            setters["Foo"].UpdateViewManagerProperty(instance, null, properties);
+            setters["Bar1"].UpdateViewManagerProperty(instance, null, properties);
+            setters["Bar2"].UpdateViewManagerProperty(instance, null, properties);
 
             Assert.AreEqual("v1", instance.FooValue);
             Assert.AreEqual("v2", instance.BarValues[0]);
@@ -92,17 +92,17 @@ namespace ReactNative.Tests.UIManager
                 { "Qux2", "v3" },
             });
 
-            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].SetViewManagerProperty(new ViewManagerValueTest(), null, properties));
+            AssertEx.Throws<NotSupportedException>(() => setters["Foo"].UpdateViewManagerProperty(new ViewManagerValueTest(), null, properties));
             AssertEx.Throws<ArgumentNullException>(
-                () => setters["Foo"].SetShadowNodeProperty(null, properties),
+                () => setters["Foo"].UpdateShadowNodeProperty(null, properties),
                 ex => Assert.AreEqual("shadowNode", ex.ParamName));
             AssertEx.Throws<ArgumentNullException>(
-                () => setters["Foo"].SetShadowNodeProperty(instance, null),
+                () => setters["Foo"].UpdateShadowNodeProperty(instance, null),
                 ex => Assert.AreEqual("properties", ex.ParamName));
 
-            setters["Foo"].SetShadowNodeProperty(instance, properties);
-            setters["Qux1"].SetShadowNodeProperty(instance, properties);
-            setters["Qux2"].SetShadowNodeProperty(instance, properties);
+            setters["Foo"].UpdateShadowNodeProperty(instance, properties);
+            setters["Qux1"].UpdateShadowNodeProperty(instance, properties);
+            setters["Qux2"].UpdateShadowNodeProperty(instance, properties);
 
             Assert.AreEqual(42, instance.FooValue);
             Assert.AreEqual("v2", instance.QuxValues[0]);
@@ -147,25 +147,25 @@ namespace ReactNative.Tests.UIManager
             instance.NullableValue = true;
             instance.GroupValue = new[] { "a", "b", "c" };
 
-            setters["TestByte"].SetViewManagerProperty(instance, null, properties);
-            setters["TestSByte"].SetViewManagerProperty(instance, null, properties);
-            setters["TestInt16"].SetViewManagerProperty(instance, null, properties);
-            setters["TestUInt16"].SetViewManagerProperty(instance, null, properties);
-            setters["TestInt32"].SetViewManagerProperty(instance, null, properties);
-            setters["TestUInt32"].SetViewManagerProperty(instance, null, properties);
-            setters["TestInt64"].SetViewManagerProperty(instance, null, properties);
-            setters["TestUInt64"].SetViewManagerProperty(instance, null, properties);
-            setters["TestSingle"].SetViewManagerProperty(instance, null, properties);
-            setters["TestDouble"].SetViewManagerProperty(instance, null, properties);
-            setters["TestDecimal"].SetViewManagerProperty(instance, null, properties);
-            setters["TestBoolean"].SetViewManagerProperty(instance, null, properties);
-            setters["TestString"].SetViewManagerProperty(instance, null, properties);
-            setters["TestArray"].SetViewManagerProperty(instance, null, properties);
-            setters["TestMap"].SetViewManagerProperty(instance, null, properties);
-            setters["TestNullable"].SetViewManagerProperty(instance, null, properties);
-            setters["foo"].SetViewManagerProperty(instance, null, properties);
-            setters["bar"].SetViewManagerProperty(instance, null, properties);
-            setters["baz"].SetViewManagerProperty(instance, null, properties);
+            setters["TestByte"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestSByte"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestInt16"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestUInt16"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestInt32"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestUInt32"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestInt64"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestUInt64"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestSingle"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestDouble"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestDecimal"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestBoolean"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestString"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestArray"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestMap"].UpdateViewManagerProperty(instance, null, properties);
+            setters["TestNullable"].UpdateViewManagerProperty(instance, null, properties);
+            setters["foo"].UpdateViewManagerProperty(instance, null, properties);
+            setters["bar"].UpdateViewManagerProperty(instance, null, properties);
+            setters["baz"].UpdateViewManagerProperty(instance, null, properties);
 
             Assert.AreEqual(0, instance.ByteValue);
             Assert.AreEqual(0, instance.SByteValue);

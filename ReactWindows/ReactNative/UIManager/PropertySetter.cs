@@ -71,7 +71,7 @@ namespace ReactNative.UIManager
             }
         }
 
-        public void SetShadowNodeProperty(ReactShadowNode shadowNode, CatalystStylesDiffMap properties)
+        public void UpdateShadowNodeProperty(ReactShadowNode shadowNode, CatalystStylesDiffMap properties)
         {
             if (shadowNode == null)
                 throw new ArgumentNullException(nameof(shadowNode));
@@ -81,7 +81,7 @@ namespace ReactNative.UIManager
             Invoke(shadowNode, GetShadowNodeArgs(properties));
         }
 
-        public void SetViewManagerProperty(IViewManager viewManager, FrameworkElement view, CatalystStylesDiffMap properties)
+        public void UpdateViewManagerProperty(IViewManager viewManager, FrameworkElement view, CatalystStylesDiffMap properties)
         {
             if (viewManager == null)
                 throw new ArgumentNullException(nameof(viewManager));
