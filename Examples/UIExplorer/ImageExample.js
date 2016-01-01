@@ -68,8 +68,6 @@ var NetworkImageCallbackExample = React.createClass({
 });
 
 var NetworkImageExample = React.createClass({
-  watchID: (null: ?number),
-
   getInitialState: function() {
     return {
       error: false,
@@ -95,6 +93,38 @@ var NetworkImageExample = React.createClass({
         {loader}
       </Image>;
   }
+});
+
+var ImageSizeExample = React.createClass({
+  getInitialState: function() {
+    return {
+      width: 0,
+      height: 0,
+    };
+  },
+  componentDidMount: function() {
+    Image.getSize(this.props.source.uri, (width, height) => {
+      this.setState({width, height});
+    });
+  },
+  render: function() {
+    return (
+      <View style={{flexDirection: 'row'}}>
+        <Image
+          style={{
+            width: 60,
+            height: 60,
+            backgroundColor: 'transparent',
+            marginRight: 10,
+          }}
+          source={this.props.source} />
+        <Text>
+          Actual dimensions:{'\n'}
+          Width: {this.state.width}, Height: {this.state.height}
+        </Text>
+      </View>
+    );
+  },
 });
 
 exports.displayName = (undefined: ?string);
@@ -407,6 +437,12 @@ exports.examples = [
       return <ImageCapInsetsExample />;
     },
     platform: 'ios',
+  },
+  {
+    title: 'Image Size',
+    render: function() {
+      return <ImageSizeExample source={fullImage} />; 
+    }
   },
 ];
 

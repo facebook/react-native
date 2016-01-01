@@ -15,7 +15,6 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -28,6 +27,11 @@ var invariant = require('invariant');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
 var warning = require('warning');
+
+var {
+  ImageViewManager,
+  NetworkImageViewManager,
+} = require('NativeModules');
 
 /**
  * A React component for displaying different types of images,
@@ -197,7 +201,7 @@ var Image = React.createClass({
         />
       );
     }
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -207,7 +211,30 @@ var styles = StyleSheet.create({
 });
 
 var RCTImageView = requireNativeComponent('RCTImageView', Image);
-var RCTNetworkImageView = NativeModules.NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
+var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
 var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it.
+ * This method can fail if the image cannot be found, or fails to download.
+ *
+ * In order to retrieve the image dimensions, the image may first need to be
+ * loaded or downloaded, after which it will be cached. This means that in
+ * principle you could use this method to preload images, however it is not
+ * optimized for that purpose, and may in future be implemented in a way that
+ * does not fully load/download the image data. A proper, supported way to
+ * preload images will be provided as a separate API.
+ *
+ * @platform ios
+ */
+Image.getSize = function(
+  uri: string,
+  success: (width: number, height: number) => void,
+  failure: (error: any) => void,
+) {
+  ImageViewManager.getSize(uri, success, failure || function() {
+    console.warn('Failed to get size for image: ' + uri);
+  });
+};
 
 module.exports = Image;

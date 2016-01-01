@@ -218,7 +218,6 @@ UIImage *RCTDecodeImageWithData(NSData *data,
   }
 
   // get original image size
-  CGSize sourceSize;
   CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(sourceRef, 0, NULL);
   if (!imageProperties) {
     CFRelease(sourceRef);
@@ -226,7 +225,7 @@ UIImage *RCTDecodeImageWithData(NSData *data,
   }
   NSNumber *width = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
   NSNumber *height = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
-  sourceSize = (CGSize){width.doubleValue, height.doubleValue};
+  CGSize sourceSize = {width.doubleValue, height.doubleValue};
   CFRelease(imageProperties);
 
   if (CGSizeEqualToSize(destSize, CGSizeZero)) {
@@ -264,6 +263,17 @@ UIImage *RCTDecodeImageWithData(NSData *data,
                                  orientation:UIImageOrientationUp];
   CGImageRelease(imageRef);
   return image;
+}
+
+NSDictionary<NSString *, id> *RCTGetImageMetadata(NSData *data)
+{
+  CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+  if (!sourceRef) {
+    return nil;
+  }
+  CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(sourceRef, 0, NULL);
+  CFRelease(sourceRef);
+  return (__bridge_transfer id)imageProperties;
 }
 
 NSData *RCTGetImageData(CGImageRef image, float quality)

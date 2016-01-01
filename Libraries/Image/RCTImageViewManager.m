@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
+#import "RCTImageLoader.h"
 #import "RCTImageSource.h"
 #import "RCTImageView.h"
 
@@ -40,6 +41,20 @@ RCT_CUSTOM_VIEW_PROPERTY(tintColor, UIColor, RCTImageView)
   // so we toggle `renderingMode` here instead of in `-[RCTImageView setTintColor:]`
   view.tintColor = [RCTConvert UIColor:json] ?: defaultView.tintColor;
   view.renderingMode = json ? UIImageRenderingModeAlwaysTemplate : defaultView.renderingMode;
+}
+
+RCT_EXPORT_METHOD(getSize:(NSURL *)imageURL
+                  successBlock:(RCTResponseSenderBlock)successBlock
+                  errorBlock:(RCTResponseErrorBlock)errorBlock)
+{
+  [self.bridge.imageLoader getImageSize:imageURL.absoluteString
+                                  block:^(NSError *error, CGSize size) {
+                                    if (error) {
+                                      errorBlock(error);
+                                    } else {
+                                      successBlock(@[@(size.width), @(size.height)]);
+                                    }
+                                  }];
 }
 
 @end
