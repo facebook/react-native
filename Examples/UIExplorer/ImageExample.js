@@ -18,6 +18,7 @@
 var React = require('react-native');
 var {
   Image,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -135,7 +136,7 @@ exports.description = 'Base component for displaying different types of images.'
 exports.examples = [
   {
     title: 'Plain Network Image',
-    description: 'If the `source` prop `uri` property is prefixed with ' +
+    description: 'if the `source` prop `uri` property is prefixed with ' +
     '"http", then it will be downloaded from the network.',
     render: function() {
       return (
@@ -147,17 +148,16 @@ exports.examples = [
     },
   },
   {
-    title: 'Plain Static Image',
-    description: 'Static assets should be required by prefixing with `image!` ' +
-      'and are located in the app bundle.',
+    title: Platform.OS === 'ios' ? 'defaultSource' : 'loadingIndicatorSource',
+    description: 'Show a placeholder image when a network image is loading',
     render: function() {
       return (
-        <View style={styles.horizontal}>
-          <Image source={require('image!uie_thumb_normal')} style={styles.icon} />
-          <Image source={require('image!uie_thumb_selected')} style={styles.icon} />
-          <Image source={require('image!uie_comment_normal')} style={styles.icon} />
-          <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
-        </View>
+        <Image
+          defaultSource={require('./bunny.png')}
+          loadingIndicatorSource={require('./bunny.png')}
+          source={{uri: 'http://facebook.github.io/origami/public/images/birds.jpg'}}
+          style={styles.base}
+        />
       );
     },
   },
@@ -173,7 +173,7 @@ exports.examples = [
     title: 'Error Handler',
     render: function() {
       return (
-        <NetworkImageExample source={{uri: 'http://TYPO_ERROR_facebook.github.io/react/img/logo_og.png'}} />
+        <NetworkImageExample source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}} />
       );
     },
     platform: 'ios',
@@ -186,6 +186,21 @@ exports.examples = [
       );
     },
     platform: 'ios',
+  },
+  {
+    title: 'Plain Static Image',
+    description: 'Static assets should be required by prefixing with `image!` ' +
+      'and are located in the app bundle.',
+    render: function() {
+      return (
+        <View style={styles.horizontal}>
+          <Image source={require('image!uie_thumb_normal')} style={styles.icon} />
+          <Image source={require('image!uie_thumb_selected')} style={styles.icon} />
+          <Image source={require('image!uie_comment_normal')} style={styles.icon} />
+          <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
+        </View>
+      );
+    },
   },
   {
     title: 'Border Color',
@@ -441,8 +456,9 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function() {
-      return <ImageSizeExample source={fullImage} />; 
-    }
+      return <ImageSizeExample source={fullImage} />;
+    },
+    platform: 'ios',
   },
 ];
 
