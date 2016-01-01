@@ -422,7 +422,7 @@ function setupConsole(global) {
     columns.forEach(function(k, i) {
       columnWidths[i] = k.length;
       for (var j = 0; j < rows.length; j++) {
-        if(rows[j][k] != undefined && rows[j][k] != null) {
+        if(rows[j][k] != undefined && rows[j][k] != null){
           var cellStr = rows[j][k].toString();
           stringRows[j] = stringRows[j] || [];
           stringRows[j][i] = cellStr;
