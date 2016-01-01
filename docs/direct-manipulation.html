@@ -98,29 +98,7 @@ child perform touch handling. To do this, it passes on <a href="https://facebook
 props</a>
 that call back to the <code>TouchableOpacity</code> component.
 <code>TouchableHighlight</code>, in contrast, is backed by a native view and only
-requires that we implement <code>setNativeProps</code>.</p><h2><a class="anchor" name="precomputing-style"></a>Precomputing style <a class="hash-link" href="#precomputing-style">#</a></h2><p>We learned above that <code>setNativeProps</code> is a wrapper around
-<code>RCTUIManager.updateView</code>, which is also used internally by React to
-perform updates on re-render. One important difference is that
-<code>setNativeProps</code> does not call <code>precomputeStyle</code>, which is done
-internally by React, and so the <code>transform</code> property will not work if
-you try to update it manually with <code>setNativeProps</code>. To fix this,
-you can call <code>precomputeStyle</code> on your object first:</p><div class="prism language-javascript"><span class="token keyword">var</span> precomputeStyle <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;precomputeStyle&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-<span class="token keyword">var</span> App <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-  <span class="token function">componentDidMount<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">var</span> nativeProps <span class="token operator">=</span> <span class="token function">precomputeStyle<span class="token punctuation">(</span></span><span class="token punctuation">{</span>transform<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>rotate<span class="token punctuation">:</span> <span class="token string">&#x27;45deg&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>_root<span class="token punctuation">.</span><span class="token function">setNativeProps<span class="token punctuation">(</span></span>nativeProps<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
-  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;View ref<span class="token operator">=</span><span class="token punctuation">{</span>component <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_root <span class="token operator">=</span> component<span class="token punctuation">}</span>
-            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-        &lt;Text<span class="token operator">&gt;</span>Precompute style<span class="token operator">!</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-    <span class="token punctuation">)</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><p><a href="https://rnplay.org/apps/8_mIAA" target="_blank">Run this example</a></p><h2><a class="anchor" name="setnativeprops-to-clear-textinput-value"></a>setNativeProps to clear TextInput value <a class="hash-link" href="#setnativeprops-to-clear-textinput-value">#</a></h2><p>Another very common use case of <code>setNativeProps</code> is to clear the value
+requires that we implement <code>setNativeProps</code>.</p><h2><a class="anchor" name="setnativeprops-to-clear-textinput-value"></a>setNativeProps to clear TextInput value <a class="hash-link" href="#setnativeprops-to-clear-textinput-value">#</a></h2><p>Another very common use case of <code>setNativeProps</code> is to clear the value
 of a TextInput. The <code>controlled</code> prop of TextInput can sometimes drop
 characters when the <code>bufferDelay</code> is low and the user types very
 quickly. Some developers prefer to skip this prop entirely and instead
