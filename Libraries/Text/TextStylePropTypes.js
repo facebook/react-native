@@ -30,6 +30,11 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['normal' /*default*/, 'bold',
      '100', '200', '300', '400', '500', '600', '700', '800', '900']
   ),
+  textShadowOffset: ReactPropTypes.shape(
+    {width: ReactPropTypes.number, height: ReactPropTypes.number}
+  ),
+  textShadowRadius: ReactPropTypes.number,
+  textShadowColor: ColorPropType,
   /**
    * @platform ios
    */

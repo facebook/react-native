@@ -32,6 +32,7 @@ import com.facebook.csslayout.CSSConstants;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -62,6 +63,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
 
   @VisibleForTesting
   public static final String PROP_TEXT = "text";
+
+  public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
+  public static final String PROP_SHADOW_RADIUS = "textShadowRadius";
+  public static final String PROP_SHADOW_COLOR = "textShadowColor";
+  public static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
   private static final TextPaint sTextPaintInstance = new TextPaint();
 
@@ -114,8 +120,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
         ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textCSSNode.mColor)));
       }
       if (textCSSNode.mIsBackgroundColorSet) {
-        ops.add(
-            new SetSpanOperation(
+        ops.add(new SetSpanOperation(
                 start,
                 end,
                 new BackgroundColorSpan(textCSSNode.mBackgroundColor)));
@@ -134,6 +139,16 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                     textCSSNode.mFontWeight,
                     textCSSNode.mFontFamily,
                     textCSSNode.getThemedContext().getAssets())));
+      }
+      if (textCSSNode.mTextShadowOffsetDx != 0 || textCSSNode.mTextShadowOffsetDy != 0) {
+        ops.add(new SetSpanOperation(
+                start,
+                end,
+                new ShadowStyleSpan(
+                    textCSSNode.mTextShadowOffsetDx,
+                    textCSSNode.mTextShadowOffsetDy,
+                    textCSSNode.mTextShadowRadius,
+                    textCSSNode.mTextShadowColor)));
       }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textCSSNode.getReactTag())));
     }
@@ -279,6 +294,11 @@ public class ReactTextShadowNode extends LayoutShadowNode {
   protected int mNumberOfLines = UNSET;
   protected int mFontSize = UNSET;
 
+  private float mTextShadowOffsetDx = 0;
+  private float mTextShadowOffsetDy = 0;
+  private float mTextShadowRadius = 1;
+  private int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
+
   /**
    * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
    * mFontWeight can be {@link Typeface#NORMAL} or {@link Typeface#BOLD}.
@@ -409,6 +429,34 @@ public class ReactTextShadowNode extends LayoutShadowNode {
     }
     if (fontStyle != mFontStyle) {
       mFontStyle = fontStyle;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = PROP_SHADOW_OFFSET)
+  public void setTextShadowOffset(ReadableMap offsetMap) {
+    if (offsetMap == null) {
+      mTextShadowOffsetDx = 0;
+      mTextShadowOffsetDy = 0;
+    } else {
+      mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(offsetMap.getDouble("width"));
+      mTextShadowOffsetDy = PixelUtil.toPixelFromDIP(offsetMap.getDouble("height"));
+    }
+    markUpdated();
+  }
+
+  @ReactProp(name = PROP_SHADOW_RADIUS, defaultInt = 1)
+  public void setTextShadowRadius(float textShadowRadius) {
+    if (textShadowRadius != mTextShadowRadius) {
+      mTextShadowRadius = textShadowRadius;
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = PROP_SHADOW_COLOR, defaultInt = DEFAULT_TEXT_SHADOW_COLOR, customType = "Color")
+  public void setTextShadowColor(int textShadowColor) {
+    if (textShadowColor != mTextShadowColor) {
+      mTextShadowColor = textShadowColor;
       markUpdated();
     }
   }

@@ -424,6 +424,17 @@ exports.examples = [
       </View>
     );
   },
+}, {
+  title: 'Text shadow',
+  render: function() {
+    return (
+      <View>
+        <Text style={{fontSize: 20, textShadowOffset: {width: 2, height: 2}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
+          Demo text shadow
+        </Text>
+      </View>
+    );
+  },
 }];
 
 var styles = StyleSheet.create({
