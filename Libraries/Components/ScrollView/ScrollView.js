@@ -307,6 +307,12 @@ var ScrollView = React.createClass({
      */
     onRefreshStart: PropTypes.func,
 
+    /**
+     * Whether a UIRefreshControl should be displayed and indicating an active refresh.
+     *
+     * @platform ios
+     */
+    refreshing: React.PropTypes.bool,
   },
 
   mixins: [ScrollResponder.Mixin],

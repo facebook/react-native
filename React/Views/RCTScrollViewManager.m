@@ -66,6 +66,7 @@ RCT_EXPORT_VIEW_PROPERTY(snapToInterval, int)
 RCT_EXPORT_VIEW_PROPERTY(snapToAlignment, NSString)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(onRefreshStart, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(refreshing, BOOL)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
