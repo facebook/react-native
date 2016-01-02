@@ -209,6 +209,7 @@
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
     <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
+    <Compile Include="UIManager\RootViewManager.cs" />
     <Compile Include="UIManager\TouchTargetHelper.cs" />
     <Compile Include="UIManager\FrameworkElementExtensions.cs" />
     <Compile Include="UIManager\ICatalystInterceptingViewGroup.cs" />

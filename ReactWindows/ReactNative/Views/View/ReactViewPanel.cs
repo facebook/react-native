@@ -16,7 +16,8 @@ namespace ReactNative.Views.View
 {
     /// <summary>
     /// Backing for a React View. Has support for borders, but since borders 
-    /// aren't common, lazy initializes most of the storage needed for them.
+    /// aren't common, lazy initializes most of the storage needed for them. Also supports
+    /// 3D transformations such as elevation depth.  
     /// </summary>
     public class ReactViewPanel : Panel, CatalystInterceptingViewGroup, ReactPointerEventsView
     {

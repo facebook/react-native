@@ -100,8 +100,6 @@ namespace ReactNative.UIManager
         protected abstract TPanel CreateViewInstanceCore(ThemedReactContext reactContext);
 
         /// <summary>
-<<<<<<< 52b8b626cebd2f4762bc931bf5976f9f958d86ca
-=======
         /// This method should return the subclass of <see cref="ReactShadowNode"/>
         /// which will be then used for measuring the position and size of the
         /// view. 
@@ -117,7 +115,6 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
->>>>>>> Adding ReactViewManager
         /// Callback that will be triggered after all properties are updated in
         /// the current update transation (all <see cref="ReactPropertyAttribute"/> handlers
         /// for properties updated in the current transaction have been called).
