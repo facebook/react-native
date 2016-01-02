@@ -89,7 +89,7 @@ var platformBlacklists = {
 
 function escapeRegExp(pattern) {
   if (Object.prototype.toString.call(pattern) === '[object RegExp]') {
-    return pattern.source;
+    return pattern.source.replace(/\//g, path.sep);
   } else if (typeof pattern === 'string') {
     var escaped = pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
     // convert the '/' into an escaped local file separator
