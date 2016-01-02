@@ -24,6 +24,24 @@
   UITextRange *_previousSelectionRange;
 }
 
+static NSUInteger RCTApparentLengthOfText(NSString *text)
+{
+  NSUInteger length = 0;
+  for (NSUInteger i = 0, textLength = text.length; i < textLength; length++) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  
+  return length;
+}
+
+static void RCTPlaceCaretAtOffset(id<UITextInput> textInput, NSUInteger offset)
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   if ((self = [super initWithFrame:CGRectZero])) {
@@ -180,20 +198,17 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
     // It seems that it's impossible to have a textField which has some text selected after
     // its text have just changed, unless we set it programmatically.
     if (self.maxLength && selectedRange && selectedRange.isEmpty) {
-      __block NSInteger exceededLength = [self _apparentLengthOfText:self.text] - self.maxLength.integerValue;
+      NSInteger exceededLength = RCTApparentLengthOfText(self.text) - self.maxLength.integerValue;
       if (exceededLength > 0) {
         UITextRange *textRange = [self textRangeFromPosition:self.beginningOfDocument toPosition:selectedRange.end];
         NSString *text = [self textInRange:textRange];
-        __block NSRange rangeToRemove;
-        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences|NSStringEnumerationReverse usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-          exceededLength--;
-          if (exceededLength == 0) {
-            rangeToRemove.location = substringRange.location;
-            rangeToRemove.length = text.length - substringRange.location;
-            *stop = YES;
-          }
-        }];
         
+        NSUInteger i = text.length;
+        for (; exceededLength > 0; exceededLength--) {
+          NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i - 1];
+          i = range.location;
+        }
+        NSRange rangeToRemove = NSMakeRange(i, text.length - i);
         NSMutableString *newString = [self.text mutableCopy];
         [newString replaceCharactersInRange:rangeToRemove withString:@""];
         
@@ -203,7 +218,8 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
         // time. `-setText:` will fail because the native event count will increase 2 or more instantaneously
         // and JS code cannot catch up. So we have to resort to call super's `-setText:`.
         super.text = newString;
-        [self _textInput:self placeCaretAtOffset:rangeToRemove.location];
+        
+        RCTPlaceCaretAtOffset(self, rangeToRemove.location);
       }
     }
     
@@ -321,22 +337,5 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   return result;
 }
 
-- (void)_textInput:(id<UITextInput>)textInput placeCaretAtOffset:(NSUInteger)offset
-{
-  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
-                                                       offset:offset];
-  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
-}
-
-- (NSUInteger)_apparentLengthOfText:(NSString *)text
-{
-  // Composed character sequences like surrogate-pair('é'), emoiji('😛'), etc., are treated
-  // as one symbol, as we human would count.
-  __block NSUInteger length = 0;
-  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-    length++;
-  }];
-  return length;
-}
 
 @end

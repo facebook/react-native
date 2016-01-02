@@ -21,6 +21,34 @@
 
 RCT_EXPORT_MODULE()
 
+static NSUInteger RCTApparentLengthOfText(NSString *text)
+{
+  NSUInteger length = 0;
+  for (NSUInteger i = 0, textLength = text.length; i < textLength; length++) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  
+  return length;
+}
+
+static void RCTPlaceCaretAtOffset(id<UITextInput> textInput, NSUInteger offset)
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
+static NSRange RCTLimitedRangeOfText(NSString *text, NSUInteger allowedLength)
+{
+  NSUInteger i = 0;
+  for (; allowedLength > 0; allowedLength--) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  return NSMakeRange(0, i);
+}
+
 - (UIView *)view
 {
   RCTTextField *textField = [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
@@ -48,57 +76,24 @@ RCT_EXPORT_MODULE()
     return YES;
   }
   
-  NSUInteger allowedLength = textField.maxLength.integerValue - [self _apparentLengthOfText:textField.text] + [self _apparentLengthOfText:[textField.text substringWithRange:range]];
-  NSUInteger replacementTextLength = [self _apparentLengthOfText:string];
+  NSUInteger allowedLength = textField.maxLength.integerValue - RCTApparentLengthOfText(textField.text) + RCTApparentLengthOfText([textField.text substringWithRange:range]);
+  NSUInteger replacementTextLength = RCTApparentLengthOfText(string);
   
   if (replacementTextLength > allowedLength) {
     if (allowedLength > 0) {
       // Truncate the input string so the result is exactly maxLength
-      NSRange allowedRange = [self _rangeOfText:string allowedLength:allowedLength];
+      NSRange allowedRange = RCTLimitedRangeOfText(string, allowedLength);
       NSString *limitedString = [string substringWithRange:allowedRange];
       NSMutableString *newString = textField.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textField.text = newString;
       // Collapse selection at end of insert to match normal paste behavior
-      [self _textInput:textField placeCaretAtOffset:range.location + allowedRange.length];
+      RCTPlaceCaretAtOffset(textField, range.location + allowedRange.length);
       [textField textFieldDidChange];
     }
     return NO;
   }
   return YES;
-}
-
-- (void)_textInput:(id<UITextInput>)textInput placeCaretAtOffset:(NSUInteger)offset
-{
-  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
-                                                       offset:offset];
-  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
-  
-}
-
-- (NSUInteger)_apparentLengthOfText:(NSString *)text
-{
-  // Composed character sequences like surrogate-pair('é'), emoiji('😛'), etc., are treated
-  // as one symbol, as we human would count.
-  __block NSUInteger length = 0;
-  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-    length++;
-  }];
-  return length;
-}
-
-- (NSRange)_rangeOfText:(NSString *)text allowedLength:(NSUInteger)length
-{
-  __block NSUInteger limitedLength = 0;
-  __block NSRange range = NSMakeRange(0, 0);
-  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-    limitedLength++;
-    if (limitedLength == length) {
-      range.length = substringRange.location + substringRange.length;
-      *stop = YES;
-    }
-  }];
-  return range;
 }
 
 // This method allows us to detect a `Backspace` keyPress

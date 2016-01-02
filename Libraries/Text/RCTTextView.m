@@ -64,6 +64,35 @@
   UIScrollView *_scrollView;
 }
 
+static NSUInteger RCTApparentLengthOfText(NSString *text)
+{
+  NSUInteger length = 0;
+  for (NSUInteger i = 0, textLength = text.length; i < textLength; length++) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  
+  return length;
+}
+
+static void RCTPlaceCaretAtOffset(id<UITextInput> textInput, NSUInteger offset)
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
+static NSRange RCTLimitedRangeOfText(NSString *text, NSUInteger allowedLength)
+{
+  NSUInteger i = 0;
+  for (; allowedLength > 0; allowedLength--) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  return NSMakeRange(0, i);
+}
+
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
@@ -329,19 +358,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return YES;
   }
   
-  NSUInteger allowedLength = _maxLength.integerValue - [self _apparentLengthOfText:textView.text] + [self _apparentLengthOfText:[textView.text substringWithRange:range]];
-  NSUInteger replacementTextLength = [self _apparentLengthOfText:text];
+  NSUInteger allowedLength = _maxLength.integerValue - RCTApparentLengthOfText(textView.text) + RCTApparentLengthOfText([textView.text substringWithRange:range]);
+  NSUInteger replacementTextLength = RCTApparentLengthOfText(text);
   
   if (replacementTextLength > allowedLength) {
     if (allowedLength > 0) {
       // Truncate the input string so the result is exactly maxLength
-      NSRange allowedRange = [self _rangeOfText:text allowedLength:allowedLength];
+      NSRange allowedRange = RCTLimitedRangeOfText(text, allowedLength);
       NSString *limitedString = [text substringWithRange:allowedRange];
       NSMutableString *newString = textView.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textView.text = newString;
       // Collapse selection at end of insert to match normal paste behavior
-      [self _textInput:textView placeCaretAtOffset:range.location + allowedRange.length];
+      RCTPlaceCaretAtOffset(textView, range.location + allowedRange.length);
       [self textViewDidChange:textView];
     }
     return NO;
@@ -451,23 +480,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     // It seems that it's impossible to have a textView which has some text selected after  
     // its text have just changed, unless we set it programmatically.
     if (self.maxLength && selectedTextRange.length == 0) {
-      __block NSInteger exceededLength = [self _apparentLengthOfText:textView.text] - _maxLength.integerValue;
+      NSInteger exceededLength = RCTApparentLengthOfText(textView.text) - _maxLength.integerValue;
       if (exceededLength > 0) {
         NSString *text = [textView.text substringWithRange:NSMakeRange(0, selectedTextRange.location)];
-        __block NSRange rangeToRemove;
-        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences|NSStringEnumerationReverse usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-          exceededLength--;
-          if (exceededLength == 0) {
-            rangeToRemove.location = substringRange.location;
-            rangeToRemove.length = selectedTextRange.location - substringRange.location;
-            *stop = YES;
-          }
-        }];
         
+        NSUInteger i = text.length;
+        for (; exceededLength > 0; exceededLength--) {
+          NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i - 1];
+          i = range.location;
+        }
+        NSRange rangeToRemove = NSMakeRange(i, text.length - i);
         NSMutableString *newString = [textView.text mutableCopy];
         [newString replaceCharactersInRange:rangeToRemove withString:@""];
         textView.text = newString;
-        [self _textInput:textView placeCaretAtOffset:rangeToRemove.location];
+        RCTPlaceCaretAtOffset(textView, rangeToRemove.location);
       }
     }
   }
@@ -543,38 +569,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UIColor *)defaultPlaceholderTextColor
 {
   return [UIColor colorWithRed:0.0/255.0 green:0.0/255.0 blue:0.098/255.0 alpha:0.22];
-}
-
-- (void)_textInput:(id<UITextInput>)textInput placeCaretAtOffset:(NSUInteger)offset
-{
-  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
-                                                       offset:offset];
-  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
-}
-
-- (NSUInteger)_apparentLengthOfText:(NSString *)text
-{
-  // Composed character sequences like surrogate-pair('é'), emoiji('😛'), etc., are treated
-  // as one symbol, as we human would count.
-  __block NSUInteger length = 0;
-  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-    length++;
-  }];
-  return length;
-}
-
-- (NSRange)_rangeOfText:(NSString *)text allowedLength:(NSUInteger)length
-{
-  __block NSUInteger limitedLength = 0;
-  __block NSRange range = NSMakeRange(0, 0);
-  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-    limitedLength++;
-    if (limitedLength == length) {
-      range.length = substringRange.location + substringRange.length;
-      *stop = YES;
-    }
-  }];
-  return range;
 }
 
 @end
