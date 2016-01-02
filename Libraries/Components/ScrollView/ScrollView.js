@@ -308,6 +308,11 @@ var ScrollView = React.createClass({
      */
     onRefreshStart: PropTypes.func,
 
+    /**
+     * Function which returns a RefreshControl to provide pull to refresh
+     * functionnality to the ScrollView.
+     */
+    refreshControl: PropTypes.func,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -401,21 +406,6 @@ var ScrollView = React.createClass({
       };
     }
 
-    // Extract the RefreshControl from the children if there is one.
-    var refreshControl = null;
-    var children;
-    if (Array.isArray(this.props.children)) {
-      children = this.props.children.filter(c => {
-        if (c && c.type && c.type.displayName === 'RefreshControl') {
-          refreshControl = c;
-          return false;
-        }
-        return true;
-      });
-    } else {
-      children = this.props.children;
-    }
-
     var contentContainer =
       <View
         {...contentSizeChangeProps}
@@ -423,7 +413,7 @@ var ScrollView = React.createClass({
         style={contentContainerStyle}
         removeClippedSubviews={this.props.removeClippedSubviews}
         collapsable={false}>
-        {children}
+        {this.props.children}
       </View>;
 
     var alwaysBounceHorizontal =
@@ -482,6 +472,7 @@ var ScrollView = React.createClass({
       'ScrollViewClass must not be undefined'
     );
 
+    var refreshControl = this.props.refreshControl && this.props.refreshControl();
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.

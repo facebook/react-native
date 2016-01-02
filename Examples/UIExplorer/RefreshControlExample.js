@@ -85,15 +85,18 @@ const RefreshControlExample = React.createClass({
       return <Row key={ii} data={row} onClick={this._onClick}/>;
     });
     return (
-      <ScrollView style={styles.scrollview}>
-        <RefreshControl
-          refreshing={this.state.isRefreshing}
-          onRefresh={this._onRefresh}
-          tintColor="#ff0000"
-          title="Loading..."
-          colors={['#ff0000', '#00ff00', '#0000ff']}
-          progressBackgroundColor={'#ffff00'}
-        />
+      <ScrollView
+        style={styles.scrollview}
+        refreshControl={() =>
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this._onRefresh}
+            tintColor="#ff0000"
+            title="Loading..."
+            colors={['#ff0000', '#00ff00', '#0000ff']}
+            progressBackgroundColor="#ffff00"
+          />
+        }>
         {rows}
       </ScrollView>
     );

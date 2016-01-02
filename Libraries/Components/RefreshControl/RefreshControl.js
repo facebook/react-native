@@ -12,6 +12,7 @@
 
 const React = require('React');
 const Platform = require('Platform');
+const ColorPropType = require('ColorPropType');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -44,7 +45,7 @@ const RefreshControl = React.createClass({
      * The color of the refresh indicator.
      * @platform ios
      */
-    tintColor: React.PropTypes.string,
+    tintColor: ColorPropType,
     /**
      * The title displayed under the refresh indicator.
      * @platform ios
@@ -59,14 +60,14 @@ const RefreshControl = React.createClass({
      * The colors (at least one) that will be used to draw the refresh indicator.
      * @platform android
      */
-    colors: React.PropTypes.arrayOf(React.PropTypes.string),
+    colors: React.PropTypes.arrayOf(ColorPropType),
     /**
      * The background color of the refresh indicator.
      * @platform android
      */
-    progressBackgroundColor: React.PropTypes.string,
+    progressBackgroundColor: ColorPropType,
     /**
-     * Size of the refresh indicator, see PullToRefreshView.SIZE.
+     * Size of the refresh indicator, see RefreshControl.SIZE.
      * @platform android
      */
     size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
@@ -86,7 +87,8 @@ const RefreshControl = React.createClass({
         tintColor={this.props.tintColor}
         title={this.props.title}
         refreshing={this.props.refreshing}
-        onRefresh={this.props.onRefresh}/>
+        onRefresh={this.props.onRefresh}
+      />
     );
   },
 

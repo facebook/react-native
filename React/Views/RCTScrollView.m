@@ -433,6 +433,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (NSArray<UIView *> *)reactSubviews
 {
+  if (_contentView && _scrollView.refreshControl) {
+    return @[_contentView, _scrollView.refreshControl];
+  }
   return _contentView ? @[_contentView] : @[];
 }
 
