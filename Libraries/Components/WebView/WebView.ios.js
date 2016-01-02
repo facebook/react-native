@@ -114,13 +114,13 @@ var WebView = React.createClass({
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
-    javaScriptEnabledAndroid: PropTypes.bool,
+    javaScriptEnabled: PropTypes.bool,
 
     /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
-    domStorageEnabledAndroid: PropTypes.bool,
+    domStorageEnabled: PropTypes.bool,
 
     /**
      * Sets the JS to be injected when the webpage loads.
