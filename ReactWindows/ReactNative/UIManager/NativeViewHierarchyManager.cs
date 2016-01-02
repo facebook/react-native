@@ -468,7 +468,7 @@ namespace ReactNative.UIManager
             return viewManager;
         }
 
-        private void AddRootViewGroup(int tag, Panel view, ThemedReactContext themedContext)
+        private void AddRootViewGroup(int tag, FrameworkElement view, ThemedReactContext themedContext)
         {
             DispatcherHelpers.AssertOnDispatcher();
             _tagsToViews.Add(tag, view);

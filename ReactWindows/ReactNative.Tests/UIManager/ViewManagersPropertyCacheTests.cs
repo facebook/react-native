@@ -14,7 +14,8 @@ namespace ReactNative.Tests.UIManager
         public void ViewManagersPropertyCache_ArgumentChecks()
         {
             AssertEx.Throws<ArgumentNullException>(
-                () => ViewManagersPropertyCache.GetNativePropertiesForView(null, typeof(object)),
+                () => ViewManagersPropertyCache.GetNativePropertiesForView(null, 
+                (object)),
                 ex => Assert.AreEqual("viewManagerType", ex.ParamName));
 
             AssertEx.Throws<ArgumentNullException>(

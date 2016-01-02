@@ -57,7 +57,7 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="child">The child view.</param>
         /// <param name="index">The index.</param>
-        public void AddView(Panel parent, UIElement child, int index)
+        public virtual void AddView(Panel parent, UIElement child, int index)
         {
             parent.Children.Insert(index, child);
         }
@@ -67,7 +67,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="parent">The view group.</param>
         /// <returns>The number of children.</returns>
-        public int GetChildCount(Panel parent)
+        public virtual int GetChildCount(Panel parent)
         {
             return parent.Children.Count;
         }
@@ -78,7 +78,7 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="index">The index.</param>
         /// <returns>The child view.</returns>
-        public FrameworkElement GetChildAt(Panel parent, int index)
+        public virtual FrameworkElement GetChildAt(Panel parent, int index)
         {
             return (FrameworkElement)parent.Children[index];
         }
@@ -88,7 +88,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="parent">The view group.</param>
         /// <param name="index">The index.</param>
-        public void RemoveChildAt(Panel parent, int index)
+        public virtual void RemoveChildAt(Panel parent, int index)
         {
             parent.Children.RemoveAt(index);
         }
@@ -97,7 +97,7 @@ namespace ReactNative.UIManager
         /// Removes all children from the view group.
         /// </summary>
         /// <param name="parent">The view group.</param>
-        public void RemoveAllChildren(Panel parent)
+        public virtual void RemoveAllChildren(Panel parent)
         {
             parent.Children.Clear();
         }

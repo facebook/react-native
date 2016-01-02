@@ -18,6 +18,6 @@ namespace ReactNative.Touch
         /// A callback that <see cref="Panel"/> should delage calls for <see cref="Panel.GotTouchCaptureEvent"/>
         /// </summary>
         /// <param name="listener">The touch event listener</param>
-        void setOnInterceptTouchEventListener(OnInterceptTouchEventListener listener);
+        void SetOnInterceptTouchEventListener(OnInterceptTouchEventListener listener);
     }
 }
