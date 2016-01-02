@@ -207,6 +207,7 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
+    <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\TouchTargetHelper.cs" />
     <Compile Include="UIManager\FrameworkElementExtensions.cs" />
@@ -220,7 +221,6 @@
     <Compile Include="UIManager\PropertySetter.cs" />
     <Compile Include="UIManager\ReactPropertyBaseAttribute.cs" />
     <Compile Include="UIManager\ReactPropertyGroupAttribute.cs" />
-    <Compile Include="UIManager\RootViewManager.cs" />
     <Compile Include="UIManager\ISizeChangedListener.cs" />
     <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
@@ -246,8 +246,7 @@
       <DependentUpon>ReactRootView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Touch\CatalystInterceptingViewGroup.cs" />
-    <Compile Include="Views\View\ReactClippingViewGroup.cs" />
-    <Compile Include="Views\View\ReactViewGroup.cs" />
+    <Compile Include="Views\View\ReactViewPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>

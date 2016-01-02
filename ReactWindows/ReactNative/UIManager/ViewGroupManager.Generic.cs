@@ -36,7 +36,7 @@ namespace ReactNative.UIManager
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public sealed override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        public override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
         {
             ReceiveCommand((TPanel)view, commandId, args);
         }
@@ -100,6 +100,24 @@ namespace ReactNative.UIManager
         protected abstract TPanel CreateViewInstanceCore(ThemedReactContext reactContext);
 
         /// <summary>
+<<<<<<< 52b8b626cebd2f4762bc931bf5976f9f958d86ca
+=======
+        /// This method should return the subclass of <see cref="ReactShadowNode"/>
+        /// which will be then used for measuring the position and size of the
+        /// view. 
+        /// </summary>
+        /// <remarks>
+        /// In most cases, this will just return an instance of
+        /// <see cref="ReactShadowNode"/>.
+        /// </remarks>
+        /// <returns>The shadow node instance.</returns>
+        protected virtual LayoutShadowNode CreateShadowNodeInstanceCore()
+        {
+            return new LayoutShadowNode();
+        }
+
+        /// <summary>
+>>>>>>> Adding ReactViewManager
         /// Callback that will be triggered after all properties are updated in
         /// the current update transation (all <see cref="ReactPropertyAttribute"/> handlers
         /// for properties updated in the current transaction have been called).

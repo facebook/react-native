@@ -103,7 +103,7 @@ namespace ReactNative.UIManager
         {
             AddEventEmitters(reactContext, (TFrameworkElement)view);
         }
-        
+
         /// <summary>
         /// Subclasses can override this method to install custom event 
         /// emitters on the given view.
