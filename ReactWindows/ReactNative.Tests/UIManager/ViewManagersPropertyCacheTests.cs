@@ -14,8 +14,7 @@ namespace ReactNative.Tests.UIManager
         public void ViewManagersPropertyCache_ArgumentChecks()
         {
             AssertEx.Throws<ArgumentNullException>(
-                () => ViewManagersPropertyCache.GetNativePropertiesForView(null, 
-                (object)),
+                () => ViewManagersPropertyCache.GetNativePropertiesForView(null, typeof(object)),
                 ex => Assert.AreEqual("viewManagerType", ex.ParamName));
 
             AssertEx.Throws<ArgumentNullException>(
@@ -53,7 +52,7 @@ namespace ReactNative.Tests.UIManager
 
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(typeof(ViewManagerValueTest));
             Assert.AreEqual(3, setters.Count);
-            
+
             var properties = new CatalystStylesDiffMap(new JObject
             {
                 { "Foo", "v1" },
