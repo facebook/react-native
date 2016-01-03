@@ -194,7 +194,8 @@ var apps = [
   {
     name: 'Eat or Not',
     icon: 'http://a3.mzstatic.com/us/r30/Purple5/v4/51/be/34/51be3462-b015-ebf2-11c5-69165b37fadc/icon175x175.jpeg',
-    link: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
+    linkAppStore: 'https://itunes.apple.com/us/app/eat-or-not/id1054565697?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.eon',
     author: 'Sharath Prabhal',
   },
   {
