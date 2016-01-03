@@ -413,7 +413,18 @@ function setupConsole(global) {
       return;
     }
 
-    var columns = Object.keys(rows[0]).sort();
+     //Get all columns from all rows.
+      //This will make sure it prints every column from each rows.
+    var columns = [];
+    for(var i = 0; i < rows.length; i++) {
+        var cols = Object.keys(rows[i]);
+        for(var j = 0; j < cols.length; j++){
+          if(columns.indexOf(cols[j]) == -1){
+            columns.push(cols[j]);
+          }
+        }
+    }
+    columns = columns.sort();
     var stringRows = [];
     var columnWidths = [];
 
@@ -423,13 +434,17 @@ function setupConsole(global) {
       columnWidths[i] = k.length;
       for (var j = 0; j < rows.length; j++) {
         if(rows[j][k] != null) {
-          var cellStr = rows[j][k].toString();
-          stringRows[j] = stringRows[j] || [];
-          stringRows[j][i] = cellStr;
-          columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
-        }
+            var cellStr = rows[j][k].toString();
+            stringRows[j] = stringRows[j] || [];
+            stringRows[j][i] = cellStr;
+            columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
+          } else {
+            stringRows[j] = stringRows[j] || [];
+            stringRows[j][i] = '';
+          }
       }
-    }
+    });
+
     // Join all elements in the row into a single string with | separators
     // (appends extra spaces to each cell to make separators  | alligned)
     var joinRow = function(row, space) {
