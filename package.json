@@ -75,7 +75,8 @@
     ],
     "unmockedModulePathPatterns": [
       "promise",
-      "source-map"
+      "source-map",
+      "fbjs"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
