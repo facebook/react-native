@@ -492,9 +492,7 @@ var NavigatorIOS = React.createClass({
           this.setState({
             requestedTopOfStack: newRequestedTopOfStack,
             makingNavigatorRequest: true,
-            // Not actually updating the indices yet until we get the native
-            // `onNavigationComplete`.
-            updatingAllIndicesAtOrBeyond: null,
+            updatingAllIndicesAtOrBeyond: this.state.requestedTopOfStack - n,
           });
         });
       }
