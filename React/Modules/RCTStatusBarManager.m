@@ -92,7 +92,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 {
   callback(@[@{
-    @"height": [NSNumber numberWithFloat:[[UIApplication sharedApplication] statusBarFrame].size.height],
+    @"height": @([UIApplication sharedApplication].statusBarFrame.size.height),
   }]);
 }
 
