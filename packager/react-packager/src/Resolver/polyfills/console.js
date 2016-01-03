@@ -414,7 +414,18 @@
         return;
       }
 
-      var columns = Object.keys(rows[0]).sort();
+      //Get all columns from all rows.
+      //This will make sure it prints every column from each rows.
+      var columns = [];
+      for(var i = 0; i < rows.length; i++) {
+          var cols = Object.keys(rows[i]);
+          for(var j = 0; j < cols.length; j++){
+            if(columns.indexOf(cols[j]) == -1){
+              columns.push(cols[j]);
+            }
+          }
+      }
+      columns = columns.sort();
       var stringRows = [];
       var columnWidths = [];
 
@@ -428,6 +439,9 @@
             stringRows[j] = stringRows[j] || [];
             stringRows[j][i] = cellStr;
             columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
+          } else {
+            stringRows[j] = stringRows[j] || [];
+            stringRows[j][i] = '';
           }
         }
       });
