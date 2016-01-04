@@ -31,6 +31,7 @@ var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
+var processColor = require('processColor');
 
 var PropTypes = React.PropTypes;
 
@@ -307,6 +308,11 @@ var ScrollView = React.createClass({
      */
     onRefreshStart: PropTypes.func,
 
+    /**
+     * Function which returns a RefreshControl to provide pull to refresh
+     * functionnality to the ScrollView.
+     */
+    refreshControl: PropTypes.func,
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -466,6 +472,33 @@ var ScrollView = React.createClass({
       'ScrollViewClass must not be undefined'
     );
 
+    var refreshControl = this.props.refreshControl && this.props.refreshControl();
+    if (refreshControl) {
+      if (Platform.OS === 'ios') {
+        // On iOS the RefreshControl is a child of the ScrollView.
+        return (
+          <ScrollViewClass {...props} ref={SCROLLVIEW}>
+            {refreshControl}
+            {contentContainer}
+          </ScrollViewClass>
+        );
+      } else if (Platform.OS === 'android') {
+        // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
+        // Since the ScrollView is wrapped add the style props to the
+        // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
+        var refreshProps = refreshControl.props;
+        return (
+          <AndroidSwipeRefreshLayout
+            {...refreshProps}
+            colors={refreshProps.colors && refreshProps.colors.map(processColor)}
+            style={props.style}>
+            <ScrollViewClass {...props} style={styles.base} ref={SCROLLVIEW}>
+              {contentContainer}
+            </ScrollViewClass>
+          </AndroidSwipeRefreshLayout>
+        );
+      }
+    }
     return (
       <ScrollViewClass {...props} ref={SCROLLVIEW}>
         {contentContainer}
@@ -519,6 +552,7 @@ if (Platform.OS === 'android') {
     'AndroidHorizontalScrollView',
     ScrollView
   );
+  var AndroidSwipeRefreshLayout = requireNativeComponent('AndroidSwipeRefreshLayout');
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }
