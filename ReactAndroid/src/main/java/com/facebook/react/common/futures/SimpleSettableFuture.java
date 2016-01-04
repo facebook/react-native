@@ -91,6 +91,18 @@ public class SimpleSettableFuture<T> implements Future<T> {
     return mResult;
   }
 
+  /**
+   * Convenience wrapper for {@link #get(long, TimeUnit)} that re-throws get()'s Exceptions as
+   * RuntimeExceptions.
+   */
+  public @Nullable T getOrThrow(long timeout, TimeUnit unit) {
+    try {
+      return get(timeout, unit);
+    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   private void checkNotSet() {
     if (mReadyLatch.getCount() == 0) {
       throw new RuntimeException("Result has already been set!");
