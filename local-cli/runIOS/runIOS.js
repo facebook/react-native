@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const chalk = require('chalk');
 const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -23,6 +22,7 @@ const Promise = require('promise');
 function runIOS(argv, config) {
   return new Promise((resolve, reject) => {
     _runIOS(argv, config, resolve, reject);
+    resolve();
   });
 }
 
@@ -68,9 +68,20 @@ function _runIOS(argv, config, resolve, reject) {
     '-derivedDataPath', 'build',
   ];
   console.log(`Building using "xcodebuild ${xcodebuildArgs.join(' ')}"`);
-  // child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
-  console.log('done');
-  return resolve();
+  child_process.spawnSync('xcodebuild', xcodebuildArgs, {stdio: 'inherit'});
+
+  const appPath = `build/Build/Products/Debug-iphonesimulator/${inferredSchemeName}.app`;
+  console.log(`Installing ${appPath}`);
+  child_process.spawnSync('xcrun', ['simctl', 'install', 'booted', appPath], {stdio: 'inherit'});
+
+  const bundleID = child_process.execFileSync(
+    '/usr/libexec/PlistBuddy',
+    ['-c', 'Print:CFBundleIdentifier', path.join(appPath, 'Info.plist')],
+    {encoding: 'utf8'}
+  ).trim();
+
+  console.log(`Launching ${bundleID}`);
+  child_process.spawnSync('xcrun', ['simctl', 'launch', 'booted', bundleID], {stdio: 'inherit'});
 }
 
 function matchingSimulator(simulators, simulatorName) {
