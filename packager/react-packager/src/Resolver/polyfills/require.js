@@ -99,12 +99,8 @@
       var mod = modules[id];
 
       if (!mod) {
-        console.warn(
-          'Cannot accept unknown module `' + id + '`. Make sure you\'re not ' +
-          'trying to modify something else other than a module ' +
-          '(i.e.: a polyfill).'
-        );
-        return;
+        define(id, factory);
+        return; // new modules don't need to be accepted
       }
 
       if (!mod.module.hot) {
