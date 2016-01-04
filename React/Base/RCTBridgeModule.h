@@ -94,7 +94,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * }
  *
  * If you don't want to specify the queue yourself, but you need to use it
- * inside your class (e.g. if you have internal methods that need to disaptch
+ * inside your class (e.g. if you have internal methods that need to dispatch
  * onto that queue), you can just add `@synthesize methodQueue = _methodQueue;`
  * and the bridge will populate the methodQueue property for you automatically
  * when it initializes the module.

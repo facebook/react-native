@@ -319,7 +319,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   _javaScriptExecutor = [self moduleForClass:self.executorClass];
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    [moduleData setBridgeForInstance:self];
+    if (moduleData.hasInstance) {
+      [moduleData setBridgeForInstance:self];
+    }
   }
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
