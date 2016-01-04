@@ -78,3 +78,29 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
   ![Create AVD dialog](/react-native/img/CreateAVD.png)
   2. With the new AVD selected, click `Start...`
 5. To bring up the developer menu press F2
+
+### Windows Hyper-V Alternative
+
+A lot of developers, especially in the enterprise space are using Hyper-V on their machines. Unfortunately the default Android Emulator cannot be hardware accelerated if Hyper-V is turned on and turning it off is often not an option.
+
+Fortunately there is a great and free android emulator that uses Hyper-V.
+
+The [Visual Studio Emulator for Android](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx). The [standalone download link](http://aka.ms/vscomemudownload) is at the bottom of that page. It doesn't require you to install Visual Studio at all.
+
+It is free, very powerful, fast and hardware accelerated via Hyper-V technology.
+
+To use it with react-native you just have to add a key and value to your registry:
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Android SDK Tools
+
+String Value:
+Name: Path
+Value: C:\Program Files\Android\sdk
+
+Obviously the path value might be different on your machine.
+
+This emulator also need the `adb reverse tcp:8081 tcp:8081` command executed once before starting.
+
+Then restart the emulator and when it is running you can just do `react-native run-android` as usual.
+
+![visual studio emulator regedit](https://cloud.githubusercontent.com/assets/1776695/10271350/345ee936-6b69-11e5-8d64-165943d578a5.png)
