@@ -143,6 +143,13 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryPath).getDependencies();
   }
 
+  /**
+   * Returns the module object for the given path.
+   */
+  getModuleForPath(entryFile) {
+    return this._moduleCache.getModule(entryFile);
+  }
+
   getDependencies(entryPath, platform) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);
