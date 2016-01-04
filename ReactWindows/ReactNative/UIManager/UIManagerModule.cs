@@ -338,7 +338,7 @@ namespace ReactNative.UIManager
         [ReactMethod]
         public void configureNextLayoutAnimation(Dictionary<string, object> config, ICallback success, ICallback error)
         {
-            _uiImplementation.ConfigureNextLayoutAnimation(config, success, error);
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -387,6 +387,9 @@ namespace ReactNative.UIManager
             {
                 _uiImplementation.DispatchViewUpdates(_eventDispatcher, batchId);
             }
+
+            // TODO: coordinate with UI operations?
+            _eventDispatcher.OnBatchComplete();
         }
 
         #endregion

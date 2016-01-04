@@ -57,6 +57,17 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
+        /// Triggers the batch completion event for all modules.
+        /// </summary>
+        public void OnBatchComplete()
+        {
+            foreach (var module in _batchCompleteListenerModules)
+            {
+                module.OnBatchComplete();
+            }
+        }
+
+        /// <summary>
         /// Write the module descriptions to the given <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="writer">The JSON writer.</param>

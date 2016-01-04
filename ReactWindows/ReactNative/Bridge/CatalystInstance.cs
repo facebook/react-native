@@ -313,6 +313,17 @@ namespace ReactNative.Bridge
             public void OnBatchComplete()
             {
                 _parent.QueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
+
+                // The bridge may have been destroyed due to an exception
+                // during the batch. In that case native modules could be in a
+                // bad state so we don't want to call anything on them.
+                if (!_parent.IsDisposed)
+                {
+                    using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "OnBatchComplete"))
+                    {
+                        _parent._registry.OnBatchComplete();
+                    }
+                }
             }
         }
     }

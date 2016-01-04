@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
-    class RootViewManager : ViewGroupManager
+    /// <summary>
+    /// View manager for react root view components.
+    /// </summary>
+    public class RootViewManager : ViewGroupManager
     {
-        private readonly string REACT_CLASS = "ReactView";
-
         /// <summary>
-        /// Get the name of the react root view
+        /// The name of the react root view.
         /// </summary>
         public override string Name
         {
             get
             {
-                return REACT_CLASS;
+                return "RootView";
             }
         }
 
         /// <summary>
-        /// Creates a new view instance of type <typeparamref name="Panel"/>.
+        /// Creates a new view instance of type <see cref="Windows.UI.Xaml.Controls.Panel"/>.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
