@@ -778,19 +778,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer
+- (void)handleBuffer:(NSArray *)buffer
 {
-  NSArray<NSArray *> *requestsArray = [RCTConvert NSArrayArray:buffer];
-
+  NSArray *requestsArray = [RCTConvert NSArray:buffer];
   if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParamss) {
     RCTLogError(@"Buffer should contain at least %tu sub-arrays. Only found %tu",
-                RCTBridgeFieldParamss + 1, requestsArray.count);
+              RCTBridgeFieldParamss + 1, requestsArray.count);
     return;
   }
 
-  NSArray<NSNumber *> *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
-  NSArray<NSNumber *> *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
-  NSArray<NSArray *> *paramsArrays = requestsArray[RCTBridgeFieldParamss];
+  NSArray<NSNumber *> *moduleIDs = [RCTConvert NSNumberArray:requestsArray[RCTBridgeFieldRequestModuleIDs]];
+  NSArray<NSNumber *> *methodIDs = [RCTConvert NSNumberArray:requestsArray[RCTBridgeFieldMethodIDs]];
+  NSArray<NSArray *> *paramsArrays = [RCTConvert NSArrayArray:requestsArray[RCTBridgeFieldParamss]];
 
   if (RCT_DEBUG && (moduleIDs.count != methodIDs.count || moduleIDs.count != paramsArrays.count)) {
     RCTLogError(@"Invalid data message - all must be length: %zd", moduleIDs.count);
