@@ -440,6 +440,16 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
        object:_parentBridge userInfo:@{@"bridge": self}];
     });
   }];
+
+#if RCT_DEV
+
+  if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
+    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
+    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path]];
+  }
+
+#endif
+
 }
 
 - (void)didFinishLoading

@@ -576,10 +576,53 @@ NSString *RCTColorToHexString(CGColorRef color)
   }
 }
 
-
 // (https://github.com/0xced/XCDFormInputAccessoryView/blob/master/XCDFormInputAccessoryView/XCDFormInputAccessoryView.m#L10-L14)
-RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string)
+NSString *RCTUIKitLocalizedString(NSString *string)
 {
   NSBundle *UIKitBundle = [NSBundle bundleForClass:[UIApplication class]];
   return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
+}
+
+NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param)
+{
+  RCTAssertParam(param);
+  if (!URL) {
+    return nil;
+  }
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL
+                                           resolvingAgainstBaseURL:YES];
+  for (NSURLQueryItem *item in components.queryItems.reverseObjectEnumerator) {
+    if ([item.name isEqualToString:param]) {
+      return item.value;
+    }
+  }
+  return nil;
+}
+
+NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value)
+{
+  RCTAssertParam(param);
+  if (!URL) {
+    return nil;
+  }
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL
+                                           resolvingAgainstBaseURL:YES];
+  __block NSInteger paramIndex = NSNotFound;
+  NSMutableArray *queryItems = [components.queryItems mutableCopy];
+  [queryItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:
+   ^(NSURLQueryItem *item, NSUInteger i, BOOL *stop) {
+     if ([item.name isEqualToString:param]) {
+       paramIndex = i;
+       *stop = YES;
+     }
+   }];
+
+  NSURLQueryItem *newItem = [NSURLQueryItem queryItemWithName:param value:value];
+  if (paramIndex == NSNotFound) {
+    [queryItems addObject:newItem];
+  } else {
+    [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
+  }
+  components.queryItems = queryItems;
+  return components.URL;
 }
