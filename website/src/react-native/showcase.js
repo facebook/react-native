@@ -477,6 +477,13 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
   },
+  {
+    name:'天才段子手',
+    icon:'http://pp.myapp.com/ma_icon/0/icon_12236104_1451810987/96',
+    linkAppStore: 'https://itunes.apple.com/us/app/tian-cai-duan-zi-shou-shen/id992312701?l=zh&ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.geniusJokeWriter.app',
+    author:'Ran Zhao&Ji Zhao'
+  }
 ];
 
 var AppList = React.createClass({
