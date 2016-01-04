@@ -85,22 +85,21 @@ A lot of developers, especially in the enterprise space are using Hyper-V on the
 
 Fortunately there is a great and free android emulator that uses Hyper-V.
 
-The [Visual Studio Emulator for Android](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx). The [standalone download link](http://aka.ms/vscomemudownload) is at the bottom of that page. It doesn't require you to install Visual Studio at all.
+The [Visual Studio Emulator for Android](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) is a free android emulator that is hardware accelerated via Hyper-V. It doesn't require you to install Visual Studio at all.
 
 It is free, very powerful, fast and hardware accelerated via Hyper-V technology.
 
 To use it with react-native you just have to add a key and value to your registry:
 
-HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Android SDK Tools
+1. Open the Run Command (Windows+R)
+2. Enter `regedit.exe`
+3. In the Registry Editor navigate to `HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Android SDK Tools`
+4. Right Click on `Android SDK Tools` and choose `New > String Value`
+5. Set the name to `Path`
+6. Double Click the new `Path` Key and set the value to `C:\Program Files\Android\sdk`. The path value might be different on your machine.
 
-String Value:
-Name: Path
-Value: C:\Program Files\Android\sdk
+You will also need to run the command `adb reverse tcp:8081 tcp:8081` with this emulator.
 
-Obviously the path value might be different on your machine.
-
-This emulator also need the `adb reverse tcp:8081 tcp:8081` command executed once before starting.
-
-Then restart the emulator and when it is running you can just do `react-native run-android` as usual.
+Then restart the emulator and when it runs you can just do `react-native run-android` as usual.
 
 ![visual studio emulator regedit](https://cloud.githubusercontent.com/assets/1776695/10271350/345ee936-6b69-11e5-8d64-165943d578a5.png)
