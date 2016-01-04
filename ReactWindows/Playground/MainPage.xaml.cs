@@ -30,21 +30,17 @@ namespace Playground
             this.InitializeComponent();
         }
 
+        private void LiftReactNativeApp()
+        {
+            var jsModuleName = "index.windows";
+            var bundleAssetName = "ms-appx:///Resources/main.jsbundle";
+            RootView?.LiftAsync(bundleAssetName, jsModuleName);
+        }
+       
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            try
-            {
-                var executor = new ChakraJavaScriptExecutor();
-                executor.RunScript("var __value = 42;");
-                var value = executor.GetGlobalVariable("__value");
-                Output.Text = value.ToString();
-            }
-            catch (Exception ex)
-            {
-                Output.Text = ex.ToString();
-            }
+            this.LiftReactNativeApp();
         }
     }
 }

@@ -182,10 +182,10 @@ namespace ReactNative.Hosting.Bridge
                 Debug.Write("JS console> ");
 
                 // First argument is this-context (? @TODO), ignore...
-                foreach (var argument in arguments)
+                /*foreach (var argument in arguments)
                 {
                     Debug.Write(JavaScriptValueToJTokenConverter.Convert(argument).ToString() + " ");
-                }
+                }*/
 
                 Debug.WriteLine("");
             }
