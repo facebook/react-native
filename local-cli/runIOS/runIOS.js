@@ -13,6 +13,7 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const parseCommandLine = require('../util/parseCommandLine');
+const findXcodeProject = require('./findXcodeProject');
 const Promise = require('promise');
 
 /**
@@ -32,8 +33,15 @@ function _runIOS(argv, config, resolve, reject) {
   }], argv);
 
   process.chdir('ios');
-  resolve();
-  return;
+  const xcodeProject = findXcodeProject(fs.readdirSync('.'));
+  if (!xcodeProject) {
+    console.warn(chalk.red('Could not find Xcode project files in ios folder'));
+    reject();
+    return;
+  }
+
+  console.log(xcodeProject);
+  return resolve();
 }
 
 module.exports = runIOS;
