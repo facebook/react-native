@@ -137,11 +137,16 @@ namespace ReactNative.Hosting.Bridge
 
             var moduleIds = messages[0].ToObject<int[]>();
             var methodIds = messages[1].ToObject<int[]>();
-            var paramsArray = (JArray)messages[2];
+            var paramsArray = messages[2] as JArray;
+            if (moduleIds == null || methodIds == null || paramsArray == null ||
+                moduleIds.Length != methodIds.Length || moduleIds.Length != paramsArray.Count)
+            {
+                throw new InvalidOperationException("Unexpected React batch response.");
+            }
 
             _nativeModulesQueueThread.RunOnQueue(() =>
             {
-                for (var i = 0; i < moduleIds.Length; i++)
+                for (var i = 0; i < moduleIds.Length; ++i)
                 {
                     var moduleId = moduleIds[i];
                     var methodId = methodIds[i];
