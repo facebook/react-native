@@ -48,6 +48,65 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
+- (void)cacheImplementedSelectors
+{
+  _implementsBatchDidComplete = [_instance respondsToSelector:@selector(batchDidComplete)];
+  _implementsPartialBatchDidFlush = [_instance respondsToSelector:@selector(partialBatchDidFlush)];
+}
+
+- (void)setUpMethodQueue
+{
+  RCTAssert(!_methodQueue, @"Method queue is already set up");
+  RCTAssert(_instance, @"Instance is not yet set up");
+
+  BOOL implementsMethodQueue = [_instance respondsToSelector:@selector(methodQueue)];
+  if (implementsMethodQueue) {
+    _methodQueue = _instance.methodQueue;
+  }
+  if (!_methodQueue) {
+
+    // Create new queue (store queueName, as it isn't retained by dispatch_queue)
+    _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
+    _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+
+    // assign it to the module
+    if (implementsMethodQueue) {
+      @try {
+        [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
+      }
+      @catch (NSException *exception) {
+        RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
+                    "permitted. You must either return a pre-initialized "
+                    "queue, or @synthesize the methodQueue to let the bridge "
+                    "create a queue for you.", self.name);
+      }
+    }
+  }
+
+  // Needs to be sent after bridge has been set for all module instances.
+  // Makes sense to put it here, since the same rules apply for methodQueue.
+  [[NSNotificationCenter defaultCenter]
+   postNotificationName:RCTDidInitializeModuleNotification
+   object:_bridge userInfo:@{@"module": _instance}];
+}
+
+- (void)setUpInstance
+{
+  RCTAssert(!_instance, @"Instance is already set up");
+
+  _instance = [_moduleClass new];
+
+  // Bridge must be set before methodQueue is set up, as methodQueue
+  // initialization requires it (View Managers get their queue by calling
+  // self.bridge.uiManager.methodQueue)
+  [self setBridgeForInstance:_bridge];
+
+  // Initialize queue
+  [self setUpMethodQueue];
+
+  [self cacheImplementedSelectors];
+}
+
 - (BOOL)hasInstance
 {
   return _instance != nil;
@@ -56,29 +115,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (id<RCTBridgeModule>)instance
 {
   if (!_instance) {
-    _instance = [_moduleClass new];
-
-    // Bridge must be set before methodQueue is set up, as methodQueue
-    // initialization requires it (View Managers get their queue by calling
-    // self.bridge.uiManager.methodQueue)
-    [self setBridgeForInstance:_bridge];
-
-    // Initialize queue
-    [self methodQueue];
-
-    [self cacheImplementedSelectors];
+    [self setUpInstance];
   }
   return _instance;
 }
 
-- (void)cacheImplementedSelectors
-{
-  _implementsBatchDidComplete = [_instance respondsToSelector:@selector(batchDidComplete)];
-  _implementsPartialBatchDidFlush = [_instance respondsToSelector:@selector(partialBatchDidFlush)];
-}
-
 - (void)setBridgeForInstance:(RCTBridge *)bridge
 {
+  RCTAssert(_instance, @"setBridgeForInstance called before module was initialized");
+
   _bridge = bridge;
   if ([_instance respondsToSelector:@selector(bridge)]) {
     @try {
@@ -175,36 +220,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (dispatch_queue_t)methodQueue
 {
+  if (!_instance) {
+    [self setUpInstance];
+  }
   if (!_methodQueue) {
-    BOOL implementsMethodQueue = [self.instance respondsToSelector:@selector(methodQueue)];
-    if (implementsMethodQueue) {
-      _methodQueue = _instance.methodQueue;
-    }
-    if (!_methodQueue) {
-
-      // Create new queue (store queueName, as it isn't retained by dispatch_queue)
-      _queueName = [NSString stringWithFormat:@"com.facebook.React.%@Queue", self.name];
-      _methodQueue = dispatch_queue_create(_queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
-
-      // assign it to the module
-      if (implementsMethodQueue) {
-        @try {
-          [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
-        }
-        @catch (NSException *exception) {
-          RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
-                      "permitted. You must either return a pre-initialized "
-                      "queue, or @synthesize the methodQueue to let the bridge "
-                      "create a queue for you.", self.name);
-        }
-      }
-    }
-
-    // Needs to be sent after bridge has been set for all module instances.
-    // Makes sense to put it here, since the same rules apply for methodQueue.
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:RCTDidInitializeModuleNotification
-                   object:_bridge userInfo:@{@"module": _instance}];
+    [self setUpMethodQueue];
   }
   return _methodQueue;
 }
