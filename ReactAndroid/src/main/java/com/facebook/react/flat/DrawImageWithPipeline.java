@@ -28,16 +28,17 @@ import com.facebook.react.views.image.ImageResizeMode;
 
 /**
  * DrawImageWithPipeline is DrawCommand that can draw a local or remote image.
- * It uses BitmapRequestHelper internally to fetch and cache the images.
+ * It uses PipelineRequestHelper internally to fetch and cache the images.
  */
-/* package */ final class DrawImageWithPipeline extends AbstractDrawBorder implements DrawImage {
+/* package */ final class DrawImageWithPipeline extends AbstractDrawBorder
+    implements DrawImage, BitmapUpdateListener {
 
   private static final Paint PAINT = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private static final int BORDER_BITMAP_PATH_DIRTY = 1 << 1;
 
   private final Matrix mTransform = new Matrix();
   private ScaleType mScaleType = ImageResizeMode.defaultValue();
-  private @Nullable BitmapRequestHelper mBitmapRequestHelper;
+  private @Nullable PipelineRequestHelper mRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
   private @Nullable FlatViewGroup.InvalidateCallback mCallback;
   private @Nullable Path mPathForRoundedBitmap;
@@ -46,7 +47,7 @@ import com.facebook.react.views.image.ImageResizeMode;
 
   @Override
   public boolean hasImageRequest() {
-    return mBitmapRequestHelper != null;
+    return mRequestHelper != null;
   }
 
   @Override
@@ -54,9 +55,9 @@ import com.facebook.react.views.image.ImageResizeMode;
     mBitmapShader = null;
 
     if (imageRequest == null) {
-      mBitmapRequestHelper = null;
+      mRequestHelper = null;
     } else {
-      mBitmapRequestHelper = new BitmapRequestHelper(imageRequest, this);
+      mRequestHelper = new PipelineRequestHelper(imageRequest);
     }
   }
 
@@ -81,7 +82,7 @@ import com.facebook.react.views.image.ImageResizeMode;
 
   @Override
   protected void onDraw(Canvas canvas) {
-    Bitmap bitmap = Assertions.assumeNotNull(mBitmapRequestHelper).getBitmap();
+    Bitmap bitmap = Assertions.assumeNotNull(mRequestHelper).getBitmap();
     if (bitmap == null) {
       return;
     }
@@ -116,16 +117,18 @@ import com.facebook.react.views.image.ImageResizeMode;
   @Override
   public void onAttached(FlatViewGroup.InvalidateCallback callback) {
     mCallback = callback;
-    Assertions.assumeNotNull(mBitmapRequestHelper).attach();
+    Assertions.assumeNotNull(mRequestHelper).attach(this);
   }
 
   @Override
   public void onDetached() {
-    Assertions.assumeNotNull(mBitmapRequestHelper).detach();
+    Assertions.assumeNotNull(mRequestHelper).detach();
 
-    if (mBitmapRequestHelper.isDetached()) {
+    if (mRequestHelper.isDetached()) {
       // Make sure we don't hold on to the Bitmap.
       mBitmapShader = null;
+      // this is optional
+      mCallback = null;
     }
   }
 
@@ -133,6 +136,16 @@ import com.facebook.react.views.image.ImageResizeMode;
   protected void onBoundsChanged() {
     super.onBoundsChanged();
     setFlag(BORDER_BITMAP_PATH_DIRTY);
+  }
+
+  @Override
+  public void onSecondaryAttach(Bitmap bitmap) {
+    updateBounds(bitmap);
+  }
+
+  @Override
+  public void onBitmapReady(Bitmap bitmap) {
+    updateBounds(bitmap);
   }
 
   /* package */ void updateBounds(Bitmap bitmap) {

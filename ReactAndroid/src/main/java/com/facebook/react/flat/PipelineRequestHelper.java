@@ -33,27 +33,28 @@ import com.facebook.infer.annotation.Assertions;
  * 3) mDataSource == null, mImageRef != null : request successfully finished.
  * 4) mDataSource != null, mImageRef != null : invalid state (should never happen)
  */
-/* package */ final class BitmapRequestHelper
+/* package */ final class PipelineRequestHelper
     implements DataSubscriber<CloseableReference<CloseableImage>> {
 
   private final ImageRequest mImageRequest;
-  private final DrawImageWithPipeline mDrawImage;
+  private @Nullable BitmapUpdateListener mBitmapUpdateListener;
   private @Nullable DataSource<CloseableReference<CloseableImage>> mDataSource;
   private @Nullable CloseableReference<CloseableImage> mImageRef;
   private int mAttachCounter;
 
-  /* package */ BitmapRequestHelper(ImageRequest imageRequest, DrawImageWithPipeline drawImage) {
+  /* package */ PipelineRequestHelper(ImageRequest imageRequest) {
     mImageRequest = imageRequest;
-    mDrawImage = drawImage;
   }
 
-  /* package */ void attach() {
+  /* package */ void attach(BitmapUpdateListener listener) {
+    mBitmapUpdateListener = listener;
+
     mAttachCounter++;
     if (mAttachCounter != 1) {
       // this is a secondary attach, ignore it, only updating Bitmap boundaries if needed.
       Bitmap bitmap = getBitmap();
       if (bitmap != null) {
-        mDrawImage.updateBounds(bitmap);
+        mBitmapUpdateListener.onSecondaryAttach(bitmap);
       }
       return;
     }
@@ -86,6 +87,8 @@ import com.facebook.infer.annotation.Assertions;
       mImageRef.close();
       mImageRef = null;
     }
+
+    mBitmapUpdateListener = null;
   }
 
   /**
@@ -147,9 +150,7 @@ import com.facebook.infer.annotation.Assertions;
         return;
       }
 
-      // now that we have the Bitmap, DrawImage can finally initialize its
-      // tranformation matrix to satisfy requested ScaleType.
-      mDrawImage.updateBounds(bitmap);
+      Assertions.assumeNotNull(mBitmapUpdateListener).onBitmapReady(bitmap);
     } finally {
       dataSource.close();
     }
