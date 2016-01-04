@@ -36,6 +36,7 @@ import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.JavaScriptModulesConfig;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ProxyJavaScriptExecutor;
@@ -103,6 +104,7 @@ import com.facebook.systrace.Systrace;
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
+  private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -198,7 +200,8 @@ import com.facebook.systrace.Systrace;
       boolean useDeveloperSupport,
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
-      UIImplementationProvider uiImplementationProvider) {
+      UIImplementationProvider uiImplementationProvider,
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     initializeSoLoaderIfNecessary(applicationContext);
 
     // TODO(9577825): remove this
@@ -222,6 +225,7 @@ import com.facebook.systrace.Systrace;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
+    mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
   }
 
   @Override
@@ -660,13 +664,16 @@ import com.facebook.systrace.Systrace;
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
+    NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
+        ? mNativeModuleCallExceptionHandler
+        : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
         .setCatalystQueueConfigurationSpec(CatalystQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
         .setRegistry(nativeModuleRegistry)
         .setJSModulesConfig(javaScriptModulesConfig)
         .setJSBundleLoader(jsBundleLoader)
-        .setNativeModuleCallExceptionHandler(mDevSupportManager);
+        .setNativeModuleCallExceptionHandler(exceptionHandler);
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
     CatalystInstance catalystInstance;
