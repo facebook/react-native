@@ -405,6 +405,12 @@ var apps = [
     author: 'Rota',
   },
   {
+    name: 'RWpodPlayer - audio player for RWpod podcast',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/a8/c0/b1/a8c0b130-e44b-742d-6458-0c89fcc15b6b/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/rwpodplayer/id1053885042?mt=8',
+    author: 'Alexey Vasiliev aka leopard',
+  },
+  {
     name: 'SG Toto 4d',
     icon: 'http://a4.mzstatic.com/us/r30/Purple7/v4/d2/bc/46/d2bc4696-84d6-9681-a49f-7f660d6b04a7/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/sg-toto-4d/id1006371481?mt=8',
