@@ -27,8 +27,8 @@ namespace ReactNative.Views
     /// TODO:
     /// 1. Add support for events(i.e. define the sendEvents method)
     /// 2. Add lifecycle functions to ensure the bundle is only loaded once
-    /// </summary>
-    public sealed partial class ReactRootView : SizeMonitoringFrameLayout, IRootView
+    /// </summary>.
+    public sealed partial class ReactRootView : IRootView
     {
         private IReactInstanceManager _ReactInstanceManager;
         private string _JSModuleName;
@@ -56,14 +56,14 @@ namespace ReactNative.Views
         /// </summary>
         /// <param name="bundleAssetName">The Javascript Bundle location</param>
         /// <param name="jsModuleName">The core Javascript module name</param>
-        public async Task Lift(string bundleAssetName, string jsModuleName)
+        public void LiftAsync(string bundleAssetName, string jsModuleName)
         {
             var defaultPackageList = new List<IReactPackage>()
             {
                 new MainReactPackage()
             };
 
-            await this.Lift(bundleAssetName, jsModuleName, defaultPackageList);
+            this.LiftAsync(bundleAssetName, jsModuleName, defaultPackageList);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace ReactNative.Views
         /// <param name="bundleAssetName">The Javascript Bundle location</param>
         /// <param name="jsModuleName">The core Javascript module name</param>
         /// <param name="packages">The list of react packges to initialize</param>
-        public async Task Lift(string bundleAssetName, string jsModuleName, List<IReactPackage> packages)
+        public void LiftAsync(string bundleAssetName, string jsModuleName, List<IReactPackage> packages)
         {
             var builder = new ReactInstanceManagerImpl.Builder()
             {
@@ -83,7 +83,7 @@ namespace ReactNative.Views
             .AddPackages(packages)
             .Build();
 
-            await this.StartReactApplication(builder, jsModuleName);
+            this.StartReactApplication(builder, jsModuleName);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace ReactNative.Views
         /// </summary>
         /// <param name="reactInstanceManager">The React Instance Manager</param>
         /// <param name="moduleName">module to load</param>
-        public async Task StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
+        public async void StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
         {
             _ReactInstanceManager = reactInstanceManager;
             _JSModuleName = moduleName;
