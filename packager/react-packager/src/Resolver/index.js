@@ -104,6 +104,10 @@ class Resolver {
     return this._depGraph.getShallowDependencies(entryFile);
   }
 
+  getModuleForPath(entryFile) {
+    return this._depGraph.getModuleForPath(entryFile);
+  }
+
   getDependencies(main, options) {
     const opts = getDependenciesValidateOpts(options);
 

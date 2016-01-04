@@ -35,27 +35,47 @@ function attachHMRServer({httpServer, path, packagerServer}) {
       // for each dependency builds the object:
       // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
       return Promise.all(Object.values(response.dependencies).map(dep => {
-        if (dep.isAsset() || dep.isAsset_DEPRECATED() || dep.isJSON()) {
-          return Promise.resolve({path: dep.path, deps: []});
-        }
-        return packagerServer.getShallowDependencies(dep.path)
-          .then(deps => {
-            return {
-              path: dep.path,
-              deps,
-            };
-          });
+        return dep.getName().then(depName => {
+          if (dep.isAsset() || dep.isAsset_DEPRECATED() || dep.isJSON()) {
+            return Promise.resolve({path: dep.path, deps: []});
+          }
+          return packagerServer.getShallowDependencies(dep.path)
+            .then(deps => {
+              return {
+                path: dep.path,
+                name: depName,
+                deps,
+              };
+            });
+        });
       }))
       .then(deps => {
-        // list with all the dependencies the bundle entry has
+        // list with all the dependencies' filenames the bundle entry has
         const dependenciesCache = response.dependencies.map(dep => dep.path);
+
+        // map from module name to path
+        const moduleToFilenameCache = Object.create(null);
+        deps.forEach(dep => moduleToFilenameCache[dep.name] = dep.path);
 
         // map that indicates the shallow dependency each file included on the
         // bundle has
-        const shallowDependencies = {};
+        const shallowDependencies = Object.create(null);
         deps.forEach(dep => shallowDependencies[dep.path] = dep.deps);
 
-        return {dependenciesCache, shallowDependencies};
+        // map from module name to the modules' dependencies the bundle entry
+        // has
+        const dependenciesModulesCache = Object.create(null);
+        return Promise.all(response.dependencies.map(dep => {
+          return dep.getName().then(depName => {
+            dependenciesModulesCache[depName] = dep;
+          });
+        })).then(() => {
+          return {
+            dependenciesCache,
+            dependenciesModulesCache,
+            shallowDependencies,
+          };
+        });
       });
     });
   }
@@ -72,18 +92,23 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     const params = querystring.parse(url.parse(ws.upgradeReq.url).query);
 
     getDependencies(params.platform, params.bundleEntry)
-      .then(({dependenciesCache, shallowDependencies}) => {
+      .then(({
+        dependenciesCache,
+        dependenciesModulesCache,
+        shallowDependencies,
+      }) => {
         client = {
           ws,
           platform: params.platform,
           bundleEntry: params.bundleEntry,
           dependenciesCache,
+          dependenciesModulesCache,
           shallowDependencies,
         };
 
         packagerServer.setHMRFileChangeListener(filename => {
           if (!client) {
-            return Promise.resolve();
+            return;
           }
 
           return packagerServer.getShallowDependencies(filename)
@@ -91,28 +116,49 @@ function attachHMRServer({httpServer, path, packagerServer}) {
               // if the file dependencies have change we need to invalidate the
               // dependencies caches because the list of files we need to send
               // to the client may have changed
-              if (arrayEquals(deps, client.shallowDependencies[filename])) {
-                return Promise.resolve();
+              const oldDependencies = client.shallowDependencies[filename];
+              if (arrayEquals(deps, oldDependencies)) {
+                return [packagerServer.getModuleForPath(filename)];
               }
+
+              // if there're new dependencies compare the full list of
+              // dependencies we used to have with the one we now have
               return getDependencies(client.platform, client.bundleEntry)
-                .then(({dependenciesCache, shallowDependencies}) => {
+                .then(({
+                  dependenciesCache,
+                  dependenciesModulesCache,
+                  shallowDependencies,
+                }) => {
+                  // build list of modules for which we'll send HMR updates
+                  const modulesToUpdate = [];
+                  Object.keys(dependenciesModulesCache).forEach(module => {
+                    if (!client.dependenciesModulesCache[module]) {
+                      modulesToUpdate.push(dependenciesModulesCache[module]);
+                    }
+                  });
+
                   // invalidate caches
                   client.dependenciesCache = dependenciesCache;
+                  client.dependenciesModulesCache = dependenciesModulesCache;
                   client.shallowDependencies = shallowDependencies;
+
+                  return modulesToUpdate;
                 });
             })
-            .then(() => {
+            .then(modulesToUpdate => {
               // make sure the file was modified is part of the bundle
               if (!client.shallowDependencies[filename]) {
                 return;
               }
 
-              return packagerServer.buildBundleForHMR({
-                platform: client.platform,
-                entryFile: filename,
-              })
-              .then(bundle => client.ws.send(bundle));
-            });
+              return packagerServer.buildBundleForHMR(modulesToUpdate);
+            })
+            .then(bundle => {
+              if (bundle) {
+                client.ws.send(bundle);
+              }
+            })
+            .done();
         });
 
         client.ws.on('error', e => {

@@ -120,17 +120,6 @@ const bundleOpts = declareOpts({
   },
 });
 
-const hmrBundleOpts = declareOpts({
-  entryFile: {
-    type: 'string',
-    required: true,
-  },
-  platform: {
-    type: 'string',
-    required: true,
-  },
-});
-
 const dependencyOpts = declareOpts({
   platform: {
     type: 'string',
@@ -199,13 +188,10 @@ class Server {
       // updates. Instead, send the HMR updates right away and once that
       // finishes, invoke any other file change listener.
       if (this._hmrFileChangeListener) {
-        this._hmrFileChangeListener(filePath).then(() => {
-          this._fileChangeListeners.forEach(listener => listener(filePath));
-        }).done();
+        this._hmrFileChangeListener(filePath);
         return;
       }
 
-      this._fileChangeListeners.forEach(listener => listener(filePath));
       this._rebuildBundles(filePath);
       this._informChangeWatchers();
     }, 50);
@@ -216,10 +202,6 @@ class Server {
       this._fileWatcher.end(),
       this._bundler.kill(),
     ]);
-  }
-
-  addFileChangeListener(listener) {
-    this._fileChangeListeners.push(listener);
   }
 
   setHMRFileChangeListener(listener) {
@@ -253,19 +235,16 @@ class Server {
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(options) {
-    return Promise.resolve().then(() => {
-      if (!options.platform) {
-        options.platform = getPlatformExtension(options.entryFile);
-      }
-
-      const opts = hmrBundleOpts(options);
-      return this._bundler.bundleForHMR(opts);
-    });
+  buildBundleForHMR(modules) {
+    return this._bundler.bundleForHMR(modules);
   }
 
   getShallowDependencies(entryFile) {
     return this._bundler.getShallowDependencies(entryFile);
+  }
+
+  getModuleForPath(entryFile) {
+    return this._bundler.getModuleForPath(entryFile);
   }
 
   getDependencies(options) {
