@@ -10,7 +10,7 @@
  * and Flow doesn't have a good way to enable getters and setters for
  * react-native without forcing all react-native users to also enable getters
  * and setters. Until we solve that issue, we can use this .flow file to
- * pretend like react-native doesn't use getters and setters 
+ * pretend like react-native doesn't use getters and setters
  *
  * @flow
  */
@@ -47,6 +47,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Switch: require('Switch'),
   PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
   RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
+  RefreshControl: require('RefreshControl'),
   SwitchAndroid: require('SwitchAndroid'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
