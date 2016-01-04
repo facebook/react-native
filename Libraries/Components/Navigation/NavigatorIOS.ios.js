@@ -172,6 +172,11 @@ type Event = Object;
  * });
  * ```
  *
+ * Props passed to the NavigatorIOS component will set the default configuration
+ * for the navigation bar. Props passed as properties to a route object will set
+ * the configuration for that route's navigation bar, overriding any props
+ * passed to the NavigatorIOS component.
+ *
  */
 var NavigatorIOS = React.createClass({
 
@@ -248,15 +253,45 @@ var NavigatorIOS = React.createClass({
        */
       wrapperStyle: View.propTypes.style,
 
+      /**
+       * A Boolean value that indicates whether the navigation bar is hidden
+       */
+      navigationBarHidden: PropTypes.bool,
+
+      /**
+       * A Boolean value that indicates whether to hide the 1px hairline shadow
+       */
+      shadowHidden: PropTypes.bool,
+
+      /**
+       * The color used for buttons in the navigation bar
+       */
+      tintColor: PropTypes.string,
+
+      /**
+       * The background color of the navigation bar
+       */
+      barTintColor: PropTypes.string,
+
+       /**
+       * The text color of the navigation bar title
+       */
+      titleTextColor: PropTypes.string,
+
+       /**
+       * A Boolean value that indicates whether the navigation bar is translucent
+       */
+      translucent: PropTypes.bool,
+
     }).isRequired,
 
     /**
-     * A Boolean value that indicates whether the navigation bar is hidden
+     * A Boolean value that indicates whether the navigation bar is hidden by default
      */
     navigationBarHidden: PropTypes.bool,
 
     /**
-     * A Boolean value that indicates whether to hide the 1px hairline shadow
+     * A Boolean value that indicates whether to hide the 1px hairline shadow by default
      */
     shadowHidden: PropTypes.bool,
 
@@ -267,22 +302,22 @@ var NavigatorIOS = React.createClass({
     itemWrapperStyle: View.propTypes.style,
 
     /**
-     * The color used for buttons in the navigation bar
+     * The default color used for buttons in the navigation bar
      */
     tintColor: PropTypes.string,
 
     /**
-     * The background color of the navigation bar
+     * The default background color of the navigation bar
      */
     barTintColor: PropTypes.string,
 
     /**
-     * The text color of the navigation bar title
+     * The default text color of the navigation bar title
      */
     titleTextColor: PropTypes.string,
 
     /**
-     * A Boolean value that indicates whether the navigation bar is translucent
+     * A Boolean value that indicates whether the navigation bar is translucent by default
      */
     translucent: PropTypes.bool,
 
@@ -610,8 +645,8 @@ var NavigatorIOS = React.createClass({
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
-          {...route}
           {...props}
+          {...route}
           style={[
             styles.stackItem,
             itemWrapperStyle,
