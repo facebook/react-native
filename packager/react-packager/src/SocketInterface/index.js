@@ -30,7 +30,9 @@ const SocketInterface = {
         const value = options[key];
         if (value) {
           hash.update(
-            typeof value === 'string' ? value : JSON.stringify(value)
+            options[key] != null && typeof value === 'string'
+              ? value
+              : JSON.stringify(value)
           );
         }
       });
