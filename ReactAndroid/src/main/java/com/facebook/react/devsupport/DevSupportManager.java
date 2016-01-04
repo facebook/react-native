@@ -155,7 +155,7 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
   public void handleException(Exception e) {
     if (mIsDevSupportEnabled) {
       FLog.e(ReactConstants.TAG, "Exception in native call from JS", e);
-      showNewError(e.getMessage(), StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE);
+      showNewJavaError(e.getMessage(), e);
     } else {
       if (e instanceof RuntimeException) {
         // Because we are rethrowing the original exception, the original stacktrace will be
@@ -165,6 +165,10 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
         throw new RuntimeException(e);
       }
     }
+  }
+
+  public void showNewJavaError(String message, Throwable e) {
+    showNewError(message, StackTraceHelper.convertJavaStackTrace(e), JAVA_ERROR_COOKIE);
   }
 
   /**
@@ -555,10 +559,9 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                 new Runnable() {
                   @Override
                   public void run() {
-                    showNewError(
+                    showNewJavaError(
                         mApplicationContext.getString(R.string.catalyst_remotedbg_error),
-                        StackTraceHelper.convertJavaStackTrace(cause),
-                        JAVA_ERROR_COOKIE);
+                        cause);
                   }
                 });
           }
@@ -590,15 +593,11 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
                   public void run() {
                     if (cause instanceof DebugServerException) {
                       DebugServerException debugServerException = (DebugServerException) cause;
-                      showNewError(
-                          debugServerException.description,
-                          StackTraceHelper.convertJavaStackTrace(cause),
-                          JAVA_ERROR_COOKIE);
+                      showNewJavaError(debugServerException.description, cause);
                     } else {
-                      showNewError(
+                      showNewJavaError(
                           mApplicationContext.getString(R.string.catalyst_jsload_error),
-                          StackTraceHelper.convertJavaStackTrace(cause),
-                          JAVA_ERROR_COOKIE);
+                          cause);
                     }
                   }
                 });
