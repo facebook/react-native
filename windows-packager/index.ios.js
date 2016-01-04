@@ -1,14 +1,13 @@
 'use strict';
 
 var React = require('react-native');
-var {AppRegistry} = React;
+var {AppRegistry, View} = React;
 
     var ReactRoot = React.createClass({
     render: function() {
         return (
-              <div>
-                Welcome to React Native!
-              </div>
+              <View elevation="1.0">
+              </View>
         );
     }
  });
