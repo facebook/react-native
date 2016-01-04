@@ -89,6 +89,14 @@ RCT_EXPORT_MODULE()
   [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
+RCT_EXPORT_METHOD(getStyle:(RCTResponseSenderBlock)callback)
+{
+  if (callback) {
+    NSString *value = [RCTSharedApplication() statusBarStyle] == UIStatusBarStyleLightContent ? @"light-content" : @"default";
+    callback(@[value]);
+  }
+}
+
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated)
 {

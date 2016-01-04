@@ -26,6 +26,15 @@ type StatusBarAnimation = $Enum<{
 
 var StatusBarIOS = {
 
+  getStyle(callback?: ?(result: string) => void) : Promise  {
+    return new Promise((resolve, reject) => {
+      RCTStatusBarManager.getStyle(function(value) {
+        callback && callback(value);
+        resolve(value);
+      });
+    });
+  },
+
   setStyle(style: StatusBarStyle, animated?: boolean) {
     animated = animated || false;
     RCTStatusBarManager.setStyle(style, animated);
