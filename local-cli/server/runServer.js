@@ -68,6 +68,7 @@ function getAppMiddleware(args, config) {
     cacheVersion: '3',
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
+    enableInternalTransforms: args['enable-internal-transforms'],
     assetRoots: args.assetRoots,
     assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
     resetCache: args.resetCache || args['reset-cache'],

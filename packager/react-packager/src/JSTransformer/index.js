@@ -52,7 +52,11 @@ const validateOpts = declareOpts({
   transformTimeoutInterval: {
     type: 'number',
     default: DEFAULT_MAX_CALL_TIME,
-  }
+  },
+  enableInternalTransforms: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Transformer {
@@ -60,6 +64,8 @@ class Transformer {
     const opts = this._opts = validateOpts(options);
 
     this._cache = opts.cache;
+    this._transformModulePath = opts.transformModulePath;
+    this._enableInternalTransforms = opts.enableInternalTransforms;
 
     if (opts.transformModulePath != null) {
       this._workers = workerFarm({
@@ -68,7 +74,7 @@ class Transformer {
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
         maxRetries: MAX_RETRIES,
-      }, opts.transformModulePath);
+      }, require.resolve('./worker'));
 
       this._transform = Promise.denodeify(this._workers);
     }
@@ -102,7 +108,11 @@ class Transformer {
           return this._transform({
             sourceCode,
             filename: filePath,
-            options,
+            options: {
+              ...options,
+              externalTransformModulePath: this._transformModulePath,
+              enableInternalTransforms: this._enableInternalTransforms,
+            },
           }).then(res => {
             if (res.error) {
               console.warn(

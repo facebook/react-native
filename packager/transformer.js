@@ -15,6 +15,7 @@ const fs = require('fs');
 const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
+const ReactPackager = require('./react-packager');
 
 const babelRC =
   json5.parse(
@@ -53,10 +54,13 @@ function transform(src, filename, options) {
     return plugin;
   });
 
+  config.plugins = config.plugins.concat(ReactPackager.getTransforms());
+
   const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {
-    code: result.code
+    code: result.code,
+    filename: filename,
   };
 }
 
