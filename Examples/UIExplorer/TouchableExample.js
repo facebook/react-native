@@ -229,7 +229,7 @@ var styles = StyleSheet.create({
   logBox: {
     padding: 20,
     margin: 10,
-    borderWidth: 1 / PixelRatio.get(),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
   },
@@ -237,7 +237,7 @@ var styles = StyleSheet.create({
     padding: 10,
     margin: 10,
     height: 120,
-    borderWidth: 1 / PixelRatio.get(),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
   },
