@@ -35,6 +35,7 @@ var ReactNative = {
   get Switch() { return require('Switch'); },
   get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
   get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
+  get RefreshControl() { return require('RefreshControl'); },
   get SwitchAndroid() { return require('SwitchAndroid'); },
   get SwitchIOS() { return require('SwitchIOS'); },
   get TabBarIOS() { return require('TabBarIOS'); },
