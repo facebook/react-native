@@ -101,6 +101,17 @@ RCT_EXPORT_MODULE()
                                                     userInfo:notification];
 }
 
++ (void)application:(__unused UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
+{
+  NSDictionary *errorInfo = @{
+    @"error" : @YES,
+    @"info": RCTJSErrorFromNSError(error)
+  };
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRemoteNotificationsRegistered
+                                                      object:self
+                                                    userInfo:errorInfo];
+}
+
 - (void)handleRemoteNotificationReceived:(NSNotification *)notification
 {
   [_bridge.eventDispatcher sendDeviceEventWithName:@"remoteNotificationReceived"
@@ -156,7 +167,6 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
   if ([app respondsToSelector:@selector(registerUserNotificationSettings:)]) {
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:(NSUInteger)types categories:nil];
     [app registerUserNotificationSettings:notificationSettings];
-    [app registerForRemoteNotifications];
   } else {
     [app registerForRemoteNotificationTypes:(NSUInteger)types];
   }

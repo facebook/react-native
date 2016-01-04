@@ -39,7 +39,17 @@ var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
  * And then in your AppDelegate implementation add the following:
  *
  *   ```
- *   // Required for the register event.
+ *    // Required to invoke register notifications
+ *    - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+ *    {
+ *     [RCTPushNotificationManager application:application didRegisterUserNotificationSettings:notificationSettings];
+ *    }
+ *    // Required for any errors during the registration
+ *    - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error 
+ *    {
+ *     [RCTPushNotificationManager application:application didFailToRegisterForRemoteNotificationsWithError:error];
+ *    }
+ *    // Required for the register event.
  *    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
  *    {
  *     [RCTPushNotificationManager application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
@@ -112,7 +122,8 @@ class PushNotificationIOS {
    * - `notification` : Fired when a remote notification is received. The
    *   handler will be invoked with an instance of `PushNotificationIOS`.
    * - `register`: Fired when the user registers for remote notifications. The
-   *   handler will be invoked with a hex string representing the deviceToken.
+   *   handler will be invoked with a hex string representing the deviceToken. 
+   *   If any error occurs then a JSON with error key `true`
    */
   static addEventListener(type: string, handler: Function) {
     invariant(
@@ -131,7 +142,7 @@ class PushNotificationIOS {
       listener = RCTDeviceEventEmitter.addListener(
         NOTIF_REGISTER_EVENT,
         (registrationInfo) => {
-          handler(registrationInfo.deviceToken);
+          handler(registrationInfo.deviceToken || registrationInfo);
         }
       );
     }
