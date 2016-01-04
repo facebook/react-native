@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,6 +57,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
   }
 
   private static final ArrayList<FlatViewGroup> LAYOUT_REQUESTS = new ArrayList<>();
+  private static final Rect VIEW_BOUNDS = new Rect();
 
   private @Nullable InvalidateCallback mInvalidateCallback;
   private DrawCommand[] mDrawCommands = DrawCommand.EMPTY_ARRAY;
@@ -299,7 +301,16 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
 
   /* package */ void drawNextChild(Canvas canvas) {
     View child = getChildAt(mDrawChildIndex);
-    super.drawChild(canvas, child, getDrawingTime());
+    if (child instanceof FlatViewGroup) {
+      super.drawChild(canvas, child, getDrawingTime());
+    } else {
+      // Make sure non-React Views clip properly.
+      canvas.save();
+      child.getHitRect(VIEW_BOUNDS);
+      canvas.clipRect(VIEW_BOUNDS);
+      super.drawChild(canvas, child, getDrawingTime());
+      canvas.restore();
+    }
 
     ++mDrawChildIndex;
   }
