@@ -17,6 +17,7 @@
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
+#include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -560,6 +561,9 @@ static jmethodID gLogMarkerMethod;
 static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
     return;
+  }
+  if (call.callId != -1) {
+    fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", call.callId);
   }
   auto newArray = ReadableNativeArray::newObjectCxxArgs(std::move(call.arguments));
   env->CallVoidMethod(callback, gCallbackMethod, call.moduleId, call.methodId, newArray.get());
