@@ -56,6 +56,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
+  private volatile int mTraceID = 0;
 
   // Access from native modules thread
   private final NativeModuleRegistry mJavaRegistry;
@@ -176,11 +177,22 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     incrementPendingJSCalls();
 
+    final int traceID = mTraceID++;
+    Systrace.startAsyncFlow(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        tracingName,
+        traceID);
+
     mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
         new Runnable() {
           @Override
           public void run() {
             mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
+
+            Systrace.endAsyncFlow(
+                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                tracingName,
+                traceID);
 
             if (mDestroyed) {
               return;
@@ -208,11 +220,22 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
     incrementPendingJSCalls();
 
+    final int traceID = mTraceID++;
+    Systrace.startAsyncFlow(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "<callback>",
+        traceID);
+
     mCatalystQueueConfiguration.getJSQueueThread().runOnQueue(
         new Runnable() {
           @Override
           public void run() {
             mCatalystQueueConfiguration.getJSQueueThread().assertIsOnThread();
+
+            Systrace.endAsyncFlow(
+                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                "<callback>",
+                traceID);
 
             if (mDestroyed) {
               return;
