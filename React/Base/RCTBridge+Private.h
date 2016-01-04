@@ -13,6 +13,10 @@
 
 @interface RCTBridge ()
 
+// Used for the profiler flow events between JS and native
+@property (nonatomic, assign) int64_t flowID;
+@property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
+
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
 
