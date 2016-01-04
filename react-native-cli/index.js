@@ -172,7 +172,7 @@ function createProject(name, verbose) {
     version: '0.0.1',
     private: true,
     scripts: {
-      start: 'react-native start'
+      start: 'node node_modules/react-native/local-cli/cli.js start'
     }
   };
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson));
