@@ -151,6 +151,27 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
+- (void) mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view didChangeDragState:(MKAnnotationViewDragState)newState fromOldState:(MKAnnotationViewDragState)oldState
+{
+    if ([view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
+        
+        RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
+        
+        if (mapView.onAnnotationDragChange) {
+            mapView.onAnnotationDragChange(@{
+                                             @"state": @(newState),
+                                             @"annotation": @{
+                                                     @"id": annotation.identifier,
+                                                     @"title": annotation.title ?: @"",
+                                                     @"subtitle": annotation.subtitle ?: @"",
+                                                     @"latitude": @(annotation.coordinate.latitude),
+                                                     @"longitude": @(annotation.coordinate.longitude)
+                                                     }
+                                             });
+        }
+    }
+}
+
 - (MKAnnotationView *)mapView:(RCTMap *)mapView
             viewForAnnotation:(RCTMapAnnotation *)annotation
 {
@@ -226,6 +247,8 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   } else {
     annotationView.rightCalloutAccessoryView = nil;
   }
+
+  annotationView.draggable = annotation.draggable;
 
   //http://stackoverflow.com/questions/32581049/mapkit-ios-9-detailcalloutaccessoryview-usage
   if ([annotationView respondsToSelector:@selector(detailCalloutAccessoryView)]) {
