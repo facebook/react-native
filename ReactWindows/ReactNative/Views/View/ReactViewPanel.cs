@@ -76,7 +76,7 @@ namespace ReactNative.Views.View
             _OnInterceptTouchEventListener.onInterceptTouchEvent(sender, ev);
         }
 
-        protected void SetBackgroundColor(string color)
+        public void SetBackgroundColor(string color)
         {
             this.Background = ParseColor(color);
         }
@@ -146,7 +146,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Sets an elevation 3D transformatin effect on the <see cref="ReactViewPanel"/>.
+        /// Sets an elevation 3D transformation effect on the <see cref="ReactViewPanel"/>.
         /// </summary>
         /// <param name="elevation">The positive negative elevation Z Index value of the view.</param>
         public void SetElevationEffect(float elevation)
@@ -154,7 +154,72 @@ namespace ReactNative.Views.View
             _Transform.TranslateZ = elevation;
             this.Transform3D = _Transform;
         }
-        
+
+        /// <summary>
+        /// Sets the distance to translate along the x-axis in pixels of the view panel.
+        /// </summary>
+        /// <param name="distance">The translation distance value along the x-axis.</param>
+        public void setTranslationX(float distance)
+        {
+            _Transform.TranslateX = distance;
+            this.Transform3D = _Transform;
+        }
+
+        /// <summary>
+        /// Sets the angle in degrees of clockwise rotation around the x-axis 
+        /// of the view panel.
+        /// </summary>
+        /// <param name="degrees">The x-axis rotation degrees.</param>
+        public void setRotationX(float degrees)
+        {
+            _Transform.RotationX = degrees;
+            this.Transform3D = _Transform;
+        }
+
+        /// <summary>
+        /// Sets the angle in degrees of clockwise rotation around the y-axis 
+        /// of the view panel.
+        /// </summary>
+        /// <param name="degrees">The y-axis rotation degrees.</param>
+        public void setRotationY(float degrees)
+        {
+            _Transform.RotationY = degrees;
+            this.Transform3D = _Transform;
+        }
+
+
+        /// <summary>
+        /// Sets the distance to translate along the y-axis in pixels of the view panel.
+        /// </summary>
+        /// <param name="value">The translation distance value along the y-axis.</param>
+        public void setTranslationY(float value)
+        {
+            _Transform.TranslateY = value;
+            this.Transform3D = _Transform;
+        }
+
+        /// <summary>
+        /// Sets the y-axis scale factor. You can use this property to stretch or shrink 
+        /// the panel  along the y-axis.
+        /// </summary>
+        /// <param name="factor">The y-axis scale factor.</param>
+        public void setScaleY(float factor)
+        {
+            _Transform.ScaleY = factor;
+            this.Transform3D = _Transform;
+        }
+
+        /// <summary>
+        /// Sets the y-axis scale factor. You can use this property to stretch or shrink 
+        /// the panel  along the x-axis.
+        /// </summary>
+        /// <param name="factor">The x-axis scale factor.</param>
+        public void setScaleX(float factor)
+        {
+            _Transform.ScaleX = factor;
+            this.Transform3D = _Transform;
+        }
+
         /// <summary>
         /// Retrieves the number of subviews for the current <see cref="ReactViewPanel"/> view.
         /// </summary>

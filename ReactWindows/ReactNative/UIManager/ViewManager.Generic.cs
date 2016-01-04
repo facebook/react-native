@@ -25,7 +25,7 @@ namespace ReactNative.UIManager
         /// collect properties exposed using the <see cref="ReactPropertyAttribute"/>
         /// annotation from the <see cref="ReactShadowNode"/> subclass.
         /// </summary>
-        public sealed override Type ShadowNodeType
+        public override Type ShadowNodeType
         {
             get
             {
@@ -43,7 +43,7 @@ namespace ReactNative.UIManager
         /// <see cref="ReactShadowNode"/>.
         /// </remarks>
         /// <returns>The shadow node instance.</returns>
-        public sealed override ReactShadowNode CreateShadowNodeInstance()
+        public override ReactShadowNode CreateShadowNodeInstance()
         {
             return CreateShadowNodeInstanceCore();
         }
@@ -84,7 +84,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="root">The root view.</param>
         /// <param name="extraData">The extra data.</param>
-        public sealed override void UpdateExtraData(FrameworkElement root, object extraData)
+        public override void UpdateExtraData(FrameworkElement root, object extraData)
         {
             UpdateExtraData((TFrameworkElement)root, extraData);
         }
