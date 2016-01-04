@@ -562,9 +562,13 @@ static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
     return;
   }
+
+  #ifdef WITH_FBSYSTRACE
   if (call.callId != -1) {
     fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", call.callId);
   }
+  #endif
+
   auto newArray = ReadableNativeArray::newObjectCxxArgs(std::move(call.arguments));
   env->CallVoidMethod(callback, gCallbackMethod, call.moduleId, call.methodId, newArray.get());
 }
