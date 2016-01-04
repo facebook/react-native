@@ -13,7 +13,7 @@ Default value is <code>false</code>.</p><p><strong>NOTE</strong>: You need to ad
 Info.plist to enable geolocation, otherwise it is going
 to <em>fail silently</em>!</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="style"></a>style <span class="propType"><a href="view.html#style">View#style</a></span> <a class="hash-link" href="#style">#</a></h4><div><p>Used to style and layout the <code>MapView</code>.  See <code>StyleSheet.js</code> and
 <code>ViewStylePropTypes.js</code> for more info.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="zoomenabled"></a>zoomEnabled <span class="propType">bool</span> <a class="hash-link" href="#zoomenabled">#</a></h4><div><p>If <code>false</code> the user won&#x27;t be able to pinch/zoom the map.
-Default value is <code>true</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="active"></a><span class="platform">android</span>active <span class="propType">bool</span> <a class="hash-link" href="#active">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="annotations"></a><span class="platform">ios</span>annotations <span class="propType">[{latitude: number, longitude: number, animateDrop: bool, title: string, subtitle: string, leftCalloutView: element, rightCalloutView: element, detailCalloutView: element, tintColor: ColorPropType, image: Image.propTypes.source, view: element, id: string, hasLeftCallout: bool, hasRightCallout: bool, onLeftCalloutPress: function, onRightCalloutPress: function}]</span> <a class="hash-link" href="#annotations">#</a></h4><div><p>Map annotations with title/subtitle.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="legallabelinsets"></a><span class="platform">ios</span>legalLabelInsets <span class="propType">{top: number, left: number, bottom: number, right: number}</span> <a class="hash-link" href="#legallabelinsets">#</a></h4><div><p>Insets for the map&#x27;s legal label, originally at bottom left of the map.
+Default value is <code>true</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="active"></a><span class="platform">android</span>active <span class="propType">bool</span> <a class="hash-link" href="#active">#</a></h4></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="annotations"></a><span class="platform">ios</span>annotations <span class="propType">[{latitude: number, longitude: number, animateDrop: bool, draggable: bool, onDragStateChange: function, title: string, subtitle: string, leftCalloutView: element, rightCalloutView: element, detailCalloutView: element, tintColor: ColorPropType, image: Image.propTypes.source, view: element, id: string, hasLeftCallout: bool, hasRightCallout: bool, onLeftCalloutPress: function, onRightCalloutPress: function}]</span> <a class="hash-link" href="#annotations">#</a></h4><div><p>Map annotations with title/subtitle.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="legallabelinsets"></a><span class="platform">ios</span>legalLabelInsets <span class="propType">{top: number, left: number, bottom: number, right: number}</span> <a class="hash-link" href="#legallabelinsets">#</a></h4><div><p>Insets for the map&#x27;s legal label, originally at bottom left of the map.
 See <code>EdgeInsetsPropType.js</code> for more information.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="maptype"></a><span class="platform">ios</span>mapType <span class="propType">enum(&#x27;standard&#x27;, &#x27;satellite&#x27;, &#x27;hybrid&#x27;)</span> <a class="hash-link" href="#maptype">#</a></h4><div><p>The map type to be displayed.</p><ul><li>standard: standard road map (default)</li><li>satellite: satellite view</li><li>hybrid: satellite view with roads and points of interest overlaid</li></ul></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="maxdelta"></a><span class="platform">ios</span>maxDelta <span class="propType">number</span> <a class="hash-link" href="#maxdelta">#</a></h4><div><p>Maximum size of area that can be displayed.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="mindelta"></a><span class="platform">ios</span>minDelta <span class="propType">number</span> <a class="hash-link" href="#mindelta">#</a></h4><div><p>Minimum size of area that can be displayed.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="overlays"></a><span class="platform">ios</span>overlays <span class="propType">[{coordinates: [{latitude: number, longitude: number}], lineWidth: number, strokeColor: ColorPropType, fillColor: ColorPropType, id: string}]</span> <a class="hash-link" href="#overlays">#</a></h4><div><p>Map overlays</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="showscompass"></a><span class="platform">ios</span>showsCompass <span class="propType">bool</span> <a class="hash-link" href="#showscompass">#</a></h4><div><p>If <code>false</code> compass won&#x27;t be displayed on the map.
 Default value is <code>true</code>.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="showspointsofinterest"></a><span class="platform">ios</span>showsPointsOfInterest <span class="propType">bool</span> <a class="hash-link" href="#showspointsofinterest">#</a></h4><div><p>If <code>false</code> points of interest won&#x27;t be displayed on the map.
 Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class="anchor" name="examples"></a><a class="edit-github" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/MapViewExample.js">Edit on GitHub</a>Examples <a class="hash-link" href="#examples">#</a></h3><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
@@ -22,6 +22,7 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   Image<span class="token punctuation">,</span>
   MapView<span class="token punctuation">,</span>
+  PropTypes<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
   TextInput<span class="token punctuation">,</span>
@@ -36,36 +37,23 @@ Default value is <code>true</code>.</p></div></div></div></div><div><h3><a class
   longitudeDelta<span class="token punctuation">:</span> <span class="token string">&#x27;0&#x27;</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-type MapRegion <span class="token operator">=</span> <span class="token punctuation">{</span>
-  latitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
-  longitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
-  latitudeDelta<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">,</span>
-  longitudeDelta<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-
-type MapRegionInputState <span class="token operator">=</span> <span class="token punctuation">{</span>
-  region<span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-
 <span class="token keyword">var</span> MapRegionInput <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
   propTypes<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    region<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span><span class="token function">shape<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-      latitude<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
-      longitude<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
-      latitudeDelta<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">,</span>
-      longitudeDelta<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">,</span>
+    region<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span><span class="token function">shape<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+      latitude<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+      longitude<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+      latitudeDelta<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">,</span>
+      longitudeDelta<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>number<span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    onChange<span class="token punctuation">:</span> React<span class="token punctuation">.</span>PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
+    onChange<span class="token punctuation">:</span> PropTypes<span class="token punctuation">.</span>func<span class="token punctuation">.</span>isRequired<span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> MapRegionInputState <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       region<span class="token punctuation">:</span> <span class="token punctuation">{</span>
         latitude<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
         longitude<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-        latitudeDelta<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-        longitudeDelta<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -167,36 +155,14 @@ type MapRegionInputState <span class="token operator">=</span> <span class="toke
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-type Annotations <span class="token operator">=</span> Array&lt;<span class="token punctuation">{</span>
-  animateDrop<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
-  latitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
-  longitude<span class="token punctuation">:</span> number<span class="token punctuation">,</span>
-  title<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
-  subtitle<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
-  hasLeftCallout<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
-  hasRightCallout<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
-  onLeftCalloutPress<span class="token operator">?</span><span class="token punctuation">:</span> Function<span class="token punctuation">,</span>
-  onRightCalloutPress<span class="token operator">?</span><span class="token punctuation">:</span> Function<span class="token punctuation">,</span>
-  tintColor<span class="token operator">?</span><span class="token punctuation">:</span> number <span class="token operator">|</span> string<span class="token punctuation">,</span>
-  image<span class="token operator">?</span><span class="token punctuation">:</span> any<span class="token punctuation">,</span>
-  id<span class="token operator">?</span><span class="token punctuation">:</span> string<span class="token punctuation">,</span>
-  view<span class="token operator">?</span><span class="token punctuation">:</span> ReactElement<span class="token punctuation">,</span>
-  leftCalloutView<span class="token operator">?</span><span class="token punctuation">:</span> ReactElement<span class="token punctuation">,</span>
-  rightCalloutView<span class="token operator">?</span><span class="token punctuation">:</span> ReactElement<span class="token punctuation">,</span>
-  detailCalloutView<span class="token operator">?</span><span class="token punctuation">:</span> ReactElement<span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
-type MapViewExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
-  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
-  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
-  mapRegionInput<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
-  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-
 <span class="token keyword">var</span> MapViewExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> MapViewExampleState <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      mapRegion<span class="token punctuation">:</span> undefined<span class="token punctuation">,</span>
+      mapRegionInput<span class="token punctuation">:</span> undefined<span class="token punctuation">,</span>
+      annotations<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
@@ -218,7 +184,7 @@ type MapViewExampleState <span class="token operator">=</span> <span class="toke
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  <span class="token function">_getAnnotations<span class="token punctuation">(</span></span>region<span class="token punctuation">)</span><span class="token punctuation">:</span> Annotations <span class="token punctuation">{</span>
+  <span class="token function">_getAnnotations<span class="token punctuation">(</span></span>region<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
       longitude<span class="token punctuation">:</span> region<span class="token punctuation">.</span>longitude<span class="token punctuation">,</span>
       latitude<span class="token punctuation">:</span> region<span class="token punctuation">.</span>latitude<span class="token punctuation">,</span>
@@ -252,16 +218,13 @@ type MapViewExampleState <span class="token operator">=</span> <span class="toke
 
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-type AnnotationExampleState <span class="token operator">=</span> <span class="token punctuation">{</span>
-  isFirstLoad<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
-  annotations<span class="token operator">?</span><span class="token punctuation">:</span> Annotations<span class="token punctuation">,</span>
-  mapRegion<span class="token operator">?</span><span class="token punctuation">:</span> MapRegion<span class="token punctuation">,</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> AnnotationExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
 
-  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> AnnotationExampleState <span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       isFirstLoad<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      annotations<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      mapRegion<span class="token punctuation">:</span> undefined<span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
@@ -351,6 +314,17 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
             <span class="token operator">/</span><span class="token operator">&gt;</span>
           &lt;<span class="token operator">/</span>TouchableOpacity<span class="token operator">&gt;</span>
         <span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Draggable pin&#x27;</span><span class="token punctuation">,</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> &lt;AnnotationExample style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>map<span class="token punctuation">}</span> annotation<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+        draggable<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        onDragStateChange<span class="token punctuation">:</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+          console<span class="token punctuation">.</span><span class="token function">log<span class="token punctuation">(</span></span><span class="token string">&#x27;Drag state: &#x27;</span> <span class="token operator">+</span> event<span class="token punctuation">.</span>state<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
       <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
