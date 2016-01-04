@@ -172,6 +172,11 @@ type Event = Object;
  * });
  * ```
  *
+ * Props passed to the NavigatorIOS component will set the default configuration
+ * for the navigation bar. Props passed as properties to a route object will set
+ * the configuration for that route's navigation bar, overriding any props
+ * passed to the NavigatorIOS component.
+ *
  */
 var NavigatorIOS = React.createClass({
 
@@ -247,12 +252,12 @@ var NavigatorIOS = React.createClass({
        * Styles for the navigation item containing the component
        */
       wrapperStyle: View.propTypes.style,
-  
+
       /**
        * A Boolean value that indicates whether the navigation bar is hidden
        */
       navigationBarHidden: PropTypes.bool,
-  
+
       /**
        * A Boolean value that indicates whether to hide the 1px hairline shadow
        */
@@ -262,12 +267,12 @@ var NavigatorIOS = React.createClass({
        * The color used for buttons in the navigation bar
        */
       tintColor: PropTypes.string,
- 
+
       /**
        * The background color of the navigation bar
        */
       barTintColor: PropTypes.string,
- 
+
        /**
        * The text color of the navigation bar title
        */
