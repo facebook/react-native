@@ -46,9 +46,8 @@ exports.examples = [{
             'Hello World',
             null,
             [
-              {text: 'OK', onPress: (text) => console.log('OK pressed')},
-            ],
-            'default'
+              {text: 'OK', onPress: (text) => console.log('OK pressed'), type: 'default'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -64,9 +63,9 @@ exports.examples = [{
             'Plain Text Entry',
             null,
             [
-              {text: 'Submit', onPress: (text) => console.log('Text: ' + text)},
-            ],
-            'plain-text'
+              {text: 'Submit', onPress: (text) => console.log('Text: ' + text), type: 'plain-text'},
+              {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -82,9 +81,9 @@ exports.examples = [{
             'Secure Text Entry',
             null,
             [
-              {text: 'Submit', onPress: (text) => console.log('Password: ' + text)},
-            ],
-            'secure-text'
+              {text: 'Submit', onPress: (text) => console.log('Password: ' + text), type: 'secure-text'},
+              {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -100,9 +99,9 @@ exports.examples = [{
             'Login & Password',
             null,
             [
-              {text: 'Submit', onPress: (details) => console.log('Login: ' + details.login + '; Password: ' + details.password)},
-            ],
-            'login-password'
+              {text: 'Submit', onPress: (details) => console.log('Login: ' + details.login + '; Password: ' + details.password), type: 'login-password'},
+              {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'}
+            ]
           )}>
 
           <View style={styles.button}>
