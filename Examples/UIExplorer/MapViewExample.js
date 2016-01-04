@@ -19,6 +19,7 @@ var React = require('react-native');
 var {
   Image,
   MapView,
+  PropTypes,
   StyleSheet,
   Text,
   TextInput,
@@ -33,36 +34,23 @@ var regionText = {
   longitudeDelta: '0',
 };
 
-type MapRegion = {
-  latitude: number,
-  longitude: number,
-  latitudeDelta?: number,
-  longitudeDelta?: number,
-};
-
-type MapRegionInputState = {
-  region: MapRegion,
-};
-
 var MapRegionInput = React.createClass({
 
   propTypes: {
-    region: React.PropTypes.shape({
-      latitude: React.PropTypes.number.isRequired,
-      longitude: React.PropTypes.number.isRequired,
-      latitudeDelta: React.PropTypes.number,
-      longitudeDelta: React.PropTypes.number,
+    region: PropTypes.shape({
+      latitude: PropTypes.number.isRequired,
+      longitude: PropTypes.number.isRequired,
+      latitudeDelta: PropTypes.number,
+      longitudeDelta: PropTypes.number,
     }),
-    onChange: React.PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
   },
 
-  getInitialState(): MapRegionInputState {
+  getInitialState() {
     return {
       region: {
         latitude: 0,
         longitude: 0,
-        latitudeDelta: 0,
-        longitudeDelta: 0,
       }
     };
   },
@@ -164,36 +152,14 @@ var MapRegionInput = React.createClass({
 
 });
 
-type Annotations = Array<{
-  animateDrop?: boolean,
-  latitude: number,
-  longitude: number,
-  title?: string,
-  subtitle?: string,
-  hasLeftCallout?: boolean,
-  hasRightCallout?: boolean,
-  onLeftCalloutPress?: Function,
-  onRightCalloutPress?: Function,
-  tintColor?: number | string,
-  image?: any,
-  id?: string,
-  view?: ReactElement,
-  leftCalloutView?: ReactElement,
-  rightCalloutView?: ReactElement,
-  detailCalloutView?: ReactElement,
-}>;
-type MapViewExampleState = {
-  isFirstLoad: boolean,
-  mapRegion?: MapRegion,
-  mapRegionInput?: MapRegion,
-  annotations?: Annotations,
-};
-
 var MapViewExample = React.createClass({
 
-  getInitialState(): MapViewExampleState {
+  getInitialState() {
     return {
       isFirstLoad: true,
+      mapRegion: undefined,
+      mapRegionInput: undefined,
+      annotations: [],
     };
   },
 
@@ -215,7 +181,7 @@ var MapViewExample = React.createClass({
     );
   },
 
-  _getAnnotations(region): Annotations {
+  _getAnnotations(region) {
     return [{
       longitude: region.longitude,
       latitude: region.latitude,
@@ -249,16 +215,13 @@ var MapViewExample = React.createClass({
 
 });
 
-type AnnotationExampleState = {
-  isFirstLoad: boolean,
-  annotations?: Annotations,
-  mapRegion?: MapRegion,
-};
 var AnnotationExample = React.createClass({
 
-  getInitialState(): AnnotationExampleState {
+  getInitialState() {
     return {
       isFirstLoad: true,
+      annotations: [],
+      mapRegion: undefined,
     };
   },
 
@@ -348,6 +311,17 @@ exports.examples = [
             />
           </TouchableOpacity>
         ),
+      }}/>;
+    }
+  },
+  {
+    title: 'Draggable pin',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        draggable: true,
+        onDragStateChange: (event) => {
+          console.log('Drag state: ' + event.state);
+        },
       }}/>;
     }
   },

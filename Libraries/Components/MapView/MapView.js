@@ -28,7 +28,16 @@ const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
+export type AnnotationDragState = $Enum<{
+  idle: string;
+  starting: string;
+  dragging: string;
+  canceling: string;
+  ending: string;
+}>;
+
 const MapView = React.createClass({
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
@@ -144,6 +153,18 @@ const MapView = React.createClass({
        * Whether the pin drop should be animated or not
        */
       animateDrop: React.PropTypes.bool,
+      
+      /**
+       * Whether the pin should be draggable or not
+       * @platform ios
+       */
+      draggable: React.PropTypes.bool,
+
+      /**
+       * Event that fires when the annotation drag state changes.
+       * @platform ios
+       */  
+      onDragStateChange: React.PropTypes.func,
 
       /**
        * Annotation title/subtile.
@@ -376,6 +397,24 @@ const MapView = React.createClass({
           }
         }
       };
+      var onAnnotationDragStateChange = (event: Event) => {
+        if (!annotations) {
+          return;
+        }
+        // Find the annotation with the id that was pressed
+        for (let i = 0, l = annotations.length; i < l; i++) {
+          let annotation = annotations[i];
+          if (annotation.id === event.nativeEvent.annotationId) {
+            // Update location
+            annotation.latitude = event.nativeEvent.latitude;
+            annotation.longitude = event.nativeEvent.longitude;
+            // Call callback
+            annotation.onDragStateChange &&
+              annotation.onDragStateChange(event.nativeEvent);
+            break;
+          }
+        }
+      }
     }
 
     // TODO: these should be separate events, to reduce bridge traffic
@@ -399,6 +438,7 @@ const MapView = React.createClass({
         overlays={overlays}
         onPress={onPress}
         onChange={onChange}
+        onAnnotationDragStateChange={onAnnotationDragStateChange}
       />
     );
   },
@@ -430,7 +470,11 @@ MapView.PinColors = PinColors && {
 };
 
 const RCTMap = requireNativeComponent('RCTMap', MapView, {
-  nativeOnly: {onChange: true, onPress: true}
+  nativeOnly: {
+    onAnnotationDragStateChange: true,
+    onChange: true,
+    onPress: true
+  }
 });
 
 module.exports = MapView;

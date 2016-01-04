@@ -21,5 +21,6 @@
 @property (nonatomic, assign) NSInteger leftCalloutViewIndex;
 @property (nonatomic, assign) NSInteger rightCalloutViewIndex;
 @property (nonatomic, assign) NSInteger detailCalloutViewIndex;
+@property (nonatomic, assign) BOOL draggable;
 
 @end
