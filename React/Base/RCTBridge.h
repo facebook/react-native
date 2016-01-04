@@ -123,11 +123,11 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
 /**
  * URL of the script that was loaded into the bridge.
  */
-@property (nonatomic, strong) NSURL *bundleURL;
+@property (nonatomic, strong, readonly) NSURL *bundleURL;
 
 /**
- * The class of the executor currently being used *or* to be used after the next
- * reload.
+ * The class of the executor currently being used. Changes to this value will
+ * take effect after the bridge is reloaded.
  */
 @property (nonatomic, strong) Class executorClass;
 

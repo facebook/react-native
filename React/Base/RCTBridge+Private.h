@@ -41,6 +41,11 @@
  */
 @property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
 
+/**
+ * Used by RCTDevMenu to override the `hot` param of the current bundleURL.
+ */
+@property (nonatomic, strong, readwrite) NSURL *bundleURL;
+
 @end
 
 @interface RCTBridge (RCTBatchedBridge)
