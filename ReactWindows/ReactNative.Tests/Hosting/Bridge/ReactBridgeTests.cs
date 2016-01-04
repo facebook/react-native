@@ -5,6 +5,8 @@ using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
 using ReactNative.Hosting.Bridge;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReactNative.Tests.Hosting.Bridge
@@ -135,9 +137,84 @@ namespace ReactNative.Tests.Hosting.Bridge
             });
         }
 
+        [TestMethod]
+        public void ReactBridge_ReactCallbacks()
+        {
+            using (var nativeThread = CreateNativeModulesThread())
+            {
+                var jsonResponse = JArray.Parse("[[42,17],[16,22],[[],[\"foo\"]]]");
+
+                var executor = new MockJavaScriptExecutor((module, method, args) =>
+                {
+                    return jsonResponse;
+                });
+
+                var callbacks = new List<Tuple<int, int, JArray>>();
+                var eventHandler = new AutoResetEvent(false);
+                var callback = new MockReactCallback(
+                    (moduleId, methodId, args) => callbacks.Add(Tuple.Create(moduleId, methodId, args)),
+                    () => eventHandler.Set());
+
+                var bridge = new ReactBridge(executor, callback, nativeThread);
+                bridge.CallFunction(0, 0, new JArray());
+
+                Assert.IsTrue(eventHandler.WaitOne());
+
+                Assert.AreEqual(2, callbacks.Count);
+
+                Assert.AreEqual(42, callbacks[0].Item1);
+                Assert.AreEqual(16, callbacks[0].Item2);
+                Assert.AreEqual(0, callbacks[0].Item3.Count);
+
+                Assert.AreEqual(17, callbacks[1].Item1);
+                Assert.AreEqual(22, callbacks[1].Item2);
+                Assert.AreEqual(1, callbacks[1].Item3.Count);
+                Assert.AreEqual("foo", callbacks[1].Item3[0].Value<string>());
+            }
+        }
+
+        [TestMethod]
+        public void ReactBridge_InvalidJavaScriptResponse()
+        {
+            var responses = new[]
+            {
+                JArray.Parse("[null,[],[]]"),
+                JArray.Parse("[[],null,[]]"),
+                JArray.Parse("[[],[],null]"),
+                JArray.Parse("[[42],[],[]]"),
+                JArray.Parse("[[],[42],[]]"),
+                JArray.Parse("[[],[],[42]]"),
+            };
+
+            var n = responses.Length;
+            using (var nativeThread = CreateNativeModulesThread())
+            {
+                var count = 0;
+                var executor = new MockJavaScriptExecutor((module, method, args) =>
+                {
+                    return responses[count++];
+                });
+
+                var bridge = new ReactBridge(executor, new MockReactCallback(), nativeThread);
+
+                for (var i = 0; i < n; ++i)
+                {
+                    AssertEx.Throws<InvalidOperationException>(() => bridge.CallFunction(0, 0, new JArray()));
+                }
+
+                Assert.AreEqual(n, count);
+            }
+        }
+
         private static MessageQueueThread CreateNativeModulesThread()
         {
-            return MessageQueueThread.Create(MessageQueueThreadSpec.Create("native", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
+            return CreateNativeModulesThread(ex => Assert.Fail(ex.ToString()));
+        }
+
+        private static MessageQueueThread CreateNativeModulesThread(Action<Exception> exceptionHandler)
+        {
+            return MessageQueueThread.Create(
+                MessageQueueThreadSpec.Create("native", MessageQueueThreadKind.BackgroundAnyThread), exceptionHandler);
         }
 
         class MockReactCallback : IReactCallback

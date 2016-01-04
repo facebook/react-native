@@ -4,6 +4,7 @@ using ReactNative.Tracing;
 using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
@@ -15,14 +16,14 @@ namespace ReactNative.UIManager
     /// native view hierarchy.
     /// 
     /// TODO:
-    /// 1. CSSLayoutContext
-    /// 2. View registration for root and children
-    /// 3. Shadow DOM item updates
-    /// 4. Animation support
-    /// 5. Anything related to measurement and resizing
+    /// 1. View registration for root and children
+    /// 2. Shadow DOM item updates
+    /// 3. Animation support
     /// </summary>
     public class UIImplementation
     {
+        private readonly int[] _measureBuffer = new int[4];
+
         private readonly ViewManagerRegistry _viewManagers;
         private readonly UIViewOperationQueue _operationsQueue;
         private readonly ShadowNodeRegistry _shadowNodeRegistry;
@@ -397,16 +398,60 @@ namespace ReactNative.UIManager
             _operationsQueue.EnqueueMeasure(reactTag, callback);
         }
 
-        internal void MeasureLayout(int tag, int ancestorTag, ICallback errorCallback, ICallback successCallback)
+        /// <summary>
+        /// Measures the view specified by <paramref name="tag"/> relative to
+        /// the given <paramref name="ancestorTag"/>. This means that the
+        /// returned x, y are relative to the origin x, y of the ancestor view.
+        /// </summary>
+        /// <param name="tag">The view tag.</param>
+        /// <param name="ancestorTag">The ancestor tag.</param>
+        /// <param name="errorCallback">Called in case of error.</param>
+        /// <param name="successCallback">Called with the measurements.</param>
+        /// <remarks>
+        /// The measure view and ancestor view may be the same, in which case
+        /// the x,y result would be 0,0 and the method will return the view
+        /// dimensions.
+        /// </remarks>
+        public void MeasureLayout(int tag, int ancestorTag, ICallback errorCallback, ICallback successCallback)
         {
-            // TODO
-            throw new NotImplementedException();
+            try
+            {
+                MeasureLayout(tag, ancestorTag, _measureBuffer);
+                var relativeX = _measureBuffer[0]; // TODO: convert pixels to DIP?
+                var relativeY = _measureBuffer[1]; // TODO: convert pixels to DIP?
+                var width = _measureBuffer[2]; // TODO: convert pixels to DIP?
+                var height = _measureBuffer[3]; // TODO: convert pixels to DIP?
+                successCallback.Invoke(relativeX, relativeY, width, height);
+            }
+            catch (Exception e)
+            {
+                errorCallback.Invoke(e.Message);
+            }
         }
 
-        internal void MeasureLayoutRelativeToParent(int tag, ICallback errorCallback, ICallback successCallback)
+        /// <summary>
+        /// Similar to <see cref="Measure(int, ICallback)"/> and 
+        /// <see cref="MeasureLayout(int, int, ICallback, ICallback)"/>,
+        /// measures relative to the immediate parent.
+        /// </summary>
+        /// <param name="tag">The view tag.</param>
+        /// <param name="errorCallback">Called in case of error.</param>
+        /// <param name="successCallback">Called with the measurements.</param>
+        public void MeasureLayoutRelativeToParent(int tag, ICallback errorCallback, ICallback successCallback)
         {
-            // TODO
-            throw new NotImplementedException();
+            try
+            {
+                MeasureLayoutRelativeToParent(tag, _measureBuffer);
+                var relativeX = _measureBuffer[0]; // TODO: convert pixels to DIP?
+                var relativeY = _measureBuffer[1]; // TODO: convert pixels to DIP?
+                var width = _measureBuffer[2]; // TODO: convert pixels to DIP?
+                var height = _measureBuffer[3]; // TODO: convert pixels to DIP?
+                successCallback.Invoke(relativeX, relativeY, width, height);
+            }
+            catch (Exception e)
+            {
+                errorCallback.Invoke(e);
+            }
         }
 
         /// <summary>
@@ -427,12 +472,6 @@ namespace ReactNative.UIManager
 
             _nativeViewHierarchyOptimizer.OnBatchComplete();
             _operationsQueue.DispatchViewUpdates(batchId);
-        }
-
-        internal void ConfigureNextLayoutAnimation(Dictionary<string, object> config, ICallback success, ICallback error)
-        {
-            // TODO
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -501,7 +540,6 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnSuspend()
         {
-            _operationsQueue.SuspendFrameCallback();
         }
 
         /// <summary>
@@ -509,7 +547,6 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnResume()
         {
-            _operationsQueue.ResumeFrameCallback();
         }
 
         /// <summary>
@@ -556,6 +593,11 @@ namespace ReactNative.UIManager
             return _shadowNodeRegistry.GetNode(reactTag);
         }
 
+        private ViewManager ResolveViewManager(string className)
+        {
+            return _viewManagers.Get(className);
+        }
+
         private void RemoveShadowNode(ReactShadowNode nodeToRemove)
         {
             _nativeViewHierarchyOptimizer.HandleRemoveNode(nodeToRemove);
@@ -568,9 +610,140 @@ namespace ReactNative.UIManager
             nodeToRemove.RemoveAllChildren();
         }
 
-        private ViewManager ResolveViewManager(string className)
+        private void MeasureLayout(int tag, int ancestorTag, int[] outputBuffer)
         {
-            return _viewManagers.Get(className);
+            var node = _shadowNodeRegistry.GetNode(tag);
+            var ancestor = _shadowNodeRegistry.GetNode(ancestorTag);
+            if (node == null || ancestor == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Tag '{0}' does not exist.",
+                        node == null ? tag : ancestorTag));
+            }
+
+            if (node != ancestor)
+            {
+                var currentParent = node.Parent;
+                while (currentParent != ancestor)
+                {
+                    if (currentParent == null)
+                    {
+                        throw new InvalidOperationException(
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                "Tag '{0}' is not an ancestor of tag '{1}'.",
+                                ancestorTag,
+                                tag));
+                    }
+
+                    currentParent = currentParent.Parent;
+                }
+            }
+
+            MeasureLayoutRelativeToVerifiedAncestor(node, ancestor, outputBuffer);
+        }
+
+        private void MeasureLayoutRelativeToParent(int tag, int[] outputBuffer)
+        {
+            var node = _shadowNodeRegistry.GetNode(tag);
+            if (node == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "No native view for tag '{0}' exists.",
+                        tag));
+            }
+
+            var parent = node.Parent;
+            if (parent == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "View with tag '{0}' does not have a parent.",
+                        tag));
+            }
+
+            MeasureLayoutRelativeToVerifiedAncestor(node, parent, outputBuffer);
+        }
+
+        private void MeasureLayoutRelativeToVerifiedAncestor(
+            ReactShadowNode node, 
+            ReactShadowNode ancestor, 
+            int[] outputBuffer)
+        {
+            var offsetX = 0;
+            var offsetY = 0;
+            if (node != ancestor)
+            {
+                offsetX = (int)Math.Round(node.LayoutX);
+                offsetY = (int)Math.Round(node.LayoutY);
+                var current = node.Parent;
+                while (current != ancestor)
+                {
+                    Debug.Assert(current != null);
+                    AssertNodeDoesNotNeedCustomLayoutForChildren(current);
+                    offsetX += (int)Math.Round(current.LayoutX);
+                    offsetY += (int)Math.Round(current.LayoutY);
+                    current = current.Parent;
+                }
+
+                AssertNodeDoesNotNeedCustomLayoutForChildren(ancestor);
+            }
+
+            outputBuffer[0] = offsetX;
+            outputBuffer[1] = offsetY;
+            outputBuffer[2] = node.ScreenWidth;
+            outputBuffer[3] = node.ScreenHeight;
+        }
+
+        private void AssertViewExists(int reactTag, [CallerMemberName]string caller = null)
+        {
+            if (_shadowNodeRegistry.GetNode(reactTag) == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Unable to execute operation '{0}' on view with non-existant tag '{1}'.",
+                        caller,
+                        reactTag));
+            }
+        }
+
+        private void AssertNodeDoesNotNeedCustomLayoutForChildren(ReactShadowNode node)
+        {
+            var viewManager = _viewManagers.Get(node.ViewClass);
+            if (viewManager == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Could not find view class '{0}'.",
+                        node.ViewClass));
+            }
+
+            var viewGroupManager = viewManager as ViewGroupManager;
+            if (viewGroupManager == null)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Trying to use view '{0}' as a parent but its manager is not a ViewGroupManager.",
+                        node.ViewClass));
+            }
+
+            if (viewGroupManager.NeedsCustomLayoutForChildren)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Trying to measure a view using measureLayout/measureLayoutRelativeToParent relative to " +
+                        "an ancestor that requires custom layout for it's children ('{0}'). Use measure instead.",
+                        node.ViewClass));
+            }
         }
 
         private void NotifyBeforeOnLayoutRecursive(ReactShadowNode cssNode)
@@ -641,11 +814,6 @@ namespace ReactNative.UIManager
             }
 
             cssNode.MarkUpdateSeen();
-        }
-
-        private void AssertViewExists(int reactTag, [CallerMemberName]string caller = null)
-        {
-            throw new NotImplementedException();
         }
     }
 }
