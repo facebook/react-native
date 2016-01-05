@@ -25,7 +25,7 @@ namespace ReactNative.UIManager
         /// <returns>The view instance.</returns>
         protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
         {
-            return new SizeMonitoringFrameLayout();
+            return new SizeMonitoringPanel();
         }
     }
 }

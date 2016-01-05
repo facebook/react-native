@@ -12,6 +12,6 @@ namespace ReactNative.UIManager
     /// </summary>
     public interface ISizeChangedListener
     {
-        void onSizeChanged(object sender, SizeChangedEventArgs e);
+        void OnSizeChanged(object sender, SizeChangedEventArgs e);
     }
 }

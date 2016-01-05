@@ -37,7 +37,7 @@ namespace ReactNative.UIManager
     /// manager will create a copy of <see cref="ThemedReactContext"/> that
     /// wraps the instance of <see cref="ReactContext"/> for each root view
     /// added to the manager (see
-    /// <see cref="AddRootView(int, SizeMonitoringFrameLayout, ThemedReactContext)"/>).
+    /// <see cref="AddRootView(int, SizeMonitoringPanel, ThemedReactContext)"/>).
     /// 
     /// TODO: 
     /// 1) AnimationRegistry
@@ -327,7 +327,7 @@ namespace ReactNative.UIManager
         /// <param name="tag">The tag.</param>
         /// <param name="view">The root view.</param>
         /// <param name="themedContext">The themed context.</param>
-        public void AddRootView(int tag, SizeMonitoringFrameLayout view, ThemedReactContext themedContext)
+        public void AddRootView(int tag, SizeMonitoringPanel view, ThemedReactContext themedContext)
         {
             AddRootViewGroup(tag, view, themedContext);
         }

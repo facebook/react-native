@@ -72,7 +72,7 @@ namespace ReactNative.UIManager
         /// <param name="height">The height.</param>
         /// <param name="context">The context.</param>
         public void RegisterRootView(
-            SizeMonitoringFrameLayout rootView,
+            SizeMonitoringPanel rootView,
             int tag,
             int width,
             int height,
@@ -80,6 +80,7 @@ namespace ReactNative.UIManager
         {
             var rootCssNode = CreateRootShadowNode();
             rootCssNode.ReactTag = tag;
+            rootCssNode.ThemedContext = context;
             rootCssNode.Width = width;
             rootCssNode.Height = height;
             _shadowNodeRegistry.AddRootNode(rootCssNode);

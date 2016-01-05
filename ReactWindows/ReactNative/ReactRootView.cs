@@ -3,48 +3,16 @@ using ReactNative.Shell;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
-namespace ReactNative.Views
+namespace ReactNative
 {
-    /// <summary>
-    /// Default root view for catalyst apps. Provides the ability to listen
-    /// for size changes so that a UI manager can re-layout its elements
-    /// TODO:
-    /// 1. Add support for events(i.e. define the sendEvents method)
-    /// 2. Add lifecycle functions to ensure the bundle is only loaded once
-    /// </summary>.
-    public sealed partial class ReactRootView : IRootView
+    public class ReactRootView : SizeMonitoringPanel, IRootView
     {
-        private IReactInstanceManager _ReactInstanceManager;
-        private string _JSModuleName;
+        private IReactInstanceManager _reactInstanceManager;
+        private string _jsModuleName;
         private int _rootTageNode;
-        private bool _IsAttachedToWindow;
-
-        public ReactRootView()
-        {
-            this.InitializeComponent();
-            base.Unloaded += onDetachedFromWindow;
-        }
-
-        private void onDetachedFromWindow(object sender, RoutedEventArgs e)
-        {
-            _ReactInstanceManager.DetachRootView(this);
-        }
+        private bool _isAttachedToWindow;
 
         public void OnChildStartedNativeGesture(RoutedEventArgs ev)
         {
@@ -93,7 +61,7 @@ namespace ReactNative.Views
         {
             get
             {
-                return _JSModuleName;
+                return _jsModuleName;
             }
         }
 
@@ -122,19 +90,24 @@ namespace ReactNative.Views
         /// <param name="moduleName">module to load</param>
         public async void StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
         {
-            _ReactInstanceManager = reactInstanceManager;
-            _JSModuleName = moduleName;
+            _reactInstanceManager = reactInstanceManager;
+            _jsModuleName = moduleName;
 
-            await _ReactInstanceManager.RecreateReactContextInBackgroundFromBundleFileAsync();
+            await _reactInstanceManager.RecreateReactContextInBackgroundFromBundleFileAsync();
 
             // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
             // mAttachScheduled flag, which will make this view startReactApplication itself to instance
             // manager once onMeasure is called.
-            if (!_IsAttachedToWindow)
+            if (!_isAttachedToWindow)
             {
-                _ReactInstanceManager.AttachMeasuredRootView(this);
-                _IsAttachedToWindow = true;
+                _reactInstanceManager.AttachMeasuredRootView(this);
+                _isAttachedToWindow = true;
             }
+        }
+
+        private void OnDetachedFromWindow(object sender, RoutedEventArgs e)
+        {
+            _reactInstanceManager.DetachRootView(this);
         }
     }
 }

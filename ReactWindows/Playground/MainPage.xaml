@@ -5,11 +5,10 @@
     xmlns:local="using:Playground"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:views="using:ReactNative.Views"
+    xmlns:rn="using:ReactNative"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <views:ReactRootView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="RootView">
-        </views:ReactRootView>
+        <rn:ReactRootView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="RootView" />
     </Grid>
 </Page>

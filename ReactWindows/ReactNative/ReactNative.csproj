@@ -189,6 +189,7 @@
     <Compile Include="Modules\Core\RCTDeviceEventEmitter.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
+    <Compile Include="ReactRootView.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="IReactPackage.cs" />
     <Compile Include="Shell\MainReactPackage.cs" />
@@ -227,7 +228,7 @@
     <Compile Include="UIManager\ReactPropertyBaseAttribute.cs" />
     <Compile Include="UIManager\ReactPropertyGroupAttribute.cs" />
     <Compile Include="UIManager\ISizeChangedListener.cs" />
-    <Compile Include="UIManager\SizeMonitoringFrameLayout.cs" />
+    <Compile Include="UIManager\SizeMonitoringPanel.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
     <Compile Include="UIManager\ReactPropertyAttribute.cs" />
     <Compile Include="UIManager\ReactShadowNode.cs" />
@@ -247,9 +248,6 @@
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
-    <Compile Include="Views\ReactRootView.xaml.cs">
-      <DependentUpon>ReactRootView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Touch\ICatalystInterceptingViewGroup.cs" />
     <Compile Include="Views\View\ReactPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
@@ -263,12 +261,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Views\ReactRootView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="JavaScript\lib\" />
