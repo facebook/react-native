@@ -83,8 +83,6 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
 
 The [Visual Studio Emulator for Android](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) is a free android emulator that is hardware accelerated via Hyper-V. It doesn't require you to install Visual Studio at all.
 
-It is free, very powerful, fast and hardware accelerated via Hyper-V technology.
-
 To use it with react-native you just have to add a key and value to your registry:
 
 1. Open the Run Command (Windows+R)
