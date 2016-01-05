@@ -32,8 +32,8 @@ namespace Playground
 
         private void LiftReactNativeApp()
         {
-            var jsModuleName = "index.windows";
-            var bundleAssetName = "ms-appx:///Resources/main.jsbundle";
+            var jsModuleName = "ReactRoot";
+            var bundleAssetName = "ms-appx:///Resources/main.dev.jsbundle";
             RootView?.LiftAsync(bundleAssetName, jsModuleName);
         }
        
