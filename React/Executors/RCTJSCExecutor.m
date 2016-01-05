@@ -283,20 +283,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
     };
 
-#ifndef __clang_analyzer__
-    weakBridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
-#endif
-    context[@"nativeTraceBeginAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
-      int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
-      CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
-    };
-
-    context[@"nativeTraceEndAsyncFlow"] = ^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
-      int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
-      _RCTProfileEndFlowEvent(@(newCookie));
-      CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
-    };
-
     context[@"nativeTraceBeginSection"] = ^(NSNumber *tag, NSString *profileName){
       static int profileCounter = 1;
       if (!profileName) {
