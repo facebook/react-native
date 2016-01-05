@@ -591,9 +591,13 @@ NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param)
   }
   NSURLComponents *components = [NSURLComponents componentsWithURL:URL
                                            resolvingAgainstBaseURL:YES];
-  for (NSURLQueryItem *item in components.queryItems.reverseObjectEnumerator) {
-    if ([item.name isEqualToString:param]) {
-      return item.value;
+
+  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
+  for (NSString *item in [components.percentEncodedQuery componentsSeparatedByString:@"&"].reverseObjectEnumerator) {
+    NSArray *keyValue = [item componentsSeparatedByString:@"="];
+    NSString *key = [keyValue.firstObject stringByRemovingPercentEncoding];
+    if ([key isEqualToString:param]) {
+      return [keyValue.lastObject stringByRemovingPercentEncoding];
     }
   }
   return nil;
@@ -607,22 +611,42 @@ NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value)
   }
   NSURLComponents *components = [NSURLComponents componentsWithURL:URL
                                            resolvingAgainstBaseURL:YES];
+
+  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
+
+  // Unhelpfully, iOS doesn't provide this set as a constant
+  static NSCharacterSet *URLParamCharacterSet;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSMutableCharacterSet *characterSet = [NSMutableCharacterSet new];
+    [characterSet formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    [characterSet removeCharactersInString:@"&=?"];
+    URLParamCharacterSet = [characterSet copy];
+  });
+
+  NSString *encodedParam =
+  [param stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
   __block NSInteger paramIndex = NSNotFound;
-  NSMutableArray *queryItems = [components.queryItems mutableCopy];
+  NSMutableArray *queryItems = [[components.percentEncodedQuery componentsSeparatedByString:@"&"] mutableCopy];
   [queryItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:
-   ^(NSURLQueryItem *item, NSUInteger i, BOOL *stop) {
-     if ([item.name isEqualToString:param]) {
+   ^(NSString *item, NSUInteger i, BOOL *stop) {
+     NSArray *keyValue = [item componentsSeparatedByString:@"="];
+     if ([keyValue.firstObject isEqualToString:encodedParam]) {
        paramIndex = i;
        *stop = YES;
      }
    }];
 
-  NSURLQueryItem *newItem = [NSURLQueryItem queryItemWithName:param value:value];
+  NSString *encodedValue =
+  [value stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
+  NSString *newItem = [encodedParam stringByAppendingFormat:@"=%@", encodedValue];
   if (paramIndex == NSNotFound) {
     [queryItems addObject:newItem];
   } else {
     [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
   }
-  components.queryItems = queryItems;
+  components.percentEncodedQuery = [queryItems componentsJoinedByString:@"&"];
   return components.URL;
 }
