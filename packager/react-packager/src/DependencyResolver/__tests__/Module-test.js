@@ -56,7 +56,7 @@ describe('Module', () => {
           fastfs,
           moduleCache: new ModuleCache(fastfs, cache),
           cache: cache,
-          depGraphHelpers: new DependencyGraphHelpers()
+          depGraphHelpers: new DependencyGraphHelpers(),
         });
 
         return module.getAsyncDependencies().then(actual =>
@@ -130,7 +130,7 @@ describe('Module', () => {
           moduleCache: new ModuleCache(fastfs, cache),
           cache,
           extractor,
-          depGraphHelpers: new DependencyGraphHelpers()
+          depGraphHelpers: new DependencyGraphHelpers(),
         });
       });
     }
