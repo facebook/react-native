@@ -52,6 +52,9 @@ namespace ReactNative
 
             return new List<INativeModule>
             {
+                new DeviceEventManagerModule(reactContext, _hardwareBackButtonHandler),
+                new ExceptionsManagerModule(),
+                new Timing(reactContext),
                 uiManagerModule,
             };
         }

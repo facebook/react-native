@@ -1,5 +1,6 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
 using ReactNative.Views.View;
 using System;
@@ -15,7 +16,10 @@ namespace ReactNative.Shell
     {
         public IReadOnlyList<INativeModule> CreateNativeModules(ReactApplicationContext reactContext)
         {
-            return new List<INativeModule>();
+            return new List<INativeModule>
+            {
+                new WebSocketModule(reactContext),
+            };
         }
 
         public IReadOnlyList<Type> CreateJavaScriptModulesConfig()

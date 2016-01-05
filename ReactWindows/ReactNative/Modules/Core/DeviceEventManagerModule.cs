@@ -58,7 +58,7 @@ namespace ReactNative.Modules.Core
         /// handle the back press itself.
         /// </summary>
         [ReactMethod]
-        public void InvokeDefaultBackPressHandler()
+        public void invokeDefaultBackPressHandler()
         {
             Context.RunOnDispatcherQueueThread(_invokeDefaultBackPressAction);
         }

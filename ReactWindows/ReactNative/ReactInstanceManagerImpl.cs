@@ -67,13 +67,9 @@ namespace ReactNative
         public IReadOnlyList<ViewManager> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
         {
             var allViewManagers = new List<ViewManager>();
-
-            foreach (var reactPackage in _packages)
-            {
-                var viewManagers = reactPackage.CreateViewManagers(catalystApplicationContext);
-                allViewManagers.AddRange(viewManagers);
-            }
-
+            _packages.ForEach(reactPackage => 
+                allViewManagers.AddRange(
+                    reactPackage.CreateViewManagers(catalystApplicationContext)));
             return allViewManagers;
         }
 
@@ -91,7 +87,6 @@ namespace ReactNative
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
 

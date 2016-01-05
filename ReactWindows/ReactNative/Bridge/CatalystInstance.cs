@@ -160,7 +160,6 @@ namespace ReactNative.Bridge
                 QueueConfiguration.JSQueueThread.AssertIsOnThread();
 
                 _jsExecutor.Initialize();
-                _bundleLoader.LoadScript(_jsExecutor);
 
                 using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactBridgeCtor"))
                 {
@@ -174,6 +173,8 @@ namespace ReactNative.Bridge
                 {
                     _bridge.SetGlobalVariable("__fbBatchedBridgeConfig", BuildModulesConfig());
                 }
+
+                _bundleLoader.LoadScript(_jsExecutor);
 
                 return _bridge;
             });
