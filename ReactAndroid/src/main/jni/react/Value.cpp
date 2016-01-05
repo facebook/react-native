@@ -23,12 +23,6 @@ Value::Value(Value&& other) :
   other.m_value = nullptr;
 }
 
-Value::~Value() {
-  if (m_value) {
-    JSValueUnprotect(m_context, m_value);
-  }
-}
-
 JSContextRef Value::context() const {
   return m_context;
 }
@@ -37,7 +31,6 @@ std::string Value::toJSONString(unsigned indent) const {
   JSValueRef exn;
   auto stringToAdopt = JSValueCreateJSONString(m_context, m_value, indent, &exn);
   if (stringToAdopt == nullptr) {
-    JSValueProtect(m_context, exn);
     std::string exceptionText = Value(m_context, exn).toString().str();
     throwJSExecutionException("Exception creating JSON string: %s", exceptionText.c_str());
   }
