@@ -13,12 +13,30 @@ import android.graphics.Canvas;
 
 /* package */ final class DrawView implements DrawCommand {
 
-  /* package */ static DrawView INSTANCE = new DrawView();
+  /* package */ static DrawView INSTANCE = new DrawView(0, 0, 0, 0);
 
-  private DrawView() {}
+  private final float mClipLeft;
+  private final float mClipTop;
+  private final float mClipRight;
+  private final float mClipBottom;
+
+  public DrawView(float clipLeft, float clipTop, float clipRight, float clipBottom) {
+    mClipLeft = clipLeft;
+    mClipTop = clipTop;
+    mClipRight = clipRight;
+    mClipBottom = clipBottom;
+  }
+
+  public boolean clipBoundsMatch(float clipLeft, float clipTop, float clipRight, float clipBottom) {
+    return mClipLeft == clipLeft && mClipTop == clipTop
+        && mClipRight == clipRight && mClipBottom == clipBottom;
+  }
 
   @Override
   public void draw(FlatViewGroup parent, Canvas canvas) {
+    canvas.save();
+    canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
     parent.drawNextChild(canvas);
+    canvas.restore();
   }
 }

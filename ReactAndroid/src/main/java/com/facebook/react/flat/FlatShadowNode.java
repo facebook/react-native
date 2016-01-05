@@ -11,6 +11,7 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactProp;
@@ -43,8 +44,8 @@ import com.facebook.react.uimanager.ViewProps;
   private int mViewTop;
   private int mViewRight;
   private int mViewBottom;
-  private boolean mMountsToView;
   private boolean mBackingViewIsCreated;
+  private @Nullable DrawView mDrawView;
   private @Nullable DrawBackgroundColor mDrawBackground;
   private int mMoveToIndexInParent;
   private boolean mIsOverflowVisible = true;
@@ -253,16 +254,24 @@ import com.facebook.react.uimanager.ViewProps;
   }
 
   /* package */ final void forceMountToView() {
-    if (!mMountsToView) {
-      mMountsToView = true;
+    if (mDrawView == null) {
+      mDrawView = DrawView.INSTANCE;
       if (getParent() != null) {
         invalidate();
       }
     }
   }
 
+  /* package */ final DrawView collectDrawView(float left, float top, float right, float bottom) {
+    if (!Assertions.assumeNotNull(mDrawView).clipBoundsMatch(left, top, right, bottom)) {
+      mDrawView = new DrawView(left, top, right, bottom);
+    }
+
+    return mDrawView;
+  }
+
   /* package */ final boolean mountsToView() {
-    return mMountsToView;
+    return mDrawView != null;
   }
 
   /* package */ final boolean isBackingViewCreated() {

@@ -425,7 +425,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
       addNativeChild(node);
       if (!parentIsAndroidView) {
-        mDrawCommands.add(DrawView.INSTANCE);
+        mDrawCommands.add(node.collectDrawView(
+            parentClipLeft,
+            parentClipTop,
+            parentClipRight,
+            parentClipBottom));
       }
 
       collectStateForMountableNode(
