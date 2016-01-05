@@ -15,3 +15,5 @@ console.error([
   'npm uninstall -g react-native',
   'npm install -g react-native-cli'
 ].join('\n'));
+
+process.exit(1);
