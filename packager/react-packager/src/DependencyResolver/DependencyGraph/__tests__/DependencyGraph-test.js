@@ -2424,7 +2424,7 @@ describe('DependencyGraph', function() {
                 ' * @providesModule wontWork',
                 ' */',
                 'hi();',
-              ].join('\n')
+              ].join('\n'),
             },
           },
           // This part of the dep graph is meant to emulate internal facebook infra.
@@ -2442,7 +2442,7 @@ describe('DependencyGraph', function() {
                 ' */',
                 'hiFromInternalPackage();',
               ].join('\n'),
-            }
+            },
           },
         },
         // we need to support multiple roots and using haste between them
@@ -2453,7 +2453,7 @@ describe('DependencyGraph', function() {
             ' */',
             'wazup()',
           ].join('\n'),
-        }
+        },
       });
 
       var dgraph = new DependencyGraph({
@@ -2472,7 +2472,7 @@ describe('DependencyGraph', function() {
                 'wontWork',
                 'ember',
                 'internalVendoredPackage',
-                'anotherIndex'
+                'anotherIndex',
               ],
               isAsset: false,
               isAsset_DEPRECATED: false,
