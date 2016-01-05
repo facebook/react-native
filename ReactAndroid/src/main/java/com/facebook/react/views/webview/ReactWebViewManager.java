@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.SystemClock;
@@ -325,9 +326,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   }
 
   @Override
-  public void onDropViewInstance(ThemedReactContext reactContext, WebView webView) {
+  public void onDropViewInstance(Context reactContext, WebView webView) {
     super.onDropViewInstance(reactContext, webView);
-    reactContext.removeLifecycleEventListener((ReactWebView) webView);
+    ((ThemedReactContext) reactContext).removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
   }
 }
