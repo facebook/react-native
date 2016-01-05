@@ -14,6 +14,11 @@ package com.facebook.react.flat;
  */
 /* package */ final class FlatRootShadowNode extends FlatShadowNode {
 
+  /* package */ FlatRootShadowNode() {
+    forceMountToView();
+    signalBackingViewIsCreated();
+  }
+
   private boolean mIsUpdated;
 
   /**
