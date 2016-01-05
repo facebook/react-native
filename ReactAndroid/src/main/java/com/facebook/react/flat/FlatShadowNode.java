@@ -254,6 +254,10 @@ import com.facebook.react.uimanager.ViewProps;
   }
 
   /* package */ final void forceMountToView() {
+    if (isVirtual()) {
+      return;
+    }
+
     if (mDrawView == null) {
       mDrawView = DrawView.INSTANCE;
       if (getParent() != null) {
