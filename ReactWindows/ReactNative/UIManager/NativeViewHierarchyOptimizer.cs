@@ -157,7 +157,7 @@ namespace ReactNative.UIManager
             // the time this method is called, these views have already been
             // removed from the shadow hierarchy and the indices are no longer
             // useful to operate on.
-            for (var i = 0; i< tagsToRemove.Length; ++i)
+            for (var i = 0; i < tagsToRemove.Length; ++i)
             {
                 var tagToRemove = tagsToRemove[i];
                 var delete = tagsToDelete.Contains(tagToRemove);

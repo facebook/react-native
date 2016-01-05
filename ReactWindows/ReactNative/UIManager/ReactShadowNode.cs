@@ -43,7 +43,7 @@ namespace ReactNative.UIManager
         /// <see cref="NativeViewHierarchyManager"/> will not try to perform
         /// manage children operations on such views.
         /// </summary>
-        public bool IsVirtualAnchor
+        public virtual bool IsVirtualAnchor
         {
             get
             {
@@ -534,7 +534,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Marks a node as updated.
         /// </summary>
-        protected void MarkUpdated()
+        protected virtual void MarkUpdated()
         {
             if (_nodeUpdated)
             {

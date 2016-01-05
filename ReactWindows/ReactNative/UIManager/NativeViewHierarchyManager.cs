@@ -134,7 +134,7 @@ namespace ReactNative.UIManager
             {
                 var viewToUpdate = ResolveView(tag);
                 // TODO: call viewToUpdate.Measure()
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
         }
 

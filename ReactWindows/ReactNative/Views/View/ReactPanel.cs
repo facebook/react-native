@@ -14,7 +14,7 @@ namespace ReactNative.Views.View
     /// aren't common, lazy initializes most of the storage needed for them. Also supports
     /// 3D transformations such as elevation depth.  
     /// </summary>
-    public class ReactPanel : Panel, ICatalystInterceptingViewGroup, ReactPointerEventsView
+    public class ReactPanel : Grid, ICatalystInterceptingViewGroup, ReactPointerEventsView
     {
         private IOnInterceptTouchEventListener _onInterceptTouchEventListener;
         private PointerEvents _PointerEvents = PointerEvents.Auto;
