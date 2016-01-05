@@ -187,7 +187,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
                                               moduleProvider:nil
                                                launchOptions:nil];
     id executor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
-    RUN_RUNLOOP_WHILE(!(weakContext = [executor valueForKey:@"context"]));
+    RUN_RUNLOOP_WHILE(!(weakContext = [executor valueForKey:@"_context"]));
     XCTAssertNotNil(weakContext, @"RCTJavaScriptContext should have been created");
     (void)bridge;
   }
