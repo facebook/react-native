@@ -117,7 +117,7 @@ namespace ReactNative.Views.View
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        protected override void ReceiveCommand(ReactPanel view, int commandId, JArray args)
         {
             if (args.Count != 1)
             {
@@ -128,6 +128,7 @@ namespace ReactNative.Views.View
             {
                 var simulateViewClick = new FrameworkElementAutomationPeer(view);
                 IInvokeProvider invokeProv = simulateViewClick.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+
                 invokeProv.Invoke();
             }
         }

@@ -36,7 +36,7 @@ namespace ReactNative.UIManager
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        public sealed override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
         {
             ReceiveCommand((TPanel)view, commandId, args);
         }
