@@ -44,7 +44,7 @@ var ToolbarAndroidExample = React.createClass({
   },
   render: function() {
     return (
-      <UIExplorerPage title={statics.title}>
+      <UIExplorerPage title={this.statics.title}>
         <UIExplorerBlock title="Toolbar with title/subtitle and actions">
           <ToolbarAndroid
             actions={toolbarActions}
