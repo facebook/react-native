@@ -18,7 +18,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
  */
 @DoNotStrip
 public interface JavaJSExecutor {
-  public static class ProxyExecutorException extends Exception {
+  interface Factory {
+    JavaJSExecutor create() throws Exception;
+  }
+
+  class ProxyExecutorException extends Exception {
     public ProxyExecutorException(Throwable cause) {
       super(cause);
     }
