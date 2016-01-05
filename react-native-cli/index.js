@@ -83,11 +83,16 @@ if (cli) {
   switch (args[0]) {
   case 'init':
     if (args[1]) {
-      var verbose = process.argv.indexOf('--verbose') >= 0;
-      init(args[1], verbose);
+      var logLevel = '';
+      if (process.argv.indexOf('--verbose') >= 0) {
+        logLevel = 'verbose';
+      } else if (process.argv.indexOf('--debug') >= 0) {
+        logLevel = 'debug';
+      }
+      init(args[1], logLevel);
     } else {
       console.error(
-        'Usage: react-native init <ProjectName> [--verbose]'
+        'Usage: react-native init <ProjectName> [--debug|--verbose]'
       );
       process.exit(1);
     }
@@ -123,17 +128,17 @@ function validatePackageName(name) {
   }
 }
 
-function init(name, verbose) {
+function init(name, logLevel) {
   validatePackageName(name);
 
   if (fs.existsSync(name)) {
-    createAfterConfirmation(name, verbose);
+    createAfterConfirmation(name, logLevel);
   } else {
-    createProject(name, verbose);
+    createProject(name, logLevel);
   }
 }
 
-function createAfterConfirmation(name, verbose) {
+function createAfterConfirmation(name, logLevel) {
   prompt.start();
 
   var property = {
@@ -146,7 +151,7 @@ function createAfterConfirmation(name, verbose) {
 
   prompt.get(property, function (err, result) {
     if (result.yesno[0] === 'y') {
-      createProject(name, verbose);
+      createProject(name, logLevel);
     } else {
       console.log('Project initialization canceled');
       process.exit();
@@ -154,7 +159,7 @@ function createAfterConfirmation(name, verbose) {
   });
 }
 
-function createProject(name, verbose) {
+function createProject(name, logLevel) {
   var root = path.resolve(name);
   var projectName = path.basename(root);
 
@@ -180,16 +185,20 @@ function createProject(name, verbose) {
 
   console.log('Installing react-native package from npm...');
 
-  run(root, projectName, verbose);
+  run(root, projectName, logLevel);
 }
 
-function run(root, projectName, verbose) {
+function run(root, projectName, logLevel) {
   var args = ['install', '--save'];
-  if (verbose){
+  if (logLevel === 'verbose') {
     args.push('--verbose');
   }
   args.push('react-native');
-  var proc = spawn('npm', args, {stdio: 'inherit'});
+  var spawnArgs = {};
+  if (logLevel === 'debug' || logLevel === 'verbose') {
+    spawnArgs = {stdio: 'inherit'};
+  }
+  var proc = spawn('npm', args, spawnArgs);
   proc.on('close', function (code) {
     if (code !== 0) {
       console.error('`npm install --save react-native` failed');
