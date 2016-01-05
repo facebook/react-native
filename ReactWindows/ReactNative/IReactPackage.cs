@@ -51,6 +51,6 @@ namespace ReactNative.Modules.Core
         /// </summary>
         /// <param name="reactContext">The react application context.</param>
         /// <returns>The list of view managers.</returns>
-        IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateViewManagers(ReactApplicationContext reactContext);
+        IReadOnlyList<ViewManager> CreateViewManagers(ReactApplicationContext reactContext);
     }
 }

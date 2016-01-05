@@ -1,6 +1,7 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Modules.Core;
 using ReactNative.UIManager;
+using ReactNative.Views.View;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
@@ -19,13 +20,32 @@ namespace ReactNative.Shell
 
         public IReadOnlyList<Type> CreateJavaScriptModulesConfig()
         {
-            return new List<Type>();
+            return new List<Type>(0);
         }
 
-        public IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateViewManagers(
+        public IReadOnlyList<ViewManager> CreateViewManagers(
             ReactApplicationContext reactContext)
         {
-            return new List<ViewManager<FrameworkElement, ReactShadowNode>>();
+            return new List<ViewManager>
+            {
+                //new ReactDrawerLayoutManager(),
+                //new ReactHorizontalScrollViewManager(),
+                //new ReactImageManager(),
+                //new ReactProgressBarViewManager(),
+                //new ReactRawTextManager(),
+                //new RecyclerViewBackedScrollViewManager(),
+                //new ReactScrollViewManager(),
+                //new ReactSwitchManager(),
+                //new ReactTextInputManager(),
+                //new ReactTextViewManager(),
+                //new ReactToolbarManager(),
+                new ReactViewManager(),
+                //new ReactViewPagerManager(),
+                //new ReactTextInlineImageViewManager(),
+                //new ReactVirtualTextViewManager(),
+                //new SwipeRefreshLayoutManager(),
+                //new ReactWebViewManager(),
+            };
         }
     }
 }
