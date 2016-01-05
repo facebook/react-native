@@ -205,8 +205,21 @@ namespace ReactNative.UIManager
         public void SetPosition(string position)
         {
             PositionType = position != null
-                ? Parse<CSSPositionType>(position)
+                ? ParsePositionType(position)
                 : CSSPositionType.Relative;
+        }
+
+        private static CSSPositionType ParsePositionType(string position)
+        {
+            switch (position.ToLowerInvariant())
+            {
+                case "relative":
+                    return CSSPositionType.Relative;
+                case "absolute":
+                    return CSSPositionType.Absolute;
+                default:
+                    throw new ArgumentException("Invalid position type.", position);
+            }
         }
 
         private static T Parse<T>(string value)

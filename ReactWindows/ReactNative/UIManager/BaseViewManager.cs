@@ -29,14 +29,6 @@ namespace ReactNative.UIManager
         private const string PROP_OPACITY = "opacity";
 
         /// <summary>
-        /// Sets the background color of the <see cref="ReactPanel"/>.
-        /// </summary>
-        /// <param name="view"></param>
-        /// <param name="backgroundColor"></param>
-        [ReactProperty(PROP_BACKGROUND_COLOR, DefaultInteger = 0x00FFFFFF /* Colors.Transparent */, CustomType = "Color")]
-        public abstract void SetBackgroundColor(TFrameworkElement view, int backgroundColor);
-
-        /// <summary>
         /// Set's the  <typeparamref name="TFrameworkElement"/> styling layout 
         /// properties, based on the <see cref="JObject"/> map.
         /// </summary>

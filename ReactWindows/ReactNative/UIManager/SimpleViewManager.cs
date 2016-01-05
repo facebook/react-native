@@ -14,7 +14,7 @@ namespace ReactNative.UIManager
         /// Creates a <see cref="LayoutShadowNode"/> instance.
         /// </summary>
         /// <returns>The shadow node instance.</returns>
-        public override ReactShadowNode CreateShadowNodeInstance()
+        protected sealed override LayoutShadowNode CreateShadowNodeInstanceCore()
         {
             return new LayoutShadowNode();
         }
@@ -26,7 +26,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="root">The root view.</param>
         /// <param name="extraData">The extra data.</param>
-        public override void UpdateExtraData(FrameworkElement root, object extraData)
+        protected override void UpdateExtraData(TFrameworkElement root, object extraData)
         {
         }
     }
