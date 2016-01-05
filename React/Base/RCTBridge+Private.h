@@ -13,6 +13,10 @@
 
 @interface RCTBridge ()
 
+// Used for the profiler flow events between JS and native
+@property (nonatomic, assign) int64_t flowID;
+@property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
+
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
 
@@ -40,6 +44,11 @@
  * Exposed for the RCTBatchedBridge
  */
 @property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
+
+/**
+ * Used by RCTDevMenu to override the `hot` param of the current bundleURL.
+ */
+@property (nonatomic, strong, readwrite) NSURL *bundleURL;
 
 @end
 

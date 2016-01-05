@@ -267,6 +267,7 @@ RCT_EXPORT_MODULE()
   self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
+  self.hotLoadingEnabled = [_settings[@"hotLoadingEnabled"] ?: @YES boolValue];
   self.showFPS = [_settings[@"showFPS"] ?: @NO boolValue];
   self.executorClass = NSClassFromString(_executorOverride ?: _settings[@"executorClass"]);
 }
@@ -321,7 +322,7 @@ RCT_EXPORT_MODULE()
     } else {
       RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
     }
-  } else if (!(sourceCodeModule.scriptURL).fileURL) {
+  } else if (!sourceCodeModule.scriptURL.fileURL) {
     // Live reloading is disabled when running from bundled JS file
     _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:sourceCodeModule.scriptURL];
   }
@@ -420,6 +421,13 @@ RCT_EXPORT_MODULE()
     }]];
   }
 
+  if ([self hotLoadingAvailable]) {
+    NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Loading" : @"Enable Hot Loading";
+    [items addObject:[RCTDevMenuItem buttonItemWithTitle:hotLoadingTitle handler:^{
+      weakSelf.hotLoadingEnabled = !_hotLoadingEnabled;
+    }]];
+  }
+
   [items addObjectsFromArray:_extraMenuItems];
 
   return items;
@@ -483,8 +491,6 @@ RCT_EXPORT_METHOD(show)
 
 RCT_EXPORT_METHOD(reload)
 {
-  _jsLoaded = NO;
-  _liveReloadURL = nil;
   [_bridge reload];
 }
 
@@ -523,6 +529,26 @@ RCT_EXPORT_METHOD(reload)
   }
 }
 
+- (BOOL)hotLoadingAvailable
+{
+  return !_bridge.bundleURL.fileURL // Only works when running from server
+  && [_bridge.delegate respondsToSelector:@selector(bridgeSupportsHotLoading:)]
+  && [_bridge.delegate bridgeSupportsHotLoading:_bridge];
+}
+
+- (void)setHotLoadingEnabled:(BOOL)enabled
+{
+  _hotLoadingEnabled = enabled;
+  [self updateSetting:@"hotLoadingEnabled" value:@(_hotLoadingEnabled)];
+
+  BOOL actuallyEnabled = [self hotLoadingAvailable] && _hotLoadingEnabled;
+  if (RCTGetURLQueryParam(_bridge.bundleURL, @"hot").boolValue != actuallyEnabled) {
+    _bridge.bundleURL = RCTURLByReplacingQueryParam(_bridge.bundleURL, @"hot",
+                                                    actuallyEnabled ? @"true" : @"false");
+    [_bridge reload];
+  }
+}
+
 - (void)setExecutorClass:(Class)executorClass
 {
   if (_executorClass != executorClass) {
@@ -543,7 +569,7 @@ RCT_EXPORT_METHOD(reload)
     }
 
     _bridge.executorClass = executorClass;
-    [self reload];
+    [_bridge reload];
   }
 }
 

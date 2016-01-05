@@ -21,19 +21,32 @@ const HMRClient = {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
 
+    // TODO(martinb) receive host and port as parameters
+    const host = 'localhost';
+    const port = '8081';
+
     // need to require WebSocket inside of `enable` function because the
     // this module is defined as a `polyfillGlobal`.
     // See `InitializeJavascriptAppEngine.js`
     const WebSocket = require('WebSocket');
 
-    // TODO(martinb): parametrize the url and receive entryFile to minimize
-    // the number of updates we want to receive from the server.
     const activeWS = new WebSocket(
-      'ws://localhost:8081/hot?platform=' + platform + '&bundleEntry=' +
-      bundleEntry.replace('.bundle', '.js')
+      `ws://${host}:${port}/hot?platform=${platform}&` +
+      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`
     );
     activeWS.onerror = (e) => {
-      console.error('[Hot Module Replacement] Unexpected error', e);
+      throw new Error(
+`Hot loading isn't working because it cannot connect to the development server.
+
+Ensure the following:
+- Node server is running and available on the same network
+- run 'npm start' from react-native root
+- Node server URL is correctly set in AppDelegate
+
+URL: ${host}:${port}
+
+Error: ${e.message}`
+      );
     };
     activeWS.onmessage = (m) => {
       eval(m.data); // eslint-disable-line no-eval
