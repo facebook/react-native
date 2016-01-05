@@ -64,14 +64,14 @@ namespace ReactNative
         /// </summary>
         /// <param name="catalystApplicationContext">react application instance</param>
         /// <returns></returns>
-        public IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
+        public IReadOnlyList<ViewManager> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext)
         {
-            var allViewManagers = new List<ViewManager<FrameworkElement, ReactShadowNode>>();
+            var allViewManagers = new List<ViewManager>();
 
             foreach (var reactPackage in _packages)
             {
                 var viewManagers = reactPackage.CreateViewManagers(catalystApplicationContext);
-                allViewManagers.Concat(viewManagers);
+                allViewManagers.AddRange(viewManagers);
             }
 
             return allViewManagers;
@@ -327,13 +327,13 @@ namespace ReactNative
             }
 
             /// <summary>
-            /// Concats a list of packages to the builder list.
+            /// Concatenates a list of packages to the builder list.
             /// </summary>
             /// <param name="packages">Client requested package list to include</param>
             /// <returns></returns>
             public Builder AddPackages(List<IReactPackage> packages)
             {
-                _reactPackages.Concat(packages);
+                _reactPackages.AddRange(packages);
                 return this;
             }
 

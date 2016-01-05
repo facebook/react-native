@@ -1,147 +1,176 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Views.View;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Media3D;
 
-namespace ReactNative.UIManager {
+namespace ReactNative.UIManager
+{
     /// <summary>
     /// Base class that should be suitable for the majority of subclasses of <see cref="ViewManager"/>.
     /// It provides support for base view properties such as backgroundColor, opacity, etc.
     /// </summary>
-    public abstract class BaseViewManager : ViewManager<ReactViewPanel, LayoutShadowNode>
+    /// <typeparam name="TFrameworkElement">Type of framework element.</typeparam>
+    /// <typeparam name="TLayoutShadowNode">Type of shadow node.</typeparam>
+    public abstract class BaseViewManager<TFrameworkElement, TLayoutShadowNode> : ViewManager<TFrameworkElement, TLayoutShadowNode>
+        where TFrameworkElement : FrameworkElement
+        where TLayoutShadowNode : LayoutShadowNode
     {
-        private static readonly string PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
-        private static readonly string PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
-        private static readonly string PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
-        private static readonly string PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
-        private static readonly string PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
-        private static readonly string PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
-        private static readonly string PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
+        private const string PROP_BACKGROUND_COLOR = ViewProperties.BackgroundColor;
+        private const string PROM_DECOMPOSED_MATRIX = "decomposedMatrix";
+        private const string PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
+        private const string PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
+        private const string PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
+        private const string PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
+        private const string PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
+        private const string PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
+        private const string PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
+        private const string PROP_OPACITY = "opacity";
 
         /// <summary>
-        /// Sets the background color of the <see cref="ReactViewPanel"/>.
+        /// Sets the background color of the <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="view"></param>
         /// <param name="backgroundColor"></param>
-       [ReactProperty("backgroundColor", CustomType="Color")]
-       public void setBackgroundColor(ReactViewPanel view, string backgroundColor)
-        {
-            view.SetBackgroundColor(backgroundColor);
-        }
+        [ReactProperty(PROP_BACKGROUND_COLOR, DefaultInteger = 0x00FFFFFF /* Colors.Transparent */, CustomType = "Color")]
+        public abstract void SetBackgroundColor(TFrameworkElement view, int backgroundColor);
 
         /// <summary>
-        /// Set's the <see cref="ReactViewPanel"/> styling layout properties, based on the <see cref="JObject"/> map.
+        /// Set's the  <typeparamref name="TFrameworkElement"/> styling layout 
+        /// properties, based on the <see cref="JObject"/> map.
         /// </summary>
-        /// <param name="view">The view to style.</param>
+        /// <param name="view">The framework element instance.</param>
         /// <param name="decomposedMatrix">The requested styling properties to set.</param>
-        [ReactProperty("C")]
-        public void setDecomposedMatrix(ReactViewPanel view, JObject decomposedMatrix)
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_ROTATE)]
+        public void SetDecomposedMatrix(TFrameworkElement view, JObject decomposedMatrix)
         {
             if (decomposedMatrix == null)
             {
-                resetTransformMatrix(view);
+                ResetTransformMatrix(view);
             }
             else {
-                setTransformMatrix(view, decomposedMatrix);
+                SetTransformMatrix(view, decomposedMatrix);
             }
         }
 
         /// <summary>
-        /// Sets the opacity of the <see cref="ReactViewPanel"/>.
+        /// Sets the opacity of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The WPF view panel.</param>
-        /// <param name="opacity"></param>
-        [ReactProperty("opacity", DefaultFloat = 1)]
-        public void setOpacity(ReactViewPanel view, float opacity)
+        /// <param name="view">The framework element instance.</param>
+        /// <param name="opacity">The opacity value.</param>
+        [ReactProperty(PROP_OPACITY, DefaultDouble = 1.0)]
+        public void SetOpacity(TFrameworkElement view, double opacity)
         {
             view.Opacity = opacity;
         }
 
         /// <summary>
-        /// Sets the scaleX property of the <see cref="ReactViewPanel"/>.
+        /// Sets the scaleX property of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The WPF view panel.</param>
+        /// <param name="view">The framework element instance.</param>
         /// <param name="factor">The scaling factor.</param>
-        [ReactProperty("scaleX", DefaultFloat = 1)]
-        public void setScaleX(ReactViewPanel view, float factor)
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_SCALE_X, DefaultDouble = 1.0)]
+        public void SetScaleX(TFrameworkElement view, double factor)
         {
-            view.setScaleX(factor);
+            var transform = EnsureTransform(view);
+            transform.ScaleX = factor;
         }
 
         /// <summary>
-        /// Sets the scaleY property of the <see cref="ReactViewPanel"/>.
+        /// Sets the scaleY property of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The WPF view panel.</param>
+        /// <param name="view">The framework element instance.</param>
         /// <param name="factor">The scaling factor.</param>
-        [ReactProperty("scaleY", DefaultFloat = 1)]
-        public void setScaleY(ReactViewPanel view, float factor)
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_SCALE_Y, DefaultDouble = 1.0)]
+        public void SetScaleY(TFrameworkElement view, double factor)
         {
-            view.setScaleY(factor);
+            var transform = EnsureTransform(view);
+            transform.ScaleY = factor;
         }
 
         /// <summary>
-        /// Sets the translateX property of the <see cref="ReactViewPanel"/>.
+        /// Sets the translateX property of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
         /// <param name="view">The WPF view panel.</param>
         /// <param name="factor">The scaling factor.</param>
-        [ReactProperty("translationX", DefaultFloat = 1)]
-        public void setTranslationX(ReactViewPanel view, float distance)
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_X, DefaultDouble = 1.0)]
+        public void SetTranslationX(TFrameworkElement view, double distance)
         {
-            view.setTranslationX(distance);
+            var transform = EnsureTransform(view);
+            transform.TranslateX = distance;
         }
 
         /// <summary>
-        /// Sets the translateY property of the <see cref="ReactViewPanel"/>.
+        /// Sets the translateY property of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
         /// <param name="view">The WPF view panel.</param>
         /// <param name="factor">The scaling factor.</param>
-        [ReactProperty("translationY", DefaultFloat = 1)]
-        public void setTranslationY(ReactViewPanel view, float distance)
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, DefaultDouble = 1.0)]
+        public void SetTranslationY(TFrameworkElement view, double distance)
         {
-            view.setTranslationY(distance);
+            var transform = EnsureTransform(view);
+            transform.TranslateY = distance;
         }
 
-        /// <summary>
-        /// Retrieves the property using the given name and type.
-        /// </summary>
-        /// <param name="decomposedMatrix">The JSON property map.</param>
-        /// <param name="name">The property name.</param>
-        /// <param name="type">The property type.</param>
-        /// <returns></returns>
-        public static object GetProperty(JObject decomposedMatrix, string name, Type type)
+        private void SetRotationX(TFrameworkElement view, double rotation)
         {
-            var token = default(JToken);
-            if (decomposedMatrix.TryGetValue(name, out token))
-            {
-                return token.ToObject(type);
-            }
-
-            return null;
+            var transform = EnsureTransform(view);
+            transform.RotationX = rotation;
         }
 
-        private static void setTransformMatrix(ReactViewPanel view, JObject matrix)
+        private void SetRotationY(TFrameworkElement view, double rotation)
         {
-            view.setTranslationX((float)GetProperty(matrix, PROP_DECOMPOSED_MATRIX_TRANSLATE_X, typeof(float)));
-            view.setTranslationY((float)GetProperty(matrix, PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, typeof(float)));
-            view.setRotationX((float)GetProperty(matrix, PROP_DECOMPOSED_MATRIX_ROTATE_X, typeof(float)));
-            view.setRotationY((float)GetProperty(matrix, PROP_DECOMPOSED_MATRIX_ROTATE_Y, typeof(float)));
-            view.setScaleY((float)GetProperty(matrix, PROP_DECOMPOSED_MATRIX_SCALE_Y, typeof(float)));
-            view.setScaleX((float)GetProperty(matrix, PROP_DECOMPOSED_MATRIX_SCALE_X, typeof(float)));
+            var transform = EnsureTransform(view);
+            transform.RotationY = rotation;
+        }
+
+        private void SetTransformMatrix(TFrameworkElement view, JObject matrix)
+        {
+            // TODO: eliminate closure in action.
+            LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_TRANSLATE_X, value => SetTranslationX(view, value));
+            LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, value => SetTranslationY(view, value));
+            LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_ROTATE_X, value => SetRotationX(view, value));
+            LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_ROTATE_Y, value => SetRotationY(view, value));
+            LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_SCALE_X, value => SetScaleX(view, value));
+            LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_SCALE_Y, value => SetScaleY(view, value));
         }
         
-        private static void resetTransformMatrix(ReactViewPanel view)
+        private void ResetTransformMatrix(TFrameworkElement view)
         {
-            view.setTranslationX(0);
-            view.setTranslationY(0);
-            view.setRotationX(0);
-            view.setRotationY(0);
-            view.setScaleX(1);
-            view.setScaleY(1);
+            SetTranslationX(view, 0.0);
+            SetTranslationY(view, 0.0);
+            SetRotationX(view, 0.0);
+            SetRotationY(view, 0.0);
+            SetScaleX(view, 1.0);
+            SetScaleY(view, 1.0);
+        }
+
+        private static void LookupAndDo<T>(JObject matrix, string name, Action<T> onFound)
+        {
+            var token = default(JToken);
+            if (matrix.TryGetValue(name, out token))
+            {
+                onFound(token.ToObject<T>());
+            }
+        }
+
+        private static CompositeTransform3D EnsureTransform(FrameworkElement view)
+        {
+            var transform = view.Transform3D;
+            var compositeTransform = transform as CompositeTransform3D;
+            if (transform != null && compositeTransform == null)
+            {
+                throw new InvalidOperationException("Unknown transform set on framework element.");
+            }
+
+            if (compositeTransform == null)
+            {
+                compositeTransform = new CompositeTransform3D();
+                view.Transform3D = compositeTransform;
+            }
+
+            return compositeTransform;
         }
     }
 }
