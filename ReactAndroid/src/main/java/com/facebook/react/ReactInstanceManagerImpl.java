@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -47,7 +46,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
-import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevServerHelper;
@@ -203,9 +201,6 @@ import com.facebook.systrace.Systrace;
       UIImplementationProvider uiImplementationProvider,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     initializeSoLoaderIfNecessary(applicationContext);
-
-    // TODO(9577825): remove this
-    ApplicationHolder.setApplication((Application) applicationContext.getApplicationContext());
 
     mApplicationContext = applicationContext;
     mJSBundleFile = jsBundleFile;
