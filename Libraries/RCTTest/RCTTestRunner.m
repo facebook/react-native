@@ -136,7 +136,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     // (we can only do this now, since it's been lazily initialized)
     id jsExecutor = [bridge valueForKeyPath:@"batchedBridge.javaScriptExecutor"];
     if ([jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
-      weakJSContext = [jsExecutor valueForKey:@"context"];
+      weakJSContext = [jsExecutor valueForKey:@"_context"];
     }
     [rootView removeFromSuperview];
 

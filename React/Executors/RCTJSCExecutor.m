@@ -215,99 +215,113 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   return [self initWithJavaScriptThread:javaScriptThread context:context];
 }
 
-- (void)setUp
+- (RCTJavaScriptContext *)context
+{
+  RCTAssertThread(_javaScriptThread, @"Must be called on JS thread.");
+
+  if (!self.isValid) {
+    return nil;
+  }
+
+  if (!_context) {
+    JSContext *context = [JSContext new];
+    _context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
+  }
+
+  return _context;
+}
+
+- (void)addSynchronousHookWithName:(NSString *)name usingBlock:(id)block
 {
   __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
+    weakSelf.context.context[name] = block;
+  }];
+}
+
+- (void)setUp
+{
+  __weak RCTJSCExecutor *weakSelf = self;
+  [self addSynchronousHookWithName:@"noop" usingBlock:^{}];
+
+  [self addSynchronousHookWithName:@"nativeLoggingHook" usingBlock:^(NSString *message, NSNumber *logLevel) {
+    RCTLogLevel level = RCTLogLevelInfo;
+    if (logLevel) {
+      level = MAX(level, logLevel.integerValue);
+    }
+
+    _RCTLogJavaScriptInternal(level, message);
+  }];
+
+  [self addSynchronousHookWithName:@"nativeRequireModuleConfig" usingBlock:^NSString *(NSString *moduleName) {
     RCTJSCExecutor *strongSelf = weakSelf;
-    if (!strongSelf.isValid) {
+    if (!strongSelf.valid) {
+      return nil;
+    }
+
+    NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
+    if (config) {
+      return RCTJSONStringify(config, NULL);
+    }
+
+    return nil;
+  }];
+
+  [self addSynchronousHookWithName:@"nativeFlushQueueImmediate" usingBlock:^(NSArray<NSArray *> *calls){
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid || !calls) {
       return;
     }
 
-    if (!strongSelf->_context) {
-      JSContext *context = [JSContext new];
-      strongSelf->_context = [[RCTJavaScriptContext alloc] initWithJSContext:context];
-    }
+    [strongSelf->_bridge handleBuffer:calls batchEnded:NO];
+  }];
 
-    __weak RCTBridge *weakBridge = strongSelf->_bridge;
-    JSContext *context = strongSelf->_context.context;
-
-    context[@"noop"] = ^{};
-
-    context[@"nativeLoggingHook"] = ^(NSString *message, NSNumber *logLevel) {
-      RCTLogLevel level = RCTLogLevelInfo;
-      if (logLevel) {
-        level = MAX(level, logLevel.integerValue);
-      }
-
-      _RCTLogJavaScriptInternal(level, message);
-    };
-
-    context[@"nativeRequireModuleConfig"] = ^NSString *(NSString *moduleName) {
-      if (!weakSelf.valid) {
-        return nil;
-      }
-      NSArray *config = [weakBridge configForModuleName:moduleName];
-      if (config) {
-        return RCTJSONStringify(config, NULL);
-      }
-      return nil;
-    };
-
-    context[@"nativeFlushQueueImmediate"] = ^(NSArray<NSArray *> *calls){
-      if (!weakSelf.valid || !calls) {
-        return;
-      }
-      [weakBridge handleBuffer:calls batchEnded:NO];
-    };
-
-    context[@"nativePerformanceNow"] = ^{
-      return @(CACurrentMediaTime() * 1000);
-    };
+  [self addSynchronousHookWithName:@"nativePerformanceNow" usingBlock:^{
+    return @(CACurrentMediaTime() * 1000);
+  }];
 
 #if RCT_DEV
+  if (RCTProfileIsProfiling()) {
+    // Cheating, since it's not a "hook", but meh
+    [self addSynchronousHookWithName:@"__RCTProfileIsProfiling" usingBlock:@YES];
+  }
 
-    if (RCTProfileIsProfiling()) {
-      context[@"__RCTProfileIsProfiling"] = @YES;
-    }
-
-    CFMutableDictionaryRef cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
-    context[@"nativeTraceBeginAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
-      NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
-      CFDictionarySetValue(cookieMap, (const void *)cookie, (const void *)newCookie);
-    };
-
-    context[@"nativeTraceEndAsyncSection"] = ^(uint64_t tag, NSString *name, NSUInteger cookie) {
-      NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
-      RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, nil);
-      CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
-    };
-
-    context[@"nativeTraceBeginSection"] = ^(NSNumber *tag, NSString *profileName){
-      static int profileCounter = 1;
-      if (!profileName) {
-        profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
-      }
-
-      RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
-    };
-
-    context[@"nativeTraceEndSection"] = ^(NSNumber *tag) {
-      RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
-    };
-
-    RCTInstallJSCProfiler(_bridge, strongSelf->_context.ctx);
-
-    for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
-      [[NSNotificationCenter defaultCenter] addObserver:strongSelf
-                                               selector:@selector(toggleProfilingFlag:)
-                                                   name:event
-                                                 object:nil];
-    }
-
-#endif
-
+  CFMutableDictionaryRef cookieMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+  [self addSynchronousHookWithName:@"nativeTraceBeginAsyncSection" usingBlock:^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    NSUInteger newCookie = RCTProfileBeginAsyncEvent(tag, name, nil);
+    CFDictionarySetValue(cookieMap, (const void *)cookie, (const void *)newCookie);
   }];
+
+  [self addSynchronousHookWithName:@"nativeTraceEndAsyncSection" usingBlock:^(uint64_t tag, NSString *name, NSUInteger cookie) {
+    NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
+    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, nil);
+    CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
+  }];
+
+  [self addSynchronousHookWithName:@"nativeTraceBeginSection" usingBlock:^(NSNumber *tag, NSString *profileName){
+    static int profileCounter = 1;
+    if (!profileName) {
+      profileName = [NSString stringWithFormat:@"Profile %d", profileCounter++];
+    }
+
+    RCT_PROFILE_BEGIN_EVENT(tag.longLongValue, profileName, nil);
+  }];
+
+  [self addSynchronousHookWithName:@"nativeTraceEndSection" usingBlock:^(NSNumber *tag) {
+    RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
+  }];
+
+  [self executeBlockOnJavaScriptQueue:^{
+    RCTInstallJSCProfiler(_bridge, self.context.ctx);
+  }];
+
+  for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(toggleProfilingFlag:)
+                                                 name:event
+                                               object:nil];
+  }
+#endif
 }
 
 - (void)toggleProfilingFlag:(NSNotification *)notification
