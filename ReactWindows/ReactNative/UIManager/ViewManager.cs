@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Touch;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;

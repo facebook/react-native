@@ -67,10 +67,10 @@ namespace ReactNative
             };
         }
 
-        public IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateViewManagers(
+        public IReadOnlyList<ViewManager> CreateViewManagers(
             ReactApplicationContext reactContext)
         {
-            return new List<ViewManager<FrameworkElement, ReactShadowNode>>();
+            return new List<ViewManager>(0);
         }
     }
 }
