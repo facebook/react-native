@@ -26,7 +26,7 @@ class ModuleCache {
         moduleCache: this,
         cache: this._cache,
         extractor: this._extractRequires,
-        depGraphHelpers: this._depGraphHelpers
+        depGraphHelpers: this._depGraphHelpers,
       });
     }
     return this._moduleCache[filePath];
