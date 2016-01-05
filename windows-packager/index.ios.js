@@ -7,6 +7,7 @@ var {AppRegistry, View} = React;
     render: function() {
         return (
               <View elevation="1.0">
+	          <Text>Hello React Native</Text>
               </View>
         );
     }
