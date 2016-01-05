@@ -114,13 +114,13 @@ var WebView = React.createClass({
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
-    javaScriptEnabledAndroid: PropTypes.bool,
+    javaScriptEnabled: PropTypes.bool,
 
     /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
-    domStorageEnabledAndroid: PropTypes.bool,
+    domStorageEnabled: PropTypes.bool,
 
     /**
      * Sets the JS to be injected when the webpage loads.
@@ -200,6 +200,16 @@ var WebView = React.createClass({
         this.props.onShouldStartLoadWithRequest(event.nativeEvent);
       RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
+
+    var {javaScriptEnabled, domStorageEnabled} = this.props;
+    if (this.props.javaScriptEnabledAndroid) {
+      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
+      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
+    }
+    if (this.props.domStorageEnabledAndroid) {
+      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
+      domStorageEnabled = this.props.domStorageEnabledAndroid;
+    }
 
     var webView =
       <RCTWebView
