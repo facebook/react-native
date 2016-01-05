@@ -8,27 +8,66 @@
  */
 'use strict';
 
-var transformer = require('./transformer');
+var babel = require('babel-core');
+var Transforms = require('../transforms');
 
-module.exports = function (data, callback) {
+// Runs internal transforms on the given sourceCode. Note that internal
+// transforms should be run after the external ones to ensure that they run on
+// Javascript code
+function internalTransforms(sourceCode, filename, options) {
+  var result = babel.transform(sourceCode, {
+    retainLines: true,
+    compact: true,
+    comments: false,
+    filename: filename,
+    sourceFileName: filename,
+    sourceMaps: false,
+    plugins: Transforms.getAll()
+  });
+
+  return {
+    code: result.code,
+    filename: filename,
+  };
+}
+
+function onExternalTransformDone(data, callback, error, externalOutput) {
   var result;
-  try {
-    result = transformer.transform(
-      data.transformSets,
-      data.sourceCode,
+  if (data.options.enableInternalTransforms) {
+    result = internalTransforms(
+      externalOutput.code,
+      externalOutput.filename,
       data.options
     );
-  } catch (e) {
-    return callback(null, {
-      error: {
-        lineNumber: e.lineNumber,
-        column: e.column,
-        message: e.message,
-        stack: e.stack,
-        description: e.description
-      }
-    });
+  } else {
+    result = externalOutput;
   }
 
   callback(null, result);
+}
+
+module.exports = function(data, callback) {
+  try {
+    if (data.options.externalTransformModulePath) {
+      var externalTransformModule = require(
+        data.options.externalTransformModulePath
+      );
+      externalTransformModule(
+        data,
+        onExternalTransformDone.bind(null, data, callback)
+      );
+    } else {
+      onExternalTransformDone(
+        data,
+        callback,
+        null,
+        {
+          code: data.sourceCode,
+          filename: data.filename
+        }
+      );
+    }
+  } catch (e) {
+    callback(e);
+  }
 };

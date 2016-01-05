@@ -81,21 +81,31 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'fbjs-haste',
-        'react-haste',
+        'fbjs',
+        'react',
         'react-native',
         // Parse requires AsyncStorage. They will
         // change that to require('react-native') which
         // should work after this release and we can
         // remove it from here.
         'parse',
+        'react-transform-hmr',
       ],
       platforms: ['ios', 'android'],
+      preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
     });
 
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
+  }
+
+  getShallowDependencies(entryFile) {
+    return this._depGraph.getShallowDependencies(entryFile);
+  }
+
+  getModuleForPath(entryFile) {
+    return this._depGraph.getModuleForPath(entryFile);
   }
 
   getDependencies(main, options) {

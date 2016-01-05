@@ -52,6 +52,10 @@ const validateOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  enableInternalTransforms: {
+    type: 'boolean',
+    default: false,
+  },
   assetRoots: {
     type: 'array',
     required: false,
@@ -109,7 +113,11 @@ const bundleOpts = declareOpts({
   unbundle: {
     type: 'boolean',
     default: false,
-  }
+  },
+  hot: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -134,6 +142,7 @@ class Server {
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
+    this._fileChangeListeners = [];
 
     const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
 
@@ -175,6 +184,14 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
+      // if Hot Loading is enabled avoid rebuilding bundles and sending live
+      // updates. Instead, send the HMR updates right away and once that
+      // finishes, invoke any other file change listener.
+      if (this._hmrFileChangeListener) {
+        this._hmrFileChangeListener(filePath);
+        return;
+      }
+
       this._rebuildBundles(filePath);
       this._informChangeWatchers();
     }, 50);
@@ -185,6 +202,10 @@ class Server {
       this._fileWatcher.end(),
       this._bundler.kill(),
     ]);
+  }
+
+  setHMRFileChangeListener(listener) {
+    this._hmrFileChangeListener = listener;
   }
 
   buildBundle(options) {
@@ -212,6 +233,18 @@ class Server {
   buildBundleFromUrl(reqUrl) {
     const options = this._getOptionsFromUrl(reqUrl);
     return this.buildBundle(options);
+  }
+
+  buildBundleForHMR(modules) {
+    return this._bundler.bundleForHMR(modules);
+  }
+
+  getShallowDependencies(entryFile) {
+    return this._bundler.getShallowDependencies(entryFile);
+  }
+
+  getModuleForPath(entryFile) {
+    return this._bundler.getModuleForPath(entryFile);
   }
 
   getDependencies(options) {
@@ -473,6 +506,7 @@ class Server {
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
       minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
+      hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
         urlObj.query,

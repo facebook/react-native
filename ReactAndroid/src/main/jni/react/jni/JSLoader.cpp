@@ -4,6 +4,7 @@
 
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
+#include <jni/Environment.h>
 #include <fstream>
 #include <sstream>
 #include <streambuf>
@@ -17,6 +18,19 @@ using fbsystrace::FbSystraceSection;
 
 namespace facebook {
 namespace react {
+
+static jclass gApplicationHolderClass;
+static jmethodID gGetApplicationMethod;
+static jmethodID gGetAssetManagerMethod;
+
+std::string loadScriptFromAssets(std::string assetName) {
+  JNIEnv *env = jni::Environment::current();
+  jobject application = env->CallStaticObjectMethod(
+    gApplicationHolderClass,
+    gGetApplicationMethod);
+  jobject assetManager = env->CallObjectMethod(application, gGetAssetManagerMethod);
+  return loadScriptFromAssets(env, assetManager, assetName);
+}
 
 std::string loadScriptFromAssets(
     JNIEnv *env,
@@ -69,6 +83,16 @@ std::string loadScriptFromFile(std::string fileName) {
 
   FBLOGE("Unable to load script from file: %s", fileName.c_str());
   return "";
+}
+
+void registerJSLoaderNatives() {
+  JNIEnv *env = jni::Environment::current();
+  jclass applicationHolderClass = env->FindClass("com/facebook/react/common/ApplicationHolder");
+  gApplicationHolderClass = (jclass)env->NewGlobalRef(applicationHolderClass);
+  gGetApplicationMethod = env->GetStaticMethodID(applicationHolderClass, "getApplication", "()Landroid/app/Application;");
+  
+  jclass appClass = env->FindClass("android/app/Application");
+  gGetAssetManagerMethod = env->GetMethodID(appClass, "getAssets", "()Landroid/content/res/AssetManager;");
 }
 
 } }

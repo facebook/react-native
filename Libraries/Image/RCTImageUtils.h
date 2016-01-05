@@ -59,6 +59,12 @@ RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
                                            UIViewContentMode resizeMode);
 
 /**
+ * This function takes the source data for an image and decodes just the
+ * metadata, without decompressing the image itself.
+ */
+RCT_EXTERN NSDictionary<NSString *, id> *RCTGetImageMetadata(NSData *data);
+
+/**
  * Convert an image back into data. Images with an alpha channel will be
  * converted to lossless PNG data. Images without alpha will be converted to
  * JPEG. The `quality` argument controls the compression ratio of the JPEG

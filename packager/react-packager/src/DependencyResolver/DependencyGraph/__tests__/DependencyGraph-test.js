@@ -2362,6 +2362,7 @@ describe('DependencyGraph', function() {
 
     pit('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
+      var otherRoot = '/anotherRoot';
       fs.__setMockFilesystem({
         'root': {
           'index.js': [
@@ -2371,6 +2372,9 @@ describe('DependencyGraph', function() {
             'require("shouldWork");',
             'require("dontWork");',
             'require("wontWork");',
+            'require("ember");',
+            'require("internalVendoredPackage");',
+            'require("anotherIndex");',
           ].join('\n'),
           'node_modules': {
             'react-haste': {
@@ -2378,6 +2382,7 @@ describe('DependencyGraph', function() {
                 name: 'react-haste',
                 main: 'main.js',
               }),
+              // @providesModule should not be ignored here, because react-haste is whitelisted
               'main.js': [
                 '/**',
                 ' * @providesModule shouldWork',
@@ -2390,6 +2395,7 @@ describe('DependencyGraph', function() {
                     name: 'bar',
                     main: 'main.js',
                   }),
+                  // @providesModule should be ignored here, because it's not whitelisted
                   'main.js':[
                     '/**',
                     ' * @providesModule dontWork',
@@ -2411,20 +2417,48 @@ describe('DependencyGraph', function() {
                 name: 'ember',
                 main: 'main.js',
               }),
+              // @providesModule should be ignored here, because it's not whitelisted,
+              // and also, the modules "id" should be ember/main.js, not it's haste name
               'main.js':[
                 '/**',
                 ' * @providesModule wontWork',
                 ' */',
                 'hi();',
-              ].join('\n'),
+              ].join('\n')
             },
           },
+          // This part of the dep graph is meant to emulate internal facebook infra.
+          // By whitelisting `vendored_modules`, haste should still work.
+          'vendored_modules': {
+            'a-vendored-package': {
+              'package.json': JSON.stringify({
+                name: 'a-vendored-package',
+                main: 'main.js',
+              }),
+              // @providesModule should _not_ be ignored here, because it's whitelisted.
+              'main.js':[
+                '/**',
+                ' * @providesModule internalVendoredPackage',
+                ' */',
+                'hiFromInternalPackage();',
+              ].join('\n'),
+            }
+          },
         },
+        // we need to support multiple roots and using haste between them
+        'anotherRoot': {
+          'index.js': [
+            '/**',
+            ' * @providesModule anotherIndex',
+            ' */',
+            'wazup()',
+          ].join('\n'),
+        }
       });
 
       var dgraph = new DependencyGraph({
         ...defaults,
-        roots: [root],
+        roots: [root, otherRoot],
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
@@ -2432,7 +2466,14 @@ describe('DependencyGraph', function() {
             {
               id: 'index',
               path: '/root/index.js',
-              dependencies: ['shouldWork', 'dontWork', 'wontWork'],
+              dependencies: [
+                'shouldWork',
+                'dontWork',
+                'wontWork',
+                'ember',
+                'internalVendoredPackage',
+                'anotherIndex'
+              ],
               isAsset: false,
               isAsset_DEPRECATED: false,
               isJSON: false,
@@ -2452,6 +2493,36 @@ describe('DependencyGraph', function() {
             {
               id: 'submodule/main.js',
               path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'ember/main.js',
+              path: '/root/node_modules/ember/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'internalVendoredPackage',
+              path: '/root/vendored_modules/a-vendored-package/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'anotherIndex',
+              path: '/anotherRoot/index.js',
               dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,

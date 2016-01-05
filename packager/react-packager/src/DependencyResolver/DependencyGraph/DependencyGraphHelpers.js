@@ -10,7 +10,7 @@
 
 const path = require('path');
 
-class Helpers {
+class DependencyGraphHelpers {
   constructor({ providesModuleNodeModules, assetExts }) {
     this._providesModuleNodeModules = providesModuleNodeModules;
     this._assetExts = assetExts;
@@ -46,4 +46,4 @@ class Helpers {
   }
 }
 
-module.exports = Helpers;
+module.exports = DependencyGraphHelpers;

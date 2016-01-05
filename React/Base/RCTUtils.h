@@ -105,3 +105,7 @@ RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
+
+// URL manipulation
+RCT_EXTERN NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param);
+RCT_EXTERN NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value);

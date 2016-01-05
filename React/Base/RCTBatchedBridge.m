@@ -35,7 +35,8 @@
 typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
-  RCTBridgeFieldParamss,
+  RCTBridgeFieldParams,
+  RCTBridgeFieldCallID,
 };
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
@@ -64,6 +65,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   NSUInteger _syncInitializedModules;
   NSUInteger _asyncInitializedModules;
 }
+
+@synthesize flowID = _flowID;
+@synthesize flowIDMap = _flowIDMap;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
@@ -319,7 +323,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   _javaScriptExecutor = [self moduleForClass:self.executorClass];
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
-    [moduleData setBridgeForInstance:self];
+    if (moduleData.hasInstance) {
+      [moduleData setBridgeForInstance:self];
+    }
   }
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
@@ -438,6 +444,16 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
        object:_parentBridge userInfo:@{@"bridge": self}];
     });
   }];
+
+#if RCT_DEV
+
+  if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
+    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
+    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path]];
+  }
+
+#endif
+
 }
 
 - (void)didFinishLoading
@@ -579,6 +595,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       _modulesByName_DEPRECATED = nil;
       _frameUpdateObservers = nil;
 
+      if (_flowIDMap != NULL) {
+        CFRelease(_flowIDMap);
+      }
     }];
   });
 }
@@ -778,19 +797,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer
+- (void)handleBuffer:(NSArray *)buffer
 {
-  NSArray<NSArray *> *requestsArray = [RCTConvert NSArrayArray:buffer];
+  NSArray *requestsArray = [RCTConvert NSArray:buffer];
 
-  if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParamss) {
+  if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParams) {
     RCTLogError(@"Buffer should contain at least %tu sub-arrays. Only found %tu",
-                RCTBridgeFieldParamss + 1, requestsArray.count);
+                RCTBridgeFieldParams + 1, requestsArray.count);
     return;
   }
 
-  NSArray<NSNumber *> *moduleIDs = requestsArray[RCTBridgeFieldRequestModuleIDs];
-  NSArray<NSNumber *> *methodIDs = requestsArray[RCTBridgeFieldMethodIDs];
-  NSArray<NSArray *> *paramsArrays = requestsArray[RCTBridgeFieldParamss];
+  NSArray<NSNumber *> *moduleIDs = [RCTConvert NSNumberArray:requestsArray[RCTBridgeFieldRequestModuleIDs]];
+  NSArray<NSNumber *> *methodIDs = [RCTConvert NSNumberArray:requestsArray[RCTBridgeFieldMethodIDs]];
+  NSArray<NSArray *> *paramsArrays = [RCTConvert NSArrayArray:requestsArray[RCTBridgeFieldParams]];
+
+  int64_t callID = -1;
+
+  if (requestsArray.count > 3) {
+    callID = [requestsArray[RCTBridgeFieldCallID] longLongValue];
+  }
 
   if (RCT_DEBUG && (moduleIDs.count != methodIDs.count || moduleIDs.count != paramsArrays.count)) {
     RCTLogError(@"Invalid data message - all must be length: %zd", moduleIDs.count);
@@ -824,6 +849,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
+          if (callID != -1) {
+            int64_t newFlowID = (int64_t)CFDictionaryGetValue(_flowIDMap, (const void *)(_flowID + index));
+            _RCTProfileEndFlowEvent(@(newFlowID));
+            CFDictionaryRemoveValue(_flowIDMap, (const void *)(_flowID + index));
+          }
           [self _handleRequestNumber:index
                             moduleID:[moduleIDs[index] integerValue]
                             methodID:[methodIDs[index] integerValue]
@@ -842,6 +872,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       dispatch_async(queue, block);
     }
   }
+
+  _flowID = callID;
 }
 
 - (void)partialBatchDidFlush
