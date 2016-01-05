@@ -1193,7 +1193,8 @@ AppRegistry=React.AppRegistry;var View=React.View;
 var ReactRoot=React.createClass({displayName:'ReactRoot',
 render:function(){
 return (
-React.createElement(View,{elevation:'1.0'}));}});
+React.createElement(View,{elevation:'1.0'},
+React.createElement(Text,null,'Hello React Native')));}});
 
 
 
@@ -57327,4 +57328,4 @@ module.exports=findDOMNode;
 });
 ;require("InitializeJavaScriptAppEngine");
 ;require("react-xaml-wpf/index.ios.js");
-__SSTOKENSTRING = "@generated SignedSource<<8a9aad82927145a159f9ecb21a3904c7>>";
+__SSTOKENSTRING = "@generated SignedSource<<06ac9dc59c5e7e5710ab05c8c2190702>>";
