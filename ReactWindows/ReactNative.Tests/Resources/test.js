@@ -3,12 +3,18 @@
     return this[name];
 }
 
-var BatchProcessCalls = new Array();
+var FunctionCalls = new Array();
+var CallbackCalls = new Array();
 var BatchedBridge =
 {
-    "processBatch": function (args)
+    "callFunctionReturnFlushedQueue": function (moduleId, methodId, args)
     {
-        BatchProcessCalls.push(args);
+        FunctionCalls.push([moduleId, methodId, args]);
+        return [[],[],[]];
+    },
+    "invokeCallbackAndReturnFlushedQueue": function (callbackId, args)
+    {
+        CallbackCalls.push([callbackId, args]);
         return [[],[],[]];
     }
 }

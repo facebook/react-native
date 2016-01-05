@@ -156,6 +156,10 @@
     <Compile Include="CoreModulesPackage.cs" />
     <Compile Include="LifecycleState.cs" />
     <Compile Include="IReactInstanceManager.cs" />
+    <Compile Include="Modules\Core\ExceptionsManagerModule.cs" />
+    <Compile Include="Modules\Core\Timing.cs" />
+    <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
+    <Compile Include="Modules\WebSocket\WebSocketModule.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />

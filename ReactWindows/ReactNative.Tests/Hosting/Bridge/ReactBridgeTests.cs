@@ -67,29 +67,17 @@ namespace ReactNative.Tests.Hosting.Bridge
                     var token = await jsQueueThread.CallOnQueue(() =>
                     {
                         bridge.CallFunction(1, 1, new JArray());
-                        return executor.GetGlobalVariable("BatchProcessCalls");
+                        return executor.GetGlobalVariable("FunctionCalls");
                     });
 
                     var expected = new JArray
                     {
                         new JArray
                         {
-                            new JObject
-                            {
-                                { "module", "BatchedBridge" },
-                                { "method", "callFunctionReturnFlushedQueue" },
-                                { "context", 15 },
-                                {
-                                    "args",
-                                    new JArray
-                                    {
-                                        1,
-                                        1,
-                                        new JArray(),
-                                    }
-                                },
-                            }
-                        }
+                            1,
+                            1,
+                            new JArray(),
+                        },
                     };
 
                     Assert.AreEqual(expected.ToString(Formatting.None), token.ToString(Formatting.None));
@@ -109,27 +97,16 @@ namespace ReactNative.Tests.Hosting.Bridge
                     var token = await jsQueueThread.CallOnQueue(() =>
                     {
                         bridge.InvokeCallback(1, new JArray());
-                        return executor.GetGlobalVariable("BatchProcessCalls");
+                        return executor.GetGlobalVariable("CallbackCalls");
                     });
 
                     var expected = new JArray
                     {
                         new JArray
                         {
-                            new JObject
-                            {
-                                { "module", "BatchedBridge" },
-                                { "method", "invokeCallbackAndReturnFlushedQueue" },
-                                {
-                                    "args",
-                                    new JArray
-                                    {
-                                        1,
-                                        new JArray(),
-                                    }
-                                },
-                            }
-                        }
+                            1,
+                            new JArray(),
+                        },
                     };
 
                     Assert.AreEqual(expected.ToString(Formatting.None), token.ToString(Formatting.None));
