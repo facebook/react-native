@@ -165,6 +165,8 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
     if (mReactInstanceManager != null) {
       mReactInstanceManager.onActivityResult(requestCode, resultCode, data);
     }
