@@ -86,7 +86,6 @@ static std::string executeJSCallWithJSC(
       "__fbBatchedBridge.", methodName, ".apply(null, ",
       folly::toJson(jsonArgs), ")");
   auto result = evaluateScript(ctx, String(js.c_str()), nullptr);
-  JSValueProtect(ctx, result);
   return Value(ctx, result).toJSONString();
 }
 
@@ -247,7 +246,6 @@ static JSValueRef nativeFlushQueueImmediate(
     return JSValueMakeUndefined(ctx);
   }
 
-  JSValueProtect(ctx, arguments[0]);
   std::string resStr = Value(ctx, arguments[0]).toJSONString();
 
   executor->flushQueueImmediate(resStr);

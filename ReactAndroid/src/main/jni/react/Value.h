@@ -142,7 +142,6 @@ class Value : public noncopyable {
 public:
   Value(JSContextRef context, JSValueRef value);
   Value(Value&&);
-  ~Value();
 
   operator JSValueRef() const {
     return m_value;
