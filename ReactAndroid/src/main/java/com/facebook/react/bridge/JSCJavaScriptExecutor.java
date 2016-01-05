@@ -14,6 +14,12 @@ import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class JSCJavaScriptExecutor extends JavaScriptExecutor {
+  public static class Factory implements JavaScriptExecutor.Factory {
+    @Override
+    public JavaScriptExecutor create() throws Exception {
+      return new JSCJavaScriptExecutor();
+    }
+  }
 
   static {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);

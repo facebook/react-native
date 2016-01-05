@@ -108,8 +108,8 @@ import com.facebook.systrace.Systrace;
       new ReactInstanceDevCommandsHandler() {
 
         @Override
-        public void onReloadWithJSDebugger(JavaJSExecutor jsExecutor) {
-          ReactInstanceManagerImpl.this.onReloadWithJSDebugger(jsExecutor);
+        public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
+          ReactInstanceManagerImpl.this.onReloadWithJSDebugger(jsExecutorFactory);
         }
 
         @Override
@@ -132,18 +132,18 @@ import com.facebook.systrace.Systrace;
       };
 
   private class ReactContextInitParams {
-    private final JavaScriptExecutor mJsExecutor;
+    private final JavaScriptExecutor.Factory mJsExecutorFactory;
     private final JSBundleLoader mJsBundleLoader;
 
     public ReactContextInitParams(
-        JavaScriptExecutor jsExecutor,
+        JavaScriptExecutor.Factory jsExecutorFactory,
         JSBundleLoader jsBundleLoader) {
-      mJsExecutor = Assertions.assertNotNull(jsExecutor);
+      mJsExecutorFactory = Assertions.assertNotNull(jsExecutorFactory);
       mJsBundleLoader = Assertions.assertNotNull(jsBundleLoader);
     }
 
-    public JavaScriptExecutor getJsExecutor() {
-      return mJsExecutor;
+    public JavaScriptExecutor.Factory getJsExecutorFactory() {
+      return mJsExecutorFactory;
     }
 
     public JSBundleLoader getJsBundleLoader() {
@@ -156,8 +156,7 @@ import com.facebook.systrace.Systrace;
    * be executing one at time, see {@link #recreateReactContextInBackground()}.
    */
   private final class ReactContextInitAsyncTask extends
-      AsyncTask<ReactContextInitParams, Void, ReactApplicationContext> {
-
+      AsyncTask<ReactContextInitParams, Void, Result<ReactApplicationContext>> {
     @Override
     protected void onPreExecute() {
       if (mCurrentReactContext != null) {
@@ -167,15 +166,23 @@ import com.facebook.systrace.Systrace;
     }
 
     @Override
-    protected ReactApplicationContext doInBackground(ReactContextInitParams... params) {
+    protected Result<ReactApplicationContext> doInBackground(ReactContextInitParams... params) {
       Assertions.assertCondition(params != null && params.length > 0 && params[0] != null);
-      return createReactContext(params[0].getJsExecutor(), params[0].getJsBundleLoader());
+      try {
+        JavaScriptExecutor jsExecutor = params[0].getJsExecutorFactory().create();
+        return Result.of(createReactContext(jsExecutor, params[0].getJsBundleLoader()));
+      } catch (Exception e) {
+        // Pass exception to onPostExecute() so it can be handled on the main thread
+        return Result.of(e);
+      }
     }
 
     @Override
-    protected void onPostExecute(ReactApplicationContext reactContext) {
+    protected void onPostExecute(Result<ReactApplicationContext> result) {
       try {
-        setupReactContext(reactContext);
+        setupReactContext(result.get());
+      } catch (Exception e) {
+        mDevSupportManager.handleException(e);
       } finally {
         mIsContextInitAsyncTaskRunning = false;
       }
@@ -183,10 +190,43 @@ import com.facebook.systrace.Systrace;
       // Handle enqueued request to re-initialize react context.
       if (mPendingReactContextInitParams != null) {
         recreateReactContextInBackground(
-            mPendingReactContextInitParams.getJsExecutor(),
+            mPendingReactContextInitParams.getJsExecutorFactory(),
             mPendingReactContextInitParams.getJsBundleLoader());
         mPendingReactContextInitParams = null;
       }
+    }
+  }
+
+  private static class Result<T> {
+    @Nullable private final T mResult;
+    @Nullable private final Exception mException;
+
+    public static <T, U extends T> Result<T> of(U result) {
+      return new Result<T>(result);
+    }
+
+    public static <T> Result<T> of(Exception exception) {
+      return new Result<>(exception);
+    }
+
+    private Result(T result) {
+      mException = null;
+      mResult = result;
+    }
+
+    private Result(Exception exception) {
+      mException = exception;
+      mResult = null;
+    }
+
+    public T get() throws Exception {
+      if (mException != null) {
+        throw mException;
+      }
+
+      Assertions.assertNotNull(mResult);
+
+      return mResult;
     }
   }
 
@@ -311,7 +351,7 @@ import com.facebook.systrace.Systrace;
 
   private void recreateReactContextInBackgroundFromBundleFile() {
     recreateReactContextInBackground(
-        new JSCJavaScriptExecutor(),
+        new JSCJavaScriptExecutor.Factory(),
         JSBundleLoader.createFileLoader(mApplicationContext, mJSBundleFile));
   }
 
@@ -504,9 +544,9 @@ import com.facebook.systrace.Systrace;
     return mCurrentReactContext;
   }
 
-  private void onReloadWithJSDebugger(JavaJSExecutor jsExecutor) {
+  private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
     recreateReactContextInBackground(
-        new ProxyJavaScriptExecutor(jsExecutor),
+        new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
         JSBundleLoader.createRemoteDebuggerBundleLoader(
             mDevSupportManager.getJSBundleURLForRemoteDebugging(),
             mDevSupportManager.getSourceUrl()));
@@ -514,18 +554,19 @@ import com.facebook.systrace.Systrace;
 
   private void onJSBundleLoadedFromServer() {
     recreateReactContextInBackground(
-        new JSCJavaScriptExecutor(),
+        new JSCJavaScriptExecutor.Factory(),
         JSBundleLoader.createCachedBundleFromNetworkLoader(
             mDevSupportManager.getSourceUrl(),
             mDevSupportManager.getDownloadedJSBundleFile()));
   }
 
   private void recreateReactContextInBackground(
-      JavaScriptExecutor jsExecutor,
+      JavaScriptExecutor.Factory jsExecutorFactory,
       JSBundleLoader jsBundleLoader) {
     UiThreadUtil.assertOnUiThread();
 
-    ReactContextInitParams initParams = new ReactContextInitParams(jsExecutor, jsBundleLoader);
+    ReactContextInitParams initParams =
+        new ReactContextInitParams(jsExecutorFactory, jsBundleLoader);
     if (!mIsContextInitAsyncTaskRunning) {
       // No background task to create react context is currently running, create and execute one.
       ReactContextInitAsyncTask initTask = new ReactContextInitAsyncTask();

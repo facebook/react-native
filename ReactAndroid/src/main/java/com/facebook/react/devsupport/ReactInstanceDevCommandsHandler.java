@@ -20,7 +20,7 @@ public interface ReactInstanceDevCommandsHandler {
   /**
    * Request react instance recreation with JS debugging enabled.
    */
-  void onReloadWithJSDebugger(JavaJSExecutor proxyExecutor);
+  void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory);
 
   /**
    * Notify react instance manager about new JS bundle version downloaded from the server.

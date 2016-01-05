@@ -24,6 +24,18 @@ import com.facebook.proguard.annotations.DoNotStrip;
  */
 @DoNotStrip
 public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
+  public static class Factory implements JavaScriptExecutor.Factory {
+    private final JavaJSExecutor.Factory mJavaJSExecutorFactory;
+
+    public Factory(JavaJSExecutor.Factory javaJSExecutorFactory) {
+      mJavaJSExecutorFactory = javaJSExecutorFactory;
+    }
+
+    @Override
+    public JavaScriptExecutor create() throws Exception {
+      return new ProxyJavaScriptExecutor(mJavaJSExecutorFactory.create());
+    }
+  }
 
   static {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
