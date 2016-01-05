@@ -66,7 +66,7 @@ namespace ReactNative.UIManager
         /// Sets the right position of the shadow node.
         /// </summary>
         /// <param name="right">The right position.</param>
-        [ReactProperty(ViewProperties.Top, DefaultFloat = Undefined)]
+        [ReactProperty(ViewProperties.Right, DefaultFloat = Undefined)]
         public void SetRight(float right)
         {
             PositionRight = right;
