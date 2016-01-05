@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react-native');
-var {AppRegistry, View} = React;
+var {AppRegistry, View, Text} = React;
 
     var ReactRoot = React.createClass({
     render: function() {
