@@ -118,6 +118,7 @@
     <Compile Include="Internal\MockEvent.cs" />
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitterTests.cs" />
+    <Compile Include="Modules\Toast\ToastNotificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactInstanceManagerTests.cs" />
     <Compile Include="UIManager\AppRegistryTests.cs" />
