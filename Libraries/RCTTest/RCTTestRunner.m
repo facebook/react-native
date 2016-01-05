@@ -16,6 +16,7 @@
 #import "RCTTestModule.h"
 #import "RCTUtils.h"
 #import "RCTJSCExecutor.h"
+#import "RCTBridge+Private.h"
 
 static const NSTimeInterval kTestTimeoutSeconds = 60;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
@@ -134,7 +135,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
 
     // Take a weak reference to the JS context, so we track its deallocation later
     // (we can only do this now, since it's been lazily initialized)
-    id jsExecutor = [bridge valueForKeyPath:@"batchedBridge.javaScriptExecutor"];
+    id jsExecutor = [bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
     if ([jsExecutor isKindOfClass:[RCTJSCExecutor class]]) {
       weakJSContext = [jsExecutor valueForKey:@"_context"];
     }
