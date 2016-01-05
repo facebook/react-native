@@ -20,7 +20,7 @@
 
 static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 static NSString *const RCTManifestFileName = @"manifest.json";
-static const NSUInteger RCTInlineValueThreshold = 100;
+static const NSUInteger RCTInlineValueThreshold = 1024;
 
 #pragma mark - Static helper functions
 
