@@ -21,6 +21,7 @@ rm -Rf *
 cd ../react-native/website
 node server/generate.js
 cp -R build/react-native/* ../../react-native-gh-pages/
+cp ../circle.yml ../../react-native-gh-pages/
 rm -Rf build/
 cd ../../react-native-gh-pages
 git status
