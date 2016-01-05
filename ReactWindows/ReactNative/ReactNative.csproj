@@ -159,6 +159,8 @@
     <Compile Include="Modules\Core\ExceptionsManagerModule.cs" />
     <Compile Include="Modules\Core\Timing.cs" />
     <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
+    <Compile Include="Modules\Toast\ToastHelper.cs" />
+    <Compile Include="Modules\Toast\ToastModule.cs" />
     <Compile Include="Modules\WebSocket\WebSocketModule.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
