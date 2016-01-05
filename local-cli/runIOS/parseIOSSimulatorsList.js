@@ -8,7 +8,6 @@
  *
  * @flow
  */
-
 'use strict';
 
 type IOSSimulatorInfo = {
@@ -21,7 +20,7 @@ type IOSSimulatorInfo = {
  * Parses the output of `xcrun simctl list devices` command
  */
 function parseIOSSimulatorsList(text: string): Array<IOSSimulatorInfo> {
-  var devices = [];
+  const devices = [];
   var currentOS = null;
 
   text.split('\n').forEach((line) => {
@@ -36,12 +35,12 @@ function parseIOSSimulatorsList(text: string): Array<IOSSimulatorInfo> {
       return;
     }
 
-    var device = line.match(/^[ ]*([^()]+) \(([^()]+)\)/);
-      if (device && currentOS) {
-        var name = device[1];
-        var udid = device[2];
-        devices.push({udid, name, version: currentOS});
-      }
+    const device = line.match(/^[ ]*([^()]+) \(([^()]+)\)/);
+    if (device && currentOS) {
+      var name = device[1];
+      var udid = device[2];
+      devices.push({udid, name, version: currentOS});
+    }
   });
 
   return devices;
