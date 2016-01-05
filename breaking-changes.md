@@ -2,6 +2,8 @@
 
 ## 0.17
 
+- `javaScriptEnabledAndroid` of the `WebView` component has been renamed to `javaScriptEnabled`
+
 ## 0.16
 
 - Touch events on Android now have coordinates consistent with iOS: [0c2ee5](https://github.com/facebook/react-native/commit/0c2ee5d480e696f8621252c936a8773e8de9f8b6)

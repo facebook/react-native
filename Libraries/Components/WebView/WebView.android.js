@@ -52,13 +52,13 @@ var WebView = React.createClass({
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
-    javaScriptEnabledAndroid: PropTypes.bool,
+    javaScriptEnabled: PropTypes.bool,
 
     /**
      * Used on Android only, controls whether DOM Storage is enabled or not
      * @platform android
      */
-    domStorageEnabledAndroid: PropTypes.bool,
+    domStorageEnabled: PropTypes.bool,
 
     /**
      * Sets the JS to be injected when the webpage loads.
@@ -122,8 +122,8 @@ var WebView = React.createClass({
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
-        javaScriptEnabledAndroid={this.props.javaScriptEnabledAndroid}
-        domStorageEnabledAndroid={this.props.domStorageEnabledAndroid}
+        javaScriptEnabled={this.props.javaScriptEnabled}
+        domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
