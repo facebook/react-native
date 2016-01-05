@@ -54,7 +54,8 @@ module.exports = function upgrade(args, config) {
       } else {
         console.warn(
           chalk.yellow(
-            'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'. Try running \'npm install\'.\n'
+            'react-native version in \'package.json\' doesn\'t match the installed version in \'node_modules\'.\n' +
+            'Try running \'npm install\' to fix the issue.'
           )
         );
       }
