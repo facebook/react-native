@@ -215,6 +215,20 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
     }
   }
 
+  @Override
+  public void invalidate() {
+    // By default, invalidate() only invalidates the View's boundaries, which works great in most
+    // cases but may fail with overflow: visible (i.e. View clipping disabled) when View width or
+    // height is 0. This is because invalidate() has an optimization where it will not invalidate
+    // empty Views at all. A quick fix is to invalidate a slightly larger region to make sure we
+    // never hit that optimization.
+    // 
+    // Another thing to note is that this may not work correctly with software rendering because
+    // in software, Android tracks dirty regions to redraw. We would need to collect information
+    // about all children boundaries (recursively) to track dirty region precisely.
+    invalidate(0, 0, getWidth() + 1, getHeight() + 1);
+  }
+
   /**
    * We override this to allow developers to determine whether they need offscreen alpha compositing
    * or not. See the documentation of needsOffscreenAlphaCompositing in View.js.
@@ -358,6 +372,8 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
     for (int viewToDetach : viewsToDetach) {
       removeDetachedView(viewResolver.getView(viewToDetach), false);
     }
+
+    invalidate();
   }
 
   /* package */ void processLayoutRequest() {
