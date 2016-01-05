@@ -20,14 +20,15 @@
 - (instancetype)initWithModuleClass:(Class)moduleClass
                              bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+                                bridge:(RCTBridge *)bridge;
 
 /**
  * Sets the bridge for the module instance. This is only needed when using the
  * `initWithModuleID:instance:` constructor. Otherwise, the bridge will be set
  * automatically when the module is first accessed.
  */
-- (void)setBridgeForInstance:(RCTBridge *)bridge;
+- (void)setBridgeForInstance;
 
 @property (nonatomic, strong, readonly) Class moduleClass;
 @property (nonatomic, copy, readonly) NSString *name;

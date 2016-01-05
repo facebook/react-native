@@ -50,7 +50,12 @@
 
 @interface RCTBridge (RCTBatchedBridge)
 
-- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData;
+/**
+ * Used by RCTModuleData to register the module for frame updates after it is
+ * lazily initialized.
+ */
+- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
+                       withModuleData:(RCTModuleData *)moduleData;
 
 /**
  * Dispatch work to a module's queue - this is also suports the fake RCTJSThread
