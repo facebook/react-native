@@ -1,10 +1,4 @@
-﻿using ReactNative.Views.View;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
@@ -12,23 +6,28 @@ namespace ReactNative.UIManager
     /// Common base class for most of the <see cref="ViewManager"/>s. 
     /// It provides support for most common properties through extending <see cref="BaseViewManager"/>.
     /// </summary>
-    public abstract class SimpleViewManager : BaseViewManager
+    /// <typeparam name="TFrameworkElement">Type of framework element.</typeparam>
+    public abstract class SimpleViewManager<TFrameworkElement> : BaseViewManager<TFrameworkElement, LayoutShadowNode>
+        where TFrameworkElement : FrameworkElement
     {
         /// <summary>
         /// Creates a <see cref="LayoutShadowNode"/> instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The shadow node instance.</returns>
         public override ReactShadowNode CreateShadowNodeInstance()
         {
             return new LayoutShadowNode();
         }
 
-        public override Type ShadowNodeType
+        /// <summary>
+        /// Implement this method to receive optional extra data enqueued from
+        /// the corresponding instance of <see cref="ReactShadowNode"/> in
+        /// <see cref="ReactShadowNode.OnCollectExtraUpdates"/>.
+        /// </summary>
+        /// <param name="root">The root view.</param>
+        /// <param name="extraData">The extra data.</param>
+        public override void UpdateExtraData(FrameworkElement root, object extraData)
         {
-            get
-            {
-                return typeof(LayoutShadowNode);
-            }
         }
     }
 }

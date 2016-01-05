@@ -1,5 +1,4 @@
-﻿
-using ReactNative.Bridge;
+﻿using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
@@ -13,7 +12,7 @@ namespace ReactNative.UIManager
     {
         public UIImplementation CreateUIImplementation(
             ReactApplicationContext reactContext, 
-            IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> viewManagers)
+            IReadOnlyList<ViewManager> viewManagers)
         {
             return new UIImplementation(reactContext, viewManagers);
         }

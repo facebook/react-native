@@ -29,7 +29,7 @@ namespace ReactNative
     /// </summary>
     public interface IReactInstanceManager : IDisposable
     {
-        IReadOnlyList<ViewManager<FrameworkElement, ReactShadowNode>> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext);
+        IReadOnlyList<ViewManager> CreateAllViewManagers(ReactApplicationContext catalystApplicationContext);
 
         /// <summary>
         /// Trigger react context initialization asynchronously in a background async task.

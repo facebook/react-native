@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ReactNative.touch;
-using Windows.UI.Xaml.Controls;
-using ReactNative.Touch;
+﻿using ReactNative.Touch;
 using ReactNative.UIManager;
+using System;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Media3D;
 
 namespace ReactNative.Views.View
@@ -19,14 +14,14 @@ namespace ReactNative.Views.View
     /// aren't common, lazy initializes most of the storage needed for them. Also supports
     /// 3D transformations such as elevation depth.  
     /// </summary>
-    public class ReactViewPanel : Panel, CatalystInterceptingViewGroup, ReactPointerEventsView
+    public class ReactPanel : Panel, ICatalystInterceptingViewGroup, ReactPointerEventsView
     {
-        private OnInterceptTouchEventListener _OnInterceptTouchEventListener;
+        private IOnInterceptTouchEventListener _onInterceptTouchEventListener;
         private PointerEvents _PointerEvents = PointerEvents.Auto;
         private Border _Border;
         private CompositeTransform3D _Transform = new CompositeTransform3D();
 
-        public ReactViewPanel() : base()
+        public ReactPanel() : base()
         {
             this.SizeChanged += OnBoundsChanged;
         }
@@ -60,9 +55,9 @@ namespace ReactNative.Views.View
         /// Sets the touch event listener for the react view.
         /// </summary>
         /// <param name="listener">The custom touch event listener.</param>
-        public void SetOnInterceptTouchEventListener(OnInterceptTouchEventListener listener)
+        public void SetOnInterceptTouchEventListener(IOnInterceptTouchEventListener listener)
         {
-            _OnInterceptTouchEventListener = listener;
+            _onInterceptTouchEventListener = listener;
             this.PointerPressed += OnInterceptTouchEvent;
         }
 
@@ -73,7 +68,7 @@ namespace ReactNative.Views.View
                 return;
             }
 
-            _OnInterceptTouchEventListener.onInterceptTouchEvent(sender, ev);
+            _onInterceptTouchEventListener.OnInterceptTouchEvent(sender, ev);
         }
 
         public void SetBackgroundColor(string color)
@@ -128,25 +123,25 @@ namespace ReactNative.Views.View
         }
         
         /// <summary>
-        /// Sets the border padding for the <see cref="ReactViewPanel"/>.
+        /// Sets the border padding for the <see cref="ReactPanel"/>.
         /// </summary>
-        /// <param name="thickness">The padding of the <see cref="ReactViewPanel"/> <see cref="Border"/> in pixels.</param>
+        /// <param name="thickness">The padding of the <see cref="ReactPanel"/> <see cref="Border"/> in pixels.</param>
         public void SetBorderThickness(float thickness)
         {
             GetOrCreateReactViewBorder().BorderThickness = new Thickness(thickness);
         }
 
         /// <summary>
-        /// Sets the padding for the <see cref="ReactViewPanel"/>.
+        /// Sets the padding for the <see cref="ReactPanel"/>.
         /// </summary>
-        /// <param name="thickness">The padding of the <see cref="ReactViewPanel"/> in pixels.</param>
+        /// <param name="thickness">The padding of the <see cref="ReactPanel"/> in pixels.</param>
         public void SetBorderPadding(float thickness)
         {
             GetOrCreateReactViewBorder().Padding = new Thickness(thickness);
         }
 
         /// <summary>
-        /// Sets an elevation 3D transformation effect on the <see cref="ReactViewPanel"/>.
+        /// Sets an elevation 3D transformation effect on the <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="elevation">The positive negative elevation Z Index value of the view.</param>
         public void SetElevationEffect(float elevation)
@@ -221,7 +216,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Retrieves the number of subviews for the current <see cref="ReactViewPanel"/> view.
+        /// Retrieves the number of subviews for the current <see cref="ReactPanel"/> view.
         /// </summary>
         public int ChildrenCount
         {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Facebook.CSSLayout;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ReactNative.UIManager
 {
@@ -11,7 +13,7 @@ namespace ReactNative.UIManager
 
         // Layout only (only affect positions of children, causes no drawing)
         // !!! Keep in sync with s_layoutOnlyProperties below !!!
-        public const string AlignItmes = "alignItems";
+        public const string AlignItems = "alignItems";
         public const string AlignSelf = "alignSelf";
         public const string Bottom = "bottom";
         public const string Collapsible = "collapsable";
@@ -64,10 +66,35 @@ namespace ReactNative.UIManager
         public const string BorderRightWidth = "borderRightWidth";
         public const string BorderBottomWidth = "borderBottomWidth";
 
+        /// <summary>
+        /// Orders list of CSS spacing types.
+        /// </summary>
+        public static readonly IReadOnlyList<CSSSpacingType> PaddingMarginSpacingTypes = 
+            new List<CSSSpacingType>
+            {
+                CSSSpacingType.All,
+                CSSSpacingType.Vertical,
+                CSSSpacingType.Horizontal,
+                CSSSpacingType.Left,
+                CSSSpacingType.Right,
+                CSSSpacingType.Top,
+                CSSSpacingType.Bottom,
+            };
+
+        public static readonly IReadOnlyList<CSSSpacingType> BorderSpacingTypes =
+            new List<CSSSpacingType>
+            {
+                CSSSpacingType.All,
+                CSSSpacingType.Left,
+                CSSSpacingType.Right,
+                CSSSpacingType.Top,
+                CSSSpacingType.Bottom,
+            };
+
         private static readonly HashSet<string> s_layoutOnlyProperties =
             new HashSet<string>
             {
-                AlignItmes,
+                AlignItems,
                 AlignSelf,
                 Bottom,
                 Collapsible,
