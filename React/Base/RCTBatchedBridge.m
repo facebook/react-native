@@ -295,7 +295,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     RCTModuleData *moduleData;
     if (module) {
       if (module != (id)kCFNull) {
-        moduleData = [[RCTModuleData alloc] initWithModuleInstance:module];
+        moduleData = [[RCTModuleData alloc] initWithModuleInstance:module
+                                                            bridge:self];
       }
     } else {
        moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
@@ -320,13 +321,20 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
     if (moduleData.hasInstance) {
-      [moduleData setBridgeForInstance:self];
+      [moduleData setBridgeForInstance];
     }
   }
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
     if (moduleData.hasInstance) {
       [moduleData methodQueue]; // initialize the queue
+    }
+  }
+
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    if (moduleData.hasInstance) {
+      [self registerModuleForFrameUpdates:moduleData.instance
+                           withModuleData:moduleData];
     }
   }
 
@@ -347,18 +355,22 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   [_javaScriptExecutor setUp];
 }
 
-- (void)registerModuleForFrameUpdates:(RCTModuleData *)moduleData
+- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
+                       withModuleData:(RCTModuleData *)moduleData
 {
-  if ([moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
-    [_frameUpdateObservers addObject:moduleData];
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
-    __weak typeof(self) weakSelf = self;
-    __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
-    observer.pauseCallback = ^{
-      [weakJavaScriptExecutor executeBlockOnJavaScriptQueue:^{
-        [weakSelf updateJSDisplayLinkState];
-      }];
-    };
+  if (![_frameUpdateObservers containsObject:moduleData]) {
+    if ([moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)]) {
+      [_frameUpdateObservers addObject:moduleData];
+      // Don't access the module instance via moduleData, as this will cause deadlock
+      id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)module;
+      __weak typeof(self) weakSelf = self;
+      __weak typeof(_javaScriptExecutor) weakJavaScriptExecutor = _javaScriptExecutor;
+      observer.pauseCallback = ^{
+        [weakJavaScriptExecutor executeBlockOnJavaScriptQueue:^{
+          [weakSelf updateJSDisplayLinkState];
+        }];
+      };
+    }
   }
 }
 
