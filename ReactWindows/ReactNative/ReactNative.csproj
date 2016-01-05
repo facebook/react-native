@@ -208,7 +208,6 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
-    <Compile Include="UIManager\PixelHelpers.cs" />
     <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
@@ -248,7 +247,7 @@
       <DependentUpon>ReactRootView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Touch\ICatalystInterceptingViewGroup.cs" />
-    <Compile Include="Views\View\ReactViewPanel.cs" />
+    <Compile Include="Views\View\ReactPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
