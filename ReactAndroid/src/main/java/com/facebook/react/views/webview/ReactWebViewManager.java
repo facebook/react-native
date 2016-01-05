@@ -74,13 +74,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   private WebViewConfig mWebViewConfig;
 
-  static {
-    if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      // TODO(T9455950): re-enable debugging
-      // WebView.setWebContentsDebuggingEnabled(true);
-    }
-  }
-
   private static class ReactWebViewClient extends WebViewClient {
 
     private boolean mLastLoadFailed = false;
@@ -248,6 +241,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ReactWebView webView = new ReactWebView(reactContext);
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
+
+    if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      WebView.setWebContentsDebuggingEnabled(true);
+    }
+
     return webView;
   }
 
