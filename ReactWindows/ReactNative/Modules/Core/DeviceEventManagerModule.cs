@@ -16,7 +16,7 @@ namespace ReactNative.Modules.Core
         /// <param name="reactContext">The react context.</param>
         /// <param name="backButtonHandler">The back button handler.</param>
         public DeviceEventManagerModule(
-            ReactContext reactContext,
+            ReactApplicationContext reactContext,
             IDefaultHardwareBackButtonHandler backButtonHandler)
           : base(reactContext)
         {

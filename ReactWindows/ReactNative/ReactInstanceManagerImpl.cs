@@ -228,7 +228,12 @@ namespace ReactNative
 
         private void AttachMeasuredRootViewToInstance(ReactRootView rootView, ICatalystInstance catalystInstance)
         {
+            DispatcherHelpers.AssertOnDispatcher();
+
+            // Reset view content as it's going to be populated by the 
+            // application content from JavaScript
             var uiManagerModule = catalystInstance.GetNativeModule<UIManagerModule>();
+
             var rootTag = uiManagerModule.AddMeasuredRootView(rootView);
             var initialProps = new Dictionary<string, object>();
                 initialProps.Add("rootTag", rootTag);

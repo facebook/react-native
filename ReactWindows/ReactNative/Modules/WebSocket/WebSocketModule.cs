@@ -1,5 +1,4 @@
 ﻿using ReactNative.Bridge;
-using System;
 
 namespace ReactNative.Modules.WebSocket
 {
@@ -21,19 +20,19 @@ namespace ReactNative.Modules.WebSocket
         [ReactMethod]
         public void connect(string url, int id)
         {
-            throw new NotImplementedException();
+            // TODO: implement
         }
 
         [ReactMethod]
         public void close(int code, string reason, int id)
         {
-            throw new NotImplementedException();
+            // TODO: implement
         }
 
         [ReactMethod]
         public void send(string message, int id)
         {
-            throw new NotImplementedException();
+            // TODO: implement
         }
     }
 }
