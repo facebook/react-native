@@ -19,7 +19,7 @@ import com.facebook.react.uimanager.ReactProp;
 /**
  * RCTRawText is a FlatTextShadowNode that can only contain raw text (but not styling).
  */
-/* package */ class RCTRawText extends FlatTextShadowNode {
+/* package */ final class RCTRawText extends FlatTextShadowNode {
 
   private @Nullable String mText;
 
@@ -37,6 +37,11 @@ import com.facebook.react.uimanager.ReactProp;
         begin,
         end,
         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+  }
+
+  @Override
+  protected void performCollectAttachDetachListeners(StateBuilder stateBuilder) {
+    // nothing to do
   }
 
   @ReactProp(name = "text")

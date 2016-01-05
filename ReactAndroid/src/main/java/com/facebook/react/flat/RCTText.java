@@ -201,6 +201,8 @@ import com.facebook.react.uimanager.ViewProps;
         clipRight,
         clipBottom);
     stateBuilder.addDrawCommand(mDrawCommand);
+
+    performCollectAttachDetachListeners(stateBuilder);
   }
 
   @ReactProp(name = ViewProps.LINE_HEIGHT, defaultDouble = Double.NaN)

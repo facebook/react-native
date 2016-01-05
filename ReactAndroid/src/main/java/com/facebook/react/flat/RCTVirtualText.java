@@ -59,6 +59,14 @@ import com.facebook.react.uimanager.ViewProps;
     }
   }
 
+  @Override
+  protected void performCollectAttachDetachListeners(StateBuilder stateBuilder) {
+    for (int i = 0, childCount = getChildCount(); i < childCount; ++i) {
+      FlatTextShadowNode child = (FlatTextShadowNode) getChildAt(i);
+      child.performCollectAttachDetachListeners(stateBuilder);
+    }
+  }
+
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = Float.NaN)
   public void setFontSize(float fontSizeSp) {
     final int fontSize;

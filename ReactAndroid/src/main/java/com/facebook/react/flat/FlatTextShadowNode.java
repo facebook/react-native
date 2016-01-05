@@ -59,4 +59,5 @@ import com.facebook.react.uimanager.ReactShadowNode;
 
   protected abstract void performCollectText(SpannableStringBuilder builder);
   protected abstract void performApplySpans(SpannableStringBuilder builder, int begin, int end);
+  protected abstract void performCollectAttachDetachListeners(StateBuilder stateBuilder);
 }
