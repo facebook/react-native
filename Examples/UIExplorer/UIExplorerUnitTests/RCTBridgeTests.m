@@ -21,6 +21,16 @@
 #import "RCTJavaScriptExecutor.h"
 #import "RCTUtils.h"
 
+
+#define RUN_RUNLOOP_WHILE(CONDITION) \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wshadow\"") \
+NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:0.1]; \
+while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
+} \
+_Pragma("clang diagnostic pop")
+
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 
 @property (nonatomic, readonly, copy) NSMutableDictionary<NSString *, id> *injectedStuff;
@@ -93,6 +103,8 @@ RCT_EXPORT_MODULE()
 @interface RCTBridgeTests : XCTestCase <RCTBridgeModule>
 {
   RCTBridge *_bridge;
+  __weak TestExecutor *_jsExecutor;
+
   BOOL _testMethodCalled;
 }
 @end
@@ -112,35 +124,34 @@ RCT_EXPORT_MODULE(TestModule)
                                    launchOptions:nil];
 
   _bridge.executorClass = [TestExecutor class];
+
   // Force to recreate the executor with the new class
   // - reload: doesn't work here since bridge hasn't loaded yet.
   [_bridge invalidate];
   [_bridge setUp];
+
+  _jsExecutor = [_bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
+  XCTAssertNotNil(_jsExecutor);
 }
 
 - (void)tearDown
 {
   [super tearDown];
 
-  [_bridge invalidate];
   _testMethodCalled = NO;
-}
 
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:0.1]; \
-while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
-  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
-} \
-_Pragma("clang diagnostic pop")
+  [_bridge invalidate];
+  _bridge = nil;
+
+  RUN_RUNLOOP_WHILE(_jsExecutor != nil);
+  XCTAssertNotNil(_jsExecutor);
+}
 
 - (void)testHookRegistration
 {
-  TestExecutor *executor =  [_bridge.batchedBridge valueForKey:@"_javaScriptExecutor"];
-
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;
   __block NSDictionary<NSString *, id> *testConstants = nil;
@@ -165,10 +176,9 @@ _Pragma("clang diagnostic pop")
 
 - (void)testCallNativeMethod
 {
-  TestExecutor *executor =  [_bridge.batchedBridge valueForKey:@"_javaScriptExecutor"];
-
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;
   __block NSNumber *testMethodID = nil;
