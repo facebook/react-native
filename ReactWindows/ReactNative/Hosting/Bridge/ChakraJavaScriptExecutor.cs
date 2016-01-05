@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
 using System.Diagnostics;
@@ -181,11 +182,11 @@ namespace ReactNative.Hosting.Bridge
             {
                 Debug.Write("JS console> ");
 
-                // First argument is this-context (? @TODO), ignore...
-                /*foreach (var argument in arguments)
+                // First argument is this-context, ignore...
+                for (var i = 1; i < argumentCount; ++i)
                 {
-                    Debug.Write(JavaScriptValueToJTokenConverter.Convert(argument).ToString() + " ");
-                }*/
+                    Debug.Write(Stringify(arguments[i]) + " ");
+                }
 
                 Debug.WriteLine("");
             }
@@ -196,6 +197,27 @@ namespace ReactNative.Hosting.Bridge
             }
 
             return JavaScriptValue.Invalid;
+        }
+
+        private static string Stringify(JavaScriptValue value)
+        {
+            switch (value.ValueType)
+            {
+                case JavaScriptValueType.Undefined:
+                case JavaScriptValueType.Null:
+                case JavaScriptValueType.Number:
+                case JavaScriptValueType.String:
+                case JavaScriptValueType.Boolean:
+                case JavaScriptValueType.Object:
+                case JavaScriptValueType.Array:
+                    return JavaScriptValueToJTokenConverter.Convert(value).ToString(Formatting.None);
+                case JavaScriptValueType.Function:
+                    return "function";
+                case JavaScriptValueType.Error:
+                    return "error";
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

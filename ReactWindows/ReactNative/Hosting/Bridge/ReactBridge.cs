@@ -55,26 +55,7 @@ namespace ReactNative.Hosting.Bridge
                 arguments,
             };
 
-            var message = new JObject
-            {
-                { "module", "BatchedBridge" },
-                { "method", "callFunctionReturnFlushedQueue" },
-                { "context", 15 },
-                { "args", allArgs },
-            };
-
-            var messageArray = new JArray
-            {
-                message,
-            };
-
-            // TODO: actually introduce batching here...
-            var processBatchArgs = new JArray
-            {
-                messageArray,
-            };
-
-            var response = _jsExecutor.Call("BatchedBridge", "processBatch", processBatchArgs);
+            var response = _jsExecutor.Call("BatchedBridge", "callFunctionReturnFlushedQueue", allArgs);
 
             ProcessResponse(response);
         }
@@ -91,25 +72,8 @@ namespace ReactNative.Hosting.Bridge
                 callbackId,
                 arguments,
             };
-
-            var message = new JObject
-            {
-                { "module", "BatchedBridge" },
-                { "method", "invokeCallbackAndReturnFlushedQueue" },
-                { "args", allArgs },
-            };
-
-            var messageArray = new JArray
-            {
-                message,
-            };
-
-            var processBatchArgs = new JArray
-            {
-                messageArray,
-            };
-
-            var response = _jsExecutor.Call("BatchedBridge", "processBatch", processBatchArgs);
+            
+            var response = _jsExecutor.Call("BatchedBridge", "invokeCallbackAndReturnFlushedQueue", allArgs);
 
             ProcessResponse(response);
         }
