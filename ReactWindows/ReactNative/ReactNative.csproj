@@ -251,6 +251,9 @@
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
     <Compile Include="Touch\ICatalystInterceptingViewGroup.cs" />
+    <Compile Include="Views\Text\ReactRawTextManager.cs" />
+    <Compile Include="Views\Text\ReactTextShadowNode.cs" />
+    <Compile Include="Views\Text\ReactTextViewManager.cs" />
     <Compile Include="Views\View\ReactPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
@@ -269,7 +272,8 @@
     <Folder Include="JavaScript\uwp-native\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Facebook.CSSLayout">
+    <Reference Include="Facebook.CSSLayout, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\References\Facebook.CSSLayout.dll</HintPath>
     </Reference>
   </ItemGroup>

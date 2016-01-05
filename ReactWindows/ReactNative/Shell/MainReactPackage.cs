@@ -2,10 +2,10 @@
 using ReactNative.Modules.Core;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
+using ReactNative.Views.Text;
 using ReactNative.Views.View;
 using System;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
 
 namespace ReactNative.Shell
 {
@@ -36,12 +36,12 @@ namespace ReactNative.Shell
                 //new ReactHorizontalScrollViewManager(),
                 //new ReactImageManager(),
                 //new ReactProgressBarViewManager(),
-                //new ReactRawTextManager(),
+                new ReactRawTextManager(),
                 //new RecyclerViewBackedScrollViewManager(),
                 //new ReactScrollViewManager(),
                 //new ReactSwitchManager(),
                 //new ReactTextInputManager(),
-                //new ReactTextViewManager(),
+                new ReactTextViewManager(),
                 //new ReactToolbarManager(),
                 new ReactViewManager(),
                 //new ReactViewPagerManager(),

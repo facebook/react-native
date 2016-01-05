@@ -1188,12 +1188,13 @@ typeof global!=='undefined'?global:typeof self!=='undefined'?self:this);
 __d('react-xaml-wpf/index.ios.js',function(global, require, module, exports) {  'use strict';
 
 var React=require('react-native/Libraries/react-native/react-native.js');var 
-AppRegistry=React.AppRegistry;var View=React.View;
+AppRegistry=React.AppRegistry;var View=React.View;var Text=React.Text;
 
 var ReactRoot=React.createClass({displayName:'ReactRoot',
 render:function(){
 return (
-React.createElement(View,{elevation:'1.0'}));}});
+React.createElement(View,{elevation:'1.0'},
+React.createElement(Text,null,'Hello React Native')));}});
 
 
 
@@ -57327,4 +57328,4 @@ module.exports=findDOMNode;
 });
 ;require("InitializeJavaScriptAppEngine");
 ;require("react-xaml-wpf/index.ios.js");
-__SSTOKENSTRING = "@generated SignedSource<<8a9aad82927145a159f9ecb21a3904c7>>";
+__SSTOKENSTRING = "@generated SignedSource<<d545c00c0e8f6b3ae9b0c55ce3164c44>>";
