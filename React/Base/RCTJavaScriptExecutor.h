@@ -85,4 +85,7 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  */
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
+- (void)injectGlobal:(NSString *)name
+               value:(id)value;
+
 @end

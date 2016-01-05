@@ -89,6 +89,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
   NSURL *_bundleURL;
+  BOOL _contextInitialized;
+  NSMutableDictionary<NSString *, id> *_globalsToInject;
 }
 
 @synthesize valid = _valid;
@@ -190,6 +192,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
             @"Can't initialize RCTJSCExecutor without a javaScriptThread");
 
   if ((self = [super init])) {
+    _contextInitialized = NO;
+    _globalsToInject = [NSMutableDictionary new];
+
     _valid = YES;
     _javaScriptThread = javaScriptThread;
     __weak RCTJSCExecutor *weakSelf = self;
@@ -217,6 +222,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
 - (void)setUp
 {
+  _contextInitialized = YES;
+
   __weak RCTJSCExecutor *weakSelf = self;
   [self executeBlockOnJavaScriptQueue:^{
     RCTJSCExecutor *strongSelf = weakSelf;
@@ -264,6 +271,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     context[@"nativePerformanceNow"] = ^{
       return @(CACurrentMediaTime() * 1000);
     };
+
+    for (NSString *name in _globalsToInject) {
+      strongSelf->_context.context[name] = _globalsToInject[name];
+    }
 
 #if RCT_DEV
 
@@ -571,6 +582,23 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       onComplete(nil);
     }
   }), 0, @"js_call,json_call", (@{@"objectName": objectName}))];
+}
+
+- (void)injectGlobal:(NSString *)name value:(id)value
+{
+  if (!_contextInitialized) {
+    _globalsToInject[name] = value;
+    return;
+  }
+  __weak RCTJSCExecutor *weakSelf = self;
+  [self executeBlockOnJavaScriptQueue:^{
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.isValid) {
+      return;
+    }
+
+    strongSelf->_context.context[name] = value;
+  }];
 }
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
