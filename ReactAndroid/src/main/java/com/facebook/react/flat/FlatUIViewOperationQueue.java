@@ -11,7 +11,9 @@ package com.facebook.react.flat;
 
 import javax.annotation.Nullable;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 
 /**
@@ -19,6 +21,8 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
  * FlatUIImplementation-specific methods that need to run in UI thread.
  */
 /* package */ final class FlatUIViewOperationQueue extends UIViewOperationQueue {
+
+  private static final int[] MEASURE_BUFFER = new int[4];
 
   private final FlatNativeViewHierarchyManager mNativeViewHierarchyManager;
   private final ProcessLayoutRequests mProcessLayoutRequests = new ProcessLayoutRequests();
@@ -150,6 +154,50 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     }
   }
 
+  private final class MeasureVirtualView implements UIOperation {
+
+    private final int mReactTag;
+    private final float mScaledX;
+    private final float mScaledY;
+    private final float mScaledWidth;
+    private final float mScaledHeight;
+    private final Callback mCallback;
+
+    private MeasureVirtualView(
+        int reactTag,
+        float scaledX,
+        float scaledY,
+        float scaledWidth,
+        float scaledHeight,
+        Callback callback) {
+      mReactTag = reactTag;
+      mScaledX = scaledX;
+      mScaledY = scaledY;
+      mScaledWidth = scaledWidth;
+      mScaledHeight = scaledHeight;
+      mCallback = callback;
+    }
+
+    @Override
+    public void execute() {
+      // Measure native View
+      mNativeViewHierarchyManager.measure(mReactTag, MEASURE_BUFFER);
+
+      float nativeViewX = MEASURE_BUFFER[0];
+      float nativeViewY = MEASURE_BUFFER[1];
+      float nativeViewWidth = MEASURE_BUFFER[2];
+      float nativeViewHeight = MEASURE_BUFFER[3];
+
+      // Calculate size of the virtual child inside native View.
+      float x = PixelUtil.toDIPFromPixel(mScaledX * nativeViewWidth + nativeViewX);
+      float y = PixelUtil.toDIPFromPixel(mScaledY * nativeViewHeight + nativeViewY);
+      float width = PixelUtil.toDIPFromPixel(mScaledWidth * nativeViewWidth);
+      float height = PixelUtil.toDIPFromPixel(mScaledHeight * nativeViewHeight);
+
+      mCallback.invoke(0, 0, width, height, x, y);
+    }
+  }
+
   public final class DetachAllChildrenFromViews implements UIViewOperationQueue.UIOperation {
     private @Nullable int[] mViewsToDetachAllChildrenFrom;
 
@@ -205,6 +253,22 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
 
   public void enqueueDropViews(int[] viewsToDrop) {
     enqueueUIOperation(new DropViews(viewsToDrop));
+  }
+
+  public void enqueueMeasureVirtualView(
+      int reactTag,
+      float scaledX,
+      float scaledY,
+      float scaledWidth,
+      float scaledHeight,
+      Callback callback) {
+    enqueueUIOperation(new MeasureVirtualView(
+        reactTag,
+        scaledX,
+        scaledY,
+        scaledWidth,
+        scaledHeight,
+        callback));
   }
 
   public void enqueueProcessLayoutRequests() {

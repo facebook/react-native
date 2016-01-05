@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
@@ -149,6 +151,43 @@ public class FlatUIImplementation extends UIImplementation {
 
     // moveTo and addAtIndices are defined in final order after all the mutations applied.
     addChildren(parentNode, addChildTags, addAtIndices);
+  }
+
+  @Override
+  public void measure(int reactTag, Callback callback) {
+    FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
+    if (node.mountsToView()) {
+      super.measure(reactTag, callback);
+      return;
+    }
+
+    float width = node.getLayoutWidth();
+    float height = node.getLayoutHeight();
+
+    float xInParent = node.getLayoutX();
+    float yInParent = node.getLayoutY();
+
+    while (true) {
+      node =  Assertions.assumeNotNull((FlatShadowNode) node.getParent());
+      if (node.mountsToView()) {
+        break;
+      }
+
+      xInParent += node.getLayoutX();
+      yInParent += node.getLayoutY();
+    }
+
+    float parentWidth = node.getLayoutWidth();
+    float parentHeight = node.getLayoutHeight();
+
+    FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
+    operationsQueue.enqueueMeasureVirtualView(
+        node.getReactTag(),
+        xInParent / parentWidth,
+        yInParent / parentHeight,
+        width / parentWidth,
+        height / parentHeight,
+        callback);
   }
 
   /**
