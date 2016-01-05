@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.Views.View
 {
-    public class ReactViewManager : ViewGroupManager<ReactViewPanel>
+    public class ReactViewManager : ViewGroupManager<ReactPanel>
     {
         public static readonly string REACT_CLASS = ViewProperties.ViewClassName;
         private static readonly int CMD_SET_PRESSED = 1;
@@ -27,13 +27,13 @@ namespace ReactNative.Views.View
         }
         
         /// <summary>
-        /// Returns the view instance for <see cref="ReactViewPanel"/>.
+        /// Returns the view instance for <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="reactContext"></param>
         /// <returns></returns>
-        protected override ReactViewPanel CreateViewInstanceCore(ThemedReactContext reactContext)
+        protected override ReactPanel CreateViewInstanceCore(ThemedReactContext reactContext)
         {
-            return new ReactViewPanel();
+            return new ReactPanel();
         }
 
         /// <summary>
@@ -42,51 +42,51 @@ namespace ReactNative.Views.View
         /// <param name="view">The view panel.</param>
         /// <param name="borderRadius">The border radius value.</param>
         [ReactProperty("borderRadius")]
-        public void SetBorderRadius(ReactViewPanel view, float borderRadius)
+        public void SetBorderRadius(ReactPanel view, float borderRadius)
         {
             view.SetBorderRadius(borderRadius);
         }
 
         /// <summary>
-        /// Sets the elevation transformation effect of the <see cref="ReactViewPanel"/>. 
+        /// Sets the elevation transformation effect of the <see cref="ReactPanel"/>. 
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="elevation">The 3D Z-Location index of the <see cref="ReactRootView"/>.</param>
         [ReactProperty("elevation")]
-        public void SetElevation(ReactViewPanel view, float elevation)
+        public void SetElevation(ReactPanel view, float elevation)
         {
             view.SetElevationEffect(elevation);
         }
 
         /// <summary>
-        /// Sets the border thickness of the <see cref="ReactViewPanel"/>.
+        /// Sets the border thickness of the <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="borderWidth">The border width in pixels.</param>
         [ReactProperty("borderWidth", DefaultFloat = float.NaN)]    
-        public void SetBorderWidth(ReactViewPanel view, float borderWidth)
+        public void SetBorderWidth(ReactPanel view, float borderWidth)
         {
             view.SetBorderThickness(borderWidth);
         }
 
         /// <summary>
-        /// Set the border color of the <see cref="ReactViewPanel"/>.
+        /// Set the border color of the <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="color">The color hex code.</param>
         [ReactProperty("borderColor")]
-        public void SetBorderColor(ReactViewPanel view, string color)
+        public void SetBorderColor(ReactPanel view, string color)
         {
             view.SetBorderBackgroundColor(color);
         }
 
         /// <summary>
-        /// Sets the <see cref="ReactViewPanel"/> pointer events based on a event string key.
+        /// Sets the <see cref="ReactPanel"/> pointer events based on a event string key.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="pointerEventsStr">The event to propogate down to the view.</param>
         [ReactProperty("pointerEvents")]
-        public void SetPointerEvents(ReactViewPanel view, string pointerEventsStr)
+        public void SetPointerEvents(ReactPanel view, string pointerEventsStr)
         {
             var pointerEvent = default(PointerEvents);
             if (Enum.TryParse(pointerEventsStr, out pointerEvent))
@@ -143,7 +143,7 @@ namespace ReactNative.Views.View
             parent.Children.Insert(index, child);
         }
 
-        protected override void UpdateExtraData(ReactViewPanel root, object extraData)
+        protected override void UpdateExtraData(ReactPanel root, object extraData)
         {
         }
     }

@@ -188,8 +188,8 @@
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="IReactPackage.cs" />
     <Compile Include="Shell\MainReactPackage.cs" />
-    <Compile Include="Touch\JSResponderHandler.cs" />
-    <Compile Include="Touch\OnInterceptTouchEventListener.cs" />
+    <Compile Include="Touch\JavaScriptResponderHandler.cs" />
+    <Compile Include="Touch\IOnInterceptTouchEventListener.cs" />
     <Compile Include="UIManager\Animation\AnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
     <Compile Include="UIManager\CatalystStylesDiffMap.cs" />
@@ -208,15 +208,14 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
+    <Compile Include="UIManager\PixelHelpers.cs" />
     <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
     <Compile Include="UIManager\SimpleViewManager.cs" />
     <Compile Include="UIManager\TouchTargetHelper.cs" />
     <Compile Include="UIManager\FrameworkElementExtensions.cs" />
-    <Compile Include="UIManager\ICatalystInterceptingViewGroup.cs" />
     <Compile Include="UIManager\IPropertySetter.cs" />
-    <Compile Include="UIManager\JavaScriptResponderHandler.cs" />
     <Compile Include="UIManager\LayoutShadowNode.cs" />
     <Compile Include="UIManager\NativeViewHierarchyOptimizer.cs" />
     <Compile Include="UIManager\OnLayoutEvent.cs" />
@@ -248,7 +247,7 @@
     <Compile Include="Views\ReactRootView.xaml.cs">
       <DependentUpon>ReactRootView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Touch\CatalystInterceptingViewGroup.cs" />
+    <Compile Include="Touch\ICatalystInterceptingViewGroup.cs" />
     <Compile Include="Views\View\ReactViewPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
