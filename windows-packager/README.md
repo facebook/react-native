@@ -14,4 +14,4 @@ Run this to setup react native CLI
     
 Your bundles entry point file(<entry-file>) needs to be named as either index.ios.js or index.android.js. We have an open issue to enhance RN to support index.windows.js named files. 
 
-    $ react-native bundle --minify entry-file <entry-file> --out <main.jsbundle>
+    $ react-native bundle --dev false --entry-file <entry-file> --bundle-output <main.jsbundle>
