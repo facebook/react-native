@@ -60,7 +60,7 @@ namespace ReactNative.UIManager
         /// <param name="themedRootContext">The react context.</param>
         public void AddRootView(
             int tag, 
-            SizeMonitoringFrameLayout rootView, 
+            SizeMonitoringPanel rootView, 
             ThemedReactContext themedRootContext)
         {
             if (DispatcherHelpers.IsOnDispatcher())

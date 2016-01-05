@@ -19,6 +19,8 @@ namespace ReactNative.UIManager
     /// </remarks>
     public partial class UIManagerModule : ReactContextNativeModuleBase, ILifecycleEventListener, IOnBatchCompleteListener
     {
+        private const int RootViewTagIncrement = 10;
+
         private readonly UIImplementation _uiImplementation;
         private readonly IReadOnlyDictionary<string, object> _moduleConstants;
         private readonly EventDispatcher _eventDispatcher;
@@ -85,19 +87,22 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Registers a new root view. JS can use the returned tag with manageChildren to add/remove
         /// children to this view.
-        /// 
-        /// TODO:
-        /// 1.This needs to be more formally implemented so that it takes <see cref="ThemedReactContext" /> into consideration. This is a 
-        ///   temporary implementation
         /// </summary>
         /// <param name="rootView"></param>
         /// <returns></returns>
-        public int AddMeasuredRootView(ReactRootView rootView)
+        public int AddMeasuredRootView(SizeMonitoringPanel rootView)
         {
             var tag = _nextRootTag;
-            _nextRootTag += 10;
-            rootView.BindTagToView(_nextRootTag);
-            rootView.setOnSizeChangedListener(new RootViewSizeChangedListener());
+            _nextRootTag += RootViewTagIncrement;
+
+            // TODO: round?
+            var width = (int)Math.Floor(rootView.ActualWidth);
+            var height = (int)Math.Floor(rootView.ActualHeight);
+
+            var context = new ThemedReactContext(Context);
+            _uiImplementation.RegisterRootView(rootView, tag, width, height, context);
+
+            rootView.SetOnSizeChangedListener(new RootViewSizeChangedListener());
             
             return tag;
         }
@@ -406,7 +411,7 @@ namespace ReactNative.UIManager
 
         sealed class RootViewSizeChangedListener : ISizeChangedListener
         {
-            public void onSizeChanged(object sender, SizeChangedEventArgs e)
+            public void OnSizeChanged(object sender, SizeChangedEventArgs e)
             {
                 //TODO: Need to adjust the styling of the panel based on the new
                 //width and height(e.NewSize). The adjustment needs to run on the 
