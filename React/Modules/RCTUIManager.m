@@ -16,12 +16,15 @@
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTComponent.h"
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTModuleData.h"
+#import "RCTModuleMethod.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTRootViewInternal.h"
@@ -905,6 +908,20 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
       @(frame.size.height),
     ]);
   }];
+}
+
+RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
+                  commandID:(NSInteger)commandID
+                  commandArgs:(NSArray<id> *)commandArgs)
+{
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
+  Class managerClass = componentData.managerClass;
+  RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
+  id<RCTBridgeMethod> method = moduleData.methods[commandID];
+
+  NSArray *args = [@[reactTag] arrayByAddingObjectsFromArray:commandArgs];
+  [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
 }
 
 - (void)partialBatchDidFlush
