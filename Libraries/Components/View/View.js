@@ -168,6 +168,17 @@ var View = React.createClass({
     onMagicTap: PropTypes.func,
 
     /**
+     * Provides a flip transition animation. This makes it look as if a new
+     * view was flipped into place, but the view actually remains the same.
+     * Default value is 'front'.
+     * @platform ios
+     */
+    side: React.PropTypes.oneOf([
+      'front',
+      'back',
+    ]),
+
+    /**
      * Used to locate this view in end-to-end tests. NB: disables the 'layout-only
      * view removal' optimization for this view!
      */
