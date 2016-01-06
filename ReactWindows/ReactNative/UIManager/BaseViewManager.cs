@@ -105,19 +105,31 @@ namespace ReactNative.UIManager
             transform.TranslateY = distance;
         }
 
-        private void SetRotationX(TFrameworkElement view, double rotation)
+        /// <summary>
+        /// Sets the rotateX property of the <typeparamref name="TFrameworkElement"/>.
+        /// </summary>
+        /// <param name="view">The WPF <typeparamref name="TFrameworkElement"/>.</param>
+        /// <param name="rotation">The rotation degrees</param>
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_ROTATE_X, DefaultDouble = 1.0)]
+        public void SetRotationX(TFrameworkElement view, double rotation)
         {
             var transform = EnsureTransform(view);
             transform.RotationX = rotation;
         }
 
-        private void SetRotationY(TFrameworkElement view, double rotation)
+        /// <summary>
+        /// Sets the rotateY property of the <typeparamref name="TFrameworkElement"/>.
+        /// </summary>
+        /// <param name="view">The WPF <typeparamref name="TFrameworkElement"/>.</param>
+        /// <param name="rotation">The rotation degrees</param>
+        [ReactProperty(PROP_DECOMPOSED_MATRIX_ROTATE_Y, DefaultDouble = 1.0)]
+        public void SetRotationY(TFrameworkElement view, double rotation)
         {
             var transform = EnsureTransform(view);
             transform.RotationY = rotation;
         }
 
-        private void SetTransformMatrix(TFrameworkElement view, JObject matrix)
+        protected void SetTransformMatrix(TFrameworkElement view, JObject matrix)
         {
             // TODO: eliminate closure in action.
             LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_TRANSLATE_X, value => SetTranslationX(view, value));
