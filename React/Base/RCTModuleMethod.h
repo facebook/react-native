@@ -31,8 +31,4 @@
                           JSMethodName:(NSString *)JSMethodName
                            moduleClass:(Class)moduleClass NS_DESIGNATED_INITIALIZER;
 
-- (void)invokeWithBridge:(RCTBridge *)bridge
-                  module:(id)module
-               arguments:(NSArray *)arguments;
-
 @end

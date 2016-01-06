@@ -16,6 +16,7 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
+var UIManager = require('UIManager');
 var View = require('View');
 
 var invariant = require('invariant');
@@ -240,15 +241,27 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTWebViewManager.goForward(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.goForward,
+      null
+    );
   },
 
   goBack: function() {
-    RCTWebViewManager.goBack(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.goBack,
+      null
+    );
   },
 
   reload: function() {
-    RCTWebViewManager.reload(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.reload,
+      null
+    );
   },
 
   /**

@@ -64,6 +64,12 @@
 - (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
 
 /**
+ * Get the module data for a given module name. Used by UIManager to implement
+ * the `dispatchViewManagerCommand` method.
+ */
+- (RCTModuleData *)moduleDataForName:(NSString *)moduleName;
+
+/**
  * Systrace profiler toggling methods exposed for the RCTDevMenu
  */
 - (void)startProfiling;

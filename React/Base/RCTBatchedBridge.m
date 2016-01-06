@@ -222,6 +222,14 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   return _moduleClassesByID;
 }
 
+/**
+ * Used by RCTUIManager
+ */
+- (RCTModuleData *)moduleDataForName:(NSString *)moduleName
+{
+  return _moduleDataByName[moduleName];
+}
+
 - (id)moduleForName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
