@@ -43,7 +43,7 @@ namespace ReactNative.UIManager
         /// <see cref="ReactShadowNode"/>.
         /// </remarks>
         /// <returns>The shadow node instance.</returns>
-        public override ReactShadowNode CreateShadowNodeInstance()
+        public sealed override ReactShadowNode CreateShadowNodeInstance()
         {
             return CreateShadowNodeInstanceCore();
         }

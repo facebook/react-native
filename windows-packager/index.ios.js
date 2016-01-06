@@ -6,7 +6,7 @@ var {AppRegistry, View, Text} = React;
     var ReactRoot = React.createClass({
     render: function() {
         return (
-              <View elevation="1.0">
+              <View elevation="1.0" onStartShouldSetResponder="true">
 	          <Text>Hello React Native</Text>
               </View>
         );
