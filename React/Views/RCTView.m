@@ -610,6 +610,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   layer.mask = mask;
 }
 
+- (void)setSide:(NSString *)side
+{
+   if (side != _side) {
+     _side = side;
+     [UIView transitionWithView:self
+                       duration:.3
+                        options:[side isEqualToString:@"front"] ? UIViewAnimationOptionTransitionFlipFromLeft :
+                            UIViewAnimationOptionTransitionFlipFromRight
+                     animations:NULL
+                     completion:NULL];
+   }
+}
+
 #pragma mark Border Color
 
 #define setBorderColor(side)                                \

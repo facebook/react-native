@@ -90,4 +90,11 @@
  */
 @property (nonatomic, assign) RCTBorderStyle borderStyle;
 
+/**
+ * Creates a flip transition animation (side = 'front' or 'back').
+ * This makes it look as if a new view was flipped into place, 
+ * but the view actually remains the same.
+ */
+@property (nonatomic, assign) NSString *side;
+
 @end
