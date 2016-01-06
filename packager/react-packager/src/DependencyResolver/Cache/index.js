@@ -135,6 +135,10 @@ class Cache {
       .then(values => {
         var json = Object.create(null);
         Object.keys(data).forEach((key, i) => {
+          if (!values[i]) {
+            return;
+          }
+
           json[key] = Object.create(null);
           json[key].metadata = data[key].metadata;
           json[key].data = values[i].data;
