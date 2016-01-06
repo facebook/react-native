@@ -92,7 +92,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
    * Called when view is detached from view hierarchy and allows for some additional cleanup by
    * the {@link ViewManager} subclass.
    */
-  public void onDropViewInstance(ThemedReactContext reactContext, T view) {
+  public void onDropViewInstance(T view) {
   }
 
   /**
