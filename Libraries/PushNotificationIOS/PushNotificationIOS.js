@@ -30,7 +30,13 @@ var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
  * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
  * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
  *
- * To enable support for `notification` and `register` events you need to augment your AppDelegate.
+ * [Manually link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
+ *
+ * - Be sure to add the following to your `Header Search Paths`:
+ * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS`
+ * - Set the search to `recursive`
+ *
+ * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
  * At the top of your `AppDelegate.m`:
  *
