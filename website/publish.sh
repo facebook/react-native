@@ -9,6 +9,7 @@
 
 set -e
 
+VERSION=`git describe --abbrev=0 --tags`
 # Start in website/ even if run from root directory
 cd "$(dirname "$0")"
 
@@ -17,16 +18,17 @@ git checkout -- .
 git clean -dfx
 git fetch
 git rebase
-rm -Rf *
+rm -Rf ${VERSION}
+mkdir -p ${VERSION}
 cd ../react-native/website
 node server/generate.js
-cp -R build/react-native/* ../../react-native-gh-pages/
+cp -R build/react-native/* ../../react-native-gh-pages/${VERSION}
 rm -Rf build/
 cd ../../react-native-gh-pages
 git status
-git add -A .
+git add -A ${VERSION}
 if ! git diff-index --quiet HEAD --; then
-  git commit -m "update website"
+  git commit -m "update ${VERSION} of the website"
   git push origin gh-pages
 fi
 cd ../react-native/website
