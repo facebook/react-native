@@ -23,11 +23,23 @@ case "$CONFIGURATION" in
     ;;
 esac
 
-# Xcode project file for React Native apps is located in ios/ subfolder
-cd ..
+search_parent_paths_for() {
+  if [ -e "$1" ]; then
+    pwd
+    return 0
+  elif [ "$PWD" != "/" ]; then
+    (cd ..; search_parent_paths_for "$1")
+    return $?
+  fi
+  return 1
+}
 
-set -x
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+# Load user environment (which should also handle ndenv or nvm setup)
+[ -e "$HOME/.bashrc" ] && source "$HOME/.bashrc"
+
+# Add node binstubs to our binary search $PATH
+project_root_path="$(search_parent_paths_for node_modules)"
+export PATH="$PATH:$project_root_path/node_modules/.bin"
 
 # npm global install path may be a non-standard location
 PATH="$(npm prefix -g)/bin:$PATH"
@@ -45,6 +57,12 @@ fi
 if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
   eval "$($HOME/.nodenv/bin/nodenv init -)"
 fi
+
+# Xcode project file for React Native apps is located in ios/ subfolder
+cd ..
+
+set -x
+DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 react-native bundle \
   --entry-file index.ios.js \
