@@ -34,6 +34,7 @@ public class DevInternalSettings implements
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
   private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
+  private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
 
   private final SharedPreferences mPreferences;
   private final DevSupportManager mDebugManager;
@@ -75,6 +76,14 @@ public class DevInternalSettings implements
         PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)) {
       mDebugManager.reloadSettings();
     }
+  }
+
+  public boolean isHotModuleReplacementEnabled() {
+    return mPreferences.getBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, false);
+  }
+
+  public void setHotModuleReplacementEnabled(boolean enabled) {
+    mPreferences.edit().putBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, enabled).apply();
   }
 
   public boolean isReloadOnJSChangeEnabled() {
