@@ -49,15 +49,22 @@ const MapView = React.createClass({
     style: View.propTypes.style,
 
     /**
-     * If `true` the app will ask for the user's location and focus on it.
-     * Default value is `false`.
+     * If `true` the app will ask for the user's location and display it on
+     * the map. Default value is `false`.
      *
-     * **NOTE**: You need to add NSLocationWhenInUseUsageDescription key in
-     * Info.plist to enable geolocation, otherwise it is going
-     * to *fail silently*!
+     * **NOTE**: on iOS, you need to add the `NSLocationWhenInUseUsageDescription`
+     * key in Info.plist to enable geolocation, otherwise it will fail silently.
      */
     showsUserLocation: React.PropTypes.bool,
 
+    /**
+     * If `true` the map will follow the user's location whenever it changes.
+     * Note that this has no effect unless `showsUserLocation` is enabled.
+     * Default value is `true`.
+     * @platform ios
+     */
+    followUserLocation: React.PropTypes.bool,
+    
     /**
      * If `false` points of interest won't be displayed on the map.
      * Default value is `true`.
@@ -156,13 +163,11 @@ const MapView = React.createClass({
       
       /**
        * Whether the pin should be draggable or not
-       * @platform ios
        */
       draggable: React.PropTypes.bool,
 
       /**
        * Event that fires when the annotation drag state changes.
-       * @platform ios
        */  
       onDragStateChange: React.PropTypes.func,
 
@@ -282,7 +287,7 @@ const MapView = React.createClass({
   },
 
   render: function() {
-    let children = [], {annotations, overlays} = this.props;
+    let children = [], {annotations, overlays, followUserLocation} = this.props;
     annotations = annotations && annotations.map((annotation: Object) => {
       let {
         id,
@@ -430,11 +435,17 @@ const MapView = React.createClass({
       };
     }
 
+    // followUserLocation defaults to true if showUserLocation is set
+    if (followUserLocation === undefined) {
+      followUserLocation = this.props.showUserLocation;
+    }
+
     return (
       <RCTMap
         {...this.props}
         annotations={annotations}
         children={children}
+        followUserLocation={followUserLocation}
         overlays={overlays}
         onPress={onPress}
         onChange={onChange}
