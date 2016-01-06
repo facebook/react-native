@@ -9,6 +9,7 @@
 
 package com.facebook.react.bridge.queue;
 
+import com.facebook.jni.Countable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
@@ -16,12 +17,10 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * A Runnable that has a native run implementation.
  */
 @DoNotStrip
-public class NativeRunnable implements Runnable {
+public class NativeRunnableDeprecated extends Countable implements Runnable {
 
-  private final HybridData mHybridData;
-
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
+  @DoNotStrip
+  private NativeRunnableDeprecated() {
   }
 
   public native void run();
