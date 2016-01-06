@@ -233,7 +233,7 @@ namespace ReactNative.UIManager
             var numToRemove = removeFrom?.Length ?? 0;
             var viewsToAdd = new ViewAtIndex[numToMove + numToAdd];
             var indicesToRemove = new int[numToMove + numToRemove];
-            var tagsToRemove = new int[addAtIndices.Length];
+            var tagsToRemove = new int[indicesToRemove.Length];
             var tagsToDelete = new int[numToRemove];
 
             if (numToMove > 0)
@@ -250,7 +250,7 @@ namespace ReactNative.UIManager
 
             if (numToAdd > 0)
             {
-                for (var i = 0; i < numToRemove; ++i)
+                for (var i = 0; i < numToAdd; ++i)
                 {
                     viewsToAdd[numToMove + i] = new ViewAtIndex(addChildTags[i], addAtIndices[i]);
                 }
