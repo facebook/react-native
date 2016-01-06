@@ -22,13 +22,12 @@
 #import "RCTRootView.h"
 
 #define RUN_RUNLOOP_WHILE(CONDITION) \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:5]; \
-while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
-  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
-} \
-_Pragma("clang diagnostic pop")
+{ \
+  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
+  while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
+  } \
+}
 
 @interface RCTJavaScriptContext : NSObject
 
@@ -212,8 +211,6 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
   XCTAssertFalse(rootContentView.userInteractionEnabled, @"RCTContentView should have been invalidated");
 }
 
-// This test is flaky, and needs to be fixed before re-enabling. See t9456702.
-#if 0
 - (void)testUnderlyingBridgeIsDeallocated
 {
   RCTBridge *bridge;
@@ -229,7 +226,15 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 
   XCTAssertNotNil(bridge, @"RCTBridge should not have been deallocated");
   XCTAssertNil(batchedBridge, @"RCTBatchedBridge should have been deallocated");
+
+  // Wait to complete the test until the new batchedbridge is also deallocated
+  @autoreleasepool {
+    batchedBridge = bridge.batchedBridge;
+    bridge = nil;
+  }
+
+  RUN_RUNLOOP_WHILE(batchedBridge != nil);
+  XCTAssertNil(batchedBridge);
 }
-#endif
 
 @end

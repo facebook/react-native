@@ -175,9 +175,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   dispatch_group_notify(initModulesAndLoadSource, dispatch_get_main_queue(), ^{
     RCTBatchedBridge *strongSelf = weakSelf;
     if (sourceCode && strongSelf.loading) {
-      dispatch_async(bridgeQueue, ^{
-        [weakSelf executeSourceCode:sourceCode];
-      });
+      [strongSelf executeSourceCode:sourceCode];
     }
   });
 }
@@ -570,6 +568,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   RCTAssertMainThread();
+  RCTAssert(_javaScriptExecutor != nil, @"Can't complete invalidation without a JS executor");
 
   _loading = NO;
   _valid = NO;
@@ -605,11 +604,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       if (RCTProfileIsProfiling()) {
         RCTProfileUnhookModules(self);
       }
+
       _moduleDataByName = nil;
       _moduleDataByID = nil;
       _moduleClassesByID = nil;
       _modulesByName_DEPRECATED = nil;
       _frameUpdateObservers = nil;
+      _pendingCalls = nil;
 
     }];
   });
