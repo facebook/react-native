@@ -323,9 +323,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   }
 
   @Override
-  public void onDropViewInstance(ThemedReactContext reactContext, WebView webView) {
-    super.onDropViewInstance(reactContext, webView);
-    reactContext.removeLifecycleEventListener((ReactWebView) webView);
+  public void onDropViewInstance(WebView webView) {
+    super.onDropViewInstance(webView);
+    ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
   }
 }
