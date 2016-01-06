@@ -77,6 +77,7 @@ class AnExChained extends React.Component {
           return (
             <Animated.Image
               {...handlers}
+              key={i}
               source={{uri: CHAIN_IMGS[j]}}
               style={[styles.sticker, {
                 transform: this.state.stickers[j].getTranslateTransform(), // simple conversion
