@@ -290,9 +290,15 @@ exports.examples = [
     }
   },
   {
-    title: 'Map shows user location',
+    title: 'showsUserLocation + followUserLocation',
     render() {
-      return <MapView style={styles.map} showsUserLocation={true} />;
+      return (
+        <MapView
+          style={styles.map}
+          showsUserLocation={true}
+          followUserLocation={true}
+        />
+      );
     }
   },
   {
