@@ -165,7 +165,7 @@ class Resolver {
     );
   }
 
-  wrapModule(resolutionResponse, module, code) {
+  resolveRequires(resolutionResponse, module, code) {
     return Promise.resolve().then(() => {
       if (module.isPolyfill()) {
         return Promise.resolve({code});
@@ -200,10 +200,22 @@ class Resolver {
           .replace(replacePatterns.EXPORT_RE, relativizeCode)
           .replace(replacePatterns.REQUIRE_RE, relativizeCode);
 
-        return module.getName().then(name =>
-          ({name, code: defineModuleCode(name, code)}));
+        return module.getName().then(name => {
+          return {name, code};
+        });
       });
     });
+  }
+
+  wrapModule(resolutionResponse, module, code) {
+    if (module.isPolyfill()) {
+      return Promise.resolve({code});
+    }
+
+    return this.resolveRequires(resolutionResponse, module, code).then(
+      ({name, code}) => {
+        return {name, code: defineModuleCode(name, code)};
+      });
   }
 
   getDebugInfo() {

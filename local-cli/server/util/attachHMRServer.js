@@ -151,7 +151,11 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return;
               }
 
-              return packagerServer.buildBundleForHMR(modulesToUpdate);
+              return packagerServer.buildBundleForHMR({
+                entryFile: client.bundleEntry,
+                platform: client.platform,
+                modules: modulesToUpdate,
+              });
             })
             .then(bundle => {
               if (bundle) {
