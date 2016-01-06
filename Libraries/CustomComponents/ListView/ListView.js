@@ -203,6 +203,15 @@ var ListView = React.createClass({
      * containers.  This is enabled by default.
      */
     removeClippedSubviews: React.PropTypes.bool,
+    /**
+     * An array of child indices determining which children get docked to the
+     * top of the screen when scrolling. For example, passing
+     * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
+     * top of the scroll view. This property is not supported in conjunction
+     * with `horizontal={true}`.
+     * @platform ios
+     */
+    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
   },
 
   /**
@@ -242,6 +251,7 @@ var ListView = React.createClass({
       renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
+      stickyHeaderIndices: [],
     };
   },
 
@@ -394,7 +404,7 @@ var ListView = React.createClass({
     }
     Object.assign(props, {
       onScroll: this._onScroll,
-      stickyHeaderIndices: sectionHeaderIndices,
+      stickyHeaderIndices: this.props.stickyHeaderIndices.concat(sectionHeaderIndices),
 
       // Do not pass these events downstream to ScrollView since they will be
       // registered in ListView's own ScrollResponder.Mixin
