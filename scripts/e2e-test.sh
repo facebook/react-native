@@ -2,6 +2,7 @@
 
 # Abort the mission if any command fails
 set -e
+set -x
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
@@ -58,9 +59,8 @@ npm unpublish react-native-cli --force
 npm publish $ROOT
 npm publish $ROOT/react-native-cli
 
-
 npm install -g react-native-cli
-react-native init EndToEndTest
+react-native init EndToEndTest --verbose
 cd EndToEndTest/ios
 
 # Make sure we installed local version of react-native

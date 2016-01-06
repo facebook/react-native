@@ -1,6 +1,6 @@
 language: objective-c
 
-osx_image: xcode7
+osx_image: xcode7.2
 
 cache:
     directories:
