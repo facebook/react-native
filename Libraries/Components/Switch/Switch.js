@@ -92,7 +92,7 @@ var Switch = React.createClass({
     if (Platform.OS === 'android') {
       props.enabled = !this.props.disabled;
       props.on = this.props.value;
-      props.style = [styles.rctSwitchAndroid, this.props.style];
+      props.style = this.props.style;
     } else if (Platform.OS === 'ios') {
       props.style = [styles.rctSwitchIOS, this.props.style];
     }
@@ -110,11 +110,7 @@ var styles = StyleSheet.create({
   rctSwitchIOS: {
     height: 31,
     width: 51,
-  },
-  rctSwitchAndroid: {
-    height: 27,
-    width: 40,
-  },
+  }
 });
 
 if (Platform.OS === 'android') {
