@@ -32,6 +32,11 @@ function internalTransforms(sourceCode, filename, options) {
 }
 
 function onExternalTransformDone(data, callback, error, externalOutput) {
+  if (error) {
+    callback(error);
+    return;
+  }
+
   var result;
   if (data.options.enableInternalTransforms) {
     result = internalTransforms(
