@@ -22,7 +22,7 @@ function internalTransforms(sourceCode, filename, options) {
     filename: filename,
     sourceFileName: filename,
     sourceMaps: false,
-    plugins: Transforms.getAll()
+    plugins: Transforms.getAll(options)
   });
 
   return {
@@ -37,16 +37,11 @@ function onExternalTransformDone(data, callback, error, externalOutput) {
     return;
   }
 
-  var result;
-  if (data.options.enableInternalTransforms) {
-    result = internalTransforms(
-      externalOutput.code,
-      externalOutput.filename,
-      data.options
-    );
-  } else {
-    result = externalOutput;
-  }
+  var result = internalTransforms(
+    externalOutput.code,
+    externalOutput.filename,
+    data.options
+  );
 
   callback(null, result);
 }
