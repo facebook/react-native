@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -154,13 +154,12 @@
     <Compile Include="Common\ReactConstants.cs" />
     <Compile Include="Bridge\ReactApplicationContext.cs" />
     <Compile Include="CoreModulesPackage.cs" />
+    <Compile Include="UIManager\Events\IOnInterceptKeyboardEventListener.cs" />
     <Compile Include="LifecycleState.cs" />
     <Compile Include="IReactInstanceManager.cs" />
     <Compile Include="Modules\Core\ExceptionsManagerModule.cs" />
     <Compile Include="Modules\Core\Timing.cs" />
     <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
-    <Compile Include="Modules\Toast\ToastHelper.cs" />
-    <Compile Include="Modules\Toast\ToastModule.cs" />
     <Compile Include="Modules\WebSocket\WebSocketModule.cs" />
     <Compile Include="ReactInstanceManagerImpl.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
@@ -251,13 +250,11 @@
     <Compile Include="UIManager\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
     <Compile Include="Touch\ICatalystInterceptingViewGroup.cs" />
-    <Compile Include="Views\Text\InlineManager.cs" />
-    <Compile Include="Views\Text\ReactRawTextManager.cs" />
-    <Compile Include="Views\Text\ReactTextShadowNode.cs" />
-    <Compile Include="Views\Text\ReactTextViewManager.cs" />
-    <Compile Include="Views\Text\ReactVirtualTextViewManager.cs" />
+    <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputEvent.cs" />
     <Compile Include="Views\View\ReactPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -274,8 +271,7 @@
     <Folder Include="JavaScript\uwp-native\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Facebook.CSSLayout, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Facebook.CSSLayout">
       <HintPath>..\References\Facebook.CSSLayout.dll</HintPath>
     </Reference>
   </ItemGroup>
