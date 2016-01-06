@@ -6,7 +6,7 @@ React Native is distributed as two npm packages, `react-native-cli` and `react-n
 
 ### Creating a Javascript Bundle File
 
-Run this to setup react native CLI
+Run this to setup react native CLI using Git Bash. 
 
     $ npm install -g react-native-cli
     $ cd {REACT_NATIVE_CWD}/windows-packager
