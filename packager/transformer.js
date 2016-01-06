@@ -54,8 +54,6 @@ function transform(src, filename, options) {
     return plugin;
   });
 
-  config.plugins = config.plugins.concat(ReactPackager.getTransforms());
-
   const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {

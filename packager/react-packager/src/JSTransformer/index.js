@@ -53,10 +53,6 @@ const validateOpts = declareOpts({
     type: 'number',
     default: DEFAULT_MAX_CALL_TIME,
   },
-  enableInternalTransforms: {
-    type: 'boolean',
-    default: false,
-  },
 });
 
 class Transformer {
@@ -65,7 +61,6 @@ class Transformer {
 
     this._cache = opts.cache;
     this._transformModulePath = opts.transformModulePath;
-    this._enableInternalTransforms = opts.enableInternalTransforms;
 
     if (opts.transformModulePath != null) {
       this._workers = workerFarm({
@@ -111,7 +106,6 @@ class Transformer {
             options: {
               ...options,
               externalTransformModulePath: this._transformModulePath,
-              enableInternalTransforms: this._enableInternalTransforms,
             },
           }).then(res => {
             if (res.error) {

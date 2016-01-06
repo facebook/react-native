@@ -56,10 +56,6 @@ const validateOpts = declareOpts({
     type:'string',
     required: false,
   },
-  enableInternalTransforms: {
-    type: 'boolean',
-    default: false,
-  },
   nonPersistent: {
     type: 'boolean',
     default: false,
@@ -135,7 +131,6 @@ class Bundler {
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       transformModulePath: opts.transformModulePath,
-      enableInternalTransforms: opts.enableInternalTransforms,
     });
 
     this._projectRoots = opts.projectRoots;
