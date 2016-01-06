@@ -1,8 +1,5 @@
-﻿using System;
-using ReactNative.UIManager;
+﻿using ReactNative.UIManager;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Text;
 
 namespace ReactNative.Views.Text
 {
@@ -30,8 +27,8 @@ namespace ReactNative.Views.Text
 
         protected override void UpdateExtraData(TextBlock root, object extraData)
         {
-            var stringData = (string)extraData;
-            root.Text = stringData;
+            var inlineManager = (InlineManager)extraData;
+            root.Inlines.Add(inlineManager.Evaluate());
         }
     }
 }
