@@ -193,7 +193,7 @@ void setNewJavaException(jclass exceptionClass, const char* fmt, ARGS... args) {
   JNIEnv* env = internal::getEnv();
 
   try {
-    char *msg = (char*) alloca(msgSize);
+    char *msg = (char*) alloca(msgSize + 1);
     snprintf(msg, kMaxExceptionMessageBufferSize, fmt, args...);
     env->ThrowNew(exceptionClass, msg);
   } catch (...) {
