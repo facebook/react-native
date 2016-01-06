@@ -226,6 +226,7 @@ var TouchableHighlight = React.createClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
+        pointerEvents={this.props.disabled ? 'none' : 'auto'}
         testID={this.props.testID}>
         {React.cloneElement(
           onlyChild(this.props.children),

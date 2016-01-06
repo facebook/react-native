@@ -210,6 +210,7 @@ var TouchableNativeFeedback = React.createClass({
       onResponderMove: this._handleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
+      pointerEvents: this.props.disabled ? 'none' : 'auto',
     };
     return <TouchableView {...childProps}/>;
   }
