@@ -13,6 +13,7 @@
 #include <react/Bridge.h>
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
+#include "JNativeRunnable.h"
 #include "JSLoader.h"
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
@@ -780,6 +781,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     NativeArray::registerNatives();
     ReadableNativeArray::registerNatives();
     WritableNativeArray::registerNatives();
+    JNativeRunnable::registerNatives();
 
     registerNatives("com/facebook/react/bridge/NativeMap", {
         makeNativeMethod("initialize", map::initialize),
@@ -861,7 +863,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     });
 
-    jclass nativeRunnableClass = env->FindClass("com/facebook/react/bridge/queue/NativeRunnable");
+    jclass nativeRunnableClass = env->FindClass("com/facebook/react/bridge/queue/NativeRunnableDeprecated");
     runnable::gNativeRunnableClass = (jclass)env->NewGlobalRef(nativeRunnableClass);
     runnable::gNativeRunnableCtor = env->GetMethodID(nativeRunnableClass, "<init>", "()V");
     wrap_alias(nativeRunnableClass)->registerNatives({
