@@ -11,20 +11,22 @@ package com.facebook.react.views.viewpager;
 
 import java.util.Map;
 
+import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.SimpleViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewManager;
 
 import javax.annotation.Nullable;
 
 /**
  * Instance of {@link ViewManager} that provides native {@link ViewPager} view.
  */
-public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
+public class ReactViewPagerManager extends SimpleViewGroupManager<ReactViewPager> {
 
   private static final String REACT_CLASS = "AndroidViewPager";
 

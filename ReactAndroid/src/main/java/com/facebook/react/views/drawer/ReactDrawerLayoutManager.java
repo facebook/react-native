@@ -23,9 +23,9 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.SimpleViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
@@ -35,7 +35,7 @@ import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
 /**
  * View Manager for {@link ReactDrawerLayout} components.
  */
-public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout> {
+public class ReactDrawerLayoutManager extends SimpleViewGroupManager<ReactDrawerLayout> {
 
   private static final String REACT_CLASS = "AndroidDrawerLayout";
 

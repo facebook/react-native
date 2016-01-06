@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 /**
  * View manager for ReactRootView components.
  */
-public class RootViewManager extends ViewGroupManager<ViewGroup> {
+public class RootViewManager extends SimpleViewGroupManager<ViewGroup> {
 
   public static final String REACT_CLASS = "RootView";
 
