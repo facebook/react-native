@@ -9,8 +9,8 @@ React Native is distributed as two npm packages, `react-native-cli` and `react-n
 Run this to setup react native CLI
 
     $ npm install -g react-native-cli
-    $ npm install
     $ cd {REACT_NATIVE_CWD}/windows-packager
+    $ npm install
     
 Your bundles entry point file(<entry-file>) needs to be named as either index.ios.js or index.android.js. We have an open issue to enhance RN to support index.windows.js named files. 
 
