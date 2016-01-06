@@ -37,7 +37,7 @@ public abstract class JSBundleLoader {
 
       @Override
       public String getSourceUrl() {
-        return fileName;
+        return (fileName.startsWith("assets://") ? "" : "file://") + fileName;
       }
     };
   }
