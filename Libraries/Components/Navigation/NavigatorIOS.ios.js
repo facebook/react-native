@@ -639,7 +639,7 @@ var NavigatorIOS = React.createClass({
     var {component, wrapperStyle, passProps, ...route} = route;
     var {itemWrapperStyle, ...props} = this.props;
     var shouldUpdateChild =
-      this.state.updatingAllIndicesAtOrBeyond &&
+      this.state.updatingAllIndicesAtOrBeyond != null &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
     var Component = component;
     return (
