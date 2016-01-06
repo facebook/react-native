@@ -638,14 +638,20 @@ NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value)
      }
    }];
 
-  NSString *encodedValue =
-  [value stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
-
-  NSString *newItem = [encodedParam stringByAppendingFormat:@"=%@", encodedValue];
-  if (paramIndex == NSNotFound) {
-    [queryItems addObject:newItem];
+  if (!value) {
+    if (paramIndex != NSNotFound) {
+      [queryItems removeObjectAtIndex:paramIndex];
+    }
   } else {
-    [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
+    NSString *encodedValue =
+    [value stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
+    NSString *newItem = [encodedParam stringByAppendingFormat:@"=%@", encodedValue];
+    if (paramIndex == NSNotFound) {
+      [queryItems addObject:newItem];
+    } else {
+      [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
+    }
   }
   components.percentEncodedQuery = [queryItems componentsJoinedByString:@"&"];
   return components.URL;

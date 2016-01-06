@@ -79,6 +79,13 @@
   XCTAssertEqualObjects(result.absoluteString, @"http://example.com?bar=foo&foo=bar");
 }
 
+- (void)testRemoveParam
+{
+  NSURL *URL = [NSURL URLWithString:@"http://example.com?bar=foo&foo=bar"];
+  NSURL *result = RCTURLByReplacingQueryParam(URL, @"bar", nil);
+  XCTAssertEqualObjects(result.absoluteString, @"http://example.com?foo=bar");
+}
+
 - (void)testNilURLAppendQueryParam
 {
   NSURL *URL = nil;
