@@ -782,6 +782,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     ReadableNativeArray::registerNatives();
     WritableNativeArray::registerNatives();
     JNativeRunnable::registerNatives();
+    registerJSLoaderNatives();
 
     registerNatives("com/facebook/react/bridge/NativeMap", {
         makeNativeMethod("initialize", map::initialize),
