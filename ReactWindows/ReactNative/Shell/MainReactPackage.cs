@@ -46,7 +46,7 @@ namespace ReactNative.Shell
                 new ReactViewManager(),
                 //new ReactViewPagerManager(),
                 //new ReactTextInlineImageViewManager(),
-                //new ReactVirtualTextViewManager(),
+                new ReactVirtualTextViewManager(),
                 //new SwipeRefreshLayoutManager(),
                 //new ReactWebViewManager(),
             };
