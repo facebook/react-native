@@ -207,10 +207,10 @@ CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
   };
 }
 
-UIImage *RCTDecodeImageWithData(NSData *data,
-                                CGSize destSize,
-                                CGFloat destScale,
-                                UIViewContentMode resizeMode)
+UIImage *__nullable RCTDecodeImageWithData(NSData *data,
+                                           CGSize destSize,
+                                           CGFloat destScale,
+                                           UIViewContentMode resizeMode)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
   if (!sourceRef) {
@@ -265,7 +265,7 @@ UIImage *RCTDecodeImageWithData(NSData *data,
   return image;
 }
 
-NSDictionary<NSString *, id> *RCTGetImageMetadata(NSData *data)
+NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
   if (!sourceRef) {
@@ -276,7 +276,7 @@ NSDictionary<NSString *, id> *RCTGetImageMetadata(NSData *data)
   return (__bridge_transfer id)imageProperties;
 }
 
-NSData *RCTGetImageData(CGImageRef image, float quality)
+NSData *__nullable RCTGetImageData(CGImageRef image, float quality)
 {
   NSDictionary *properties;
   CGImageDestinationRef destination;
