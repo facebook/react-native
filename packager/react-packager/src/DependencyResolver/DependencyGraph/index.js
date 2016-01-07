@@ -42,6 +42,7 @@ class DependencyGraph {
     extensions,
     mocksPattern,
     extractRequires,
+    shouldThrowOnUnresolvedErrors = () => true,
   }) {
     this._opts = {
       activity: activity || defaultActivity,
@@ -57,6 +58,7 @@ class DependencyGraph {
       extensions: extensions || ['js', 'json'],
       mocksPattern,
       extractRequires,
+      shouldThrowOnUnresolvedErrors,
     };
     this._cache = this._opts.cache;
     this._helpers = new DependencyGraphHelpers(this._opts);
@@ -163,6 +165,7 @@ class DependencyGraph {
         helpers: this._helpers,
         moduleCache: this._moduleCache,
         fastfs: this._fastfs,
+        shouldThrowOnUnresolvedErrors: this._opts.shouldThrowOnUnresolvedErrors,
       });
 
       const response = new ResolutionResponse();
