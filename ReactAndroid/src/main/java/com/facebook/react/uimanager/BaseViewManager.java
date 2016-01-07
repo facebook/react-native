@@ -7,6 +7,7 @@ import android.os.Build;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.

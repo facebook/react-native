@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager.annotations;
 
 import javax.annotation.Nullable;
 
@@ -12,9 +12,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Use this annotation to annotate group of properties of native views that should be exposed to JS.
- * This annotation should only be used for setter methods of subclasses of {@link ViewManager}. It's
- * a batched version of {@link ReactProp} annotation (please see documentation of {@link ReactProp}
- * for more details about how this annotation can be used).
+ * This annotation should only be used for setter methods of subclasses of
+ * {@link com.facebook.react.uimanager.ViewManager}. It's a batched version of {@link ReactProp}
+ * annotation (please see documentation of {@link ReactProp} for more details about how this
+ * annotation can be used).
  *
  * This annotation is meant to be used for a group of similar properties. That's why it support only
  * a set of properties of the same type. A good example is supporting "border", where we have 7

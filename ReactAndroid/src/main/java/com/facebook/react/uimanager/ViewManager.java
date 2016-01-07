@@ -20,6 +20,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.touch.CatalystInterceptingViewGroup;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
