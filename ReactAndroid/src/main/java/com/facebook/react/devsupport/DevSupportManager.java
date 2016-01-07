@@ -629,6 +629,13 @@ public class DevSupportManager implements NativeModuleCallExceptionHandler {
         },
         Assertions.assertNotNull(mJSAppBundleName),
         mJSBundleTempFile);
+    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+      @Override
+      public void onCancel(DialogInterface dialog) {
+        mDevServerHelper.cancelDownloadBundleFromURL();
+      }
+    });
+    progressDialog.setCancelable(true);
   }
 
   private void reload() {
