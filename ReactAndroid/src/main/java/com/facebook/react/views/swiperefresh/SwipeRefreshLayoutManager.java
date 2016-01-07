@@ -21,16 +21,16 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.SimpleViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a
  * child view. Emits an {@code onRefresh} event when this happens.
  */
-public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
+public class SwipeRefreshLayoutManager extends SimpleViewGroupManager<ReactSwipeRefreshLayout> {
 
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {

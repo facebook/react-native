@@ -9,12 +9,12 @@
 
 package com.facebook.react.views.scroll;
 
-import javax.annotation.Nullable;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.SimpleViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
+
+import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -23,7 +23,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
 public class ReactHorizontalScrollViewManager
-    extends ViewGroupManager<ReactHorizontalScrollView>
+    extends SimpleViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
   private static final String REACT_CLASS = "AndroidHorizontalScrollView";

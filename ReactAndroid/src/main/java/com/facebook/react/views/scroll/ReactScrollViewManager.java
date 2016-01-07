@@ -16,8 +16,8 @@ import java.util.Map;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.SimpleViewGroupManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
@@ -27,7 +27,7 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
 public class ReactScrollViewManager
-    extends ViewGroupManager<ReactScrollView>
+    extends SimpleViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
   private static final String REACT_CLASS = "RCTScrollView";

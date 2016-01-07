@@ -15,18 +15,9 @@ import android.view.ViewGroup;
 /**
  * Class providing children management API for view managers of classes extending ViewGroup.
  */
-public abstract class ViewGroupManager <T extends ViewGroup>
-    extends BaseViewManager<T, LayoutShadowNode> {
 
-  @Override
-  public LayoutShadowNode createShadowNodeInstance() {
-    return new LayoutShadowNode();
-  }
-
-  @Override
-  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
-    return LayoutShadowNode.class;
-  }
+public abstract class ViewGroupManager <T extends ViewGroup, C extends LayoutShadowNode>
+    extends BaseViewManager<T, C> {
 
   @Override
   public void updateExtraData(T root, Object extraData) {
