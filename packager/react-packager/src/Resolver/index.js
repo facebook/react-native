@@ -105,6 +105,10 @@ class Resolver {
     return this._depGraph.getShallowDependencies(entryFile);
   }
 
+  stat(filePath) {
+    return this._depGraph.stat(filePath);
+  }
+
   getModuleForPath(entryFile) {
     return this._depGraph.getModuleForPath(entryFile);
   }
