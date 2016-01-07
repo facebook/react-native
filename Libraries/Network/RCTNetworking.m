@@ -375,7 +375,8 @@ RCT_EXPORT_MODULE()
         headers = response.MIMEType ? @{@"Content-Type": response.MIMEType} : @{};
         status = 200;
       }
-      NSArray<id> *responseJSON = @[task.requestID, @(status), headers];
+      id responseURL = response.URL ? response.URL.absoluteString : [NSNull null];
+      NSArray<id> *responseJSON = @[task.requestID, @(status), headers, responseURL];
       [_bridge.eventDispatcher sendDeviceEventWithName:@"didReceiveNetworkResponse"
                                                   body:responseJSON];
     });
