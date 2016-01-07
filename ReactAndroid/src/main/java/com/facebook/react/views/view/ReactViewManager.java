@@ -84,14 +84,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
             null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
   }
 
-  @ReactProp(name = ViewProps.BORDER_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
-  public void setBorderWidth(ReactViewGroup view, float width) {
-    if (!CSSConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
-    view.setBorderWidth(Spacing.ALL, width);
-  }
-
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactViewGroup view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
