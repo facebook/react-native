@@ -70,6 +70,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
+- (void)finishSetupForInstance
+{
+  if (!_setupComplete) {
+    _setupComplete = YES;
+    [self setUpMethodQueue];
+    [_bridge registerModuleForFrameUpdates:_instance withModuleData:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
+                                                        object:_bridge
+                                                      userInfo:@{@"module": _instance}];
+  }
+}
+
 - (void)setUpMethodQueue
 {
   if (!_methodQueue) {
@@ -90,19 +102,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
           [(id)_instance setValue:_methodQueue forKey:@"methodQueue"];
         }
         @catch (NSException *exception) {
-          RCTLogError(@"%@ is returning nil for it's methodQueue, which is not "
+          RCTLogError(@"%@ is returning nil for its methodQueue, which is not "
                       "permitted. You must either return a pre-initialized "
                       "queue, or @synthesize the methodQueue to let the bridge "
                       "create a queue for you.", self.name);
         }
       }
     }
-
-    // Needs to be sent after bridge has been set for all module instances.
-    // Makes sense to put it here, since the same rules apply for methodQueue.
-    [[NSNotificationCenter defaultCenter]
-     postNotificationName:RCTDidInitializeModuleNotification
-     object:_bridge userInfo:@{@"module": _instance}];
   }
 }
 
@@ -124,11 +130,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     // initialization requires it (View Managers get their queue by calling
     // self.bridge.uiManager.methodQueue)
     [self setBridgeForInstance];
-    [self setUpMethodQueue];
-    [_bridge registerModuleForFrameUpdates:_instance withModuleData:self];
-    _setupComplete = YES;
   }
   [_instanceLock unlock];
+
+  [self finishSetupForInstance];
+
   return _instance;
 }
 

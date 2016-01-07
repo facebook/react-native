@@ -333,14 +333,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   for (RCTModuleData *moduleData in _moduleDataByID) {
     if (moduleData.hasInstance) {
-      [moduleData methodQueue]; // initialize the queue
-    }
-  }
-
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.hasInstance) {
-      [self registerModuleForFrameUpdates:moduleData.instance
-                           withModuleData:moduleData];
+      [moduleData finishSetupForInstance];
     }
   }
 
