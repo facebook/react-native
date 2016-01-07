@@ -14,17 +14,16 @@ namespace ReactNative.Views.TextInput
     class ReactTextChangedEvent : Event
     {
         public static readonly String EVENT_NAME = "topChange";
-        private String mText;
-        private int mContentWidth;
-        private int mContentHeight;
+        private String _Text;
+        private double _ContentWidth;
+        private double _ContentHeight;
 
-        public ReactTextChangedEvent(int viewId, TimeSpan timestamp,
-                                     string text, int contentSizeWidth,
-                                     int contentSizeHeight) : base(viewId, timestamp)
+        public ReactTextChangedEvent(int viewId, string text, double contentSizeWidth,
+                                     double contentSizeHeight) : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
         {
-            mText = text;
-            mContentWidth = contentSizeWidth;
-            mContentHeight = contentSizeHeight;
+            _Text = text;
+            _ContentWidth = contentSizeWidth;
+            _ContentHeight = contentSizeHeight;
         }
 
         /// <summary>
@@ -53,10 +52,10 @@ namespace ReactNative.Views.TextInput
             {
                 return new JObject()
                 {
-                    { "width", mContentWidth },
-                    { "height", mContentWidth },
-                    { "text", mText },
-                    { "width", mContentWidth },
+                    { "width", _ContentWidth },
+                    { "height", _ContentWidth },
+                    { "text", _Text },
+                    { "width", _ContentWidth },
                     {"target", this.ViewTag }
                 };
             }
