@@ -3,6 +3,9 @@ using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
 using System.Diagnostics;
+#if DEBUG
+using Windows.System.Profile;
+#endif
 
 namespace ReactNative.Hosting.Bridge
 {
@@ -143,7 +146,11 @@ namespace ReactNative.Hosting.Bridge
 
 #if DEBUG
             // Start debugging.
-            JavaScriptContext.StartDebugging();
+            if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
+            {
+                JavaScriptContext.StartDebugging();
+            }
+
 #endif
 
             var consolePropertyId = default(JavaScriptPropertyId);
