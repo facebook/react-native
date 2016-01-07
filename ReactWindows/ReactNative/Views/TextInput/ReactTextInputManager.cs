@@ -20,10 +20,12 @@ namespace ReactNative.Views.TextInput
     {
         private static readonly int FOCUS_TEXT_INPUT = 1;
         private static readonly int BLUR_TEXT_INPUT = 2;
-        public static readonly string REACT_CLASS = ViewProperties.TextInputClassName;
+        private static readonly string REACT_CLASS = ViewProperties.TextInputClassName;
 
         private const string PROP_ROTATION_X = "rotationX";
         private const string PROP_TEXT_ALIGN = "textAlign";
+        private const string PROP_MAX_LENGTH = "maxLength";
+        private const string PROP_IS_EDITABLE = "editable";
 
         public override string Name
         {
@@ -42,12 +44,7 @@ namespace ReactNative.Views.TextInput
         {
             return new TextBox();
         }
-
-        private void TextChangedHandler(object sender, TextChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         /// <summary>
         /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
         /// </summary>
@@ -55,19 +52,17 @@ namespace ReactNative.Views.TextInput
         /// <param name="view">The <see cref="TextBox"/> view instance.</param>
         protected override void AddEventEmitters(ThemedReactContext reactContext, TextBox view)
         {
-            view.TextChanged += TextChangedHandler;
-            view.
+            var eventListener = new ReactTextInputWatcher(reactContext);
+            view.TextChanged += eventListener.OnInterceptTextChangeEvent;
+            view.GotFocus += eventListener.OnInterceptGotFocusEvent;
+            view.LostFocus += eventListener.OnInterceptLostFocusEvent;
         }
+        
 
         protected override void UpdateExtraData(TextBox root, object extraData)
         {
         }
-
-        public override void SetBackgroundColor(TextBox view, int backgroundColor)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         protected override LayoutShadowNode CreateShadowNodeInstanceCore()
         {
             //TODO: Need to implement ReactTextInputShadowNode.
@@ -162,35 +157,71 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
-        /// Sets the editability of the <see cref="TextBox"/>.
+        /// Sets the max charcter length property on the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="view">The text input box control.</param>
-        /// <param name="degrees">The text alignment.</param>
-        [ReactProperty(PROP_TEXT_ALIGN)]
-        public void Editable(TextBox view, bool editable)
+        /// <param name="maxCharLength">The text alignment.</param>
+        [ReactProperty(PROP_MAX_LENGTH)]
+        public void SetMaxLength(TextBox view, int maxCharLength)
         {
-            var textAlignment = default(TextAlignment);
-            if (Enum.TryParse(alignment, out textAlignment))
-            {
-                view.TextAlignment = textAlignment;
-            }
+            view.MaxLength = maxCharLength;
         }
 
-        private class ReactTextInputTextWatcher : IOnInterceptKeyboardEventListener
+        /// <summary>
+        /// Sets the editablilty for the <see cref="TextBox"/>. <see cref="TextBox"/> will be set to read-only if this field is set to false.
+        /// </summary>
+        /// <param name="view">The text input box control.</param>
+        /// <param name="isEditable">Determines if the control is editable.</param>
+        [ReactProperty(PROP_IS_EDITABLE, DefaultBoolean = true)]
+        public void SetEditable(TextBox view, bool isEditable)
+        {
+            view.IsReadOnly = !isEditable;
+        }
+
+        private class ReactTextInputWatcher : IOnInterceptTextInputEventListener, IOnIntercepTextFocusEventListener
         {
             private EventDispatcher _EventDispatcher;
             private String _PreviousText;
 
-            public ReactTextInputTextWatcher(ReactContext reactContext)
+            public ReactTextInputWatcher(ReactContext reactContext)
             {
                 _EventDispatcher = reactContext.CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
                 _PreviousText = null;
             }
 
-            public bool OnInterceptKeyboardEvent(object sender, TextChangedEventArgs @event)
+            /// <summary>
+            /// The <see cref="TextBox"/> event interceptor for focus lost events for the native control.
+            /// </summary>
+            /// <param name="sender">The source sender view.</param>
+            /// <param name="event">The received event args</param>
+            public void OnInterceptLostFocusEvent(object sender, RoutedEventArgs @event)
             {
-                _EventDispatcher.DispatchEvent(new ReactTextChangedEvent());
+                var senderTextInput = (TextBox)sender;
+                _EventDispatcher.DispatchEvent(new ReactTextInputBlurEvent(senderTextInput.GetTag()));
             }
+
+            /// <summary>
+            /// The <see cref="TextBox"/> event interceptor for focus gained events for the native control.
+            /// </summary>
+            /// <param name="sender">The source sender view.</param>
+            /// <param name="event">The received event args</param>
+            public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
+            {
+                var senderTextInput = (TextBox)sender;
+                _EventDispatcher.DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
+            }
+
+            /// <summary>
+            /// The <see cref="TextBox"/> event interceptor for text change events for the native control.
+            /// </summary>
+            /// <param name="sender">The source sender view.</param>
+            /// <param name="event">The received event args</param>
+            public void OnInterceptTextChangeEvent(object sender, TextChangedEventArgs e)
+            {
+                var senderTextInput = (TextBox)sender;
+                _EventDispatcher.DispatchEvent(new ReactTextChangedEvent(senderTextInput.GetTag(), senderTextInput.Text, senderTextInput.Width, senderTextInput.Height));
+            }
+            
         }
     }
 }
