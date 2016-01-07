@@ -96,10 +96,22 @@ CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds,
   const CGFloat maxX = CGRectGetMaxX(bounds);
   const CGFloat maxY = CGRectGetMaxY(bounds);
 
-  const CGSize topLeft = cornerInsets.topLeft;
-  const CGSize topRight = cornerInsets.topRight;
-  const CGSize bottomLeft = cornerInsets.bottomLeft;
-  const CGSize bottomRight = cornerInsets.bottomRight;
+  const CGSize topLeft = {
+    MAX(0, MIN(cornerInsets.topLeft.width, bounds.size.width - cornerInsets.topRight.width)),
+    MAX(0, MIN(cornerInsets.topLeft.height, bounds.size.height - cornerInsets.bottomLeft.height)),
+  };
+  const CGSize topRight = {
+    MAX(0, MIN(cornerInsets.topRight.width, bounds.size.width - cornerInsets.topLeft.width)),
+    MAX(0, MIN(cornerInsets.topRight.height, bounds.size.height - cornerInsets.bottomRight.height)),
+  };
+  const CGSize bottomLeft = {
+    MAX(0, MIN(cornerInsets.bottomLeft.width, bounds.size.width - cornerInsets.bottomRight.width)),
+    MAX(0, MIN(cornerInsets.bottomLeft.height, bounds.size.height - cornerInsets.topLeft.height)),
+  };
+  const CGSize bottomRight = {
+    MAX(0, MIN(cornerInsets.bottomRight.width, bounds.size.width - cornerInsets.bottomLeft.width)),
+    MAX(0, MIN(cornerInsets.bottomRight.height, bounds.size.height - cornerInsets.topRight.height)),
+  };
 
   CGMutablePathRef path = CGPathCreateMutable();
   RCTPathAddEllipticArc(path, transform, (CGPoint){
@@ -174,6 +186,7 @@ static CGContextRef RCTUIGraphicsBeginImageContext(CGSize size, CGColorRef backg
 }
 
 static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
+                                       CGSize viewSize,
                                        UIEdgeInsets borderInsets,
                                        RCTBorderColors borderColors,
                                        CGColorRef backgroundColor,
@@ -182,6 +195,16 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
   const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, borderInsets);
 
+  const BOOL makeStretchable =
+  (borderInsets.left + cornerInsets.topLeft.width +
+   borderInsets.right + cornerInsets.bottomRight.width <= viewSize.width) &&
+  (borderInsets.left + cornerInsets.bottomLeft.width +
+   borderInsets.right + cornerInsets.topRight.width <= viewSize.width) &&
+  (borderInsets.top + cornerInsets.topLeft.height +
+   borderInsets.bottom + cornerInsets.bottomRight.height <= viewSize.height) &&
+  (borderInsets.top + cornerInsets.topRight.height +
+   borderInsets.bottom + cornerInsets.bottomLeft.height <= viewSize.height);
+
   const UIEdgeInsets edgeInsets = (UIEdgeInsets){
     borderInsets.top + MAX(cornerInsets.topLeft.height, cornerInsets.topRight.height),
     borderInsets.left + MAX(cornerInsets.topLeft.width, cornerInsets.bottomLeft.width),
@@ -189,11 +212,11 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
     borderInsets.right + MAX(cornerInsets.bottomRight.width, cornerInsets.topRight.width)
   };
 
-  const CGSize size = (CGSize){
+  const CGSize size = makeStretchable ? (CGSize){
     // 1pt for the middle stretchable area along each axis
     edgeInsets.left + 1 + edgeInsets.right,
     edgeInsets.top + 1 + edgeInsets.bottom
-  };
+  } : viewSize;
 
   CGContextRef ctx = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge);
   const CGRect rect = {.size = size};
@@ -270,6 +293,8 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
       }
     }
 
+    CGColorRef currentColor = NULL;
+
     // RIGHT
     if (borderInsets.right > 0) {
 
@@ -280,9 +305,8 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
         (CGPoint){size.width, size.height},
       };
 
-      CGContextSetFillColorWithColor(ctx, borderColors.right);
+      currentColor = borderColors.right;
       CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
     }
 
     // BOTTOM
@@ -295,9 +319,12 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
         (CGPoint){size.width, size.height},
       };
 
-      CGContextSetFillColorWithColor(ctx, borderColors.bottom);
+      if (!CGColorEqualToColor(currentColor, borderColors.bottom)) {
+        CGContextSetFillColorWithColor(ctx, currentColor);
+        CGContextFillPath(ctx);
+        currentColor = borderColors.bottom;
+      }
       CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
     }
 
     // LEFT
@@ -310,9 +337,12 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
         (CGPoint){0, size.height},
       };
 
-      CGContextSetFillColorWithColor(ctx, borderColors.left);
+      if (!CGColorEqualToColor(currentColor, borderColors.left)) {
+        CGContextSetFillColorWithColor(ctx, currentColor);
+        CGContextFillPath(ctx);
+        currentColor = borderColors.left;
+      }
       CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
     }
 
     // TOP
@@ -325,10 +355,16 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
         (CGPoint){size.width, 0},
       };
 
-      CGContextSetFillColorWithColor(ctx, borderColors.top);
+      if (!CGColorEqualToColor(currentColor, borderColors.top)) {
+        CGContextSetFillColorWithColor(ctx, currentColor);
+        CGContextFillPath(ctx);
+        currentColor = borderColors.top;
+      }
       CGContextAddLines(ctx, points, sizeof(points)/sizeof(*points));
-      CGContextFillPath(ctx);
     }
+
+    CGContextSetFillColorWithColor(ctx, currentColor);
+    CGContextFillPath(ctx);
   }
 
   CGPathRelease(insetPath);
@@ -336,7 +372,11 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
   UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
 
-  return [image resizableImageWithCapInsets:edgeInsets];
+  if (makeStretchable) {
+    image = [image resizableImageWithCapInsets:edgeInsets];
+  }
+
+  return image;
 }
 
 // Currently, the dashed / dotted implementation only supports a single colour +
@@ -469,7 +509,7 @@ UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
 
   switch (borderStyle) {
     case RCTBorderStyleSolid:
-      return RCTGetSolidBorderImage(cornerRadii, borderInsets, borderColors, backgroundColor, drawToEdge);
+      return RCTGetSolidBorderImage(cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge);
     case RCTBorderStyleDashed:
     case RCTBorderStyleDotted:
       return RCTGetDashedOrDottedBorderImage(borderStyle, cornerRadii, viewSize, borderInsets, borderColors, backgroundColor, drawToEdge);
