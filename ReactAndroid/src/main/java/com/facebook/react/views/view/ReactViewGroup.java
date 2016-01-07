@@ -33,7 +33,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
  */
-public class ReactViewGroup extends ViewGroup implements
+  public class ReactViewGroup extends ViewGroup implements
     CatalystInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
