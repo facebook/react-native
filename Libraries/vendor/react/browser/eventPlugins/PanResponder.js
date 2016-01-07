@@ -56,7 +56,7 @@ var currentCentroidY = TouchHistoryMath.currentCentroidY;
  *  - `dy` - accumulated distance of the gesture since the touch started
  *  - `vx` - current velocity of the gesture
  *  - `vy` - current velocity of the gesture
- *  - `numberActiveTouches` - Number of touches currently on screeen
+ *  - `numberActiveTouches` - Number of touches currently on screen
  *
  * ### Basic Usage
  *
