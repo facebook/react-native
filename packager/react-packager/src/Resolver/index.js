@@ -95,6 +95,7 @@ class Resolver {
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
+      shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
     });
 
     this._polyfillModuleNames = opts.polyfillModuleNames || [];

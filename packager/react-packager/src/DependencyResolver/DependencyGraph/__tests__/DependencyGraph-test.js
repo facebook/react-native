@@ -70,6 +70,7 @@ describe('DependencyGraph', function() {
         'parse',
       ],
       platforms: ['ios', 'android'],
+      shouldThrowOnUnresolvedErrors: () => false,
     };
   });
 

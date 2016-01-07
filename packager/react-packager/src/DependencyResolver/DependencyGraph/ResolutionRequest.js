@@ -25,6 +25,7 @@ class ResolutionRequest {
     helpers,
     moduleCache,
     fastfs,
+    shouldThrowOnUnresolvedErrors,
   }) {
     this._platform = platform;
     this._preferNativePlatform = preferNativePlatform;
@@ -34,6 +35,7 @@ class ResolutionRequest {
     this._helpers = helpers;
     this._moduleCache = moduleCache;
     this._fastfs = fastfs;
+    this._shouldThrowOnUnresolvedErrors = shouldThrowOnUnresolvedErrors;
     this._resetResolutionCache();
   }
 
@@ -67,8 +69,10 @@ class ResolutionRequest {
     };
 
     const forgive = (error) => {
-      if (error.type !== 'UnableToResolveError' ||
-        this._platform === 'ios') {
+      if (
+        error.type !== 'UnableToResolveError' ||
+        this._shouldThrowOnUnresolvedErrors(this._entryPath, this._platform)
+      ) {
         throw error;
       }
 
