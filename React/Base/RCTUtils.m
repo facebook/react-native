@@ -494,7 +494,11 @@ NSString *RCTBundlePathForURL(NSURL *URL)
     // Not a bundle-relative file
     return nil;
   }
-  return [path substringFromIndex:bundlePath.length + 1];
+  path = [path substringFromIndex:bundlePath.length];
+  if ([path hasPrefix:@"/"]) {
+    path = [path substringFromIndex:1];
+  }
+  return path;
 }
 
 BOOL RCTIsXCAssetURL(NSURL *imageURL)
