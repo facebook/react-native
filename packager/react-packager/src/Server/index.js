@@ -184,7 +184,7 @@ class Server {
       // updates. Instead, send the HMR updates right away and once that
       // finishes, invoke any other file change listener.
       if (this._hmrFileChangeListener) {
-        this._hmrFileChangeListener(filePath);
+        this._hmrFileChangeListener(filePath, this._bundler.stat(filePath));
         return;
       }
 

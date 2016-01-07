@@ -320,6 +320,10 @@ class Bundler {
     return this._resolver.getShallowDependencies(entryFile);
   }
 
+  stat(filePath) {
+    return this._resolver.stat(filePath);
+  }
+
   getModuleForPath(entryFile) {
     return this._resolver.getModuleForPath(entryFile);
   }
