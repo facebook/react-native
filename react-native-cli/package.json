@@ -1,6 +1,6 @@
 {
   "name": "react-native-cli",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "license" : "BSD-3-Clause",
   "description": "The React Native CLI tools",
   "main": "index.js",
