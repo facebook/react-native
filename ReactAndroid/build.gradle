@@ -227,6 +227,9 @@ android {
         jni.srcDirs = []
         jniLibs.srcDir "$buildDir/react-ndk/exported"
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell']
+        java {
+          exclude 'com/facebook/react/processing'
+        }
     }
 
     tasks.withType(JavaCompile) {
