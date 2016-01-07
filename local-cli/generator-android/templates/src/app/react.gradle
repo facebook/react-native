@@ -74,14 +74,33 @@ task bundleReleaseJsAndAssets(type: Exec) {
     enabled config.bundleInRelease ?: true
 }
 
+void runBefore(String dependentTaskName, Task task) {
+    Task dependentTask = tasks.findByPath(dependentTaskName);
+    if (dependentTask != null) {
+        dependentTask.dependsOn task
+    }
+}
+
 gradle.projectsEvaluated {
+
     // hook bundleDebugJsAndAssets into the android build process
+
     bundleDebugJsAndAssets.dependsOn mergeDebugResources
     bundleDebugJsAndAssets.dependsOn mergeDebugAssets
-    processDebugResources.dependsOn bundleDebugJsAndAssets
+
+    runBefore('processArmeabi-v7aDebugResources', bundleDebugJsAndAssets)
+    runBefore('processX86DebugResources', bundleDebugJsAndAssets)
+    runBefore('processUniversalDebugResources', bundleDebugJsAndAssets)
+    runBefore('processDebugResources', bundleDebugJsAndAssets)
 
     // hook bundleReleaseJsAndAssets into the android build process
+
     bundleReleaseJsAndAssets.dependsOn mergeReleaseResources
     bundleReleaseJsAndAssets.dependsOn mergeReleaseAssets
-    processReleaseResources.dependsOn bundleReleaseJsAndAssets
+
+    runBefore('processArmeabi-v7aReleaseResources', bundleReleaseJsAndAssets)
+    runBefore('processX86ReleaseResources', bundleReleaseJsAndAssets)
+    runBefore('processUniversalReleaseResources', bundleReleaseJsAndAssets)
+    runBefore('processReleaseResources', bundleReleaseJsAndAssets)
+
 }
