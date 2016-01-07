@@ -19,9 +19,9 @@ namespace ReactNative.Views.Text
 
         private int _lineHeight = UNSET;
         private bool _isColorSet = false;
-        private int _color;
+        private uint _color;
         private bool _isBackgroundColorSet = false;
-        private int _backgroundColor;
+        private uint _backgroundColor;
 
         private int _numberOfLines = UNSET;
         private int _fontSize = UNSET;
@@ -121,7 +121,7 @@ namespace ReactNative.Views.Text
         }
 
         [ReactProperty(ViewProperties.Color)]
-        public void SetColor(int? color)
+        public void SetColor(uint? color)
         {
             _isColorSet = color.HasValue;
             if (_isColorSet)
@@ -133,7 +133,7 @@ namespace ReactNative.Views.Text
         }
 
         [ReactProperty(ViewProperties.BackgroundColor)]
-        public void SetBackgroundColor(int? color)
+        public void SetBackgroundColor(uint? color)
         {
             if (!IsVirtualAnchor)
             {
@@ -254,8 +254,8 @@ namespace ReactNative.Views.Text
                 var r = (byte)color;
                 color >>= 8;
                 var a = (byte)color;
-                var brush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
-                inline.Do(i => i.Foreground = brush);
+                var c = Color.FromArgb(a, r, g, b);
+                inline.Do(i => i.Foreground = new SolidColorBrush(c));
             }
 
             if (textNode._fontSize != UNSET)
