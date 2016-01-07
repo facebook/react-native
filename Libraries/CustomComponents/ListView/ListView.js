@@ -294,13 +294,22 @@ var ListView = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
       this.setState((state, props) => {
-        var rowsToRender = Math.min(
-          state.curRenderedRowsCount + props.pageSize,
-          props.dataSource.getRowCount()
-        );
         this._prevRenderedRowsCount = 0;
         return {
-          curRenderedRowsCount: rowsToRender,
+          curRenderedRowsCount: Math.min(
+            state.curRenderedRowsCount + props.pageSize,
+            props.dataSource.getRowCount()
+          ),
+        };
+      });
+    }
+    if (this.props.initialListSize !== nextProps.initialListSize) {
+      this.setState((state, props) => {
+        return {
+          curRenderedRowsCount: Math.max(
+            state.curRenderedRowsCount,
+            props.initialListSize
+          ),
         };
       });
     }
