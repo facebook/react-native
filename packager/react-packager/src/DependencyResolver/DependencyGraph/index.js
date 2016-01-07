@@ -145,6 +145,10 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryPath).getDependencies();
   }
 
+  stat(filePath) {
+    return this._fastfs.stat(filePath);
+  }
+
   /**
    * Returns the module object for the given path.
    */
