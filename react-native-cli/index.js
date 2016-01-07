@@ -200,7 +200,7 @@ function run(root, projectName, logLevel) {
     spawnArgs = {stdio: 'inherit'};
   }
   var proc;
-  if (os.platform() === 'win32'){
+  if (/^win/.test(process.platform)) {
     args.unshift('npm');
     args.unshift('/c');
     proc = spawn('cmd', args, spawnArgs);
