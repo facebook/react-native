@@ -164,7 +164,8 @@ var TouchableOpacity = React.createClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        pointerEvents={this.props.disabled ? 'none' : 'auto'}>
         {this.props.children}
       </Animated.View>
     );
