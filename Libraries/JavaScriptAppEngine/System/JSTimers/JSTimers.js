@@ -119,7 +119,7 @@ var JSTimers = {
   _clearTimerID: function(timerID) {
     // JSTimersExecution.timerIDs contains nulls after timers have been removed;
     // ignore nulls upfront so indexOf doesn't find them
-    if (timerID == null) {
+    if (timerID === null) {
       return;
     }
 

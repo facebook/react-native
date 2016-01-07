@@ -54,7 +54,7 @@ var PickerIOS = React.createClass({
     });
     return {selectedIndex, items};
   },
-  
+
   render: function() {
     return (
       <View style={this.props.style}>

@@ -240,7 +240,7 @@ const NetInfo = {
       });
     } else {
       // TODO t9296080 consider polyfill and more features later on
-      callback(null, "Unsupported");
+      callback(null, 'Unsupported');
     }
   },
 };

@@ -183,7 +183,7 @@ var ScrollResponderMixin = {
     // First see if we want to eat taps while the keyboard is up
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (!this.props.keyboardShouldPersistTaps &&
-      currentlyFocusedTextInput != null &&
+      currentlyFocusedTextInput !== null &&
       e.target !== currentlyFocusedTextInput) {
       return true;
     }
@@ -244,7 +244,7 @@ var ScrollResponderMixin = {
     // if another touch occurs outside of it
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
     if (!this.props.keyboardShouldPersistTaps &&
-      currentlyFocusedTextInput != null &&
+      currentlyFocusedTextInput !== null &&
       e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&
       !this.state.becameResponderWhileAnimating) {

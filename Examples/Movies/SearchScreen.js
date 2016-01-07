@@ -179,7 +179,7 @@ var SearchScreen = React.createClass({
     });
 
     var page = resultsCache.nextPageNumberForQuery[query];
-    invariant(page != null, 'Next page number for "%s" is missing', query);
+    invariant(page !== null, 'Next page number for "%s" is missing', query);
     fetch(this._urlForQueryAndPage(query, page))
       .then((response) => response.json())
       .catch((error) => {

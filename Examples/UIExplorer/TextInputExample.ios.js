@@ -202,7 +202,7 @@ class TokenizedTextExample extends React.Component {
 
 var BlurOnSubmitExample = React.createClass({
   focusNextField(nextField) {
-    this.refs[nextField].focus()
+    this.refs[nextField].focus();
   },
 
   render: function() {
@@ -335,7 +335,7 @@ exports.examples = [
     }
   },
   {
-    title: "Live Re-Write (no spaces allowed)",
+    title: 'Live Re-Write (no spaces allowed)',
     render: function() {
       return <RewriteExampleInvalidCharacters />;
     }
