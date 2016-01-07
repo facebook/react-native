@@ -74,9 +74,8 @@ namespace ReactNative.Hosting.Bridge
         {
             var number = value.ToDouble();
 
-            // TODO: resolve integer detection
             return number % 1 == 0
-                ? new JValue((int)number)
+                ? new JValue((long)number)
                 : new JValue(number);
         }
 
