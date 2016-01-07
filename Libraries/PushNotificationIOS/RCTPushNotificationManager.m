@@ -35,6 +35,16 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
   UILocalNotification *notification = [UILocalNotification new];
   notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
+  notification.alertLaunchImage = [RCTConvert NSString:details[@"alertLaunchImage"]];
+  notification.alertAction = [RCTConvert NSString:details[@"alertAction"]];
+  notification.soundName = [RCTConvert NSString:details[@"soundName"]];
+  notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
+  if ([notification respondsToSelector:@selector(alertTitle)]) {
+    notification.alertTitle = [RCTConvert NSString:details[@"alertTitle"]];
+  }
+  if ([notification respondsToSelector:@selector(category)]) {
+    notification.category = [RCTConvert NSString:details[@"category"]];
+  }
   return notification;
 }
 
