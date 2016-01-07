@@ -40,9 +40,12 @@
 
 -keep class * extends com.facebook.react.bridge.JavaScriptModule { *; }
 -keep class * extends com.facebook.react.bridge.NativeModule { *; }
+-keepclassmembers,includedescriptorclasses class * { native <methods>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.UIProp <fields>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.ReactProp <methods>; }
 -keepclassmembers class *  { @com.facebook.react.uimanager.ReactPropGroup <methods>; }
+
+-dontwarn com.facebook.react.**
 
 # okhttp
 
@@ -58,3 +61,7 @@
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
+
+# stetho
+
+-dontwarn com.facebook.stetho.**
