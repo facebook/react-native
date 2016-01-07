@@ -289,6 +289,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     args.pushInt(requestId);
     args.pushInt(response.code());
     args.pushMap(headers);
+    args.pushString(response.request().urlString());
 
     getEventEmitter().emit("didReceiveNetworkResponse", args);
   }
