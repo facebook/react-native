@@ -64,6 +64,7 @@ public class ReactEditText extends EditText {
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   private boolean mContainsImages;
+  private String mKeyboardType;
 
   public ReactEditText(Context context) {
     super(context);
@@ -80,6 +81,7 @@ public class ReactEditText extends EditText {
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
+    mKeyboardType = "default";
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -162,6 +164,14 @@ public class ReactEditText extends EditText {
     if (getInputType() != mStagedInputType) {
       setInputType(mStagedInputType);
     }
+  }
+
+  String getKeyboardType() {
+    return mKeyboardType;
+  }
+
+  void setKeyboardType(String keyboardType) {
+    this.mKeyboardType = keyboardType;
   }
 
   @Override

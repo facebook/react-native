@@ -271,21 +271,29 @@ public class ReactTextInputManager extends
 
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
-    int flagsToSet = 0;
-    if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
-      flagsToSet = InputType.TYPE_CLASS_NUMBER;
-    } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
-      flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-    }
-    updateStagedInputTypeFlag(
-        view,
-        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
-        flagsToSet);
+    view.setKeyboardType(keyboardType);
   }
 
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
+
+    if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(view.getKeyboardType())) {
+      updateStagedInputTypeFlag(
+          view,
+          0,
+          InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+    } else if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(view.getKeyboardType())) {
+      boolean pw = (view.getStagedInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) > 0;
+
+      view.setStagedInputType(
+          InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+              (pw ?
+                  InputType.TYPE_NUMBER_VARIATION_PASSWORD
+                : InputType.TYPE_NUMBER_VARIATION_NORMAL));
+    }
+
     view.commitStagedInputType();
   }
 
