@@ -32,7 +32,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
   private static final String REACT_CLASS = "AndroidSwitch";
 
-  private static class ReactSwitchShadowNode extends LayoutShadowNode implements
+  static class ReactSwitchShadowNode extends LayoutShadowNode implements
       CSSNode.MeasureFunction {
 
     private int mWidth;
