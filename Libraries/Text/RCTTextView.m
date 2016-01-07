@@ -452,6 +452,28 @@ static NSAttributedString *removeReactTagFromString(NSAttributedString *string)
   return _textView.text;
 }
 
+- (void)setSelection:(NSDictionary *)selection
+{
+  NSInteger selectionStart = [RCTConvert NSInteger:selection[@"start"]];
+  NSInteger selectionEnd = [RCTConvert NSInteger:selection[@"end"]];
+  UITextRange *currentSelection = _textView.selectedTextRange;
+  NSInteger currentSelectionStart = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:currentSelection.start];
+  NSInteger currentSelectionEnd = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:currentSelection.end];
+  bool isSameSelection = (selectionStart == currentSelectionStart) && (selectionEnd == currentSelectionEnd);
+  NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
+  if (eventLag == 0) {
+    if (!isSameSelection) {
+      UITextPosition *start = [_textView positionFromPosition:[_textView beginningOfDocument] offset:selectionStart];
+      UITextPosition *end = [_textView positionFromPosition:[_textView beginningOfDocument] offset:selectionEnd];
+      UITextRange *selectedTextRange = [_textView textRangeFromPosition:start toPosition:end];
+      _previousSelectionRange = selectedTextRange;
+      _textView.selectedTextRange = selectedTextRange;
+    }
+  } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
+    RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
+  }
+}
+
 - (void)setText:(NSString *)text
 {
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;

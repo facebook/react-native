@@ -387,6 +387,15 @@ const TextInput = React.createClass({
      */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
+     * The start and end of the text input's selection. Set start and end to
+     * the same value to position the cursor.
+     * @platform ios
+     */
+    selection: PropTypes.shape({
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number.isRequired
+    }),
+    /**
      * The value to show for the text input. `TextInput` is a controlled
      * component, which means the native value will be forced to match this
      * value prop if provided. For most uses, this works great, but in some
