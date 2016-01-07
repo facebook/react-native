@@ -48,8 +48,16 @@ URL: ${host}:${port}
 Error: ${e.message}`
       );
     };
-    activeWS.onmessage = (m) => {
-      eval(m.data); // eslint-disable-line no-eval
+    activeWS.onmessage = ({data}) => {
+      data = JSON.parse(data);
+      if (data.type === 'update') {
+        eval(data.body); // eslint-disable-line no-eval
+        return;
+      }
+
+      // TODO: add support for opening filename by clicking on the stacktrace
+      const error = data.body;
+      throw new Error(error.type + ' ' + error.description);
     };
   },
 };
