@@ -28,6 +28,7 @@ var {
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleCookies = require('./XHRExampleCookies');
+var XHRExampleFetch = require('./XHRExampleFetch');
 
 
 // TODO t7093728 This is a simplified XHRExample.ios.js.
@@ -280,6 +281,11 @@ exports.examples = [{
   title: 'multipart/form-data Upload',
   render() {
     return <FormUploader/>;
+  }
+}, {
+  title: 'Fetch Test',
+  render() {
+    return <XHRExampleFetch/>;
   }
 }, {
   title: 'Headers',
