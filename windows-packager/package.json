@@ -5,6 +5,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "react-native": "*"
+    "react-native": "0.16.0"
   }
 }

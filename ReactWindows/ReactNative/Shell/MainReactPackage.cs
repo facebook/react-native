@@ -3,6 +3,7 @@ using ReactNative.Modules.Core;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
 using ReactNative.Views.Text;
+using ReactNative.Views.TextInput;
 using ReactNative.Views.View;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace ReactNative.Shell
                 //new RecyclerViewBackedScrollViewManager(),
                 //new ReactScrollViewManager(),
                 //new ReactSwitchManager(),
-                //new ReactTextInputManager(),
+                new ReactTextInputManager(),
                 new ReactTextViewManager(),
                 //new ReactToolbarManager(),
                 new ReactViewManager(),
