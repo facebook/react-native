@@ -262,6 +262,8 @@
     <Compile Include="Views\View\ReactPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
+	<Compile Include="Modules\Toast\ToastHelper.cs" />
+	<Compile Include="Modules\Toast\ToastModule.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
