@@ -166,6 +166,15 @@ public class ReactTextInputManager extends
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
   }
 
+  @ReactProp(name = "onSelectionChange", defaultBoolean = false)
+  public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
+    if (onSelectionChange) {
+      view.setSelectionWatcher(new ReactSelectionWatcher(view));
+    } else {
+      view.setSelectionWatcher(null);
+    }
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -416,6 +425,40 @@ public class ReactTextInputManager extends
             return false;
           }
         });
+  }
+
+  private class ReactSelectionWatcher implements SelectionWatcher {
+
+    private ReactEditText mReactEditText;
+    private EventDispatcher mEventDispatcher;
+    private int mPreviousSelectionStart;
+    private int mPreviousSelectionEnd;
+
+    public ReactSelectionWatcher(ReactEditText editText) {
+      mReactEditText = editText;
+      ReactContext reactContext = (ReactContext) editText.getContext();
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public void onSelectionChanged(int start, int end) {
+      // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
+      // To prevent double calling back into js we cache the result of the previous call and only
+      // forward it on if we have new values
+      if (mPreviousSelectionStart != start || mPreviousSelectionEnd != end) {
+        mEventDispatcher.dispatchEvent(
+            new ReactTextInputSelectionEvent(
+                mReactEditText.getId(),
+                SystemClock.uptimeMillis(),
+                start,
+                end
+            )
+        );
+
+        mPreviousSelectionStart = start;
+        mPreviousSelectionEnd = end;
+      }
+    }
   }
 
   @Override
