@@ -108,10 +108,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
         packagerServer.setHMRFileChangeListener((filename, stat) => {
           if (!client) {
-            return;
+            return Promise.resolve();
           }
 
-          stat.then(() => {
+          return stat.then(() => {
             return packagerServer.getShallowDependencies(filename)
               .then(deps => {
                 if (!client) {
@@ -184,7 +184,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             () => {
               // do nothing, file was removed
             },
-          ).done();
+          );
         });
 
         client.ws.on('error', e => {
