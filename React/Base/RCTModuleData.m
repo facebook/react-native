@@ -58,7 +58,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 - (void)setBridgeForInstance
 {
   RCTAssert(_instance, @"setBridgeForInstance called before %@ initialized", self.name);
-  if ([_instance respondsToSelector:@selector(bridge)] && !_instance.bridge) {
+  if ([_instance respondsToSelector:@selector(bridge)] && _instance.bridge != _bridge) {
     @try {
       [(id)_instance setValue:_bridge forKey:@"bridge"];
     }
