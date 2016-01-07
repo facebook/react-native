@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * RCTRawText is a FlatTextShadowNode that can only contain raw text (but not styling).

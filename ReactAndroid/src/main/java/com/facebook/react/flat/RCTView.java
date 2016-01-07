@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactProp;
-import com.facebook.react.uimanager.ReactPropGroup;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.ViewProps;
 
 /* package */ final class RCTView extends FlatShadowNode {

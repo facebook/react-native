@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * RCTTextInlineImage

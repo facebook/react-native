@@ -17,7 +17,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
 
 /**

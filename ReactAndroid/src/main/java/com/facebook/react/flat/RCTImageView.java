@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import com.facebook.csslayout.Spacing;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.image.ImageResizeMode;
 

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
 
 /**
