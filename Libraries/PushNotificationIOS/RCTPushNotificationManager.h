@@ -13,9 +13,8 @@
 
 @interface RCTPushNotificationManager : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithInitialNotification:(NSDictionary *)initialNotification NS_DESIGNATED_INITIALIZER;
-
-+ (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
-+ (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification;
++ (void)didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
++ (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
++ (void)didReceiveRemoteNotification:(NSDictionary *)notification;
 
 @end

@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0CF68B051AF0549300FF9E5C /* ARTGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68ADE1AF0549300FF9E5C /* ARTGroup.m */; };
+		0CF68B061AF0549300FF9E5C /* ARTNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE01AF0549300FF9E5C /* ARTNode.m */; };
+		0CF68B071AF0549300FF9E5C /* ARTRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE21AF0549300FF9E5C /* ARTRenderable.m */; };
+		0CF68B081AF0549300FF9E5C /* ARTShape.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE41AF0549300FF9E5C /* ARTShape.m */; };
+		0CF68B091AF0549300FF9E5C /* ARTSurfaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE61AF0549300FF9E5C /* ARTSurfaceView.m */; };
+		0CF68B0A1AF0549300FF9E5C /* ARTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE81AF0549300FF9E5C /* ARTText.m */; };
+		0CF68B0B1AF0549300FF9E5C /* ARTBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AEC1AF0549300FF9E5C /* ARTBrush.m */; };
+		0CF68B0C1AF0549300FF9E5C /* ARTLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AEE1AF0549300FF9E5C /* ARTLinearGradient.m */; };
+		0CF68B0D1AF0549300FF9E5C /* ARTPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF01AF0549300FF9E5C /* ARTPattern.m */; };
+		0CF68B0E1AF0549300FF9E5C /* ARTRadialGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF21AF0549300FF9E5C /* ARTRadialGradient.m */; };
+		0CF68B0F1AF0549300FF9E5C /* ARTSolidColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF41AF0549300FF9E5C /* ARTSolidColor.m */; };
+		0CF68B101AF0549300FF9E5C /* RCTConvert+ART.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF71AF0549300FF9E5C /* RCTConvert+ART.m */; };
+		0CF68B111AF0549300FF9E5C /* ARTGroupManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AFA1AF0549300FF9E5C /* ARTGroupManager.m */; };
+		0CF68B121AF0549300FF9E5C /* ARTNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AFC1AF0549300FF9E5C /* ARTNodeManager.m */; };
+		0CF68B131AF0549300FF9E5C /* ARTRenderableManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AFE1AF0549300FF9E5C /* ARTRenderableManager.m */; };
+		0CF68B141AF0549300FF9E5C /* ARTShapeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68B001AF0549300FF9E5C /* ARTShapeManager.m */; };
+		0CF68B151AF0549300FF9E5C /* ARTSurfaceViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68B021AF0549300FF9E5C /* ARTSurfaceViewManager.m */; };
+		0CF68B161AF0549300FF9E5C /* ARTTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68B041AF0549300FF9E5C /* ARTTextManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0CF68ABF1AF0540F00FF9E5C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0CF68AC11AF0540F00FF9E5C /* libART.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libART.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CF68ADB1AF0549300FF9E5C /* ARTCGFloatArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTCGFloatArray.h; sourceTree = "<group>"; };
+		0CF68ADC1AF0549300FF9E5C /* ARTContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTContainer.h; sourceTree = "<group>"; };
+		0CF68ADD1AF0549300FF9E5C /* ARTGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTGroup.h; sourceTree = "<group>"; };
+		0CF68ADE1AF0549300FF9E5C /* ARTGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTGroup.m; sourceTree = "<group>"; };
+		0CF68ADF1AF0549300FF9E5C /* ARTNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTNode.h; sourceTree = "<group>"; };
+		0CF68AE01AF0549300FF9E5C /* ARTNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTNode.m; sourceTree = "<group>"; };
+		0CF68AE11AF0549300FF9E5C /* ARTRenderable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTRenderable.h; sourceTree = "<group>"; };
+		0CF68AE21AF0549300FF9E5C /* ARTRenderable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTRenderable.m; sourceTree = "<group>"; };
+		0CF68AE31AF0549300FF9E5C /* ARTShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTShape.h; sourceTree = "<group>"; };
+		0CF68AE41AF0549300FF9E5C /* ARTShape.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTShape.m; sourceTree = "<group>"; };
+		0CF68AE51AF0549300FF9E5C /* ARTSurfaceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTSurfaceView.h; sourceTree = "<group>"; };
+		0CF68AE61AF0549300FF9E5C /* ARTSurfaceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTSurfaceView.m; sourceTree = "<group>"; };
+		0CF68AE71AF0549300FF9E5C /* ARTText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTText.h; sourceTree = "<group>"; };
+		0CF68AE81AF0549300FF9E5C /* ARTText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTText.m; sourceTree = "<group>"; };
+		0CF68AE91AF0549300FF9E5C /* ARTTextFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTTextFrame.h; sourceTree = "<group>"; };
+		0CF68AEB1AF0549300FF9E5C /* ARTBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTBrush.h; sourceTree = "<group>"; };
+		0CF68AEC1AF0549300FF9E5C /* ARTBrush.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTBrush.m; sourceTree = "<group>"; };
+		0CF68AED1AF0549300FF9E5C /* ARTLinearGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTLinearGradient.h; sourceTree = "<group>"; };
+		0CF68AEE1AF0549300FF9E5C /* ARTLinearGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTLinearGradient.m; sourceTree = "<group>"; };
+		0CF68AEF1AF0549300FF9E5C /* ARTPattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTPattern.h; sourceTree = "<group>"; };
+		0CF68AF01AF0549300FF9E5C /* ARTPattern.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTPattern.m; sourceTree = "<group>"; };
+		0CF68AF11AF0549300FF9E5C /* ARTRadialGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTRadialGradient.h; sourceTree = "<group>"; };
+		0CF68AF21AF0549300FF9E5C /* ARTRadialGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTRadialGradient.m; sourceTree = "<group>"; };
+		0CF68AF31AF0549300FF9E5C /* ARTSolidColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTSolidColor.h; sourceTree = "<group>"; };
+		0CF68AF41AF0549300FF9E5C /* ARTSolidColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTSolidColor.m; sourceTree = "<group>"; };
+		0CF68AF61AF0549300FF9E5C /* RCTConvert+ART.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+ART.h"; sourceTree = "<group>"; };
+		0CF68AF71AF0549300FF9E5C /* RCTConvert+ART.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+ART.m"; sourceTree = "<group>"; };
+		0CF68AF91AF0549300FF9E5C /* ARTGroupManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTGroupManager.h; sourceTree = "<group>"; };
+		0CF68AFA1AF0549300FF9E5C /* ARTGroupManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTGroupManager.m; sourceTree = "<group>"; };
+		0CF68AFB1AF0549300FF9E5C /* ARTNodeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTNodeManager.h; sourceTree = "<group>"; };
+		0CF68AFC1AF0549300FF9E5C /* ARTNodeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTNodeManager.m; sourceTree = "<group>"; };
+		0CF68AFD1AF0549300FF9E5C /* ARTRenderableManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTRenderableManager.h; sourceTree = "<group>"; };
+		0CF68AFE1AF0549300FF9E5C /* ARTRenderableManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTRenderableManager.m; sourceTree = "<group>"; };
+		0CF68AFF1AF0549300FF9E5C /* ARTShapeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTShapeManager.h; sourceTree = "<group>"; };
+		0CF68B001AF0549300FF9E5C /* ARTShapeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTShapeManager.m; sourceTree = "<group>"; };
+		0CF68B011AF0549300FF9E5C /* ARTSurfaceViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTSurfaceViewManager.h; sourceTree = "<group>"; };
+		0CF68B021AF0549300FF9E5C /* ARTSurfaceViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTSurfaceViewManager.m; sourceTree = "<group>"; };
+		0CF68B031AF0549300FF9E5C /* ARTTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTTextManager.h; sourceTree = "<group>"; };
+		0CF68B041AF0549300FF9E5C /* ARTTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTTextManager.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0CF68ABE1AF0540F00FF9E5C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0CF68AB81AF0540F00FF9E5C = {
+			isa = PBXGroup;
+			children = (
+				0CF68AEA1AF0549300FF9E5C /* Brushes */,
+				0CF68AF81AF0549300FF9E5C /* ViewManagers */,
+				0CF68ADB1AF0549300FF9E5C /* ARTCGFloatArray.h */,
+				0CF68ADC1AF0549300FF9E5C /* ARTContainer.h */,
+				0CF68ADD1AF0549300FF9E5C /* ARTGroup.h */,
+				0CF68ADE1AF0549300FF9E5C /* ARTGroup.m */,
+				0CF68ADF1AF0549300FF9E5C /* ARTNode.h */,
+				0CF68AE01AF0549300FF9E5C /* ARTNode.m */,
+				0CF68AE11AF0549300FF9E5C /* ARTRenderable.h */,
+				0CF68AE21AF0549300FF9E5C /* ARTRenderable.m */,
+				0CF68AE31AF0549300FF9E5C /* ARTShape.h */,
+				0CF68AE41AF0549300FF9E5C /* ARTShape.m */,
+				0CF68AE51AF0549300FF9E5C /* ARTSurfaceView.h */,
+				0CF68AE61AF0549300FF9E5C /* ARTSurfaceView.m */,
+				0CF68AE71AF0549300FF9E5C /* ARTText.h */,
+				0CF68AE81AF0549300FF9E5C /* ARTText.m */,
+				0CF68AE91AF0549300FF9E5C /* ARTTextFrame.h */,
+				0CF68AF61AF0549300FF9E5C /* RCTConvert+ART.h */,
+				0CF68AF71AF0549300FF9E5C /* RCTConvert+ART.m */,
+				0CF68AC21AF0540F00FF9E5C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0CF68AC21AF0540F00FF9E5C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0CF68AC11AF0540F00FF9E5C /* libART.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0CF68AEA1AF0549300FF9E5C /* Brushes */ = {
+			isa = PBXGroup;
+			children = (
+				0CF68AEB1AF0549300FF9E5C /* ARTBrush.h */,
+				0CF68AEC1AF0549300FF9E5C /* ARTBrush.m */,
+				0CF68AED1AF0549300FF9E5C /* ARTLinearGradient.h */,
+				0CF68AEE1AF0549300FF9E5C /* ARTLinearGradient.m */,
+				0CF68AEF1AF0549300FF9E5C /* ARTPattern.h */,
+				0CF68AF01AF0549300FF9E5C /* ARTPattern.m */,
+				0CF68AF11AF0549300FF9E5C /* ARTRadialGradient.h */,
+				0CF68AF21AF0549300FF9E5C /* ARTRadialGradient.m */,
+				0CF68AF31AF0549300FF9E5C /* ARTSolidColor.h */,
+				0CF68AF41AF0549300FF9E5C /* ARTSolidColor.m */,
+			);
+			path = Brushes;
+			sourceTree = "<group>";
+		};
+		0CF68AF81AF0549300FF9E5C /* ViewManagers */ = {
+			isa = PBXGroup;
+			children = (
+				0CF68AF91AF0549300FF9E5C /* ARTGroupManager.h */,
+				0CF68AFA1AF0549300FF9E5C /* ARTGroupManager.m */,
+				0CF68AFB1AF0549300FF9E5C /* ARTNodeManager.h */,
+				0CF68AFC1AF0549300FF9E5C /* ARTNodeManager.m */,
+				0CF68AFD1AF0549300FF9E5C /* ARTRenderableManager.h */,
+				0CF68AFE1AF0549300FF9E5C /* ARTRenderableManager.m */,
+				0CF68AFF1AF0549300FF9E5C /* ARTShapeManager.h */,
+				0CF68B001AF0549300FF9E5C /* ARTShapeManager.m */,
+				0CF68B011AF0549300FF9E5C /* ARTSurfaceViewManager.h */,
+				0CF68B021AF0549300FF9E5C /* ARTSurfaceViewManager.m */,
+				0CF68B031AF0549300FF9E5C /* ARTTextManager.h */,
+				0CF68B041AF0549300FF9E5C /* ARTTextManager.m */,
+			);
+			path = ViewManagers;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0CF68AC01AF0540F00FF9E5C /* ART */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0CF68AD51AF0540F00FF9E5C /* Build configuration list for PBXNativeTarget "ART" */;
+			buildPhases = (
+				0CF68ABD1AF0540F00FF9E5C /* Sources */,
+				0CF68ABE1AF0540F00FF9E5C /* Frameworks */,
+				0CF68ABF1AF0540F00FF9E5C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ART;
+			productName = ART;
+			productReference = 0CF68AC11AF0540F00FF9E5C /* libART.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0CF68AB91AF0540F00FF9E5C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				TargetAttributes = {
+					0CF68AC01AF0540F00FF9E5C = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 0CF68ABC1AF0540F00FF9E5C /* Build configuration list for PBXProject "ART" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0CF68AB81AF0540F00FF9E5C;
+			productRefGroup = 0CF68AC21AF0540F00FF9E5C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0CF68AC01AF0540F00FF9E5C /* ART */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0CF68ABD1AF0540F00FF9E5C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0CF68B161AF0549300FF9E5C /* ARTTextManager.m in Sources */,
+				0CF68B111AF0549300FF9E5C /* ARTGroupManager.m in Sources */,
+				0CF68B0D1AF0549300FF9E5C /* ARTPattern.m in Sources */,
+				0CF68B0A1AF0549300FF9E5C /* ARTText.m in Sources */,
+				0CF68B121AF0549300FF9E5C /* ARTNodeManager.m in Sources */,
+				0CF68B051AF0549300FF9E5C /* ARTGroup.m in Sources */,
+				0CF68B131AF0549300FF9E5C /* ARTRenderableManager.m in Sources */,
+				0CF68B091AF0549300FF9E5C /* ARTSurfaceView.m in Sources */,
+				0CF68B0E1AF0549300FF9E5C /* ARTRadialGradient.m in Sources */,
+				0CF68B151AF0549300FF9E5C /* ARTSurfaceViewManager.m in Sources */,
+				0CF68B081AF0549300FF9E5C /* ARTShape.m in Sources */,
+				0CF68B071AF0549300FF9E5C /* ARTRenderable.m in Sources */,
+				0CF68B101AF0549300FF9E5C /* RCTConvert+ART.m in Sources */,
+				0CF68B061AF0549300FF9E5C /* ARTNode.m in Sources */,
+				0CF68B0F1AF0549300FF9E5C /* ARTSolidColor.m in Sources */,
+				0CF68B0C1AF0549300FF9E5C /* ARTLinearGradient.m in Sources */,
+				0CF68B0B1AF0549300FF9E5C /* ARTBrush.m in Sources */,
+				0CF68B141AF0549300FF9E5C /* ARTShapeManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0CF68AD31AF0540F00FF9E5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../React/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		0CF68AD41AF0540F00FF9E5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../React/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0CF68AD61AF0540F00FF9E5C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		0CF68AD71AF0540F00FF9E5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0CF68ABC1AF0540F00FF9E5C /* Build configuration list for PBXProject "ART" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CF68AD31AF0540F00FF9E5C /* Debug */,
+				0CF68AD41AF0540F00FF9E5C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0CF68AD51AF0540F00FF9E5C /* Build configuration list for PBXNativeTarget "ART" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0CF68AD61AF0540F00FF9E5C /* Debug */,
+				0CF68AD71AF0540F00FF9E5C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0CF68AB91AF0540F00FF9E5C /* Project object */;
+}

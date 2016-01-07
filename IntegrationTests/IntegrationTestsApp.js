@@ -6,12 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule IntegrationTestsApp
+ * @flow
  */
 'use strict';
 
 var React = require('react-native');
-
 var {
   AppRegistry,
   ScrollView,
@@ -21,21 +20,31 @@ var {
   View,
 } = React;
 
+// Keep this list in sync with UIExplorerIntegrationTests.m
 var TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
   require('./AsyncStorageTest'),
+  require('./LayoutEventsTest'),
+  require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),
+  require('./ImageSnapshotTest'),
+  require('./PromiseTest'),
 ];
 
 TESTS.forEach(
   (test) => AppRegistry.registerComponent(test.displayName, () => test)
 );
 
+// Modules required for integration tests
+require('LoggingTestModule');
+
+type Test = any;
+
 var IntegrationTestsApp = React.createClass({
   getInitialState: function() {
     return {
-      test: null,
+      test: (null: ?Test),
     };
   },
   render: function() {
@@ -50,18 +59,18 @@ var IntegrationTestsApp = React.createClass({
       <View style={styles.container}>
         <Text style={styles.row}>
           Click on a test to run it in this shell for easier debugging and
-          development.  Run all tests in the testing envirnment with cmd+U in
+          development.  Run all tests in the testing environment with cmd+U in
           Xcode.
         </Text>
         <View style={styles.separator} />
         <ScrollView>
           {TESTS.map((test) => [
-            <TouchableOpacity onPress={() => this.setState({test})}>
-              <View style={styles.row}>
-                <Text style={styles.testName}>
-                  {test.displayName}
-                </Text>
-              </View>
+            <TouchableOpacity
+              onPress={() => this.setState({test})}
+              style={styles.row}>
+              <Text style={styles.testName}>
+                {test.displayName}
+              </Text>
             </TouchableOpacity>,
             <View style={styles.separator} />
           ])}

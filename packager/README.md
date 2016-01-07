@@ -62,7 +62,7 @@ if the option is boolean `1/0` or `true/false` is accepted.
 Here are the current options the packager accepts:
 
 * `dev` boolean, defaults to true: sets a global `__DEV__` variable
-  which will effect how the React Nativeg core libraries behave.
+  which will effect how the React Native core libraries behave.
 * `minify` boolean, defaults to false: whether to minify the bundle.
 * `runModule` boolean, defaults to true: whether to require your entry
   point module. So if you requested `moduleName`, this option will add
@@ -112,6 +112,9 @@ middleware. Takes the following options:
   should be used as a persistent deamon to watch files and update
   itself
 * `assetRoots` array: Where should the packager look for assets
+* `getTransformOptionsModulePath` string: Path to module that exports a function
+  that acts as a middleware for generating options to pass to the transformer
+  based on the bundle and module being transformed.
 
 ### ReactPackager.buildPackageFromUrl(options, url)
 
@@ -124,6 +127,16 @@ Given an entry point module. Recursively collect all the dependent
 modules and return it as an array. `options` is the same options that
 is passed to `ReactPackager.middleware`
 
+## Debugging
+
+To get verbose output when running the packager, define an environment variable:
+
+    export DEBUG=ReactNativePackager:*
+    
+You can combine this with other values, e.g. `DEBUG=babel,ReactNativePackager:*`. Under the hood this uses the [`debug`](https://www.npmjs.com/package/debug) package, see its documentation for all the available options.
+    
+The `/debug` endpoint discussed above is also useful.
+
 ## FAQ
 
 ### Can I use this in my own non-React Native project?
@@ -134,5 +147,5 @@ is informed by React Native needs.
 ### Why didn't you use webpack?
 
 We love webpack, however, when we tried on our codebase it was slower
-than our developers would like it to be. You find can more discussion about
-the subject [here](https://github.com/facebook/react-native/issues/5)
+than our developers would like it to be. You can find more discussion about
+the subject [here](https://github.com/facebook/react-native/issues/5).

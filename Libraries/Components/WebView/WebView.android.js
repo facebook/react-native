@@ -12,16 +12,16 @@
 
 var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
+var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
+var UIManager = require('UIManager');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var PropTypes = React.PropTypes;
-var RCTUIManager = require('NativeModules').UIManager;
 
 var RCT_WEBVIEW_REF = 'webview';
 
@@ -31,17 +31,46 @@ var WebViewState = keyMirror({
   ERROR: null,
 });
 
+/**
+ * Renders a native WebView.
+ */
 var WebView = React.createClass({
 
   propTypes: {
-    renderError: PropTypes.func.isRequired, // view to show if there's an error
-    renderLoading: PropTypes.func.isRequired, // loading indicator to show
-    url: PropTypes.string.isRequired,
+    ...View.propTypes,
+    renderError: PropTypes.func,
+    renderLoading: PropTypes.func,
+    url: PropTypes.string,
+    html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+
+    /**
+     * Used on Android only, JS is enabled by default for WebView on iOS
+     * @platform android
+     */
+    javaScriptEnabled: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether DOM Storage is enabled or not
+     * @platform android
+     */
+    domStorageEnabled: PropTypes.bool,
+
+    /**
+     * Sets the JS to be injected when the webpage loads.
+     */
+    injectedJavaScript: PropTypes.string,
+
+    /**
+     * Sets the user-agent for this WebView. The user-agent can also be set in native using
+     * WebViewConfig. This prop will overwrite that config.
+     */
+    userAgent: PropTypes.string,
+
     /**
      * Used to locate this view in end-to-end tests.
      */
@@ -66,15 +95,15 @@ var WebView = React.createClass({
     var otherView = null;
 
    if (this.state.viewState === WebViewState.LOADING) {
-      otherView = this.props.renderLoading();
+      otherView = this.props.renderLoading && this.props.renderLoading();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
-      otherView = this.props.renderError(
+      otherView = this.props.renderError && this.props.renderError(
         errorEvent.domain,
         errorEvent.code,
         errorEvent.description);
     } else if (this.state.viewState !== WebViewState.IDLE) {
-      console.error("RCTWebView invalid state encountered: " + this.state.loading);
+      console.error('RCTWebView invalid state encountered: ' + this.state.loading);
     }
 
     var webViewStyles = [styles.container, this.props.style];
@@ -84,12 +113,27 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
+    var {javaScriptEnabled, domStorageEnabled} = this.props;
+    if (this.props.javaScriptEnabledAndroid) {
+      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
+      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
+    }
+    if (this.props.domStorageEnabledAndroid) {
+      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
+      domStorageEnabled = this.props.domStorageEnabledAndroid;
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        html={this.props.html}
+        injectedJavaScript={this.props.injectedJavaScript}
+        userAgent={this.props.userAgent}
+        javaScriptEnabled={javaScriptEnabled}
+        domStorageEnabled={domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
@@ -107,15 +151,27 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTUIManager.webViewGoForward(this.getWebWiewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebWiewHandle(),
+      UIManager.RCTWebView.Commands.goForward,
+      null
+    );
   },
 
   goBack: function() {
-    RCTUIManager.webViewGoBack(this.getWebWiewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebWiewHandle(),
+      UIManager.RCTWebView.Commands.goBack,
+      null
+    );
   },
 
   reload: function() {
-    RCTUIManager.webViewReload(this.getWebWiewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebWiewHandle(),
+      UIManager.RCTWebView.Commands.reload,
+      null
+    );
   },
 
   /**
@@ -129,7 +185,7 @@ var WebView = React.createClass({
   },
 
   getWebWiewHandle: function() {
-    return this.refs[RCT_WEBVIEW_REF].getNodeHandle();
+    return React.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   },
 
   onLoadingStart: function(event) {
@@ -138,7 +194,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event) {
     event.persist(); // persist this event because we need to store it
-    console.error("encountered an error loading page", event.nativeEvent);
+    console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
@@ -154,12 +210,7 @@ var WebView = React.createClass({
   },
 });
 
-var RCTWebView = createReactIOSNativeComponentClass({
-  validAttributes: merge(ReactIOSViewAttributes.UIView, {
-    url: true,
-  }),
-  uiViewClassName: 'RCTWebView',
-});
+var RCTWebView = requireNativeComponent('RCTWebView', WebView);
 
 var styles = StyleSheet.create({
   container: {

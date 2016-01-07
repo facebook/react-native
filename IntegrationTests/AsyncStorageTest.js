@@ -5,16 +5,20 @@
  * This source code is licensed under the BSD-style license found in the
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @flow
  */
 'use strict';
 
-var RCTTestModule = require('NativeModules').TestModule;
 var React = require('react-native');
 var {
   AsyncStorage,
   Text,
   View,
 } = React;
+var { TestModule } = React.NativeModules;
+
+var deepDiffer = require('deepDiffer');
 
 var DEBUG = false;
 
@@ -22,38 +26,47 @@ var KEY_1 = 'key_1';
 var VAL_1 = 'val_1';
 var KEY_2 = 'key_2';
 var VAL_2 = 'val_2';
+var KEY_MERGE = 'key_merge';
+var VAL_MERGE_1 = {'foo': 1, 'bar': {'hoo': 1, 'boo': 1}, 'moo': {'a': 3}};
+var VAL_MERGE_2 = {'bar': {'hoo': 2}, 'baz': 2, 'moo': {'a': 3}};
+var VAL_MERGE_EXPECT =
+  {'foo': 1, 'bar': {'hoo': 2, 'boo': 1}, 'baz': 2, 'moo': {'a': 3}};
 
 // setup in componentDidMount
-var done;
-var updateMessage;
+var done = (result : ?boolean) => {};
+var updateMessage = (message : string ) => {};
 
-function runTestCase(description, fn) {
+function runTestCase(description : string, fn) {
   updateMessage(description);
   fn();
 }
 
-function expectTrue(condition, message) {
+function expectTrue(condition : boolean, message : string) {
   if (!condition) {
     throw new Error(message);
   }
 }
 
-function expectEqual(lhs, rhs, testname) {
+function expectEqual(lhs, rhs, testname : string) {
   expectTrue(
-    lhs === rhs,
-    'Error in test ' + testname + ': expected ' + rhs + ', got ' + lhs
+    !deepDiffer(lhs, rhs),
+    'Error in test ' + testname + ': expected\n' + JSON.stringify(rhs) +
+      '\ngot\n' + JSON.stringify(lhs)
   );
 }
 
-function expectAsyncNoError(err) {
-  expectTrue(err === null, 'Unexpected Async error: ' + JSON.stringify(err));
+function expectAsyncNoError(place, err) {
+  if (err instanceof Error) {
+    err = err.message;
+  }
+  expectTrue(err === null, 'Unexpected error in ' + place + ': ' + JSON.stringify(err));
 }
 
 function testSetAndGet() {
   AsyncStorage.setItem(KEY_1, VAL_1, (err1) => {
-    expectAsyncNoError(err1);
+    expectAsyncNoError('testSetAndGet/setItem', err1);
     AsyncStorage.getItem(KEY_1, (err2, result) => {
-      expectAsyncNoError(err2);
+      expectAsyncNoError('testSetAndGet/getItem', err2);
       expectEqual(result, VAL_1, 'testSetAndGet setItem');
       updateMessage('get(key_1) correctly returned ' + result);
       runTestCase('should get null for missing key', testMissingGet);
@@ -63,7 +76,7 @@ function testSetAndGet() {
 
 function testMissingGet() {
   AsyncStorage.getItem(KEY_2, (err, result) => {
-    expectAsyncNoError(err);
+    expectAsyncNoError('testMissingGet/setItem', err);
     expectEqual(result, null, 'testMissingGet');
     updateMessage('missing get(key_2) correctly returned ' + result);
     runTestCase('check set twice results in a single key', testSetTwice);
@@ -74,7 +87,7 @@ function testSetTwice() {
   AsyncStorage.setItem(KEY_1, VAL_1, ()=>{
     AsyncStorage.setItem(KEY_1, VAL_1, ()=>{
       AsyncStorage.getItem(KEY_1, (err, result) => {
-        expectAsyncNoError(err);
+        expectAsyncNoError('testSetTwice/setItem', err);
         expectEqual(result, VAL_1, 'testSetTwice');
         updateMessage('setTwice worked as expected');
         runTestCase('test removeItem', testRemoveItem);
@@ -87,34 +100,49 @@ function testRemoveItem() {
   AsyncStorage.setItem(KEY_1, VAL_1, ()=>{
     AsyncStorage.setItem(KEY_2, VAL_2, ()=>{
       AsyncStorage.getAllKeys((err, result) => {
-        expectAsyncNoError(err);
+        expectAsyncNoError('testRemoveItem/getAllKeys', err);
         expectTrue(
           result.indexOf(KEY_1) >= 0 && result.indexOf(KEY_2) >= 0,
           'Missing KEY_1 or KEY_2 in ' + '(' + result + ')'
         );
         updateMessage('testRemoveItem - add two items');
-        AsyncStorage.removeItem(KEY_1, (err) => {
-          expectAsyncNoError(err);
+        AsyncStorage.removeItem(KEY_1, (err2) => {
+          expectAsyncNoError('testRemoveItem/removeItem', err2);
           updateMessage('delete successful ');
-          AsyncStorage.getItem(KEY_1, (err, result) => {
-            expectAsyncNoError(err);
+          AsyncStorage.getItem(KEY_1, (err3, result2) => {
+            expectAsyncNoError('testRemoveItem/getItem', err3);
             expectEqual(
-              result,
+              result2,
               null,
               'testRemoveItem: key_1 present after delete'
             );
             updateMessage('key properly removed ');
-            AsyncStorage.getAllKeys((err, result2) => {
-             expectAsyncNoError(err);
+            AsyncStorage.getAllKeys((err4, result3) => {
+             expectAsyncNoError('testRemoveItem/getAllKeys', err4);
              expectTrue(
-               result2.indexOf(KEY_1) === -1,
-               'Unexpected: KEY_1 present in ' + result2
+               result3.indexOf(KEY_1) === -1,
+               'Unexpected: KEY_1 present in ' + result3
              );
-             updateMessage('proper length returned.\nDone!');
-             done();
+             updateMessage('proper length returned.');
+             runTestCase('should merge values', testMerge);
             });
           });
         });
+      });
+    });
+  });
+}
+
+function testMerge() {
+  AsyncStorage.setItem(KEY_MERGE, JSON.stringify(VAL_MERGE_1), (err1) => {
+    expectAsyncNoError('testMerge/setItem', err1);
+    AsyncStorage.mergeItem(KEY_MERGE, JSON.stringify(VAL_MERGE_2), (err2) => {
+      expectAsyncNoError('testMerge/mergeItem', err2);
+      AsyncStorage.getItem(KEY_MERGE, (err3, result) => {
+        expectAsyncNoError('testMerge/setItem', err3);
+        expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
+        updateMessage('objects deeply merged\nDone!');
+        done();
       });
     });
   });
@@ -129,7 +157,7 @@ var AsyncStorageTest = React.createClass({
   },
 
   componentDidMount() {
-    done = () => this.setState({done: true}, RCTTestModule.markTestCompleted);
+    done = () => this.setState({done: true}, TestModule.markTestCompleted);
     updateMessage = (msg) => {
       this.setState({messages: this.state.messages.concat('\n' + msg)});
       DEBUG && console.log(msg);
@@ -149,5 +177,7 @@ var AsyncStorageTest = React.createClass({
     );
   }
 });
+
+AsyncStorageTest.displayName = 'AsyncStorageTest';
 
 module.exports = AsyncStorageTest;

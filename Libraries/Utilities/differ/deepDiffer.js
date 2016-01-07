@@ -35,16 +35,29 @@ var deepDiffer = function(one: any, two: any): bool {
   if (one.constructor !== two.constructor) {
     return true;
   }
-  for (var key in one) {
-    if (deepDiffer(one[key], two[key])) {
+  if (Array.isArray(one)) {
+    // We know two is also an array because the constructors are equal
+    var len = one.length;
+    if (two.length !== len) {
       return true;
     }
-  }
-  for (var twoKey in two) {
-    // The only case we haven't checked yet is keys that are in two but aren't
-    // in one, which means they are different.
-    if (one[twoKey] === undefined && two[twoKey] !== undefined) {
-      return true;
+    for (var ii = 0; ii < len; ii++) {
+      if (deepDiffer(one[ii], two[ii])) {
+        return true;
+      }
+    }
+  } else {
+    for (var key in one) {
+      if (deepDiffer(one[key], two[key])) {
+        return true;
+      }
+    }
+    for (var twoKey in two) {
+      // The only case we haven't checked yet is keys that are in two but aren't
+      // in one, which means they are different.
+      if (one[twoKey] === undefined && two[twoKey] !== undefined) {
+        return true;
+      }
     }
   }
   return false;

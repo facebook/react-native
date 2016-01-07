@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0610"
-   version = "1.3">
+   LastUpgradeVersion = "0700"
+   version = "1.8">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -22,15 +22,29 @@
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "YES"
+            buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
+            buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "004D289D1AAF61C70097A701"
-               BuildableName = "UIExplorerTests.xctest"
-               BlueprintName = "UIExplorerTests"
+               BuildableName = "UIExplorerUnitTests.xctest"
+               BlueprintName = "UIExplorerUnitTests"
+               ReferencedContainer = "container:UIExplorer.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "143BC5941B21E3E100462512"
+               BuildableName = "UIExplorerIntegrationTests.xctest"
+               BlueprintName = "UIExplorerIntegrationTests"
                ReferencedContainer = "container:UIExplorer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,8 +61,18 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "004D289D1AAF61C70097A701"
-               BuildableName = "UIExplorerTests.xctest"
-               BlueprintName = "UIExplorerTests"
+               BuildableName = "UIExplorerUnitTests.xctest"
+               BlueprintName = "UIExplorerUnitTests"
+               ReferencedContainer = "container:UIExplorer.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "143BC5941B21E3E100462512"
+               BuildableName = "UIExplorerIntegrationTests.xctest"
+               BlueprintName = "UIExplorerIntegrationTests"
                ReferencedContainer = "container:UIExplorer.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -62,6 +86,8 @@
             ReferencedContainer = "container:UIExplorer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <AdditionalOptions>
+      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
@@ -71,8 +97,10 @@
       buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
@@ -90,7 +118,8 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"

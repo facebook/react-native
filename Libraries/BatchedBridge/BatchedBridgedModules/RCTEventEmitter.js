@@ -11,7 +11,13 @@
  */
 'use strict';
 
-var ReactIOSEventEmitter = require('ReactIOSEventEmitter');
+var BatchedBridge = require('BatchedBridge');
+var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
+
+BatchedBridge.registerCallableModule(
+  'RCTEventEmitter',
+  ReactNativeEventEmitter
+);
 
 // Completely locally implemented - no native hooks.
-module.exports = ReactIOSEventEmitter;
+module.exports = ReactNativeEventEmitter;

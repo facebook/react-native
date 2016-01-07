@@ -15,21 +15,21 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactChildren = require('ReactChildren');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RCTPickerIOSConsts = require('NativeModules').UIManager.RCTPicker.Constants;
 var StyleSheet = require('StyleSheet');
+var StyleSheetPropType = require('StyleSheetPropType');
+var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
-var merge = require('merge');
-
-var PICKER = 'picker';
+var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
+var requireNativeComponent = require('requireNativeComponent');
 
 var PickerIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
+    itemStyle: itemStylePropType,
     onValueChange: React.PropTypes.func,
     selectedValue: React.PropTypes.any, // string or integer basically
   },
@@ -54,13 +54,13 @@ var PickerIOS = React.createClass({
     });
     return {selectedIndex, items};
   },
-
+  
   render: function() {
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={PICKER}
-          style={styles.rkPickerIOS}
+          ref={picker => this._picker = picker}
+          style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
@@ -83,8 +83,8 @@ var PickerIOS = React.createClass({
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this.state.selectedIndex !== event.nativeEvent.newIndex) {
-      this.refs[PICKER].setNativeProps({
+    if (this._picker && this.state.selectedIndex !== event.nativeEvent.newIndex) {
+      this._picker.setNativeProps({
         selectedIndex: this.state.selectedIndex
       });
     }
@@ -104,7 +104,7 @@ PickerIOS.Item = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  rkPickerIOS: {
+  pickerIOS: {
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.
@@ -112,14 +112,16 @@ var styles = StyleSheet.create({
   },
 });
 
-var rkPickerIOSAttributes = merge(ReactIOSViewAttributes.UIView, {
-  items: true,
-  selectedIndex: true,
-});
-
-var RCTPickerIOS = createReactIOSNativeComponentClass({
-  validAttributes: rkPickerIOSAttributes,
-  uiViewClassName: 'RCTPicker',
+var RCTPickerIOS = requireNativeComponent('RCTPicker', {
+  propTypes: {
+    style: itemStylePropType,
+  },
+}, {
+  nativeOnly: {
+    items: true,
+    onChange: true,
+    selectedIndex: true,
+  },
 });
 
 module.exports = PickerIOS;

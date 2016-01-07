@@ -22,7 +22,9 @@ var {
 
 var MAX_VALUE = 200;
 
-function getStyleFromScore(score: number): {color: string} {
+import type { StyleObj } from 'StyleSheetTypes';
+
+function getStyleFromScore(score: number): StyleObj {
   if (score < 0) {
     return styles.noScore;
   }

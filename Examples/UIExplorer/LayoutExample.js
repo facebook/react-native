@@ -62,8 +62,11 @@ var CircleBlock = React.createClass({
 var LayoutExample = React.createClass({
   statics: {
     title: 'Layout - Flexbox',
-    description: 'Examples of using the flexbox API to layout views.'
+    description: 'Examples of using the flexbox API to layout views.',
   },
+
+  displayName: 'LayoutExample',
+
   render: function() {
     return (
       <UIExplorerPage title={this.props.navigator ? null : 'Layout'}>

@@ -12,6 +12,9 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTBorderStyle.h"
+#import "RCTTextDecorationLineType.h"
+#import "RCTDefines.h"
 #import "RCTLog.h"
 #import "RCTPointerEvents.h"
 
@@ -21,6 +24,8 @@
  * custom RCTViewManager setter methods.
  */
 @interface RCTConvert : NSObject
+
++ (id)id:(id)json;
 
 + (BOOL)BOOL:(id)json;
 + (double)double:(id)json;
@@ -38,19 +43,29 @@
 + (NSString *)NSString:(id)json;
 + (NSNumber *)NSNumber:(id)json;
 
++ (NSSet *)NSSet:(id)json;
++ (NSData *)NSData:(id)json;
++ (NSIndexSet *)NSIndexSet:(id)json;
+
 + (NSURL *)NSURL:(id)json;
 + (NSURLRequest *)NSURLRequest:(id)json;
+
+typedef NSURL RCTFileURL;
++ (RCTFileURL *)RCTFileURL:(id)json;
 
 + (NSDate *)NSDate:(id)json;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
++ (NSLineBreakMode)NSLineBreakMode:(id)json;
 + (NSTextAlignment)NSTextAlignment:(id)json;
++ (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
-+ (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
++ (UIKeyboardAppearance)UIKeyboardAppearance:(id)json;
++ (UIReturnKeyType)UIReturnKeyType:(id)json;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
 + (UIBarStyle)UIBarStyle:(id)json;
@@ -68,26 +83,38 @@
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
 + (UIColor *)UIColor:(id)json;
-+ (CGColorRef)CGColor:(id)json;
++ (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
-+ (UIImage *)UIImage:(id)json;
-+ (CGImageRef)CGImage:(id)json;
-
++ (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withStyle:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withFamily:(id)family
-              size:(id)size weight:(id)weight style:(id)style;
+              size:(id)size weight:(id)weight style:(id)style
+   scaleMultiplier:(CGFloat)scaleMultiplier;
 
-+ (NSArray *)NSStringArray:(id)json;
-+ (NSArray *)NSDictionaryArray:(id)json;
-+ (NSArray *)NSURLArray:(id)json;
-+ (NSArray *)NSNumberArray:(id)json;
-+ (NSArray *)UIColorArray:(id)json;
-+ (NSArray *)CGColorArray:(id)json;
++ (NSArray<NSArray *> *)NSArrayArray:(id)json;
++ (NSArray<NSString *> *)NSStringArray:(id)json;
++ (NSArray<NSArray<NSString *> *> *)NSStringArrayArray:(id)json;
++ (NSArray<NSDictionary *> *)NSDictionaryArray:(id)json;
++ (NSArray<NSURL *> *)NSURLArray:(id)json;
++ (NSArray<RCTFileURL *> *)RCTFileURLArray:(id)json;
++ (NSArray<NSNumber *> *)NSNumberArray:(id)json;
++ (NSArray<UIColor *> *)UIColorArray:(id)json;
 
-+ (BOOL)css_overflow:(id)json;
+typedef NSArray CGColorArray;
++ (CGColorArray *)CGColorArray:(id)json;
+
+/**
+ * Convert a JSON object to a Plist-safe equivalent by stripping null values.
+ */
+typedef id NSPropertyList;
++ (NSPropertyList)NSPropertyList:(id)json;
+
+typedef BOOL css_clip_t, css_backface_visibility_t;
++ (css_clip_t)css_clip_t:(id)json;
++ (css_backface_visibility_t)css_backface_visibility_t:(id)json;
 + (css_flex_direction_t)css_flex_direction_t:(id)json;
 + (css_justify_t)css_justify_t:(id)json;
 + (css_align_t)css_align_t:(id)json;
@@ -96,66 +123,89 @@
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTBorderStyle)RCTBorderStyle:(id)json;
++ (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
 
 @end
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+@interface RCTConvert (Deprecated)
 
 /**
- * This function will attempt to set a property using a json value by first
- * inferring the correct type from all available information, and then
- * applying an appropriate conversion method. If the property does not
- * exist, or the type cannot be inferred, the function will return NO.
+ * Use lightweight generics syntax instead, e.g. NSArray<NSString *>
  */
-BOOL RCTSetProperty(id target, NSString *keyPath, SEL type, id json);
+typedef NSArray NSArrayArray __deprecated_msg("Use NSArray<NSArray *>");
+typedef NSArray NSStringArray __deprecated_msg("Use NSArray<NSString *>");
+typedef NSArray NSStringArrayArray __deprecated_msg("Use NSArray<NSArray<NSString *> *>");
+typedef NSArray NSDictionaryArray __deprecated_msg("Use NSArray<NSDictionary *>");
+typedef NSArray NSURLArray __deprecated_msg("Use NSArray<NSURL *>");
+typedef NSArray RCTFileURLArray __deprecated_msg("Use NSArray<RCTFileURL *>");
+typedef NSArray NSNumberArray __deprecated_msg("Use NSArray<NSNumber *>");
+typedef NSArray UIColorArray __deprecated_msg("Use NSArray<UIColor *>");
 
 /**
- * This function attempts to copy a property from the source object to the
- * destination object using KVC. If the property does not exist, or cannot
- * be set, it will do nothing and return NO.
+ * Synchronous image loading is generally a bad idea for performance reasons.
+ * If you need to pass image references, try to use `RCTImageSource` and then
+ * `RCTImageLoader` instead of converting directly to a UIImage.
  */
-BOOL RCTCopyProperty(id target, id source, NSString *keyPath);
++ (UIImage *)UIImage:(id)json;
++ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
 
-#ifdef __cplusplus
-}
-#endif
+@end
 
 /**
- * This macro is used for creating converter functions with arbitrary logic.
+ * Underlying implementations of RCT_XXX_CONVERTER macros. Ignore these.
  */
-#define RCT_CONVERTER_CUSTOM(type, name, code) \
-+ (type)name:(id)json                          \
-{                                              \
-  if (json == [NSNull null]) {                 \
-    json = nil;                                \
-  }                                            \
-  @try {                                       \
-    return code;                               \
-  }                                            \
-  @catch (__unused NSException *e) {           \
-    RCTLogError(@"JSON value '%@' of type '%@' cannot be converted to '%s'", \
-    json, [json class], #type); \
-    json = nil; \
-    return code; \
-  } \
-}
+RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
+RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
+RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
+
+/**
+ * Get the converter function for the specified type
+ */
+RCT_EXTERN SEL RCTConvertSelectorForType(NSString *type);
+
+/**
+ * This macro is used for logging conversion errors. This is just used to
+ * avoid repeating the same boilerplate for every error message.
+ */
+#define RCTLogConvertError(json, typeName) \
+RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", \
+json, [json classForCoder], typeName)
 
 /**
  * This macro is used for creating simple converter functions that just call
  * the specified getter method on the json value.
  */
 #define RCT_CONVERTER(type, name, getter) \
-RCT_CONVERTER_CUSTOM(type, name, [json getter])
+RCT_CUSTOM_CONVERTER(type, name, [json getter])
+
+/**
+ * This macro is used for creating converter functions with arbitrary logic.
+ */
+#define RCT_CUSTOM_CONVERTER(type, name, code) \
++ (type)name:(id)json                          \
+{                                              \
+  if (!RCT_DEBUG) {                            \
+    return code;                               \
+  } else {                                     \
+    @try {                                     \
+      return code;                             \
+    }                                          \
+    @catch (__unused NSException *e) {         \
+      RCTLogConvertError(json, @#type);        \
+      json = nil;                              \
+      return code;                             \
+    }                                          \
+  }                                            \
+}
 
 /**
  * This macro is similar to RCT_CONVERTER, but specifically geared towards
  * numeric types. It will handle string input correctly, and provides more
- * detailed error reporting if a wrong value is passed in.
+ * detailed error reporting if an invalid value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
-RCT_CONVERTER_CUSTOM(type, type, [[self NSNumber:json] getter])
+RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter])
 
 /**
  * This macro is used for creating converters for enum types.
@@ -168,89 +218,29 @@ RCT_CONVERTER_CUSTOM(type, type, [[self NSNumber:json] getter])
   dispatch_once(&onceToken, ^{                            \
     mapping = values;                                     \
   });                                                     \
-  if (!json || json == [NSNull null]) {                   \
-    return default;                                       \
-  }                                                       \
-  if ([json isKindOfClass:[NSNumber class]]) {            \
-    if ([[mapping allValues] containsObject:json] || [json getter] == default) { \
-      return [json getter];                               \
-    }                                                     \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allValues]); \
-    return default;                                       \
-  }                                                       \
-  if (![json isKindOfClass:[NSString class]]) {           \
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", #type, [json class], json); \
-  }                                                       \
-  id value = mapping[json];                               \
-  if(!value && [json description].length > 0) {           \
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", #type, json, [mapping allKeys]); \
-  }                                                       \
-  return value ? [value getter] : default;                \
+  return [RCTConvertEnumValue(#type, mapping, @(default), json) getter]; \
 }
 
 /**
- * This macro is used for creating converter functions for structs that consist
- * of a number of CGFloat properties, such as CGPoint, CGRect, etc.
+ * This macro is used for creating converters for enum types for
+ * multiple enum values combined with | operator
  */
-#define RCT_CGSTRUCT_CONVERTER(type, values, _aliases)   \
-+ (type)type:(id)json                                    \
-{                                                        \
-  @try {                                                 \
-    static NSArray *fields;                              \
-    static NSUInteger count;                             \
-    static dispatch_once_t onceToken;                    \
-    dispatch_once(&onceToken, ^{                         \
-      fields = values;                                   \
-      count = [fields count];                            \
-    });                                                  \
-    type result;                                         \
-    if ([json isKindOfClass:[NSArray class]]) {          \
-      if ([json count] != count) {                       \
-        RCTLogError(@"Expected array with count %zd, but count is %zd: %@", count, [json count], json); \
-      } else {                                           \
-        for (NSUInteger i = 0; i < count; i++) {         \
-          ((CGFloat *)&result)[i] = [self CGFloat:json[i]]; \
-        }                                                \
-      }                                                  \
-    } else if ([json isKindOfClass:[NSDictionary class]]) { \
-      NSDictionary *aliases = _aliases;                  \
-      if (aliases.count) {                               \
-        json = [json mutableCopy];                       \
-        for (NSString *alias in aliases) {               \
-          NSString *key = aliases[alias];                \
-          NSNumber *number = json[key];                  \
-          if (number) {                                  \
-            ((NSMutableDictionary *)json)[key] = number; \
-          }                                              \
-        }                                                \
-      }                                                  \
-      for (NSUInteger i = 0; i < count; i++) {           \
-        ((CGFloat *)&result)[i] = [self CGFloat:json[fields[i]]]; \
-      }                                                  \
-    } else if (json && json != [NSNull null]) {          \
-      RCTLogError(@"Expected NSArray or NSDictionary for %s, received %@: %@", #type, [json class], json); \
-    }                                                    \
-    return result;                                       \
-  }                                                      \
-  @catch (__unused NSException *e) {                     \
-    RCTLogError(@"JSON value '%@' cannot be converted to '%s'", json, #type); \
-    type result; \
-    return result; \
-  } \
+#define RCT_MULTI_ENUM_CONVERTER(type, values, default, getter) \
++ (type)type:(id)json                                     \
+{                                                         \
+  static NSDictionary *mapping;                           \
+  static dispatch_once_t onceToken;                       \
+  dispatch_once(&onceToken, ^{                            \
+    mapping = values;                                     \
+  });                                                     \
+  return [RCTConvertMultiEnumValue(#type, mapping, @(default), json) getter]; \
 }
 
 /**
  * This macro is used for creating converter functions for typed arrays.
  */
-#define RCT_ARRAY_CONVERTER(type)                         \
-+ (NSArray *)type##Array:(id)json                         \
-{                                                         \
-  NSMutableArray *values = [[NSMutableArray alloc] init]; \
-  for (id jsonValue in [self NSArray:json]) {             \
-    id value = [self type:jsonValue];                     \
-    if (value) {                                          \
-      [values addObject:value];                           \
-    }                                                     \
-  }                                                       \
-  return values;                                          \
+#define RCT_ARRAY_CONVERTER(type)                      \
++ (NSArray<id> *)type##Array:(id)json                      \
+{                                                      \
+  return RCTConvertArrayValue(@selector(type:), json); \
 }

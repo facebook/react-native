@@ -12,4 +12,3 @@
 @interface RCTTextManager : RCTViewManager
 
 @end
-

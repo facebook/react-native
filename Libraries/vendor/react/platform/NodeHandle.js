@@ -19,7 +19,7 @@
   *  worker thread.
   *
   *  The only other requirement of a platform/environment is that it always be
-  *  possible to extract the react rootNodeID in a blocking manner (see
+  *  possible to extract the React rootNodeID in a blocking manner (see
   *  `getRootNodeID`).
   *
   * +------------------+ +------------------+ +------------------+

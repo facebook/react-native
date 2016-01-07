@@ -10,7 +10,8 @@
 #import <UIKit/UIKit.h>
 
 #import "Layout.h"
-#import "RCTViewNodeProtocol.h"
+#import "RCTComponent.h"
+#import "RCTRootView.h"
 
 @class RCTSparseArray;
 
@@ -20,8 +21,7 @@ typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
   RCTUpdateLifecycleDirtied,
 };
 
-// TODO: is this redundact now?
-typedef void (^RCTApplierBlock)(RCTSparseArray *);
+typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry);
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.
@@ -33,14 +33,17 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
  * 3. If a node is "computed" and the constraint passed from above is identical to the constraint used to
  *    perform the last computation, we skip laying out the subtree entirely.
  */
-@interface RCTShadowView : NSObject <RCTViewNodeProtocol>
+@interface RCTShadowView : NSObject <RCTComponent>
+
+- (NSArray<RCTShadowView *> *)reactSubviews;
+- (RCTShadowView *)reactSuperview;
 
 @property (nonatomic, weak, readonly) RCTShadowView *superview;
 @property (nonatomic, assign, readonly) css_node_t *cssNode;
 @property (nonatomic, copy) NSString *viewName;
-@property (nonatomic, assign) BOOL isBGColorExplicitlySet; // Used to propagate to children
 @property (nonatomic, strong) UIColor *backgroundColor; // Used to propagate to children
 @property (nonatomic, assign) RCTUpdateLifecycle layoutLifecycle;
+@property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 /**
  * isNewView - Used to track the first time the view is introduced into the hierarchy.  It is initialized YES, then is
@@ -60,44 +63,51 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) CGFloat height;
+@property (nonatomic, assign) CGFloat minWidth;
+@property (nonatomic, assign) CGFloat minHeight;
+@property (nonatomic, assign) CGFloat maxWidth;
+@property (nonatomic, assign) CGFloat maxHeight;
 @property (nonatomic, assign) CGRect frame;
 
 - (void)setTopLeft:(CGPoint)topLeft;
 - (void)setSize:(CGSize)size;
 
 /**
+ * Size flexibility type used to find size constraints.
+ * Default to RCTRootViewSizeFlexibilityNone
+ */
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+
+/**
  * Border. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat borderWidth;
 @property (nonatomic, assign) CGFloat borderTopWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderRightWidth;
 
-- (void)setBorderWidth:(CGFloat)value;
-
 /**
  * Margin. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat margin;
+@property (nonatomic, assign) CGFloat marginVertical;
+@property (nonatomic, assign) CGFloat marginHorizontal;
 @property (nonatomic, assign) CGFloat marginTop;
 @property (nonatomic, assign) CGFloat marginLeft;
 @property (nonatomic, assign) CGFloat marginBottom;
 @property (nonatomic, assign) CGFloat marginRight;
 
-- (void)setMargin:(CGFloat)margin;
-- (void)setMarginVertical:(CGFloat)margin;
-- (void)setMarginHorizontal:(CGFloat)margin;
-
 /**
  * Padding. Defaults to { 0, 0, 0, 0 }.
  */
+@property (nonatomic, assign) CGFloat padding;
+@property (nonatomic, assign) CGFloat paddingVertical;
+@property (nonatomic, assign) CGFloat paddingHorizontal;
 @property (nonatomic, assign) CGFloat paddingTop;
 @property (nonatomic, assign) CGFloat paddingLeft;
 @property (nonatomic, assign) CGFloat paddingBottom;
 @property (nonatomic, assign) CGFloat paddingRight;
-
-- (void)setPadding:(CGFloat)padding;
-- (void)setPaddingVertical:(CGFloat)padding;
-- (void)setPaddingHorizontal:(CGFloat)padding;
 
 - (UIEdgeInsets)paddingAsInsets;
 
@@ -108,7 +118,7 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
 @property (nonatomic, assign) css_justify_t justifyContent;
 @property (nonatomic, assign) css_align_t alignSelf;
 @property (nonatomic, assign) css_align_t alignItems;
-@property (nonatomic, assign) css_position_type_t positionType;
+@property (nonatomic, assign) css_position_type_t position;
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 
@@ -117,34 +127,44 @@ typedef void (^RCTApplierBlock)(RCTSparseArray *);
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
  * on the main thread in order to update the view.
  */
-- (void)collectUpdatedProperties:(NSMutableSet *)applierBlocks parentProperties:(NSDictionary *)parentProperties;
+- (void)collectUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
+                parentProperties:(NSDictionary<NSString *, id> *)parentProperties;
+
+/**
+ * Process the updated properties and apply them to view. Shadow view classes
+ * that add additional propagating properties should override this method.
+ */
+- (NSDictionary<NSString *, id> *)processUpdatedProperties:(NSMutableSet<RCTApplierBlock> *)applierBlocks
+                                          parentProperties:(NSDictionary<NSString *, id> *)parentProperties NS_REQUIRES_SUPER;
 
 /**
  * Calculate all views whose frame needs updating after layout has been calculated.
- * The viewsWithNewFrame set contains the reactTags of the views that need updating.
+ * Returns a set contains the shadowviews that need updating.
  */
-- (void)collectRootUpdatedFrames:(NSMutableSet *)viewsWithNewFrame parentConstraint:(CGSize)parentConstraint;
+- (NSSet<RCTShadowView *> *)collectRootUpdatedFrames;
+
+/**
+ * Recursively apply layout to children.
+ */
+- (void)applyLayoutNode:(css_node_t *)node
+      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
+       absolutePosition:(CGPoint)absolutePosition NS_REQUIRES_SUPER;
 
 /**
  * The following are implementation details exposed to subclasses. Do not call them directly
  */
-- (void)fillCSSNode:(css_node_t *)node;
-- (void)dirtyLayout;
+- (void)fillCSSNode:(css_node_t *)node NS_REQUIRES_SUPER;
+- (void)dirtyLayout NS_REQUIRES_SUPER;
 - (BOOL)isLayoutDirty;
 
-// TODO: is this still needed?
-- (void)dirtyPropagation;
+- (void)dirtyPropagation NS_REQUIRES_SUPER;
 - (BOOL)isPropagationDirty;
 
-// TODO: move this to text node?
-- (void)dirtyText;
+- (void)dirtyText NS_REQUIRES_SUPER;
+- (void)setTextComputed NS_REQUIRES_SUPER;
 - (BOOL)isTextDirty;
-- (void)setTextComputed;
 
-/**
- * Triggers a recalculation of the shadow view's layout.
- */
-- (void)updateLayout;
+- (void)didSetProps:(NSArray<NSString *> *)changedProps NS_REQUIRES_SUPER;
 
 /**
  * Computes the recursive offset, meaning the sum of all descendant offsets -

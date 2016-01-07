@@ -9,20 +9,17 @@
  * @providesModule IOSNativeBridgeEventPlugin
  * @flow
  */
-
-"use strict";
+'use strict';
 
 var EventPropagators = require('EventPropagators');
-var NativeModules = require('NativeModules');
 var SyntheticEvent = require('SyntheticEvent');
+var UIManager = require('UIManager');
 
 var merge = require('merge');
 var warning = require('warning');
 
-var RCTUIManager = NativeModules.UIManager;
-
-var customBubblingEventTypes = RCTUIManager.customBubblingEventTypes;
-var customDirectEventTypes = RCTUIManager.customDirectEventTypes;
+var customBubblingEventTypes = UIManager.customBubblingEventTypes;
+var customDirectEventTypes = UIManager.customDirectEventTypes;
 
 var allTypesByEventName = {};
 
@@ -33,7 +30,7 @@ for (var bubblingTypeName in customBubblingEventTypes) {
 for (var directTypeName in customDirectEventTypes) {
   warning(
     !customBubblingEventTypes[directTypeName],
-    "Event cannot be both direct and bubbling: %s",
+    'Event cannot be both direct and bubbling: %s',
     directTypeName
   );
   allTypesByEventName[directTypeName] = customDirectEventTypes[directTypeName];
@@ -76,4 +73,3 @@ var IOSNativeBridgeEventPlugin = {
 };
 
 module.exports = IOSNativeBridgeEventPlugin;
-

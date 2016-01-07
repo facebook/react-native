@@ -16,16 +16,11 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var RCTDatePickerIOSConsts = require('NativeModules').UIManager.RCTDatePicker.Constants;
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass =
-  require('createReactIOSNativeComponentClass');
-var merge = require('merge');
-
-var DATEPICKER = 'datepicker';
+var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
   mode: 'date' | 'time' | 'datetime';
@@ -41,9 +36,13 @@ type Event = Object;
  * source of truth.
  */
 var DatePickerIOS = React.createClass({
+  // TOOD: Put a better type for _picker
+  _picker: (undefined: ?$FlowFixMe),
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * The currently selected date.
      */
@@ -110,8 +109,8 @@ var DatePickerIOS = React.createClass({
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
     var propsTimeStamp = this.props.date.getTime();
-    if (nativeTimeStamp !== propsTimeStamp) {
-      this.refs[DATEPICKER].setNativeProps({
+    if (this._picker && nativeTimeStamp !== propsTimeStamp) {
+      this._picker.setNativeProps({
         date: propsTimeStamp,
       });
     }
@@ -122,8 +121,8 @@ var DatePickerIOS = React.createClass({
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          ref={DATEPICKER}
-          style={styles.rkDatePickerIOS}
+          ref={ picker => this._picker = picker }
+          style={styles.datePickerIOS}
           date={props.date.getTime()}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
@@ -131,7 +130,7 @@ var DatePickerIOS = React.createClass({
           minimumDate={
             props.minimumDate ? props.minimumDate.getTime() : undefined
           }
-          mode={RCTDatePickerIOSConsts.DatePickerModes[props.mode]}
+          mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
@@ -142,24 +141,14 @@ var DatePickerIOS = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  rkDatePickerIOS: {
+  datePickerIOS: {
     height: RCTDatePickerIOSConsts.ComponentHeight,
     width: RCTDatePickerIOSConsts.ComponentWidth,
   },
 });
 
-var rkDatePickerIOSAttributes = merge(ReactIOSViewAttributes.UIView, {
-  date: true,
-  maximumDate: true,
-  minimumDate: true,
-  mode: true,
-  minuteInterval: true,
-  timeZoneOffsetInMinutes: true,
-});
-
-var RCTDatePickerIOS = createReactIOSNativeComponentClass({
-  validAttributes: rkDatePickerIOSAttributes,
-  uiViewClassName: 'RCTDatePicker',
+var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS, {
+  nativeOnly: { onChange: true },
 });
 
 module.exports = DatePickerIOS;

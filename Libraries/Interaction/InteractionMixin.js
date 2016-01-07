@@ -2,6 +2,7 @@
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
  * @providesModule InteractionMixin
+ * @flow
  */
 'use strict';
 
@@ -21,7 +22,7 @@ var InteractionMixin = {
     }
   },
 
-  _interactionMixinHandles: [],
+  _interactionMixinHandles: ([]: Array<number>),
 
   createInteractionHandle: function() {
     var handle = InteractionManager.createInteractionHandle();
@@ -29,7 +30,7 @@ var InteractionMixin = {
     return handle;
   },
 
-  clearInteractionHandle: function(clearHandle) {
+  clearInteractionHandle: function(clearHandle: number) {
     InteractionManager.clearInteractionHandle(clearHandle);
     this._interactionMixinHandles = this._interactionMixinHandles.filter(
       handle => handle !== clearHandle
@@ -41,7 +42,7 @@ var InteractionMixin = {
    *
    * @param {function} callback
    */
-  runAfterInteractions: function(callback) {
+  runAfterInteractions: function(callback: Function) {
     InteractionManager.runAfterInteractions(callback);
   },
 };

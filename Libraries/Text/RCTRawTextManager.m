@@ -13,17 +13,13 @@
 
 @implementation RCTRawTextManager
 
-- (UIView *)view
-{
-  return [[UIView alloc] init];
-}
+RCT_EXPORT_MODULE()
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowRawText alloc] init];
+  return [RCTShadowRawText new];
 }
 
 RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 
 @end
-

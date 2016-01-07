@@ -11,18 +11,54 @@
 
 #import "RCTBridge.h"
 
-@interface RCTRootView : UIView<RCTInvalidating>
-
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions /* NS_DESIGNATED_INITIALIZER */;
+@protocol RCTRootViewDelegate;
 
 /**
- * The URL of the bundled application script (required).
- * Setting this will clear the view contents, and trigger
- * an asynchronous load/download and execution of the script.
+ * This enum is used to define size flexibility type of the root view.
+ * If a dimension is flexible, the view will recalculate that dimension
+ * so the content fits. Recalculations are performed when the root's frame,
+ * size flexibility mode or content size changes. After a recalculation,
+ * rootViewDidChangeIntrinsicSize method of the RCTRootViewDelegate will be called.
  */
-@property (nonatomic, strong, readonly) NSURL *scriptURL;
+typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
+  RCTRootViewSizeFlexibilityNone = 0,
+  RCTRootViewSizeFlexibilityWidth,
+  RCTRootViewSizeFlexibilityHeight,
+  RCTRootViewSizeFlexibilityWidthAndHeight,
+};
+
+/**
+ * This notification is sent when the first subviews are added to the root view
+ * after the application has loaded. This is used to hide the `loadingView`, and
+ * is a good indicator that the application is ready to use.
+ */
+extern NSString *const RCTContentDidAppearNotification;
+
+/**
+ * Native view used to host React-managed views within the app. Can be used just
+ * like any ordinary UIView. You can have multiple RCTRootViews on screen at
+ * once, all controlled by the same JavaScript application.
+ */
+@interface RCTRootView : UIView
+
+/**
+ * - Designated initializer -
+ */
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+
+/**
+ * - Convenience initializer -
+ * A bridge will be created internally.
+ * This initializer is intended to be used when the app has a single RCTRootView,
+ * otherwise create an `RCTBridge` and pass it in via `initWithBridge:moduleName:`
+ * to all the instances.
+ */
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                initialProperties:(NSDictionary *)initialProperties
+                    launchOptions:(NSDictionary *)launchOptions;
 
 /**
  * The name of the JavaScript module to execute within the
@@ -33,38 +69,65 @@
 @property (nonatomic, copy, readonly) NSString *moduleName;
 
 /**
- * A block that returns an array of pre-allocated modules.  These
- * modules will take precedence over any automatically registered
- * modules of the same name.
+ * The bridge used by the root view. Bridges can be shared between multiple
+ * root views, so you can use this property to initialize another RCTRootView.
  */
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
+@property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 /**
- * The default properties to apply to the view when the script bundle
- * is first loaded. Defaults to nil/empty.
+ * The properties to apply to the view. Use this property to update
+ * application properties and rerender the view. Initialized with
+ * initialProperties argument of the initializer.
+ *
+ * Set this property only on the main thread.
  */
-@property (nonatomic, copy) NSDictionary *initialProperties;
+@property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 
 /**
  * The class of the RCTJavaScriptExecutor to use with this view.
- * If not specified, it will default to using RCTContextExecutor.
+ * If not specified, it will default to using RCTJSCExecutor.
  * Changes will take effect next time the bundle is reloaded.
  */
 @property (nonatomic, strong) Class executorClass;
 
 /**
- * If YES will watch for shake gestures and show development menu
- * with options like "Reload", "Enable Debugging", etc.
+ * The size flexibility mode of the root view.
  */
-@property (nonatomic, assign) BOOL enableDevMenu;
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 
 /**
- * Reload this root view, or all root views, respectively.
+ * The size of the root view's content. This is set right before the
+ * rootViewDidChangeIntrinsicSize method of RCTRootViewDelegate is called.
  */
-- (void)reload;
-+ (void)reloadAll;
+@property (readonly, nonatomic, assign) CGSize intrinsicSize;
 
-- (void)startOrResetInteractionTiming;
-- (NSDictionary *)endAndResetInteractionTiming;
+/**
+ * The delegate that handles intrinsic size updates.
+ */
+@property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
+
+/**
+ * The backing view controller of the root view.
+ */
+@property (nonatomic, weak) UIViewController *reactViewController;
+
+/**
+ * The React-managed contents view of the root view.
+ */
+@property (nonatomic, strong, readonly) UIView *contentView;
+
+/**
+ * A view to display while the JavaScript is loading, so users aren't presented
+ * with a blank screen. By default this is nil, but you can override it with
+ * (for example) a UIActivityIndicatorView or a placeholder image.
+ */
+@property (nonatomic, strong) UIView *loadingView;
+
+/**
+ * Timings for hiding the loading view after the content has loaded. Both of
+ * these values default to 0.25 seconds.
+ */
+@property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
+@property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
 
 @end

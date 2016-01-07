@@ -25,7 +25,7 @@ var defaultOptions = {
   elipsis: '...',
 };
 
-// maxChars (including elipsis)
+// maxChars (including ellipsis)
 var truncate = function(
   str: ?string,
   maxChars: number,
@@ -45,4 +45,3 @@ var truncate = function(
 };
 
 module.exports = truncate;
-

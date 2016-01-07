@@ -10,12 +10,11 @@
 #import <UIKit/UIScrollView.h>
 
 #import "RCTAutoInsetsProtocol.h"
+#import "RCTEventDispatcher.h"
 #import "RCTScrollableProtocol.h"
 #import "RCTView.h"
 
 @protocol UIScrollViewDelegate;
-
-@class RCTEventDispatcher;
 
 @interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 
@@ -43,8 +42,26 @@
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
-@property (nonatomic, assign) NSUInteger throttleScrollCallbackMS;
+@property (nonatomic, assign) NSTimeInterval scrollEventThrottle;
 @property (nonatomic, assign) BOOL centerContent;
-@property (nonatomic, copy) NSArray *stickyHeaderIndices;
+@property (nonatomic, assign) int snapToInterval;
+@property (nonatomic, copy) NSString *snapToAlignment;
+@property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
+@property (nonatomic, copy) RCTDirectEventBlock onRefreshStart;
+
+- (void)endRefreshing;
+
+@end
+
+@interface RCTEventDispatcher (RCTScrollView)
+
+/**
+ * Send a scroll event.
+ * (You can send a fake scroll event by passing nil for scrollView).
+ */
+- (void)sendScrollEventWithType:(RCTScrollEventType)type
+                       reactTag:(NSNumber *)reactTag
+                     scrollView:(UIScrollView *)scrollView
+                       userData:(NSDictionary *)userData;
 
 @end

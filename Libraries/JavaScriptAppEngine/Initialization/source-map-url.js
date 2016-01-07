@@ -11,12 +11,13 @@
  *
  * @nolint
  */
+/* eslint-disable */
 
 (function() {
   var define = null; // Hack to make it work with our packager
 
 // Copyright 2014 Simon Lydell
-// X11 (“MIT”) Licensed. (See LICENSE.)
+// X11 ("MIT") Licensed. (See LICENSE.)
 
 void (function(root, factory) {
   if (typeof define === "function" && define.amd) {

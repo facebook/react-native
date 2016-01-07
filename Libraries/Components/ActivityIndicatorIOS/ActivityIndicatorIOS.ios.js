@@ -12,34 +12,27 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
-var keyMirror = require('keyMirror');
-var merge = require('merge');
-
-var SpinnerSize = keyMirror({
-  large: null,
-  small: null,
-});
+var requireNativeComponent = require('requireNativeComponent');
 
 var GRAY = '#999999';
 
 type DefaultProps = {
   animating: boolean;
-  size: 'small' | 'large';
   color: string;
+  hidesWhenStopped: boolean;
+  size: 'small' | 'large';
 };
 
 var ActivityIndicatorIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Whether to show the indicator (true, the default) or hide it (false).
      */
@@ -48,7 +41,10 @@ var ActivityIndicatorIOS = React.createClass({
      * The foreground color of the spinner (default is gray).
      */
     color: PropTypes.string,
-
+    /**
+     * Whether the indicator should hide when not animating (true by default).
+     */
+    hidesWhenStopped: PropTypes.bool,
     /**
      * Size of the indicator. Small has a height of 20, large has a height of 36.
      */
@@ -56,32 +52,31 @@ var ActivityIndicatorIOS = React.createClass({
       'small',
       'large',
     ]),
+    /**
+     * Invoked on mount and layout changes with
+     *
+     *   {nativeEvent: { layout: {x, y, width, height}}}.
+     */
+    onLayout: PropTypes.func,
   },
 
   getDefaultProps: function(): DefaultProps {
     return {
       animating: true,
-      size: SpinnerSize.small,
       color: GRAY,
+      hidesWhenStopped: true,
+      size: 'small',
     };
   },
 
   render: function() {
-    var style = styles.sizeSmall;
-    var NativeConstants = NativeModules.UIManager.UIActivityIndicatorView.Constants;
-    var activityIndicatorViewStyle = NativeConstants.StyleWhite;
-    if (this.props.size === 'large') {
-      style = styles.sizeLarge;
-      activityIndicatorViewStyle = NativeConstants.StyleWhiteLarge;
-    }
+    var {onLayout, style, ...props} = this.props;
+    var sizeStyle = (this.props.size === 'large') ? styles.sizeLarge : styles.sizeSmall;
     return (
       <View
-        style={[styles.container, style, this.props.style]}>
-        <UIActivityIndicatorView
-          activityIndicatorViewStyle={activityIndicatorViewStyle}
-          animating={this.props.animating}
-          color={this.props.color}
-        />
+        onLayout={onLayout}
+        style={[styles.container, style]}>
+        <RCTActivityIndicatorView {...props} style={sizeStyle} />
       </View>
     );
   }
@@ -93,21 +88,19 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sizeSmall: {
+    width: 20,
     height: 20,
   },
   sizeLarge: {
+    width: 36,
     height: 36,
   }
 });
 
-var UIActivityIndicatorView = createReactIOSNativeComponentClass({
-  validAttributes: merge(
-    ReactIOSViewAttributes.UIView, {
-    activityIndicatorViewStyle: true, // UIActivityIndicatorViewStyle=UIActivityIndicatorViewStyleWhite
-    animating: true,
-    color: true,
-  }),
-  uiViewClassName: 'UIActivityIndicatorView',
-});
+var RCTActivityIndicatorView = requireNativeComponent(
+  'RCTActivityIndicatorView',
+  ActivityIndicatorIOS,
+  {nativeOnly: {activityIndicatorViewStyle: true}},
+);
 
 module.exports = ActivityIndicatorIOS;

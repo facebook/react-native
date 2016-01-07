@@ -9,14 +9,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class RCTBridge;
+#import "RCTBridge.h"
 
 typedef NS_ENUM(NSInteger, RCTTextEventType) {
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
   RCTTextEventTypeSubmit,
-  RCTTextEventTypeEnd
+  RCTTextEventTypeEnd,
+  RCTTextEventTypeKeyPress
 };
 
 typedef NS_ENUM(NSInteger, RCTScrollEventType) {
@@ -29,12 +30,47 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
 };
 
 /**
+ * The threshold at which text inputs will start warning that the JS thread
+ * has fallen behind (resulting in poor input performance, missed keys, etc.)
+ */
+RCT_EXTERN const NSInteger RCTTextUpdateLagWarningThreshold;
+
+/**
+ * Takes an input event name and normalizes it to the form that is required
+ * by the events system (currently that means starting with the "top" prefix,
+ * but that's an implementation detail that may change in future).
+ */
+RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
+
+@protocol RCTEvent <NSObject>
+
+@required
+
+@property (nonatomic, strong, readonly) NSNumber *viewTag;
+@property (nonatomic, copy, readonly) NSString *eventName;
+@property (nonatomic, copy, readonly) NSDictionary *body;
+@property (nonatomic, assign, readonly) uint16_t coalescingKey;
+
+- (BOOL)canCoalesce;
+- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
+
++ (NSString *)moduleDotMethod;
+
+@end
+
+@interface RCTBaseEvent : NSObject <RCTEvent>
+
+- (instancetype)initWithViewTag:(NSNumber *)viewTag
+                      eventName:(NSString *)eventName
+                           body:(NSDictionary *)body NS_DESIGNATED_INITIALIZER;
+
+@end
+
+/**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
  */
-@interface RCTEventDispatcher : NSObject
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+@interface RCTEventDispatcher : NSObject <RCTBridgeModule>
 
 /**
  * Send an application-specific event that does not relate to a specific
@@ -50,7 +86,7 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
 
 /**
  * Send a user input event. The body dictionary must contain a "target"
- * parameter, representing the react tag of the view sending the event
+ * parameter, representing the React tag of the view sending the event
  */
 - (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body;
 
@@ -59,15 +95,13 @@ typedef NS_ENUM(NSInteger, RCTScrollEventType) {
  */
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
-                         text:(NSString *)text;
+                         text:(NSString *)text
+                          key:(NSString *)key
+                   eventCount:(NSInteger)eventCount;
 
 /**
- * Send a scroll event.
- * (You can send a fake scroll event by passing nil for scrollView).
+ * Send a pre-prepared event object.
  */
-- (void)sendScrollEventWithType:(RCTScrollEventType)type
-                       reactTag:(NSNumber *)reactTag
-                     scrollView:(UIScrollView *)scrollView
-                       userData:(NSDictionary *)userData;
+- (void)sendEvent:(id<RCTEvent>)event;
 
 @end

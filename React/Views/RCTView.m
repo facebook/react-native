@@ -10,11 +10,11 @@
 #import "RCTView.h"
 
 #import "RCTAutoInsetsProtocol.h"
+#import "RCTBorderDrawing.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTUtils.h"
 #import "UIView+React.h"
-
-static const RCTBorderSide RCTBorderSideCount = 4;
 
 @implementation UIView (RCTViewUnmounting)
 
@@ -35,7 +35,7 @@ static const RCTBorderSide RCTBorderSideCount = 4;
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (self.clipsToBounds && [self.subviews count] > 0) {
+  if (self.clipsToBounds && self.subviews.count > 0) {
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -79,7 +79,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
   for (UIView *subview in view.subviews) {
-    NSString *label = [subview accessibilityLabel];
+    NSString *label = subview.accessibilityLabel;
     if (label) {
       [str appendString:@" "];
       [str appendString:label];
@@ -92,10 +92,31 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 @implementation RCTView
 {
-  NSMutableArray *_reactSubviews;
-  CAShapeLayer *_borderLayers[RCTBorderSideCount];
-  CGFloat _borderWidths[RCTBorderSideCount];
+  NSMutableArray<UIView *> *_reactSubviews;
+  UIColor *_backgroundColor;
 }
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if ((self = [super initWithFrame:frame])) {
+    _borderWidth = -1;
+    _borderTopWidth = -1;
+    _borderRightWidth = -1;
+    _borderBottomWidth = -1;
+    _borderLeftWidth = -1;
+    _borderTopLeftRadius = -1;
+    _borderTopRightRadius = -1;
+    _borderBottomLeftRadius = -1;
+    _borderBottomRightRadius = -1;
+    _borderStyle = RCTBorderStyleSolid;
+
+    _backgroundColor = super.backgroundColor;
+  }
+
+  return self;
+}
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityLabel
 {
@@ -116,28 +137,75 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+  BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
+  if(!canReceiveTouchEvents) {
+    return nil;
+  }
+
+  // `hitSubview` is the topmost subview which was hit. The hit point can
+  // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
+  UIView *hitSubview = nil;
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+  BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
+  if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
+    // The default behaviour of UIKit is that if a view does not contain a point,
+    // then no subviews will be returned from hit testing, even if they contain
+    // the hit point. By doing hit testing directly on the subviews, we bypass
+    // the strict containment policy (i.e., UIKit guarantees that every ancestor
+    // of the hit view will return YES from -pointInside:withEvent:). See:
+    //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
+    for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+      CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+      hitSubview = [subview hitTest:convertedPoint withEvent:event];
+      if (hitSubview != nil) {
+        break;
+      }
+    }
+  }
+
+  UIView *hitView = (isPointInside ? self : nil);
+
   switch (_pointerEvents) {
     case RCTPointerEventsNone:
       return nil;
     case RCTPointerEventsUnspecified:
-      return [super hitTest:point withEvent:event];
+      return hitSubview ?: hitView;
     case RCTPointerEventsBoxOnly:
-      return [super hitTest:point withEvent:event] ? self: nil;
+      return hitView;
     case RCTPointerEventsBoxNone:
-      for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
-        if (!subview.isHidden && subview.isUserInteractionEnabled && subview.alpha > 0) {
-          CGPoint convertedPoint = [subview convertPoint:point fromView:self];
-          UIView *subviewHitTestView = [subview hitTest:convertedPoint withEvent:event];
-          if (subviewHitTestView != nil) {
-            return subviewHitTestView;
-          }
-        }
-      }
-      return nil;
+      return hitSubview;
     default:
       RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
-      return [super hitTest:point withEvent:event];
+      return hitSubview ?: hitView;
   }
+}
+
+- (BOOL)accessibilityActivate
+{
+  if (_onAccessibilityTap) {
+    _onAccessibilityTap(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (BOOL)accessibilityPerformMagicTap
+{
+  if (_onMagicTap) {
+    _onMagicTap(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (NSString *)description
+{
+  NSString *superDescription = super.description;
+  NSRange semicolonRange = [superDescription rangeOfString:@";"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
+  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
 }
 
 #pragma mark - Statics for dealing with layoutGuides
@@ -157,8 +225,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
-  [scrollView setContentInset:baseInset];
-  [scrollView setScrollIndicatorInsets:baseInset];
+  scrollView.contentInset = baseInset;
+  scrollView.scrollIndicatorInsets = baseInset;
 
   if (updateOffset) {
     // If we're adjusting the top inset, then let's also adjust the contentOffset so that the view
@@ -176,7 +244,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 + (UIEdgeInsets)contentInsetsForView:(UIView *)view
 {
   while (view) {
-    UIViewController *controller = view.backingViewController;
+    UIViewController *controller = view.reactViewController;
     if (controller) {
       return (UIEdgeInsets){
         controller.topLayoutGuide.length, 0,
@@ -193,10 +261,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (void)react_remountAllSubviews
 {
   if (_reactSubviews) {
-    NSInteger index = 0;
+    NSUInteger index = 0;
     for (UIView *view in _reactSubviews) {
       if (view.superview != self) {
-        if (index < [self subviews].count) {
+        if (index < self.subviews.count) {
           [self insertSubview:view atIndex:index];
         } else {
           [self addSubview:view];
@@ -234,7 +302,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     // View has cliping enabled, so we can easily test if it is partially
     // or completely within the clipRect, and mount or unmount it accordingly
 
-    if (CGRectIntersectsRect(clipRect, view.frame)) {
+    if (!CGRectIsEmpty(CGRectIntersection(clipRect, view.frame))) {
 
       // View is at least partially visible, so remount it if unmounted
       if (view.superview == nil) {
@@ -280,7 +348,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return [super react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 
-  if ([_reactSubviews count] == 0) {
+  if (_reactSubviews.count == 0) {
     // Do nothing if we have no subviews
     return;
   }
@@ -346,13 +414,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   [subview removeFromSuperview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   // The _reactSubviews array is only used when we have hidden
   // offscreen views. If _reactSubviews is nil, we can assume
   // that [self reactSubviews] and [self subviews] are the same
 
-  return _reactSubviews ?: [self subviews];
+  return _reactSubviews ?: self.subviews;
 }
 
 - (void)updateClippedSubviews
@@ -376,189 +444,248 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   if (_reactSubviews) {
     [self updateClippedSubviews];
   }
-
-  for (RCTBorderSide side = 0; side < RCTBorderSideCount; side++) {
-    if (_borderLayers[side]) [self updatePathForShapeLayerForSide:side];
-  }
 }
 
-- (void)layoutSublayersOfLayer:(CALayer *)layer
-{
-  [super layoutSublayersOfLayer:layer];
+#pragma mark - Borders
 
-  const CGRect bounds = layer.bounds;
-  for (RCTBorderSide side = 0; side < RCTBorderSideCount; side++) {
-    _borderLayers[side].frame = bounds;
-  }
+- (UIColor *)backgroundColor
+{
+  return _backgroundColor;
 }
 
-- (BOOL)getTrapezoidPoints:(CGPoint[4])outPoints forSide:(RCTBorderSide)side
+- (void)setBackgroundColor:(UIColor *)backgroundColor
 {
-  const CGRect bounds = self.layer.bounds;
-  const CGFloat minX = CGRectGetMinX(bounds);
-  const CGFloat maxX = CGRectGetMaxX(bounds);
-  const CGFloat minY = CGRectGetMinY(bounds);
-  const CGFloat maxY = CGRectGetMaxY(bounds);
-
-#define BW(SIDE) [self borderWidthForSide:RCTBorderSide##SIDE]
-
-  switch (side) {
-    case RCTBorderSideRight:
-      outPoints[0] = CGPointMake(maxX - BW(Right), maxY - BW(Bottom));
-      outPoints[1] = CGPointMake(maxX - BW(Right), minY + BW(Top));
-      outPoints[2] = CGPointMake(maxX, minY);
-      outPoints[3] = CGPointMake(maxX, maxY);
-      break;
-    case RCTBorderSideBottom:
-      outPoints[0] = CGPointMake(minX + BW(Left), maxY - BW(Bottom));
-      outPoints[1] = CGPointMake(maxX - BW(Right), maxY - BW(Bottom));
-      outPoints[2] = CGPointMake(maxX, maxY);
-      outPoints[3] = CGPointMake(minX, maxY);
-      break;
-    case RCTBorderSideLeft:
-      outPoints[0] = CGPointMake(minX + BW(Left), minY + BW(Top));
-      outPoints[1] = CGPointMake(minX + BW(Left), maxY - BW(Bottom));
-      outPoints[2] = CGPointMake(minX, maxY);
-      outPoints[3] = CGPointMake(minX, minY);
-      break;
-    case RCTBorderSideTop:
-      outPoints[0] = CGPointMake(maxX - BW(Right), minY + BW(Top));
-      outPoints[1] = CGPointMake(minX + BW(Left), minY + BW(Top));
-      outPoints[2] = CGPointMake(minX, minY);
-      outPoints[3] = CGPointMake(maxX, minY);
-      break;
+  if ([_backgroundColor isEqual:backgroundColor]) {
+    return;
   }
 
-  return YES;
+  _backgroundColor = backgroundColor;
+  [self.layer setNeedsDisplay];
 }
 
-- (CAShapeLayer *)createShapeLayerIfNotExistsForSide:(RCTBorderSide)side
+- (UIEdgeInsets)bordersAsInsets
 {
-  CAShapeLayer *borderLayer = _borderLayers[side];
-  if (!borderLayer) {
-    borderLayer = [CAShapeLayer layer];
-    borderLayer.fillColor = self.layer.borderColor;
-    [self.layer addSublayer:borderLayer];
-    _borderLayers[side] = borderLayer;
+  const CGFloat borderWidth = MAX(0, _borderWidth);
+
+  return (UIEdgeInsets) {
+    _borderTopWidth >= 0 ? _borderTopWidth : borderWidth,
+    _borderLeftWidth >= 0 ? _borderLeftWidth : borderWidth,
+    _borderBottomWidth >= 0 ? _borderBottomWidth : borderWidth,
+    _borderRightWidth  >= 0 ? _borderRightWidth : borderWidth,
+  };
+}
+
+- (RCTCornerRadii)cornerRadii
+{
+  const CGRect bounds = self.bounds;
+  const CGFloat maxRadius = MIN(bounds.size.height, bounds.size.width);
+  const CGFloat radius = MAX(0, _borderRadius);
+
+  return (RCTCornerRadii){
+    MIN(_borderTopLeftRadius >= 0 ? _borderTopLeftRadius : radius, maxRadius),
+    MIN(_borderTopRightRadius >= 0 ? _borderTopRightRadius : radius, maxRadius),
+    MIN(_borderBottomLeftRadius >= 0 ? _borderBottomLeftRadius : radius, maxRadius),
+    MIN(_borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius, maxRadius),
+  };
+}
+
+- (RCTBorderColors)borderColors
+{
+  return (RCTBorderColors){
+    _borderTopColor ?: _borderColor,
+    _borderLeftColor ?: _borderColor,
+    _borderBottomColor ?: _borderColor,
+    _borderRightColor ?: _borderColor,
+  };
+}
+
+- (void)displayLayer:(CALayer *)layer
+{
+  const RCTCornerRadii cornerRadii = [self cornerRadii];
+  const UIEdgeInsets borderInsets = [self bordersAsInsets];
+  const RCTBorderColors borderColors = [self borderColors];
+
+  BOOL useIOSBorderRendering =
+  !RCTRunningInTestEnvironment() &&
+  RCTCornerRadiiAreEqual(cornerRadii) &&
+  RCTBorderInsetsAreEqual(borderInsets) &&
+  RCTBorderColorsAreEqual(borderColors) &&
+  _borderStyle == RCTBorderStyleSolid &&
+
+  // iOS draws borders in front of the content whereas CSS draws them behind
+  // the content. For this reason, only use iOS border drawing when clipping
+  // or when the border is hidden.
+
+  (borderInsets.top == 0 || CGColorGetAlpha(borderColors.top) == 0 || self.clipsToBounds);
+
+  // iOS clips to the outside of the border, but CSS clips to the inside. To
+  // solve this, we'll need to add a container view inside the main view to
+  // correctly clip the subviews.
+
+  if (useIOSBorderRendering) {
+    layer.cornerRadius = cornerRadii.topLeft;
+    layer.borderColor = borderColors.left;
+    layer.borderWidth = borderInsets.left;
+    layer.backgroundColor = _backgroundColor.CGColor;
+    layer.contents = nil;
+    layer.needsDisplayOnBoundsChange = NO;
+    layer.mask = nil;
+    return;
   }
-  return borderLayer;
-}
 
-- (void)updatePathForShapeLayerForSide:(RCTBorderSide)side
-{
-  CAShapeLayer *borderLayer = [self createShapeLayerIfNotExistsForSide:side];
+  UIImage *image = RCTGetBorderImage(_borderStyle,
+                                     layer.bounds.size,
+                                     cornerRadii,
+                                     borderInsets,
+                                     borderColors,
+                                     _backgroundColor.CGColor,
+                                     self.clipsToBounds);
 
-  CGPoint trapezoidPoints[4];
-  [self getTrapezoidPoints:trapezoidPoints forSide:side];
+  layer.backgroundColor = NULL;
 
-  CGMutablePathRef path = CGPathCreateMutable();
-  CGPathAddLines(path, NULL, trapezoidPoints, 4);
-  CGPathCloseSubpath(path);
-  borderLayer.path = path;
-  CGPathRelease(path);
-}
-
-- (void)updateBorderLayers
-{
-  BOOL widthsAndColorsSame = YES;
-  CGFloat width = _borderWidths[0];
-  CGColorRef color = _borderLayers[0].fillColor;
-  for (RCTBorderSide side = 1; side < RCTBorderSideCount; side++) {
-    CAShapeLayer *layer = _borderLayers[side];
-    if (_borderWidths[side] != width || (layer && !CGColorEqualToColor(layer.fillColor, color))) {
-      widthsAndColorsSame = NO;
-      break;
-    }
+  if (image == nil) {
+    layer.contents = nil;
+    layer.needsDisplayOnBoundsChange = NO;
+    return;
   }
-  if (widthsAndColorsSame) {
 
-    // Set main layer border
-    if (width) {
-      _borderWidth = self.layer.borderWidth = width;
-    }
-    if (color) {
-      self.layer.borderColor = color;
-    }
+  CGRect contentsCenter = ({
+    CGSize size = image.size;
+    UIEdgeInsets insets = image.capInsets;
+    CGRectMake(
+      insets.left / size.width,
+      insets.top / size.height,
+      1.0 / size.width,
+      1.0 / size.height
+    );
+  });
 
-    // Remove border layers
-    for (RCTBorderSide side = 0; side < RCTBorderSideCount; side++) {
-      [_borderLayers[side] removeFromSuperlayer];
-      _borderLayers[side] = nil;
-    }
+  if (RCTRunningInTestEnvironment()) {
+    const CGSize size = self.bounds.size;
+    UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
+    [image drawInRect:(CGRect){CGPointZero, size}];
+    image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    contentsCenter = CGRectMake(0, 0, 1, 1);
+  }
 
+  layer.contents = (id)image.CGImage;
+  layer.contentsScale = image.scale;
+  layer.needsDisplayOnBoundsChange = YES;
+  layer.magnificationFilter = kCAFilterNearest;
+
+  const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+  if (isResizable) {
+    layer.contentsCenter = contentsCenter;
   } else {
+    layer.contentsCenter = CGRectMake(0.0, 0.0, 1.0, 1.0);
+  }
 
-    // Clear main layer border
-    self.layer.borderWidth = 0;
+  [self updateClippingForLayer:layer];
+}
 
-    // Set up border layers
-    for (RCTBorderSide side = 0; side < RCTBorderSideCount; side++) {
-      [self updatePathForShapeLayerForSide:side];
+- (void)updateClippingForLayer:(CALayer *)layer
+{
+  CALayer *mask = nil;
+  CGFloat cornerRadius = 0;
+
+  if (self.clipsToBounds) {
+
+    const RCTCornerRadii cornerRadii = [self cornerRadii];
+    if (RCTCornerRadiiAreEqual(cornerRadii)) {
+
+      cornerRadius = cornerRadii.topLeft;
+
+    } else {
+
+      CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+      CGPathRef path = RCTPathCreateWithRoundedRect(self.bounds, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+      shapeLayer.path = path;
+      CGPathRelease(path);
+      mask = shapeLayer;
     }
   }
+
+  layer.cornerRadius = cornerRadius;
+  layer.mask = mask;
 }
 
-- (CGFloat)borderWidthForSide:(RCTBorderSide)side
-{
-  return _borderWidths[side] ?: _borderWidth;
-}
+#pragma mark Border Color
 
-- (void)setBorderWidth:(CGFloat)width forSide:(RCTBorderSide)side
-{
-  _borderWidths[side] = width;
-  [self updateBorderLayers];
-}
-
-#define BORDER_WIDTH(SIDE) \
-- (CGFloat)border##SIDE##Width { return [self borderWidthForSide:RCTBorderSide##SIDE]; } \
-- (void)setBorder##SIDE##Width:(CGFloat)width { [self setBorderWidth:width forSide:RCTBorderSide##SIDE]; }
-
-BORDER_WIDTH(Top)
-BORDER_WIDTH(Right)
-BORDER_WIDTH(Bottom)
-BORDER_WIDTH(Left)
-
-- (CGColorRef)borderColorForSide:(RCTBorderSide)side
-{
-  return _borderLayers[side].fillColor ?: self.layer.borderColor;
-}
-
-- (void)setBorderColor:(CGColorRef)color forSide:(RCTBorderSide)side
-{
-  [self createShapeLayerIfNotExistsForSide:side].fillColor = color;
-  [self updateBorderLayers];
-}
-
-#define BORDER_COLOR(SIDE) \
-- (CGColorRef)border##SIDE##Color { return [self borderColorForSide:RCTBorderSide##SIDE]; } \
-- (void)setBorder##SIDE##Color:(CGColorRef)color { [self setBorderColor:color forSide:RCTBorderSide##SIDE]; }
-
-BORDER_COLOR(Top)
-BORDER_COLOR(Right)
-BORDER_COLOR(Bottom)
-BORDER_COLOR(Left)
-
-- (void)setBorderWidth:(CGFloat)borderWidth
-{
-  _borderWidth = borderWidth;
-  for (RCTBorderSide side = 0; side < RCTBorderSideCount; side++) {
-    _borderWidths[side] = borderWidth;
+#define setBorderColor(side)                                \
+  - (void)setBorder##side##Color:(CGColorRef)color          \
+  {                                                         \
+    if (CGColorEqualToColor(_border##side##Color, color)) { \
+      return;                                               \
+    }                                                       \
+    CGColorRelease(_border##side##Color);                   \
+    _border##side##Color = CGColorRetain(color);            \
+    [self.layer setNeedsDisplay];                           \
   }
-  [self updateBorderLayers];
-}
 
-- (void)setBorderColor:(CGColorRef)borderColor
-{
-  self.layer.borderColor = borderColor;
-  for (RCTBorderSide side = 0; side < RCTBorderSideCount; side++) {
-    _borderLayers[side].fillColor = borderColor;
+setBorderColor()
+setBorderColor(Top)
+setBorderColor(Right)
+setBorderColor(Bottom)
+setBorderColor(Left)
+
+#pragma mark - Border Width
+
+#define setBorderWidth(side)                    \
+  - (void)setBorder##side##Width:(CGFloat)width \
+  {                                             \
+    if (_border##side##Width == width) {        \
+      return;                                   \
+    }                                           \
+    _border##side##Width = width;               \
+    [self.layer setNeedsDisplay];               \
   }
-  [self updateBorderLayers];
-}
 
-- (CGColorRef)borderColor
+setBorderWidth()
+setBorderWidth(Top)
+setBorderWidth(Right)
+setBorderWidth(Bottom)
+setBorderWidth(Left)
+
+#pragma mark - Border Radius
+
+#define setBorderRadius(side)                     \
+  - (void)setBorder##side##Radius:(CGFloat)radius \
+  {                                               \
+    if (_border##side##Radius == radius) {        \
+      return;                                     \
+    }                                             \
+    _border##side##Radius = radius;               \
+    [self.layer setNeedsDisplay];                 \
+  }
+
+setBorderRadius()
+setBorderRadius(TopLeft)
+setBorderRadius(TopRight)
+setBorderRadius(BottomLeft)
+setBorderRadius(BottomRight)
+
+#pragma mark - Border Style
+
+#define setBorderStyle(side)                                   \
+  - (void)setBorder##side##Style:(RCTBorderStyle)style \
+  {                                                            \
+    if (_border##side##Style == style) {                       \
+      return;                                                  \
+    }                                                          \
+    _border##side##Style = style;                              \
+    [self.layer setNeedsDisplay];                              \
+  }
+
+setBorderStyle()
+
+- (void)dealloc
 {
-  return self.layer.borderColor;
+  CGColorRelease(_borderColor);
+  CGColorRelease(_borderTopColor);
+  CGColorRelease(_borderRightColor);
+  CGColorRelease(_borderBottomColor);
+  CGColorRelease(_borderLeftColor);
 }
 
 @end

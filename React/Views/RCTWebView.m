@@ -18,28 +18,37 @@
 #import "RCTView.h"
 #import "UIView+React.h"
 
+NSString *const RCTJSNavigationScheme = @"react-js-navigation";
+
 @interface RCTWebView () <UIWebViewDelegate, RCTAutoInsetsProtocol>
+
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
+@property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
+@property (nonatomic, copy) RCTDirectEventBlock onShouldStartLoadWithRequest;
 
 @end
 
 @implementation RCTWebView
 {
-  RCTEventDispatcher *_eventDispatcher;
   UIWebView *_webView;
+  NSString *_injectedJavaScript;
 }
 
-- (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:CGRectZero])) {
+  if ((self = [super initWithFrame:frame])) {
+    super.backgroundColor = [UIColor clearColor];
     _automaticallyAdjustContentInsets = YES;
     _contentInset = UIEdgeInsetsZero;
-    _eventDispatcher = eventDispatcher;
     _webView = [[UIWebView alloc] initWithFrame:self.bounds];
     _webView.delegate = self;
     [self addSubview:_webView];
   }
   return self;
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)goForward
 {
@@ -56,6 +65,11 @@
   [_webView reload];
 }
 
+- (NSURL *)URL
+{
+  return _webView.request.URL;
+}
+
 - (void)setURL:(NSURL *)URL
 {
   // Because of the way React works, as pages redirect, we actually end up
@@ -67,19 +81,21 @@
   }
   if (!URL) {
     // Clear the webview
-    [_webView loadHTMLString:nil baseURL:nil];
+    [_webView loadHTMLString:@"" baseURL:nil];
     return;
   }
   [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
+}
+
+- (void)setHTML:(NSString *)HTML
+{
+  [_webView loadHTMLString:HTML baseURL:nil];
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   _webView.frame = self.bounds;
-  [RCTView autoAdjustInsetsForView:self
-                    withScrollView:_webView.scrollView
-                      updateOffset:YES];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -90,97 +106,110 @@
                       updateOffset:NO];
 }
 
-- (NSMutableDictionary *)baseEvent
+- (void)setBackgroundColor:(UIColor *)backgroundColor
 {
-  NSURL *url = _webView.request.URL;
-  NSString *title = [_webView stringByEvaluatingJavaScriptFromString:@"document.title"];
-  NSMutableDictionary *event = [[NSMutableDictionary alloc] initWithDictionary: @{
-    @"target": self.reactTag,
-    @"url": url ? [url absoluteString] : @"",
+  CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
+  self.opaque = _webView.opaque = (alpha == 1.0);
+  _webView.backgroundColor = backgroundColor;
+}
+
+- (UIColor *)backgroundColor
+{
+  return _webView.backgroundColor;
+}
+
+- (NSMutableDictionary<NSString *, id> *)baseEvent
+{
+  NSMutableDictionary<NSString *, id> *event = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"url": _webView.request.URL.absoluteString ?: @"",
     @"loading" : @(_webView.loading),
-    @"title": title,
-    @"canGoBack": @([_webView canGoBack]),
-    @"canGoForward" : @([_webView canGoForward]),
+    @"title": [_webView stringByEvaluatingJavaScriptFromString:@"document.title"],
+    @"canGoBack": @(_webView.canGoBack),
+    @"canGoForward" : @(_webView.canGoForward),
   }];
 
   return event;
 }
 
-#pragma mark - UIWebViewDelegate methods
-
-static NSString *const RCTJSAJAXScheme = @"react-ajax";
-
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType
+- (void)refreshContentInset
 {
-  // We have this check to filter out iframe requests and whatnot
-  BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
-  if (isTopFrame) {
-    NSMutableDictionary *event = [self baseEvent];
-    [event addEntriesFromDictionary: @{
-      @"url": [request.URL absoluteString],
-      @"navigationType": @(navigationType)
-    }];
-    [_eventDispatcher sendInputEventWithName:@"topLoadingStart" body:event];
-  }
-
-  // AJAX handler
-  return ![request.URL.scheme isEqualToString:RCTJSAJAXScheme];
+  [RCTView autoAdjustInsetsForView:self
+                    withScrollView:_webView.scrollView
+                      updateOffset:YES];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+#pragma mark - UIWebViewDelegate methods
+
+- (BOOL)webView:(__unused UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType
 {
-  if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
-    // NSURLErrorCancelled is reported when a page has a redirect OR if you load
-    // a new URL in the WebView before the previous one came back. We can just
-    // ignore these since they aren't real errors.
-    // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
-    return;
+  BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
+
+  // skip this for the JS Navigation handler
+  if (!isJSNavigation && _onShouldStartLoadWithRequest) {
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary: @{
+      @"url": (request.URL).absoluteString,
+      @"navigationType": @(navigationType)
+    }];
+    if (![self.delegate webView:self
+      shouldStartLoadForRequest:event
+                   withCallback:_onShouldStartLoadWithRequest]) {
+      return NO;
+    }
   }
 
-  NSMutableDictionary *event = [self baseEvent];
-  [event addEntriesFromDictionary: @{
-    @"domain": error.domain,
-    @"code": @(error.code),
-    @"description": [error localizedDescription],
-  }];
-  [_eventDispatcher sendInputEventWithName:@"topLoadingError" body:event];
+  if (_onLoadingStart) {
+    // We have this check to filter out iframe requests and whatnot
+    BOOL isTopFrame = [request.URL isEqual:request.mainDocumentURL];
+    if (isTopFrame) {
+      NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+      [event addEntriesFromDictionary: @{
+        @"url": (request.URL).absoluteString,
+        @"navigationType": @(navigationType)
+      }];
+      _onLoadingStart(event);
+    }
+  }
+
+  // JS Navigation handler
+  return !isJSNavigation;
+}
+
+- (void)webView:(__unused UIWebView *)webView didFailLoadWithError:(NSError *)error
+{
+  if (_onLoadingError) {
+    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) {
+      // NSURLErrorCancelled is reported when a page has a redirect OR if you load
+      // a new URL in the WebView before the previous one came back. We can just
+      // ignore these since they aren't real errors.
+      // http://stackoverflow.com/questions/1024748/how-do-i-fix-nsurlerrordomain-error-999-in-iphone-3-0-os
+      return;
+    }
+
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    [event addEntriesFromDictionary:@{
+      @"domain": error.domain,
+      @"code": @(error.code),
+      @"description": error.localizedDescription,
+    }];
+    _onLoadingError(event);
+  }
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-  if (_shouldInjectAJAXHandler) {
+  if (_injectedJavaScript != nil) {
+    NSString *jsEvaluationValue = [webView stringByEvaluatingJavaScriptFromString:_injectedJavaScript];
 
-    // From http://stackoverflow.com/questions/5353278/uiwebviewdelegate-not-monitoring-xmlhttprequest
+    NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    event[@"jsEvaluationValue"] = jsEvaluationValue;
 
-    [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"\
-      var s_ajaxListener = new Object();                       \n\
-      s_ajaxListener.tempOpen = XMLHttpRequest.prototype.open; \n\
-      s_ajaxListener.tempSend = XMLHttpRequest.prototype.send; \n\
-      s_ajaxListener.callback = function() {                   \n\
-        window.location.href = '%@://' + this.url;             \n\
-      }                                                        \n\
-      XMLHttpRequest.prototype.open = function(a,b) {          \n\
-        s_ajaxListener.tempOpen.apply(this, arguments);        \n\
-        s_ajaxListener.method = a;                             \n\
-        s_ajaxListener.url = b;                                \n\
-        if (a.toLowerCase() === 'get') {                       \n\
-          s_ajaxListener.data = (b.split('?'))[1];             \n\
-        }                                                      \n\
-      }                                                        \n\
-      XMLHttpRequest.prototype.send = function(a,b) {          \n\
-        s_ajaxListener.tempSend.apply(this, arguments);        \n\
-        if (s_ajaxListener.method.toLowerCase() === 'post') {  \n\
-          s_ajaxListener.data = a;                             \n\
-        }                                                      \n\
-        s_ajaxListener.callback();                             \n\
-      }                                                        \n\
-    ", RCTJSAJAXScheme]];
+    _onLoadingFinish(event);
   }
-
   // we only need the final 'finishLoad' call so only fire the event when we're actually done loading.
-  if (!webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
-    [_eventDispatcher sendInputEventWithName:@"topLoadingFinish" body:[self baseEvent]];
+  else if (_onLoadingFinish && !webView.loading && ![webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+    _onLoadingFinish([self baseEvent]);
   }
 }
 

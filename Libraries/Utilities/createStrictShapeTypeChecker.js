@@ -24,7 +24,7 @@ function createStrictShapeTypeChecker(
       if (isRequired) {
         invariant(
           false,
-          `Required object \`${propName}\` was not specified in `+
+          `Required object \`${propName}\` was not specified in ` +
           `\`${componentName}\`.`
         );
       }

@@ -12,7 +12,6 @@
 'use strict';
 
 var ReactDefaultPerf = require('ReactDefaultPerf');
-var ReactPerf = require('ReactPerf');
 
 var invariant = require('invariant');
 

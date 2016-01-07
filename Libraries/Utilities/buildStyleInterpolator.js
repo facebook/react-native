@@ -7,6 +7,7 @@
 /**
  * Cannot "use strict" because we must use eval in this file.
  */
+/* eslint-disable global-strict */
 
 var keyOf = require('keyOf');
 
@@ -101,7 +102,7 @@ var ARGUMENT_NAMES_RE = /([^\s,]+)/g;
  *
  *  inline(inlineMe, ['hi', 'bye']);  // "hi = bye + bye;"
  *
- * @param {function} func Any simple function whos arguments can be replaced via a regex.
+ * @param {function} func Any simple function who's arguments can be replaced via a regex.
  * @param {array<string>} replaceWithArgs Corresponding names of variables
  * within an environment, to replace `func` args with.
  * @return {string} Resulting function body string.
@@ -115,7 +116,7 @@ var inline = function(func, replaceWithArgs) {
     return '\\b' + paramName + '\\b';
   }).join('|');
   var replaceRegex = new RegExp(replaceRegexStr, 'g');
-  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}') - 1);
+  var fnBody = fnStr.substring(fnStr.indexOf('{') + 1, fnStr.lastIndexOf('}'));
   var newFnBody = fnBody.replace(replaceRegex, function(parameterName) {
     var indexInParameterNames = parameterNames.indexOf(parameterName);
     var replacementName = replaceWithArgs[indexInParameterNames];
@@ -372,7 +373,7 @@ var MatrixOpsInitial = {
 var setNextValAndDetectChange = function(name, tmpVarName) {
   return (
     '  if (!didChange) {\n' +
-    '    var prevVal = result.' + name +';\n' +
+    '    var prevVal = result.' + name + ';\n' +
     '    result.' + name + ' = ' + tmpVarName + ';\n' +
     '    didChange = didChange  || (' + tmpVarName + ' !== prevVal);\n' +
     '  } else {\n' +
@@ -552,8 +553,15 @@ var createFunctionString = function(anims) {
  * object and returns a boolean describing if any update was actually applied.
  */
 var buildStyleInterpolator = function(anims) {
-  return Function(createFunctionString(anims))();
+  // Defer compiling this method until we really need it.
+  var interpolator = null;
+  function lazyStyleInterpolator(result, value) {
+    if (interpolator === null) {
+      interpolator = Function(createFunctionString(anims))();
+    }
+    return interpolator(result, value);
+  }
+  return lazyStyleInterpolator;
 };
-
 
 module.exports = buildStyleInterpolator;

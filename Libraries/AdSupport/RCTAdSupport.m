@@ -7,31 +7,30 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <AdSupport/ASIdentifierManager.h>
+
 #import "RCTAdSupport.h"
+#import "RCTUtils.h"
 
 @implementation RCTAdSupport
 
-- (void)getAdvertisingId:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback
-{
-  RCT_EXPORT();
+RCT_EXPORT_MODULE()
 
-  if ([ASIdentifierManager class]) {
-    callback(@[[[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]]);
+RCT_EXPORT_METHOD(getAdvertisingId:(RCTResponseSenderBlock)callback
+                  withErrorCallback:(RCTResponseErrorBlock)errorCallback)
+{
+  NSUUID *advertisingIdentifier = [ASIdentifierManager sharedManager].advertisingIdentifier;
+  if (advertisingIdentifier) {
+    callback(@[advertisingIdentifier.UUIDString]);
   } else {
-    return errorCallback(@[@"as_identifier_unavailable"]);
+    errorCallback(RCTErrorWithMessage(@"Advertising identifier is unavailable."));
   }
 }
 
-- (void)getAdvertisingTrackingEnabled:(RCTResponseSenderBlock)callback withErrorCallback:(RCTResponseSenderBlock)errorCallback
+RCT_EXPORT_METHOD(getAdvertisingTrackingEnabled:(RCTResponseSenderBlock)callback
+                  withErrorCallback:(__unused RCTResponseSenderBlock)errorCallback)
 {
-  RCT_EXPORT();
-
-  if ([ASIdentifierManager class]) {
-    bool hasTracking = [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled];
-    callback(@[@(hasTracking)]);
-  } else {
-    return errorCallback(@[@"as_identifier_unavailable"]);
-  }
+  callback(@[@([ASIdentifierManager sharedManager].advertisingTrackingEnabled)]);
 }
 
 @end

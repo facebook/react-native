@@ -9,16 +9,18 @@
 'use strict';
 
 jest
-  .dontMock('worker-farm')
-  .dontMock('os')
-  .dontMock('../index');
+  .dontMock('../../lib/ModuleTransport')
+  .dontMock('../');
 
-var OPTIONS = {
-  transformModulePath: '/foo/bar'
-};
+jest.mock('fs');
+
+var Cache = require('../../DependencyResolver/Cache');
+var Transformer = require('../');
+var fs = require('fs');
+
+var options;
 
 describe('Transformer', function() {
-  var Transformer;
   var workers;
 
   beforeEach(function() {
@@ -26,27 +28,26 @@ describe('Transformer', function() {
     jest.setMock('worker-farm', jest.genMockFn().mockImpl(function() {
       return workers;
     }));
-    require('../Cache').prototype.get.mockImpl(function(filePath, callback) {
-      return callback();
-    });
-    require('fs').readFile.mockImpl(function(file, callback) {
-      callback(null, 'content');
-    });
-    Transformer = require('../');
+
+    options = {
+      transformModulePath: '/foo/bar',
+      cache: new Cache({}),
+    };
   });
 
   pit('should loadFileAndTransform', function() {
     workers.mockImpl(function(data, callback) {
-      callback(null, { code: 'transformed' });
+      callback(null, { code: 'transformed', map: 'sourceMap' });
     });
-    require('fs').readFile.mockImpl(function(file, callback) {
+    fs.readFile.mockImpl(function(file, callback) {
       callback(null, 'content');
     });
 
-    return new Transformer(OPTIONS).loadFileAndTransform('file')
+    return new Transformer(options).loadFileAndTransform('file')
       .then(function(data) {
         expect(data).toEqual({
           code: 'transformed',
+          map: 'sourceMap',
           sourcePath: 'file',
           sourceCode: 'content'
         });
@@ -54,25 +55,34 @@ describe('Transformer', function() {
   });
 
   pit('should add file info to parse errors', function() {
-    require('fs').readFile.mockImpl(function(file, callback) {
+    var message = 'message';
+    var snippet = 'snippet';
+
+    fs.readFile.mockImpl(function(file, callback) {
       callback(null, 'var x;\nvar answer = 1 = x;');
     });
 
     workers.mockImpl(function(data, callback) {
-      var esprimaError = new Error('Error: Line 2: Invalid left-hand side in assignment');
-      esprimaError.description = 'Invalid left-hand side in assignment';
-      esprimaError.lineNumber = 2;
-      esprimaError.column = 15;
-      callback(null, {error: esprimaError});
+      var babelError = new SyntaxError(message);
+      babelError.type = 'SyntaxError';
+      babelError.description = message;
+      babelError.loc = {
+        line: 2,
+        column: 15,
+      };
+      babelError.codeFrame = snippet;
+      callback(babelError);
     });
 
-    return new Transformer(OPTIONS).loadFileAndTransform('foo-file.js')
+    return new Transformer(options).loadFileAndTransform('foo-file.js')
       .catch(function(error) {
         expect(error.type).toEqual('TransformError');
-        expect(error.snippet).toEqual([
-          'var answer = 1 = x;',
-          '             ^',
-        ].join('\n'));
+        expect(error.message).toBe('SyntaxError ' + message);
+        expect(error.lineNumber).toBe(2);
+        expect(error.column).toBe(15);
+        expect(error.filename).toBe('foo-file.js');
+        expect(error.description).toBe(message);
+        expect(error.snippet).toBe(snippet);
       });
   });
 });

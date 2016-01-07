@@ -13,6 +13,7 @@
 		58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
 		58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
 		58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
+		9913A84B1BBE833400D70E66 /* RCTSnapshotManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +43,8 @@
 		58E64FE91AB964CD007446E2 /* UIImage+Compare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Compare.m"; sourceTree = "<group>"; };
 		58E64FEA1AB964CD007446E2 /* UIImage+Diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Diff.h"; sourceTree = "<group>"; };
 		58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Diff.m"; sourceTree = "<group>"; };
+		9913A8491BBE833400D70E66 /* RCTSnapshotManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSnapshotManager.h; sourceTree = "<group>"; };
+		9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSnapshotManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,14 +61,18 @@
 		580C37661AB104AF0015E709 = {
 			isa = PBXGroup;
 			children = (
+				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
+				9913A8491BBE833400D70E66 /* RCTSnapshotManager.h */,
+				9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */,
 				585135331AB3C56F00882537 /* RCTTestModule.h */,
 				585135341AB3C56F00882537 /* RCTTestModule.m */,
 				585135351AB3C56F00882537 /* RCTTestRunner.h */,
 				585135361AB3C56F00882537 /* RCTTestRunner.m */,
-				58E64FE31AB964CD007446E2 /* FBSnapshotTestCase */,
 				580C37701AB104AF0015E709 /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		580C37701AB104AF0015E709 /* Products */ = {
 			isa = PBXGroup;
@@ -147,6 +154,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */,
+				9913A84B1BBE833400D70E66 /* RCTSnapshotManager.m in Sources */,
 				585135371AB3C56F00882537 /* RCTTestModule.m in Sources */,
 				58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */,
 				58E64FED1AB964CD007446E2 /* FBSnapshotTestController.m in Sources */,
@@ -186,6 +194,8 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -199,6 +209,10 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
 			};
 			name = Debug;
 		};
@@ -225,6 +239,8 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -238,12 +254,17 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				WARNING_CFLAGS = (
+					"-Werror",
+					"-Wall",
+				);
 			};
 			name = Release;
 		};
 		580C37841AB104AF0015E709 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -255,6 +276,7 @@
 					XCTest,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -262,6 +284,7 @@
 		580C37851AB104AF0015E709 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,

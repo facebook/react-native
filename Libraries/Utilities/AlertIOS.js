@@ -12,69 +12,120 @@
 'use strict';
 
 var RCTAlertManager = require('NativeModules').AlertManager;
+var invariant = require('invariant');
 
-var DEFAULT_BUTTON_TEXT = 'OK';
-var DEFAULT_BUTTON = {
-  text: DEFAULT_BUTTON_TEXT,
-  onPress: null,
-};
+export type AlertType = $Enum<{
+  'default': string;
+  'plain-text': string;
+  'secure-text': string;
+  'login-password': string;
+}>;
+
+export type AlertButtonStyle = $Enum<{
+  'default': string;
+  'cancel': string;
+  'destructive': string;
+}>;
 
 /**
- * AlertIOS manages native iOS alerts, option sheets, and share dialogs
+ * Launches an alert dialog with the specified title and message.
+ *
+ * Optionally provide a list of buttons. Tapping any button will fire the
+ * respective onPress callback and dismiss the alert. By default, the only
+ * button will be an 'OK' button.
+ *
+ * Use this API for iOS-specific features, such as prompting the user to enter
+ * some information. In other cases, especially to show static alerts, use
+ * the cross-platform `Alert` API.
+ *
+ * ```
+ * AlertIOS.alert(
+ *   'Enter password',
+ *   null,
+ *   [
+ *     {text: 'Submit', onPress: (text) => console.log('Password: ' + text)},
+ *   ],
+ *   'secure-text'
+ * )
+ * ```
  */
-
 class AlertIOS {
-
-  /**
-   * Launches an alert dialog with the specified title and message.
-   *
-   * Optionally provide a list of buttons. Tapping any button will fire the
-   * respective onPress callback and dismiss the alert. By default, the only
-   * button will be an 'OK' button
-   *
-   * The last button in the list will be considered the 'Primary' button and
-   * it will appear bold.
-   *
-   * ```
-   * AlertIOS.alert(
-   *   'Foo Title',
-   *   'My Alert Msg',
-   *   [
-   *     {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
-   *     {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
-   *   ]
-   * )}
-   * ```
-   */
   static alert(
     title: ?string,
     message?: ?string,
     buttons?: Array<{
-      text: ?string;
-      onPress: ?Function;
-    }>
+      text?: string;
+      onPress?: ?Function;
+      style?: AlertButtonStyle;
+    }>,
+    type?: ?AlertType
   ): void {
     var callbacks = [];
     var buttonsSpec = [];
-    title = title || '';
-    message = message || '';
-    buttons = buttons || [DEFAULT_BUTTON];
-    buttons.forEach((btn, index) => {
+    var cancelButtonKey;
+    var destructiveButtonKey;
+    buttons && buttons.forEach((btn, index) => {
       callbacks[index] = btn.onPress;
-      var btnDef = {};
-      btnDef[index] = btn.text || DEFAULT_BUTTON_TEXT;
-      buttonsSpec.push(btnDef);
+      if (btn.style == 'cancel') {
+        cancelButtonKey = String(index);
+      } else if (btn.style == 'destructive') {
+        destructiveButtonKey = String(index);
+      }
+      if (btn.text || index < (buttons || []).length - 1) {
+        var btnDef = {};
+        btnDef[index] = btn.text || '';
+        buttonsSpec.push(btnDef);
+      }
     });
     RCTAlertManager.alertWithArgs({
-      title,
-      message,
+      title: title || undefined,
+      message: message || undefined,
       buttons: buttonsSpec,
-    }, (id) => {
+      type: type || undefined,
+      cancelButtonKey,
+      destructiveButtonKey,
+    }, (id, value) => {
       var cb = callbacks[id];
-      cb && cb();
+      cb && cb(value);
     });
   }
 
+  /**
+   * Prompt the user to enter some text.
+   */
+  static prompt(
+    title: string,
+    value?: string,
+    buttons?: Array<{
+      text?: string;
+      onPress?: ?Function;
+      style?: AlertButtonStyle;
+    }>,
+    callback?: ?Function
+  ): void {
+    if (arguments.length === 2) {
+      if (typeof value === 'object') {
+        buttons = value;
+        value = undefined;
+      } else if (typeof value === 'function') {
+        callback = value;
+        value = undefined;
+      }
+    } else if (arguments.length === 3 && typeof buttons === 'function') {
+      callback = buttons;
+      buttons = undefined;
+    }
+
+    invariant(
+      !(callback && buttons) && (callback || buttons),
+      'Must provide either a button list or a callback, but not both'
+    );
+
+    if (!buttons) {
+      buttons = [{ onPress: callback }];
+    }
+    this.alert(title, value, buttons, 'plain-text');
+  }
 }
 
 module.exports = AlertIOS;

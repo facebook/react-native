@@ -9,9 +9,10 @@
 
 #import "RCTMap.h"
 
-#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTMapAnnotation.h"
+#import "RCTMapOverlay.h"
 #import "RCTUtils.h"
 
 const CLLocationDegrees RCTMapDefaultSpan = 0.005;
@@ -22,15 +23,21 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   UIView *_legalLabel;
   CLLocationManager *_locationManager;
+  NSMutableArray<UIView *> *_reactSubviews;
 }
 
 - (instancetype)init
 {
   if ((self = [super init])) {
+
+    _hasStartedRendering = NO;
+    _reactSubviews = [NSMutableArray new];
+
     // Find Apple link label
     for (UIView *subview in self.subviews) {
       if ([NSStringFromClass(subview.class) isEqualToString:@"MKAttributionLabel"]) {
-        // This check is super hacky, but the whole premise of moving around Apple's internal subviews is super hacky
+        // This check is super hacky, but the whole premise of moving around
+        // Apple's internal subviews is super hacky
         _legalLabel = subview;
         break;
       }
@@ -44,14 +51,24 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   [_regionChangeObserveTimer invalidate];
 }
 
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  [_reactSubviews removeObject:subview];
+}
+
+- (NSArray<UIView *> *)reactSubviews
+{
+  return _reactSubviews;
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-
-  // Force resize subviews - only the layer is resized by default
-  CGRect mapFrame = self.frame;
-  self.frame = CGRectZero;
-  self.frame = mapFrame;
 
   if (_legalLabel) {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -59,12 +76,12 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       if (_legalLabelInsets.left) {
         frame.origin.x = _legalLabelInsets.left;
       } else if (_legalLabelInsets.right) {
-        frame.origin.x = mapFrame.size.width - _legalLabelInsets.right - frame.size.width;
+        frame.origin.x = self.frame.size.width - _legalLabelInsets.right - frame.size.width;
       }
       if (_legalLabelInsets.top) {
         frame.origin.y = _legalLabelInsets.top;
       } else if (_legalLabelInsets.bottom) {
-        frame.origin.y = mapFrame.size.height - _legalLabelInsets.bottom - frame.size.height;
+        frame.origin.y = self.frame.size.height - _legalLabelInsets.bottom - frame.size.height;
       }
       _legalLabel.frame = frame;
     });
@@ -77,20 +94,16 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   if (self.showsUserLocation != showsUserLocation) {
     if (showsUserLocation && !_locationManager) {
-      _locationManager = [[CLLocationManager alloc] init];
+      _locationManager = [CLLocationManager new];
       if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [_locationManager requestWhenInUseAuthorization];
       }
     }
-    [super setShowsUserLocation:showsUserLocation];
-
-    // If it needs to show user location, force map view centered
-    // on user's current location on user location updates
-    self.followUserLocation = showsUserLocation;
+    super.showsUserLocation = showsUserLocation;
   }
 }
 
-- (void)setRegion:(MKCoordinateRegion)region
+- (void)setRegion:(MKCoordinateRegion)region animated:(BOOL)animated
 {
   // If location is invalid, abort
   if (!CLLocationCoordinate2DIsValid(region.center)) {
@@ -106,7 +119,94 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   }
 
   // Animate to new position
-  [super setRegion:region animated:YES];
+  [super setRegion:region animated:animated];
+}
+
+// TODO: this doesn't preserve order. Should it? If so we should change the
+// algorithm. If not, it would be more efficient to use an NSSet
+- (void)setAnnotations:(NSArray<RCTMapAnnotation *> *)annotations
+{
+  NSMutableArray<NSString *> *newAnnotationIDs = [NSMutableArray new];
+  NSMutableArray<RCTMapAnnotation *> *annotationsToDelete = [NSMutableArray new];
+  NSMutableArray<RCTMapAnnotation *> *annotationsToAdd = [NSMutableArray new];
+
+  for (RCTMapAnnotation *annotation in annotations) {
+    if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
+      continue;
+    }
+
+    [newAnnotationIDs addObject:annotation.identifier];
+
+    // If the current set does not contain the new annotation, mark it to add
+    if (![_annotationIDs containsObject:annotation.identifier]) {
+      [annotationsToAdd addObject:annotation];
+    }
+  }
+
+  for (RCTMapAnnotation *annotation in self.annotations) {
+    if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
+      continue;
+    }
+
+    // If the new set does not contain an existing annotation, mark it to delete
+    if (![newAnnotationIDs containsObject:annotation.identifier]) {
+      [annotationsToDelete addObject:annotation];
+    }
+  }
+
+  if (annotationsToDelete.count) {
+    [self removeAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToDelete];
+  }
+
+  if (annotationsToAdd.count) {
+    [self addAnnotations:(NSArray<id<MKAnnotation>> *)annotationsToAdd];
+  }
+
+  self.annotationIDs = newAnnotationIDs;
+}
+
+// TODO: this doesn't preserve order. Should it? If so we should change the
+// algorithm. If not, it would be more efficient to use an NSSet
+- (void)setOverlays:(NSArray<RCTMapOverlay *> *)overlays
+{
+  NSMutableArray *newOverlayIDs = [NSMutableArray new];
+  NSMutableArray *overlaysToDelete = [NSMutableArray new];
+  NSMutableArray *overlaysToAdd = [NSMutableArray new];
+
+  for (RCTMapOverlay *overlay in overlays) {
+    if (![overlay isKindOfClass:[RCTMapOverlay class]]) {
+      continue;
+    }
+
+    [newOverlayIDs addObject:overlay.identifier];
+
+    // If the current set does not contain the new annotation, mark it to add
+    if (![_annotationIDs containsObject:overlay.identifier]) {
+      [overlaysToAdd addObject:overlay];
+    }
+  }
+
+  for (RCTMapOverlay *overlay in self.overlays) {
+    if (![overlay isKindOfClass:[RCTMapOverlay class]]) {
+      continue;
+    }
+
+    // If the new set does not contain an existing annotation, mark it to delete
+    if (![newOverlayIDs containsObject:overlay.identifier]) {
+      [overlaysToDelete addObject:overlay];
+    }
+  }
+
+  if (overlaysToDelete.count) {
+    [self removeOverlays:(NSArray<id<MKOverlay>> *)overlaysToDelete];
+  }
+
+  if (overlaysToAdd.count) {
+    [self addOverlays:(NSArray<id<MKOverlay>> *)overlaysToAdd
+                level:MKOverlayLevelAboveRoads];
+  }
+
+  self.overlayIDs = newOverlayIDs;
 }
 
 @end

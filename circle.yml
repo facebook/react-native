@@ -1,0 +1,44 @@
+general:
+  branches:
+    ignore:
+      - gh-pages # list of branches to ignore
+machine:
+  node:
+    version: 5.1.0
+  environment:
+    PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:$PATH"
+    TERM: "dumb"
+    ADB_INSTALL_TIMEOUT: 10
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+
+dependencies:
+  pre:
+  # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
+  - npm install -g npm@3.2
+  - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+  - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+  cache_directories:
+  - "ReactAndroid/build/downloads"
+test:
+  pre:
+    # starting emulator in advance because it takes very long to boot
+    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
+            background: true
+    # assemble done separately because it requires quite a lot of memory and also gives time for emulator to load
+    - ./gradlew :ReactAndroid:assembleDebug -PdisablePreDex -Pjobs=1:
+            timeout: 360
+    - source scripts/circle-ci-android-setup.sh && waitForAVD
+  override:
+    # unit tests
+    - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
+    # build JS bundle for instrumentation tests
+    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    # run tests on the emulator
+    - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
+        timeout: 360
+  post:
+    # copy test report for Circle CI to display
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+

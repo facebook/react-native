@@ -9,14 +9,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTInvalidating.h"
+#import "RCTFrameUpdate.h"
 
 @class RCTBridge;
 
-@interface RCTTouchHandler : UIGestureRecognizer<RCTInvalidating>
+@interface RCTTouchHandler : UIGestureRecognizer
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-- (void)startOrResetInteractionTiming;
-- (NSDictionary *)endAndResetInteractionTiming;
 
 @end

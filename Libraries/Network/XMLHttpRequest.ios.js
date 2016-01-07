@@ -11,35 +11,33 @@
  */
 'use strict';
 
-var RCTDataManager = require('NativeModules').DataManager;
-
-var crc32 = require('crc32');
+var FormData = require('FormData');
+var RCTNetworking = require('RCTNetworking');
 
 var XMLHttpRequestBase = require('XMLHttpRequestBase');
 
 class XMLHttpRequest extends XMLHttpRequestBase {
-
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
-    RCTDataManager.queryData(
-      'http',
-      JSON.stringify({
-        method: method,
-        url: url,
-        data: data,
-        headers: headers,
-      }),
-      'h' + crc32(method + '|' + url + '|' + data),
-      (result) => {
-        result = JSON.parse(result);
-        this.callback(result.status, result.responseHeaders, result.responseText);
-      }
-    );
+  constructor() {
+    super();
+    // iOS supports upload
+    this.upload = {};
   }
 
-  abortImpl(): void {
-    console.warn(
-      'XMLHttpRequest: abort() cancels JS callbacks ' +
-      'but not native HTTP request.'
+  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+    if (typeof data === 'string') {
+      data = {string: data};
+    } else if (data instanceof FormData) {
+      data = {formData: data.getParts()};
+    }
+    RCTNetworking.sendRequest(
+      {
+        method,
+        url,
+        data,
+        headers,
+        incrementalUpdates: this.onreadystatechange ? true : false,
+      },
+      this.didCreateRequest.bind(this)
     );
   }
 }

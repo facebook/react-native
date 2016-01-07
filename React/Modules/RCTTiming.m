@@ -11,8 +11,8 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTLog.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
 
 @interface RCTTimer : NSObject
@@ -57,22 +57,20 @@
 
 @implementation RCTTiming
 {
-  RCTSparseArray *_timers;
-  id _updateTimer;
+  NSMutableDictionary<NSNumber *, RCTTimer *> *_timers;
 }
 
 @synthesize bridge = _bridge;
+@synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
-+ (NSArray *)JSMethods
-{
-  return @[@"RCTJSTimers.callTimers"];
-}
+RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
   if ((self = [super init])) {
-
-    _timers = [[RCTSparseArray alloc] init];
+    _paused = YES;
+    _timers = [NSMutableDictionary new];
 
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -101,9 +99,9 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)isValid
+- (dispatch_queue_t)methodQueue
 {
-  return _bridge != nil;
+  return RCTJSThread;
 }
 
 - (void)invalidate
@@ -114,48 +112,47 @@
 
 - (void)stopTimers
 {
-  [_updateTimer invalidate];
-  _updateTimer = nil;
+  self.paused = YES;
 }
 
 - (void)startTimers
 {
-  RCTAssertMainThread();
-
-  if (![self isValid] || _updateTimer != nil || _timers.count == 0) {
+  if (!_bridge || _timers.count == 0) {
     return;
   }
 
-  _updateTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
-  if (_updateTimer) {
-    [_updateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-  } else {
-    RCTLogWarn(@"Failed to create a display link (probably on buildbot) - using an NSTimer for AppEngine instead.");
-    _updateTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60)
-                                                    target:self
-                                                  selector:@selector(update)
-                                                  userInfo:nil
-                                                   repeats:YES];
+  self.paused = NO;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
   }
 }
 
-- (void)update
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  RCTAssertMainThread();
-
-  NSMutableArray *timersToCall = [[NSMutableArray alloc] init];
-  for (RCTTimer *timer in _timers.allObjects) {
+  NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
+  for (RCTTimer *timer in _timers.allValues) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
     }
     if (!timer.target) {
-      _timers[timer.callbackID] = nil;
+      [_timers removeObjectForKey:timer.callbackID];
     }
   }
 
   // call timers that need to be called
-  if ([timersToCall count] > 0) {
-    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[timersToCall]];
+  if (timersToCall.count > 0) {
+    [_bridge enqueueJSCall:@"JSTimersExecution.callTimers" args:@[timersToCall]];
+  }
+
+  if (_timers.count == 0) {
+    [self stopTimers];
   }
 }
 
@@ -166,55 +163,45 @@
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-- (void)createTimer:(NSNumber *)callbackID
-           duration:(double)jsDuration
-   jsSchedulingTime:(double)jsSchedulingTime
-            repeats:(BOOL)repeats
+RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
+                  duration:(NSTimeInterval)jsDuration
+                  jsSchedulingTime:(NSDate *)jsSchedulingTime
+                  repeats:(BOOL)repeats)
 {
-  RCT_EXPORT();
-
   if (jsDuration == 0 && repeats == NO) {
     // For super fast, one-off timers, just enqueue them immediately rather than waiting a frame.
-    [_bridge enqueueJSCall:@"RCTJSTimers.callTimers" args:@[@[callbackID]]];
+    [_bridge _immediatelyCallTimer:callbackID];
     return;
   }
 
-  NSTimeInterval interval = jsDuration / 1000;
-  NSTimeInterval jsCreationTimeSinceUnixEpoch = jsSchedulingTime / 1000;
-  NSTimeInterval currentTimeSinceUnixEpoch = [[NSDate date] timeIntervalSince1970];
-  NSTimeInterval jsSchedulingOverhead = currentTimeSinceUnixEpoch - jsCreationTimeSinceUnixEpoch;
+  NSTimeInterval jsSchedulingOverhead = -jsSchedulingTime.timeIntervalSinceNow;
   if (jsSchedulingOverhead < 0) {
     RCTLogWarn(@"jsSchedulingOverhead (%ims) should be positive", (int)(jsSchedulingOverhead * 1000));
+
+    /**
+     * Probably debugging on device, set to 0 so we don't ignore the interval
+     */
+    jsSchedulingOverhead = 0;
   }
 
-  NSTimeInterval targetTime = interval - jsSchedulingOverhead;
-  if (interval < 0.018) { // Make sure short intervals run each frame
-    interval = 0;
+  NSTimeInterval targetTime = jsDuration - jsSchedulingOverhead;
+  if (jsDuration < 0.018) { // Make sure short intervals run each frame
+    jsDuration = 0;
   }
 
   RCTTimer *timer = [[RCTTimer alloc] initWithCallbackID:callbackID
-                                                interval:interval
+                                                interval:jsDuration
                                               targetTime:targetTime
                                                  repeats:repeats];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    _timers[callbackID] = timer;
-    [self startTimers];
-  });
+  _timers[callbackID] = timer;
+  [self startTimers];
 }
 
-- (void)deleteTimer:(NSNumber *)timerID
+RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
-  RCT_EXPORT();
-
-  if (timerID) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      _timers[timerID] = nil;
-      if (_timers.count == 0) {
-        [self stopTimers];
-      }
-    });
-  } else {
-    RCTLogWarn(@"Called deleteTimer: with a nil timerID");
+  [_timers removeObjectForKey:timerID];
+  if (_timers.count == 0) {
+    [self stopTimers];
   }
 }
 

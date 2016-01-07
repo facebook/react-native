@@ -16,9 +16,11 @@
 
 @implementation RCTSwitchManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
-  RCTSwitch *switcher = [[RCTSwitch alloc] init];
+  RCTSwitch *switcher = [RCTSwitch new];
   [switcher addTarget:self
                action:@selector(onChange:)
      forControlEvents:UIControlEventValueChanged];
@@ -28,11 +30,9 @@
 - (void)onChange:(RCTSwitch *)sender
 {
   if (sender.wasOn != sender.on) {
-    [self.bridge.eventDispatcher sendInputEventWithName:@"topChange" body:@{
-       @"target": sender.reactTag,
-       @"value": @(sender.on)
-     }];
-
+    if (sender.onChange) {
+      sender.onChange(@{ @"value": @(sender.on) });
+    }
     sender.wasOn = sender.on;
   }
 }
@@ -40,7 +40,15 @@
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
-RCT_EXPORT_VIEW_PROPERTY(on, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL);
+RCT_REMAP_VIEW_PROPERTY(value, on, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock);
+RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)
+{
+  if (json) {
+    view.enabled = !([RCTConvert BOOL:json]);
+  } else {
+    view.enabled = defaultView.enabled;
+  }
+}
 
 @end

@@ -10,10 +10,12 @@
 #import "RCTNavigator.h"
 
 #import "RCTAssert.h"
+#import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTNavItem.h"
+#import "RCTScrollView.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "RCTWrapperViewController.h"
@@ -59,7 +61,7 @@ NSInteger kNeverProgressed = -10000;
  * or tapping the back button. In both cases, the other system is initially
  * unaware. And in both cases, `RCTNavigator` helps the other side "catch up".
  *
- * If `RCTNavigator` sees the number of react children have changed, it
+ * If `RCTNavigator` sees the number of React children have changed, it
  * pushes/pops accordingly. If `RCTNavigator` sees a `UIKit` driven push/pop, it
  * notifies JavaScript that this has happened, and expects that JavaScript will
  * eventually render more children to match `UIKit`. There's no rush for
@@ -190,17 +192,16 @@ NSInteger kNeverProgressed = -10000;
 @end
 
 @interface RCTNavigator() <RCTWrapperViewControllerNavigationListener, UINavigationControllerDelegate>
-{
-  RCTEventDispatcher *_eventDispatcher;
-  NSInteger _numberOfViewControllerMovesToIgnore;
-}
+
+@property (nonatomic, copy) RCTDirectEventBlock onNavigationProgress;
+@property (nonatomic, copy) RCTBubblingEventBlock onNavigationComplete;
 
 @property (nonatomic, assign) NSInteger previousRequestedTopOfStack;
 
 // Previous views are only mainted in order to detect incorrect
 // addition/removal of views below the `requestedTopOfStack`
-@property (nonatomic, copy, readwrite) NSArray *previousViews;
-@property (nonatomic, readwrite, strong) NSMutableArray *currentViews;
+@property (nonatomic, copy, readwrite) NSArray<RCTNavItem *> *previousViews;
+@property (nonatomic, readwrite, strong) NSMutableArray<RCTNavItem *> *currentViews;
 @property (nonatomic, readwrite, strong) RCTNavigationController *navigationController;
 /**
  * Display link is used to get high frequency sample rate during
@@ -251,7 +252,6 @@ NSInteger kNeverProgressed = -10000;
  *
  */
 @property (nonatomic, readonly, assign) CGFloat mostRecentProgress;
-@property (nonatomic, readwrite, strong) CADisplayLink *displayLink;
 @property (nonatomic, readonly, strong) NSTimer *runTimer;
 @property (nonatomic, readonly, assign) NSInteger currentlyTransitioningFrom;
 @property (nonatomic, readonly, assign) NSInteger currentlyTransitioningTo;
@@ -263,22 +263,24 @@ NSInteger kNeverProgressed = -10000;
 @end
 
 @implementation RCTNavigator
-
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
+  __weak RCTBridge *_bridge;
+  NSInteger _numberOfViewControllerMovesToIgnore;
+}
+
+@synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+{
+  RCTAssertParam(bridge);
+
   if ((self = [super initWithFrame:CGRectZero])) {
-    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(reportNavigationProgress:)];
+    _paused = YES;
+
+    _bridge = bridge;
     _mostRecentProgress = kNeverProgressed;
     _dummyView = [[UIView alloc] initWithFrame:CGRectZero];
-    if (_displayLink) {
-      [_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-      _displayLink.paused = YES;
-    } else {
-      // It's okay to leak this on a build bot.
-      RCTLogWarn(@"Failed to create a display link (probably on automated build system) - using an NSTimer for AppEngine instead.");
-     _runTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0 / 60.0) target:self selector:@selector(reportNavigationProgress:) userInfo:nil repeats:YES];
-    }
-    _eventDispatcher = eventDispatcher;
     _previousRequestedTopOfStack = kNeverRequested; // So that we initialize with a push.
     _previousViews = @[];
     _currentViews = [[NSMutableArray alloc] initWithCapacity:0];
@@ -295,7 +297,10 @@ NSInteger kNeverProgressed = -10000;
   return self;
 }
 
-- (void)reportNavigationProgress:(CADisplayLink *)sender
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
   if (_currentlyTransitioningFrom != _currentlyTransitioningTo) {
     UIView *topView = _dummyView;
@@ -307,21 +312,33 @@ NSInteger kNeverProgressed = -10000;
       return;
     }
     _mostRecentProgress = nextProgress;
-    [_eventDispatcher sendInputEventWithName:@"topNavigationProgress" body:@{
-      @"fromIndex": @(_currentlyTransitioningFrom),
-      @"toIndex": @(_currentlyTransitioningTo),
-      @"progress": @(nextProgress),
-      @"target": self.reactTag
-    }];
+    if (_onNavigationProgress) {
+      _onNavigationProgress(@{
+        @"fromIndex": @(_currentlyTransitioningFrom),
+        @"toIndex": @(_currentlyTransitioningTo),
+        @"progress": @(nextProgress),
+      });
+    }
+  }
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
   }
 }
 
 - (void)dealloc
 {
   _navigationController.delegate = nil;
+  [_navigationController removeFromParentViewController];
 }
 
-- (UIViewController *)backingViewController
+- (UIViewController *)reactViewController
 {
   return _navigationController;
 }
@@ -332,8 +349,8 @@ NSInteger kNeverProgressed = -10000;
  * locks aside from the animation complete hook.
  */
 - (void)navigationController:(UINavigationController *)navigationController
-      willShowViewController:(UIViewController *)viewController
-                    animated:(BOOL)animated
+      willShowViewController:(__unused UIViewController *)viewController
+                    animated:(__unused BOOL)animated
 {
   id<UIViewControllerTransitionCoordinator> tc =
     navigationController.topViewController.transitionCoordinator;
@@ -347,19 +364,17 @@ NSInteger kNeverProgressed = -10000;
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
-    _dummyView.frame = (CGRect){{destination}};
+    _dummyView.frame = (CGRect){{destination, 0}, CGSizeZero};
     _currentlyTransitioningFrom = indexOfFrom;
     _currentlyTransitioningTo = indexOfTo;
-    if (indexOfFrom != indexOfTo) {
-      _displayLink.paused = NO;
-    }
+    self.paused = NO;
   }
-  completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+  completion:^(__unused id<UIViewControllerTransitionCoordinatorContext> context) {
     [weakSelf freeLock];
     _currentlyTransitioningFrom = 0;
     _currentlyTransitioningTo = 0;
     _dummyView.frame = CGRectZero;
-    _displayLink.paused = YES;
+    self.paused = YES;
     // Reset the parallel position tracker
   }];
 }
@@ -385,7 +400,7 @@ NSInteger kNeverProgressed = -10000;
  * `requestedTopOfStack` changes, there had better be enough subviews present
  * to satisfy the push/pop.
  */
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTNavItem *)view atIndex:(NSInteger)atIndex
 {
   RCTAssert([view isKindOfClass:[RCTNavItem class]], @"RCTNavigator only accepts RCTNavItem subviews");
   RCTAssert(
@@ -395,31 +410,19 @@ NSInteger kNeverProgressed = -10000;
   [_currentViews insertObject:view atIndex:atIndex];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<RCTNavItem *> *)reactSubviews
 {
   return _currentViews;
-}
-
-- (BOOL)isValid
-{
-  return _displayLink != nil;
-}
-
-- (void)invalidate
-{
-  // Prevent displayLink from retaining the navigator indefinitely
-  [_displayLink invalidate];
-  _displayLink = nil;
-  _runTimer = nil;
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_navigationController];
   _navigationController.view.frame = self.bounds;
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTNavItem *)subview
 {
   if (_currentViews.count <= 0 || subview == _currentViews[0]) {
     RCTLogError(@"Attempting to remove invalid RCT subview of RCTNavigator");
@@ -430,15 +433,16 @@ NSInteger kNeverProgressed = -10000;
 
 - (void)handleTopOfStackChanged
 {
-  [_eventDispatcher sendInputEventWithName:@"topNavigateBack" body:@{
-    @"target":self.reactTag,
-    @"stackLength":@(_navigationController.viewControllers.count)
-  }];
+  if (_onNavigationComplete) {
+    _onNavigationComplete(@{
+      @"stackLength":@(_navigationController.viewControllers.count)
+    });
+  }
 }
 
 - (void)dispatchFakeScrollEvent
 {
-  [_eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
+  [_bridge.eventDispatcher sendScrollEventWithType:RCTScrollEventTypeMove
                                    reactTag:self.reactTag
                                  scrollView:nil
                                    userData:nil];
@@ -450,7 +454,7 @@ NSInteger kNeverProgressed = -10000;
  */
 - (UIView *)reactSuperview
 {
-  RCTAssert(self.superview != nil, @"put reactNavSuperviewLink back");
+  RCTAssert(!_bridge.isValid || self.superview != nil, @"put reactNavSuperviewLink back");
   return self.superview ? self.superview : self.reactNavSuperviewLink;
 }
 
@@ -458,15 +462,15 @@ NSInteger kNeverProgressed = -10000;
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here
-  [self addControllerToClosestParent:_navigationController];
+  [self reactAddControllerToClosestParent:_navigationController];
 
-  NSInteger viewControllerCount = _navigationController.viewControllers.count;
+  NSUInteger viewControllerCount = _navigationController.viewControllers.count;
   // The "react count" is the count of views that are visible on the navigation
   // stack.  There may be more beyond this - that aren't visible, and may be
   // deleted/purged soon.
-  NSInteger previousReactCount =
+  NSUInteger previousReactCount =
     _previousRequestedTopOfStack == kNeverRequested ? 0 : _previousRequestedTopOfStack + 1;
-  NSInteger currentReactCount = _requestedTopOfStack + 1;
+  NSUInteger currentReactCount = _requestedTopOfStack + 1;
 
   BOOL jsGettingAhead =
     //    ----- previously caught up ------          ------ no longer caught up -------
@@ -481,6 +485,10 @@ NSInteger kNeverProgressed = -10000;
     //    --- previously caught up --------          ------- still caught up ----------
     viewControllerCount == previousReactCount && currentReactCount == previousReactCount;
 
+BOOL jsGettingtooSlow =
+  //    --- previously not caught up --------          ------- no longer caught up ----------
+  viewControllerCount < previousReactCount && currentReactCount < previousReactCount;
+
   BOOL reactPushOne = jsGettingAhead && currentReactCount == previousReactCount + 1;
   BOOL reactPopN = jsGettingAhead && currentReactCount < previousReactCount;
 
@@ -491,33 +499,37 @@ NSInteger kNeverProgressed = -10000;
   if (!(jsGettingAhead ||
         jsCatchingUp ||
         jsMakingNoProgressButNeedsToCatchUp ||
-        jsMakingNoProgressAndDoesntNeedTo)) {
+        jsMakingNoProgressAndDoesntNeedTo ||
+        jsGettingtooSlow)) {
     RCTLogError(@"JS has only made partial progress to catch up to UIKit");
   }
-  RCTAssert(
-    currentReactCount <= _currentViews.count,
-    @"Cannot adjust current top of stack beyond available views"
-  );
-
-  // Views before the previous react count must not have changed. Views greater than previousReactCount
-  // up to currentReactCount may have changed.
-  for (NSInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
-    RCTAssert(_currentViews[i] == _previousViews[i], @"current view should equal previous view");
+  if (currentReactCount > _currentViews.count) {
+    RCTLogError(@"Cannot adjust current top of stack beyond available views");
   }
-  RCTAssert(currentReactCount >= 1, @"should be at least one current view");
+
+  // Views before the previous React count must not have changed. Views greater than previousReactCount
+  // up to currentReactCount may have changed.
+  for (NSUInteger i = 0; i < MIN(_currentViews.count, MIN(_previousViews.count, previousReactCount)); i++) {
+    if (_currentViews[i] != _previousViews[i]) {
+      RCTLogError(@"current view should equal previous view");
+    }
+  }
+  if (currentReactCount < 1) {
+    RCTLogError(@"should be at least one current view");
+  }
   if (jsGettingAhead) {
     if (reactPushOne) {
-      UIView *lastView = [_currentViews lastObject];
-      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView eventDispatcher:_eventDispatcher];
+      UIView *lastView = _currentViews.lastObject;
+      RCTWrapperViewController *vc = [[RCTWrapperViewController alloc] initWithNavItem:(RCTNavItem *)lastView];
       vc.navigationListener = self;
       _numberOfViewControllerMovesToIgnore = 1;
       [_navigationController pushViewController:vc animated:(currentReactCount > 1)];
     } else if (reactPopN) {
-      UIViewController *viewControllerToPopTo = [[_navigationController viewControllers] objectAtIndex:(currentReactCount - 1)];
+      UIViewController *viewControllerToPopTo = _navigationController.viewControllers[(currentReactCount - 1)];
       _numberOfViewControllerMovesToIgnore = viewControllerCount - currentReactCount;
       [_navigationController popToViewController:viewControllerToPopTo animated:YES];
     } else {
-      RCTAssert(NO, @"Pushing or popping more than one view at a time from JS");
+      RCTLogError(@"Pushing or popping more than one view at a time from JS");
     }
   } else if (jsCatchingUp) {
     [self freeLock]; // Nothing to push/pop

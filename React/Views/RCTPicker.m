@@ -10,45 +10,37 @@
 #import "RCTPicker.h"
 
 #import "RCTConvert.h"
-#import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
-#import "UIView+React.h"
-
-const NSInteger UNINITIALIZED_INDEX = -1;
 
 @interface RCTPicker() <UIPickerViewDataSource, UIPickerViewDelegate>
-
 @end
 
 @implementation RCTPicker
-{
-  RCTEventDispatcher *_eventDispatcher;
-  NSArray *_items;
-  NSInteger _selectedIndex;
-}
 
-- (id)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
+- (instancetype)initWithFrame:(CGRect)frame
 {
-  if (self = [super initWithFrame:CGRectZero]) {
-    _eventDispatcher = eventDispatcher;
-    _selectedIndex = UNINITIALIZED_INDEX;
+  if ((self = [super initWithFrame:frame])) {
+    _color = [UIColor blackColor];
+    _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
+    _selectedIndex = NSNotFound;
+    _textAlign = NSTextAlignmentCenter;
     self.delegate = self;
   }
   return self;
 }
 
-- (void)setItems:(NSArray *)items
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (void)setItems:(NSArray<NSDictionary *> *)items
 {
-  if (_items != items) {
-    _items = [items copy];
-    [self setNeedsLayout];
-  }
+  _items = [items copy];
+  [self setNeedsLayout];
 }
 
 - (void)setSelectedIndex:(NSInteger)selectedIndex
 {
   if (_selectedIndex != selectedIndex) {
-    BOOL animated = _selectedIndex != UNINITIALIZED_INDEX; // Don't animate the initial value
+    BOOL animated = _selectedIndex != NSNotFound; // Don't animate the initial value
     _selectedIndex = selectedIndex;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self selectRow:selectedIndex inComponent:0 animated:animated];
@@ -58,42 +50,58 @@ const NSInteger UNINITIALIZED_INDEX = -1;
 
 #pragma mark - UIPickerViewDataSource protocol
 
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+- (NSInteger)numberOfComponentsInPickerView:(__unused UIPickerView *)pickerView
 {
   return 1;
 }
 
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+- (NSInteger)pickerView:(__unused UIPickerView *)pickerView
+numberOfRowsInComponent:(__unused NSInteger)component
 {
   return _items.count;
 }
 
 #pragma mark - UIPickerViewDelegate methods
 
-- (NSDictionary *)itemForRow:(NSInteger)row
+- (NSString *)pickerView:(__unused UIPickerView *)pickerView
+             titleForRow:(NSInteger)row
+            forComponent:(__unused NSInteger)component
 {
-  return _items[row];
+  return [RCTConvert NSString:_items[row][@"label"]];
 }
 
-- (id)valueForRow:(NSInteger)row
+- (UIView *)pickerView:(UIPickerView *)pickerView
+            viewForRow:(NSInteger)row
+          forComponent:(NSInteger)component
+           reusingView:(UILabel *)label
 {
-  return [self itemForRow:row][@"value"];
+  if (!label) {
+    label = [[UILabel alloc] initWithFrame:(CGRect){
+      CGPointZero,
+      {
+        [pickerView rowSizeForComponent:component].width,
+        [pickerView rowSizeForComponent:component].height,
+      }
+    }];
+  }
+
+  label.font = _font;
+  label.textColor = _color;
+  label.textAlignment = _textAlign;
+  label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
+  return label;
 }
 
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-  return [self itemForRow:row][@"label"];
-}
-
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+- (void)pickerView:(__unused UIPickerView *)pickerView
+      didSelectRow:(NSInteger)row inComponent:(__unused NSInteger)component
 {
   _selectedIndex = row;
-  NSDictionary *event = @{
-    @"target": self.reactTag,
-    @"newIndex": @(row),
-    @"newValue": [self valueForRow:row]
-  };
-
-  [_eventDispatcher sendInputEventWithName:@"topChange" body:event];
+  if (_onChange) {
+    _onChange(@{
+      @"newIndex": @(row),
+      @"newValue": RCTNullIfNil(_items[row][@"value"]),
+    });
+  }
 }
+
 @end

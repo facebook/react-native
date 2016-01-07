@@ -8,122 +8,109 @@
  */
 
 #import "RCTRootView.h"
+#import "RCTRootViewDelegate.h"
+#import "RCTRootViewInternal.h"
 
-#import "RCTBridge.h"
-#import "RCTContextExecutor.h"
-#import "RCTDevMenu.h"
+#import <objc/runtime.h>
+
+#import "RCTAssert.h"
+#import "RCTBridge+Private.h"
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
-#import "RCTRedBox.h"
+#import "RCTPerformanceLogger.h"
 #import "RCTSourceCode.h"
 #import "RCTTouchHandler.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
-#import "RCTWebViewExecutor.h"
+#import "RCTView.h"
 #import "UIView+React.h"
 
-NSString *const RCTReloadNotification = @"RCTReloadNotification";
+NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
-/**
- * HACK(t6568049) This should be removed soon, hiding to prevent people from
- * relying on it
- */
-@interface RCTBridge (RCTRootView)
+@interface RCTUIManager (RCTRootView)
 
-- (void)setJavaScriptExecutor:(id<RCTJavaScriptExecutor>)executor;
+- (NSNumber *)allocateRootTag;
+
+@end
+
+@interface RCTRootContentView : RCTView <RCTInvalidating>
+
+@property (nonatomic, readonly) BOOL contentHasAppeared;
+
+- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation RCTRootView
 {
-  RCTDevMenu *_devMenu;
   RCTBridge *_bridge;
-  RCTTouchHandler *_touchHandler;
-  id<RCTJavaScriptExecutor> _executor;
-  BOOL _registered;
+  NSString *_moduleName;
   NSDictionary *_launchOptions;
+  RCTRootContentView *_contentView;
 }
 
-static Class _globalExecutorClass;
-
-+ (void)initialize
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
 {
+  RCTAssertMainThread();
+  RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
+  RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
-#if TARGET_IPHONE_SIMULATOR
+  if ((self = [super initWithFrame:CGRectZero])) {
 
-  // Register Cmd-R as a global refresh key
-  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
-                                                 modifierFlags:UIKeyModifierCommand
-                                                        action:^(UIKeyCommand *command) {
-                                                          [self reloadAll];
-                                                        }];
+    self.backgroundColor = [UIColor whiteColor];
 
-  // Cmd-D reloads using the web view executor, allows attaching from Safari dev tools.
-  [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"d"
-                                                 modifierFlags:UIKeyModifierCommand
-                                                        action:^(UIKeyCommand *command) {
-                                                          _globalExecutorClass = NSClassFromString(@"RCTWebSocketExecutor");
-                                                          if (!_globalExecutorClass) {
-                                                            RCTLogError(@"WebSocket debugger is not available. Did you forget to include RCTWebSocketExecutor?");
-                                                          }
-                                                          [self reloadAll];
-                                                        }];
+    _bridge = bridge;
+    _moduleName = moduleName;
+    _appProperties = [initialProperties copy];
+    _loadingViewFadeDelay = 0.25;
+    _loadingViewFadeDuration = 0.25;
+    _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
-#endif
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(javaScriptDidLoad:)
+                                                 name:RCTJavaScriptDidLoadNotification
+                                               object:_bridge];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(hideLoadingView)
+                                                 name:RCTContentDidAppearNotification
+                                               object:self];
+    if (!_bridge.loading) {
+      [self bundleFinishedLoading:_bridge.batchedBridge];
+    }
+
+    [self showLoadingView];
+  }
+  return self;
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
+                initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions
 {
-  if ((self = [super init])) {
-    RCTAssert(bundleURL, @"A bundleURL is required to create an RCTRootView");
-    RCTAssert(moduleName, @"A bundleURL is required to create an RCTRootView");
-    _moduleName = moduleName;
-    _launchOptions = launchOptions;
-    [self setUp];
-    [self setScriptURL:bundleURL];
-  }
-  return self;
+  RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:bundleURL
+                                            moduleProvider:nil
+                                             launchOptions:launchOptions];
+
+  return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-  /**
-   * HACK(t6568049) Private constructor for testing purposes
-   */
-- (instancetype)_initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                    launchOptions:(NSDictionary *)launchOptions
-                    moduleProvider:(RCTBridgeModuleProviderBlock)moduleProvider
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
 {
-  if ((self = [super init])) {
-    _moduleProvider = moduleProvider;
-    _moduleName = moduleName;
-    _launchOptions = launchOptions;
-    [self setUp];
-    [self setScriptURL:bundleURL];
-  }
-  return self;
+  super.backgroundColor = backgroundColor;
+  _contentView.backgroundColor = backgroundColor;
 }
 
-- (void)setUp
+- (UIViewController *)reactViewController
 {
-  // Every root view that is created must have a unique react tag.
-  // Numbering of these tags goes from 1, 11, 21, 31, etc
-  static NSInteger rootViewTag = 1;
-  self.reactTag = @(rootViewTag);
-#ifdef DEBUG
-  self.enableDevMenu = YES;
-#endif
-  self.backgroundColor = [UIColor whiteColor];
-  rootViewTag += 10;
-
-  // Add reload observer
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(reload)
-                                               name:RCTReloadNotification
-                                             object:nil];
+  return _reactViewController ?: [super reactViewController];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -131,222 +118,235 @@ static Class _globalExecutorClass;
   return YES;
 }
 
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+- (void)setLoadingView:(UIView *)loadingView
 {
-  if (motion == UIEventSubtypeMotionShake && self.enableDevMenu) {
-    if (!_devMenu) {
-      _devMenu = [[RCTDevMenu alloc] initWithRootView:self];
-    }
-    [_devMenu show];
+  _loadingView = loadingView;
+  if (!_contentView.contentHasAppeared) {
+    [self showLoadingView];
   }
 }
 
-+ (NSArray *)JSMethods
+- (void)showLoadingView
 {
-  return @[
-    @"AppRegistry.runApplication",
-    @"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-  ];
+  if (_loadingView && !_contentView.contentHasAppeared) {
+    _loadingView.hidden = NO;
+    [self addSubview:_loadingView];
+  }
 }
 
-- (void)dealloc
+- (void)hideLoadingView
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  if (_loadingView.superview == self && _contentView.contentHasAppeared) {
+    if (_loadingViewFadeDuration > 0) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_loadingViewFadeDelay * NSEC_PER_SEC)),
+                     dispatch_get_main_queue(), ^{
 
-  [_bridge enqueueJSCall:@"ReactIOS.unmountComponentAtNodeAndRemoveContainer"
-                    args:@[self.reactTag]];
-  [self invalidate];
-}
-
-#pragma mark - RCTInvalidating
-
-- (BOOL)isValid
-{
-  return [_bridge isValid];
-}
-
-- (void)invalidate
-{
-  // Clear view
-  [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-
-  [self removeGestureRecognizer:_touchHandler];
-  [_touchHandler invalidate];
-  [_executor invalidate];
-
-  // TODO: eventually we'll want to be able to share the bridge between
-  // multiple rootviews, in which case we'll need to move this elsewhere
-  [_bridge invalidate];
-}
-
-#pragma mark Bundle loading
-
-- (void)bundleFinishedLoading:(NSError *)error
-{
-  if (error != nil) {
-    NSArray *stack = [[error userInfo] objectForKey:@"stack"];
-    if (stack) {
-      [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withStack:stack];
+                       [UIView transitionWithView:self
+                                         duration:_loadingViewFadeDuration
+                                          options:UIViewAnimationOptionTransitionCrossDissolve
+                                       animations:^{
+                                         _loadingView.hidden = YES;
+                                       } completion:^(__unused BOOL finished) {
+                                         [_loadingView removeFromSuperview];
+                                       }];
+                     });
     } else {
-      [[RCTRedBox sharedInstance] showErrorMessage:[error localizedDescription] withDetails:[error localizedFailureReason]];
+      _loadingView.hidden = YES;
+      [_loadingView removeFromSuperview];
     }
-  } else {
-
-    [_bridge.uiManager registerRootView:self];
-    _registered = YES;
-
-    NSString *moduleName = _moduleName ?: @"";
-    NSDictionary *appParameters = @{
-      @"rootTag": self.reactTag,
-      @"initialProps": self.initialProperties ?: @{},
-    };
-    [_bridge enqueueJSCall:@"AppRegistry.runApplication"
-                      args:@[moduleName, appParameters]];
   }
 }
 
-- (void)loadBundle
+- (void)javaScriptDidLoad:(NSNotification *)notification
 {
-  [self invalidate];
-
-  if (!_scriptURL) {
-    return;
-  }
-
-  // Clean up
-  [self removeGestureRecognizer:_touchHandler];
-  [_touchHandler invalidate];
-  [_executor invalidate];
-  [_bridge invalidate];
-
-  _registered = NO;
-
-  // Choose local executor if specified, followed by global, followed by default
-  _executor = [[_executorClass ?: _globalExecutorClass ?: [RCTContextExecutor class] alloc] init];
-
-  /**
-   * HACK(t6568049) Most of the properties passed into the bridge are not used
-   * right now but it'll be changed soon so it's here for convenience.
-   */
-  _bridge = [[RCTBridge alloc] initWithBundlePath:_scriptURL.absoluteString
-                                   moduleProvider:_moduleProvider
-                                    launchOptions:_launchOptions];
-  [_bridge setJavaScriptExecutor:_executor];
-
-  _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
-  [self addGestureRecognizer:_touchHandler];
-
-  // Load the bundle
-  NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:_scriptURL completionHandler:
-                                ^(NSData *data, NSURLResponse *response, NSError *error) {
-
-    // Handle general request errors
-    if (error) {
-      if ([[error domain] isEqualToString:NSURLErrorDomain]) {
-        NSDictionary *userInfo = @{
-          NSLocalizedDescriptionKey: @"Could not connect to development server. Ensure node server is running - run 'npm start' from React root",
-          NSLocalizedFailureReasonErrorKey: [error localizedDescription],
-          NSUnderlyingErrorKey: error,
-        };
-        error = [NSError errorWithDomain:@"JSServer"
-                                    code:error.code
-                                userInfo:userInfo];
-      }
-      [self bundleFinishedLoading:error];
-      return;
-    }
-
-    // Parse response as text
-    NSStringEncoding encoding = NSUTF8StringEncoding;
-    if (response.textEncodingName != nil) {
-      CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)response.textEncodingName);
-      if (cfEncoding != kCFStringEncodingInvalidId) {
-        encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
-      }
-    }
-    NSString *rawText = [[NSString alloc] initWithData:data encoding:encoding];
-
-    // Handle HTTP errors
-    if ([response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)response statusCode] != 200) {
-      NSDictionary *userInfo;
-      NSDictionary *errorDetails = RCTJSONParse(rawText, nil);
-      if ([errorDetails isKindOfClass:[NSDictionary class]]) {
-        userInfo = @{
-          NSLocalizedDescriptionKey: errorDetails[@"message"] ?: @"No message provided",
-          @"stack": @[@{
-            @"methodName": errorDetails[@"description"] ?: @"",
-            @"file": errorDetails[@"filename"] ?: @"",
-            @"lineNumber": errorDetails[@"lineNumber"] ?: @0
-          }]
-        };
-      } else {
-        userInfo = @{NSLocalizedDescriptionKey: rawText};
-      }
-      error = [NSError errorWithDomain:@"JSServer"
-                                  code:[(NSHTTPURLResponse *)response statusCode]
-                              userInfo:userInfo];
-
-      [self bundleFinishedLoading:error];
-      return;
-    }
-    if (!_bridge.isValid) {
-      return; // Bridge was invalidated in the meanwhile
-    }
-
-    // Success!
-    RCTSourceCode *sourceCodeModule = _bridge.modules[NSStringFromClass([RCTSourceCode class])];
-    sourceCodeModule.scriptURL = _scriptURL;
-    sourceCodeModule.scriptText = rawText;
-
-    [_bridge enqueueApplicationScript:rawText url:_scriptURL onComplete:^(NSError *_error) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (_bridge.isValid) {
-          [self bundleFinishedLoading:_error];
-        }
-      });
-    }];
-
-  }];
-
-  [task resume];
+  RCTAssertMainThread();
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  [self bundleFinishedLoading:bridge];
 }
 
-- (void)setScriptURL:(NSURL *)scriptURL
+- (void)bundleFinishedLoading:(RCTBridge *)bridge
 {
-  if ([_scriptURL isEqual:scriptURL]) {
+  if (!bridge.valid) {
     return;
   }
 
-  _scriptURL = scriptURL;
-  [self loadBundle];
+  [_contentView removeFromSuperview];
+  _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
+  _contentView.backgroundColor = self.backgroundColor;
+  [self insertSubview:_contentView atIndex:0];
+
+  [self runApplication:bridge];
+}
+
+- (void)runApplication:(RCTBridge *)bridge
+{
+  NSString *moduleName = _moduleName ?: @"";
+  NSDictionary *appParameters = @{
+    @"rootTag": _contentView.reactTag,
+    @"initialProps": _appProperties ?: @{},
+  };
+
+  [bridge enqueueJSCall:@"AppRegistry.runApplication"
+                   args:@[moduleName, appParameters]];
+}
+
+- (void)setSizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
+{
+  _sizeFlexibility = sizeFlexibility;
+  [self setNeedsLayout];
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if (_registered) {
-    [_bridge.uiManager setFrame:self.frame forRootView:self];
+  _contentView.frame = self.bounds;
+  _loadingView.center = (CGPoint){
+    CGRectGetMidX(self.bounds),
+    CGRectGetMidY(self.bounds)
+  };
+}
+
+- (void)setAppProperties:(NSDictionary *)appProperties
+{
+  RCTAssertMainThread();
+
+  if ([_appProperties isEqualToDictionary:appProperties]) {
+    return;
+  }
+
+  _appProperties = [appProperties copy];
+
+  if (_contentView && _bridge.valid && !_bridge.loading) {
+    [self runApplication:_bridge.batchedBridge];
   }
 }
 
-- (void)reload
+- (void)setIntrinsicSize:(CGSize)intrinsicSize
 {
-  [self loadBundle];
+  BOOL oldSizeHasAZeroDimension = _intrinsicSize.height == 0 || _intrinsicSize.width == 0;
+  BOOL newSizeHasAZeroDimension = intrinsicSize.height == 0 || intrinsicSize.width == 0;
+  BOOL bothSizesHaveAZeroDimension = oldSizeHasAZeroDimension && newSizeHasAZeroDimension;
+
+  BOOL sizesAreEqual = CGSizeEqualToSize(_intrinsicSize, intrinsicSize);
+
+  _intrinsicSize = intrinsicSize;
+
+  // Don't notify the delegate if the content remains invisible or its size has not changed
+  if (bothSizesHaveAZeroDimension || sizesAreEqual) {
+    return;
+  }
+
+  [_delegate rootViewDidChangeIntrinsicSize:self];
 }
 
-+ (void)reloadAll
+- (NSNumber *)reactTag
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
+  return _contentView.reactTag;
 }
 
-- (void)startOrResetInteractionTiming
+- (void)contentViewInvalidated
 {
-  [_touchHandler startOrResetInteractionTiming];
+  [_contentView removeFromSuperview];
+  _contentView = nil;
+  [self showLoadingView];
 }
 
-- (NSDictionary *)endAndResetInteractionTiming
+- (void)dealloc
 {
-  return [_touchHandler endAndResetInteractionTiming];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_contentView invalidate];
+}
+
+@end
+
+@implementation RCTUIManager (RCTRootView)
+
+- (NSNumber *)allocateRootTag
+{
+  NSNumber *rootTag = objc_getAssociatedObject(self, _cmd) ?: @1;
+  objc_setAssociatedObject(self, _cmd, @(rootTag.integerValue + 10), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  return rootTag;
+}
+
+@end
+
+@implementation RCTRootContentView
+{
+  __weak RCTBridge *_bridge;
+  RCTTouchHandler *_touchHandler;
+  UIColor *_backgroundColor;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+{
+  if ((self = [super initWithFrame:frame])) {
+    _bridge = bridge;
+    [self setUp];
+    self.layer.backgroundColor = NULL;
+  }
+  return self;
+}
+
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame:(CGRect)frame)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
+
+- (void)insertReactSubview:(id<RCTComponent>)subview atIndex:(NSInteger)atIndex
+{
+  [super insertReactSubview:subview atIndex:atIndex];
+  RCTPerformanceLoggerEnd(RCTPLTTI);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (!_contentHasAppeared) {
+      _contentHasAppeared = YES;
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTContentDidAppearNotification
+                                                          object:self.superview];
+    }
+  });
+}
+
+- (void)setFrame:(CGRect)frame
+{
+  super.frame = frame;
+  if (self.reactTag && _bridge.isValid) {
+    [_bridge.uiManager setFrame:frame forView:self];
+  }
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  _backgroundColor = backgroundColor;
+  if (self.reactTag && _bridge.isValid) {
+    [_bridge.uiManager setBackgroundColor:backgroundColor forRootView:self];
+  }
+}
+
+- (UIColor *)backgroundColor
+{
+  return _backgroundColor;
+}
+
+- (void)setUp
+{
+  /**
+   * Every root view that is created must have a unique react tag.
+   * Numbering of these tags goes from 1, 11, 21, 31, etc
+   *
+   * NOTE: Since the bridge persists, the RootViews might be reused, so now
+   * the react tag is assigned every time we load new content.
+   */
+  self.reactTag = [_bridge.uiManager allocateRootTag];
+  [self addGestureRecognizer:[[RCTTouchHandler alloc] initWithBridge:_bridge]];
+  [_bridge.uiManager registerRootView:self];
+}
+
+- (void)invalidate
+{
+  if (self.userInteractionEnabled) {
+    self.userInteractionEnabled = NO;
+    [(RCTRootView *)self.superview contentViewInvalidated];
+    [_bridge enqueueJSCall:@"AppRegistry.unmountApplicationComponentAtRootTag"
+                      args:@[self.reactTag]];
+  }
 }
 
 @end

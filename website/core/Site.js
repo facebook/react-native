@@ -14,18 +14,22 @@ var HeaderLinks = require('HeaderLinks');
 
 var Site = React.createClass({
   render: function() {
+    var title = this.props.title ? this.props.title + ' – ' : '';
+    title += 'React Native | A framework for building native apps using React';
     return (
       <html>
         <head>
           <meta charSet="utf-8" />
           <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-          <title>React Native | A framework for building native apps using React</title>
+          <title>{title}</title>
           <meta name="viewport" content="width=device-width" />
-          <meta property="og:title" content="React Native | A framework for building native apps using React" />
+          <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
           <meta property="og:url" content="http://facebook.github.io/react-native/index.html" />
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
           <meta property="og:description" content="A framework for building native apps using React" />
+
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css" />
 
           <link rel="shortcut icon" href="/react-native/img/favicon.png?2" />
           <link rel="stylesheet" href="/react-native/css/react-native.css" />
@@ -49,7 +53,7 @@ var Site = React.createClass({
             {this.props.children}
 
             <footer className="wrap">
-              <div className="right">© 2015 Facebook Inc.</div>
+              <div className="center">© 2015 Facebook Inc.</div>
             </footer>
           </div>
 
@@ -66,6 +70,8 @@ var Site = React.createClass({
             ){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";
             fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
           `}} />
+          <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+          <script src="/react-native/js/scripts.js" />
         </body>
       </html>
     );

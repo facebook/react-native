@@ -57,10 +57,51 @@ var styles = StyleSheet.create({
     borderLeftWidth: 40,
     borderLeftColor: 'blue',
   },
+  border5: {
+    borderRadius: 50,
+    borderTopWidth: 10,
+    borderTopColor: 'red',
+    borderRightWidth: 20,
+    borderRightColor: 'yellow',
+    borderBottomWidth: 30,
+    borderBottomColor: 'green',
+    borderLeftWidth: 40,
+    borderLeftColor: 'blue',
+  },
+  border6: {
+    borderTopWidth: 10,
+    borderTopColor: 'red',
+    borderRightWidth: 20,
+    borderRightColor: 'yellow',
+    borderBottomWidth: 30,
+    borderBottomColor: 'green',
+    borderLeftWidth: 40,
+    borderLeftColor: 'blue',
+
+    borderTopLeftRadius: 100,
+  },
+  border7: {
+    borderWidth: 10,
+    borderColor: '#f007',
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+  border7_inner: {
+    backgroundColor: 'blue',
+    width: 100,
+    height: 100
+  },
+  border8: {
+    width: 60,
+    height: 60,
+    borderColor: 'black',
+    marginRight: 10,
+    backgroundColor: 'lightgrey',
+  },
 });
 
 exports.title = 'Border';
-exports.description = 'View borders';
+exports.description = 'Demonstrates some of the border styles available to Views.';
 exports.examples = [
   {
     title: 'Equal-Width / Same-Color',
@@ -71,7 +112,7 @@ exports.examples = [
   },
   {
     title: 'Equal-Width / Same-Color',
-    description: 'borderWidth & borderColor',
+    description: 'borderWidth & borderColor & borderRadius',
     render() {
       return <View style={[styles.box, styles.borderRadius]} />;
     }
@@ -95,6 +136,48 @@ exports.examples = [
     description: 'border*Width & border*Color',
     render() {
       return <View style={[styles.box, styles.border4]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'border*Width & border*Color',
+    platform: 'ios',
+    render() {
+      return <View style={[styles.box, styles.border5]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'border*Width & border*Color',
+    platform: 'ios',
+    render() {
+      return <View style={[styles.box, styles.border6]} />;
+    }
+  },
+  {
+    title: 'Custom Borders',
+    description: 'borderRadius & clipping',
+    platform: 'ios',
+    render() {
+      return (
+        <View style={[styles.box, styles.border7]}>
+          <View style={styles.border7_inner} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Single Borders',
+    description: 'top, left, bottom right',
+    render() {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <View style={[styles.box, styles.border8, {borderTopWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderLeftWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderBottomWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderRightWidth: 5}]} />
+        </View>
+      );
     }
   },
 ];

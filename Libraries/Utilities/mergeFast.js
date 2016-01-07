@@ -13,7 +13,7 @@
 
 /**
  * Faster version of `merge` that doesn't check its arguments and
- * also merges prototye inherited properties.
+ * also merges prototype inherited properties.
  *
  * @param {object} one Any non-null object.
  * @param {object} two Any non-null object.

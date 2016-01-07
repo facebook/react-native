@@ -11,20 +11,43 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var React = require('React');
-var ReactIOSViewAttributes = require('ReactIOSViewAttributes');
-var TabBarItemIOS = require('TabBarItemIOS');
 var StyleSheet = require('StyleSheet');
+var TabBarItemIOS = require('TabBarItemIOS');
+var View = require('View');
 
-var createReactIOSNativeComponentClass = require('createReactIOSNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 
 var TabBarIOS = React.createClass({
   statics: {
     Item: TabBarItemIOS,
   },
+
+  propTypes: {
+    ...View.propTypes,
+    style: View.propTypes.style,
+    /**
+     * Color of the currently selected tab icon
+     */
+    tintColor: ColorPropType,
+    /**
+     * Background color of the tab bar
+     */
+    barTintColor: ColorPropType,
+    /**
+     * A Boolean value that indicates whether the tab bar is translucent
+     */
+    translucent: React.PropTypes.bool,
+  },
+
   render: function() {
     return (
-      <RCTTabBar style={[styles.tabGroup, this.props.style]}>
+      <RCTTabBar
+        style={[styles.tabGroup, this.props.style]}
+        tintColor={this.props.tintColor}
+        barTintColor={this.props.barTintColor}
+        translucent={this.props.translucent !== false}>
         {this.props.children}
       </RCTTabBar>
     );
@@ -37,10 +60,6 @@ var styles = StyleSheet.create({
   }
 });
 
-var config = {
-  validAttributes: ReactIOSViewAttributes.UIView,
-  uiViewClassName: 'RCTTabBar',
-};
-var RCTTabBar = createReactIOSNativeComponentClass(config);
+var RCTTabBar = requireNativeComponent('RCTTabBar', TabBarIOS);
 
 module.exports = TabBarIOS;

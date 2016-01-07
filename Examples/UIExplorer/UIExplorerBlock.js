@@ -69,15 +69,13 @@ var styles = StyleSheet.create({
     overflow: 'hidden',
   },
   titleContainer: {
-    borderWidth: 0.5,
-    borderColor: '#d6d7da',
+    borderBottomWidth: 0.5,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 2.5,
+    borderBottomColor: '#d6d7da',
     backgroundColor: '#f6f7f8',
     paddingHorizontal: 10,
     paddingVertical: 5,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   titleText: {
     fontSize: 14,
@@ -97,7 +95,7 @@ var styles = StyleSheet.create({
     height: 8,
   },
   children: {
-    padding: 10,
+    margin: 10,
   }
 });
 

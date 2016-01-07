@@ -16,7 +16,7 @@ var extractDocs = require('./extractDocs');
 var argv = optimist.argv;
 
 function splitHeader(content) {
-  var lines = content.split('\n');
+  var lines = content.split(/\r?\n/);
   for (var i = 1; i < lines.length - 1; ++i) {
     if (lines[i] === '---') {
       break;
@@ -30,7 +30,7 @@ function splitHeader(content) {
 }
 
 function backtickify(str) {
-  var escaped = '`' + str.replace(/\\/g, '\\\\').replace(/`/g, '\\`') + '`';
+  var escaped = '`' + str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/{/g, '\\{') + '`';
   // Replace require( with require\( so node-haste doesn't replace example
   // require calls in the docs
   return escaped.replace(/require\(/g, 'require\\(');
@@ -69,7 +69,10 @@ function execute() {
       try { value = JSON.parse(value); } catch(e) { }
       metadata[key] = value;
     }
-    metadatas.files.push(metadata);
+
+    if (metadata.sidebar !== false) {
+      metadatas.files.push(metadata);
+    }
 
     if (metadata.permalink.match(/^https?:/)) {
       return;
@@ -84,15 +87,16 @@ function execute() {
       ' * @jsx React.DOM\n' +
       ' */\n' +
       'var React = require("React");\n' +
-      'var layout = require("' + layout + '");\n' +
+      'var Layout = require("' + layout + '");\n' +
       'var content = ' + backtickify(both.content) + '\n' +
       'var Post = React.createClass({\n' +
+      '  statics: {\n' +
+      '    content: content\n' +
+      '  },\n' +
       '  render: function() {\n' +
-      '    return layout({metadata: ' + JSON.stringify(metadata) + '}, content);\n' +
+      '    return <Layout metadata={' + JSON.stringify(metadata) + '}>{content}</Layout>;\n' +
       '  }\n' +
       '});\n' +
-      // TODO: Use React statics after upgrading React
-      'Post.content = content;\n' +
       'module.exports = Post;\n'
     );
 

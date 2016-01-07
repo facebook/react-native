@@ -11,8 +11,7 @@
 
 @interface RCTText : UIView
 
-@property (nonatomic, copy) NSAttributedString *attributedText;
-@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
-@property (nonatomic, assign) NSUInteger numberOfLines;
+@property (nonatomic, assign) UIEdgeInsets contentInset;
+@property (nonatomic, strong) NSTextStorage *textStorage;
 
 @end

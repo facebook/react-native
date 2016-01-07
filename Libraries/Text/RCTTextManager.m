@@ -9,74 +9,64 @@
 
 #import "RCTTextManager.h"
 
+#import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowRawText.h"
 #import "RCTShadowText.h"
-#import "RCTSparseArray.h"
 #import "RCTText.h"
+#import "RCTTextView.h"
 #import "UIView+React.h"
+
+@interface RCTShadowText (Private)
+
+- (NSTextStorage *)buildTextStorageForWidth:(CGFloat)width;
+
+@end
+
 
 @implementation RCTTextManager
 
+RCT_EXPORT_MODULE()
+
 - (UIView *)view
 {
-  return [[RCTText alloc] init];
+  return [RCTText new];
 }
 
 - (RCTShadowView *)shadowView
 {
-  return [[RCTShadowText alloc] init];
-}
-
-#pragma mark - View properties
-
-RCT_REMAP_VIEW_PROPERTY(containerBackgroundColor, backgroundColor, UIColor)
-RCT_CUSTOM_VIEW_PROPERTY(numberOfLines, NSInteger, RCTText)
-{
-  NSLineBreakMode truncationMode = NSLineBreakByClipping;
-  view.numberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.numberOfLines;
-  if (view.numberOfLines > 0) {
-    truncationMode = NSLineBreakByTruncatingTail;
-  }
-  view.lineBreakMode = truncationMode;
+  return [RCTShadowText new];
 }
 
 #pragma mark - Shadow properties
 
-RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
 RCT_EXPORT_SHADOW_PROPERTY(color, UIColor)
 RCT_EXPORT_SHADOW_PROPERTY(fontFamily, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(fontSize, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(fontWeight, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(fontStyle, NSString)
 RCT_EXPORT_SHADOW_PROPERTY(isHighlighted, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(letterSpacing, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(lineHeight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxNumberOfLines, NSInteger)
+RCT_EXPORT_SHADOW_PROPERTY(numberOfLines, NSUInteger)
 RCT_EXPORT_SHADOW_PROPERTY(shadowOffset, CGSize)
 RCT_EXPORT_SHADOW_PROPERTY(textAlign, NSTextAlignment)
-RCT_REMAP_SHADOW_PROPERTY(backgroundColor, textBackgroundColor, UIColor)
-RCT_CUSTOM_SHADOW_PROPERTY(containerBackgroundColor, UIColor, RCTShadowText)
-{
-  view.backgroundColor = json ? [RCTConvert UIColor:json] : defaultView.backgroundColor;
-  view.isBGColorExplicitlySet = json ? YES : defaultView.isBGColorExplicitlySet;
-}
-RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
-{
-  NSLineBreakMode truncationMode = NSLineBreakByClipping;
-  view.maxNumberOfLines = json ? [RCTConvert NSInteger:json] : defaultView.maxNumberOfLines;
-  if (view.maxNumberOfLines > 0) {
-    truncationMode = NSLineBreakByTruncatingTail;
-  }
-  view.truncationMode = truncationMode;
-}
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationStyle, NSUnderlineStyle)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationColor, UIColor)
+RCT_EXPORT_SHADOW_PROPERTY(textDecorationLine, RCTTextDecorationLineType)
+RCT_EXPORT_SHADOW_PROPERTY(writingDirection, NSWritingDirection)
+RCT_EXPORT_SHADOW_PROPERTY(allowFontScaling, BOOL)
+RCT_EXPORT_SHADOW_PROPERTY(opacity, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(textShadowOffset, CGSize)
+RCT_EXPORT_SHADOW_PROPERTY(textShadowRadius, CGFloat)
+RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
 {
-  NSMutableArray *uiBlocks = [NSMutableArray new];
-
-  for (RCTShadowView *rootView in shadowViewRegistry.allObjects) {
+  NSMutableSet *textViewTagsToUpdate = [NSMutableSet new];
+  for (RCTShadowView *rootView in shadowViewRegistry.allValues) {
     if (![rootView isReactRootView]) {
       // This isn't a root view
       continue;
@@ -87,18 +77,31 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
       continue;
     }
 
-    RCTSparseArray *reactTaggedAttributedStrings = [[RCTSparseArray alloc] init];
-    NSMutableArray *queue = [NSMutableArray arrayWithObject:rootView];
-    for (NSInteger i = 0; i < [queue count]; i++) {
+    NSMutableArray<RCTShadowView *> *queue = [NSMutableArray arrayWithObject:rootView];
+    for (NSInteger i = 0; i < queue.count; i++) {
       RCTShadowView *shadowView = queue[i];
       RCTAssert([shadowView isTextDirty], @"Don't process any nodes that don't have dirty text");
 
       if ([shadowView isKindOfClass:[RCTShadowText class]]) {
-        RCTShadowText *shadowText = (RCTShadowText *)shadowView;
-        reactTaggedAttributedStrings[shadowText.reactTag] = [shadowText attributedString];
+        ((RCTShadowText *)shadowView).fontSizeMultiplier = self.bridge.accessibilityManager.multiplier;
+        [(RCTShadowText *)shadowView recomputeText];
       } else if ([shadowView isKindOfClass:[RCTShadowRawText class]]) {
-        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'", [(RCTShadowRawText *)shadowView text]);
+        RCTLogError(@"Raw text cannot be used outside of a <Text> tag. Not rendering string: '%@'",
+                    [(RCTShadowRawText *)shadowView text]);
       } else {
+        NSNumber *reactTag = shadowView.reactTag;
+        // This isn't pretty, but hopefully it's temporary
+        // the problem is, there's no easy way (besides the viewName)
+        // to tell from the shadowView if the view is an RKTextView
+        if ([shadowView.viewName hasSuffix:@"TextView"]) {
+          // Add to textViewTagsToUpdate only if has a RCTShadowText subview
+          for (RCTShadowView *subview in shadowView.reactSubviews) {
+            if ([subview isKindOfClass:[RCTShadowText class]]) {
+              [textViewTagsToUpdate addObject:reactTag];
+              break;
+            }
+          }
+        }
         for (RCTShadowView *child in [shadowView reactSubviews]) {
           if ([child isTextDirty]) {
             [queue addObject:child];
@@ -108,19 +111,65 @@ RCT_CUSTOM_SHADOW_PROPERTY(numberOfLines, NSInteger, RCTShadowText)
 
       [shadowView setTextComputed];
     }
-
-    [uiBlocks addObject:^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-      [reactTaggedAttributedStrings enumerateObjectsUsingBlock:^(NSAttributedString *attributedString, NSNumber *reactTag, BOOL *stop) {
-        RCTText *text = viewRegistry[reactTag];
-        text.attributedText = attributedString;
-      }];
-    }];
   }
 
-  return ^(RCTUIManager *uiManager, RCTSparseArray *viewRegistry) {
-    for (RCTViewManagerUIBlock shadowBlock in uiBlocks) {
-      shadowBlock(uiManager, viewRegistry);
+  /**
+   * NOTE: this logic is included to support rich text editing inside multiline
+   * `<TextInput>` controls, a feature which is not yet supported in open source.
+   * It is required in order to ensure that the textStorage (aka attributed
+   * string) is copied over from the RCTShadowText to the RCTText view in time
+   * to be used to update the editable text content.
+   */
+  if (textViewTagsToUpdate.count) {
+
+    NSMutableArray<RCTViewManagerUIBlock> *uiBlocks = [NSMutableArray new];
+    for (NSNumber *reactTag in textViewTagsToUpdate) {
+      RCTShadowView *shadowTextView = shadowViewRegistry[reactTag];
+      RCTShadowText *shadowText;
+      for (RCTShadowText *subview in shadowTextView.reactSubviews) {
+        if ([subview isKindOfClass:[RCTShadowText class]]) {
+          shadowText = subview;
+          break;
+        }
+      }
+
+      UIEdgeInsets padding = shadowText.paddingAsInsets;
+      CGFloat width = shadowText.frame.size.width - (padding.left + padding.right);
+      NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
+
+      [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
+        RCTTextView *textView = viewRegistry[reactTag];
+        RCTText *text;
+        for (RCTText *subview in textView.reactSubviews) {
+          if ([subview isKindOfClass:[RCTText class]]) {
+            text = subview;
+            break;
+          }
+        }
+
+        text.textStorage = textStorage;
+        [textView performTextUpdate];
+      }];
     }
+
+    return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+      for (RCTViewManagerUIBlock uiBlock in uiBlocks) {
+        uiBlock(uiManager, viewRegistry);
+      }
+    };
+  } else {
+    return nil;
+  }
+}
+
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowText *)shadowView
+{
+  NSNumber *reactTag = shadowView.reactTag;
+  UIEdgeInsets padding = shadowView.paddingAsInsets;
+
+  return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTText *> *viewRegistry) {
+    RCTText *text = viewRegistry[reactTag];
+    text.contentInset = padding;
   };
 }
 

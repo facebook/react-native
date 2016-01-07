@@ -7,70 +7,96 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule ExceptionsManager
+ * @flow
  */
 'use strict';
 
-var Platform = require('Platform');
-var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
-
-var loadSourceMap = require('loadSourceMap');
-var parseErrorStack = require('parseErrorStack');
-
 var sourceMapPromise;
 
-function handleException(e) {
-  var stack = parseErrorStack(e);
-  console.error(
-    'Error: ' +
-    '\n stack: \n' + stackToString(stack) +
-    '\n URL: ' + e.sourceURL +
-    '\n line: ' + e.line +
-    '\n message: ' + e.message
-  );
+var exceptionID = 0;
 
+/**
+ * Handles the developer-visible aspect of errors and exceptions
+ */
+function reportException(e: Error, isFatal: bool) {
+  var loadSourceMap = require('loadSourceMap');
+  var parseErrorStack = require('parseErrorStack');
+  var RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+
+  var currentExceptionID = ++exceptionID;
   if (RCTExceptionsManager) {
-    RCTExceptionsManager.reportUnhandledException(e.message, format(stack));
+    var stack = parseErrorStack(e);
+    if (isFatal) {
+      RCTExceptionsManager.reportFatalException(e.message, stack, currentExceptionID);
+    } else {
+      RCTExceptionsManager.reportSoftException(e.message, stack, currentExceptionID);
+    }
     if (__DEV__) {
       (sourceMapPromise = sourceMapPromise || loadSourceMap())
         .then(map => {
           var prettyStack = parseErrorStack(e, map);
-          RCTExceptionsManager.updateExceptionMessage(e.message, format(prettyStack));
+          RCTExceptionsManager.updateExceptionMessage(e.message, prettyStack, currentExceptionID);
         })
-        .then(null, error => {
-          console.error('#CLOWNTOWN (error while displaying error): ' + error.message);
+        .catch(error => {
+          // This can happen in a variety of normal situations, such as
+          // Network module not being available, or when running locally
+          console.warn('Unable to load source map: ' + error.message);
         });
     }
   }
 }
 
-function stackToString(stack) {
-  var maxLength = Math.max.apply(null, stack.map(frame => frame.methodName.length));
-  return stack.map(frame => stackFrameToString(frame, maxLength)).join('\n');
-}
-
-function stackFrameToString(stackFrame, maxLength) {
-  var fileNameParts = stackFrame.file.split('/');
-  var fileName = fileNameParts[fileNameParts.length - 1];
-
-  if (fileName.length > 18) {
-    fileName = fileName.substr(0, 17) + '\u2026' /* ... */;
+/**
+ * Logs exceptions to the (native) console and displays them
+ */
+function handleException(e: Error, isFatal: boolean) {
+  // Workaround for reporting errors caused by `throw 'some string'`
+  // Unfortunately there is no way to figure out the stacktrace in this
+  // case, so if you ended up here trying to trace an error, look for
+  // `throw '<error message>'` somewhere in your codebase.
+  if (!e.message) {
+    e = new Error(e);
   }
 
-  var spaces = fillSpaces(maxLength - stackFrame.methodName.length);
-  return '  ' + stackFrame.methodName + spaces + '  ' + fileName + ':' + stackFrame.lineNumber;
+  (console._errorOriginal || console.error)(e.message);
+  reportException(e, isFatal);
 }
 
-function fillSpaces(n) {
-  return new Array(n + 1).join(' ');
-}
+/**
+ * Shows a redbox with stacktrace for all console.error messages.  Disable by
+ * setting `console.reportErrorsAsExceptions = false;` in your app.
+ */
+function installConsoleErrorReporter() {
+  // Enable reportErrorsAsExceptions
+  if (console._errorOriginal) {
+    return; // already installed
+  }
+  console._errorOriginal = console.error.bind(console);
+  console.error = function reactConsoleError() {
+    console._errorOriginal.apply(null, arguments);
+    if (!console.reportErrorsAsExceptions) {
+      return;
+    }
 
-// HACK(frantic) Android currently expects stack trace to be a string #5920439
-function format(stack) {
-  if (Platform.OS === 'android') {
-    return stackToString(stack);
-  } else {
-    return stack;
+    if (arguments[0] && arguments[0].stack) {
+      reportException(arguments[0], /* isFatal */ false);
+    } else {
+      var stringifySafe = require('stringifySafe');
+      var str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
+      if (str.slice(0, 10) === '"Warning: ') {
+        // React warnings use console.error so that a stack trace is shown, but
+        // we don't (currently) want these to show a redbox
+        // (Note: Logic duplicated in polyfills/console.js.)
+        return;
+      }
+      var error : any = new Error('console.error: ' + str);
+      error.framesToPop = 1;
+      reportException(error, /* isFatal */ false);
+    }
+  };
+  if (console.reportErrorsAsExceptions === undefined) {
+    console.reportErrorsAsExceptions = true; // Individual apps can disable this
   }
 }
 
-module.exports = { handleException };
+module.exports = { handleException, installConsoleErrorReporter };
