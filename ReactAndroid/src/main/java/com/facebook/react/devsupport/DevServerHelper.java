@@ -91,6 +91,7 @@ public class DevServerHelper {
   private boolean mOnChangePollingEnabled;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
+  private @Nullable Call mDownloadBundleFromURLCall;
 
   public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
@@ -179,15 +180,29 @@ public class DevServerHelper {
     Request request = new Request.Builder()
         .url(bundleURL)
         .build();
-    Call call = mClient.newCall(request);
-    call.enqueue(new Callback() {
+    mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
+    mDownloadBundleFromURLCall.enqueue(new Callback() {
       @Override
       public void onFailure(Request request, IOException e) {
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
         callback.onFailure(e);
       }
 
       @Override
       public void onResponse(Response response) throws IOException {
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
         // Check for server errors. If the server error has the expected form, fail with more info.
         if (!response.isSuccessful()) {
           String body = response.body().string();
@@ -212,6 +227,13 @@ public class DevServerHelper {
         }
       }
     });
+  }
+
+  public void cancelDownloadBundleFromURL() {
+    if (mDownloadBundleFromURLCall != null) {
+      mDownloadBundleFromURLCall.cancel();
+      mDownloadBundleFromURLCall = null;
+    }
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
