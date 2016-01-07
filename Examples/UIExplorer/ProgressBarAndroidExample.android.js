@@ -60,6 +60,10 @@ var ProgressBarAndroidExample = React.createClass({
           <ProgressBar />
         </UIExplorerBlock>
 
+        <UIExplorerBlock title="Normal ProgressBar">
+          <ProgressBar styleAttr="Normal" />
+        </UIExplorerBlock>
+
         <UIExplorerBlock title="Small ProgressBar">
           <ProgressBar styleAttr="Small" />
         </UIExplorerBlock>

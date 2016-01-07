@@ -21,6 +21,7 @@ var requireNativeComponent = require('requireNativeComponent');
 
 var STYLE_ATTRIBUTES = [
   'Horizontal',
+  'Normal',
   'Small',
   'Large',
   'Inverse',
@@ -70,6 +71,7 @@ var ProgressBarAndroid = React.createClass({
      * Style of the ProgressBar. One of:
      *
      * - Horizontal
+     * - Normal (default)
      * - Small
      * - Large
      * - Inverse
@@ -98,7 +100,7 @@ var ProgressBarAndroid = React.createClass({
 
   getDefaultProps: function() {
     return {
-      styleAttr: 'Large',
+      styleAttr: 'Normal',
       indeterminate: true
     };
   },
