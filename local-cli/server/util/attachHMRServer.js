@@ -170,6 +170,42 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   modules: modulesToUpdate,
                 });
               })
+              .then(update => {
+                if (!client) {
+                  return;
+                }
+
+                // check we actually want to send an HMR update
+                if (update) {
+                  return JSON.stringify({
+                    type: 'update',
+                    body: update,
+                  });
+                }
+              })
+              .catch(error => {
+                // send errors to the client instead of killing packager server
+                let body;
+                if (error.type === 'TransformError' ||
+                    error.type === 'NotFoundError' ||
+                    error.type === 'UnableToResolveError') {
+                  body = {
+                    type: error.type,
+                    description: error.description,
+                    filename: error.filename,
+                    lineNumber: error.lineNumber,
+                  };
+                } else {
+                  console.error(error.stack || error);
+                  body = {
+                    type: 'InternalError',
+                    description: 'react-packager has encountered an internal error, ' +
+                      'please check your terminal error output for more details',
+                  };
+                }
+
+                return JSON.stringify({type: 'error', body});
+              })
               .then(bundle => {
                 if (!client) {
                   return;
