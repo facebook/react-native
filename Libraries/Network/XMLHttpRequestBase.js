@@ -179,6 +179,9 @@ class XMLHttpRequestBase {
       // async is default
       throw new Error('Synchronous http requests are not supported');
     }
+    if (!url) {
+      throw new Error('Cannot load an empty url');
+    }
     this._reset();
     this._method = method;
     this._url = url;

@@ -136,6 +136,10 @@ RCT_EXPORT_MODULE()
 
 - (id<RCTURLRequestHandler>)handlerForRequest:(NSURLRequest *)request
 {
+  if (!request.URL) {
+    return nil;
+  }
+
   if (!_handlers) {
 
     // get handlers
