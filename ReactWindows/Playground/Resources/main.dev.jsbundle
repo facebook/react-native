@@ -1194,11 +1194,21 @@ var ReactRoot=React.createClass({displayName:'ReactRoot',
 render:function(){
 return (
 React.createElement(View,{elevation:'1.0'},
+<<<<<<< 09dc008f310da864bd3e9a31ba443482448909bd
 React.createElement(View,{style:{marginLeft:20}},
 React.createElement(View,{style:{borderLeftWidth:5,borderRightWidth:10,borderTopWidth:2, borderBottomWidth: 8}},
 React.createElement(View,{style:{margin:10,borderWidth:10,borderRadius:5,borderLeftColor:'red',borderRightColor:'blue',borderTopColor:'yellow',borderBottomColor:'green'}},
 React.createElement(View,{style:{padding:10}},
 React.createElement(Text,{style:{color:'orange'}},"Hello React Native")))))));}});
+=======
+<<<<<<< 95fc5c4b3b088a56d5d215df016ee39e2515e2e7
+React.createElement(View,{style:{marginLeft:200}},
+React.createElement(View,{style:{marginTop:10}},
+React.createElement(Text,{style:{color:'red'}},"Hello React Native")))));}});
+=======
+React.createElement(Text,null,'Hello React Native, I\'m running on Windows Phone')));}});
+>>>>>>> Merging with Erics recent changes
+>>>>>>> Merging with Erics recent changes
 
 
 
@@ -57332,4 +57342,4 @@ module.exports=findDOMNode;
 });
 ;require("InitializeJavaScriptAppEngine");
 ;require("react-xaml-wpf/index.ios.js");
-__SSTOKENSTRING = "@generated SignedSource<<d545c00c0e8f6b3ae9b0c55ce3164c44>>";
+__SSTOKENSTRING = "@generated SignedSource<<4c8b8d4626a04f605e3785551393f2dd>>";
