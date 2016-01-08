@@ -1,11 +1,9 @@
-﻿using Windows.UI.Xaml;
-
-namespace ReactNative.UIManager
+﻿namespace ReactNative.UIManager
 {
     /// <summary>
     /// View manager for react root view components.
     /// </summary>
-    public class RootViewManager : ViewGroupManager
+    public class RootViewManager : PanelViewGroupManager<SizeMonitoringPanel>
     {
         /// <summary>
         /// The name of the react root view.
@@ -23,7 +21,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
+        protected override SizeMonitoringPanel CreateViewInstanceCore(ThemedReactContext reactContext)
         {
             return new SizeMonitoringPanel();
         }

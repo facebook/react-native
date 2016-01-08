@@ -463,6 +463,8 @@ namespace ReactNative.UIManager
         /// <param name="batchId">The batch identifier.</param>
         public void DispatchViewUpdates(EventDispatcher eventDispatcher, int batchId)
         {
+            DispatcherHelpers.AssertOnDispatcher();
+
             foreach (var tag in _shadowNodeRegistry.RootNodeTags)
             {
                 var cssRoot = _shadowNodeRegistry.GetNode(tag);
@@ -472,7 +474,7 @@ namespace ReactNative.UIManager
             }
 
             _nativeViewHierarchyOptimizer.OnBatchComplete();
-            _operationsQueue.DispatchViewUpdates(batchId);
+            _operationsQueue.ExecuteOperations(batchId);
         }
 
         /// <summary>

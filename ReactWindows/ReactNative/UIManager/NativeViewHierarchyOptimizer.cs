@@ -79,7 +79,7 @@ namespace ReactNative.UIManager
             _uiViewOperationQueue.EnqueueCreateView(
                     themedContext,
                     node.ReactTag,
-                    node.ViewClassName,
+                    node.ViewClass,
                     initialProperties);
 #else
             var isLayoutOnly = node.ViewClass == ViewProperties.ViewClassName
@@ -376,7 +376,7 @@ namespace ReactNative.UIManager
             if (!node.IsLayoutOnly && node.NativeParent != null)
             {
                 _uiViewOperationQueue.EnqueueUpdateLayout(
-                    node.Parent.ReactTag,
+                    node.NativeParent.ReactTag,
                     node.ReactTag,
                     x,
                     y,

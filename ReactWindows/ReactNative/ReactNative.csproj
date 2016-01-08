@@ -244,13 +244,13 @@
     <Compile Include="UIManager\UIViewOperationQueue.cs" />
     <Compile Include="UIManager\ViewAtIndex.cs" />
     <Compile Include="UIManager\ViewGroupManager.cs" />
-    <Compile Include="UIManager\ViewGroupManager.Generic.cs" />
+    <Compile Include="UIManager\PanelViewGroupManager.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManager.Generic.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
+    <Compile Include="Views\Scroll\ReactScrollViewManager.cs" />
     <Compile Include="Views\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
-	<Compile Include="Views\Text\InlineManager.cs" />
     <Compile Include="Views\Text\ReactRawTextManager.cs" />
     <Compile Include="Views\Text\ReactTextShadowNode.cs" />
     <Compile Include="Views\Text\ReactTextViewManager.cs" />
@@ -262,8 +262,8 @@
     <Compile Include="Views\View\ReactPanel.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
-	<Compile Include="Modules\Toast\ToastHelper.cs" />
-	<Compile Include="Modules\Toast\ToastModule.cs" />
+    <Compile Include="Modules\Toast\ToastHelper.cs" />
+    <Compile Include="Modules\Toast\ToastModule.cs" />
     <EmbeddedResource Include="Properties\ReactNative.rd.xml" />
   </ItemGroup>
   <ItemGroup>
