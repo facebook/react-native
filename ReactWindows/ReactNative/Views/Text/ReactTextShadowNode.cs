@@ -223,7 +223,6 @@ namespace ReactNative.Views.Text
             // the UI thread from handling other work.
             //
             // TODO: determine another way to measure text elements.
-
             var shadowNode = (ReactTextShadowNode)node;
             var textBlock = new TextBlock();
             textBlock.Inlines.Add(shadowNode._inline);
@@ -289,16 +288,7 @@ namespace ReactNative.Views.Text
 
             if (textNode._isColorSet)
             {
-                var color = textNode._color;
-                var b = (byte)color;
-                color >>= 8;
-                var g = (byte)color;
-                color >>= 8;
-                var r = (byte)color;
-                color >>= 8;
-                var a = (byte)color;
-                var c = Color.FromArgb(a, r, g, b);
-                inline.Foreground = new SolidColorBrush(c);
+                inline.Foreground = new SolidColorBrush(ColorHelpers.Parse(textNode._color));
             }
 
             if (textNode._fontSize != UNSET)
