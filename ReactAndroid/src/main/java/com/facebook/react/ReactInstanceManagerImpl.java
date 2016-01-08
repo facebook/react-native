@@ -52,8 +52,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.react.devsupport.DevSupportManager;
-import com.facebook.react.devsupport.DevSupportManagerImpl;
-import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -254,15 +252,15 @@ import com.facebook.systrace.Systrace;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
-    if (mUseDeveloperSupport) {
-      mDevSupportManager = new DevSupportManagerImpl(
-          applicationContext,
-          mDevInterface,
-          mJSMainModuleName,
-          useDeveloperSupport);
-    } else {
-      mDevSupportManager = new DisabledDevSupportManager();
-    }
+    // We need to instantiate DevSupportManager regardless to the useDeveloperSupport option,
+    // although will prevent dev support manager from displaying any options or dialogs by
+    // checking useDeveloperSupport option before calling setDevSupportEnabled on this manager
+    // TODO(6803830): Don't instantiate devsupport manager when useDeveloperSupport is false
+    mDevSupportManager = new DevSupportManager(
+        applicationContext,
+        mDevInterface,
+        mJSMainModuleName,
+        useDeveloperSupport);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
