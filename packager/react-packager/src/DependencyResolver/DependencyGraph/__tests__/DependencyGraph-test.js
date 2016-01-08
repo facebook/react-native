@@ -16,7 +16,7 @@ jest
   .mock('fs');
 
 var DependencyGraph = require('../index');
-var fs = require('fs');
+var fs = require('graceful-fs');
 
 describe('DependencyGraph', function() {
   let defaults;

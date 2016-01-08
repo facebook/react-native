@@ -21,7 +21,7 @@ jest
   });
 
 var Promise = require('promise');
-var fs = require('fs');
+var fs = require('graceful-fs');
 
 var Cache = require('../');
 

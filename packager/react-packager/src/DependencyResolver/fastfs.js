@@ -11,7 +11,7 @@
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
-const fs = require('fs');
+const fs = require('graceful-fs');
 const path = require('path');
 
 const readFile = Promise.denodeify(fs.readFile);
