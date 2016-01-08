@@ -64,6 +64,11 @@ class FormData {
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       var contentDisposition = 'form-data; name="' + name + '"';
+      // Convert non-object values to strings as per FormData.append() spec
+      if (typeof value !== 'object') {
+        value = '' + value;
+      }
+
       /* $FlowIssue(>=0.20.1) #9463928 */
       var headers: Headers = {'content-disposition': contentDisposition};
       if (typeof value === 'string') {
