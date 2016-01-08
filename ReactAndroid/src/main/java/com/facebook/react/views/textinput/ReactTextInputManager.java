@@ -376,7 +376,7 @@ public class ReactTextInputManager extends
               newText,
               oldText,
               start,
-              count > 0 ? start + count - 1 : start + before));
+              start + before));
     }
 
     @Override
