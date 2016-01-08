@@ -43,7 +43,7 @@ namespace Playground
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 
-#if DEBUG
+#if DEBUG2
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;

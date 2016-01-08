@@ -1194,7 +1194,7 @@ var ReactRoot=React.createClass({displayName:'ReactRoot',
 render:function(){
 return (
 React.createElement(View,{elevation:'1.0'},
-React.createElement(Text,null,'Hello React Native')));}});
+React.createElement(Text,null,'Hello React Native, I\'m running on Windows Phone')));}});
 
 
 
@@ -57328,4 +57328,4 @@ module.exports=findDOMNode;
 });
 ;require("InitializeJavaScriptAppEngine");
 ;require("react-xaml-wpf/index.ios.js");
-__SSTOKENSTRING = "@generated SignedSource<<d545c00c0e8f6b3ae9b0c55ce3164c44>>";
+__SSTOKENSTRING = "@generated SignedSource<<4c8b8d4626a04f605e3785551393f2dd>>";
