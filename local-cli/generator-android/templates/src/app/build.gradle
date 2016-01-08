@@ -3,7 +3,8 @@ apply plugin: "com.android.application"
 import com.android.build.OutputFile
 
 /**
- * The react.gradle file registers two tasks: bundleDebugJsAndAssets and bundleReleaseJsAndAssets.
+ * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
+ * and bundleReleaseJsAndAssets).
  * These basically call `react-native bundle` with the correct arguments during the Android build
  * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
  * bundle directly from the development server. Below you can see all the possible configurations
@@ -22,6 +23,13 @@ import com.android.build.OutputFile
  *
  *   // whether to bundle JS and assets in release mode
  *   bundleInRelease: true,
+ *
+ *   // whether to bundle JS and assets in another build variant (if configured).
+ *   // See http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Build-Variants
+ *   // The configuration property is in the format 'bundleIn${productFlavor}${buildType}'
+ *   // bundleInFreeDebug: true,
+ *   // bundleInPaidRelease: true,
+ *   // bundleInBeta: true,
  *
  *   // the root of your project, i.e. where "package.json" lives
  *   root: "../../",
