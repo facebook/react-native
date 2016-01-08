@@ -9,7 +9,7 @@ namespace ReactNative.UIManager
     /// extending <see cref="Panel"/>.
     /// </summary>
     /// <typeparam name="TPanel">Type of panel.</typeparam>
-    public abstract class ViewGroupManager<TPanel> : ViewGroupManager
+    public abstract class PanelViewGroupManager<TPanel> : ViewGroupManager
         where TPanel : Panel
     {
         /// <summary>
@@ -51,6 +51,57 @@ namespace ReactNative.UIManager
         public sealed override void UpdateExtraData(FrameworkElement root, object extraData)
         {
             UpdateExtraData((TPanel)root, extraData);
+        }
+
+        /// <summary>
+        /// Gets the number of children in the view group.
+        /// </summary>
+        /// <param name="parent">The view group.</param>
+        /// <returns>The number of children.</returns>
+        public sealed override int GetChildCount(FrameworkElement parent)
+        {
+            return GetChildCount((TPanel)parent);
+        }
+
+        /// <summary>
+        /// Gets the child at the given index.
+        /// </summary>
+        /// <param name="parent">The parent view.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>The child view.</returns>
+        public sealed override FrameworkElement GetChildAt(FrameworkElement parent, int index)
+        {
+            return GetChildAt((TPanel)parent, index);
+        }
+
+        /// <summary>
+        /// Adds a child at the given index.
+        /// </summary>
+        /// <param name="parent">The parent view.</param>
+        /// <param name="child">The child view.</param>
+        /// <param name="index">The index.</param>
+        public sealed override void AddView(FrameworkElement parent, FrameworkElement child, int index)
+        {
+            AddView((TPanel)parent, child, index);
+        }
+
+        /// <summary>
+        /// Removes the child at the given index.
+        /// </summary>
+        /// <param name="parent">The view group.</param>
+        /// <param name="index">The index.</param>
+        public override void RemoveChildAt(FrameworkElement parent, int index)
+        {
+            RemoveChildAt((TPanel)parent, index);
+        }
+
+        /// <summary>
+        /// Removes all children from the view group.
+        /// </summary>
+        /// <param name="parent">The view group.</param>
+        public override void RemoveAllChildren(FrameworkElement parent)
+        {
+            RemoveAllChildren((TPanel)parent);
         }
 
         /// <summary>
@@ -171,6 +222,57 @@ namespace ReactNative.UIManager
         /// <param name="extraData">The extra data.</param>
         protected virtual void UpdateExtraData(TPanel root, object extraData)
         {
+        }
+
+        /// <summary>
+        /// Gets the number of children in the view group.
+        /// </summary>
+        /// <param name="parent">The view group.</param>
+        /// <returns>The number of children.</returns>
+        protected virtual int GetChildCount(TPanel parent)
+        {
+            return parent.Children.Count;
+        }
+
+        /// <summary>
+        /// Gets the child at the given index.
+        /// </summary>
+        /// <param name="parent">The parent view.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>The child view.</returns>
+        protected virtual FrameworkElement GetChildAt(TPanel parent, int index)
+        {
+            return (FrameworkElement)parent.Children[index];
+        }
+
+        /// <summary>
+        /// Adds a child at the given index.
+        /// </summary>
+        /// <param name="parent">The parent view.</param>
+        /// <param name="child">The child view.</param>
+        /// <param name="index">The index.</param>
+        protected virtual void AddView(TPanel parent, FrameworkElement child, int index)
+        {
+            parent.Children.Insert(index, child);
+        }
+
+        /// <summary>
+        /// Removes the child at the given index.
+        /// </summary>
+        /// <param name="parent">The view group.</param>
+        /// <param name="index">The index.</param>
+        protected virtual void RemoveChildAt(TPanel parent, int index)
+        {
+            parent.Children.RemoveAt(index);
+        }
+
+        /// <summary>
+        /// Removes all children from the view group.
+        /// </summary>
+        /// <param name="parent">The view group.</param>
+        protected virtual void RemoveAllChildren(TPanel parent)
+        {
+            parent.Children.Clear();
         }
     }
 }

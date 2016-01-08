@@ -1,10 +1,13 @@
 ﻿using Facebook.CSSLayout;
+using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Text;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 
@@ -32,13 +35,18 @@ namespace ReactNative.Views.Text
         private string _fontFamily;
         private string _text;
 
-        private InlineManager _inline;
+        private Inline _inline;
 
         private readonly bool _isVirtual;
 
         public ReactTextShadowNode(bool isVirtual)
         {
             _isVirtual = isVirtual;
+
+            if (!isVirtual)
+            {
+                MeasureFunction = MeasureText;
+            }
         }
 
         public override bool IsVirtual
@@ -59,6 +67,12 @@ namespace ReactNative.Views.Text
 
         public override void OnBeforeLayout()
         {
+            // We need to perform this operation on the dispatcher in UWP as 
+            // WinRT lacks the tools needed to "predict" the height of text.
+            // Instead, we simply instantiate the Inline object, insert it into
+            // a text block, and extract how tall the element will be.
+            DispatcherHelpers.AssertOnDispatcher();
+
             if (_isVirtual)
             {
                 return;
@@ -200,6 +214,35 @@ namespace ReactNative.Views.Text
             }
         }
 
+        private static MeasureOutput MeasureText(CSSNode node, float width, float height)
+        {
+            // This is not a terribly efficient way of projecting the height of
+            // the text elements. It requires that we have access to the
+            // dispatcher in order to do measurement, which, for obvious
+            // reasons, can cause perceived performance issues as it will block
+            // the UI thread from handling other work.
+            //
+            // TODO: determine another way to measure text elements.
+
+            var shadowNode = (ReactTextShadowNode)node;
+            var textBlock = new TextBlock();
+            textBlock.Inlines.Add(shadowNode._inline);
+
+            try
+            {
+                var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
+                var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
+                textBlock.Measure(new Size(width, adjustedHeight));
+                return new MeasureOutput(
+                    (float)textBlock.DesiredSize.Width,
+                    (float)textBlock.DesiredSize.Height);
+            }
+            finally
+            {
+                textBlock.Inlines.Clear();
+            }
+        }
+
         private static int ParseNumericFontWeight(string fontWeightString)
         {
             return fontWeightString.Length == 3 && fontWeightString.EndsWith("00") &&
@@ -208,22 +251,22 @@ namespace ReactNative.Views.Text
                 : -1;
         }
 
-        private static InlineManager FromTextCSSNode(ReactTextShadowNode textNode)
+        private static Inline FromTextCSSNode(ReactTextShadowNode textNode)
         {
             return BuildInlineFromTextCSSNode(textNode);
         }
 
-        private static InlineManager BuildInlineFromTextCSSNode(ReactTextShadowNode textNode)
+        private static Inline BuildInlineFromTextCSSNode(ReactTextShadowNode textNode)
         {
             var length = textNode.ChildCount;
-            var inline = default(InlineManager);
+            var inline = default(Inline);
             if (length == 0)
             {
-                inline = new RunManager(textNode._text);
+                inline = new Run { Text = textNode._text };
             }
             else
             {
-                var span = new SpanManager();
+                var span = new Span();
                 for (var i = 0; i < length; ++i)
                 {
                     var child = textNode.GetChildAt(i);
@@ -238,7 +281,7 @@ namespace ReactNative.Views.Text
                     }
 
                     var childInline = BuildInlineFromTextCSSNode(textChild);
-                    span.Add(childInline);
+                    span.Inlines.Add(childInline);
                 }
 
                 inline = span;
@@ -255,71 +298,34 @@ namespace ReactNative.Views.Text
                 color >>= 8;
                 var a = (byte)color;
                 var c = Color.FromArgb(a, r, g, b);
-                inline.Do(i => i.Foreground = new SolidColorBrush(c));
+                inline.Foreground = new SolidColorBrush(c);
             }
 
             if (textNode._fontSize != UNSET)
             {
                 var fontSize = textNode._fontSize;
-                inline.Do(i => i.FontSize = fontSize);
+                inline.FontSize = fontSize;
             }
 
             if (textNode._fontStyle.HasValue)
             {
                 var fontStyle = textNode._fontStyle.Value;
-                inline.Do(i => i.FontStyle = fontStyle);
+                inline.FontStyle = fontStyle;
             }
 
             if (textNode._fontWeight.HasValue)
             {
                 var fontWeight = textNode._fontWeight.Value;
-                inline.Do(i => i.FontWeight = fontWeight);
+                inline.FontWeight = fontWeight;
             }
 
             if (textNode._fontFamily != null)
             {
                 var fontFamily = new FontFamily(textNode._fontFamily);
-                inline.Do(i => i.FontFamily = fontFamily);
+                inline.FontFamily = fontFamily;
             }
 
             return inline;
-        }
-
-        class RunManager : InlineManager
-        {
-            private readonly string _text;
-
-            public RunManager(string text)
-            {
-                _text = text;
-            }
-
-            protected override Inline Create()
-            {
-                return new Run { Text = _text };
-            }
-        }
-
-        class SpanManager : InlineManager
-        {
-            private readonly List<InlineManager> _children = new List<InlineManager>();
-
-            public void Add(InlineManager child)
-            {
-                _children.Add(child);
-            }
-
-            protected override Inline Create()
-            {
-                var span = new Span();
-
-                foreach (var child in _children)
-                {
-                    span.Inlines.Add(child.Evaluate());
-                }
-
-                return span;
-            }
         }
     }
 }
