@@ -25,7 +25,7 @@ const readFile = Promise.denodeify(fs.readFile);
 const MAX_CALLS_PER_WORKER = 600;
 
 // Worker will timeout if one of the callers timeout.
-const DEFAULT_MAX_CALL_TIME = 300000;
+const DEFAULT_MAX_CALL_TIME = 301000;
 
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
