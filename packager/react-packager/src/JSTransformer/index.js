@@ -12,6 +12,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const Promise = require('promise');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
+const temp = require('temp');
 const util = require('util');
 const workerFarm = require('worker-farm');
 const debug = require('debug')('ReactNativePackager:JStransformer');
@@ -63,13 +64,22 @@ class Transformer {
     this._transformModulePath = opts.transformModulePath;
 
     if (opts.transformModulePath != null) {
+      this._workerWrapperPath = temp.path();
+      fs.writeFileSync(
+        this._workerWrapperPath,
+        `
+        module.exports = require(${JSON.stringify(require.resolve('./worker'))});
+        require(${JSON.stringify(String(opts.transformModulePath))});
+        `
+      );
+
       this._workers = workerFarm({
         autoStart: true,
         maxConcurrentCallsPerWorker: 1,
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
         maxRetries: MAX_RETRIES,
-      }, require.resolve('./worker'));
+      }, this._workerWrapperPath);
 
       this._transform = Promise.denodeify(this._workers);
     }
@@ -77,6 +87,9 @@ class Transformer {
 
   kill() {
     this._workers && workerFarm.end(this._workers);
+    if (typeof this._workerWrapperPath === 'string') {
+      fs.unlink(this._workerWrapperPath, () => {}); // we don't care about potential errors here
+    }
   }
 
   invalidateFile(filePath) {
