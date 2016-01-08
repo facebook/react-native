@@ -24,7 +24,7 @@ const Module = require('../Module');
 const ModuleCache = require('../ModuleCache');
 const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
 const Promise = require('promise');
-const fs = require('fs');
+const fs = require('graceful-fs');
 
 describe('Module', () => {
   const fileWatcher = {
