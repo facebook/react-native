@@ -154,6 +154,8 @@
     <Compile Include="Common\ReactConstants.cs" />
     <Compile Include="Bridge\ReactApplicationContext.cs" />
     <Compile Include="CoreModulesPackage.cs" />
+    <Compile Include="UIManager\BorderedContentControl.cs" />
+    <Compile Include="UIManager\ColorHelpers.cs" />
     <Compile Include="UIManager\Events\IOnIntercepTextGotFocusEventListener.cs" />
     <Compile Include="UIManager\Events\IOnInterceptTextInputEventListener.cs" />
     <Compile Include="LifecycleState.cs" />

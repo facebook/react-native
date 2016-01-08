@@ -1195,7 +1195,7 @@ render:function(){
 return (
 React.createElement(View,{elevation:'1.0'},
 React.createElement(View,{style:{marginLeft:200}},
-React.createElement(View,{style:{marginTop:10}},
+React.createElement(View,{style:{marginTop:10,borderWidth:10}},
 React.createElement(Text,{style:{color:'red'}},"Hello React Native")))));}});
 
 

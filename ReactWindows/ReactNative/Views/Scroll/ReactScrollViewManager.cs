@@ -4,6 +4,12 @@ using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.Views.Scroll
 {
+    /// <summary>
+    /// A hacked in version of the scroll view manager.
+    /// </summary>
+    /// <remarks>
+    /// TODO: implement this as a proper ScrollViewer instead of a ListView.
+    /// </remarks>
     public class ReactScrollViewManager : ViewGroupManager
     {
         private const string ReactClass = "RCTScrollView";
