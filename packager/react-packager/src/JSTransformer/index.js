@@ -54,6 +54,10 @@ const validateOpts = declareOpts({
     type: 'number',
     default: DEFAULT_MAX_CALL_TIME,
   },
+  disableInternalTransforms: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Transformer {
@@ -64,14 +68,20 @@ class Transformer {
     this._transformModulePath = opts.transformModulePath;
 
     if (opts.transformModulePath != null) {
-      this._workerWrapperPath = temp.path();
-      fs.writeFileSync(
-        this._workerWrapperPath,
-        `
-        module.exports = require(${JSON.stringify(require.resolve('./worker'))});
-        require(${JSON.stringify(String(opts.transformModulePath))});
-        `
-      );
+      let transformer;
+
+      if (opts.disableInternalTransforms) {
+        transformer = opts.transformModulePath;
+      } else {
+        transformer = this._workerWrapperPath = temp.path();
+        fs.writeFileSync(
+          this._workerWrapperPath,
+          `
+          module.exports = require(${JSON.stringify(require.resolve('./worker'))});
+          require(${JSON.stringify(String(opts.transformModulePath))});
+          `
+        );
+      }
 
       this._workers = workerFarm({
         autoStart: true,
@@ -79,7 +89,7 @@ class Transformer {
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
         maxRetries: MAX_RETRIES,
-      }, this._workerWrapperPath);
+      }, transformer);
 
       this._transform = Promise.denodeify(this._workers);
     }
@@ -87,7 +97,8 @@ class Transformer {
 
   kill() {
     this._workers && workerFarm.end(this._workers);
-    if (typeof this._workerWrapperPath === 'string') {
+    if (this._workerWrapperPath &&
+        typeof this._workerWrapperPath === 'string') {
       fs.unlink(this._workerWrapperPath, () => {}); // we don't care about potential errors here
     }
   }
