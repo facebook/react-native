@@ -68,7 +68,7 @@ describe('Module', () => {
     pit('should recognize single dependency', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import("dep1")',
+          'index.js': 'System.' + 'import("dep1")',
         },
       });
 
@@ -78,7 +78,7 @@ describe('Module', () => {
     pit('should parse single quoted dependencies', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import(\'dep1\')',
+          'index.js': 'System.' + 'import(\'dep1\')',
         },
       });
 
@@ -89,8 +89,8 @@ describe('Module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': [
-            'System.import("dep1")',
-            'System.import("dep2")',
+            'System.' + 'import("dep1")',
+            'System.' + 'import("dep2")',
           ].join('\n'),
         },
       });
@@ -104,7 +104,7 @@ describe('Module', () => {
     pit('parse fine new lines', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import(\n"dep1"\n)',
+          'index.js': 'System.' + 'import(\n"dep1"\n)',
         },
       });
 
