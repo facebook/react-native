@@ -9,7 +9,7 @@
 'use strict';
 
 const Promise = require('promise');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const getCacheFilePath = require('./lib/getCacheFilePath');
 const isAbsolutePath = require('absolute-path');
 const loadCacheSync = require('./lib/loadCacheSync');
