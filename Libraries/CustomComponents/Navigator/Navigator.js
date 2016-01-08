@@ -918,7 +918,7 @@ var Navigator = React.createClass({
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
-      cb && cb(destIndex)
+      cb && cb(destIndex);
     });
   },
 
