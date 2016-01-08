@@ -1194,7 +1194,9 @@ var ReactRoot=React.createClass({displayName:'ReactRoot',
 render:function(){
 return (
 React.createElement(View,{elevation:'1.0'},
-React.createElement(Text,null,'Hello React Native')));}});
+React.createElement(View,{style:{marginLeft:200}},
+React.createElement(View,{style:{marginTop:10}},
+React.createElement(Text,{style:{color:'red'}},"Hello React Native")))));}});
 
 
 

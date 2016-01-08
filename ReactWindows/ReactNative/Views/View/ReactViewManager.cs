@@ -1,11 +1,7 @@
-﻿using Facebook.CSSLayout;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
@@ -13,7 +9,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.Views.View
 {
-    public class ReactViewManager : ViewGroupManager<ReactPanel>
+    public class ReactViewManager : PanelViewGroupManager<ReactPanel>
     {
         public static readonly string REACT_CLASS = ViewProperties.ViewClassName;
         private static readonly int CMD_SET_PRESSED = 1;
@@ -139,13 +135,9 @@ namespace ReactNative.Views.View
         /// <param name="parent">The parent view.</param>
         /// <param name="child">The child view.</param>
         /// <param name="index">The index.</param>
-        public override void AddView(Panel parent, UIElement child, int index)
+        protected override void AddView(ReactPanel parent, FrameworkElement child, int index)
         {
             parent.Children.Insert(index, child);
-        }
-
-        protected override void UpdateExtraData(ReactPanel root, object extraData)
-        {
         }
     }
 }
