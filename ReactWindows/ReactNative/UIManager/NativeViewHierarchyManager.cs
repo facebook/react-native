@@ -133,8 +133,23 @@ namespace ReactNative.UIManager
                 .With("tag", tag))
             {
                 var viewToUpdate = ResolveView(tag);
-                // TODO: call viewToUpdate.Measure()
-                //throw new NotImplementedException();
+
+                var parentViewManager = default(ViewManager);
+                var parentViewGroupManager = default(ViewGroupManager);
+                if (!_tagsToViewManagers.TryGetValue(parentTag, out parentViewManager) || 
+                    (parentViewGroupManager = parentViewManager as ViewGroupManager) == null)
+                {
+                    throw new InvalidOperationException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Trying to use view with tag '{0}' as a parent, but its manager doesn't extend ViewGroupManager.",
+                            tag));
+                }
+
+                if (!parentViewGroupManager.NeedsCustomLayoutForChildren)
+                {
+                    UpdateLayout(viewToUpdate, x, y, width, height);
+                }
             }
         }
 
@@ -189,7 +204,7 @@ namespace ReactNative.UIManager
             }
 
             var viewGroupManager = (ViewGroupManager)viewManager;
-            var viewToManage = (Panel)_tagsToViews[tag];
+            var viewToManage = _tagsToViews[tag];
 
             var lastIndexToRemove = viewGroupManager.GetChildCount(viewToManage);
             if (indicesToRemove != null)
@@ -512,6 +527,14 @@ namespace ReactNative.UIManager
 
             _tagsToViews.Remove(tag);
             _tagsToViewManagers.Remove(tag);
+        }
+
+        private void UpdateLayout(FrameworkElement viewToUpdate, int x, int y, int width, int height)
+        {
+            viewToUpdate.Width = width;
+            viewToUpdate.Height = height;
+            Canvas.SetLeft(viewToUpdate, x);
+            Canvas.SetTop(viewToUpdate, y);
         }
     }
 }

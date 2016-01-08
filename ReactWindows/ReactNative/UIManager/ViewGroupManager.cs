@@ -5,8 +5,7 @@ using Windows.UI.Xaml.Controls;
 namespace ReactNative.UIManager
 {
     /// <summary>
-    /// Class providing child management API for view managers of classes
-    /// extending <see cref="Panel"/>.
+    /// Class providing child management API for view managers.
     /// </summary>
     public abstract class ViewGroupManager : ViewManager
     {
@@ -57,20 +56,14 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="child">The child view.</param>
         /// <param name="index">The index.</param>
-        public virtual void AddView(Panel parent, UIElement child, int index)
-        {
-            parent.Children.Insert(index, child);
-        }
+        public abstract void AddView(FrameworkElement parent, FrameworkElement child, int index);
 
         /// <summary>
         /// Gets the number of children in the view group.
         /// </summary>
         /// <param name="parent">The view group.</param>
         /// <returns>The number of children.</returns>
-        public virtual int GetChildCount(Panel parent)
-        {
-            return parent.Children.Count;
-        }
+        public abstract int GetChildCount(FrameworkElement parent);
 
         /// <summary>
         /// Gets the child at the given index.
@@ -78,28 +71,19 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="index">The index.</param>
         /// <returns>The child view.</returns>
-        public virtual FrameworkElement GetChildAt(Panel parent, int index)
-        {
-            return (FrameworkElement)parent.Children[index];
-        }
+        public abstract FrameworkElement GetChildAt(FrameworkElement parent, int index);
 
         /// <summary>
         /// Removes the child at the given index.
         /// </summary>
         /// <param name="parent">The view group.</param>
         /// <param name="index">The index.</param>
-        public virtual void RemoveChildAt(Panel parent, int index)
-        {
-            parent.Children.RemoveAt(index);
-        }
+        public abstract void RemoveChildAt(FrameworkElement parent, int index);
 
         /// <summary>
         /// Removes all children from the view group.
         /// </summary>
         /// <param name="parent">The view group.</param>
-        public virtual void RemoveAllChildren(Panel parent)
-        {
-            parent.Children.Clear();
-        }
+        public abstract void RemoveAllChildren(FrameworkElement parent);
     }
 }

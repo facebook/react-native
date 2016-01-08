@@ -10,7 +10,6 @@ namespace ReactNative.UIManager
     public static class ViewProperties
     {
         public const string ViewClassName = "RCTView";
-        public const string TextInputClassName = "RCTTextField";
 
         // Layout only (only affect positions of children, causes no drawing)
         // !!! Keep in sync with s_layoutOnlyProperties below !!!

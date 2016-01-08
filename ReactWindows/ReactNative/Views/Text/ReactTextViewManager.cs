@@ -1,5 +1,6 @@
 ﻿using ReactNative.UIManager;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 
 namespace ReactNative.Views.Text
 {
@@ -27,8 +28,9 @@ namespace ReactNative.Views.Text
 
         protected override void UpdateExtraData(TextBlock root, object extraData)
         {
-            var inlineManager = (InlineManager)extraData;
-            root.Inlines.Add(inlineManager.Evaluate());
+            var inline = (Inline)extraData;
+
+            root.Inlines.Add(inline);
         }
     }
 }
