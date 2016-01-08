@@ -3934,7 +3934,7 @@ describe('DependencyGraph', function() {
             '/**',
             ' * @providesModule index',
             ' */',
-            'System.import("a")',
+            'System.' + 'import("a")',
           ].join('\n'),
           'a.js': [
             '/**',

@@ -16,3 +16,5 @@ global.__fbBatchedBridgeConfig = {
 };
 
 global.Promise = require('promise');
+
+jest.setMock('ErrorUtils', require('ErrorUtils'));

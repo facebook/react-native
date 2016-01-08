@@ -10,7 +10,7 @@
 
 var path = require('path');
 
-// Don't forget to everything listed here to `testConfig.json`
+// Don't forget to everything listed here to `package.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,

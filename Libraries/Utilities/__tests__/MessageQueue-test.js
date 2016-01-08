@@ -8,12 +8,8 @@
  */
 'use strict';
 
-jest.setMock('ReactUpdates', {
-  batchedUpdates: fn => fn()
-});
-
-jest.dontMock('MessageQueue');
-jest.dontMock('keyMirror');
+jest.dontMock('MessageQueue')
+  .dontMock('keyMirror');
 var MessageQueue = require('MessageQueue');
 
 let MODULE_IDS = 0;
@@ -23,8 +19,6 @@ let PARAMS = 2;
 let TestModule = {
   testHook1(){}, testHook2(){},
 };
-
-let customRequire = (moduleName) => TestModule;
 
 let assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
   expect(flushedQueue[MODULE_IDS][index]).toEqual(moduleID);
