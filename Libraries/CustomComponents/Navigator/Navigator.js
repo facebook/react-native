@@ -169,6 +169,7 @@ var GESTURE_ACTIONS = [
  *  - `jumpBack()` - Jump backward without unmounting the current scene
  *  - `jumpForward()` - Jump forward to the next scene in the route stack
  *  - `jumpTo(route)` - Transition to an existing scene without unmounting
+ *  - `append(route)` - Append a new scene in the route stack without transition
  *  - `push(route)` - Navigate forward to a new scene, squashing any scenes
  *     that you could `jumpForward` to
  *  - `pop()` - Transition back and unmount the current scene
@@ -904,8 +905,7 @@ var Navigator = React.createClass({
     this._jumpN(-1);
   },
 
-  push: function(route) {
-    invariant(!!route, 'Must supply route to push');
+  _append: function(route, cb) {
     var activeLength = this.state.presentedIndex + 1;
     var activeStack = this.state.routeStack.slice(0, activeLength);
     var activeAnimationConfigStack = this.state.sceneConfigStack.slice(0, activeLength);
@@ -914,11 +914,23 @@ var Navigator = React.createClass({
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
       this.props.configureScene(route),
     ]);
-    this._emitWillFocus(nextStack[destIndex]);
     this.setState({
       routeStack: nextStack,
       sceneConfigStack: nextAnimationConfigStack,
     }, () => {
+      cb && cb(destIndex)
+    });
+  },
+
+  append: function(route) {
+    invariant(!!route, 'Must supply route to append');
+    this._append(route);
+  },
+
+  push: function(route) {
+    invariant(!!route, 'Must supply route to push');
+    this._emitWillFocus(route);
+    this._append(route, (destIndex) => {
       this._enableScene(destIndex);
       this._transitionTo(destIndex);
     });
