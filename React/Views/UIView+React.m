@@ -84,7 +84,7 @@
 
 - (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
 {
-  self.backgroundColor = inheritedBackgroundColor;
+  // Does nothing by default
 }
 
 - (UIViewController *)reactViewController
