@@ -67,7 +67,11 @@ const validateOpts = declareOpts({
   getTransformOptionsModulePath: {
     type: 'string',
     required: false,
-  }
+  },
+  disableInternalTransforms: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const bundleOpts = declareOpts({

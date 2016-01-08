@@ -80,6 +80,10 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  disableInternalTransforms: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Bundler {
@@ -131,6 +135,7 @@ class Bundler {
       blacklistRE: opts.blacklistRE,
       cache: this._cache,
       transformModulePath: opts.transformModulePath,
+      disableInternalTransforms: opts.disableInternalTransforms,
     });
 
     this._projectRoots = opts.projectRoots;
