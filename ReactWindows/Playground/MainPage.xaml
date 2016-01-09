@@ -1,0 +1,16 @@
+﻿<Page
+    x:Class="Playground.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Playground"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rn="using:ReactNative"
+    mc:Ignorable="d">
+
+    <Frame Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <rn:ReactRootView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="RootView">
+          <!--<Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Red"></Canvas>-->
+        </rn:ReactRootView>
+    </Frame>
+</Page>

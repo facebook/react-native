@@ -1,6 +1,7 @@
 ﻿using ReactNative.Touch;
 using ReactNative.UIManager;
 using System;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -23,6 +24,9 @@ namespace ReactNative.Views.View
 
         public ReactPanel() : base()
         {
+            //Background = new SolidColorBrush(Colors.Blue);
+            //HorizontalAlignment = HorizontalAlignment.Stretch;
+            //VerticalAlignment = VerticalAlignment.Stretch;
             this.SizeChanged += OnBoundsChanged;
         }
 

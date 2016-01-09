@@ -1,9 +1,13 @@
-﻿namespace ReactNative.UIManager
+﻿using Windows.UI.Xaml.Controls;
+
+namespace ReactNative.UIManager
 {
     /// <summary>
     /// View manager for react root view components.
     /// </summary>
+
     public class RootViewManager : PanelViewGroupManager<SizeMonitoringCanvas>
+
     {
         /// <summary>
         /// The name of the react root view.
