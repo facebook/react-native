@@ -486,10 +486,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   // Get scale factors required to prevent radii from overlapping
   const CGSize size = self.bounds.size;
-  const CGFloat topScaleFactor = MIN(1, size.width / (topLeftRadius + topRightRadius));
-  const CGFloat bottomScaleFactor = MIN(1, size.width / (bottomLeftRadius + bottomRightRadius));
-  const CGFloat rightScaleFactor = MIN(1, size.height / (topRightRadius + bottomRightRadius));
-  const CGFloat leftScaleFactor = MIN(1, size.height / (topLeftRadius + bottomLeftRadius));
+  const CGFloat topScaleFactor = RCTZeroIfNaN(MIN(1, size.width / (topLeftRadius + topRightRadius)));
+  const CGFloat bottomScaleFactor = RCTZeroIfNaN(MIN(1, size.width / (bottomLeftRadius + bottomRightRadius)));
+  const CGFloat rightScaleFactor = RCTZeroIfNaN(MIN(1, size.height / (topRightRadius + bottomRightRadius)));
+  const CGFloat leftScaleFactor = RCTZeroIfNaN(MIN(1, size.height / (topLeftRadius + bottomLeftRadius)));
 
   // Return scaled radii
   return (RCTCornerRadii){
@@ -508,6 +508,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     _borderBottomColor ?: _borderColor,
     _borderRightColor ?: _borderColor,
   };
+}
+
+- (void)reactSetFrame:(CGRect)frame
+{
+  // If frame is zero, or below the threshold where the border radii can
+  // be rendered as a stretchable image, we'll need to re-render.
+  // TODO: detect up-front if re-rendering is necessary
+  [super reactSetFrame:frame];
+  [self.layer setNeedsDisplay];
 }
 
 - (void)displayLayer:(CALayer *)layer
