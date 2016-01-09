@@ -23,7 +23,7 @@ var View = require('View');
 var requireNativeComponent = require('requireNativeComponent');
 
 type DefaultProps = {
-  mode: 'date' | 'time' | 'datetime';
+  mode: 'date' | 'time' | 'datetime' | 'countdown';
 };
 
 type Event = Object;
@@ -46,7 +46,13 @@ var DatePickerIOS = React.createClass({
     /**
      * The currently selected date.
      */
-    date: PropTypes.instanceOf(Date).isRequired,
+    date: PropTypes.instanceOf(Date),
+
+    /**
+     * If mode is `countdown`, the currently selected countdown duration in
+     * seconds.
+     */
+    countDownDuration: PropTypes.number,
 
     /**
      * Date change handler.
@@ -55,7 +61,16 @@ var DatePickerIOS = React.createClass({
      * The first and only argument is a Date object representing the new
      * date and time.
      */
-    onDateChange: PropTypes.func.isRequired,
+    onDateChange: PropTypes.func,
+
+    /**
+     * Countdown duration change handler.
+     *
+     * This is called when the user changes the countdown duration in the UI.
+     * The first and only argument is a number representing the new duration
+     * in seconds.
+     */
+    onCountDownDurationChange: PropTypes.func,
 
     /**
      * Maximum date.
@@ -74,7 +89,7 @@ var DatePickerIOS = React.createClass({
     /**
      * The date picker mode.
      */
-    mode: PropTypes.oneOf(['date', 'time', 'datetime']),
+    mode: PropTypes.oneOf(['date', 'time', 'datetime', 'countdown']),
 
     /**
      * The interval at which minutes can be selected.
@@ -95,6 +110,25 @@ var DatePickerIOS = React.createClass({
     return {
       mode: 'datetime',
     };
+  },
+
+  _onChangeCountDownDuration: function(event: Event) {
+    var nativeDate = new Date(event.nativeEvent.timestamp);
+    var nativeDuration = nativeDate.getMinutes() * 60 + nativeDate.getHours() * (60 * 60);
+
+    this.props.onCountDownDurationChange && this.props.onCountDownDurationChange(nativeDuration);
+    this.props.onChange && this.props.onChange(event);
+
+    // We expect the onChange* handlers to be in charge of updating our `date`
+    // prop. That way they can also disallow/undo/mutate the selection of
+    // certain values. In other words, the embedder of this component should
+    // be the source of truth, not the native component.
+    var propsDuration = this.props.countDownDuration;
+    if (this._picker && nativeDuration !== propsDuration) {
+      this._picker.setNativeProps({
+        countDownDuration: propsDuration,
+      });
+    }
   },
 
   _onChange: function(event: Event) {
@@ -118,22 +152,31 @@ var DatePickerIOS = React.createClass({
 
   render: function() {
     var props = this.props;
+    const isCountDown = props.mode === 'countdown';
+
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
           ref={ picker => this._picker = picker }
           style={styles.datePickerIOS}
-          date={props.date.getTime()}
+          countDownDuration={
+            isCountDown ? props.countDownDuration : undefined
+          }
+          date={
+            !isCountDown && props.date ? props.date.getTime() : undefined
+          }
           maximumDate={
-            props.maximumDate ? props.maximumDate.getTime() : undefined
+            !isCountDown && props.maximumDate ? props.maximumDate.getTime() : undefined
           }
           minimumDate={
-            props.minimumDate ? props.minimumDate.getTime() : undefined
+            !isCountDown && props.minimumDate ? props.minimumDate.getTime() : undefined
           }
           mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
-          onChange={this._onChange}
+          onChange={
+            isCountDown ? this._onChangeCountDownDuration : this._onChange
+          }
         />
       </View>
     );
