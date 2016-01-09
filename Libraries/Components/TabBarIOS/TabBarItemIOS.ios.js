@@ -109,7 +109,7 @@ var TabBarItemIOS = React.createClass({
     } else {
       var tabContents = <View />;
     }
-    
+
     return (
       <RCTTabBarItem
         {...props}
