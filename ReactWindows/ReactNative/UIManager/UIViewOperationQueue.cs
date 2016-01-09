@@ -4,6 +4,7 @@ using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager
 {
