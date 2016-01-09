@@ -419,5 +419,25 @@ namespace ReactNative.UIManager
         }
 
         #endregion
+<<<<<<< 6e1916785e74e21985e2c4294dca78e20985ed2a
+=======
+
+        sealed class RootViewSizeChangedListener : ISizeChangedListener
+        {
+            public RootViewSizeChangedListener(UIManagerModule managerModule)
+            {
+                
+            }
+
+            public void OnSizeChanged(object sender, SizeChangedEventArgs e)
+            {
+                //TODO: Need to adjust the styling of the panel based on the new
+                //width and height(e.NewSize). The adjustment needs to run on the 
+                //Native Modules thread off the react context(this.Context.RunOnNativeModulesThread)
+                throw new NotImplementedException("Size change behavior for root view still needs to be implemented");
+            }
+        }
+
+>>>>>>> work towards better layout
     }
 }
