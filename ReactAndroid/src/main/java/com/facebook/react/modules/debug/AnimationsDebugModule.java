@@ -31,7 +31,7 @@ import com.facebook.react.common.ReactConstants;
 public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   private @Nullable FpsDebugFrameCallback mFrameCallback;
-  private final DeveloperSettings mCatalystSettings;
+  private @Nullable final DeveloperSettings mCatalystSettings;
 
   public AnimationsDebugModule(
       ReactApplicationContext reactContext,
@@ -47,7 +47,8 @@ public class AnimationsDebugModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRecordingFps() {
-    if (!mCatalystSettings.isAnimationFpsDebugEnabled()) {
+    if (mCatalystSettings == null ||
+        !mCatalystSettings.isAnimationFpsDebugEnabled()) {
       return;
     }
 
