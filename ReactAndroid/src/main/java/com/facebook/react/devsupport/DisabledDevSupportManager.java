@@ -9,6 +9,7 @@
 
 package com.facebook.react.devsupport;
 
+import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.modules.debug.DeveloperSettings;
@@ -18,6 +19,12 @@ import com.facebook.react.modules.debug.DeveloperSettings;
  * development features aren't needed.
  */
 public class DisabledDevSupportManager implements DevSupportManager {
+
+  private final DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+
+  public DisabledDevSupportManager() {
+    mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
+  }
 
   @Override
   public void showNewJavaError(String message, Throwable e) {
@@ -111,6 +118,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void handleException(Exception e) {
-
+    mDefaultNativeModuleCallExceptionHandler.handleException(e);
   }
 }
