@@ -238,5 +238,5 @@ process.stdin.on('end', function() {
   var number = process.env.TRAVIS_PULL_REQUEST;
 
   // intentional lint warning to make sure that the bot is working :)
-  main(messages, user, repo, number)
+  main(messages, user, repo, number);
 });
