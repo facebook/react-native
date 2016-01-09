@@ -124,7 +124,7 @@ var DatePickerIOS = React.createClass({
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
     var propsDuration = this.props.countDownDuration;
-    if (this._picker && nativeDuration !== propsDuration) {
+    if (this._picker && propsDuration !== undefined && nativeDuration !== propsDuration) {
       this._picker.setNativeProps({
         countDownDuration: propsDuration,
       });
@@ -142,8 +142,8 @@ var DatePickerIOS = React.createClass({
     // prop. That way they can also disallow/undo/mutate the selection of
     // certain values. In other words, the embedder of this component should
     // be the source of truth, not the native component.
-    var propsTimeStamp = this.props.date.getTime();
-    if (this._picker && nativeTimeStamp !== propsTimeStamp) {
+    var propsTimeStamp = this.props.date ? this.props.date.getTime() : null;
+    if (this._picker && propsTimeStamp !== null && nativeTimeStamp !== propsTimeStamp) {
       this._picker.setNativeProps({
         date: propsTimeStamp,
       });
