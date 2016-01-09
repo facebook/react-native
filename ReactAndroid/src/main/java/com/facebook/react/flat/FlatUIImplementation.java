@@ -43,13 +43,6 @@ public class FlatUIImplementation extends UIImplementation {
     }
   };
 
-  /**
-   * Temporary storage for elements that need to be moved within a parent.
-   * Only used inside #manageChildren() and always empty outside of it.
-   */ 
-  private final ArrayList<FlatShadowNode> mNodesToMove = new ArrayList<>();
-  private final StateBuilder mStateBuilder;
-
   public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagers) {
@@ -61,6 +54,7 @@ public class FlatUIImplementation extends UIImplementation {
         RCTImageView.setCallerContext(callerContext);
       }
     }
+    DraweeRequestHelper.setResources(reactContext.getResources());
 
     TypefaceCache.setAssetManager(reactContext.getAssets());
 
@@ -78,18 +72,38 @@ public class FlatUIImplementation extends UIImplementation {
     FlatUIViewOperationQueue operationsQueue = new FlatUIViewOperationQueue(
         reactContext,
         nativeViewHierarchyManager);
-    return new FlatUIImplementation(viewManagerRegistry, operationsQueue);
+    return new FlatUIImplementation(reactImageManager, viewManagerRegistry, operationsQueue);
   }
 
+  /**
+   * Temporary storage for elements that need to be moved within a parent.
+   * Only used inside #manageChildren() and always empty outside of it.
+   */ 
+  private final ArrayList<FlatShadowNode> mNodesToMove = new ArrayList<>();
+  private final StateBuilder mStateBuilder;
+  private @Nullable ReactImageManager mReactImageManager;
+
   private FlatUIImplementation(
+      @Nullable ReactImageManager reactImageManager,
       ViewManagerRegistry viewManagers,
       FlatUIViewOperationQueue operationsQueue) {
     super(viewManagers, operationsQueue);
     mStateBuilder = new StateBuilder(operationsQueue);
+    mReactImageManager = reactImageManager;
   }
 
   @Override
   protected ReactShadowNode createRootShadowNode() {
+    if (mReactImageManager != null) {
+      // This is not the best place to initialize DraweeRequestHelper, but order of module
+      // initialization is undefined, and this is pretty much the earliest when we are guarantied
+      // that Fresco is initalized and DraweeControllerBuilder can be queried. This also happens
+      // relatively rarely to have any performance considerations.
+      DraweeRequestHelper.setDraweeControllerBuilder(
+          mReactImageManager.getDraweeControllerBuilder());
+      mReactImageManager = null;
+    }
+
     return new FlatRootShadowNode();
   }
 

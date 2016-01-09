@@ -154,7 +154,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
 
   @Override
   protected boolean verifyDrawable(Drawable who) {
-    return who == mHotspot || super.verifyDrawable(who);
+    return true;
   }
 
   @Override

@@ -11,6 +11,8 @@ package com.facebook.react.flat;
 
 /* package */ final class RCTImageViewManager extends FlatViewManager {
 
+  private static final boolean USE_IMAGEPIPELINE_DIRECTLY = false;
+
   @Override
   public String getName() {
     return "RCTImageView";
@@ -18,7 +20,11 @@ package com.facebook.react.flat;
 
   @Override
   public RCTImageView createShadowNodeInstance() {
-    return new RCTImageView(new DrawImageWithPipeline());
+    if (USE_IMAGEPIPELINE_DIRECTLY) {
+      return new RCTImageView(new DrawImageWithPipeline());
+    } else {
+      return new RCTImageView(new DrawImageWithDrawee());
+    }
   }
 
   @Override
