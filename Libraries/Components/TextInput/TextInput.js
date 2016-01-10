@@ -473,9 +473,6 @@ var TextInput = React.createClass({
 
     var autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
-    var textAlign = UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
-    var textAlignVertical =
-      UIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);

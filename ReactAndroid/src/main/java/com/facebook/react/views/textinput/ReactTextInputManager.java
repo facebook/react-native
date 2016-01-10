@@ -493,16 +493,6 @@ public class ReactTextInputManager extends
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
-        "TextAlign",
-        MapBuilder.of(
-            "start", Gravity.START,
-            "center", Gravity.CENTER_HORIZONTAL,
-            "end", Gravity.END),
-        "TextAlignVertical",
-        MapBuilder.of(
-            "top", Gravity.TOP,
-            "center", Gravity.CENTER_VERTICAL,
-            "bottom", Gravity.BOTTOM),
         "AutoCapitalizationType",
         MapBuilder.of(
             "none",
