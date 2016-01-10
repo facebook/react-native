@@ -125,7 +125,13 @@ function launchEditor(fileName, lineNumber) {
     _childProcess.kill('SIGKILL');
   }
 
-  _childProcess = child_process.spawn(editor, args, {stdio: 'inherit'});
+  if (process.platform === 'win32') {
+    // On Windows, launch the editor in a shell because spawn can only
+    // launch .exe files.
+    _childProcess = child_process.spawn('cmd.exe', ['/C', editor].concat(args), {stdio: 'inherit'});
+  } else {
+    _childProcess = child_process.spawn(editor, args, {stdio: 'inherit'});
+  }
   _childProcess.on('exit', function(errorCode) {
     _childProcess = null;
 
