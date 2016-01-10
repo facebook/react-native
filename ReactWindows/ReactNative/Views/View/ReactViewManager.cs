@@ -186,7 +186,8 @@ namespace ReactNative.Views.View
         /// <returns>The view instance.</returns>
         protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
         {
-            return new BorderedContentControl(new ReactPanel());
+            return new BorderedContentControl() { Content = new ReactPanel()};
+            //return new BorderedContentControl(new ReactPanel());
         }
 
         private ReactPanel GetPanel(FrameworkElement element)
