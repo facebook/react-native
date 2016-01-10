@@ -12,16 +12,17 @@ namespace ReactNative.UIManager
     /// </summary>
     public class BorderedContentControl : ContentControl
     {
-        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius", 
-            typeof(CornerRadius), 
-            typeof(BorderedContentControl), 
+        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius",
+            typeof (CornerRadius),
+            typeof (BorderedContentControl),
             new PropertyMetadata(null));
 
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value);}
+            get { return (CornerRadius) GetValue(CornerRadiusProperty); }
+            set { SetValue(CornerRadiusProperty, value); }
         }
+
         private static readonly SolidColorBrush s_defaultBorderBrush = new SolidColorBrush(Colors.Black);
 
         private Border _customBorder;
@@ -32,18 +33,14 @@ namespace ReactNative.UIManager
 
         public BorderedContentControl()
         {
-            DefaultStyleKey = typeof(BorderedContentControl);
+            DefaultStyleKey = typeof (BorderedContentControl);
             BorderBrush = s_defaultBorderBrush;
-            //base.Content = content;
-            //CreateBorder(); // TODO: can we use the ContentControl border properties?
-
 
         }
 
         protected override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            //Style = Application.Current.Resources[""];
         }
 
         private bool HasCustomBorder
@@ -51,10 +48,10 @@ namespace ReactNative.UIManager
             get
             {
                 return _customBorder != null ||
-                    _customLeftBorder != null ||
-                    _customRightBorder != null ||
-                    _customTopBorder != null ||
-                    _customBottomBorder != null;
+                       _customLeftBorder != null ||
+                       _customRightBorder != null ||
+                       _customTopBorder != null ||
+                       _customBottomBorder != null;
             }
         }
 
@@ -84,7 +81,7 @@ namespace ReactNative.UIManager
         /// <param name="width">The width.</param>
         public void SetBorderWidth(CSSSpacingType kind, double width)
         {
-            var thickness = BorderThickness;
+            var thickness = _customBorder.BorderThickness;
             switch (kind)
             {
                 case CSSSpacingType.Left:
@@ -103,10 +100,33 @@ namespace ReactNative.UIManager
                     thickness = new Thickness(width);
                     break;
             }
-            BorderThickness = thickness;
+            //var thickness = BorderThickness;
+            //switch (kind)
+            //{
+            //    case CSSSpacingType.Left:
+            //        thickness.Left = width;
+            //        break;
+            //    case CSSSpacingType.Top:
+            //        thickness.Top = width;
+            //        break;
+            //    case CSSSpacingType.Right:
+            //        thickness.Right = width;
+            //        break;
+            //    case CSSSpacingType.Bottom:
+            //        thickness.Bottom = width;
+            //        break;
+            //    case CSSSpacingType.All:
+            //        thickness = new Thickness(width);
+            //        break;
+            //}
+            _customBorder.BorderThickness = thickness;
         }
 
-        /// <summary>
+        //BorderThickness = thickness;
+    }
+}
+
+/// <summary>
         /// Sets the border color.
         /// </summary>
         /// <param name="color">The masked color.</param>
