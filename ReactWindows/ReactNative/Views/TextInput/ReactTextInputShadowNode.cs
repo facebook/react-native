@@ -15,12 +15,16 @@ namespace ReactNative.Views.TextInput
     {
         
         private Style _style;
-
         private readonly bool _isVirtual;
         
-        public ReactTextInputShadowNode() : base(false)
+        public ReactTextInputShadowNode(bool isVirtual) : base(false)
         {
-            base.MeasureFunction = MeasureText;
+            _isVirtual = isVirtual;
+
+            if (!isVirtual)
+            {
+                MeasureFunction = MeasureText;
+            }
         }
 
         private static MeasureOutput MeasureText(CSSNode node, float width, float height)
