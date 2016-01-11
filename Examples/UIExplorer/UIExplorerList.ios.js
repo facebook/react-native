@@ -46,7 +46,7 @@ var COMPONENTS = [
   require('./ScrollViewExample'),
   require('./SegmentedControlIOSExample'),
   require('./SliderIOSExample'),
-  require('./SwitchIOSExample'),
+  require('./SwitchExample'),
   require('./TabBarIOSExample'),
   require('./TextExample.ios'),
   require('./TextInputExample.ios'),
