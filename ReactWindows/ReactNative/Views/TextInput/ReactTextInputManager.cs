@@ -12,7 +12,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media.Media3D;
+using Windows.UI.Xaml.Shapes;
 
 namespace ReactNative.Views.TextInput
 {
@@ -26,6 +28,7 @@ namespace ReactNative.Views.TextInput
         private const string PROP_PLACEHOLDER = "placeholder";
         private const string PROP_TEXT_ALIGN = "textAlign";
         private const string PROP_MAX_LENGTH = "maxLength";
+        private const string PROP_TEXT = "text";
         private const string PROP_IS_EDITABLE = "editable";
 
         public override string Name
@@ -62,8 +65,11 @@ namespace ReactNative.Views.TextInput
 
         protected override void UpdateExtraData(TextBox root, object extraData)
         {
+            var style = new Style { TargetType = typeof(TextBox) };
+            root.Style.Setters.Add(new Setter(Shape.FillProperty, Brushes.Red));
+            root.Style.Add(inline);
         }
-        
+
         protected override LayoutShadowNode CreateShadowNodeInstanceCore()
         {
             //TODO: Need to implement ReactTextInputShadowNode.
@@ -158,6 +164,17 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
+        /// Sets the text property on the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="view">The text input box control.</param>
+        /// <param name="degrees">The text value.</param>
+        [ReactProperty(PROP_TEXT)]
+        public void SetText(TextBox view, string text)
+        {
+            view.Text = text != null ? text : "";
+        }
+
+        /// <summary>
         /// Sets the default text placeholder property on the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="view">The text input box control.</param>
@@ -220,6 +237,8 @@ namespace ReactNative.Views.TextInput
             public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
             {
                 var senderTextInput = (TextBox)sender;
+                var te = senderTextInput.GetReactContext();
+                te.CatalystInstance.
                 _EventDispatcher.DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
             }
 

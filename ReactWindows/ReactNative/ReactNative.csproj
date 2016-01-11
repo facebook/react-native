@@ -252,6 +252,8 @@
     <Compile Include="UIManager\ViewManager.Generic.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="Views\Scroll\ReactScrollViewManager.cs" />
+    <Compile Include="Views\TextInput\ReactTextBox.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputShadowNode.cs" />
     <Compile Include="Views\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
     <Compile Include="Views\Text\ReactRawTextManager.cs" />
