@@ -23,6 +23,7 @@ namespace ReactNative.Views.TextInput
         private static readonly string REACT_CLASS = "RCTTextField";
 
         private const string PROP_ROTATION_X = "rotationX";
+        private const string PROP_PLACEHOLDER = "placeholder";
         private const string PROP_TEXT_ALIGN = "textAlign";
         private const string PROP_MAX_LENGTH = "maxLength";
         private const string PROP_IS_EDITABLE = "editable";
@@ -154,6 +155,17 @@ namespace ReactNative.Views.TextInput
             {
                 view.TextAlignment = textAlignment;
             }
+        }
+
+        /// <summary>
+        /// Sets the default text placeholder property on the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="view">The text input box control.</param>
+        /// <param name="placeholder">placeholder text.</param>
+        [ReactProperty(PROP_PLACEHOLDER)]
+        public void SetPlaceholder(TextBox view, string placeholder)
+        {
+            view.PlaceholderText = placeholder;
         }
 
         /// <summary>
