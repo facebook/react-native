@@ -7,6 +7,9 @@ using Windows.UI.Xaml.Media;
 
 namespace ReactNative.UIManager
 {
+    /// <summary>
+    /// A single child control for managing a border.
+    /// </summary>
     public class BorderedContentControl : ContentControl
     {
         private static readonly SolidColorBrush s_defaultBorderBrush = new SolidColorBrush(Colors.Black);
@@ -17,11 +20,15 @@ namespace ReactNative.UIManager
         private Border _customTopBorder;
         private Border _customBottomBorder;
 
+        /// <summary>
+        /// Instantiates the <see cref="BorderedContentControl"/>.
+        /// </summary>
+        /// <param name="content">The content.</param>
         public BorderedContentControl(object content)
         {
+            DefaultStyleKey = typeof(BorderedContentControl);
             BorderBrush = s_defaultBorderBrush;
             base.Content = content;
-            CreateBorder(); // TODO: can we use the ContentControl border properties?
         }
 
         private bool HasCustomBorder
@@ -36,6 +43,10 @@ namespace ReactNative.UIManager
             }
         }
 
+        /// <summary>
+        /// An intentional override of the <see cref="ContentControl.Content"/>
+        /// property that returns the child without any borders.
+        /// </summary>
         public new UIElement Content
         {
             get
@@ -55,16 +66,17 @@ namespace ReactNative.UIManager
             }
         }
 
+        /// <summary>
+        /// Sets the border width.
+        /// </summary>
+        /// <param name="width">The width.</param>
         public void SetBorderWidth(double width)
         {
-            var thickness = new Thickness(width);
-            if (!HasCustomBorder)
+            EnsureBorder();
+
+            if (_customBorder != null)
             {
-                BorderThickness = thickness;
-            }
-            else if (_customBorder != null)
-            {
-                _customBorder.BorderThickness = thickness;
+                _customBorder.BorderThickness = new Thickness(width);
             }
             else if (_customBorder == null)
             {
@@ -75,6 +87,11 @@ namespace ReactNative.UIManager
             }
         }
 
+        /// <summary>
+        /// Sets the border width.
+        /// </summary>
+        /// <param name="kind">The width specification.</param>
+        /// <param name="width">The width.</param>
         public void SetBorderWidth(CSSSpacingType kind, double width)
         {
             if (kind == CSSSpacingType.All)
@@ -82,30 +99,9 @@ namespace ReactNative.UIManager
                 SetBorderWidth(width);
             }
 
-            if (!HasCustomBorder)
-            {
-                var thickness = BorderThickness;
-                switch (kind)
-                {
-                    case CSSSpacingType.Left:
-                        thickness.Left = width;
-                        break;
-                    case CSSSpacingType.Top:
-                        thickness.Top = width;
-                        break;
-                    case CSSSpacingType.Right:
-                        thickness.Right = width;
-                        break;
-                    case CSSSpacingType.Bottom:
-                        thickness.Bottom = width;
-                        break;
-                    case CSSSpacingType.All:
-                        thickness = new Thickness(width);
-                        break;
-                }
-                BorderThickness = thickness;
-            }
-            else if (_customBorder != null)
+            EnsureBorder();
+
+            if (_customBorder != null)
             {
                 var thickness = _customBorder.BorderThickness;
                 switch (kind)
@@ -148,14 +144,17 @@ namespace ReactNative.UIManager
             }
         }
 
+        /// <summary>
+        /// Sets the border color.
+        /// </summary>
+        /// <param name="color">The masked color.</param>
         public void SetBorderColor(uint color)
         {
+            EnsureBorder();
+
             var brush = new SolidColorBrush(ColorHelpers.Parse(color));
-            if (!HasCustomBorder)
-            {
-                BorderBrush = brush;
-            }
-            else if (_customBorder != null)
+
+            if (_customBorder != null)
             {
                 _customBorder.BorderBrush = brush;
             }
@@ -173,6 +172,11 @@ namespace ReactNative.UIManager
             }
         }
 
+        /// <summary>
+        /// Sets the border color.
+        /// </summary>
+        /// <param name="kind">The width specification.</param>
+        /// <param name="color">The masked color.</param>
         public void SetBorderColor(CSSSpacingType kind, uint color)
         {
             if (kind == CSSSpacingType.All)
@@ -182,7 +186,9 @@ namespace ReactNative.UIManager
             else
             {
                 var brush = new SolidColorBrush(ColorHelpers.Parse(color));
-                CreateSideBorders();
+
+                EnsureSideBorders();
+
                 switch (kind)
                 {
                     case CSSSpacingType.Left:
@@ -201,13 +207,15 @@ namespace ReactNative.UIManager
             }
         }
 
+        /// <summary>
+        /// Sets the border radius.
+        /// </summary>
+        /// <param name="radius">The radius.</param>
         public void SetBorderRadius(double radius)
         {
             var cornerRadius = new CornerRadius(radius);
-            if (!HasCustomBorder)
-            {
-                CreateBorder();
-            }
+
+            EnsureBorder();
             
             if (_customBorder != null)
             {
@@ -220,15 +228,20 @@ namespace ReactNative.UIManager
                 Debug.Assert(_customRightBorder != null);
                 Debug.Assert(_customBottomBorder != null);
 
-                _customLeftBorder.CornerRadius = cornerRadius;
-                _customTopBorder.CornerRadius = cornerRadius;
-                _customRightBorder.CornerRadius = cornerRadius;
-                _customBottomBorder.CornerRadius = cornerRadius;
+                _customLeftBorder.CornerRadius = new CornerRadius(radius, 0, 0, 0);
+                _customTopBorder.CornerRadius = new CornerRadius(0, radius, 0, 0);
+                _customRightBorder.CornerRadius = new CornerRadius(0, 0, radius, 0);
+                _customBottomBorder.CornerRadius = new CornerRadius(0, 0, 0, radius);
             }
         }
 
-        private void CreateBorder()
+        private void EnsureBorder()
         {
+            if (HasCustomBorder)
+            {
+                return;
+            }
+
             var inner = Content;
             base.Content = null;
             _customBorder = new Border();
@@ -238,12 +251,11 @@ namespace ReactNative.UIManager
             _customBorder.Child = inner;
         }
 
-        private void CreateSideBorders()
+        private void EnsureSideBorders()
         {
-            if (_customBorder != null)
+            if (HasCustomBorder && _customBorder == null)
             {
-                _customBorder.Child = null;
-                _customBorder = null;
+                return;
             }
 
             _customLeftBorder = new Border();
@@ -260,19 +272,27 @@ namespace ReactNative.UIManager
             var borderBrush = _customBorder != null ? _customBorder.BorderBrush : BorderBrush;
             var child = _customBorder != null ? _customBorder.Child : (UIElement)Content;
 
+            if (_customBorder != null)
+            {
+                _customBorder.Child = null;
+                _customBorder = null;
+            }
+
             _customLeftBorder.BorderThickness = new Thickness(borderThickness.Left, 0, 0, 0);
-            _customLeftBorder.CornerRadius = cornerRadius;
+            _customLeftBorder.CornerRadius = new CornerRadius(cornerRadius.TopLeft, 0, 0, cornerRadius.BottomLeft);
             _customLeftBorder.BorderBrush = borderBrush;
             _customTopBorder.BorderThickness = new Thickness(0, borderThickness.Top, 0, 0);
-            _customTopBorder.CornerRadius = cornerRadius;
+            _customTopBorder.CornerRadius = new CornerRadius(0, cornerRadius.TopRight, 0, 0);
             _customTopBorder.BorderBrush = borderBrush;
             _customRightBorder.BorderThickness = new Thickness(0, 0, borderThickness.Right, 0);
-            _customRightBorder.CornerRadius = cornerRadius;
+            _customRightBorder.CornerRadius = new CornerRadius(0, 0, cornerRadius.BottomRight, 0);
             _customRightBorder.BorderBrush = borderBrush;
             _customBottomBorder.BorderThickness = new Thickness(0, 0, 0, borderThickness.Bottom);
-            _customBottomBorder.CornerRadius = cornerRadius;
+            _customBottomBorder.CornerRadius = new CornerRadius();
             _customBottomBorder.BorderBrush = borderBrush;
             _customBottomBorder.Child = child;
+
+            base.Content = _customLeftBorder;
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿#define ENABLED
 
+using Facebook.CSSLayout;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager
 {
@@ -366,6 +368,23 @@ namespace ReactNative.UIManager
                 x += (int)Math.Round(parent.LayoutX);
                 y += (int)Math.Round(parent.LayoutY);
                 parent = parent.Parent;
+            }
+
+            // This is a hack that accomodates for the fact that borders are
+            // wrapped around the canvases that contain the UI elements. It is
+            // likely to prove brittle over time, and we should consider either
+            // alternate ways of drawing borders, or different mechanisms to
+            // set absolute positions of elements.
+            var borderParent = node.Parent;
+            if (borderParent != null && borderParent.IsLayoutOnly)
+            {
+                borderParent = node.NativeParent;
+            }
+
+            if (borderParent != null)
+            {
+                x -= (int)Math.Round(borderParent.GetLeftBorderWidth());
+                y -= (int)Math.Round(borderParent.GetTopBorderWidth());
             }
 
             ApplyLayoutRecursive(node, x, y);

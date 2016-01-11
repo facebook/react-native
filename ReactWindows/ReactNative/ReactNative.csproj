@@ -156,6 +156,7 @@
     <Compile Include="CoreModulesPackage.cs" />
     <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
+    <Compile Include="UIManager\CSSNodeExtensions.cs" />
     <Compile Include="UIManager\Events\IOnIntercepTextGotFocusEventListener.cs" />
     <Compile Include="UIManager\Events\IOnInterceptTextInputEventListener.cs" />
     <Compile Include="LifecycleState.cs" />
