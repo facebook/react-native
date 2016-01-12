@@ -21,6 +21,18 @@ void JMessageQueueThread::runOnQueue(std::function<void()>&& runnable) {
   method(m_jobj, JNativeRunnable::newObjectCxxArgs(runnable).get());
 }
 
+bool JMessageQueueThread::isOnThread() {
+  static auto method = MessageQueueThread::javaClassStatic()->
+    getMethod<jboolean()>("isOnThread");
+  return method(m_jobj);
+}
+
+void JMessageQueueThread::quitSynchronous() {
+  static auto method = MessageQueueThread::javaClassStatic()->
+    getMethod<void()>("quitSynchronous");
+  method(m_jobj);
+}
+
 /* static */
 std::unique_ptr<JMessageQueueThread> JMessageQueueThread::currentMessageQueueThread() {
   static auto method = MessageQueueThreadRegistry::javaClassStatic()->

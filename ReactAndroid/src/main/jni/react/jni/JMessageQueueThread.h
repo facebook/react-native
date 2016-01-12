@@ -25,6 +25,17 @@ public:
    */
   void runOnQueue(std::function<void()>&& runnable);
 
+  /**
+   * Returns whether the currently executing thread is this MessageQueueThread.
+   */
+  bool isOnThread();
+
+  /**
+   * Synchronously quits the current MessageQueueThread. Can be called from any thread, but will
+   * block if not called on this MessageQueueThread.
+   */
+  void quitSynchronous();
+
   MessageQueueThread::javaobject jobj() {
     return m_jobj.get();
   }

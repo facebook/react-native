@@ -1,5 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#include <atomic>
 #include <functional>
 #include <mutex>
 #include <string>
@@ -56,17 +57,26 @@ public:
    * ownerMessageQueueThread_.
    */
   void postMessage(JSValueRef msg);
-  void finish();
-  bool isFinished();
+
+  /**
+   * Synchronously quits the current worker and cleans up its VM.
+   */
+  void terminate();
+
+  /**
+   * Whether terminate() has been called on this worker.
+   */
+  bool isTerminated();
 
   static Object createMessageObject(JSContextRef context, const std::string& msgData);
 private:
   void initJSVMAndLoadScript();
   void postRunnableToEventLoop(std::function<void()>&& runnable);
   void postMessageToOwner(JSValueRef result);
+  void terminateOnWorkerThread();
 
   int id_;
-  bool isFinished_ = false;
+  std::atomic_bool isTerminated_ = ATOMIC_VAR_INIT(false);
   std::string scriptName_;
   JSCWebWorkerOwner *owner_ = nullptr;
   std::shared_ptr<JMessageQueueThread> ownerMessageQueueThread_;

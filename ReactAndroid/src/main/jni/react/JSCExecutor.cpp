@@ -106,6 +106,7 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   installGlobalFunction(m_context, "nativePerformanceNow", nativePerformanceNow);
   installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
   installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
+  installGlobalFunction(m_context, "nativeTerminateWorker", nativeTerminateWorker);
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -123,6 +124,15 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
 }
 
 JSCExecutor::~JSCExecutor() {
+  // terminateWebWorker mutates m_webWorkers so collect all the workers to terminate first
+  std::vector<int> workerIds;
+  for (auto it = m_webWorkers.begin(); it != m_webWorkers.end(); it++) {
+    workerIds.push_back(it->first);
+  }
+  for (int workerId : workerIds) {
+    terminateWebWorker(workerId);
+  }
+
   s_globalContextRefToJSCExecutor.erase(m_context);
   JSGlobalContextRelease(m_context);
 }
@@ -268,6 +278,15 @@ void JSCExecutor::postMessageToWebWorker(int workerId, JSValueRef message, JSVal
   worker.postMessage(message);
 }
 
+void JSCExecutor::terminateWebWorker(int workerId) {
+  JSCWebWorker& worker = m_webWorkers.at(workerId);
+
+  worker.terminate();
+
+  m_webWorkers.erase(workerId);
+  m_webWorkerJSObjs.erase(workerId);
+}
+
 static JSValueRef createErrorString(JSContextRef ctx, const char *msg) {
   return JSValueMakeString(ctx, String(msg));
 }
@@ -357,6 +376,37 @@ JSValueRef JSCExecutor::nativePostMessageToWorker(
   }
 
   executor->postMessageToWebWorker((int) workerDouble, arguments[1], exception);
+
+  return JSValueMakeUndefined(ctx);
+}
+
+JSValueRef JSCExecutor::nativeTerminateWorker(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception) {
+  if (argumentCount != 1) {
+    *exception = createErrorString(ctx, "Got wrong number of args");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  double workerDouble = JSValueToNumber(ctx, arguments[0], exception);
+  if (workerDouble != workerDouble) {
+    *exception = createErrorString(ctx, "Got invalid worker id");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSCExecutor *executor;
+  try {
+    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
+  } catch (std::out_of_range& e) {
+    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  executor->terminateWebWorker((int) workerDouble);
 
   return JSValueMakeUndefined(ctx);
 }
