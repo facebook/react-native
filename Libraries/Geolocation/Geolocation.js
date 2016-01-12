@@ -18,6 +18,8 @@ var invariant = require('invariant');
 var logError = require('logError');
 var warning = require('warning');
 
+var PERMISSION_TYPES = ['always', 'inUse'];
+
 var subscriptions = [];
 
 var updatesEnabled = false;
@@ -26,6 +28,7 @@ type GeoOptions = {
   timeout: number;
   maximumAge: number;
   enableHighAccuracy: bool;
+  permissionTypeIOS: string;
 }
 
 /**
@@ -56,6 +59,10 @@ var Geolocation = {
     geo_options?: GeoOptions
   ) {
     invariant(
+      !geo_options || !geo_options.permissionTypeIOS || PERMISSION_TYPES.indexOf(geo_options.permissionTypeIOS) > -1,
+      'Invalid permissionTypeIOS option value.'
+    );
+    invariant(
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.'
     );
@@ -71,6 +78,11 @@ var Geolocation = {
    * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
+    invariant(
+      !options || !options.permissionTypeIOS || PERMISSION_TYPES.indexOf(options.permissionTypeIOS) > -1,
+      'Invalid permissionTypeIOS option value.'
+    );
+
     if (!updatesEnabled) {
       RCTLocationObserver.startObserving(options || {});
       updatesEnabled = true;
