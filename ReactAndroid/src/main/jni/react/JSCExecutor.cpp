@@ -239,14 +239,14 @@ std::shared_ptr<JMessageQueueThread> JSCExecutor::getMessageQueueThread() {
 }
 
 void JSCExecutor::onMessageReceived(int workerId, const std::string& json) {
-  Value rebornJSMsg = Value::fromJSON(m_context, String(json.c_str()));
-  JSValueRef args[] = { rebornJSMsg };
   Object& worker = m_webWorkerJSObjs.at(workerId);
 
   Value onmessageValue = worker.getProperty("onmessage");
   if (onmessageValue.isUndefined()) {
     return;
   }
+
+  JSValueRef args[] = { JSCWebWorker::createMessageObject(m_context, json) };
   onmessageValue.asObject().callAsFunction(1, args);
 
   m_flushImmediateCallback(flush(), true);

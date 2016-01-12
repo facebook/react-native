@@ -58,6 +58,8 @@ public:
   void postMessage(JSValueRef msg);
   void finish();
   bool isFinished();
+
+  static Object createMessageObject(JSContextRef context, const std::string& msgData);
 private:
   void initJSVMAndLoadScript();
   void postRunnableToEventLoop(std::function<void()>&& runnable);
