@@ -66,6 +66,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
+  while (controller.presentedViewController) {
+    controller = controller.presentedViewController;
+  }
+    
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
