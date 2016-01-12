@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Text;
+﻿using Windows.UI.Text;
 
-namespace ReactNative.UIManager
+namespace ReactNative.Views.Text
 {
-    static class LayoutStylingHelpers
+    static class FontStyleHelpers
     {
-        public static bool TryParseFontWeightString(string fontWeightString, out FontWeight? fontWeight)
+        public static bool TryParseFontWeightString(string fontWeightString, out FontWeight fontWeight)
         {
             var fontWeightNumeric = fontWeightString != null
                 ? ParseNumericFontWeight(fontWeightString)
                 : -1;
 
-            fontWeight = default(FontWeight?);
+            fontWeight = default(FontWeight);
 
             if (fontWeightNumeric >= 500 || fontWeightString == "bold")
             {
@@ -31,22 +26,23 @@ namespace ReactNative.UIManager
             return false;
         }
 
-        public static bool TryParseFontStyleString(string fontStyleString, out FontStyle? fontStyle)
+        public static bool TryParseFontStyleString(string fontStyleString, out FontStyle fontStyle)
         {
-            fontStyle = default(FontStyle?);
+            fontStyle = default(FontStyle);
 
-            if (fontStyleString == "italic")
+            switch (fontStyleString)
             {
-                fontStyle = FontStyle.Italic;
-                return true;
-            }
-            else if (fontStyleString == "normal")
-            {
-                fontStyle = FontStyle.Normal;
-                return true;
+                case "italic":
+                    fontStyle = FontStyle.Italic;
+                    break;
+                case "normal":
+                    fontStyle = FontStyle.Normal;
+                    break;
+                default:
+                    return false;
             }
 
-            return false;
+            return true;
         }
 
         private static int ParseNumericFontWeight(string fontWeightString)

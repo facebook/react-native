@@ -20,7 +20,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace ReactNative.Views.TextInput
 {
-    class ReactTextInputManager : BaseViewManager<TextBox, LayoutShadowNode>
+    class ReactTextInputManager : BaseViewManager<TextBox, ReactTextInputShadowNode>
     {
         private static readonly int FOCUS_TEXT_INPUT = 1;
         private static readonly int BLUR_TEXT_INPUT = 2;
@@ -39,45 +39,6 @@ namespace ReactNative.Views.TextInput
             {
                 return REACT_CLASS;
             }
-        }
-
-        /// <summary>
-        /// Returns the view instance for <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="reactContext"></param>
-        /// <returns></returns>
-        protected override TextBox CreateViewInstanceCore(ThemedReactContext reactContext)
-        {
-            return new TextBox();
-        }
-        
-        /// <summary>
-        /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The <see cref="TextBox"/> view instance.</param>
-        protected override void AddEventEmitters(ThemedReactContext reactContext, TextBox view)
-        {
-            view.TextChanged += this.OnInterceptTextChangeEvent;
-            view.GotFocus += this.OnInterceptGotFocusEvent;
-            view.LostFocus += this.OnInterceptLostFocusEvent;
-        }
-        
-        protected override void UpdateExtraData(TextBox root, object extraData)
-        {
-            var reactTextBoxStyle = (ReactTextBox)extraData;
-
-            if (reactTextBoxStyle == null)
-            {
-                throw new InvalidOperationException("ReactTextBox is undefined exception. We were unable to measure the dimensions of the TextBox control.");
-            }
-
-            reactTextBoxStyle.MergePropertiesToNativeTextBox(ref root);
-        }
-
-        protected override LayoutShadowNode CreateShadowNodeInstanceCore()
-        {
-            return new ReactTextInputShadowNode(false);
         }
 
         public override IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
@@ -136,23 +97,6 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
-        /// Implement this method to receive events/commands directly from
-        /// JavaScript through the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="root">
-        /// The view instance that should receive the command.
-        /// </param>
-        /// <param name="commandId">Identifer for the command.</param>
-        /// <param name="args">Optional arguments for the command.</param>
-        protected override void ReceiveCommand(TextBox view, int commandId, JArray args)
-        {
-            if (commandId == FOCUS_TEXT_INPUT)
-            {
-                view.Focus(FocusState.Programmatic);
-            }
-        }
-
-        /// <summary>
         /// Sets the text alignment property on the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="view">The text input box control.</param>
@@ -166,7 +110,7 @@ namespace ReactNative.Views.TextInput
                 view.TextAlignment = textAlignment;
             }
         }
-        
+
         /// <summary>
         /// Sets the default text placeholder property on the <see cref="TextBox"/>.
         /// </summary>
@@ -191,11 +135,6 @@ namespace ReactNative.Views.TextInput
             }
         }
 
-        private EventDispatcher EventDispatcher(TextBox textBox)
-        {
-            return textBox?.GetReactContext().CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
-        }
-
         /// <summary>
         /// Sets the max charcter length property on the <see cref="TextBox"/>.
         /// </summary>
@@ -215,7 +154,7 @@ namespace ReactNative.Views.TextInput
         public void OnInterceptLostFocusEvent(object sender, RoutedEventArgs @event)
         {
             var senderTextInput = (TextBox)sender;
-            EventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputBlurEvent(senderTextInput.GetTag()));
+            GetEventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputBlurEvent(senderTextInput.GetTag()));
         }
 
         /// <summary>
@@ -226,7 +165,7 @@ namespace ReactNative.Views.TextInput
         public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
         {
             var senderTextInput = (TextBox)sender;
-            EventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
+            GetEventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
         }
 
         /// <summary>
@@ -237,7 +176,7 @@ namespace ReactNative.Views.TextInput
         public void OnInterceptTextChangeEvent(object sender, TextChangedEventArgs e)
         {
             var senderTextInput = (TextBox)sender;
-            EventDispatcher(senderTextInput).DispatchEvent(new ReactTextChangedEvent(senderTextInput.GetTag(), senderTextInput.Text, senderTextInput.Width, senderTextInput.Height));
+            GetEventDispatcher(senderTextInput).DispatchEvent(new ReactTextChangedEvent(senderTextInput.GetTag(), senderTextInput.Text, senderTextInput.Width, senderTextInput.Height));
         }
 
         /// <summary>
@@ -252,6 +191,67 @@ namespace ReactNative.Views.TextInput
             view.TextChanged -= this.OnInterceptTextChangeEvent;
             view.GotFocus -= this.OnInterceptGotFocusEvent;
             view.LostFocus -= this.OnInterceptLostFocusEvent;
+        }
+
+        /// <summary>
+        /// Returns the view instance for <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="reactContext"></param>
+        /// <returns></returns>
+        protected override TextBox CreateViewInstanceCore(ThemedReactContext reactContext)
+        {
+            return new TextBox();
+        }
+
+        /// <summary>
+        /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The <see cref="TextBox"/> view instance.</param>
+        protected override void AddEventEmitters(ThemedReactContext reactContext, TextBox view)
+        {
+            view.TextChanged += this.OnInterceptTextChangeEvent;
+            view.GotFocus += this.OnInterceptGotFocusEvent;
+            view.LostFocus += this.OnInterceptLostFocusEvent;
+        }
+
+        protected override void UpdateExtraData(TextBox root, object extraData)
+        {
+            var reactTextBoxStyle = (ReactTextBoxProperties)extraData;
+
+            if (reactTextBoxStyle == null)
+            {
+                throw new InvalidOperationException("ReactTextBoxProperties is undefined exception. We were unable to measure the dimensions of the TextBox control.");
+            }
+
+            root.SetReactTextBoxProperties(reactTextBoxStyle);
+        }
+
+        protected override ReactTextInputShadowNode CreateShadowNodeInstanceCore()
+        {
+            return new ReactTextInputShadowNode(false);
+        }
+
+        /// <summary>
+        /// Implement this method to receive events/commands directly from
+        /// JavaScript through the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="root">
+        /// The view instance that should receive the command.
+        /// </param>
+        /// <param name="commandId">Identifer for the command.</param>
+        /// <param name="args">Optional arguments for the command.</param>
+        protected override void ReceiveCommand(TextBox view, int commandId, JArray args)
+        {
+            if (commandId == FOCUS_TEXT_INPUT)
+            {
+                view.Focus(FocusState.Programmatic);
+            }
+        }
+       
+        private EventDispatcher GetEventDispatcher(TextBox textBox)
+        {
+            return textBox?.GetReactContext().CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
         }
     }
 }
