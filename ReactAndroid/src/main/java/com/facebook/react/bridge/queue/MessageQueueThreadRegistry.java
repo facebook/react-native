@@ -29,6 +29,7 @@ public class MessageQueueThreadRegistry {
   /**
    * @return the MessageQueueThread that owns the current Thread.
    */
+  @DoNotStrip
   public static MessageQueueThread myMessageQueueThread() {
     return Assertions.assertNotNull(
         sMyMessageQueueThread.get(),
