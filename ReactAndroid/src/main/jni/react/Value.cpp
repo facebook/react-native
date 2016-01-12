@@ -58,6 +58,10 @@ Object Value::asObject() {
   return std::move(ret);
 }
 
+Object::operator Value() const {
+  return Value(m_context, m_obj);
+}
+
 Value Object::callAsFunction(int nArgs, JSValueRef args[]) {
   JSValueRef exn;
   JSValueRef result = JSObjectCallAsFunction(m_context, m_obj, NULL, nArgs, args, &exn);
@@ -68,7 +72,7 @@ Value Object::callAsFunction(int nArgs, JSValueRef args[]) {
   return Value(m_context, result);
 }
 
-Value Object::getProperty(String propName) const {
+Value Object::getProperty(const String& propName) const {
   JSValueRef exn;
   JSValueRef property = JSObjectGetProperty(m_context, m_obj, propName, &exn);
   if (!property) {
@@ -80,6 +84,28 @@ Value Object::getProperty(String propName) const {
 
 Value Object::getProperty(const char *propName) const {
   return getProperty(String(propName));
+}
+
+void Object::setProperty(const String& propName, const Value& value) const {
+  JSValueRef exn = NULL;
+  JSObjectSetProperty(m_context, m_obj, propName, value, kJSPropertyAttributeNone, &exn);
+  if (exn) {
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to set property: %s", exceptionText.c_str());
+  }
+}
+
+void Object::setProperty(const char *propName, const Value& value) const {
+  setProperty(String(propName), value);
+}
+
+/* static */
+Object Object::create(JSContextRef ctx) {
+  JSObjectRef newObj = JSObjectMake(
+      ctx,
+      NULL, // create instance of default object class
+      NULL); // no private data
+  return Object(ctx, newObj);
 }
 
 } }

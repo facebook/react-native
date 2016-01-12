@@ -111,14 +111,18 @@ public:
     return m_obj;
   }
 
+  operator Value() const;
+
   bool isFunction() const {
     return JSObjectIsFunction(m_context, m_obj);
   }
 
   Value callAsFunction(int nArgs, JSValueRef args[]);
 
-  Value getProperty(String propName) const;
+  Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
+  void setProperty(const String& propName, const Value& value) const;
+  void setProperty(const char *propName, const Value& value) const;
 
   void makeProtected() {
     if (!m_isProtected && m_obj) {
@@ -131,6 +135,11 @@ public:
     auto globalObj = JSContextGetGlobalObject(ctx);
     return Object(ctx, globalObj);
   }
+
+  /**
+   * Creates an instance of the default object class.
+   */
+  static Object create(JSContextRef ctx);
 
 private:
   JSContextRef m_context;

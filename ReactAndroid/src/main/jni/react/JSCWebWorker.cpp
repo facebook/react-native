@@ -53,8 +53,8 @@ void JSCWebWorker::postMessage(JSValueRef msg) {
     if (isFinished()) {
       return;
     }
-    Value rebornJSMsg = Value::fromJSON(context_, String(msgString.c_str()));
-    JSValueRef args[] = { rebornJSMsg };
+
+    JSValueRef args[] = { createMessageObject(context_, msgString) };
     Value onmessageValue = Object::getGlobalObject(context_).getProperty("onmessage");
     onmessageValue.asObject().callAsFunction(1, args);
   });
@@ -109,6 +109,14 @@ JSValueRef JSCWebWorker::nativePostMessage(
   webWorker->postMessageToOwner(msg);
   
   return JSValueMakeUndefined(ctx);
+}
+
+/*static*/
+Object JSCWebWorker::createMessageObject(JSContextRef context, const std::string& msgJson) {
+  Value rebornJSMsg = Value::fromJSON(context, String(msgJson.c_str()));
+  Object messageObject = Object::create(context);
+  messageObject.setProperty("data", rebornJSMsg);
+  return std::move(messageObject);
 }
 
 }
