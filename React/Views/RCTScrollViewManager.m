@@ -164,6 +164,18 @@ RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag withRect:(CGRect)rect)
   }];
 }
 
+RCT_EXPORT_METHOD(zoomToRectWithoutAnimation:(nonnull NSNumber *)reactTag withRect:(CGRect)rect)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+    UIView *view = viewRegistry[reactTag];
+    if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
+      [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:NO];
+    } else {
+      RCTLogError(@"tried to zoomToRectWithoutAnimation: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+    }
+  }];
+}
+
 - (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[

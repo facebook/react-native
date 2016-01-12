@@ -398,6 +398,18 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * A helper function to zoom to a specific rect in the scrollview without animation.
+   * @param {object} rect Should have shape {x, y, width, height}
+   */
+  scrollResponderZoomWithoutAnimationTo: function(rect: { x: number; y: number; width: number; height: number; }) {
+    if (Platform.OS === 'android') {
+      invariant('zoomToRect is not implemented');
+    } else {
+      ScrollViewManager.zoomToRectWithoutAnimation(React.findNodeHandle(this), rect);
+    }
+  },
+
+  /**
    * This method should be used as the callback to onFocus in a TextInputs'
    * parent view. Note that any module using this mixin needs to return
    * the parent view's ref in getScrollViewRef() in order to use this method.
