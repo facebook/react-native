@@ -5,6 +5,7 @@ using ReactNative.UIManager.Events;
 using ReactNative.Views.View;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Media3D;
 using Windows.UI.Xaml.Shapes;
 
@@ -56,24 +58,26 @@ namespace ReactNative.Views.TextInput
         /// <param name="view">The <see cref="TextBox"/> view instance.</param>
         protected override void AddEventEmitters(ThemedReactContext reactContext, TextBox view)
         {
-            var eventListener = new ReactTextInputWatcher(reactContext);
-            view.TextChanged += eventListener.OnInterceptTextChangeEvent;
-            view.GotFocus += eventListener.OnInterceptGotFocusEvent;
-            view.LostFocus += eventListener.OnInterceptLostFocusEvent;
+            view.TextChanged += this.OnInterceptTextChangeEvent;
+            view.GotFocus += this.OnInterceptGotFocusEvent;
+            view.LostFocus += this.OnInterceptLostFocusEvent;
         }
         
-
         protected override void UpdateExtraData(TextBox root, object extraData)
         {
-            var style = new Style { TargetType = typeof(TextBox) };
-            root.Style.Setters.Add(new Setter(Shape.FillProperty, Brushes.Red));
-            root.Style.Add(inline);
+            var reactTextBoxStyle = (ReactTextBox)extraData;
+
+            if (reactTextBoxStyle == null)
+            {
+                throw new InvalidOperationException("ReactTextBox is undefined exception. We were unable to measure the dimensions of the TextBox control.");
+            }
+
+            reactTextBoxStyle.MergePropertiesToNativeTextBox(ref root);
         }
 
         protected override LayoutShadowNode CreateShadowNodeInstanceCore()
         {
-            //TODO: Need to implement ReactTextInputShadowNode.
-            return new LayoutShadowNode();
+            return new ReactTextInputShadowNode(false);
         }
 
         public override IReadOnlyDictionary<string, object> ExportedCustomBubblingEventTypeConstants
@@ -162,18 +166,7 @@ namespace ReactNative.Views.TextInput
                 view.TextAlignment = textAlignment;
             }
         }
-
-        /// <summary>
-        /// Sets the text property on the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="view">The text input box control.</param>
-        /// <param name="degrees">The text value.</param>
-        [ReactProperty(PROP_TEXT)]
-        public void SetText(TextBox view, string text)
-        {
-            view.Text = text != null ? text : "";
-        }
-
+        
         /// <summary>
         /// Sets the default text placeholder property on the <see cref="TextBox"/>.
         /// </summary>
@@ -183,6 +176,24 @@ namespace ReactNative.Views.TextInput
         public void SetPlaceholder(TextBox view, string placeholder)
         {
             view.PlaceholderText = placeholder;
+        }
+
+        /// <summary>
+        /// Sets the foreground color property on the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="color"></param>
+        [ReactProperty(ViewProperties.Color)]
+        public void SetColor(TextBox view, uint? color)
+        {
+            if (color.HasValue)
+            {
+                view.Foreground = new SolidColorBrush(ColorHelpers.Parse(color.Value));
+            }
+        }
+
+        private EventDispatcher EventDispatcher(TextBox textBox)
+        {
+            return textBox?.GetReactContext().CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
         }
 
         /// <summary>
@@ -197,62 +208,50 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
-        /// Sets the editablilty for the <see cref="TextBox"/>. <see cref="TextBox"/> will be set to read-only if this field is set to false.
+        /// The <see cref="TextBox"/> event interceptor for focus lost events for the native control.
         /// </summary>
-        /// <param name="view">The text input box control.</param>
-        /// <param name="isEditable">Determines if the control is editable.</param>
-        [ReactProperty(PROP_IS_EDITABLE, DefaultBoolean = true)]
-        public void SetEditable(TextBox view, bool isEditable)
+        /// <param name="sender">The source sender view.</param>
+        /// <param name="event">The received event args</param>
+        public void OnInterceptLostFocusEvent(object sender, RoutedEventArgs @event)
         {
-            view.IsReadOnly = !isEditable;
+            var senderTextInput = (TextBox)sender;
+            EventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputBlurEvent(senderTextInput.GetTag()));
         }
 
-        private class ReactTextInputWatcher : IOnInterceptTextInputEventListener, IOnIntercepTextFocusEventListener
+        /// <summary>
+        /// The <see cref="TextBox"/> event interceptor for focus gained events for the native control.
+        /// </summary>
+        /// <param name="sender">The source sender view.</param>
+        /// <param name="event">The received event args</param>
+        public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
         {
-            private EventDispatcher _EventDispatcher;
-            private String _PreviousText;
+            var senderTextInput = (TextBox)sender;
+            EventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
+        }
 
-            public ReactTextInputWatcher(ReactContext reactContext)
-            {
-                _EventDispatcher = reactContext.CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
-                _PreviousText = null;
-            }
+        /// <summary>
+        /// The <see cref="TextBox"/> event interceptor for text change events for the native control.
+        /// </summary>
+        /// <param name="sender">The source sender view.</param>
+        /// <param name="event">The received event args</param>
+        public void OnInterceptTextChangeEvent(object sender, TextChangedEventArgs e)
+        {
+            var senderTextInput = (TextBox)sender;
+            EventDispatcher(senderTextInput).DispatchEvent(new ReactTextChangedEvent(senderTextInput.GetTag(), senderTextInput.Text, senderTextInput.Width, senderTextInput.Height));
+        }
 
-            /// <summary>
-            /// The <see cref="TextBox"/> event interceptor for focus lost events for the native control.
-            /// </summary>
-            /// <param name="sender">The source sender view.</param>
-            /// <param name="event">The received event args</param>
-            public void OnInterceptLostFocusEvent(object sender, RoutedEventArgs @event)
-            {
-                var senderTextInput = (TextBox)sender;
-                _EventDispatcher.DispatchEvent(new ReactTextInputBlurEvent(senderTextInput.GetTag()));
-            }
-
-            /// <summary>
-            /// The <see cref="TextBox"/> event interceptor for focus gained events for the native control.
-            /// </summary>
-            /// <param name="sender">The source sender view.</param>
-            /// <param name="event">The received event args</param>
-            public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
-            {
-                var senderTextInput = (TextBox)sender;
-                var te = senderTextInput.GetReactContext();
-                te.CatalystInstance.
-                _EventDispatcher.DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
-            }
-
-            /// <summary>
-            /// The <see cref="TextBox"/> event interceptor for text change events for the native control.
-            /// </summary>
-            /// <param name="sender">The source sender view.</param>
-            /// <param name="event">The received event args</param>
-            public void OnInterceptTextChangeEvent(object sender, TextChangedEventArgs e)
-            {
-                var senderTextInput = (TextBox)sender;
-                _EventDispatcher.DispatchEvent(new ReactTextChangedEvent(senderTextInput.GetTag(), senderTextInput.Text, senderTextInput.Width, senderTextInput.Height));
-            }
-            
+        /// <summary>
+        /// Called when view is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ViewManager{TextBox}"/>
+        /// subclass. Unregister all event handlers for the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The <see cref="TextBox"/>.</param>
+        protected override void OnDropViewInstance(ThemedReactContext reactContext, TextBox view)
+        {
+            view.TextChanged -= this.OnInterceptTextChangeEvent;
+            view.GotFocus -= this.OnInterceptGotFocusEvent;
+            view.LostFocus -= this.OnInterceptLostFocusEvent;
         }
     }
 }
