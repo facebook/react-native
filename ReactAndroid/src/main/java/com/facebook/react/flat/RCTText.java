@@ -50,6 +50,7 @@ import com.facebook.react.uimanager.ViewProps;
 
   public RCTText() {
     setMeasureFunction(this);
+    getSpan().setFontSize(getDefaultFontSize());
   }
 
   @Override

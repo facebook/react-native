@@ -16,18 +16,28 @@ import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
 /* package */ final class FontStylingSpan extends MetricAffectingSpan {
+
+  /* package */ static final FontStylingSpan INSTANCE = new FontStylingSpan(
+      Double.NaN /* mTextColor */,
+      0 /* mBackgroundColor */,
+      -1 /* mFontSize */,
+      -1 /* mFontStyle */,
+      -1 /* mFontWeight */,
+      null /* mFontFamily */,
+      true /* mFrozen */);
+
   // text property
-  private double mTextColor = Double.NaN;
+  private double mTextColor;
   private int mBackgroundColor;
 
   // font properties
-  private int mFontSize = -1;
-  private int mFontStyle = -1;
-  private int mFontWeight = -1;
+  private int mFontSize;
+  private int mFontStyle;
+  private int mFontWeight;
   private @Nullable String mFontFamily;
 
   // whether or not mutation is allowed.
-  private boolean mFrozen = false;
+  private boolean mFrozen;
 
   FontStylingSpan() {
   }
@@ -38,13 +48,15 @@ import android.text.style.MetricAffectingSpan;
       int fontSize,
       int fontStyle,
       int fontWeight,
-      @Nullable String fontFamily) {
+      @Nullable String fontFamily,
+      boolean frozen) {
     mTextColor = textColor;
     mBackgroundColor = backgroundColor;
     mFontSize = fontSize;
     mFontStyle = fontStyle;
     mFontWeight = fontWeight;
     mFontFamily = fontFamily;
+    mFrozen = frozen;
   }
 
   /* package */ FontStylingSpan mutableCopy() {
@@ -54,7 +66,8 @@ import android.text.style.MetricAffectingSpan;
         mFontSize,
         mFontStyle,
         mFontWeight,
-        mFontFamily);
+        mFontFamily,
+        false);
   }
 
   /* package */ boolean isFrozen() {

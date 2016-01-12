@@ -29,11 +29,7 @@ import com.facebook.react.uimanager.ViewProps;
   private static final String ITALIC = "italic";
   private static final String NORMAL = "normal";
 
-  private FontStylingSpan mFontStylingSpan = new FontStylingSpan();
-
-  RCTVirtualText() {
-    mFontStylingSpan.setFontSize(getDefaultFontSize());
-  }
+  private FontStylingSpan mFontStylingSpan = FontStylingSpan.INSTANCE;
 
   @Override
   protected void performCollectText(SpannableStringBuilder builder) {
@@ -176,7 +172,7 @@ import com.facebook.react.uimanager.ViewProps;
     return (int) Math.ceil(PixelUtil.toPixelFromSP(sp));
   }
 
-  private FontStylingSpan getSpan() {
+  protected final FontStylingSpan getSpan() {
     if (mFontStylingSpan.isFrozen()) {
       mFontStylingSpan = mFontStylingSpan.mutableCopy();
     }
