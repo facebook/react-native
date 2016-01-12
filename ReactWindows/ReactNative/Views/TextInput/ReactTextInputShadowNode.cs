@@ -11,9 +11,13 @@ using Windows.Foundation;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.TextInput
 {
+    /// <summary>
+    /// This extension of <see cref="LayoutShadowNode"/> is responsible for measuring the layout for Native <see cref="TextBox"/>.
+    /// </summary>
     public class ReactTextInputShadowNode : LayoutShadowNode
     {
         private ReactTextBox _textBoxStyle;
@@ -49,15 +53,113 @@ namespace ReactNative.Views.TextInput
             }
         }
 
+        /// <summary>
+        /// Queues up the view operations onto the <see cref="UIViewOperationQueue"/>.
+        /// </summary>
+        /// <param name="uiViewOperationQueue"></param>
+        public override void OnCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue)
+        {
+            if (_isVirtual)
+            {
+                return;
+            }
+
+            base.OnCollectExtraUpdates(uiViewOperationQueue);
+            if (_textBoxStyle != null)
+            {
+                uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, _textBoxStyle);
+            }
+        }
+
         private static MeasureOutput MeasureText(CSSNode node, float width, float height)
         {
             var shadowNode = (ReactTextInputShadowNode)node;
-            var textBlock = ReactTextBoxToNativeTextBoxForMeasurement(shadowNode.textBoxStyle);
+            var textBlock = default(TextBox);
+
+            shadowNode._textBoxStyle.MergePropertiesToNativeTextBox(ref textBlock);
 
             var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
                 textBlock.Measure(new Size(width, adjustedHeight));
 
             return new MeasureOutput((float)textBlock.DesiredSize.Width, (float)textBlock.DesiredSize.Height);
+        }
+
+        /// <summary>
+        /// Sets the font size for the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="fontSize">font size value</param>
+        [ReactProperty(ViewProperties.FontSize, DefaultDouble = UNSET)]
+        public void SetFontSize(double fontSize)
+        {
+            _textBoxStyle.FontSize = (int)fontSize;
+            MarkUpdated();
+        }
+
+        /// <summary>
+        /// Sets the text <see cref="FontFamily"/> for the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="fontFamily">Font family string.</param>
+        [ReactProperty(ViewProperties.FontFamily)]
+        public void SetFontFamily(string fontFamily)
+        {
+            _textBoxStyle.FontFamily = new FontFamily(fontFamily);
+            MarkUpdated();
+        }
+
+        /// <summary>
+        /// Sets the text <see cref="FontWeight"/> for the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="fontWeightString">Font weight string.</param>
+        [ReactProperty(ViewProperties.FontWeight)]
+        public void SetFontWeight(string fontWeightString)
+        {
+            var fontWeight = default(FontWeight?);
+            if (LayoutStylingHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
+            {
+                if (_textBoxStyle.FontWeight.HasValue != fontWeight.HasValue ||
+                    (_textBoxStyle.FontWeight.HasValue && fontWeight.HasValue &&
+                    _textBoxStyle.FontWeight.Value.Weight != fontWeight.Value.Weight))
+                {
+                    _textBoxStyle.FontWeight = fontWeight;
+                    MarkUpdated();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the text <see cref="FontStyle"/> for the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="fontStyleString">Font style string.</param>
+        [ReactProperty(ViewProperties.FontStyle)]
+        public void SetFontStyle(string fontStyleString)
+        {
+            var fontStyle = default(FontStyle?);
+            if (LayoutStylingHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
+            {
+                if (_textBoxStyle.FontStyle != fontStyle)
+                {
+                    _textBoxStyle.FontStyle = fontStyle;
+                    MarkUpdated();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the left, right, top and bottom padding values for the <see cref="TextBox"/> control, then binds the value on the <see cref="ReactTextBox"/>.
+        /// </summary>
+        /// <param name="padding">Font padding value.</param>
+        [ReactPropertyGroup(
+            ViewProperties.Padding,
+            ViewProperties.PaddingVertical,
+            ViewProperties.PaddingHorizontal,
+            ViewProperties.PaddingLeft,
+            ViewProperties.PaddingRight,
+            ViewProperties.PaddingTop,
+            ViewProperties.PaddingBottom)]
+        public void SetPadding(double padding)
+        {
+            _textBoxStyle.Padding = PaddingThickness;
+            MarkUpdated();
         }
 
         /// <summary>
@@ -74,56 +176,11 @@ namespace ReactNative.Views.TextInput
             
             MarkUpdated();
         }
-
-        private static TextBox ReactTextBoxToNativeTextBoxForMeasurement(ReactTextBox textBoxStyle)
-        {
-                var textBox = new TextBox() {
-                    Text = textBoxStyle.Text != null ? textBoxStyle.Text : ""
-                };
-
-                if (textBoxStyle.FontWeight.HasValue)
-                {
-                    textBox.FontWeight = textBoxStyle.FontWeight.Value;
-                }
-
-                if (textBoxStyle.FontStyle.HasValue)
-                {
-                    textBox.FontStyle = textBoxStyle.FontStyle.Value;
-                }
-
-                if (textBoxStyle.FontSize != UNSET)
-                {
-                    textBox.FontSize = textBoxStyle.FontSize;
-                }
-
-                if (textBoxStyle.FontFamily != null)
-                {
-                    textBox.FontFamily = textBoxStyle.FontFamily;
-                }
-
-                if (textBoxStyle.Padding.HasValue)
-                {
-                    textBox.Padding = textBoxStyle.Padding.Value;
-                }
-
-            return textBox;
-        }
         
-        [ReactPropertyGroup(
-            ViewProperties.Padding,
-            ViewProperties.PaddingVertical,
-            ViewProperties.PaddingHorizontal,
-            ViewProperties.PaddingLeft,
-            ViewProperties.PaddingRight,
-            ViewProperties.PaddingTop,
-            ViewProperties.PaddingBottom)]
-        public override void SetPaddings(int index, float padding)
-        {
-            base.SetPaddings(index, padding);
-            _textBoxStyle.Padding = PaddingThickness;
-            MarkUpdated();
-        }
-
+        /// <summary>
+        /// Sets the text value for the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="text"></param>
         [ReactProperty("text")]
         public void SetText(string text)
         {
@@ -135,8 +192,8 @@ namespace ReactNative.Views.TextInput
         {
             get
             {
-                return new Thickness(GetPadding(CSSSpacingType.Left), GetPadding(CSSSpacingType.Top),
-                                     GetPadding(CSSSpacingType.Right), GetPadding(CSSSpacingType.Bottom));
+                return new Thickness(this.GetPaddingSpace(CSSSpacingType.Left), this.GetPaddingSpace(CSSSpacingType.Top),
+                                     this.GetPaddingSpace(CSSSpacingType.Right), this.GetPaddingSpace(CSSSpacingType.Bottom));
             }
         }
     }

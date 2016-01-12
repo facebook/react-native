@@ -33,6 +33,35 @@ namespace ReactNative.UIManager
             return 0.0f;
         }
 
+        public static float GetPaddingSpace(this CSSNode node, CSSSpacingType spacingType)
+        {
+            var padding = node.GetPadding(spacingType);
+            if (!CSSConstants.IsUndefined(padding))
+            {
+                return padding;
+            }
+
+            padding = node.GetPadding(CSSSpacingType.Horizontal);
+            if (!CSSConstants.IsUndefined(padding))
+            {
+                return padding;
+            }
+
+            padding = node.GetPadding(CSSSpacingType.Start);
+            if (!CSSConstants.IsUndefined(padding))
+            {
+                return padding;
+            }
+
+            padding = node.GetPadding(CSSSpacingType.All);
+            if (!CSSConstants.IsUndefined(padding))
+            {
+                return padding;
+            }
+
+            return 0.0f;
+        }
+
         public static float GetTopBorderWidth(this CSSNode node)
         {
             var width = node.GetBorder(CSSSpacingType.Top);

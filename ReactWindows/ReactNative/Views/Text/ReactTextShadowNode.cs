@@ -171,26 +171,16 @@ namespace ReactNative.Views.Text
         [ReactProperty(ViewProperties.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
-            var fontWeightNumeric = fontWeightString != null
-                ? ParseNumericFontWeight(fontWeightString)
-                : -1;
-
             var fontWeight = default(FontWeight?);
-            if (fontWeightNumeric >= 500 || fontWeightString == "bold")
+            if (LayoutStylingHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
             {
-                fontWeight = FontWeights.Bold;
-            }
-            else if (fontWeightString == "normal" || (fontWeightNumeric != -1 && fontWeightNumeric < 500))
-            {
-                fontWeight = FontWeights.Normal;
-            }
-
-            if (_fontWeight.HasValue != fontWeight.HasValue ||
-                (_fontWeight.HasValue && fontWeight.HasValue &&
-                _fontWeight.Value.Weight != fontWeight.Value.Weight))
-            {
-                _fontWeight = fontWeight;
-                MarkUpdated();
+                if (_fontWeight.HasValue != fontWeight.HasValue ||
+                    (_fontWeight.HasValue && fontWeight.HasValue &&
+                    _fontWeight.Value.Weight != fontWeight.Value.Weight))
+                {
+                    _fontWeight = fontWeight;
+                    MarkUpdated();
+                }
             }
         }
 
@@ -198,19 +188,13 @@ namespace ReactNative.Views.Text
         public void SetFontStyle(string fontStyleString)
         {
             var fontStyle = default(FontStyle?);
-            if (fontStyleString == "italic")
+            if (LayoutStylingHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
             {
-                fontStyle = FontStyle.Italic;
-            }
-            else if (fontStyleString == "normal")
-            {
-                fontStyle = FontStyle.Normal;
-            }
-
-            if (_fontStyle != fontStyle)
-            {
-                _fontStyle = fontStyle;
-                MarkUpdated();
+                if (_fontStyle != fontStyle)
+                {
+                    _fontStyle = fontStyle;
+                    MarkUpdated();
+                }
             }
         }
 
@@ -241,15 +225,7 @@ namespace ReactNative.Views.Text
                 textBlock.Inlines.Clear();
             }
         }
-
-        private static int ParseNumericFontWeight(string fontWeightString)
-        {
-            return fontWeightString.Length == 3 && fontWeightString.EndsWith("00") &&
-                fontWeightString[0] <= '9' && fontWeightString[0] >= '1'
-                ? 100 * (fontWeightString[0] - '0')
-                : -1;
-        }
-
+        
         private static Inline FromTextCSSNode(ReactTextShadowNode textNode)
         {
             return BuildInlineFromTextCSSNode(textNode);
