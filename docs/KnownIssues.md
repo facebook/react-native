@@ -22,7 +22,6 @@ Our provisional plan for common views and modules includes:
 #### Views
 
 ```
-ART
 Maps
 Modal
 Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
