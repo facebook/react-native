@@ -55,7 +55,7 @@ class DependencyGraph {
       platforms: platforms || [],
       preferNativePlatform: preferNativePlatform || false,
       cache,
-      extensions: extensions || ['js', 'json'],
+      extensions: extensions || ['js', 'jsx', 'json'],
       mocksPattern,
       extractRequires,
       shouldThrowOnUnresolvedErrors,
