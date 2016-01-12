@@ -263,6 +263,9 @@ import com.facebook.react.uimanager.ViewProps;
       if (getParent() != null) {
         invalidate();
       }
+
+      // reset NodeRegion to allow it getting garbage-collected
+      mNodeRegion = NodeRegion.EMPTY;
     }
   }
 
