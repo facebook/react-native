@@ -42,9 +42,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   private final ArrayList<FlatShadowNode> mViewsToDetachAllChildrenFrom = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
-  private final ArrayList<FlatShadowNode> mViewsToUpdateBounds = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDrop = new ArrayList<>();
   private final ArrayList<OnLayoutEvent> mOnLayoutEvents = new ArrayList<>();
+  private final ArrayList<FlatUIViewOperationQueue.UpdateViewBounds> mUpdateViewBoundsOperations =
+      new ArrayList<>();
 
   private @Nullable FlatUIViewOperationQueue.DetachAllChildrenFromViews mDetachAllChildrenFromViews;
 
@@ -84,7 +85,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     node.updateNodeRegion(left, top, right, bottom);
 
-    mViewsToUpdateBounds.add(node);
+    updateViewBounds(node, left, top, right, bottom);
 
     if (mDetachAllChildrenFromViews != null) {
       int[] viewsToDetachAllChildrenFrom = collectViewTags(mViewsToDetachAllChildrenFrom);
@@ -94,10 +95,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       mDetachAllChildrenFromViews = null;
     }
 
-    for (int i = 0, size = mViewsToUpdateBounds.size(); i != size; ++i) {
-      updateViewBounds(mViewsToUpdateBounds.get(i));
+    for (int i = 0, size = mUpdateViewBoundsOperations.size(); i != size; ++i) {
+      mOperationsQueue.enqueueUpdateViewBounds(mUpdateViewBoundsOperations.get(i));
     }
-    mViewsToUpdateBounds.clear();
+    mUpdateViewBoundsOperations.clear();
 
     // This could be more efficient if EventDispatcher had a batch mode
     // to avoid multiple synchronized calls.
@@ -156,13 +157,16 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   /**
    * Updates boundaries of a View that a give nodes maps to.
    */
-  private void updateViewBounds(FlatShadowNode node) {
-    NodeRegion nodeRegion = node.getNodeRegion();
-
-    int viewLeft = Math.round(nodeRegion.mLeft);
-    int viewTop = Math.round(nodeRegion.mTop);
-    int viewRight = Math.round(nodeRegion.mRight);
-    int viewBottom = Math.round(nodeRegion.mBottom);
+  private void updateViewBounds(
+      FlatShadowNode node,
+      float left,
+      float top,
+      float right,
+      float bottom) {
+    int viewLeft = Math.round(left);
+    int viewTop = Math.round(top);
+    int viewRight = Math.round(right);
+    int viewBottom = Math.round(bottom);
     if (node.getViewLeft() == viewLeft && node.getViewTop() == viewTop &&
         node.getViewRight() == viewRight && node.getViewBottom() == viewBottom) {
       // nothing changed.
@@ -172,7 +176,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     // this will optionally measure and layout the View this node maps to.
     node.setViewBounds(viewLeft, viewTop, viewRight, viewBottom);
     int tag = node.getReactTag();
-    mOperationsQueue.enqueueUpdateViewBounds(tag, viewLeft, viewTop, viewRight, viewBottom);
+
+    mUpdateViewBoundsOperations.add(
+        mOperationsQueue.createUpdateViewBounds(tag, viewLeft, viewTop, viewRight, viewBottom));
   }
 
   /**
@@ -445,7 +451,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           parentClipBottom - top);
 
       if (!needsCustomLayout) {
-        mViewsToUpdateBounds.add(node);
+        updateViewBounds(node, left, top, right, bottom);
       }
     } else {
       collectStateRecursively(

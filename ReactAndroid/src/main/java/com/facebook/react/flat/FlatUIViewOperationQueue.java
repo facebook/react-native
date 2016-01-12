@@ -86,7 +86,7 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
   /**
    * UIOperation that updates View bounds for a View defined by reactTag.
    */
-  private final class UpdateViewBounds implements UIOperation {
+  public final class UpdateViewBounds implements UIOperation {
 
     private final int mReactTag;
     private final int mLeft;
@@ -234,11 +234,20 @@ import com.facebook.react.uimanager.UIViewOperationQueue;
     enqueueUIOperation(new UpdateViewGroup(reactTag, viewsToAdd, viewsToDetach));
   }
 
+  public UpdateViewBounds createUpdateViewBounds(
+      int reactTag,
+      int left,
+      int top,
+      int right,
+      int bottom) {
+    return new UpdateViewBounds(reactTag, left, top, right, bottom);
+  }
+
   /**
    * Enqueues a new UIOperation that will update View bounds for a View defined by reactTag.
    */
-  public void enqueueUpdateViewBounds(int reactTag, int left, int top, int right, int bottom) {
-    enqueueUIOperation(new UpdateViewBounds(reactTag, left, top, right, bottom));
+  public void enqueueUpdateViewBounds(UpdateViewBounds updateViewBounds) {
+    enqueueUIOperation(updateViewBounds);
   }
 
   public void enqueueSetPadding(
