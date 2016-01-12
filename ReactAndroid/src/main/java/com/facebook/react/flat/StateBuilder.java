@@ -150,6 +150,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float top,
       float right,
       float bottom) {
+    if (left == right || top == bottom) {
+      // no point in adding an empty NodeRegion
+      return;
+    }
+
     node.updateNodeRegion(left, top, right, bottom);
     mNodeRegions.add(node.getNodeRegion());
   }
