@@ -14,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import android.app.Application;
 import android.support.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.modules.core.Timing;
 
@@ -155,6 +157,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
               mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
               mInstance.addBridgeIdleDebugListener(mBridgeIdleSignaler);
               getContext().initializeWithInstance(mInstance);
+              ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
               setupEvent.occur();
             }
           });
