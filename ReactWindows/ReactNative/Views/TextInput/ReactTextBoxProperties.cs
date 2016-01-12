@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -13,7 +9,7 @@ namespace ReactNative.Views.TextInput
     /// <summary>
     /// A Data model which holds measurement related styling updates for <see cref="TextBox"/>.
     /// </summary>
-    public class ReactTextBox
+    public class ReactTextBoxProperties
     {
         private const int UNSET = -1;
 
@@ -51,45 +47,5 @@ namespace ReactNative.Views.TextInput
         /// Sets / Gets the line height of a <see cref="TextBox"/>.
         /// </summary>
         public int LineHeight { get; set; } = UNSET;
-
-        /// <summary>
-        /// This method copies the <see cref="ReactTextBox"/> properties onto a <see cref="TextBox"/> reference.
-        /// </summary>
-        /// <param name="textBox">The <see cref="TextBox"/> reference used to merge the <see cref="ReactTextBox"/> properties onto.</param>
-        /// <returns></returns>
-        public void MergePropertiesToNativeTextBox(ref TextBox textBox)
-        {
-            if (textBox == null)
-            {
-                textBox = new TextBox();
-            }
-
-            textBox.Text = Text != null ? Text : "";
-
-            if (FontWeight.HasValue)
-            {
-                textBox.FontWeight = FontWeight.Value;
-            }
-
-            if (FontStyle.HasValue)
-            {
-                textBox.FontStyle = FontStyle.Value;
-            }
-
-            if (FontSize != UNSET)
-            {
-                textBox.FontSize = FontSize;
-            }
-
-            if (FontFamily != null)
-            {
-                textBox.FontFamily = FontFamily;
-            }
-
-            if (Padding.HasValue)
-            {
-                textBox.Padding = Padding.Value;
-            }
-        }
     }
 }

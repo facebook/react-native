@@ -218,7 +218,8 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
-    <Compile Include="UIManager\LayoutStylingHelpers.cs" />
+    <Compile Include="UIManager\TextBoxExtensions.cs" />
+    <Compile Include="Views\Text\FontStyleHelpers.cs" />
     <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
@@ -253,7 +254,7 @@
     <Compile Include="UIManager\ViewManager.Generic.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="Views\Scroll\ReactScrollViewManager.cs" />
-    <Compile Include="Views\TextInput\ReactTextBox.cs" />
+    <Compile Include="Views\TextInput\ReactTextBoxProperties.cs" />
     <Compile Include="Views\TextInput\ReactTextInputShadowNode.cs" />
     <Compile Include="Views\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
