@@ -3,6 +3,7 @@
 #include "JSCExecutor.h"
 
 #include <algorithm>
+#include <atomic>
 #include <sstream>
 #include <string>
 #include <fb/log.h>
@@ -11,6 +12,7 @@
 #include <jni/fbjni/Exceptions.h>
 #include <sys/time.h>
 #include "Value.h"
+#include "jni/JMessageQueueThread.h"
 #include "jni/OnLoad.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
@@ -48,6 +50,7 @@ namespace facebook {
 namespace react {
 
 static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
+
 static JSValueRef nativeFlushQueueImmediate(
     JSContextRef ctx,
     JSObjectRef function,
@@ -96,10 +99,13 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateC
 JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
     m_flushImmediateCallback(cb) {
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
+  m_messageQueueThread = JMessageQueueThread::currentMessageQueueThread();
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", nativePerformanceNow);
+  installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
+  installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -219,12 +225,54 @@ void JSCExecutor::handleMemoryPressureCritical() {
 }
 
 void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
-  m_flushImmediateCallback(queueJSON);
+  m_flushImmediateCallback(queueJSON, false);
+}
+
+// WebWorker impl
+
+JSGlobalContextRef JSCExecutor::getContext() {
+  return m_context;
+}
+
+std::shared_ptr<JMessageQueueThread> JSCExecutor::getMessageQueueThread() {
+  return m_messageQueueThread;
+}
+
+void JSCExecutor::onMessageReceived(int workerId, const std::string& json) {
+  Value rebornJSMsg = Value::fromJSON(m_context, String(json.c_str()));
+  JSValueRef args[] = { rebornJSMsg };
+  Object& worker = m_webWorkerJSObjs.at(workerId);
+
+  Value onmessageValue = worker.getProperty("onmessage");
+  if (onmessageValue.isUndefined()) {
+    return;
+  }
+  onmessageValue.asObject().callAsFunction(1, args);
+
+  m_flushImmediateCallback(flush(), true);
+}
+
+int JSCExecutor::addWebWorker(const std::string& script, JSValueRef workerRef) {
+  static std::atomic_int nextWorkerId(0);
+  int workerId = nextWorkerId++;
+
+  m_webWorkers.emplace(std::piecewise_construct, std::forward_as_tuple(workerId), std::forward_as_tuple(workerId, this, script));
+  Object workerObj = Value(m_context, workerRef).asObject();
+  workerObj.makeProtected();
+  m_webWorkerJSObjs.emplace(workerId, std::move(workerObj));
+  return workerId;
+}
+
+void JSCExecutor::postMessageToWebWorker(int workerId, JSValueRef message, JSValueRef *exn) {
+  JSCWebWorker& worker = m_webWorkers.at(workerId);
+  worker.postMessage(message);
 }
 
 static JSValueRef createErrorString(JSContextRef ctx, const char *msg) {
   return JSValueMakeString(ctx, String(msg));
 }
+
+// Native JS hooks
 
 static JSValueRef nativeFlushQueueImmediate(
     JSContextRef ctx,
@@ -249,6 +297,66 @@ static JSValueRef nativeFlushQueueImmediate(
   std::string resStr = Value(ctx, arguments[0]).toJSONString();
 
   executor->flushQueueImmediate(resStr);
+
+  return JSValueMakeUndefined(ctx);
+}
+
+JSValueRef JSCExecutor::nativeStartWorker(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception) {
+  if (argumentCount != 2) {
+    *exception = createErrorString(ctx, "Got wrong number of args");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  std::string scriptFile = Value(ctx, arguments[0]).toString().str();
+
+  JSValueRef worker = arguments[1];
+
+  JSCExecutor *executor;
+  try {
+    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
+  } catch (std::out_of_range& e) {
+    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  int workerId = executor->addWebWorker(scriptFile, worker);
+
+  return JSValueMakeNumber(ctx, workerId);
+}
+
+JSValueRef JSCExecutor::nativePostMessageToWorker(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception) {
+  if (argumentCount != 2) {
+    *exception = createErrorString(ctx, "Got wrong number of args");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  double workerDouble = JSValueToNumber(ctx, arguments[0], exception);
+  if (workerDouble != workerDouble) {
+    *exception = createErrorString(ctx, "Got invalid worker id");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSCExecutor *executor;
+  try {
+    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
+  } catch (std::out_of_range& e) {
+    *exception = createErrorString(ctx, "Global JS context didn't map to a valid executor");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  executor->postMessageToWebWorker((int) workerDouble, arguments[1], exception);
 
   return JSValueMakeUndefined(ctx);
 }

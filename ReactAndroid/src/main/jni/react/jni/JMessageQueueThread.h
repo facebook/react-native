@@ -25,6 +25,10 @@ public:
    */
   void runOnQueue(std::function<void()>&& runnable);
 
+  MessageQueueThread::javaobject jobj() {
+    return m_jobj.get();
+  }
+
   /**
    * Returns the current MessageQueueThread that owns this thread.
    */
