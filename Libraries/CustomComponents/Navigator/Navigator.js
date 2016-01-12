@@ -175,6 +175,7 @@ var GESTURE_ACTIONS = [
  *  - `replace(route)` - Replace the current scene with a new route
  *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
  *  - `replacePrevious(route)` - Replace the previous scene
+ *  - `resetTo(route)` - Navigate to a new scene and reset route stack
  *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
  *     array of routes
  *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
