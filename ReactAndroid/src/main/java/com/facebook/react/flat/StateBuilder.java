@@ -83,8 +83,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         Float.POSITIVE_INFINITY,
         Float.POSITIVE_INFINITY);
 
-    node.updateNodeRegion(left, top, right, bottom);
-
     updateViewBounds(node, left, top, right, bottom);
 
     if (mDetachAllChildrenFromViews != null) {
@@ -146,8 +144,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mViewsToDrop.add(node);
   }
 
-  private void addNodeRegion(NodeRegion nodeRegion) {
-    mNodeRegions.add(nodeRegion);
+  private void addNodeRegion(
+      FlatShadowNode node,
+      float left,
+      float top,
+      float right,
+      float bottom) {
+    node.updateNodeRegion(left, top, right, bottom);
+    mNodeRegions.add(node.getNodeRegion());
   }
 
   private void addNativeChild(FlatShadowNode nativeChild) {
@@ -216,13 +220,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       clipTop = Float.NEGATIVE_INFINITY;
       clipRight = Float.POSITIVE_INFINITY;
       clipBottom = Float.POSITIVE_INFINITY;
-    } else if (node.isVirtualAnchor()) {
-      // If RCTText is mounted to View, virtual children will not receive any touch events
-      // because they don't get added to nodeRegions, so nodeRegions will be empty and
-      // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
-      // manually add nodeRegion so it will have exactly one NodeRegion, and virtual nodes will
-      // be able to receive touch events.
-      addNodeRegion(node.getNodeRegion());
     }
 
     collectStateRecursively(
@@ -237,6 +234,15 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         clipBottom,
         isAndroidView,
         needsCustomLayoutForChildren);
+
+    if (node.isVirtualAnchor()) {
+      // If RCTText is mounted to View, virtual children will not receive any touch events
+      // because they don't get added to nodeRegions, so nodeRegions will be empty and
+      // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
+      // manually add nodeRegion so it will have exactly one NodeRegion, and virtual nodes will
+      // be able to receive touch events.
+      addNodeRegion(node, left, top, right, bottom);
+    }
 
     boolean shouldUpdateMountState = false;
     final DrawCommand[] drawCommands = mDrawCommands.finish();
@@ -424,8 +430,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     float right = left + width;
     float bottom = top + height;
 
-    node.updateNodeRegion(left, top, right, bottom);
-
     if (node.mountsToView()) {
       ensureBackingViewIsCreated(node, tag, null);
 
@@ -466,21 +470,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           parentClipBottom,
           false,
           false);
-      addNodeRegion(node.getNodeRegion());
-    }
-  }
-
-  private static void updateNodeRegion(
-      FlatShadowNode node,
-      int tag,
-      float left,
-      float top,
-      float right,
-      float bottom) {
-    final NodeRegion nodeRegion = node.getNodeRegion();
-    if (nodeRegion.mLeft != left || nodeRegion.mTop != top ||
-        nodeRegion.mRight != right || nodeRegion.mBottom != bottom) {
-      node.setNodeRegion(new NodeRegion(left, top, right, bottom, tag));
+      addNodeRegion(node, left, top, right, bottom);
     }
   }
 
