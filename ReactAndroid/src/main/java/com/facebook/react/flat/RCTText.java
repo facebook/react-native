@@ -157,8 +157,8 @@ import com.facebook.react.uimanager.ViewProps;
         right,
         bottom,
         clipLeft,
-        clipRight,
         clipTop,
+        clipRight,
         clipBottom);
 
     if (mText == null) {
