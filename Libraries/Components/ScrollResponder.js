@@ -388,24 +388,13 @@ var ScrollResponderMixin = {
   /**
    * A helper function to zoom to a specific rect in the scrollview.
    * @param {object} rect Should have shape {x, y, width, height}
+   * @param {bool} animated Enable the zoom animation
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
+  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }, animated?: boolean = true) {
     if (Platform.OS === 'android') {
       invariant('zoomToRect is not implemented');
     } else {
-      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect);
-    }
-  },
-
-  /**
-   * A helper function to zoom to a specific rect in the scrollview without animation.
-   * @param {object} rect Should have shape {x, y, width, height}
-   */
-  scrollResponderZoomWithoutAnimationTo: function(rect: { x: number; y: number; width: number; height: number; }) {
-    if (Platform.OS === 'android') {
-      invariant('zoomToRect is not implemented');
-    } else {
-      ScrollViewManager.zoomToRectWithoutAnimation(React.findNodeHandle(this), rect);
+      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect, animated);
     }
   },
 
