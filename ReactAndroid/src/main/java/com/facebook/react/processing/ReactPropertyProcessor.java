@@ -23,6 +23,7 @@ import javax.lang.model.util.Types;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -157,6 +158,14 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     for (ClassInfo classInfo : mClasses.values()) {
       try {
         if (!shouldIgnoreClass(classInfo)) {
+          // Sort by name
+          Collections.sort(
+              classInfo.mProperties, new Comparator<PropertyInfo>() {
+                @Override
+                public int compare(PropertyInfo a, PropertyInfo b) {
+                  return a.mProperty.name().compareTo(b.mProperty.name());
+                }
+              });
           generateCode(classInfo, classInfo.mProperties);
         } else if (shouldWarnClass(classInfo)) {
           warning(classInfo.mElement, "Class was skipped. Classes need to be non-private.");
@@ -178,29 +187,40 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     TypeName viewType = targetType.equals(SHADOW_NODE_TYPE) ? null : targetType;
 
     ClassInfo classInfo = new ClassInfo(className, typeElement, viewType);
+    findProperties(classInfo, typeElement);
 
-    PropertyInfo.Builder propertyBuilder = new PropertyInfo.Builder(mTypes, mElements, classInfo);
-    for (Element element : mElements.getAllMembers(typeElement)) {
-      ReactProp prop = element.getAnnotation(ReactProp.class);
-      ReactPropGroup propGroup = element.getAnnotation(ReactPropGroup.class);
-
-      try {
-        if (prop != null || propGroup != null) {
-          checkElement(element);
-        }
-
-        if (prop != null) {
-          classInfo.addProperty(propertyBuilder.build(element, new RegularProperty(prop)));
-        } else if (propGroup != null) {
-          for (int i = 0, size = propGroup.names().length; i < size; i++) {
-            classInfo.addProperty(propertyBuilder.build(element, new GroupProperty(propGroup, i)));
-          }
-        }
-      } catch (ReactPropertyException e) {
-        error(e.element, e.getMessage());
-      }
-    }
     return classInfo;
+  }
+
+  private void findProperties(ClassInfo classInfo, TypeElement typeElement) {
+    PropertyInfo.Builder propertyBuilder = new PropertyInfo.Builder(mTypes, mElements, classInfo);
+
+    // Recursively search class hierarchy
+    while (typeElement != null) {
+      for (Element element : typeElement.getEnclosedElements()) {
+        ReactProp prop = element.getAnnotation(ReactProp.class);
+        ReactPropGroup propGroup = element.getAnnotation(ReactPropGroup.class);
+
+        try {
+          if (prop != null || propGroup != null) {
+            checkElement(element);
+          }
+
+          if (prop != null) {
+            classInfo.addProperty(propertyBuilder.build(element, new RegularProperty(prop)));
+          } else if (propGroup != null) {
+            for (int i = 0, size = propGroup.names().length; i < size; i++) {
+              classInfo
+                  .addProperty(propertyBuilder.build(element, new GroupProperty(propGroup, i)));
+            }
+          }
+        } catch (ReactPropertyException e) {
+          error(e.element, e.getMessage());
+        }
+      }
+
+      typeElement = (TypeElement) mTypes.asElement(typeElement.getSuperclass());
+    }
   }
 
   private TypeName getTargetType(TypeMirror mirror) {
