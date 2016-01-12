@@ -89,11 +89,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final TypeName CONCRETE_PROPERTY_MAP_TYPE =
       ParameterizedTypeName.get(HashMap.class, String.class, String.class);
 
-  private static final TypeName MAPPINGS_MAP_TYPE =
-      ParameterizedTypeName.get(Map.class, String.class, Integer.class);
-  private static final TypeName CONCRETE_MAPPINGS_MAP_TYPE =
-      ParameterizedTypeName.get(HashMap.class, String.class, Integer.class);
-
   private final Map<ClassName, ClassInfo> mClasses;
 
   @SuppressFieldNotInitialized
@@ -242,8 +237,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     TypeSpec holderClass = TypeSpec.classBuilder(holderClassName)
         .addSuperinterface(superType)
         .addModifiers(PUBLIC)
-        .addField(MAPPINGS_MAP_TYPE, "mappings", PRIVATE, STATIC, FINAL)
-        .addStaticBlock(generatePropertyMappings(properties))
         .addMethod(generateSetPropertySpec(classInfo, properties))
         .addMethod(getMethods)
         .build();
@@ -272,24 +265,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       default:
         throw new IllegalArgumentException();
     }
-  }
-
-  private static CodeBlock generatePropertyMappings(List<PropertyInfo> properties) {
-    if (properties.isEmpty()) {
-      return CodeBlock.builder()
-          .addStatement("mappings = $T.emptyMap()", Collections.class)
-          .build();
-    }
-
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addStatement("mappings = new $T($L)", CONCRETE_MAPPINGS_MAP_TYPE, properties.size());
-
-    for (int i = 0, size = properties.size(); i < size; i++) {
-      PropertyInfo propertyInfo = properties.get(i);
-      builder.addStatement("mappings.put($S, $L)", propertyInfo.mProperty.name(), i);
-    }
-
-    return builder.build();
   }
 
   private static MethodSpec generateSetPropertySpec(
@@ -324,15 +299,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       return CodeBlock.builder().build();
     }
 
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addStatement("Integer id = mappings.get(name)")
-        .addStatement("if (id == null) return");
+    CodeBlock.Builder builder = CodeBlock.builder();
 
-    builder.add("switch (id) {\n").indent();
+    builder.add("switch (name) {\n").indent();
     for (int i = 0, size = properties.size(); i < size; i++) {
       PropertyInfo propertyInfo = properties.get(i);
       builder
-          .add("case $L:\n", i)
+          .add("case \"$L\":\n", propertyInfo.mProperty.name())
           .indent();
 
       switch (info.getType()) {
