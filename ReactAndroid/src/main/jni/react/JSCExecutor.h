@@ -62,6 +62,7 @@ private:
 
   int addWebWorker(const std::string& script, JSValueRef workerRef);
   void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);
+  void terminateWebWorker(int worker);
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,
@@ -71,6 +72,13 @@ private:
       const JSValueRef arguments[],
       JSValueRef *exception);
   static JSValueRef nativePostMessageToWorker(
+      JSContextRef ctx,
+      JSObjectRef function,
+      JSObjectRef thisObject,
+      size_t argumentCount,
+      const JSValueRef arguments[],
+      JSValueRef *exception);
+  static JSValueRef nativeTerminateWorker(
       JSContextRef ctx,
       JSObjectRef function,
       JSObjectRef thisObject,

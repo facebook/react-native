@@ -1,8 +1,8 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
 #include <unistd.h>
+#include <condition_variable>
 #include <mutex>
-#include <pthread.h>
 #include <unordered_map>
 
 #include <fb/assert.h>
@@ -43,14 +43,14 @@ JSCWebWorker::JSCWebWorker(int id, JSCWebWorkerOwner *owner, std::string scriptS
 }
 
 JSCWebWorker::~JSCWebWorker() {
-  // TODO(9604430): Implement tear down
+  FBASSERTMSGF(isTerminated(), "Didn't terminate the web worker before releasing it!");
 }
 
 void JSCWebWorker::postMessage(JSValueRef msg) {
   std::string msgString = Value(owner_->getContext(), msg).toJSONString();
 
   workerMessageQueueThread_->runOnQueue([this, msgString] () {
-    if (isFinished()) {
+    if (isTerminated()) {
       return;
     }
 
@@ -60,17 +60,46 @@ void JSCWebWorker::postMessage(JSValueRef msg) {
   });
 }
 
-void JSCWebWorker::finish() {
-  isFinished_ = true;
-  // TODO(9604430): Implement tear down
+void JSCWebWorker::terminate() {
+  if (isTerminated()) {
+    return;
+  }
+  isTerminated_.store(true, std::memory_order_release);
+
+  if (workerMessageQueueThread_->isOnThread()) {
+    terminateOnWorkerThread();
+  } else {
+    std::mutex signalMutex;
+    std::condition_variable signalCv;
+    bool terminationComplete = false;
+
+    workerMessageQueueThread_->runOnQueue([&] () mutable {
+      std::lock_guard<std::mutex> lock(signalMutex);
+
+      terminateOnWorkerThread();
+      terminationComplete = true;
+
+      signalCv.notify_one();
+    });
+
+    std::unique_lock<std::mutex> lock(signalMutex);
+    signalCv.wait(lock, [&terminationComplete] { return terminationComplete; });
+  }
 }
 
-bool JSCWebWorker::isFinished() {
-  return isFinished_;
+void JSCWebWorker::terminateOnWorkerThread() {
+  s_globalContextRefToJSCWebWorker.erase(context_);
+  JSGlobalContextRelease(context_);
+  context_ = nullptr;
+  workerMessageQueueThread_->quitSynchronous();
+}
+
+bool JSCWebWorker::isTerminated() {
+  return isTerminated_.load(std::memory_order_acquire);
 }
 
 void JSCWebWorker::initJSVMAndLoadScript() {
-  FBASSERTMSGF(!isFinished(), "Worker was already finished!");
+  FBASSERTMSGF(!isTerminated(), "Worker was already finished!");
   FBASSERTMSGF(!context_, "Worker JS VM was already created!");
 
   context_ = JSGlobalContextCreateInGroup(
@@ -106,6 +135,11 @@ JSValueRef JSCWebWorker::nativePostMessage(
   }
   JSValueRef msg = arguments[0];
   JSCWebWorker *webWorker = s_globalContextRefToJSCWebWorker.at(JSContextGetGlobalContext(ctx));
+
+  if (webWorker->isTerminated()) {
+    return JSValueMakeUndefined(ctx);
+  }
+
   webWorker->postMessageToOwner(msg);
   
   return JSValueMakeUndefined(ctx);
