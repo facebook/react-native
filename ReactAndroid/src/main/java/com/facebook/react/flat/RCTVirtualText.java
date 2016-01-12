@@ -16,6 +16,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
@@ -29,7 +30,13 @@ import com.facebook.react.uimanager.ViewProps;
   private static final String ITALIC = "italic";
   private static final String NORMAL = "normal";
 
+  private static final String PROP_SHADOW_OFFSET = "textShadowOffset";
+  private static final String PROP_SHADOW_RADIUS = "textShadowRadius";
+  private static final String PROP_SHADOW_COLOR = "textShadowColor";
+  private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
+
   private FontStylingSpan mFontStylingSpan = FontStylingSpan.INSTANCE;
+  private ShadowStyleSpan mShadowStyleSpan = ShadowStyleSpan.INSTANCE;
 
   @Override
   protected void performCollectText(SpannableStringBuilder builder) {
@@ -48,6 +55,16 @@ import com.facebook.react.uimanager.ViewProps;
         begin,
         end,
         Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+
+    if (mShadowStyleSpan.getColor() != 0 && mShadowStyleSpan.getRadius() != 0) {
+      mShadowStyleSpan.freeze();
+
+      builder.setSpan(
+          mShadowStyleSpan,
+          begin,
+          end,
+          Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+    }
 
     for (int i = 0, childCount = getChildCount(); i < childCount; ++i) {
       FlatTextShadowNode child = (FlatTextShadowNode) getChildAt(i);
@@ -156,6 +173,42 @@ import com.facebook.react.uimanager.ViewProps;
     }
   }
 
+  @ReactProp(name = PROP_SHADOW_OFFSET)
+  public void setTextShadowOffset(@Nullable ReadableMap offsetMap) {
+    float dx = 0;
+    float dy = 0;
+    if (offsetMap != null) {
+      if (offsetMap.hasKey("width")) {
+        dx = PixelUtil.toPixelFromDIP(offsetMap.getDouble("width"));
+      }
+      if (offsetMap.hasKey("height")) {
+        dy = PixelUtil.toPixelFromDIP(offsetMap.getDouble("height"));
+      }
+    }
+
+    if (!mShadowStyleSpan.offsetMatches(dx, dy)) {
+      getShadowSpan().setOffset(dx, dy);
+      notifyChanged(false);
+    }
+  }
+
+  @ReactProp(name = PROP_SHADOW_RADIUS)
+  public void setTextShadowRadius(float textShadowRadius) {
+    textShadowRadius = PixelUtil.toPixelFromDIP(textShadowRadius);
+    if (mShadowStyleSpan.getRadius() != textShadowRadius) {
+      getShadowSpan().setRadius(textShadowRadius);
+      notifyChanged(false);
+    }
+  }
+
+  @ReactProp(name = PROP_SHADOW_COLOR, defaultInt = DEFAULT_TEXT_SHADOW_COLOR, customType = "Color")
+  public void setTextShadowColor(int textShadowColor) {
+    if (mShadowStyleSpan.getColor() != textShadowColor) {
+      getShadowSpan().setColor(textShadowColor);
+      notifyChanged(false);
+    }
+  }
+
   /**
    * Returns font size for this node.
    * When called on RCTText, this value is never -1 (unset).
@@ -177,6 +230,13 @@ import com.facebook.react.uimanager.ViewProps;
       mFontStylingSpan = mFontStylingSpan.mutableCopy();
     }
     return mFontStylingSpan;
+  }
+
+  private final ShadowStyleSpan getShadowSpan() {
+    if (mShadowStyleSpan.isFrozen()) {
+      mShadowStyleSpan = mShadowStyleSpan.mutableCopy();
+    }
+    return mShadowStyleSpan;
   }
 
   /**
