@@ -2,10 +2,8 @@
 using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Windows.Foundation;
-using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -171,12 +169,10 @@ namespace ReactNative.Views.Text
         [ReactProperty(ViewProperties.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
-            var fontWeight = default(FontWeight?);
-            if (LayoutStylingHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
+            var fontWeight = default(FontWeight);
+            if (FontStyleHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
             {
-                if (_fontWeight.HasValue != fontWeight.HasValue ||
-                    (_fontWeight.HasValue && fontWeight.HasValue &&
-                    _fontWeight.Value.Weight != fontWeight.Value.Weight))
+                if (_fontWeight.HasValue && _fontWeight.Value.Weight != fontWeight.Weight)
                 {
                     _fontWeight = fontWeight;
                     MarkUpdated();
@@ -187,8 +183,8 @@ namespace ReactNative.Views.Text
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
-            var fontStyle = default(FontStyle?);
-            if (LayoutStylingHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
+            var fontStyle = default(FontStyle);
+            if (FontStyleHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
             {
                 if (_fontStyle != fontStyle)
                 {

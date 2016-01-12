@@ -175,7 +175,7 @@ namespace ReactNative.UIManager
             ViewProperties.PaddingTop,
             ViewProperties.PaddingBottom,
             DefaultFloat = Undefined)]
-        public virtual void SetPaddings(int index, float padding)
+        public void SetPaddings(int index, float padding)
         {
             SetPadding(ViewProperties.PaddingMarginSpacingTypes[index], padding);
         }

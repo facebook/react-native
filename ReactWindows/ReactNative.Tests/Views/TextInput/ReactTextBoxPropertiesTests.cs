@@ -1,10 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using ReactNative.Views.TextInput;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ReactNative.UIManager;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -12,32 +8,33 @@ using Windows.UI.Xaml.Controls;
 namespace ReactNative.Tests.Views.TextInput
 {
     [TestClass]
-    public class ReactTextBoxTests
+    public class ReactTextBoxPropertiesTests
     {
         [Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AppContainer.UITestMethod]
-        public void ReactTextBoxesTests_SuccessfulTextBoxMerge()
+        public void ReactTextBoxPropertiesTests_SuccessfulSrcControlPropMerge()
         {
             var textBox = new TextBox();
-            textBox.Text = "Test Text";
+            textBox.Text = "";
 
-            var reactTextBox = new ReactTextBox() {
+            var reactTextBox = new ReactTextBoxProperties() {
                 LineHeight = 12,
                 Padding = new Thickness(12, 23, 1, 23),
                 FontSize = 12,
                 FontStyle = FontStyle.Italic
             };
 
-            reactTextBox.MergePropertiesToNativeTextBox(ref textBox);
+            textBox.SetReactTextBoxProperties(reactTextBox);
             Assert.AreEqual(textBox.FontStyle, reactTextBox.FontStyle);
             Assert.AreEqual(textBox.Padding, reactTextBox.Padding);
         }
 
         [Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AppContainer.UITestMethod]
-        public void ReactTextBoxesTests_NullTextBoxMerge()
+        public void ReactTextBoxPropertiesTests_NullSrcControlPropMerge()
         {
-            var textBox = default(TextBox);
+            var textBox = new TextBox();
+            textBox.FontSize = 2;
 
-            var reactTextBox = new ReactTextBox()
+            var reactTextBox = new ReactTextBoxProperties()
             {
                 LineHeight = 12,
                 Padding = new Thickness(12, 23, 1, 23),
@@ -45,18 +42,18 @@ namespace ReactNative.Tests.Views.TextInput
                 FontStyle = FontStyle.Italic
             };
 
-            reactTextBox.MergePropertiesToNativeTextBox(ref textBox);
+            textBox.SetReactTextBoxProperties(reactTextBox);
             Assert.AreEqual(textBox.FontStyle, reactTextBox.FontStyle);
             Assert.AreEqual(textBox.Padding, reactTextBox.Padding);
         }
 
         [Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AppContainer.UITestMethod]
-        public void ReactTextBoxesTests_OverwriteTextBoxMerge()
+        public void ReactTextBoxPropertiesTests_OverwriteControlPropsMerge()
         {
             var textBox = new TextBox();
             textBox.FontStyle = FontStyle.Normal;
 
-            var reactTextBox = new ReactTextBox()
+            var reactTextBox = new ReactTextBoxProperties()
             {
                 LineHeight = 12,
                 Padding = new Thickness(12, 23, 1, 23),
@@ -64,7 +61,7 @@ namespace ReactNative.Tests.Views.TextInput
                 FontStyle = FontStyle.Italic
             };
 
-            reactTextBox.MergePropertiesToNativeTextBox(ref textBox);
+            textBox.SetReactTextBoxProperties(reactTextBox);
             Assert.AreEqual(textBox.FontStyle, reactTextBox.FontStyle);
         }
     }

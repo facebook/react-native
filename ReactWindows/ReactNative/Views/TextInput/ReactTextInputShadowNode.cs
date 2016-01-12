@@ -2,11 +2,6 @@
 using ReactNative.Bridge;
 using ReactNative.UIManager;
 using ReactNative.Views.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -20,13 +15,13 @@ namespace ReactNative.Views.TextInput
     /// </summary>
     public class ReactTextInputShadowNode : LayoutShadowNode
     {
-        private ReactTextBox _textBoxStyle;
-        private readonly bool _isVirtual;
         public const int UNSET = -1;
-
+        private readonly bool _isVirtual;
+        private ReactTextBoxProperties _textBoxStyle;
+        
         public ReactTextInputShadowNode(bool isVirtual)
         {
-            _textBoxStyle = new ReactTextBox();
+            _textBoxStyle = new ReactTextBoxProperties();
             _isVirtual = isVirtual;
 
             if (!isVirtual)
@@ -40,16 +35,6 @@ namespace ReactNative.Views.TextInput
             get
             {
                 return _isVirtual;
-            }
-        }
-
-        protected override void MarkUpdated()
-        {
-            base.MarkUpdated();
-
-            if (!_isVirtual)
-            {
-                dirty();
             }
         }
 
@@ -71,17 +56,19 @@ namespace ReactNative.Views.TextInput
             }
         }
 
-        private static MeasureOutput MeasureText(CSSNode node, float width, float height)
+        /// <summary>
+        /// This lifecycle method is called by <see cref="UIImplementation"/> to bind the CSS styling to the <see cref="ReactTextInputShadowNode"/>.
+        /// </summary>
+        public override void OnBeforeLayout()
         {
-            var shadowNode = (ReactTextInputShadowNode)node;
-            var textBlock = default(TextBox);
+            DispatcherHelpers.AssertOnDispatcher();
 
-            shadowNode._textBoxStyle.MergePropertiesToNativeTextBox(ref textBlock);
+            if (_isVirtual)
+            {
+                return;
+            }
 
-            var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
-                textBlock.Measure(new Size(width, adjustedHeight));
-
-            return new MeasureOutput((float)textBlock.DesiredSize.Width, (float)textBlock.DesiredSize.Height);
+            MarkUpdated();
         }
 
         /// <summary>
@@ -113,12 +100,10 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
-            var fontWeight = default(FontWeight?);
-            if (LayoutStylingHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
+            var fontWeight = default(FontWeight);
+            if (FontStyleHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
             {
-                if (_textBoxStyle.FontWeight.HasValue != fontWeight.HasValue ||
-                    (_textBoxStyle.FontWeight.HasValue && fontWeight.HasValue &&
-                    _textBoxStyle.FontWeight.Value.Weight != fontWeight.Value.Weight))
+                if (_textBoxStyle.FontWeight.HasValue || _textBoxStyle.FontWeight.Value.Weight != fontWeight.Weight)
                 {
                     _textBoxStyle.FontWeight = fontWeight;
                     MarkUpdated();
@@ -133,8 +118,8 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
-            var fontStyle = default(FontStyle?);
-            if (LayoutStylingHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
+            var fontStyle = default(FontStyle);
+            if (FontStyleHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
             {
                 if (_textBoxStyle.FontStyle != fontStyle)
                 {
@@ -145,39 +130,6 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
-        /// Sets the left, right, top and bottom padding values for the <see cref="TextBox"/> control, then binds the value on the <see cref="ReactTextBox"/>.
-        /// </summary>
-        /// <param name="padding">Font padding value.</param>
-        [ReactPropertyGroup(
-            ViewProperties.Padding,
-            ViewProperties.PaddingVertical,
-            ViewProperties.PaddingHorizontal,
-            ViewProperties.PaddingLeft,
-            ViewProperties.PaddingRight,
-            ViewProperties.PaddingTop,
-            ViewProperties.PaddingBottom)]
-        public void SetPadding(double padding)
-        {
-            _textBoxStyle.Padding = PaddingThickness;
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// This lifecycle method is called by <see cref="UIImplementation"/> to bind the CSS styling to the <see cref="ReactTextInputShadowNode"/>.
-        /// </summary>
-        public override void OnBeforeLayout()
-        {
-            DispatcherHelpers.AssertOnDispatcher();
-
-            if (_isVirtual)
-            {
-                return;
-            }
-            
-            MarkUpdated();
-        }
-        
-        /// <summary>
         /// Sets the text value for the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="text"></param>
@@ -187,14 +139,34 @@ namespace ReactNative.Views.TextInput
             _textBoxStyle.Text = text;
             MarkUpdated();
         }
-
-        private Thickness PaddingThickness
+        
+        protected override void MarkUpdated()
         {
-            get
+            base.MarkUpdated();
+
+            if (!_isVirtual)
             {
-                return new Thickness(this.GetPaddingSpace(CSSSpacingType.Left), this.GetPaddingSpace(CSSSpacingType.Top),
-                                     this.GetPaddingSpace(CSSSpacingType.Right), this.GetPaddingSpace(CSSSpacingType.Bottom));
+                dirty();
             }
+        }
+
+        private static Thickness PaddingThickness(ReactTextInputShadowNode node)
+        {
+            return new Thickness(node.GetPaddingSpace(CSSSpacingType.Left), node.GetPaddingSpace(CSSSpacingType.Top),
+                                 node.GetPaddingSpace(CSSSpacingType.Right), node.GetPaddingSpace(CSSSpacingType.Bottom));
+        }
+
+        private static MeasureOutput MeasureText(CSSNode node, float width, float height)
+        {
+            var shadowNode = (ReactTextInputShadowNode)node;
+            var textBlock = new TextBox();
+            shadowNode._textBoxStyle.Padding = PaddingThickness(shadowNode);
+            textBlock.SetReactTextBoxProperties(shadowNode._textBoxStyle);
+
+            var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
+            textBlock.Measure(new Size(width, adjustedHeight));
+
+            return new MeasureOutput((float)textBlock.DesiredSize.Width, (float)textBlock.DesiredSize.Height);
         }
     }
 }
