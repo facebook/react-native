@@ -18,12 +18,6 @@ namespace ReactNative.UIManager
                 return width;
             }
 
-            width = node.GetBorder(CSSSpacingType.Start);
-            if (!CSSConstants.IsUndefined(width))
-            {
-                return width;
-            }
-
             width = node.GetBorder(CSSSpacingType.All);
             if (!CSSConstants.IsUndefined(width))
             {
@@ -79,12 +73,6 @@ namespace ReactNative.UIManager
             }
 
             width = node.GetBorder(CSSSpacingType.Vertical);
-            if (!CSSConstants.IsUndefined(width))
-            {
-                return width;
-            }
-
-            width = node.GetBorder(CSSSpacingType.Start);
             if (!CSSConstants.IsUndefined(width))
             {
                 return width;

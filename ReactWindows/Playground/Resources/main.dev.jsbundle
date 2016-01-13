@@ -1188,27 +1188,18 @@ typeof global!=='undefined'?global:typeof self!=='undefined'?self:this);
 __d('react-xaml-wpf/index.ios.js',function(global, require, module, exports) {  'use strict';
 
 var React=require('react-native/Libraries/react-native/react-native.js');var 
-AppRegistry=React.AppRegistry;var View=React.View;var Text=React.Text;
+AppRegistry=React.AppRegistry;var View=React.View;var Text=React.Text;var Switch=React.Switch;
 
 var ReactRoot=React.createClass({displayName:'ReactRoot',
 render:function(){
 return (
 React.createElement(View,{elevation:'1.0'},
-<<<<<<< 09dc008f310da864bd3e9a31ba443482448909bd
 React.createElement(View,{style:{marginLeft:20}},
 React.createElement(View,{style:{borderLeftWidth:5,borderRightWidth:10,borderTopWidth:2, borderBottomWidth: 8}},
 React.createElement(View,{style:{margin:10,borderWidth:10,borderRadius:5,borderLeftColor:'red',borderRightColor:'blue',borderTopColor:'yellow',borderBottomColor:'green'}},
 React.createElement(View,{style:{padding:10}},
+React.createElement(Switch,null),
 React.createElement(Text,{style:{color:'orange'}},"Hello React Native")))))));}});
-=======
-<<<<<<< 95fc5c4b3b088a56d5d215df016ee39e2515e2e7
-React.createElement(View,{style:{marginLeft:200}},
-React.createElement(View,{style:{marginTop:10}},
-React.createElement(Text,{style:{color:'red'}},"Hello React Native")))));}});
-=======
-React.createElement(Text,null,'Hello React Native, I\'m running on Windows Phone')));}});
->>>>>>> Merging with Erics recent changes
->>>>>>> Merging with Erics recent changes
 
 
 

@@ -172,10 +172,10 @@ namespace ReactNative.UIManager
                 _tagsToViews.Add(tag, view);
                 _tagsToViewManagers.Add(tag, viewManager);
 
-                // Uses an extension method and a conditional weak table to
-                // store the tag of the view. The conditional weak table does
-                // not prevent the view from being garbage collected.
+                // Uses an extension method and `Tag` property on 
+                // FrameworkElement to store the tag of the view.
                 view.SetTag(tag);
+                view.SetReactContext(themedContext);
 
                 if (initialProperties != null)
                 {
@@ -491,6 +491,7 @@ namespace ReactNative.UIManager
             _tagsToViewManagers.Add(tag, _rootViewManager);
             _rootTags.Add(tag, true);
             view.SetTag(tag);
+            view.SetReactContext(themedContext);
         }
 
         private void DropView(FrameworkElement view)
