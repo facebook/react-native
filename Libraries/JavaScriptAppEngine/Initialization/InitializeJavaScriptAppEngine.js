@@ -126,6 +126,10 @@ function setUpAlert() {
   }
 }
 
+function setUpSymbol() {
+  GLOBAL.Symbol = require('es6-symbol');
+}
+
 function setUpPromise() {
   // The native Promise implementation throws the following error:
   // ERROR: Event loop not supported.
@@ -194,6 +198,7 @@ setUpProcessEnv();
 setUpConsole();
 setUpTimers();
 setUpAlert();
+setUpSymbol();
 setUpPromise();
 setUpErrorHandler();
 setUpXHR();
