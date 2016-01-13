@@ -14,19 +14,23 @@ import javax.annotation.Nullable;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Animatable;
 
+import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.views.image.ImageLoadEvent;
 import com.facebook.react.views.image.ImageResizeMode;
 
 /**
  * DrawImageWithDrawee is DrawCommand that can draw a local or remote image.
  * It uses DraweeRequestHelper internally to fetch and cache the images.
  */
-/* package */ final class DrawImageWithDrawee extends AbstractDrawCommand implements DrawImage {
+/* package */ final class DrawImageWithDrawee extends AbstractDrawCommand
+    implements DrawImage, ControllerListener {
 
   private @Nullable DraweeRequestHelper mRequestHelper;
   private @Nullable PorterDuffColorFilter mColorFilter;
@@ -34,6 +38,8 @@ import com.facebook.react.views.image.ImageResizeMode;
   private float mBorderWidth;
   private float mBorderRadius;
   private int mBorderColor;
+  private int mReactTag;
+  private @Nullable FlatViewGroup.InvalidateCallback mCallback;
 
   @Override
   public boolean hasImageRequest() {
@@ -45,7 +51,7 @@ import com.facebook.react.views.image.ImageResizeMode;
     if (imageRequest == null) {
       mRequestHelper = null;
     } else {
-      mRequestHelper = new DraweeRequestHelper(imageRequest);
+      mRequestHelper = new DraweeRequestHelper(imageRequest, this);
     }
   }
 
@@ -99,12 +105,19 @@ import com.facebook.react.views.image.ImageResizeMode;
   }
 
   @Override
+  public void setReactTag(int reactTag) {
+    mReactTag = reactTag;
+  }
+
+  @Override
   public void onDraw(Canvas canvas) {
     Assertions.assumeNotNull(mRequestHelper).getDrawable().draw(canvas);
   }
 
   @Override
   public void onAttached(FlatViewGroup.InvalidateCallback callback) {
+    mCallback = callback;
+
     GenericDraweeHierarchy hierarchy = Assertions.assumeNotNull(mRequestHelper).getHierarchy();
 
     RoundingParams roundingParams = hierarchy.getRoundingParams();
@@ -138,6 +151,43 @@ import com.facebook.react.views.image.ImageResizeMode;
   @Override
   public void onDetached() {
     Assertions.assumeNotNull(mRequestHelper).detach();
+  }
+
+  @Override
+  public void onSubmit(String id, Object callerContext) {
+    if (mCallback != null && mReactTag != 0) {
+      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_START);
+    }
+  }
+
+  @Override
+  public void onFinalImageSet(
+      String id,
+      @Nullable Object imageInfo,
+      @Nullable Animatable animatable) {
+    if (mCallback != null && mReactTag != 0) {
+      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_END);
+      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD);
+    }
+  }
+
+  @Override
+  public void onIntermediateImageSet(String id, @Nullable Object imageInfo) {
+  }
+
+  @Override
+  public void onIntermediateImageFailed(String id, Throwable throwable) {
+  }
+
+  @Override
+  public void onFailure(String id, Throwable throwable) {
+    if (mCallback != null && mReactTag != 0) {
+      mCallback.dispatchImageLoadEvent(mReactTag, ImageLoadEvent.ON_LOAD_END);
+    }
+  }
+
+  @Override
+  public void onRelease(String id) {
   }
 
   private boolean shouldDisplayBorder() {

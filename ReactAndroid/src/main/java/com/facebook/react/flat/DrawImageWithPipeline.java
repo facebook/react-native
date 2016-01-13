@@ -44,6 +44,7 @@ import com.facebook.react.views.image.ImageResizeMode;
   private @Nullable Path mPathForRoundedBitmap;
   private @Nullable BitmapShader mBitmapShader;
   private boolean mForceClip;
+  private int mReactTag;
 
   @Override
   public boolean hasImageRequest() {
@@ -78,6 +79,11 @@ import com.facebook.react.views.image.ImageResizeMode;
   @Override
   public ScaleType getScaleType() {
     return mScaleType;
+  }
+
+  @Override
+  public void setReactTag(int reactTag) {
+    mReactTag = reactTag;
   }
 
   @Override
@@ -146,6 +152,13 @@ import com.facebook.react.views.image.ImageResizeMode;
   @Override
   public void onBitmapReady(Bitmap bitmap) {
     updateBounds(bitmap);
+  }
+
+  @Override
+  public void onImageLoadEvent(int imageLoadEvent) {
+    if (mReactTag != 0 && mCallback != null) {
+      mCallback.dispatchImageLoadEvent(mReactTag, imageLoadEvent);
+    }
   }
 
   /* package */ void updateBounds(Bitmap bitmap) {

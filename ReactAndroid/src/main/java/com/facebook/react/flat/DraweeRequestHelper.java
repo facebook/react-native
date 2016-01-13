@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -37,10 +38,11 @@ import com.facebook.infer.annotation.Assertions;
   private final DraweeController mDraweeController;
   private int mAttachCounter;
 
-  /* package */ DraweeRequestHelper(ImageRequest imageRequest) {
+  /* package */ DraweeRequestHelper(ImageRequest imageRequest, ControllerListener listener) {
     DraweeController controller = sControllerBuilder
           .setImageRequest(imageRequest)
           .setCallerContext(RCTImageView.getCallerContext())
+          .setControllerListener(listener)
           .build();
 
     controller.setHierarchy(sHierarchyBuilder.build());

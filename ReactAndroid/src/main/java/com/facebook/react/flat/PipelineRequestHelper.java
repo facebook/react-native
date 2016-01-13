@@ -23,6 +23,7 @@ import com.facebook.imagepipeline.image.CloseableBitmap;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.views.image.ImageLoadEvent;
 
 /**
  * Helper class for DrawImage that helps manage fetch requests through ImagePipeline.
@@ -54,10 +55,12 @@ import com.facebook.infer.annotation.Assertions;
       // this is a secondary attach, ignore it, only updating Bitmap boundaries if needed.
       Bitmap bitmap = getBitmap();
       if (bitmap != null) {
-        mBitmapUpdateListener.onSecondaryAttach(bitmap);
+        listener.onSecondaryAttach(bitmap);
       }
       return;
     }
+
+    listener.onImageLoadEvent(ImageLoadEvent.ON_LOAD_START);
 
     Assertions.assertCondition(mDataSource == null);
     Assertions.assertCondition(mImageRef == null);
@@ -150,7 +153,10 @@ import com.facebook.infer.annotation.Assertions;
         return;
       }
 
-      Assertions.assumeNotNull(mBitmapUpdateListener).onBitmapReady(bitmap);
+      BitmapUpdateListener listener = Assertions.assumeNotNull(mBitmapUpdateListener);
+      listener.onBitmapReady(bitmap);
+      listener.onImageLoadEvent(ImageLoadEvent.ON_LOAD_END);
+      listener.onImageLoadEvent(ImageLoadEvent.ON_LOAD);
     } finally {
       dataSource.close();
     }
@@ -158,8 +164,8 @@ import com.facebook.infer.annotation.Assertions;
 
   @Override
   public void onFailure(DataSource<CloseableReference<CloseableImage>> dataSource) {
-    if (mDataSource != dataSource) {
-      // Should always be the case, but let's be safe.
+    if (mDataSource == dataSource) {
+      Assertions.assumeNotNull(mBitmapUpdateListener).onImageLoadEvent(ImageLoadEvent.ON_LOAD_END);
       mDataSource = null;
     }
 
@@ -168,6 +174,11 @@ import com.facebook.infer.annotation.Assertions;
 
   @Override
   public void onCancellation(DataSource<CloseableReference<CloseableImage>> dataSource) {
+    if (mDataSource == dataSource) {
+      mDataSource = null;
+    }
+
+    dataSource.close();
   }
 
   @Override

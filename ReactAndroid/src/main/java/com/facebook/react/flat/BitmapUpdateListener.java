@@ -14,4 +14,5 @@ import android.graphics.Bitmap;
 /* package */ interface BitmapUpdateListener {
   public void onSecondaryAttach(Bitmap bitmap);
   public void onBitmapReady(Bitmap bitmap);
+  public void onImageLoadEvent(int imageLoadEvent);
 }

@@ -18,17 +18,21 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.touch.CatalystInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ReactPointerEventsView;
+import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.views.image.ImageLoadEvent;
 
 /**
  * A view that FlatShadowNode hierarchy maps to. Performs drawing by iterating over
@@ -53,6 +57,18 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
       if (view != null) {
         view.invalidate();
       }
+    }
+
+    public void dispatchImageLoadEvent(int reactTag, int imageLoadEvent) {
+      FlatViewGroup view = get();
+      if (view == null) {
+        return;
+      }
+
+      ReactContext reactContext = ((ReactContext) view.getContext());
+      UIManagerModule uiManagerModule = reactContext.getNativeModule(UIManagerModule.class);
+      uiManagerModule.getEventDispatcher().dispatchEvent(
+          new ImageLoadEvent(reactTag, SystemClock.uptimeMillis(), imageLoadEvent));
     }
   }
 

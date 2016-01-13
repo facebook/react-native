@@ -100,6 +100,11 @@ import com.facebook.infer.annotation.Assertions;
   }
 
   @Override
+  public void onImageLoadEvent(int imageLoadEvent) {
+    // ignore
+  }
+
+  @Override
   public void onAttached(FlatViewGroup.InvalidateCallback callback) {
     mCallback = callback;
 

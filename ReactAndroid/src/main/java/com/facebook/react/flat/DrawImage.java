@@ -44,6 +44,11 @@ import com.facebook.imagepipeline.request.ImageRequest;
    */
   public ScaleType getScaleType();
 
+  /**
+   * React tag used for dispatching ImageLoadEvents, or 0 to ignore events.
+   */
+  public void setReactTag(int reactTag);
+
   public void setBorderWidth(float borderWidth);
 
   public float getBorderWidth();

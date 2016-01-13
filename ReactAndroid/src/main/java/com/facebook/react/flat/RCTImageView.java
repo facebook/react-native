@@ -80,6 +80,11 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
   }
 
+  @ReactProp(name = "shouldNotifyLoadEvents")
+  public void setShouldNotifyLoadEvents(boolean shouldNotifyLoadEvents) {
+    getMutableDrawImage().setReactTag(shouldNotifyLoadEvents ? getReactTag() : 0);
+  }
+
   @ReactProp(name = "src")
   public void setSource(@Nullable String source) {
     getMutableDrawImage().setImageRequest(
