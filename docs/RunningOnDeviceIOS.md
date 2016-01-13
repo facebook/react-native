@@ -28,7 +28,7 @@ You can also pack all the JavaScript code within the app itself. This way you ca
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Follow the instructions for "OPTION 2":
   * Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
-  * Run the `react-native bundle` command in terminal from the root directory of your app
+  * Run the `react-native bundle --platform ios --dev false --entry-file index.ios.js --bundle-output iOS/main.jsbundle` command in terminal from the root directory of your app
 
 The bundle script supports a couple of flags:
 
