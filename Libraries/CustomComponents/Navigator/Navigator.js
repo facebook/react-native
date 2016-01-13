@@ -189,11 +189,11 @@ var Navigator = React.createClass({
   propTypes: {
     /**
      * Optional function that allows configuration about scene animations and
-     * gestures. Will be invoked with the route and should return a scene
-     * configuration object
+     * gestures. Will be invoked with the route and the routeStack and should
+     * return a scene configuration object
      *
      * ```
-     * (route) => Navigator.SceneConfigs.FloatFromRight
+     * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
      */
     configureScene: PropTypes.func,
@@ -293,7 +293,7 @@ var Navigator = React.createClass({
     }
     return {
       sceneConfigStack: routeStack.map(
-        (route) => this.props.configureScene(route)
+        (route) => this.props.configureScene(route, routeStack)
       ),
       routeStack,
       presentedIndex: initialRouteIndex,
@@ -368,7 +368,7 @@ var Navigator = React.createClass({
     this.setState({
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
-        this.props.configureScene
+        route => this.props.configureScene(route, nextRouteStack)
       ),
       presentedIndex: destIndex,
       activeGesture: null,
@@ -913,7 +913,7 @@ var Navigator = React.createClass({
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.configureScene(route),
+      this.props.configureScene(route, nextStack),
     ]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
@@ -981,7 +981,7 @@ var Navigator = React.createClass({
     var nextRouteStack = this.state.routeStack.slice();
     var nextAnimationModeStack = this.state.sceneConfigStack.slice();
     nextRouteStack[index] = route;
-    nextAnimationModeStack[index] = this.props.configureScene(route);
+    nextAnimationModeStack[index] = this.props.configureScene(route, nextRouteStack);
 
     if (index === this.state.presentedIndex) {
       this._emitWillFocus(route);
