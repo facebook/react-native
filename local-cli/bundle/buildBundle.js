@@ -33,6 +33,7 @@ function buildBundle(args, config, output = outputBundle) {
 
     const requestOpts = {
       entryFile: args['entry-file'],
+      sourceMapUrl: args['sourcemap-output'],
       dev: args.dev,
       minify: !args.dev,
       platform: args.platform,
