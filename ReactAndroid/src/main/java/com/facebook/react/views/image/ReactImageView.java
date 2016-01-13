@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -97,6 +98,7 @@ public class ReactImageView extends GenericDraweeView {
 
   private @Nullable Uri mUri;
   private int mBorderColor;
+  private int mOverlayColor;
   private float mBorderWidth;
   private float mBorderRadius;
   private ScalingUtils.ScaleType mScaleType;
@@ -129,6 +131,11 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setBorderColor(int borderColor) {
     mBorderColor = borderColor;
+    mIsDirty = true;
+  }
+
+  public void setOverlayColor(int overlayColor) {
+    mOverlayColor = overlayColor;
     mIsDirty = true;
   }
 
@@ -201,6 +208,9 @@ public class ReactImageView extends GenericDraweeView {
     RoundingParams roundingParams = hierarchy.getRoundingParams();
     roundingParams.setCornersRadius(hierarchyRadius);
     roundingParams.setBorder(mBorderColor, mBorderWidth);
+    if (mOverlayColor != Color.TRANSPARENT) {
+        roundingParams.setOverlayColor(mOverlayColor);
+    }
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(
         mFadeDurationMs >= 0
