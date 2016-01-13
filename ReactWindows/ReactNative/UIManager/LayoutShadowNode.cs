@@ -1,5 +1,6 @@
 ﻿using Facebook.CSSLayout;
 using System;
+using System.Globalization;
 
 namespace ReactNative.UIManager
 {
@@ -90,7 +91,7 @@ namespace ReactNative.UIManager
         public void SetFlexDirection(string flexDirection)
         {
             FlexDirection = flexDirection != null
-                ? Parse<CSSFlexDirection>(flexDirection)
+                ? ParseFlexDirection(flexDirection)
                 : CSSFlexDirection.Column;
         }
 
@@ -218,7 +219,35 @@ namespace ReactNative.UIManager
                 case "absolute":
                     return CSSPositionType.Absolute;
                 default:
-                    throw new ArgumentException("Invalid position type.", position);
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Invalid position type '{0}'.",
+                            position),
+                        nameof(position));
+
+            }
+        }
+
+        private static CSSFlexDirection ParseFlexDirection(string direction)
+        {
+            switch (direction.ToLowerInvariant())
+            {
+                case "column":
+                    return CSSFlexDirection.Column;
+                case "columnreverse":
+                    return CSSFlexDirection.ColumnReverse;
+                case "row":
+                    return CSSFlexDirection.Row;
+                case "rowreverse":
+                    return CSSFlexDirection.RowReverse;
+                default:
+                    throw new ArgumentException(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "Invalid flex direction.",
+                            direction),
+                        nameof(direction));
             }
         }
 

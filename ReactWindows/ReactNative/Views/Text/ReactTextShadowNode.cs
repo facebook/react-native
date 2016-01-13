@@ -211,7 +211,7 @@ namespace ReactNative.Views.Text
             {
                 var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
                 var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
-                textBlock.Measure(new Size(width, adjustedHeight));
+                textBlock.Measure(new Size(adjustedWidth, adjustedHeight));
                 return new MeasureOutput(
                     (float)textBlock.DesiredSize.Width,
                     (float)textBlock.DesiredSize.Height);
