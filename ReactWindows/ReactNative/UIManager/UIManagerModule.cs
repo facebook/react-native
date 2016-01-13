@@ -395,9 +395,6 @@ namespace ReactNative.UIManager
                     _uiImplementation.DispatchViewUpdates(_eventDispatcher, batchId);
                 }
             });
-
-            // TODO: coordinate with UI operations a la choreographer?
-            _eventDispatcher.OnBatchComplete();
         }
 
         #endregion

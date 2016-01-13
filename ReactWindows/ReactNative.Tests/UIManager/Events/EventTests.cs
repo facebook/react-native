@@ -10,8 +10,9 @@ namespace ReactNative.Tests.UIManager.Events
         [TestMethod]
         public void Event_Initialize_Dispose()
         {
-            var e = new MockEvent(42, TimeSpan.FromSeconds(10), "Test", new JObject());
+            var e = new MockEvent(42, TimeSpan.FromSeconds(10), "Test");
 
+            Assert.IsTrue(e.CanCoalesce);
             Assert.IsTrue(e.IsInitialized);
 
             Assert.AreEqual(42, e.ViewTag);

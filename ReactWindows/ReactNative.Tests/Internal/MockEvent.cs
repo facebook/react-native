@@ -8,12 +8,24 @@ namespace ReactNative.Tests
     {
         private readonly string _eventName;
         private readonly JObject _eventArgs;
+        private readonly Action _onDispose;
+
+        public MockEvent(int viewTag, TimeSpan timestamp, string eventName)
+            : this(viewTag, timestamp, eventName, new JObject())
+        {
+        }
 
         public MockEvent(int viewTag, TimeSpan timestamp, string eventName, JObject eventArgs)
+            : this(viewTag, timestamp, eventName, eventArgs, () => { })
+        {
+        }
+
+        public MockEvent(int viewTag, TimeSpan timestamp, string eventName, JObject eventArgs, Action onDispose)
             : base(viewTag, timestamp)
         {
             _eventName = eventName;
             _eventArgs = eventArgs;
+            _onDispose = onDispose;
         }
 
         public override string EventName
@@ -27,6 +39,11 @@ namespace ReactNative.Tests
         public override void Dispatch(RCTEventEmitter eventEmitter)
         {
             eventEmitter.receiveEvent(ViewTag, EventName, _eventArgs);
+        }
+
+        protected override void OnDispose()
+        {
+            _onDispose();
         }
     }
 }
