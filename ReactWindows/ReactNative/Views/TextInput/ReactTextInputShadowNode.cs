@@ -140,6 +140,9 @@ namespace ReactNative.Views.TextInput
             MarkUpdated();
         }
         
+        /// <summary>
+        /// Marks the node as updated/dirty. This occurs on any property changes affecting the measurement of the <see cref="TextBox"/>.
+        /// </summary>
         protected override void MarkUpdated()
         {
             base.MarkUpdated();
