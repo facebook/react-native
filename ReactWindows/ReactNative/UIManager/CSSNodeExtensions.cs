@@ -41,21 +41,25 @@ namespace ReactNative.UIManager
                 return padding;
             }
 
-            var horizontalBasedSpacing = (spacingType == CSSSpacingType.Left || spacingType == CSSSpacingType.Right);
-            var verticalBasedSpacing = (spacingType == CSSSpacingType.Top || spacingType == CSSSpacingType.Bottom);
+            if (spacingType == CSSSpacingType.Left || spacingType == CSSSpacingType.Right)
+            {
+                padding = node.GetPadding(CSSSpacingType.Horizontal);
+            }
 
-            padding = node.GetPadding(CSSSpacingType.Horizontal);
-            if (horizontalBasedSpacing && !CSSConstants.IsUndefined(padding))
+            if (!CSSConstants.IsUndefined(padding))
             {
                 return padding;
             }
 
-            padding = node.GetPadding(CSSSpacingType.Vertical);
-            if (verticalBasedSpacing && !CSSConstants.IsUndefined(padding))
+            if (spacingType == CSSSpacingType.Top || spacingType == CSSSpacingType.Bottom)
+            {
+                padding = node.GetPadding(CSSSpacingType.Vertical);
+            }
+
+            if (!CSSConstants.IsUndefined(padding))
             {
                 return padding;
             }
-
 
             padding = node.GetPadding(CSSSpacingType.All);
             if (!CSSConstants.IsUndefined(padding))
