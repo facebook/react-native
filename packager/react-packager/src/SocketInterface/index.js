@@ -49,7 +49,7 @@ const SocketInterface = {
         sockPath = '\\\\.\\pipe\\' + sockPath
       }
 
-      if (fs.existsSync(sockPath)) {
+      if (existsSync(sockPath)) {
         var sock = net.connect(sockPath);
         sock.on('connect', () => {
           SocketClient.create(sockPath).then(
@@ -133,6 +133,15 @@ function createServer(resolve, reject, options, sockPath) {
     type: 'createSocketServer',
     data: { sockPath, options }
   });
+}
+
+function existsSync(filename) {
+  try {
+    fs.accessSync(filename);
+    return true;
+  } catch(ex) {
+    return false;
+  }
 }
 
 module.exports = SocketInterface;
