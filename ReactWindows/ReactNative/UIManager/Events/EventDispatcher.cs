@@ -2,6 +2,7 @@
 using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ReactNative.UIManager.Events
 {
@@ -72,10 +73,8 @@ namespace ReactNative.UIManager.Events
             }
         });
 
-        private readonly object _eventsStagingLock = new object();
         private readonly object _eventsToDispatchLock = new object();
 
-        private readonly IList<Event> _eventStaging = new List<Event>();
         private readonly List<Event> _eventsToDispatch = new List<Event>();
         private readonly IDictionary<long, int> _eventCookieToLastEventIndex = new Dictionary<long, int>();
         private readonly IDictionary<string, short> _eventNameToEventId = new Dictionary<string, short>();
@@ -83,8 +82,7 @@ namespace ReactNative.UIManager.Events
         private readonly ReactApplicationContext _reactContext;
 
         private RCTEventEmitter _rctEventEmitter;
-        private bool _hasDispatchScheduled;
-        private FrameManager _currentFrameCallback;
+        private EventDispatcherCallback _currentFrameCallback;
 
         /// <summary>
         /// Instantiates the <see cref="EventDispatcher"/>.
@@ -114,21 +112,12 @@ namespace ReactNative.UIManager.Events
                 throw new ArgumentException("Dispatched event has not been initialized.", nameof(@event));
             }
 
-            lock (_eventsStagingLock)
-            {
-                _eventStaging.Add(@event);
-            }
-        }
+            CoalesceEvent(@event);
 
-        /// <summary>
-        /// Submits the batch of dispatched events.
-        /// </summary>
-        public void OnBatchComplete()
-        {
             var currentFrameCallback = _currentFrameCallback;
             if (currentFrameCallback != null)
             {
-                currentFrameCallback.Run();
+                currentFrameCallback.Reschedule();
             }
         }
 
@@ -149,7 +138,9 @@ namespace ReactNative.UIManager.Events
                 _rctEventEmitter = _reactContext.GetJavaScriptModule<RCTEventEmitter>();
             }
 
-            _currentFrameCallback = new FrameManager(this);
+            var currentFrameCallback = new EventDispatcherCallback(this);
+            _currentFrameCallback = currentFrameCallback;
+            currentFrameCallback.Reschedule();
         }
 
         /// <summary>
@@ -157,7 +148,7 @@ namespace ReactNative.UIManager.Events
         /// </summary>
         public void OnShutdown()
         {
-            ClearFrameCallback();
+            ClearCallback();
         }
 
         /// <summary>
@@ -165,7 +156,7 @@ namespace ReactNative.UIManager.Events
         /// </summary>
         public void OnSuspend()
         {
-            ClearFrameCallback();
+            ClearCallback();
         }
 
         /// <summary>
@@ -173,100 +164,93 @@ namespace ReactNative.UIManager.Events
         /// </summary>
         public void OnCatalystInstanceDispose()
         {
-            ClearFrameCallback();
+            ClearCallback();
         }
 
         private void DispatchEvents()
         {
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "DispatchEvents"))
             {
-                _hasDispatchScheduled = false;
-                
                 if (_rctEventEmitter == null)
                 {
                     throw new InvalidOperationException("The RCTEventEmitter must not be null.");
                 }
 
+                // Clone the events to dispatch
+                var eventsToDispatch = default(List<Event>);
                 lock (_eventsToDispatchLock)
                 {
-                    var n = _eventsToDispatch.Count;
-                    if (n > 1)
-                    {
-                        _eventsToDispatch.Sort(s_eventComparer);
-                    }
-
-                    for (var idx = 0; idx < n; ++idx)
-                    {
-                        var e = _eventsToDispatch[idx];
-                        if (e == null)
-                        {
-                            continue;
-                        }
-
-                        e.Dispatch(_rctEventEmitter);
-                        e.Dispose();
-                    }
-
+                    eventsToDispatch = _eventsToDispatch.ToList(/* clone */);
                     _eventsToDispatch.Clear();
+                    _eventCookieToLastEventIndex.Clear();
+                }
+
+                var n = eventsToDispatch.Count;
+                if (n > 1)
+                {
+                    eventsToDispatch.Sort(s_eventComparer);
+                }
+
+                for (var idx = 0; idx < n; ++idx)
+                {
+                    var e = eventsToDispatch[idx];
+                    if (e == null)
+                    {
+                        continue;
+                    }
+
+                    e.Dispatch(_rctEventEmitter);
+                    e.Dispose();
                 }
             }
         }
 
-        private void MoveStagedEventsToDispatchQueue()
+        private void CoalesceEvent(Event e)
         {
-            lock (_eventsStagingLock)
+            lock (_eventsToDispatchLock)
             {
-                lock (_eventsToDispatchLock)
+                if (!e.CanCoalesce)
                 {
-                    for (var i = 0; i < _eventStaging.Count; ++i)
+                    _eventsToDispatch.Add(e);
+                    return;
+                }
+
+                var eventCookie = GetEventCookie(e.ViewTag, e.EventName, e.CoalescingKey);
+                var eventToAdd = default(Event);
+                var eventToDispose = default(Event);
+                var lastEventIdx = default(int);
+
+                if (!_eventCookieToLastEventIndex.TryGetValue(eventCookie, out lastEventIdx))
+                {
+                    eventToAdd = e;
+                    _eventCookieToLastEventIndex.Add(eventCookie, _eventsToDispatch.Count);
+                }
+                else
+                {
+                    var lastEvent = _eventsToDispatch[lastEventIdx];
+                    var coalescedEvent = e.Coalesce(lastEvent);
+                    if (coalescedEvent != lastEvent)
                     {
-                        var e = _eventStaging[i];
-                        if (!e.CanCoalesce)
-                        {
-                            _eventsToDispatch.Add(e);
-                            continue;
-                        }
-
-                        var eventCookie = GetEventCookie(e.ViewTag, e.EventName, e.CoalescingKey);
-                        var eventToAdd = default(Event);
-                        var eventToDispose = default(Event);
-                        var lastEventIdx = default(int);
-
-                        if (!_eventCookieToLastEventIndex.TryGetValue(eventCookie, out lastEventIdx))
-                        {
-                            eventToAdd = e;
-                            _eventCookieToLastEventIndex.Add(eventCookie, _eventsToDispatch.Count);
-                        }
-                        else
-                        {
-                            var lastEvent = _eventsToDispatch[lastEventIdx];
-                            var coalescedEvent = e.Coalesce(lastEvent);
-                            if (coalescedEvent != lastEvent)
-                            {
-                                eventToAdd = coalescedEvent;
-                                _eventCookieToLastEventIndex[eventCookie] = _eventsToDispatch.Count;
-                                eventToDispose = lastEvent;
-                                _eventsToDispatch[lastEventIdx] = null;
-                            }
-                            else
-                            {
-                                eventToDispose = e;
-                            }
-                        }
-
-                        if (eventToAdd != null)
-                        {
-                            _eventsToDispatch.Add(eventToAdd);
-                        }
-
-                        if (eventToDispose != null)
-                        {
-                            eventToDispose.Dispose();
-                        }
+                        eventToAdd = coalescedEvent;
+                        _eventCookieToLastEventIndex[eventCookie] = _eventsToDispatch.Count;
+                        eventToDispose = lastEvent;
+                        _eventsToDispatch[lastEventIdx] = null;
+                    }
+                    else
+                    {
+                        eventToDispose = e;
                     }
                 }
 
-                _eventStaging.Clear();
+                if (eventToAdd != null)
+                {
+                    _eventsToDispatch.Add(eventToAdd);
+                }
+
+                if (eventToDispose != null)
+                {
+                    eventToDispose.Dispose();
+                }
             }
         }
 
@@ -294,7 +278,7 @@ namespace ReactNative.UIManager.Events
                 (((long)coalescingKey) & 0xffff) << 48;
         }
 
-        private void ClearFrameCallback()
+        private void ClearCallback()
         {
             DispatcherHelpers.AssertOnDispatcher();
             if (_currentFrameCallback != null)
@@ -304,34 +288,32 @@ namespace ReactNative.UIManager.Events
             }
         }
 
-        class FrameManager
+        class EventDispatcherCallback
         {
+            private readonly object _gate = new object();
+
             private readonly EventDispatcher _parent;
 
+            private bool _scheduled;
             private bool _stopped;
 
-            public FrameManager(EventDispatcher parent)
+            public EventDispatcherCallback(EventDispatcher parent)
             {
                 _parent = parent;
             }
 
-            public void Run()
+            public void Reschedule()
             {
-                DispatcherHelpers.AssertOnDispatcher();
-
-                if (_stopped)
+                lock (_gate)
                 {
-                    return;
-                }
-
-                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ScheduleDispatchFrameCallback"))
-                {
-                    _parent.MoveStagedEventsToDispatchQueue();
-
-                    if (!_parent._hasDispatchScheduled)
+                    if (!_scheduled && !_stopped)
                     {
-                        _parent._hasDispatchScheduled = true;
-                        _parent._reactContext.RunOnJSQueueThread(_parent.DispatchEvents);
+                        _scheduled = true;
+
+                        using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ScheduleDispatchFrameCallback"))
+                        {
+                            _parent._reactContext.RunOnJSQueueThread(Run);
+                        }
                     }
                 }
             }
@@ -339,6 +321,18 @@ namespace ReactNative.UIManager.Events
             public void Stop()
             {
                 _stopped = true;
+            }
+
+            private void Run()
+            {
+                _scheduled = false;
+
+                if (_stopped)
+                {
+                    return;
+                }
+
+                _parent.DispatchEvents();
             }
         }
     }

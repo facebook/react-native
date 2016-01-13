@@ -118,6 +118,7 @@ namespace ReactNative.UIManager.Events
         public void Dispose()
         {
             _initialized = false;
+            OnDispose();
         }
 
         /// <summary>
