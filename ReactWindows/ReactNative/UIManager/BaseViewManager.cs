@@ -41,7 +41,8 @@ namespace ReactNative.UIManager
             {
                 ResetTransformMatrix(view);
             }
-            else {
+            else
+            {
                 SetTransformMatrix(view, decomposedMatrix);
             }
         }

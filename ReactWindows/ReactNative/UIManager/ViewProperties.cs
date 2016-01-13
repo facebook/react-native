@@ -46,7 +46,7 @@ namespace ReactNative.UIManager
         public const string Width = "width";
       
         // Properties that affect more than just layout
-        public const string Enabled = "enabled";
+        public const string Disabled = "disabled";
         public const string BackgroundColor = "backgroundColor";
         public const string Color = "color";
         public const string FontSize = "fontSize";
@@ -56,7 +56,7 @@ namespace ReactNative.UIManager
         public const string LineHeight = "lineHeight";
         public const string NeedsOffscreenAlphaCompositing = "needsOffscreenAlphaCompositing";
         public const string NumberOfLines = "numberOfLines";
-        public const string On = "on";
+        public const string Value = "value";
         public const string ResizeMode = "resizeMode";
         public const string TextAlign = "textAlign";
 
