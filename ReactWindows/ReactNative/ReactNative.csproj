@@ -218,7 +218,7 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
-    <Compile Include="UIManager\TextBoxExtensions.cs" />
+    <Compile Include="Views\TextInput\TextBoxExtensions.cs" />
     <Compile Include="Views\Text\FontStyleHelpers.cs" />
     <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />

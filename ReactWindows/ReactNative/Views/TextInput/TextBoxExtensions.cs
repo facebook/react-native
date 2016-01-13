@@ -1,7 +1,7 @@
 ﻿using ReactNative.Views.TextInput;
 using Windows.UI.Xaml.Controls;
 
-namespace ReactNative.UIManager
+namespace ReactNative.Views.TextInput
 {
     static class TextBoxExtensions
     {
