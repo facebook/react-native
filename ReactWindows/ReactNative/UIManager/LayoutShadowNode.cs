@@ -1,6 +1,9 @@
 ﻿using Facebook.CSSLayout;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace ReactNative.UIManager
 {
@@ -10,6 +13,9 @@ namespace ReactNative.UIManager
     /// </summary>
     public class LayoutShadowNode : ReactShadowNode
     {
+        private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, object>> s_enumCache =
+            new ConcurrentDictionary<Type, IReadOnlyDictionary<string, object>>();
+
         // TODO: replace with CSSConstants.Undefined
         private const float Undefined = float.NaN;
 
@@ -91,7 +97,7 @@ namespace ReactNative.UIManager
         public void SetFlexDirection(string flexDirection)
         {
             FlexDirection = flexDirection != null
-                ? ParseFlexDirection(flexDirection)
+                ? Parse<CSSFlexDirection>(flexDirection, nameof(flexDirection))
                 : CSSFlexDirection.Column;
         }
 
@@ -103,7 +109,7 @@ namespace ReactNative.UIManager
         public void SetFlexWrap(string flexWrap)
         {
             Wrap = flexWrap != null
-                ? Parse<CSSWrap>(flexWrap)
+                ? Parse<CSSWrap>(flexWrap, nameof(flexWrap))
                 : CSSWrap.NoWrap;
         }
 
@@ -115,7 +121,7 @@ namespace ReactNative.UIManager
         public void SetAlignSelf(string alignSelf)
         {
             AlignSelf = alignSelf != null
-                ? Parse<CSSAlign>(alignSelf)
+                ? Parse<CSSAlign>(alignSelf, nameof(alignSelf))
                 : CSSAlign.Auto;
         }
 
@@ -127,7 +133,7 @@ namespace ReactNative.UIManager
         public void SetAlignItems(string alignItems)
         {
             AlignItems = alignItems != null
-                ? Parse<CSSAlign>(alignItems)
+                ? Parse<CSSAlign>(alignItems, nameof(alignItems))
                 : CSSAlign.Stretch;
         }
 
@@ -139,7 +145,7 @@ namespace ReactNative.UIManager
         public void SetJustifyContent(string justifyContent)
         {
             JustifyContent = justifyContent != null
-                ? Parse<CSSJustify>(justifyContent)
+                ? Parse<CSSJustify>(justifyContent, nameof(justifyContent))
                 : CSSJustify.FlexStart;
         }
 
@@ -206,54 +212,33 @@ namespace ReactNative.UIManager
         public void SetPosition(string position)
         {
             PositionType = position != null
-                ? ParsePositionType(position)
+                ? Parse<CSSPositionType>(position, nameof(position))
                 : CSSPositionType.Relative;
         }
 
-        private static CSSPositionType ParsePositionType(string position)
+        private static T Parse<T>(string value, string paramName)
         {
-            switch (position.ToLowerInvariant())
+            var lookup = s_enumCache.GetOrAdd(
+                typeof(T), 
+                type => Enum.GetValues(type)
+                    .Cast<object>()
+                    .ToDictionary(
+                        e => e.ToString().ToLowerInvariant(),
+                        e => e));
+
+            var result = default(object);
+            if (!lookup.TryGetValue(value.ToLowerInvariant(), out result))
             {
-                case "relative":
-                    return CSSPositionType.Relative;
-                case "absolute":
-                    return CSSPositionType.Absolute;
-                default:
-                    throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Invalid position type '{0}'.",
-                            position),
-                        nameof(position));
-
+                throw new ArgumentOutOfRangeException(
+                    paramName,
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                       "Invalid value '{0}' for type '{1}'.",
+                       value,
+                       typeof(T)));
             }
-        }
 
-        private static CSSFlexDirection ParseFlexDirection(string direction)
-        {
-            switch (direction.ToLowerInvariant())
-            {
-                case "column":
-                    return CSSFlexDirection.Column;
-                case "columnreverse":
-                    return CSSFlexDirection.ColumnReverse;
-                case "row":
-                    return CSSFlexDirection.Row;
-                case "rowreverse":
-                    return CSSFlexDirection.RowReverse;
-                default:
-                    throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Invalid flex direction.",
-                            direction),
-                        nameof(direction));
-            }
-        }
-
-        private static T Parse<T>(string value)
-        {
-            return (T)Enum.Parse(typeof(T), value);
+            return (T)result;
         }
     }
 }
