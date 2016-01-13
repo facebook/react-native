@@ -34,6 +34,7 @@ var ImageStylePropTypes = {
   // It changes the color of all the non-transparent pixels to the tintColor
   tintColor: ColorPropType,
   opacity: ReactPropTypes.number,
+  overlayColor: ReactPropTypes.string,
 };
 
 module.exports = ImageStylePropTypes;
