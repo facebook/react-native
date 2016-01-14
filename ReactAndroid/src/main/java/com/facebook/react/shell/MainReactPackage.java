@@ -17,6 +17,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
@@ -57,6 +58,7 @@ public class MainReactPackage implements ReactPackage {
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     return Arrays.<NativeModule>asList(
       new AsyncStorageModule(reactContext),
+      new CameraRollManager(reactContext),
       new ClipboardModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),

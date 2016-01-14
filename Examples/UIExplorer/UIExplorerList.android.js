@@ -43,6 +43,7 @@ var APIS = [
   require('./AccessibilityAndroidExample.android'),
   require('./AlertExample').AlertExample,
   require('./BorderExample'),
+  require('./CameraRollExample'),
   require('./ClipboardExample'),
   require('./GeolocationExample'),
   require('./IntentAndroidExample.android'),

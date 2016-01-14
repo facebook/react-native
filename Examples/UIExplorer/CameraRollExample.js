@@ -15,24 +15,25 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+const React = require('react-native');
+const {
   CameraRoll,
   Image,
   SliderIOS,
   StyleSheet,
-  SwitchIOS,
+  Switch,
   Text,
   View,
   TouchableOpacity
 } = React;
 
-var CameraRollView = require('./CameraRollView.ios');
-var AssetScaledImageExampleView = require('./AssetScaledImageExample');
+const CameraRollView = require('./CameraRollView');
 
-var CAMERA_ROLL_VIEW = 'camera_roll_view';
+const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-var CameraRollExample = React.createClass({
+const CAMERA_ROLL_VIEW = 'camera_roll_view';
+
+const CameraRollExample = React.createClass({
 
   getInitialState() {
     return {
@@ -45,7 +46,7 @@ var CameraRollExample = React.createClass({
   render() {
     return (
       <View>
-        <SwitchIOS
+        <Switch
           onValueChange={this._onSwitchChange}
           value={this.state.bigImages} />
         <Text>{(this.state.bigImages ? 'Big' : 'Small') + ' Images'}</Text>
@@ -65,18 +66,20 @@ var CameraRollExample = React.createClass({
   },
 
   loadAsset(asset){
-    this.props.navigator.push({
-      title: 'Camera Roll Image',
-      component: AssetScaledImageExampleView,
-      backButtonTitle: 'Back',
-      passProps: { asset: asset },
-    });
+    if (this.props.navigator) {
+      this.props.navigator.push({
+        title: 'Camera Roll Image',
+        component: AssetScaledImageExampleView,
+        backButtonTitle: 'Back',
+        passProps: { asset: asset },
+      });
+    }
   },
 
   _renderImage(asset) {
-    var imageSize = this.state.bigImages ? 150 : 75;
-    var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
-    var location = asset.node.location.longitude ?
+    const imageSize = this.state.bigImages ? 150 : 75;
+    const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
+    const location = asset.node.location.longitude ?
       JSON.stringify(asset.node.location) : 'Unknown location';
     return (
       <TouchableOpacity key={asset} onPress={ this.loadAsset.bind( this, asset ) }>
@@ -97,9 +100,9 @@ var CameraRollExample = React.createClass({
   },
 
   _onSliderChange(value) {
-    var options = CameraRoll.GroupTypesOptions;
-    var index = Math.floor(value * options.length * 0.99);
-    var groupTypes = options[index];
+    const options = CameraRoll.GroupTypesOptions;
+    const index = Math.floor(value * options.length * 0.99);
+    const groupTypes = options[index];
     if (groupTypes !== this.state.groupTypes) {
       this.setState({groupTypes: groupTypes});
     }
@@ -111,7 +114,7 @@ var CameraRollExample = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     flex: 1,
