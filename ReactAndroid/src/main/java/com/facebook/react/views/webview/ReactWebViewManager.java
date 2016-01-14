@@ -34,6 +34,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
@@ -94,10 +95,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       super.onPageStarted(webView, url, favicon);
       mLastLoadFailed = false;
 
-      ReactContext reactContext = (ReactContext) ((ReactWebView) webView).getContext();
-      EventDispatcher eventDispatcher =
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-      eventDispatcher.dispatchEvent(
+      dispatchEvent(
+          webView,
           new TopLoadingStartEvent(
               webView.getId(),
               SystemClock.uptimeMillis(),
@@ -117,14 +116,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       // Android WebView does it in the opposite way, so we need to simulate that behavior
       emitFinishEvent(webView, failingUrl);
 
-      ReactContext reactContext = (ReactContext) ((ReactWebView) webView).getContext();
       WritableMap eventData = createWebViewEvent(webView, failingUrl);
       eventData.putDouble("code", errorCode);
       eventData.putString("description", description);
 
-      EventDispatcher eventDispatcher =
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-      eventDispatcher.dispatchEvent(
+      dispatchEvent(
+          webView,
           new TopLoadingErrorEvent(webView.getId(), SystemClock.uptimeMillis(), eventData));
     }
 
@@ -132,26 +129,28 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     public void doUpdateVisitedHistory(WebView webView, String url, boolean isReload) {
       super.doUpdateVisitedHistory(webView, url, isReload);
 
-      ReactContext reactContext = (ReactContext) webView.getContext();
-      EventDispatcher eventDispatcher =
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-      eventDispatcher.dispatchEvent(
+      dispatchEvent(
+          webView,
           new TopLoadingStartEvent(
+            webView.getId(),
+            SystemClock.uptimeMillis(),
+            createWebViewEvent(webView, url)));
+    }
+
+    private void emitFinishEvent(WebView webView, String url) {
+      dispatchEvent(
+          webView,
+          new TopLoadingFinishEvent(
               webView.getId(),
               SystemClock.uptimeMillis(),
               createWebViewEvent(webView, url)));
     }
 
-    private void emitFinishEvent(WebView webView, String url) {
+    private static void dispatchEvent(WebView webView, Event event) {
       ReactContext reactContext = (ReactContext) webView.getContext();
-
       EventDispatcher eventDispatcher =
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
-      eventDispatcher.dispatchEvent(
-          new TopLoadingFinishEvent(
-              webView.getId(),
-              SystemClock.uptimeMillis(),
-              createWebViewEvent(webView, url)));
+      eventDispatcher.dispatchEvent(event);
     }
 
     private WritableMap createWebViewEvent(WebView webView, String url) {
