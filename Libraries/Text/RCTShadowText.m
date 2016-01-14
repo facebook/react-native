@@ -373,7 +373,6 @@ RCT_TEXT_PROPERTY(IsHighlighted, _isHighlighted, BOOL)
 RCT_TEXT_PROPERTY(LetterSpacing, _letterSpacing, CGFloat)
 RCT_TEXT_PROPERTY(LineHeight, _lineHeight, CGFloat)
 RCT_TEXT_PROPERTY(NumberOfLines, _numberOfLines, NSUInteger)
-RCT_TEXT_PROPERTY(ShadowOffset, _shadowOffset, CGSize)
 RCT_TEXT_PROPERTY(TextAlign, _textAlign, NSTextAlignment)
 RCT_TEXT_PROPERTY(TextDecorationColor, _textDecorationColor, UIColor *);
 RCT_TEXT_PROPERTY(TextDecorationLine, _textDecorationLine, RCTTextDecorationLineType);
