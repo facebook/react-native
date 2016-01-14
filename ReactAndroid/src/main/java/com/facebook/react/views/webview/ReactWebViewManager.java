@@ -286,6 +286,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     // TODO(8495359): url and html are coupled as they both call loadUrl, therefore in case when
     // property url is removed in favor of property html being added in single transaction we may
     // end up in a state when blank url is loaded as it depends on the order of update operations!
+
+    String currentUrl = view.getUrl();
+    if (currentUrl != null && currentUrl.equals(url)) {
+      // We are already loading it so no need to stomp over it and start again
+      return;
+    }
     if (url != null) {
       view.loadUrl(url);
     } else {
