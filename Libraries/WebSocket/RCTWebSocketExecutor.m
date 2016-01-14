@@ -80,8 +80,9 @@ RCT_EXPORT_MODULE()
     retries--;
   }
   if (!runtimeIsReady) {
-    RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
-                 "paused on a breakpoint or exception and try reloading again.");
+    RCTLogError(@"Runtime is not ready for debugging.\n "
+                 "- Make sure Packager server is running.\n"
+                 "- Make sure Chrome is running and not paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
     return;
   }
