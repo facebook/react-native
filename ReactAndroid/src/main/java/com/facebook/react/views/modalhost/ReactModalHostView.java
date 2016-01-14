@@ -3,11 +3,11 @@ package com.facebook.react.views.modalhost;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.facebook.react.R;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.views.view.ReactViewGroup;
 
@@ -23,13 +23,18 @@ public class ReactModalHostView extends ViewGroup {
     super(context);
 
     mHostView = new ReactViewGroup(context);
+    mHostView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-    mDialog = new Dialog(context, R.style.Theme_ReactNative_AppCompat_Light_NoActionBar_FullScreen);
+    mDialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
     mDialog.setContentView(mHostView);
     mDialog.show();
     mDialog.getWindow().setLayout(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT);
+  }
+
+  public void setBackgroundDrawable(ColorDrawable color) {
+    mDialog.getWindow().setBackgroundDrawable(color);
   }
 
   @Override

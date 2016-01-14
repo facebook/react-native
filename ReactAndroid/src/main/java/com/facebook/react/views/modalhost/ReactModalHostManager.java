@@ -3,6 +3,8 @@
 package com.facebook.react.views.modalhost;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
 
 import com.facebook.react.common.MapBuilder;
@@ -17,8 +19,6 @@ import java.util.Map;
  * View manager for {@link ReactModalHostView} components.
  *
  * Emits an {@code onDismiss} event when the Dialog host is dismissed.
- *
- * TODO(8776300): Refactor this class to use @ReactProp
  */
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
 
@@ -31,7 +31,11 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
 
   @ReactProp(name = "transparent")
   public void setTransparent(ReactModalHostView view, boolean transparent) {
-    // TODO(8776300): Implement this
+    if (transparent) {
+      view.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    } else {
+      view.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+    }
   }
 
   @Override
