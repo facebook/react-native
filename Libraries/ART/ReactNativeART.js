@@ -479,13 +479,12 @@ function extractAlignment(alignment) {
 }
 
 var Polygon = React.createClass({
-
   render: function() {
     var props = this.props;
-    let d = 'M' + props.points.trim().replace(/\s+/g, 'L') + 'z';
-    console.log(d);
+    var d = 'M' + props.points.trim().replace(/\s+/g, 'L') + 'z';
     return <Shape
       {...props}
+      points={null}
       d={d}
     />
   }
