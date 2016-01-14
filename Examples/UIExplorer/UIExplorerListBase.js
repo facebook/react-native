@@ -87,11 +87,9 @@ class UIExplorerListBase extends React.Component {
 
   _renderSectionHeader(data: any, section: string) {
     return (
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionHeaderTitle}>
-          {section.toUpperCase()}
-        </Text>
-      </View>
+      <Text style={styles.sectionHeader}>
+        {section.toUpperCase()}
+      </Text>
     );
   }
 
@@ -148,13 +146,11 @@ var styles = StyleSheet.create({
   },
   sectionHeader: {
     padding: 5,
+    fontWeight: '500',
+    fontSize: 11,
   },
   group: {
     backgroundColor: 'white',
-  },
-  sectionHeaderTitle: {
-    fontWeight: '500',
-    fontSize: 11,
   },
   row: {
     backgroundColor: 'white',
