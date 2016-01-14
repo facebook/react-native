@@ -11,32 +11,29 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var Platform = require('Platform');
-var PointPropType = require('PointPropType');
-var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
-var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var ScrollResponder = require('ScrollResponder');
-var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var View = require('View');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const Platform = require('Platform');
+const PointPropType = require('PointPropType');
+const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
+const React = require('React');
+const ScrollResponder = require('ScrollResponder');
+const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
+const View = require('View');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var deepDiffer = require('deepDiffer');
-var dismissKeyboard = require('dismissKeyboard');
-var flattenStyle = require('flattenStyle');
-var insetsDiffer = require('insetsDiffer');
-var invariant = require('invariant');
-var pointsDiffer = require('pointsDiffer');
-var requireNativeComponent = require('requireNativeComponent');
-var processColor = require('processColor');
+const dismissKeyboard = require('dismissKeyboard');
+const flattenStyle = require('flattenStyle');
+const invariant = require('invariant');
+const requireNativeComponent = require('requireNativeComponent');
+const processColor = require('processColor');
 
-var PropTypes = React.PropTypes;
+import type ReactComponent from 'ReactComponent';
 
-var SCROLLVIEW = 'ScrollView';
-var INNERVIEW = 'InnerScrollView';
+const PropTypes = React.PropTypes;
+
+const SCROLLVIEW = 'ScrollView';
+const INNERVIEW = 'InnerScrollView';
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -53,7 +50,7 @@ var INNERVIEW = 'InnerScrollView';
  * Doesn't yet support other contained responders from blocking this scroll
  * view from becoming the responder.
  */
-var ScrollView = React.createClass({
+const ScrollView = React.createClass({
   propTypes: {
     ...View.propTypes,
     /**
@@ -311,15 +308,15 @@ var ScrollView = React.createClass({
 
   mixins: [ScrollResponder.Mixin],
 
-  getInitialState: function() {
+  getInitialState() {
     return this.scrollResponderMixinGetInitialState();
   },
 
-  setNativeProps: function(props: Object) {
+  setNativeProps(props: Object) {
     this.refs[SCROLLVIEW].setNativeProps(props);
   },
 
-  endRefreshing: function() {
+  endRefreshing() {
     RCTScrollViewManager.endRefreshing(
       React.findNodeHandle(this)
     );
@@ -331,28 +328,26 @@ var ScrollView = React.createClass({
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder: function(): ReactComponent {
+  getScrollResponder(): ReactComponent {
     return this;
   },
 
-  getInnerViewNode: function(): any {
+  getInnerViewNode(): any {
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY?: number, destX?: number) {
-    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
+  scrollTo(destY?: number, destX?: number) {
     this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
   },
 
-  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
-    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
+  scrollWithoutAnimationTo(destY?: number, destX?: number) {
     this.getScrollResponder().scrollResponderScrollWithoutAnimationTo(
       destX || 0,
       destY || 0,
     );
   },
 
-  handleScroll: function(e: Object) {
+  handleScroll(e: Object) {
     if (__DEV__) {
       if (this.props.onScroll && !this.props.scrollEventThrottle) {
         console.log(
@@ -372,19 +367,19 @@ var ScrollView = React.createClass({
     this.scrollResponderHandleScroll(e);
   },
 
-  _handleContentOnLayout: function(e: Object) {
-    var {width, height} = e.nativeEvent.layout;
+  _handleContentOnLayout(e: Object) {
+    const {width, height} = e.nativeEvent.layout;
     this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
   },
 
-  render: function() {
-    var contentContainerStyle = [
+  render() {
+    const contentContainerStyle = [
       this.props.horizontal && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
     ];
     if (__DEV__ && this.props.style) {
-      var style = flattenStyle(this.props.style);
-      var childLayoutProps = ['alignItems', 'justifyContent']
+      const style = flattenStyle(this.props.style);
+      const childLayoutProps = ['alignItems', 'justifyContent']
         .filter((prop) => style && style[prop] !== undefined);
       invariant(
         childLayoutProps.length === 0,
@@ -393,14 +388,14 @@ var ScrollView = React.createClass({
       );
     }
 
-    var contentSizeChangeProps = {};
+    let contentSizeChangeProps = {};
     if (this.props.onContentSizeChange) {
       contentSizeChangeProps = {
         onLayout: this._handleContentOnLayout,
       };
     }
 
-    var contentContainer =
+    const contentContainer =
       <View
         {...contentSizeChangeProps}
         ref={INNERVIEW}
@@ -410,17 +405,17 @@ var ScrollView = React.createClass({
         {this.props.children}
       </View>;
 
-    var alwaysBounceHorizontal =
+    const alwaysBounceHorizontal =
       this.props.alwaysBounceHorizontal !== undefined ?
         this.props.alwaysBounceHorizontal :
         this.props.horizontal;
 
-    var alwaysBounceVertical =
+    const alwaysBounceVertical =
       this.props.alwaysBounceVertical !== undefined ?
         this.props.alwaysBounceVertical :
         !this.props.horizontal;
 
-    var props = {
+    const props = {
       ...this.props,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
@@ -444,16 +439,16 @@ var ScrollView = React.createClass({
       sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ? true : false,
     };
 
-    var onRefreshStart = this.props.onRefreshStart;
+    const onRefreshStart = this.props.onRefreshStart;
     if (onRefreshStart) {
       console.warn('onRefreshStart is deprecated. Use the refreshControl prop instead.');
       // this is necessary because if we set it on props, even when empty,
       // it'll trigger the default pull-to-refresh behavior on native.
       props.onRefreshStart =
-        function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
+        () => { onRefreshStart && onRefreshStart(this.endRefreshing); };
     }
 
-    var ScrollViewClass;
+    let ScrollViewClass;
     if (Platform.OS === 'ios') {
       ScrollViewClass = RCTScrollView;
     } else if (Platform.OS === 'android') {
@@ -468,7 +463,7 @@ var ScrollView = React.createClass({
       'ScrollViewClass must not be undefined'
     );
 
-    var refreshControl = this.props.refreshControl;
+    const refreshControl = this.props.refreshControl;
     if (refreshControl) {
       if (Platform.OS === 'ios') {
         // On iOS the RefreshControl is a child of the ScrollView.
@@ -482,7 +477,7 @@ var ScrollView = React.createClass({
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
         // Since the ScrollView is wrapped add the style props to the
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
-        var refreshProps = refreshControl.props;
+        const refreshProps = refreshControl.props;
         return (
           <AndroidSwipeRefreshLayout
             {...refreshProps}
@@ -503,7 +498,7 @@ var ScrollView = React.createClass({
   }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   base: {
     flex: 1,
   },
@@ -512,35 +507,6 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-
-var validAttributes = {
-  ...ReactNativeViewAttributes.UIView,
-  alwaysBounceHorizontal: true,
-  alwaysBounceVertical: true,
-  automaticallyAdjustContentInsets: true,
-  bounces: true,
-  centerContent: true,
-  contentInset: {diff: insetsDiffer},
-  contentOffset: {diff: pointsDiffer},
-  decelerationRate: true,
-  horizontal: true,
-  keyboardDismissMode: true,
-  keyboardShouldPersistTaps: true,
-  maximumZoomScale: true,
-  minimumZoomScale: true,
-  pagingEnabled: true,
-  removeClippedSubviews: true,
-  scrollEnabled: true,
-  scrollIndicatorInsets: {diff: insetsDiffer},
-  scrollsToTop: true,
-  showsHorizontalScrollIndicator: true,
-  showsVerticalScrollIndicator: true,
-  snapToInterval: true,
-  snapToAlignment: true,
-  stickyHeaderIndices: {diff: deepDiffer},
-  scrollEventThrottle: true,
-  zoomScale: true,
-};
 
 if (Platform.OS === 'android') {
   var AndroidScrollView = requireNativeComponent('RCTScrollView', ScrollView);
