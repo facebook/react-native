@@ -134,14 +134,14 @@ var TextInput = React.createClass({
     keyboardType: PropTypes.oneOf([
       // Cross-platform
       'default',
-      'numeric',
       'email-address',
+      'numeric',
+      'phone-pad',
       // iOS-only
       'ascii-capable',
       'numbers-and-punctuation',
       'url',
       'number-pad',
-      'phone-pad',
       'name-phone-pad',
       'decimal-pad',
       'twitter',

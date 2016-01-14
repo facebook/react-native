@@ -242,6 +242,7 @@ exports.examples = [
         'default',
         'email-address',
         'numeric',
+        'phone-pad',
       ];
       var examples = keyboardTypes.map((type) => {
         return (
