@@ -594,7 +594,7 @@ var TextInput = React.createClass({
   _onTextInput: function(event: Event) {
     this.props.onTextInput && this.props.onTextInput(event);
   },
-  
+
   focusTextInput: function(){
     UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this.refs.input),
@@ -602,7 +602,7 @@ var TextInput = React.createClass({
       null,
     );
   },
-  
+
   blurTextInput: function(){
     UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this.refs.input),
@@ -610,7 +610,7 @@ var TextInput = React.createClass({
       null,
     );
   },
-  
+
 });
 
 var styles = StyleSheet.create({
