@@ -18,6 +18,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.camera.CameraRollManager;
+import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
@@ -32,22 +33,22 @@ import com.facebook.react.views.art.ARTRenderableViewManager;
 import com.facebook.react.views.art.ARTSurfaceViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
+import com.facebook.react.views.modalhost.ReactModalHostManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
+import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
-import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactTextInlineImageViewManager;
+import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
-import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.webview.ReactWebViewManager;
-import com.facebook.react.modules.clipboard.ClipboardModule;
 
 /**
  * Package defining basic modules and view managers.
@@ -98,6 +99,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactTextInlineImageViewManager(),
       new ReactVirtualTextViewManager(),
       new SwipeRefreshLayoutManager(),
-      new ReactWebViewManager());
+      new ReactWebViewManager(),
+      new ReactModalHostManager());
   }
 }
