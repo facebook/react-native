@@ -35,7 +35,7 @@ namespace ReactNative.UIManager
         /// <param name="viewManagers">The view managers.</param>
         /// <param name="uiImplementation">The UI implementation.</param>
         public UIManagerModule(
-            ReactApplicationContext reactContext,
+            ReactContext reactContext,
             IReadOnlyList<ViewManager> viewManagers,
             UIImplementation uiImplementation)
             : base(reactContext)
@@ -102,7 +102,8 @@ namespace ReactNative.UIManager
             var context = new ThemedReactContext(Context);
             _uiImplementation.RegisterRootView(rootView, tag, width, height, context);
 
-            rootView.SetOnSizeChangedListener(new RootViewSizeChangedListener());
+            // TODO: ensure this gets unset
+            rootView.SetOnSizeChangedListener(OnSizeChanged);
             
             return tag;
         }
@@ -369,7 +370,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Called when the host is shutting down.
         /// </summary>
-        public void OnShutdown()
+        public void OnDestroy()
         {
             _uiImplementation.OnShutdown();
         }
@@ -409,16 +410,16 @@ namespace ReactNative.UIManager
 
         #endregion
 
-        sealed class RootViewSizeChangedListener : ISizeChangedListener
+        #region SizeChangedEventHandler
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            public void OnSizeChanged(object sender, SizeChangedEventArgs e)
-            {
-                //TODO: Need to adjust the styling of the panel based on the new
-                //width and height(e.NewSize). The adjustment needs to run on the 
-                //Native Modules thread off the react context(this.Context.RunOnNativeModulesThread)
-                throw new NotImplementedException("Size change behavior for root view still needs to be implemented");
-            }
+            //TODO: Need to adjust the styling of the panel based on the new
+            //width and height(e.NewSize). The adjustment needs to run on the 
+            //Native Modules thread off the react context(this.Context.RunOnNativeModulesThread)
+            throw new NotImplementedException("Size change behavior for root view still needs to be implemented");
         }
 
+        #endregion
     }
 }

@@ -79,7 +79,7 @@ namespace ReactNative.UIManager.Events
         private readonly IDictionary<long, int> _eventCookieToLastEventIndex = new Dictionary<long, int>();
         private readonly IDictionary<string, short> _eventNameToEventId = new Dictionary<string, short>();
 
-        private readonly ReactApplicationContext _reactContext;
+        private readonly ReactContext _reactContext;
 
         private RCTEventEmitter _rctEventEmitter;
         private EventDispatcherCallback _currentFrameCallback;
@@ -88,7 +88,7 @@ namespace ReactNative.UIManager.Events
         /// Instantiates the <see cref="EventDispatcher"/>.
         /// </summary>
         /// <param name="reactContext">The context.</param>
-        public EventDispatcher(ReactApplicationContext reactContext)
+        public EventDispatcher(ReactContext reactContext)
         {
             if (reactContext == null)
                 throw new ArgumentNullException(nameof(reactContext));
@@ -146,7 +146,7 @@ namespace ReactNative.UIManager.Events
         /// <summary>
         /// Called when the host is shutting down.
         /// </summary>
-        public void OnShutdown()
+        public void OnDestroy()
         {
             ClearCallback();
         }

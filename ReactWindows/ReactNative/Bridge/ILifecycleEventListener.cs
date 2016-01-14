@@ -18,6 +18,6 @@
         /// <summary>
         /// Called when the host is shutting down.
         /// </summary>
-        void OnShutdown();
+        void OnDestroy();
     }
 }

@@ -14,14 +14,14 @@ namespace ReactNative.Tests.Bridge
                 () => new TestModule(null),
                 ex => Assert.AreEqual("reactContext", ex.ParamName));
 
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var module = new TestModule(context);
             Assert.AreSame(context, module.Context);
         }
 
         class TestModule : ReactContextNativeModuleBase
         {
-            public TestModule(ReactApplicationContext reactContext)
+            public TestModule(ReactContext reactContext)
                 : base(reactContext)
             {
             }

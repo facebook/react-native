@@ -1,63 +1,35 @@
-﻿using ReactNative.Modules.Core;
-using ReactNative.Shell;
+﻿using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using Windows.Foundation;
 
 namespace ReactNative
 {
+    /// <summary>
+    /// Default root view for applicaitons. Provides the ability to listen for
+    /// size changes so that the UI manager can re-layout its elements.
+    /// 
+    /// It is also responsible for handling touch events passed to any of it's
+    /// child views and sending those events to JavaScript via the
+    /// <see cref="UIManager.Events.RCTEventEmitter"/> module.
+    /// </summary>
     public class ReactRootView : SizeMonitoringPanel, IRootView
     {
         private IReactInstanceManager _reactInstanceManager;
         private string _jsModuleName;
-        private int _rootTageNode;
-        private bool _isAttachedToWindow;
 
-        public void OnChildStartedNativeGesture(RoutedEventArgs ev)
-        {
-            throw new NotImplementedException("Native gesture event handling is not yet supported");
-        }
+        private bool _wasMeasured;
+        private bool _attachScheduled;
 
         /// <summary>
-        /// Initializes and starts a <see cref="IReactInstanceManager" /> instance.
+        /// Gets the JavaScript module name.
         /// </summary>
-        /// <param name="bundleAssetName">The Javascript Bundle location</param>
-        /// <param name="jsModuleName">The core Javascript module name</param>
-        public void LiftAsync(string bundleAssetName, string jsModuleName)
-        {
-            var defaultPackageList = new List<IReactPackage>()
-            {
-                new MainReactPackage()
-            };
-
-            this.LiftAsync(bundleAssetName, jsModuleName, defaultPackageList);
-        }
-
-        /// <summary>
-        /// Initializes and starts a <see cref="IReactInstanceManager" /> i nstance.
-        /// </summary>
-        /// <param name="bundleAssetName">The Javascript Bundle location</param>
-        /// <param name="jsModuleName">The core Javascript module name</param>
-        /// <param name="packages">The list of react packges to initialize</param>
-        public void LiftAsync(string bundleAssetName, string jsModuleName, List<IReactPackage> packages)
-        {
-            var builder = new ReactInstanceManagerImpl.Builder()
-            {
-                InitialLifecycleState = LifecycleState.RESUMED,
-                JSMainModuleName = jsModuleName,
-                JSBundleFile = bundleAssetName
-            }
-            .AddPackages(packages)
-            .Build();
-
-            this.StartReactApplication(builder, jsModuleName);
-        }
-
-        /// <summary>
-        /// Exposes the Javascript module name of the root view
-        /// </summary>
-        public string JSModuleName
+        internal string JavaScriptModuleName
         {
             get
             {
@@ -66,48 +38,79 @@ namespace ReactNative
         }
 
         /// <summary>
-        /// Exposes the react tag id of the view
+        /// Schedule rendering of the react component rendered by the 
+        /// JavaScript application from the given JavaScript module 
+        /// <paramref name="moduleName"/> using the provided
+        /// <paramref name="reactInstanceManager"/> to attach to the JavaScript
+        /// context of that manager.
         /// </summary>
-        public int TagId
+        /// <param name="reactInstanceManager">
+        /// The react instance manager.
+        /// </param>
+        /// <param name="moduleName">
+        /// The module name.
+        /// </param>
+        public void StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
         {
-            get { return _rootTageNode; }
-        }
+            DispatcherHelpers.AssertOnDispatcher();
 
-        /// <summary>
-        /// Sets the react tag id to the view
-        /// </summary>
-        /// <param name="tagId"></param>
-        public void BindTagToView(int tagId)
-        {
-            _rootTageNode = tagId;
-        }
+            if (_reactInstanceManager != null)
+            {
+                throw new InvalidOperationException("This root view has already been attached to an instance manager.");
+            }
 
-        /// <summary>
-        /// Schedule rendering of the react component rendered by the JS application from the given JS
-        /// module <see cref="moduleName" /> using provided <see cref="ReactInstanceManager" />
-        /// </summary>
-        /// <param name="reactInstanceManager">The React Instance Manager</param>
-        /// <param name="moduleName">module to load</param>
-        public async void StartReactApplication(IReactInstanceManager reactInstanceManager, string moduleName)
-        {
             _reactInstanceManager = reactInstanceManager;
             _jsModuleName = moduleName;
 
-            await _reactInstanceManager.RecreateReactContextInBackgroundFromBundleFileAsync();
+            if (!_reactInstanceManager.HasStartedCreatingInitialContext)
+            {
+                _reactInstanceManager.CreateReactContextInBackground();
+            }
 
-            // We need to wait for the initial onMeasure, if this view has not yet been measured, we set
-            // mAttachScheduled flag, which will make this view startReactApplication itself to instance
-            // manager once onMeasure is called.
-            if (!_isAttachedToWindow)
+            // We need to wait for the initial `Measure` call, if this view has
+            // not yet been measured, we set the `_attachScheduled` flag, which
+            // will enable deferred attachment of the root node.
+            if (_wasMeasured)
             {
                 _reactInstanceManager.AttachMeasuredRootView(this);
-                _isAttachedToWindow = true;
+            }
+            else
+            {
+                _attachScheduled = true;
             }
         }
 
-        private void OnDetachedFromWindow(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Called when a child starts a native gesture.
+        /// </summary>
+        /// <param name="e">The event.</param>
+        public void OnChildStartedNativeGesture(RoutedEventArgs ev)
         {
-            _reactInstanceManager.DetachRootView(this);
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Hooks into the measurement event to potentially attach the react 
+        /// root view.
+        /// </summary>
+        /// <param name="availableSize">The available size.</param>
+        /// <returns>The desired size.</returns>
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+
+            var result = base.MeasureOverride(availableSize);
+
+            _wasMeasured = true;
+
+            var reactInstanceManager = _reactInstanceManager;
+            if (_attachScheduled && reactInstanceManager != null)
+            {
+                _attachScheduled = false;
+                reactInstanceManager.AttachMeasuredRootView(this);
+            }
+
+            return result;
         }
     }
 }

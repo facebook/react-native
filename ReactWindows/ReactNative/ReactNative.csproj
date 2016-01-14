@@ -152,8 +152,10 @@
     <Compile Include="Bridge\ReactContext.cs" />
     <Compile Include="Bridge\ReactContextNativeModuleBase.cs" />
     <Compile Include="Common\ReactConstants.cs" />
-    <Compile Include="Bridge\ReactApplicationContext.cs" />
     <Compile Include="CoreModulesPackage.cs" />
+    <Compile Include="ReactContextInitializedEventArgs.cs" />
+    <Compile Include="ReactPage.cs" />
+    <Compile Include="ReactRootView.cs" />
     <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
     <Compile Include="UIManager\CSSNodeExtensions.cs" />
@@ -165,7 +167,7 @@
     <Compile Include="Modules\Core\Timing.cs" />
     <Compile Include="Modules\Storage\AsyncStorageModule.cs" />
     <Compile Include="Modules\WebSocket\WebSocketModule.cs" />
-    <Compile Include="ReactInstanceManagerImpl.cs" />
+    <Compile Include="ReactInstanceManager.cs" />
     <Compile Include="Hosting\JavaScriptBackgroundWorkItemCallback.cs" />
     <Compile Include="Hosting\JavaScriptBeforeCollectCallback.cs" />
     <Compile Include="Hosting\JavaScriptContext.cs" />
@@ -190,11 +192,9 @@
     <Compile Include="Hosting\Native.cs" />
     <Compile Include="Bridge\INativeModule.cs" />
     <Compile Include="Modules\Core\DeviceEventManagerModule.cs" />
-    <Compile Include="Modules\Core\IDefaultHardwareBackButtonHandler.cs" />
     <Compile Include="Modules\Core\RCTDeviceEventEmitter.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitter.cs" />
     <Compile Include="Bridge\ReactDelegateFactoryBase.cs" />
-    <Compile Include="ReactRootView.cs" />
     <Compile Include="Reflection\ExpressionExtensions.cs" />
     <Compile Include="IReactPackage.cs" />
     <Compile Include="Shell\MainReactPackage.cs" />

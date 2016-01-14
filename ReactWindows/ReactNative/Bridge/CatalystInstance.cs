@@ -20,7 +20,7 @@ namespace ReactNative.Bridge
     {
         private readonly NativeModuleRegistry _registry;
         private readonly JavaScriptModuleRegistry _jsRegistry;
-        private readonly IJavaScriptExecutor _jsExecutor;
+        private readonly Func<IJavaScriptExecutor> _jsExecutorFactory;
         private readonly JavaScriptBundleLoader _bundleLoader;
         private readonly JavaScriptModulesConfig _jsModulesConfig;
         private readonly Action<Exception> _nativeModuleCallExceptionHandler;
@@ -31,14 +31,14 @@ namespace ReactNative.Bridge
 
         private CatalystInstance(
             CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
-            IJavaScriptExecutor jsExecutor,
+            Func<IJavaScriptExecutor> jsExecutorFactory,
             NativeModuleRegistry registry,
             JavaScriptModulesConfig jsModulesConfig,
             JavaScriptBundleLoader bundleLoader,
             Action<Exception> nativeModuleCallExceptionHandler)
         {
             _registry = registry;
-            _jsExecutor = jsExecutor;
+            _jsExecutorFactory = jsExecutorFactory;
             _jsModulesConfig = jsModulesConfig;
             _nativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
             _bundleLoader = bundleLoader;
@@ -88,6 +88,35 @@ namespace ReactNative.Bridge
 
             _initialized = true;
             _registry.NotifyCatalystInstanceInitialize();
+        }
+
+        public async Task InitializeBridgeAsync()
+        {
+            await _bundleLoader.InitializeAsync();
+
+            await QueueConfiguration.JSQueueThread.CallOnQueue(() =>
+            {
+                QueueConfiguration.JSQueueThread.AssertIsOnThread();
+
+                var jsExecutor = _jsExecutorFactory();
+
+                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactBridgeCtor"))
+                {
+                    _bridge = new ReactBridge(
+                        jsExecutor,
+                        new NativeModulesReactCallback(this),
+                        QueueConfiguration.NativeModulesQueueThread);
+                }
+
+                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "setBatchedBridgeConfig"))
+                {
+                    _bridge.SetGlobalVariable("__fbBatchedBridgeConfig", BuildModulesConfig());
+                }
+
+                _bundleLoader.LoadScript(jsExecutor);
+
+                return _bridge;
+            });
         }
 
         public void InvokeCallback(int callbackId, JArray arguments)
@@ -151,35 +180,6 @@ namespace ReactNative.Bridge
             // TODO: notify bridge idle listeners
         }
 
-        public async Task InitializeBridgeAsync()
-        {
-            await _bundleLoader.InitializeAsync();
-
-            await QueueConfiguration.JSQueueThread.CallOnQueue(() =>
-            {
-                QueueConfiguration.JSQueueThread.AssertIsOnThread();
-
-                _jsExecutor.Initialize();
-
-                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ReactBridgeCtor"))
-                {
-                    _bridge = new ReactBridge(
-                        _jsExecutor,
-                        new NativeModulesReactCallback(this),
-                        QueueConfiguration.NativeModulesQueueThread);
-                }
-
-                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "setBatchedBridgeConfig"))
-                {
-                    _bridge.SetGlobalVariable("__fbBatchedBridgeConfig", BuildModulesConfig());
-                }
-
-                _bundleLoader.LoadScript(_jsExecutor);
-
-                return _bridge;
-            });
-        }
-
         private string BuildModulesConfig()
         {
             using (var stringWriter = new StringWriter())
@@ -209,7 +209,7 @@ namespace ReactNative.Bridge
             private CatalystQueueConfigurationSpec _catalystQueueConfigurationSpec;
             private NativeModuleRegistry _registry;
             private JavaScriptModulesConfig _jsModulesConfig;
-            private IJavaScriptExecutor _jsExecutor;
+            private Func<IJavaScriptExecutor> _jsExecutorFactory;
             private JavaScriptBundleLoader _bundleLoader;
             private Action<Exception> _nativeModuleCallExceptionHandler;
 
@@ -237,11 +237,11 @@ namespace ReactNative.Bridge
                 }
             }
 
-            public IJavaScriptExecutor JavaScriptExecutor
+            public Func<IJavaScriptExecutor> JavaScriptExecutorFactory
             {
                 set
                 {
-                    _jsExecutor = value;
+                    _jsExecutorFactory = value;
                 }
             }
 
@@ -264,7 +264,7 @@ namespace ReactNative.Bridge
             public CatalystInstance Build()
             {
                 AssertNotNull(_catalystQueueConfigurationSpec, nameof(QueueConfigurationSpec));
-                AssertNotNull(_jsExecutor, nameof(IJavaScriptExecutor));
+                AssertNotNull(_jsExecutorFactory, nameof(JavaScriptExecutorFactory));
                 AssertNotNull(_registry, nameof(Registry));
                 AssertNotNull(_jsModulesConfig, nameof(JavaScriptModulesConfig));
                 AssertNotNull(_bundleLoader, nameof(BundleLoader));
@@ -272,7 +272,7 @@ namespace ReactNative.Bridge
                  
                 return new CatalystInstance(
                     _catalystQueueConfigurationSpec,
-                    _jsExecutor,
+                    _jsExecutorFactory,
                     _registry,
                     _jsModulesConfig,
                     _bundleLoader,

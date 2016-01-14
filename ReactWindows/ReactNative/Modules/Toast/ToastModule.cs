@@ -11,7 +11,7 @@ namespace ReactNative.Modules.Toast
         const string DURATION_SHORT_KEY = "SHORT";
         const string DURATION_LONG_KEY = "LONG";
 
-        public ToastModule(ReactApplicationContext reactContext)
+        public ToastModule(ReactContext reactContext)
             : base(reactContext)
         { }
 

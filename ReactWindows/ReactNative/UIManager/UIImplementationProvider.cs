@@ -11,7 +11,7 @@ namespace ReactNative.UIManager
     public class UIImplementationProvider
     {
         public UIImplementation CreateUIImplementation(
-            ReactApplicationContext reactContext, 
+            ReactContext reactContext, 
             IReadOnlyList<ViewManager> viewManagers)
         {
             return new UIImplementation(reactContext, viewManagers);
