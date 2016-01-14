@@ -101,6 +101,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Quits this queue's Looper. If that Looper was running on a different Thread than the current
    * Thread, also waits for the last message being processed to finish and the Thread to die.
    */
+  @Override
   public void quitSynchronous() {
     mIsFinished = true;
     mLooper.quit();

@@ -64,6 +64,7 @@ public class ReactEditText extends EditText {
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   private boolean mContainsImages;
+  private @Nullable SelectionWatcher mSelectionWatcher;
 
   public ReactEditText(Context context) {
     super(context);
@@ -150,6 +151,27 @@ public class ReactEditText extends EditText {
     }
   }
 
+  @Override
+  protected void onSelectionChanged(int selStart, int selEnd) {
+    super.onSelectionChanged(selStart, selEnd);
+    if (mSelectionWatcher != null && hasFocus()) {
+      mSelectionWatcher.onSelectionChanged(selStart, selEnd);
+    }
+  }
+
+  @Override
+  protected void onFocusChanged(
+      boolean focused, int direction, Rect previouslyFocusedRect) {
+    super.onFocusChanged(focused, direction, previouslyFocusedRect);
+    if (focused && mSelectionWatcher != null) {
+      mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
+    }
+  }
+
+  public void setSelectionWatcher(SelectionWatcher selectionWatcher) {
+    mSelectionWatcher = selectionWatcher;
+  }
+
   /*protected*/ int getStagedInputType() {
     return mStagedInputType;
   }
@@ -170,7 +192,8 @@ public class ReactEditText extends EditText {
     mStagedInputType = type;
   }
 
-  /* package */ void requestFocusFromJS() {
+  // VisibleForTesting from {@link TextInputEventsTestCase}.
+  public void requestFocusFromJS() {
     mIsJSSettingFocus = true;
     requestFocus();
     mIsJSSettingFocus = false;

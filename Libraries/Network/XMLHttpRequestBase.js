@@ -32,6 +32,7 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   status: number;
+  responseURL: ?string;
 
   upload: ?{
     onprogress?: (event: Object) => void;
@@ -69,6 +70,7 @@ class XMLHttpRequestBase {
     this.responseHeaders = undefined;
     this.responseText = '';
     this.status = 0;
+    delete this.responseURL;
 
     this._requestId = null;
 
@@ -110,11 +112,16 @@ class XMLHttpRequestBase {
     }
   }
 
-  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object): void {
+  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object, responseURL: ?string): void {
     if (requestId === this._requestId) {
       this.status = status;
       this.setResponseHeaders(responseHeaders);
       this.setReadyState(this.HEADERS_RECEIVED);
+      if (responseURL || responseURL === '') {
+        this.responseURL = responseURL;
+      } else {
+        delete this.responseURL;
+      }
     }
   }
 
@@ -178,6 +185,9 @@ class XMLHttpRequestBase {
     if (async !== undefined && !async) {
       // async is default
       throw new Error('Synchronous http requests are not supported');
+    }
+    if (!url) {
+      throw new Error('Cannot load an empty url');
     }
     this._reset();
     this._method = method;

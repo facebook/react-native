@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
-import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 
@@ -25,11 +24,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactProp;
-import com.facebook.react.uimanager.ReactPropGroup;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -84,14 +82,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
     view.setTranslucentBackgroundDrawable(bg == null ?
             null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
-  }
-
-  @ReactProp(name = ViewProps.BORDER_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
-  public void setBorderWidth(ReactViewGroup view, float width) {
-    if (!CSSConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
-    view.setBorderWidth(Spacing.ALL, width);
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

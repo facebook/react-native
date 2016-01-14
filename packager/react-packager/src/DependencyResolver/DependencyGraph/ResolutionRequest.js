@@ -25,6 +25,7 @@ class ResolutionRequest {
     helpers,
     moduleCache,
     fastfs,
+    shouldThrowOnUnresolvedErrors,
   }) {
     this._platform = platform;
     this._preferNativePlatform = preferNativePlatform;
@@ -34,6 +35,7 @@ class ResolutionRequest {
     this._helpers = helpers;
     this._moduleCache = moduleCache;
     this._fastfs = fastfs;
+    this._shouldThrowOnUnresolvedErrors = shouldThrowOnUnresolvedErrors;
     this._resetResolutionCache();
   }
 
@@ -67,8 +69,10 @@ class ResolutionRequest {
     };
 
     const forgive = (error) => {
-      if (error.type !== 'UnableToResolveError' ||
-        this._platform === 'ios') {
+      if (
+        error.type !== 'UnableToResolveError' ||
+        this._shouldThrowOnUnresolvedErrors(this._entryPath, this._platform)
+      ) {
         throw error;
       }
 
@@ -131,15 +135,25 @@ class ResolutionRequest {
           const filteredPairs = [];
 
           dependencies.forEach((modDep, i) => {
+            const name = depNames[i];
             if (modDep == null) {
+              // It is possible to require mocks that don't have a real
+              // module backing them. If a dependency cannot be found but there
+              // exists a mock with the desired ID, resolve it and add it as
+              // a dependency.
+              if (mocks && mocks[name]) {
+                const mockModule = this._moduleCache.getModule(mocks[name]);
+                return filteredPairs.push([name, mockModule]);
+              }
+
               debug(
                 'WARNING: Cannot find required module `%s` from module `%s`',
-                depNames[i],
+                name,
                 mod.path
               );
               return false;
             }
-            return filteredPairs.push([depNames[i], modDep]);
+            return filteredPairs.push([name, modDep]);
           });
 
           response.setResolvedDependencyPairs(mod, filteredPairs);
@@ -336,6 +350,8 @@ class ResolutionRequest {
         file = potentialModulePath + '.native.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
         file = potentialModulePath + '.js';
+      } else if (this._fastfs.fileExists(potentialModulePath + '.jsx')) {
+        file = potentialModulePath + '.jsx';
       } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
         file = potentialModulePath + '.json';
       } else {

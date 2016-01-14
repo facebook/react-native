@@ -9,11 +9,11 @@
 'use strict';
 
 const Promise = require('promise');
-const fs = require('fs');
+const fs = require('graceful-fs');
 const getCacheFilePath = require('./lib/getCacheFilePath');
 const isAbsolutePath = require('absolute-path');
 const loadCacheSync = require('./lib/loadCacheSync');
-const tmpdir = require('os').tmpDir();
+const tmpDir = require('os').tmpDir();
 
 function getObjectValues(object) {
   return Object.keys(object).map(key => object[key]);
@@ -31,8 +31,9 @@ class Cache {
   constructor({
     resetCache,
     cacheKey,
+    cacheDirectory = tmpDir,
   }) {
-    this._cacheFilePath = getCacheFilePath(tmpdir, cacheKey);
+    this._cacheFilePath = getCacheFilePath(cacheDirectory, cacheKey);
     if (!resetCache) {
       this._data = this._loadCacheSync(this._cacheFilePath);
     } else {

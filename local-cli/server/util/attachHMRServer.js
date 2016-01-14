@@ -106,80 +106,121 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           shallowDependencies,
         };
 
-        packagerServer.setHMRFileChangeListener(filename => {
+        packagerServer.setHMRFileChangeListener((filename, stat) => {
           if (!client) {
-            return;
+            return Promise.resolve();
           }
 
-          return packagerServer.getShallowDependencies(filename)
-            .then(deps => {
-              if (!client) {
-                return [];
-              }
+          return stat.then(() => {
+            return packagerServer.getShallowDependencies(filename)
+              .then(deps => {
+                if (!client) {
+                  return [];
+                }
 
-              // if the file dependencies have change we need to invalidate the
-              // dependencies caches because the list of files we need to send
-              // to the client may have changed
-              const oldDependencies = client.shallowDependencies[filename];
-              if (arrayEquals(deps, oldDependencies)) {
-                return [packagerServer.getModuleForPath(filename)];
-              }
+                // if the file dependencies have change we need to invalidate the
+                // dependencies caches because the list of files we need to send
+                // to the client may have changed
+                const oldDependencies = client.shallowDependencies[filename];
+                if (arrayEquals(deps, oldDependencies)) {
+                  return [packagerServer.getModuleForPath(filename)];
+                }
 
-              // if there're new dependencies compare the full list of
-              // dependencies we used to have with the one we now have
-              return getDependencies(client.platform, client.bundleEntry)
-                .then(({
-                  dependenciesCache,
-                  dependenciesModulesCache,
-                  shallowDependencies,
-                }) => {
-                  if (!client) {
-                    return [];
-                  }
-
-                  // build list of modules for which we'll send HMR updates
-                  const modulesToUpdate = [];
-                  Object.keys(dependenciesModulesCache).forEach(module => {
-                    if (!client.dependenciesModulesCache[module]) {
-                      modulesToUpdate.push(dependenciesModulesCache[module]);
+                // if there're new dependencies compare the full list of
+                // dependencies we used to have with the one we now have
+                return getDependencies(client.platform, client.bundleEntry)
+                  .then(({
+                    dependenciesCache,
+                    dependenciesModulesCache,
+                    shallowDependencies,
+                  }) => {
+                    if (!client) {
+                      return [];
                     }
+
+                    // build list of modules for which we'll send HMR updates
+                    const modulesToUpdate = [];
+                    Object.keys(dependenciesModulesCache).forEach(module => {
+                      if (!client.dependenciesModulesCache[module]) {
+                        modulesToUpdate.push(dependenciesModulesCache[module]);
+                      }
+                    });
+
+                    // invalidate caches
+                    client.dependenciesCache = dependenciesCache;
+                    client.dependenciesModulesCache = dependenciesModulesCache;
+                    client.shallowDependencies = shallowDependencies;
+
+                    return modulesToUpdate;
                   });
+              })
+              .then(modulesToUpdate => {
+                if (!client) {
+                  return;
+                }
 
-                  // invalidate caches
-                  client.dependenciesCache = dependenciesCache;
-                  client.dependenciesModulesCache = dependenciesModulesCache;
-                  client.shallowDependencies = shallowDependencies;
+                // make sure the file was modified is part of the bundle
+                if (!client.shallowDependencies[filename]) {
+                  return;
+                }
 
-                  return modulesToUpdate;
+                return packagerServer.buildBundleForHMR({
+                  entryFile: client.bundleEntry,
+                  platform: client.platform,
+                  modules: modulesToUpdate,
                 });
-            })
-            .then(modulesToUpdate => {
-              if (!client) {
-                return;
-              }
+              })
+              .then(update => {
+                if (!client) {
+                  return;
+                }
 
-              // make sure the file was modified is part of the bundle
-              if (!client.shallowDependencies[filename]) {
-                return;
-              }
+                // check we actually want to send an HMR update
+                if (update) {
+                  return JSON.stringify({
+                    type: 'update',
+                    body: update,
+                  });
+                }
+              })
+              .catch(error => {
+                // send errors to the client instead of killing packager server
+                let body;
+                if (error.type === 'TransformError' ||
+                    error.type === 'NotFoundError' ||
+                    error.type === 'UnableToResolveError') {
+                  body = {
+                    type: error.type,
+                    description: error.description,
+                    filename: error.filename,
+                    lineNumber: error.lineNumber,
+                  };
+                } else {
+                  console.error(error.stack || error);
+                  body = {
+                    type: 'InternalError',
+                    description: 'react-packager has encountered an internal error, ' +
+                      'please check your terminal error output for more details',
+                  };
+                }
 
-              return packagerServer.buildBundleForHMR({
-                entryFile: client.bundleEntry,
-                platform: client.platform,
-                modules: modulesToUpdate,
+                return JSON.stringify({type: 'error', body});
+              })
+              .then(bundle => {
+                if (!client) {
+                  return;
+                }
+
+                // check we actually want to send an HMR update
+                if (bundle) {
+                  client.ws.send(bundle);
+                }
               });
-            })
-            .then(bundle => {
-              if (!client) {
-                return;
-              }
-
-              // check we actually want to send an HMR update
-              if (bundle) {
-                client.ws.send(bundle);
-              }
-            })
-            .done();
+            },
+            () => {
+              // do nothing, file was removed
+            },
+          );
         });
 
         client.ws.on('error', e => {

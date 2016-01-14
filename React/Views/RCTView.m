@@ -477,15 +477,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (RCTCornerRadii)cornerRadii
 {
-  const CGRect bounds = self.bounds;
-  const CGFloat maxRadius = MIN(bounds.size.height, bounds.size.width);
+  // Get corner radii
   const CGFloat radius = MAX(0, _borderRadius);
+  const CGFloat topLeftRadius = _borderTopLeftRadius >= 0 ? _borderTopLeftRadius : radius;
+  const CGFloat topRightRadius = _borderTopRightRadius >= 0 ? _borderTopRightRadius : radius;
+  const CGFloat bottomLeftRadius = _borderBottomLeftRadius >= 0 ? _borderBottomLeftRadius : radius;
+  const CGFloat bottomRightRadius = _borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius;
 
+  // Get scale factors required to prevent radii from overlapping
+  const CGSize size = self.bounds.size;
+  const CGFloat topScaleFactor = RCTZeroIfNaN(MIN(1, size.width / (topLeftRadius + topRightRadius)));
+  const CGFloat bottomScaleFactor = RCTZeroIfNaN(MIN(1, size.width / (bottomLeftRadius + bottomRightRadius)));
+  const CGFloat rightScaleFactor = RCTZeroIfNaN(MIN(1, size.height / (topRightRadius + bottomRightRadius)));
+  const CGFloat leftScaleFactor = RCTZeroIfNaN(MIN(1, size.height / (topLeftRadius + bottomLeftRadius)));
+
+  // Return scaled radii
   return (RCTCornerRadii){
-    MIN(_borderTopLeftRadius >= 0 ? _borderTopLeftRadius : radius, maxRadius),
-    MIN(_borderTopRightRadius >= 0 ? _borderTopRightRadius : radius, maxRadius),
-    MIN(_borderBottomLeftRadius >= 0 ? _borderBottomLeftRadius : radius, maxRadius),
-    MIN(_borderBottomRightRadius >= 0 ? _borderBottomRightRadius : radius, maxRadius),
+    topLeftRadius * MIN(topScaleFactor, leftScaleFactor),
+    topRightRadius * MIN(topScaleFactor, rightScaleFactor),
+    bottomLeftRadius * MIN(bottomScaleFactor, leftScaleFactor),
+    bottomRightRadius * MIN(bottomScaleFactor, rightScaleFactor),
   };
 }
 
@@ -499,8 +510,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   };
 }
 
+- (void)reactSetFrame:(CGRect)frame
+{
+  // If frame is zero, or below the threshold where the border radii can
+  // be rendered as a stretchable image, we'll need to re-render.
+  // TODO: detect up-front if re-rendering is necessary
+  [super reactSetFrame:frame];
+  [self.layer setNeedsDisplay];
+}
+
 - (void)displayLayer:(CALayer *)layer
 {
+  if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
+    return;
+  }
+
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
   const RCTBorderColors borderColors = [self borderColors];

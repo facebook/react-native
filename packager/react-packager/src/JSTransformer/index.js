@@ -12,6 +12,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const Promise = require('promise');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
+const temp = require('temp');
 const util = require('util');
 const workerFarm = require('worker-farm');
 const debug = require('debug')('ReactNativePackager:JStransformer');
@@ -24,7 +25,7 @@ const readFile = Promise.denodeify(fs.readFile);
 const MAX_CALLS_PER_WORKER = 600;
 
 // Worker will timeout if one of the callers timeout.
-const DEFAULT_MAX_CALL_TIME = 300000;
+const DEFAULT_MAX_CALL_TIME = 301000;
 
 // How may times can we tolerate failures from the worker.
 const MAX_RETRIES = 2;
@@ -53,6 +54,10 @@ const validateOpts = declareOpts({
     type: 'number',
     default: DEFAULT_MAX_CALL_TIME,
   },
+  disableInternalTransforms: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Transformer {
@@ -63,13 +68,28 @@ class Transformer {
     this._transformModulePath = opts.transformModulePath;
 
     if (opts.transformModulePath != null) {
+      let transformer;
+
+      if (opts.disableInternalTransforms) {
+        transformer = opts.transformModulePath;
+      } else {
+        transformer = this._workerWrapperPath = temp.path();
+        fs.writeFileSync(
+          this._workerWrapperPath,
+          `
+          module.exports = require(${JSON.stringify(require.resolve('./worker'))});
+          require(${JSON.stringify(String(opts.transformModulePath))});
+          `
+        );
+      }
+
       this._workers = workerFarm({
         autoStart: true,
         maxConcurrentCallsPerWorker: 1,
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
         maxRetries: MAX_RETRIES,
-      }, require.resolve('./worker'));
+      }, transformer);
 
       this._transform = Promise.denodeify(this._workers);
     }
@@ -77,6 +97,10 @@ class Transformer {
 
   kill() {
     this._workers && workerFarm.end(this._workers);
+    if (this._workerWrapperPath &&
+        typeof this._workerWrapperPath === 'string') {
+      fs.unlink(this._workerWrapperPath, () => {}); // we don't care about potential errors here
+    }
   }
 
   invalidateFile(filePath) {

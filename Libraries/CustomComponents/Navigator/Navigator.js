@@ -175,6 +175,7 @@ var GESTURE_ACTIONS = [
  *  - `replace(route)` - Replace the current scene with a new route
  *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
  *  - `replacePrevious(route)` - Replace the previous scene
+ *  - `resetTo(route)` - Navigate to a new scene and reset route stack
  *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
  *     array of routes
  *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
@@ -1084,13 +1085,16 @@ var Navigator = React.createClass({
   },
 
   _renderNavigationBar: function() {
-    if (!this.props.navigationBar) {
+    let { navigationBar } = this.props;
+    if (!navigationBar) {
       return null;
     }
-    return React.cloneElement(this.props.navigationBar, {
+    return React.cloneElement(navigationBar, {
       ref: (navBar) => {
-        this.props.navigationBar.ref instanceof Function && this.props.navigationBar.ref(navBar);
         this._navBar = navBar;
+        if (navigationBar && typeof navigationBar.ref === 'function') {
+          navigationBar.ref(navBar);
+        }
       },
       navigator: this._navigationBarNavigator,
       navState: this.state,

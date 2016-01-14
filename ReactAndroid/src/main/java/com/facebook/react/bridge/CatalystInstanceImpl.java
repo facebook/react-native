@@ -402,7 +402,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private void decrementPendingJSCalls() {
     int newPendingCalls = mPendingJSCalls.decrementAndGet();
-    Assertions.assertCondition(newPendingCalls >= 0);
+    // TODO(9604406): handle case of web workers injecting messages to main thread
+    //Assertions.assertCondition(newPendingCalls >= 0);
     boolean isNowIdle = newPendingCalls == 0;
     Systrace.traceCounter(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

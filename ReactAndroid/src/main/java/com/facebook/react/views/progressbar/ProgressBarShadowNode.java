@@ -22,7 +22,7 @@ import android.widget.ProgressBar;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under
