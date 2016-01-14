@@ -77,7 +77,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onResume(this);
+        mReactInstanceManager.onResume(this, this);
     }
 }
 ```
