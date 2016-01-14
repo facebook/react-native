@@ -1,11 +1,11 @@
 ﻿namespace ReactNative
 {
     /// <summary>
-    /// A enumeration to signify the current lifecycle state for a <see cref="ReactInstanceManagerImpl"/>.
+    /// A enumeration to signify the current lifecycle state for a <see cref="ReactInstanceManager"/>.
     /// </summary>
     public enum LifecycleState
     {
-        BEFORE_RESUME,
-        RESUMED,
+        BeforeResume,
+        Resumed,
     }
 }

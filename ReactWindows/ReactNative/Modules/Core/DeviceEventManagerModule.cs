@@ -14,16 +14,18 @@ namespace ReactNative.Modules.Core
         /// Instantiates the <see cref="DeviceEventManagerModule"/>.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
-        /// <param name="backButtonHandler">The back button handler.</param>
+        /// <param name="onBackPressed">
+        /// The action to take when back is pressed.
+        /// </param>
         public DeviceEventManagerModule(
-            ReactApplicationContext reactContext,
-            IDefaultHardwareBackButtonHandler backButtonHandler)
+            ReactContext reactContext,
+            Action onBackPressed)
           : base(reactContext)
         {
             _invokeDefaultBackPressAction = () =>
             {
                 DispatcherHelpers.AssertOnDispatcher();
-                backButtonHandler.InvokeDefaultOnBackPressed();
+                onBackPressed();
             };
         }
 

@@ -23,12 +23,12 @@ namespace ReactNative
     class CoreModulesPackage : IReactPackage
     {
         private readonly IReactInstanceManager _reactInstanceManager;
-        private readonly IDefaultHardwareBackButtonHandler _hardwareBackButtonHandler;
+        private readonly Action _hardwareBackButtonHandler;
         private readonly UIImplementationProvider _uiImplementationProvider;
 
         public CoreModulesPackage(
             IReactInstanceManager reactInstanceManager,
-            IDefaultHardwareBackButtonHandler hardwareBackButtonHandler,
+            Action hardwareBackButtonHandler,
             UIImplementationProvider uiImplementationProvider)
         {
             _reactInstanceManager = reactInstanceManager;
@@ -36,7 +36,7 @@ namespace ReactNative
             _uiImplementationProvider = uiImplementationProvider;
         }
 
-        public IReadOnlyList<INativeModule> CreateNativeModules(ReactApplicationContext reactContext)
+        public IReadOnlyList<INativeModule> CreateNativeModules(ReactContext reactContext)
         {
             var uiManagerModule = default(INativeModule);
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createUIManagerModule"))
@@ -71,7 +71,7 @@ namespace ReactNative
         }
 
         public IReadOnlyList<ViewManager> CreateViewManagers(
-            ReactApplicationContext reactContext)
+            ReactContext reactContext)
         {
             return new List<ViewManager>(0);
         }

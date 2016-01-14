@@ -17,7 +17,7 @@ namespace ReactNative.Shell
     /// </summary>
     public class MainReactPackage : IReactPackage
     {
-        public IReadOnlyList<INativeModule> CreateNativeModules(ReactApplicationContext reactContext)
+        public IReadOnlyList<INativeModule> CreateNativeModules(ReactContext reactContext)
         {
             return new List<INativeModule>
             {
@@ -31,7 +31,7 @@ namespace ReactNative.Shell
         }
 
         public IReadOnlyList<ViewManager> CreateViewManagers(
-            ReactApplicationContext reactContext)
+            ReactContext reactContext)
         {
             return new List<ViewManager>
             {

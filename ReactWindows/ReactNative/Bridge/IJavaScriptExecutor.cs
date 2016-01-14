@@ -9,14 +9,6 @@ namespace ReactNative.Bridge
     public interface IJavaScriptExecutor : IDisposable
     {
         /// <summary>
-        /// Initializes the JavaScript runtime.
-        /// </summary>
-        /// <remarks>
-        /// Must be called from the JavaScript thread.
-        /// </remarks>
-        void Initialize();
-
-        /// <summary>
         /// Call the JavaScript method from the given module.
         /// </summary>
         /// <param name="moduleName">The module name.</param>

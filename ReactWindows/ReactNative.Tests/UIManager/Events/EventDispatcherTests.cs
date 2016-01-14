@@ -18,7 +18,7 @@ namespace ReactNative.Tests.UIManager.Events
         {
             AssertEx.Throws<ArgumentNullException>(() => new EventDispatcher(null), ex => Assert.AreEqual("reactContext", ex.ParamName));
 
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var dispatcher = new EventDispatcher(context);
             AssertEx.Throws<ArgumentNullException>(() => dispatcher.DispatchEvent(null), ex => Assert.AreEqual("event", ex.ParamName));
         }
@@ -26,7 +26,7 @@ namespace ReactNative.Tests.UIManager.Events
         [TestMethod]
         public void EventDispatcher_IncorrectThreadCalls()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var dispatcher = new EventDispatcher(context);
 
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnResume());
@@ -269,7 +269,7 @@ namespace ReactNative.Tests.UIManager.Events
             using (BlockJavaScriptThread(context))
             {
                 dispatcher.DispatchEvent(testEvent);
-                await DispatcherHelpers.RunOnDispatcherAsync(dispatcher.OnShutdown);
+                await DispatcherHelpers.RunOnDispatcherAsync(dispatcher.OnDestroy);
             }
 
             Assert.IsFalse(waitDispatched.WaitOne(500));
@@ -325,11 +325,11 @@ namespace ReactNative.Tests.UIManager.Events
             Assert.IsTrue(waitDispatched.WaitOne());
         }
 
-        private static async Task<ReactApplicationContext> CreateContextAsync(IJavaScriptExecutor executor)
+        private static async Task<ReactContext> CreateContextAsync(IJavaScriptExecutor executor)
         {
             var catalystInstance = await DispatcherHelpers.CallOnDispatcherAsync(() => CreateCatalystInstance(executor));
             await InitializeCatalystInstanceAsync(catalystInstance);
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             context.InitializeWithInstance(catalystInstance);
             return context;
         }
@@ -347,7 +347,7 @@ namespace ReactNative.Tests.UIManager.Events
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 JavaScriptModulesConfig = jsModules,
                 Registry = registry,
-                JavaScriptExecutor = executor,
+                JavaScriptExecutorFactory = () => executor,
                 NativeModuleCallExceptionHandler = ex => Assert.Fail(ex.ToString()),
             }.Build();
 

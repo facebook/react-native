@@ -5,21 +5,21 @@ namespace ReactNative.UIManager
 
     public class ThemedReactContext : ReactContext
     {
-        private readonly ReactApplicationContext mReactApplicationContext;
+        private readonly ReactContext mReactContext;
 
-        public ThemedReactContext(ReactApplicationContext reactApplicationContext) {
+        public ThemedReactContext(ReactContext reactApplicationContext) {
              InitializeWithInstance(reactApplicationContext.CatalystInstance);
-             mReactApplicationContext = reactApplicationContext;
+             mReactContext = reactApplicationContext;
         }
 
         public void addLifecycleEventListener(ILifecycleEventListener listener)
         {
-            mReactApplicationContext.AddLifecycleEventListener(listener);
+            mReactContext.AddLifecycleEventListener(listener);
         }
 
         public void removeLifecycleEventListener(ILifecycleEventListener listener)
         {
-            mReactApplicationContext.RemoveLifecycleEventListener(listener);
+            mReactContext.RemoveLifecycleEventListener(listener);
         }
 
     }

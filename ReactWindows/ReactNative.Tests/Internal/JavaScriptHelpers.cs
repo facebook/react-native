@@ -62,8 +62,6 @@ namespace ReactNative.Tests
 
             await jsQueueThread.CallOnQueue(() =>
             {
-                executor.Initialize();
-
                 foreach (var script in scripts)
                 {
                     executor.RunScript(script);
