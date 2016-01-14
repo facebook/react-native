@@ -31,7 +31,11 @@ class Module {
   }
 
   isHaste() {
-    return this.read().then(data => !!data.id);
+    return this._cache.get(
+      this.path,
+      'isHaste',
+      () => this.read().then(data => !!data.id)
+    );
   }
 
   getName() {
@@ -67,11 +71,19 @@ class Module {
   }
 
   getDependencies() {
-    return this.read().then(data => data.dependencies);
+    return this._cache.get(
+      this.path,
+      'dependencies',
+      () => this.read().then(data => data.dependencies)
+    );
   }
 
   getAsyncDependencies() {
-    return this.read().then(data => data.asyncDependencies);
+    return this._cache.get(
+      this.path,
+      'asyncDependencies',
+      () => this.read().then(data => data.asyncDependencies)
+    );
   }
 
   invalidate() {
