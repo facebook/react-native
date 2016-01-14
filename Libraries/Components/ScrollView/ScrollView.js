@@ -339,17 +339,17 @@ var ScrollView = React.createClass({
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY?: number, destX?: number) {
+  scrollTo: function(destY: number = 0, destX: number = 0, animated: boolean = true) {
     // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
+    this.getScrollResponder().scrollResponderScrollTo(destX, destY, animated);
   },
 
-  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
-    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollWithoutAnimationTo(
-      destX || 0,
-      destY || 0,
-    );
+  /**
+   * Deprecated, do not use.
+   */
+  scrollWithoutAnimationTo: function(destY: number = 0, destX: number = 0) {
+    console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
+    this.scrollTo(destX, destY, false);
   },
 
   handleScroll: function(e: Object) {
