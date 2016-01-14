@@ -70,19 +70,4 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   ),
 });
 
-// Text doesn't support padding correctly (#4841912)
-var unsupportedProps = Object.keys({
-  padding: null,
-  paddingTop: null,
-  paddingLeft: null,
-  paddingRight: null,
-  paddingBottom: null,
-  paddingVertical: null,
-  paddingHorizontal: null,
-});
-
-for (var ii = 0; ii < unsupportedProps.length; ii++) {
-  delete TextStylePropTypes[unsupportedProps[ii]];
-}
-
 module.exports = TextStylePropTypes;
