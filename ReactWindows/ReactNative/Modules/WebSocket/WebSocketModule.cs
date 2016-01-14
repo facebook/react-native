@@ -4,7 +4,7 @@ namespace ReactNative.Modules.WebSocket
 {
     class WebSocketModule : ReactContextNativeModuleBase
     {
-        public WebSocketModule(ReactApplicationContext reactContext)
+        public WebSocketModule(ReactContext reactContext)
             : base(reactContext)
         {
         }

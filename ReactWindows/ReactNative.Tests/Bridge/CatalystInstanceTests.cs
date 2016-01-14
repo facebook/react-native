@@ -31,7 +31,7 @@ namespace ReactNative.Tests.Bridge
                 QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
-                JavaScriptExecutor = executor,
+                JavaScriptExecutorFactory = () => executor,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = _ => { }
             };
@@ -63,7 +63,7 @@ namespace ReactNative.Tests.Bridge
                 QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
-                JavaScriptExecutor = executor,
+                JavaScriptExecutorFactory = () => executor,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = _ => { },
             };
@@ -109,7 +109,7 @@ namespace ReactNative.Tests.Bridge
                 QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
-                JavaScriptExecutor = executor,
+                JavaScriptExecutorFactory = () => executor,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 NativeModuleCallExceptionHandler = handler,
             };

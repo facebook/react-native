@@ -19,7 +19,7 @@ namespace ReactNative.Tests.Modules.Toast
                 ex => Assert.AreEqual("reactContext", ex.ParamName));
 
 
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var module = new ToastModule(context);
             Assert.AreSame(context, module.Context);
 
@@ -29,7 +29,7 @@ namespace ReactNative.Tests.Modules.Toast
         [TestCategory(TEST_CATEGORY)]
         public void Send_Toast_Invalid_Duration()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var module = new ToastModule(context);
 
             AssertEx.Throws<ArgumentException>(
@@ -41,7 +41,7 @@ namespace ReactNative.Tests.Modules.Toast
         [TestCategory(TEST_CATEGORY)]
         public void Send_Basic_Toast()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var module = new ToastModule(context);
 
             module.show("SHORT TOAST", 0);
@@ -51,7 +51,7 @@ namespace ReactNative.Tests.Modules.Toast
         [TestCategory(TEST_CATEGORY)]
         public void Send_Long_Toast()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var module = new ToastModule(context);
 
             module.show("LONG TOAST container", 1);

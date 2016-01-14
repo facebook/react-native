@@ -23,7 +23,7 @@ namespace ReactNative.UIManager
 
         private IList<Action> _operations = new List<Action>();
         private readonly NativeViewHierarchyManager _nativeViewHierarchyManager;
-        private readonly ReactApplicationContext _reactContext;
+        private readonly ReactContext _reactContext;
 
         /// <summary>
         /// Instantiates the <see cref="UIViewOperationQueue"/>.
@@ -32,7 +32,7 @@ namespace ReactNative.UIManager
         /// <param name="nativeViewHierarchyManager">
         /// The native view hierarchy manager.
         /// </param>
-        public UIViewOperationQueue(ReactApplicationContext reactContext, NativeViewHierarchyManager nativeViewHierarchyManager)
+        public UIViewOperationQueue(ReactContext reactContext, NativeViewHierarchyManager nativeViewHierarchyManager)
         {
             _nativeViewHierarchyManager = nativeViewHierarchyManager;
             _reactContext = reactContext;

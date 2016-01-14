@@ -15,7 +15,7 @@ namespace ReactNative.Tests.UIManager
         [TestMethod]
         public void UIManagerModule_ArgumentChecks()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var viewManagers = new List<ViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
@@ -31,7 +31,7 @@ namespace ReactNative.Tests.UIManager
         [TestMethod]
         public void UIManagerModule_CustomEvents_Constants()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var viewManagers = new List<ViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
@@ -59,7 +59,7 @@ namespace ReactNative.Tests.UIManager
         [TestMethod]
         public void UIManagerModule_Constants_ViewManagerOverrides()
         {
-            var context = new ReactApplicationContext();
+            var context = new ReactContext();
             var viewManagers = new List<ViewManager> { new TestViewManager() };
             var uiImplementation = new UIImplementation(context, viewManagers);
 
