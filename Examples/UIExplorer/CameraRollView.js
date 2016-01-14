@@ -22,6 +22,7 @@ var {
   CameraRoll,
   Image,
   ListView,
+  Platform,
   StyleSheet,
   View,
 } = React;
@@ -139,6 +140,10 @@ var CameraRollView = React.createClass({
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
     };
+    if (Platform.OS === "android") {
+      // not supported in android
+      delete fetchParams.groupTypes;
+    }
     if (this.state.lastCursor) {
       fetchParams.after = this.state.lastCursor;
     }
