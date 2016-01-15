@@ -332,6 +332,12 @@ var apps = [
     link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
     author: 'YuanYi Zhang (@mockingbot)',
   },
+	{
+		name: 'MoneyLion',
+		icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/d7/9d/ad/d79daddc-8d67-8a6c-61e2-950425946dd2/icon350x350.jpeg',
+		link: 'https://itunes.apple.com/us/app/moneylion/id1064677082?mt=8',
+		author: 'MoneyLion LLC',
+	},
   {
     name: 'Mr. Dapper',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple4/v4/e8/3f/7c/e83f7cb3-2602-f8e8-de9a-ce0a775a4a14/mzl.hmdjhfai.png',
