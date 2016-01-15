@@ -25,6 +25,7 @@ import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.toast.ToastModule;
+import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
@@ -56,6 +57,7 @@ public class MainReactPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     return Arrays.<NativeModule>asList(
+      new AppStateModule(reactContext),
       new AsyncStorageModule(reactContext),
       new ClipboardModule(reactContext),
       new DialogModule(reactContext),
@@ -64,8 +66,8 @@ public class MainReactPackage implements ReactPackage {
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),
       new NetInfoModule(reactContext),
-      new WebSocketModule(reactContext),
-      new ToastModule(reactContext));
+      new ToastModule(reactContext),
+      new WebSocketModule(reactContext));
   }
 
   @Override
