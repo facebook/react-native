@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import java.util.concurrent.TimeUnit;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -119,12 +121,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       final int requestId,
       ReadableArray headers,
       ReadableMap data,
-      final boolean useIncrementalUpdates) {
+      final boolean useIncrementalUpdates,
+      int timeout) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
     }
+
+    // requestBuilder.setTimeoutMillis(timeout);
+    mClient.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
 
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
