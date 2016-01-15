@@ -531,7 +531,9 @@ RCT_EXPORT_METHOD(reload)
 
 - (BOOL)hotLoadingAvailable
 {
-  return false;
+  return !_bridge.bundleURL.fileURL // Only works when running from server
+  && [_bridge.delegate respondsToSelector:@selector(bridgeSupportsHotLoading:)]
+  && [_bridge.delegate bridgeSupportsHotLoading:_bridge];
 }
 
 - (void)setHotLoadingEnabled:(BOOL)enabled
