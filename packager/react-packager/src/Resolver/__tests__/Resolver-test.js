@@ -10,6 +10,7 @@
 
 jest.dontMock('../')
   .dontMock('underscore')
+  .dontMock('PixelRatio')
   .dontMock('../../DependencyResolver/lib/extractRequires')
   .dontMock('../../DependencyResolver/lib/replacePatterns');
 

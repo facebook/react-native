@@ -18,7 +18,6 @@
 var React = require('react-native');
 var {
   ListView,
-  PixelRatio,
   StyleSheet,
   Text,
   TextInput,
@@ -159,7 +158,7 @@ var styles = StyleSheet.create({
     paddingVertical: 8,
   },
   separator: {
-    height: 1 / PixelRatio.get(),
+    height: StyleSheet.hairlineWidth,
     backgroundColor: '#bbbbbb',
     marginLeft: 15,
   },
