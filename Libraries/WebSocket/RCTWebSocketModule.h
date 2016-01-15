@@ -8,7 +8,8 @@
  */
 
 #import "RCTBridgeModule.h"
+#import "RCTSRWebSocket.h"
 
-@interface RCTWebSocketModule : NSObject <RCTBridgeModule>
+@interface RCTWebSocketModule : NSObject <RCTBridgeModule, RCTSRWebSocketDelegate>
 
 @end
