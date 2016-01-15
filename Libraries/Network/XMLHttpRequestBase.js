@@ -32,6 +32,7 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   status: number;
+  timeout: number;
 
   upload: ?{
     onprogress?: (event: Object) => void;

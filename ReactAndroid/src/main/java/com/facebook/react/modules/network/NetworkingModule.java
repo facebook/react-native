@@ -115,6 +115,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  /**
+  * @param timeout value of 0 results in no timeout
+  */
   public void sendRequest(
       String method,
       String url,
@@ -129,7 +132,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.tag(requestId);
     }
 
-    // requestBuilder.setTimeoutMillis(timeout);
     mClient.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
 
     Headers requestHeaders = extractHeaders(headers, data);
