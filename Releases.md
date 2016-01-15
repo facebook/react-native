@@ -6,10 +6,12 @@ Future releases:
 - **0.17 branch cut**, 0.17.0-rc - beginning of **week of Dec 7**
 - 0.17.0 - Dec 17
 - (Holiday break)
-- **0.18 branch cut**, 0.18.0-rc - beginning of **week of Jan 4**
-- 0.18.0 - Jan 14
-- **0.19 branch cut**, 0.19.0-rc - beginning of **week of Jan 18**
-- 0.19.0 - Jan 28
+- **0.18 branch cut**, 0.18.0-rc - **week of Jan 4**
+- 0.18.0 - Jan 18
+- **0.19 branch cut**, 0.19.0-rc - **week of Jan 18**
+- 0.19.0 - Feb 1
+- **0.20 branch cut**, 0.19.0-rc - **week of Feb 1**
+- 0.20.0 - Feb 15
 - ...
 
 ## Ideas for improvements
