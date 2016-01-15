@@ -48,7 +48,6 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
 <span class="token keyword">var</span> createExamplePage <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./createExamplePage&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> <span class="token punctuation">{</span>
   AlertIOS<span class="token punctuation">,</span>
-  PixelRatio<span class="token punctuation">,</span>
   ScrollView<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
@@ -255,7 +254,7 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   line<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#bbbbbb&#x27;</span><span class="token punctuation">,</span>
-    height<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token operator">/</span> PixelRatio<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth<span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   row<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;white&#x27;</span><span class="token punctuation">,</span>
@@ -264,7 +263,7 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
     paddingVertical<span class="token punctuation">:</span> <span class="token number">15</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   separator<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    height<span class="token punctuation">:</span> <span class="token number">1</span> <span class="token operator">/</span> PixelRatio<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    height<span class="token punctuation">:</span> StyleSheet<span class="token punctuation">.</span>hairlineWidth<span class="token punctuation">,</span>
     backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#bbbbbb&#x27;</span><span class="token punctuation">,</span>
     marginLeft<span class="token punctuation">:</span> <span class="token number">15</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
