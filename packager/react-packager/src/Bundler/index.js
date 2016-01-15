@@ -291,11 +291,7 @@ class Bundler {
           modules.map(module => {
             return Promise.all([
               module.getName(),
-              this._transformer.loadFileAndTransform(
-                module.path,
-                // TODO(martinb): pass non null main (t9527509)
-                this._getTransformOptions({main: null}, {hot: true}),
-              ),
+              this._transformModuleForHMR(module, platform),
             ]).then(([moduleName, transformed]) => {
               return this._resolver.resolveRequires(response,
                 module,
@@ -315,6 +311,24 @@ class Bundler {
         );
       })
       .then(modules => modules.join('\n'));
+  }
+
+  _transformModuleForHMR(module, platform) {
+    if (module.isAsset()) {
+      return this._generateAssetObjAndCode(module, platform).then(
+        ({asset, code}) => {
+          return {
+            code,
+          };
+        }
+      );
+    } else {
+      return this._transformer.loadFileAndTransform(
+        module.path,
+        // TODO(martinb): pass non null main (t9527509)
+        this._getTransformOptions({main: null}, {hot: true}),
+      );
+    }
   }
 
   invalidateFile(filePath) {
@@ -371,9 +385,9 @@ class Bundler {
 
   _transformModule(bundle, response, module, platform = null, hot = false) {
     if (module.isAsset_DEPRECATED()) {
-      return this.generateAssetModule_DEPRECATED(bundle, module);
+      return this._generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
-      return this.generateAssetModule(bundle, module, platform);
+      return this._generateAssetModule(bundle, module, platform);
     } else if (module.isJSON()) {
       return generateJSONModule(module);
     } else {
@@ -408,7 +422,7 @@ class Bundler {
     return this._resolver.getDebugInfo();
   }
 
-  generateAssetModule_DEPRECATED(bundle, module) {
+  _generateAssetModule_DEPRECATED(bundle, module) {
     return Promise.all([
       sizeOf(module.path),
       module.getName(),
@@ -435,7 +449,7 @@ class Bundler {
     });
   }
 
-  generateAssetModule(bundle, module, platform = null) {
+  _generateAssetObjAndCode(module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = path.join('/assets', path.dirname(relPath));
 
@@ -450,7 +464,7 @@ class Bundler {
     ]).then(function(res) {
       const dimensions = res[0];
       const assetData = res[1];
-      const img = {
+      const asset = {
         __packager_asset: true,
         fileSystemLocation: path.dirname(module.path),
         httpServerLocation: assetUrlPath,
@@ -463,11 +477,17 @@ class Bundler {
         type: assetData.type,
       };
 
-      bundle.addAsset(img);
-
       const ASSET_TEMPLATE = 'module.exports = require("AssetRegistry").registerAsset(%json);';
-      const code = ASSET_TEMPLATE.replace('%json', JSON.stringify(img));
+      const code = ASSET_TEMPLATE.replace('%json', JSON.stringify(asset));
 
+      return {asset, code};
+    });
+  }
+
+
+  _generateAssetModule(bundle, module, platform = null) {
+    return this._generateAssetObjAndCode(module, platform).then(({asset, code}) => {
+      bundle.addAsset(asset);
       return new ModuleTransport({
         code: code,
         sourceCode: code,
