@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -37,6 +38,12 @@ public class ReactHorizontalScrollViewManager
   public ReactHorizontalScrollView createViewInstance(ThemedReactContext context) {
     return new ReactHorizontalScrollView(context);
   }
+
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
+  }
+
 
   @ReactProp(name = "showsHorizontalScrollIndicator")
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
