@@ -12,6 +12,7 @@ package com.facebook.react.views.modalhost;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,13 +38,21 @@ public class ReactModalHostView extends ViewGroup {
     mDialog = new Dialog(context, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
     mDialog.setContentView(mHostView);
     mDialog.show();
+    mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     mDialog.getWindow().setLayout(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT);
   }
 
-  public void setBackgroundDrawable(ColorDrawable color) {
-    mDialog.getWindow().setBackgroundDrawable(color);
+  public void setTransparent(boolean transparent) {
+    if (transparent) {
+      mDialog.getWindow().clearFlags(
+        WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    } else {
+      mDialog.getWindow().setFlags(
+        WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+        WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    }
   }
 
   @Override

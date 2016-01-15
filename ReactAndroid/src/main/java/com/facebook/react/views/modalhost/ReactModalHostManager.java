@@ -10,8 +10,6 @@
 package com.facebook.react.views.modalhost;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
 
 import com.facebook.react.common.MapBuilder;
@@ -38,11 +36,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
 
   @ReactProp(name = "transparent")
   public void setTransparent(ReactModalHostView view, boolean transparent) {
-    if (transparent) {
-      view.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-    } else {
-      view.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-    }
+    view.setTransparent(transparent);
   }
 
   @Override
