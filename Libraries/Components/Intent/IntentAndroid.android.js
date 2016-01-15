@@ -92,7 +92,7 @@ class IntentAndroid {
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.canOpenURL(url, callback);
+    IntentAndroidModule.canOpenURL(url).then(callback);
   }
 
   /**
@@ -106,7 +106,7 @@ class IntentAndroid {
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.getInitialURL(callback);
+    IntentAndroidModule.getInitialURL().then(callback);
   }
 
   static _validateURL(url: string) {
