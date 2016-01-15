@@ -18,6 +18,8 @@ var invariant = require('invariant');
 var _initialURL = RCTLinkingManager.initialURL;
 
 /**
+ * NOTE: `LinkingIOS` is being deprecated. Use `Linking` instead.
+ *
  * `LinkingIOS` gives you a general interface to interact with both incoming
  * and outgoing app links.
  *
@@ -94,22 +96,31 @@ class LinkingIOS {
   /**
    * Add a handler to LinkingIOS changes by listening to the `url` event type
    * and providing the handler
+   *
+   * @deprecated
    */
   static addEventListener(type: string, handler: Function) {
+    console.warn('"LinkingIOS.addEventListener" is deprecated. Use "Linking.addEventListener" instead.');
     Linking.addEventListener(type, handler);
   }
 
   /**
    * Remove a handler by passing the `url` event type and the handler
+   *
+   * @deprecated
    */
   static removeEventListener(type: string, handler: Function ) {
+    console.warn('"LinkingIOS.removeEventListener" is deprecated. Use "Linking.removeEventListener" instead.');
     Linking.removeEventListener(type, handler);
   }
 
   /**
    * Try to open the given `url` with any of the installed apps.
+   *
+   * @deprecated
    */
   static openURL(url: string) {
+    console.warn('"LinkingIOS.openURL" is deprecated. Use the promise based "Linking.openURL" instead.');
     Linking.openURL(url);
   }
 
@@ -119,8 +130,11 @@ class LinkingIOS {
    *
    * NOTE: As of iOS 9, your app needs to provide the `LSApplicationQueriesSchemes` key
    * inside `Info.plist`.
+   *
+   * @deprecated
    */
   static canOpenURL(url: string, callback: Function) {
+    console.warn('"LinkingIOS.canOpenURL" is deprecated. Use the promise based "Linking.canOpenURL" instead.');
     invariant(
       typeof callback === 'function',
       'A valid callback function is required'
@@ -131,8 +145,11 @@ class LinkingIOS {
   /**
    * If the app launch was triggered by an app link, it will pop the link url,
    * otherwise it will return `null`
+   *
+   * @deprecated
    */
   static popInitialURL(): ?string {
+    console.warn('"LinkingIOS.popInitialURL" is deprecated. Use the promise based "Linking.getInitialURL" instead.');
     var initialURL = _initialURL;
     _initialURL = null;
     return initialURL;
