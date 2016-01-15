@@ -29,6 +29,7 @@ var COMPONENTS = [
   require('./ScrollViewSimpleExample'),
   require('./SwitchExample'),
   require('./RefreshControlExample'),
+  require('./PickerAndroidExample'),
   require('./PullToRefreshViewAndroidExample.android'),
   require('./TextExample.android'),
   require('./TextInputExample.android'),

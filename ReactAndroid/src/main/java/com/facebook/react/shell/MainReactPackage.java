@@ -32,6 +32,8 @@ import com.facebook.react.views.art.ARTRenderableViewManager;
 import com.facebook.react.views.art.ARTSurfaceViewManager;
 import com.facebook.react.views.drawer.ReactDrawerLayoutManager;
 import com.facebook.react.views.image.ReactImageManager;
+import com.facebook.react.views.picker.ReactDialogPickerManager;
+import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
@@ -82,7 +84,9 @@ public class MainReactPackage implements ReactPackage {
       ARTRenderableViewManager.createARTShapeViewManager(),
       ARTRenderableViewManager.createARTTextViewManager(),
       new ARTSurfaceViewManager(),
+      new ReactDialogPickerManager(),
       new ReactDrawerLayoutManager(),
+      new ReactDropdownPickerManager(),
       new ReactHorizontalScrollViewManager(),
       new ReactImageManager(),
       new ReactProgressBarViewManager(),
