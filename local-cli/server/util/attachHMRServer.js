@@ -139,7 +139,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     }
 
                     // build list of modules for which we'll send HMR updates
-                    const modulesToUpdate = [];
+                    const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
                     Object.keys(dependenciesModulesCache).forEach(module => {
                       if (!client.dependenciesModulesCache[module]) {
                         modulesToUpdate.push(dependenciesModulesCache[module]);
