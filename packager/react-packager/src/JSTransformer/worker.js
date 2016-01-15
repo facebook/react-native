@@ -9,13 +9,14 @@
 'use strict';
 
 var babel = require('babel-core');
+var resolvePlugins = require('./resolvePlugins');
 var Transforms = require('../transforms');
 
 // Runs internal transforms on the given sourceCode. Note that internal
 // transforms should be run after the external ones to ensure that they run on
 // Javascript code
 function internalTransforms(sourceCode, filename, options) {
-  var plugins = Transforms.getAll(options);
+  var plugins = resolvePlugins(Transforms.getAll(options));
   if (plugins.length === 0) {
     return {
       code: sourceCode,
