@@ -515,8 +515,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   // If frame is zero, or below the threshold where the border radii can
   // be rendered as a stretchable image, we'll need to re-render.
   // TODO: detect up-front if re-rendering is necessary
+  CGSize oldSize = self.bounds.size;
   [super reactSetFrame:frame];
-  [self.layer setNeedsDisplay];
+  if (!CGSizeEqualToSize(self.bounds.size, oldSize)) {
+    [self.layer setNeedsDisplay];
+  }
 }
 
 - (void)displayLayer:(CALayer *)layer
@@ -524,6 +527,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
     return;
   }
+
+  RCTUpdateShadowPathForView(self);
 
   const RCTCornerRadii cornerRadii = [self cornerRadii];
   const UIEdgeInsets borderInsets = [self bordersAsInsets];
@@ -606,6 +611,44 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 
   [self updateClippingForLayer:layer];
+}
+
+static BOOL RCTLayerHasShadow(CALayer *layer)
+{
+  return layer.shadowOpacity * CGColorGetAlpha(layer.shadowColor) > 0;
+}
+
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+{
+  // Inherit background color if a shadow has been set, as an optimization
+  if (RCTLayerHasShadow(self.layer)) {
+    self.backgroundColor = inheritedBackgroundColor;
+  }
+}
+
+static void RCTUpdateShadowPathForView(RCTView *view)
+{
+  if (RCTLayerHasShadow(view.layer)) {
+    if (CGColorGetAlpha(view.backgroundColor.CGColor) > 0.999) {
+
+      // If view has a solid background color, calculate shadow path from border
+      const RCTCornerRadii cornerRadii = [view cornerRadii];
+      const RCTCornerInsets cornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
+      CGPathRef shadowPath = RCTPathCreateWithRoundedRect(view.bounds, cornerInsets, NULL);
+      view.layer.shadowPath = shadowPath;
+      CGPathRelease(shadowPath);
+
+    } else {
+
+      // Can't accurately calculate box shadow, so fall back to pixel-based shadow
+      view.layer.shadowPath = nil;
+
+      RCTLogWarn(@"View #%@ of type %@ has a shadow set but cannot calculate "
+                 "shadow efficiently. Consider setting a background color to "
+                 "fix this, or apply the shadow to a more specific component.",
+                 view.reactTag, [view class]);
+    }
+  }
 }
 
 - (void)updateClippingForLayer:(CALayer *)layer
@@ -691,14 +734,14 @@ setBorderRadius(BottomRight)
 
 #pragma mark - Border Style
 
-#define setBorderStyle(side)                                   \
+#define setBorderStyle(side)                           \
   - (void)setBorder##side##Style:(RCTBorderStyle)style \
-  {                                                            \
-    if (_border##side##Style == style) {                       \
-      return;                                                  \
-    }                                                          \
-    _border##side##Style = style;                              \
-    [self.layer setNeedsDisplay];                              \
+  {                                                    \
+    if (_border##side##Style == style) {               \
+      return;                                          \
+    }                                                  \
+    _border##side##Style = style;                      \
+    [self.layer setNeedsDisplay];                      \
   }
 
 setBorderStyle()

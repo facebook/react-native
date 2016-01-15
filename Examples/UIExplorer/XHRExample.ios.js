@@ -21,7 +21,6 @@ var {
   CameraRoll,
   Image,
   LinkingIOS,
-  PixelRatio,
   ProgressViewIOS,
   StyleSheet,
   Text,
@@ -343,7 +342,7 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 8,
     alignItems: 'center',
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'grey',
   },
   photoLabel: {
