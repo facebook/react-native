@@ -11,7 +11,6 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
-#import "RCTSRWebSocket.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -25,10 +24,6 @@
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-
-@end
-
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
 
 @end
 
