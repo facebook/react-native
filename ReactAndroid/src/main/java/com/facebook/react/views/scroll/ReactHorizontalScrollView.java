@@ -70,11 +70,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (super.onInterceptTouchEvent(ev) && mScrollEnabled) {
-      NativeGestureUtil.notifyNativeGestureStarted(this, ev);
-      ReactScrollViewHelper.emitScrollBeginDragEvent(this);
-      mDragging = true;
-      return true;
+    if (mScrollEnabled) {
+      if (super.onInterceptTouchEvent(ev)) {
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+        ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+        mDragging = true;
+        return true;
+      }
     }
     return false;
   }
