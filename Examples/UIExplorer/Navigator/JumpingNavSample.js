@@ -16,7 +16,6 @@
 var React = require('react-native');
 var {
   Navigator,
-  PixelRatio,
   StyleSheet,
   ScrollView,
   TabBarIOS,
@@ -185,7 +184,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {

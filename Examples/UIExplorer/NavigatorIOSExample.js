@@ -20,7 +20,6 @@ var ViewExample = require('./ViewExample');
 var createExamplePage = require('./createExamplePage');
 var {
   AlertIOS,
-  PixelRatio,
   ScrollView,
   StyleSheet,
   Text,
@@ -227,7 +226,7 @@ var styles = StyleSheet.create({
   },
   line: {
     backgroundColor: '#bbbbbb',
-    height: 1 / PixelRatio.get(),
+    height: StyleSheet.hairlineWidth,
   },
   row: {
     backgroundColor: 'white',
@@ -236,7 +235,7 @@ var styles = StyleSheet.create({
     paddingVertical: 15,
   },
   separator: {
-    height: 1 / PixelRatio.get(),
+    height: StyleSheet.hairlineWidth,
     backgroundColor: '#bbbbbb',
     marginLeft: 15,
   },

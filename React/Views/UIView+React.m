@@ -82,7 +82,7 @@
   self.bounds = bounds;
 }
 
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+- (void)reactSetInheritedBackgroundColor:(__unused UIColor *)inheritedBackgroundColor
 {
   // Does nothing by default
 }

@@ -17,7 +17,6 @@
 
 var React = require('react-native');
 var {
-  PixelRatio,
   ProgressBarAndroid,
   StyleSheet,
   Text,
@@ -312,7 +311,7 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 8,
     alignItems: 'center',
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'grey',
   },
   textButton: {
