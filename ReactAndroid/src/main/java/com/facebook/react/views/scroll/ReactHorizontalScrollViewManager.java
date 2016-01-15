@@ -42,6 +42,11 @@ public class ReactHorizontalScrollViewManager
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
   }
+  
+  @ReactProp(name = "scrollEnabled")
+  public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
+    view.setScrollEnabled(value);
+  }
 
   /**
    * Computing momentum events is potentially expensive since we post a runnable on the UI thread

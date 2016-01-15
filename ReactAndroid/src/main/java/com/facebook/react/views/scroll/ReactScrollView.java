@@ -40,6 +40,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private boolean mDragging;
   private boolean mFlinging;
   private boolean mDoneFlinging;
+  private boolean mScrollEnabled;
 
   public ReactScrollView(Context context) {
     super(context);
@@ -91,7 +92,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (super.onInterceptTouchEvent(ev)) {
+    if (super.onInterceptTouchEvent(ev) && mScrollEnabled) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
       mDragging = true;
@@ -107,6 +108,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
       mDragging = false;
+    }
+    if (mScrollEnabled) {
+      return super.onTouchEvent(ev);
     }
     return super.onTouchEvent(ev);
   }

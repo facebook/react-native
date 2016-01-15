@@ -27,9 +27,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
   private boolean mDragging;
   private boolean mFlinging;
   private boolean mDoneFlinging;
+  private boolean mScrollEnabled;
 
   public ReactHorizontalScrollView(Context context) {
     super(context);
+  }
+
+  public void setScrollEnabled(boolean scrollEnabled) {
+    mScrollEnabled = scrollEnabled;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -65,13 +70,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (super.onInterceptTouchEvent(ev)) {
+    if (super.onInterceptTouchEvent(ev) && mScrollEnabled) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
       mDragging = true;
       return true;
     }
-
     return false;
   }
 
@@ -82,7 +86,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
       mDragging = false;
     }
-    return super.onTouchEvent(ev);
+    if (mScrollEnabled) {
+      return super.onTouchEvent(ev);
+    }
+    return false;
   }
 
   @Override
