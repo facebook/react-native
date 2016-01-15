@@ -11,16 +11,11 @@
  */
 'use strict';
 
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var Linking = require('Linking');
 var RCTLinkingManager = require('NativeModules').LinkingManager;
-var Map = require('Map');
 var invariant = require('invariant');
 
-var _notifHandlers = new Map();
-var _initialURL = RCTLinkingManager &&
-  RCTLinkingManager.initialURL;
-
-var DEVICE_NOTIF_EVENT = 'openURL';
+var _initialURL = RCTLinkingManager.initialURL;
 
 /**
  * `LinkingIOS` gives you a general interface to interact with both incoming
@@ -101,42 +96,21 @@ class LinkingIOS {
    * and providing the handler
    */
   static addEventListener(type: string, handler: Function) {
-    invariant(
-      type === 'url',
-      'LinkingIOS only supports `url` events'
-    );
-    var listener = RCTDeviceEventEmitter.addListener(
-      DEVICE_NOTIF_EVENT,
-      handler
-    );
-    _notifHandlers.set(handler, listener);
+    Linking.addEventListener(type, handler);
   }
 
   /**
    * Remove a handler by passing the `url` event type and the handler
    */
   static removeEventListener(type: string, handler: Function ) {
-    invariant(
-      type === 'url',
-      'LinkingIOS only supports `url` events'
-    );
-    var listener = _notifHandlers.get(handler);
-    if (!listener) {
-      return;
-    }
-    listener.remove();
-    _notifHandlers.delete(handler);
+    Linking.removeEventListener(type, handler);
   }
 
   /**
    * Try to open the given `url` with any of the installed apps.
    */
   static openURL(url: string) {
-    invariant(
-      typeof url === 'string',
-      'Invalid url: should be a string'
-    );
-    RCTLinkingManager.openURL(url);
+    Linking.openURL(url);
   }
 
   /**
@@ -148,14 +122,10 @@ class LinkingIOS {
    */
   static canOpenURL(url: string, callback: Function) {
     invariant(
-      typeof url === 'string',
-      'Invalid url: should be a string'
-    );
-    invariant(
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    RCTLinkingManager.canOpenURL(url, callback);
+    Linking.canOpenURL(url).then(callback);
   }
 
   /**

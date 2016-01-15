@@ -7,10 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule IntentAndroid
+ * @flow
  */
 'use strict';
 
-var IntentAndroidModule = require('NativeModules').IntentAndroid;
+var Linking = require('Linking');
 var invariant = require('invariant');
 
 /**
@@ -72,8 +73,7 @@ class IntentAndroid {
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
    */
   static openURL(url: string) {
-    this._validateURL(url);
-    IntentAndroidModule.openURL(url);
+    Linking.openURL(url);
   }
 
   /**
@@ -87,12 +87,11 @@ class IntentAndroid {
    * @param URL the URL to open
    */
   static canOpenURL(url: string, callback: Function) {
-    this._validateURL(url);
     invariant(
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.canOpenURL(url).then(callback);
+    Linking.canOpenURL(url).then(callback);
   }
 
   /**
@@ -106,18 +105,7 @@ class IntentAndroid {
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.getInitialURL().then(callback);
-  }
-
-  static _validateURL(url: string) {
-    invariant(
-      typeof url === 'string',
-      'Invalid URL: should be a string. Was: ' + url
-    );
-    invariant(
-      url,
-      'Invalid URL: cannot be empty'
-    );
+    Linking.getInitialURL().then(callback);
   }
 }
 
