@@ -43,7 +43,7 @@ public class ReactHorizontalScrollViewManager
     view.setHorizontalScrollBarEnabled(value);
   }
   
-  @ReactProp(name = "scrollEnabled")
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
     view.setScrollEnabled(value);
   }
