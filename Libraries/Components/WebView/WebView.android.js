@@ -40,9 +40,10 @@ var WebView = React.createClass({
     ...View.propTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
-    onLoadingStart: PropTypes.func,
-    onLoadingError: PropTypes.func,
-    onLoadingFinish: PropTypes.func,
+    onLoad: PropTypes.func,
+    onLoadEnd: PropTypes.func,
+    onLoadStart: PropTypes.func,
+    onError: PropTypes.func,
     url: PropTypes.string,
     html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
@@ -192,19 +193,16 @@ var WebView = React.createClass({
   },
 
   onLoadingStart: function(event) {
-    var onLoadingStart = this.props.onLoadingStart;
-    if (onLoadingStart) {
-      onLoadingStart(event);
-    }
+    var onLoadStart = this.props.onLoadStart;
+    onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
   },
 
   onLoadingError: function(event) {
     event.persist(); // persist this event because we need to store it
-    var onLoadingError = this.props.onLoadingError;
-    if (onLoadingError) {
-      onLoadingError(event);
-    }
+    var {onError, onLoadEnd} = this.props.onError;
+    onError && onError(event);
+    onLoadEnd && onLoadEnd(event);
     console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
@@ -214,10 +212,9 @@ var WebView = React.createClass({
   },
 
   onLoadingFinish: function(event) {
-    var onLoadingFinish = this.props.onLoadingFinish;
-    if (onLoadingFinish) {
-      onLoadingFinish(event);
-    }
+    var {onLoad, onLoadEnd} = this.props.onLoad;
+    onLoad && onLoad(event);
+    onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });
