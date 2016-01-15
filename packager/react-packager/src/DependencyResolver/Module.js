@@ -109,10 +109,11 @@ class Module {
           )[1];
         }
 
-        // Ignore requires in generated code. An example of this is prebuilt
-        // files like the SourceMap library.
-        if ('extern' in moduleDocBlock) {
+        // Ignore requires in JSON files or generated code. An example of this
+        // is prebuilt files like the SourceMap library.
+        if (this.isJSON() || 'extern' in moduleDocBlock) {
           data.dependencies = [];
+          data.asyncDependencies = [];
         } else {
           var dependencies = (this._extractor || extractRequires)(content).deps;
           data.dependencies = dependencies.sync;
