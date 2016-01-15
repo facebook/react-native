@@ -200,7 +200,7 @@ var WebView = React.createClass({
 
   onLoadingError: function(event) {
     event.persist(); // persist this event because we need to store it
-    var {onError, onLoadEnd} = this.props.onError;
+    var {onError, onLoadEnd} = this.props;
     onError && onError(event);
     onLoadEnd && onLoadEnd(event);
     console.error('Encountered an error loading page', event.nativeEvent);
@@ -212,7 +212,7 @@ var WebView = React.createClass({
   },
 
   onLoadingFinish: function(event) {
-    var {onLoad, onLoadEnd} = this.props.onLoad;
+    var {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
     this.setState({
