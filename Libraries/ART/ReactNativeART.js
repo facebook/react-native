@@ -478,6 +478,19 @@ function extractAlignment(alignment) {
   }
 }
 
+var Polygon = React.createClass({
+  render: function() {
+    var props = this.props;
+    var d = 'M' + props.points.trim().replace(/\s+/g, 'L') + 'z';
+    return <Shape
+      {...props}
+      points={null}
+      d={d}
+    />
+  }
+
+});
+
 var Text = React.createClass({
 
   render: function() {
@@ -583,6 +596,7 @@ var ReactART = {
   Group: Group,
   ClippingRectangle: ClippingRectangle,
   Shape: Shape,
+  Polygon: Polygon,
   Text: Text,
   CSSBackgroundPattern: CSSBackgroundPattern
 };
