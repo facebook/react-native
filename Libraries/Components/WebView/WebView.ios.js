@@ -98,6 +98,18 @@ var WebView = React.createClass({
      */
     renderLoading: PropTypes.func,
     /**
+     * Invoked on load start
+     */
+    onLoadingStart: PropTypes.func,
+    /**
+     * Invoked when load fails
+     */
+    onLoadingError: PropTypes.func,
+    /**
+     * Invoked when load finish
+     */
+    onLoadingFinish: PropTypes.func,
+    /**
      * @platform ios
      */
     bounces: PropTypes.bool,
@@ -279,11 +291,19 @@ var WebView = React.createClass({
   },
 
   onLoadingStart: function(event: Event) {
+    var onLoadingStart = this.props.onLoadingStart;
+    if (onLoadingStart) {
+      onLoadingStart(event);
+    }
     this.updateNavigationState(event);
   },
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
+    var onLoadingError = this.props.onLoadingError;
+    if (onLoadingError) {
+      onLoadingError(event);
+    }
     console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
@@ -293,6 +313,10 @@ var WebView = React.createClass({
   },
 
   onLoadingFinish: function(event: Event) {
+    var onLoadingFinish = this.props.onLoadingFinish;
+    if (onLoadingFinish) {
+      onLoadingFinish(event);
+    }
     this.setState({
       viewState: WebViewState.IDLE,
     });
