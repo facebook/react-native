@@ -6,6 +6,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
+        // NOTE: Pay attention to the version of gradle
         classpath 'com.android.tools.build:gradle:1.3.1'
         classpath 'de.undercouch:gradle-download-task:1.2'
 
