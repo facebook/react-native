@@ -50,6 +50,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   }
 
   @Override
+  public void onDropViewInstance(ReactModalHostView view) {
+    super.onDropViewInstance(view);
+    view.dismissModal();
+  }
+
+  @Override
   protected void addEventEmitters(
       final ThemedReactContext reactContext,
       final ReactModalHostView view) {

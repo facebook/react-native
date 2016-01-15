@@ -79,6 +79,20 @@ public class ReactModalHostView extends ViewGroup {
     mHostView.removeView(child);
   }
 
+  @Override
+  public void removeViewAt(int index) {
+    mHostView.removeViewAt(index);
+  }
+
+  @Override
+  public void removeAllViews() {
+    mHostView.removeAllViews();
+  }
+
+  public void dismissModal() {
+    mDialog.dismiss();
+  }
+
   /*package*/ void setOnDismissListener(DialogInterface.OnDismissListener listener) {
     mDialog.setOnDismissListener(listener);
   }
