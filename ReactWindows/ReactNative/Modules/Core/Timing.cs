@@ -8,7 +8,7 @@ namespace ReactNative.Modules.Core
     /// </summary>
     public class Timing : ReactContextNativeModuleBase
     {
-        public Timing(ReactApplicationContext reactContext)
+        public Timing(ReactContext reactContext)
             : base(reactContext)
         {
         }
