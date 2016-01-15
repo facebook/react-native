@@ -20,7 +20,7 @@ var {
   AlertIOS,
   CameraRoll,
   Image,
-  LinkingIOS,
+  Linking,
   PixelRatio,
   ProgressViewIOS,
   StyleSheet,
@@ -211,7 +211,7 @@ class FormUploader extends React.Component {
         return;
       }
       var url = xhr.responseText.slice(index).split('\n')[0];
-      LinkingIOS.openURL(url);
+      Linking.openURL(url);
     };
     var formdata = new FormData();
     if (this.state.randomPhoto) {
