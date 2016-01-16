@@ -161,6 +161,21 @@ In root directory, we need to start React Native development server.
 
 This command will start up a React Native development server within our CocoaPods dependency to build our bundled script. The `--root` option indicates the root of your React Native apps – this will be our `ReactComponents` directory containing the single `index.ios.js` file. This running server will package up the `index.ios.bundle` file accessible via `http://localhost:8081/index.ios.bundle`.
 
+## Update App Transport Security
+
+On iOS 9 and above the app won't be a able to connect over http to localhost unless specifically told so. See this thread for alternatives and instructions: http://stackoverflow.com/questions/31254725/transport-security-has-blocked-a-cleartext-http.
+
+If you don't do this when connecting over http to your server you will see this error:
+```
+Could not connect to development server.
+
+Ensure the following:
+- Node server is running and available on the same network - run 'npm start' from react-native root
+- Node server URL is correctly set in AppDelegate
+
+URL: http://localhost:8081/index.ios.bundle
+```
+
 ## Compile And Run
 
 Now compile and run your app. You shall now see your React Native app running inside of the `ReactView`.
