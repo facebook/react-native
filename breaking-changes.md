@@ -1,6 +1,6 @@
 # Breaking Changes
 
-Breaking changes are now tracked as part of [Release Notes](https://github.com/facebook/react-native/releases).
+**Breaking changes are now tracked as part of [Release Notes](https://github.com/facebook/react-native/releases)**.
 
 ## 0.16
 
