@@ -21,6 +21,8 @@ class XMLHttpRequest extends XMLHttpRequestBase {
     super();
     // iOS supports upload
     this.upload = {};
+    // Native stack times out at 60s
+    this.timeout = 60000;
   }
 
   sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {

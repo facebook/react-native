@@ -26,6 +26,12 @@ function convertHeadersMapToArray(headers: Object): Array<Header> {
 }
 
 class XMLHttpRequest extends XMLHttpRequestBase {
+  constructor() {
+    super();
+    // Native stack times out at 120s
+    // this.timeout = 120000;
+    this.timeout = 200000;
+  }
   sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
     var body;
     if (typeof data === 'string') {
