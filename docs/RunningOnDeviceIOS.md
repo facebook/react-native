@@ -15,7 +15,8 @@ You can iterate quickly on device using development server. To do that, your lap
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Change the IP in the URL from `localhost` to your laptop's IP. On Mac, you can find the IP address in System Preferences / Network.
-3. In Xcode select your phone as build target and press "Build and run"
+3. Replace the `localhost` entry in your `Info.plist`’s App Transport Security settings with the same IP address from above.
+4. In Xcode select your phone as build target and press "Build and run"
 
 > Hint
 >
