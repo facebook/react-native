@@ -106,6 +106,13 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
   }
 
   /**
+   * Returns the ReactInstanceManager. A subclass may want to use it to get the current ReactContext.
+   */
+  protected ReactInstanceManager getReactInstanceManager() {
+    return mReactInstanceManager;
+  }
+
+  /**
    * A subclass may override this method if it needs to use a custom {@link ReactRootView}.
    */
   protected ReactRootView createRootView() {
