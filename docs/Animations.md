@@ -169,9 +169,9 @@ already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
 class including quadratic, exponential, and bezier curves as well as functions
 like step and bounce. `interpolation` also has configurable behavior for
-extrapolating the `outputRange`. You can set the extrapolation by setting the `extrapolate`, 
-`extrapolateLeft` or `extrapolateRight` options. The default value is 
-`extend` but you can use `clamp` to prevent the output value from exceeding 
+extrapolating the `outputRange`. You can set the extrapolation by setting the `extrapolate`,
+`extrapolateLeft` or `extrapolateRight` options. The default value is
+`extend` but you can use `clamp` to prevent the output value from exceeding
 `outputRange`.
 
 #### Tracking Dynamic Values
@@ -212,11 +212,14 @@ respectively (`gestureState` is the second arg passed to the `PanResponder` hand
 
 ```javascript
 onScroll={Animated.event(
-  [{nativeEvent: {contentOffset: {x: scrollX}}}]   // scrollX = e.nativeEvent.contentOffset.x
+  // scrollX = e.nativeEvent.contentOffset.x
+  [{nativeEvent: {contentOffset: {x: scrollX}}}]   
 )}
 onPanResponderMove={Animated.event([
   null,                                          // ignore the native event
-  {dx: pan.x, dy: pan.y}                         // extract dx and dy from gestureState
+  // extract dx and dy from gestureState
+  // like 'pan.x = gestureState.dx, pan.y = gestureState.dy'
+  {dx: pan.x, dy: pan.y}                         
 ]);
 ```
 
