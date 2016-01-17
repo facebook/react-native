@@ -90,9 +90,9 @@ already implemented in the
 <a href="https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js" target="_blank"><code>Easing</code></a>
 class including quadratic, exponential, and bezier curves as well as functions
 like step and bounce. <code>interpolation</code> also has configurable behavior for
-extrapolating the <code>outputRange</code>. You can set the extrapolation by setting the <code>extrapolate</code>, 
-<code>extrapolateLeft</code> or <code>extrapolateRight</code> options. The default value is 
-<code>extend</code> but you can use <code>clamp</code> to prevent the output value from exceeding 
+extrapolating the <code>outputRange</code>. You can set the extrapolation by setting the <code>extrapolate</code>,
+<code>extrapolateLeft</code> or <code>extrapolateRight</code> options. The default value is
+<code>extend</code> but you can use <code>clamp</code> to prevent the output value from exceeding
 <code>outputRange</code>.</p><h4><a class="anchor" name="tracking-dynamic-values"></a>Tracking Dynamic Values <a class="hash-link" href="#tracking-dynamic-values">#</a></h4><p>Animated values can also track other values.  Just set the <code>toValue</code> of an
 animation to another animated value instead of a plain number, for example with
 spring physics for an interaction like &quot;Chat Heads&quot;, or via <code>timing</code> with
@@ -116,12 +116,15 @@ contains nested objects.  In the example, you can see that <code>scrollX</code> 
 <code>event.nativeEvent.contentOffset.x</code> (<code>event</code> is normally the first arg to the
 handler), and <code>pan.x</code> and <code>pan.y</code> map to <code>gestureState.dx</code> and <code>gestureState.dy</code>,
 respectively (<code>gestureState</code> is the second arg passed to the <code>PanResponder</code> handler).</p><div class="prism language-javascript">onScroll<span class="token operator">=</span><span class="token punctuation">{</span>Animated<span class="token punctuation">.</span><span class="token function">event<span class="token punctuation">(</span></span>
-  <span class="token punctuation">[</span><span class="token punctuation">{</span>nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span>contentOffset<span class="token punctuation">:</span> <span class="token punctuation">{</span>x<span class="token punctuation">:</span> scrollX<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"> // scrollX = e.nativeEvent.contentOffset.x
-</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+ <span class="token comment" spellcheck="true"> // scrollX = e.nativeEvent.contentOffset.x
+</span>  <span class="token punctuation">[</span><span class="token punctuation">{</span>nativeEvent<span class="token punctuation">:</span> <span class="token punctuation">{</span>contentOffset<span class="token punctuation">:</span> <span class="token punctuation">{</span>x<span class="token punctuation">:</span> scrollX<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">]</span>   
+<span class="token punctuation">)</span><span class="token punctuation">}</span>
 onPanResponderMove<span class="token operator">=</span><span class="token punctuation">{</span>Animated<span class="token punctuation">.</span><span class="token function">event<span class="token punctuation">(</span></span><span class="token punctuation">[</span>
   <span class="token keyword">null</span><span class="token punctuation">,</span>                                         <span class="token comment" spellcheck="true"> // ignore the native event
-</span>  <span class="token punctuation">{</span>dx<span class="token punctuation">:</span> pan<span class="token punctuation">.</span>x<span class="token punctuation">,</span> dy<span class="token punctuation">:</span> pan<span class="token punctuation">.</span>y<span class="token punctuation">}</span>                        <span class="token comment" spellcheck="true"> // extract dx and dy from gestureState
-</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><h4><a class="anchor" name="responding-to-the-current-animation-value"></a>Responding to the Current Animation Value <a class="hash-link" href="#responding-to-the-current-animation-value">#</a></h4><p>You may notice that there is no obvious way to read the current value while
+</span> <span class="token comment" spellcheck="true"> // extract dx and dy from gestureState
+</span> <span class="token comment" spellcheck="true"> // like &#x27;pan.x = gestureState.dx, pan.y = gestureState.dy&#x27;
+</span>  <span class="token punctuation">{</span>dx<span class="token punctuation">:</span> pan<span class="token punctuation">.</span>x<span class="token punctuation">,</span> dy<span class="token punctuation">:</span> pan<span class="token punctuation">.</span>y<span class="token punctuation">}</span>                         
+<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span></div><h4><a class="anchor" name="responding-to-the-current-animation-value"></a>Responding to the Current Animation Value <a class="hash-link" href="#responding-to-the-current-animation-value">#</a></h4><p>You may notice that there is no obvious way to read the current value while
 animating - this is because the value may only be known in the native runtime
 due to optimizations.  If you need to run JavaScript in response to the current
 value, there are two approaches:</p><ul><li><code>spring.stopAnimation(callback)</code> will stop the animation and invoke <code>callback</code>
