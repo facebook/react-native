@@ -247,6 +247,12 @@ var apps = [
     author: 'Scrollback',
   },
   {
+    name: 'Honest Reviews',
+    icon: 'http://honestreviews.techulus.com/icon.png',
+    link: 'https://play.google.com/store/apps/details?id=com.techulus.honestreviews&hl=en',
+    author: 'Arjun Komath',
+  },
+  {
     name: 'HSK Level 1 Chinese Flashcards',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
     link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
