@@ -72,7 +72,7 @@ npm publish
 ```
 - Upgrade tags to a release by going to https://github.com/facebook/react-native/tags
 - Click "Add Notes to release"
-- Click Publishd
+- Click Publish
 
 ## Track bug reports from the community during the following two weeks and make sure they get fixed
 
