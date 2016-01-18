@@ -40,7 +40,7 @@ import com.facebook.systrace.SystraceMessage;
  *
  * <p>
  * <h2>== Transactional Requirement ==</h2>
- * A requirement of this class is to make sure that transactional UI updates occur all at, meaning
+ * A requirement of this class is to make sure that transactional UI updates occur all at once, meaning
  * that no intermediate state is ever rendered to the screen. For example, if a JS application
  * update changes the background of View A to blue and the width of View B to 100, both need to
  * appear at once. Practically, this means that all UI update code related to a single transaction
