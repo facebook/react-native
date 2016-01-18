@@ -12,7 +12,7 @@ echo -en "\033]0;React Packager\a"
 clear
 
 THIS_DIR=$(dirname "$0")
-pushd $THIS_DIR
+pushd "$THIS_DIR"
 source packager.sh
 popd
 
