@@ -93,7 +93,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.of(),
         null,
-        true);
+        true,
+        0);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
@@ -122,7 +123,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.from(invalidHeaders),
         null,
-        true);
+        true,
+        0);
 
     verifyErrorEmit(emitter, 0);
   }
@@ -147,7 +149,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.of(),
         body,
-        true);
+        true,
+        0);
 
     verifyErrorEmit(emitter, 0);
   }
@@ -202,7 +205,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.of(SimpleArray.of("Content-Type", "text/plain")),
         body,
-        true);
+        true,
+        0);
 
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
@@ -238,7 +242,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.from(headers),
         null,
-        true);
+        true,
+        0);
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
     Headers requestHeaders = argumentCaptor.getValue().headers();
@@ -284,7 +289,8 @@ public class NetworkingModuleTest {
         0,
         new SimpleArray(),
         body,
-        true);
+        true,
+        0);
 
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
@@ -341,7 +347,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.from(headers),
         body,
-        true);
+        true,
+        0);
 
     // verify url, method, headers
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
@@ -435,7 +442,8 @@ public class NetworkingModuleTest {
         0,
         SimpleArray.from(headers),
         body,
-        true);
+        true,
+        0);
 
     // verify RequestBodyPart for image
     PowerMockito.verifyStatic(times(1));

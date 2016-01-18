@@ -32,6 +32,7 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   status: number;
+  timeout: number;
   responseURL: ?string;
 
   upload: ?{
@@ -58,6 +59,7 @@ class XMLHttpRequestBase {
     this.onreadystatechange = null;
     this.onload = null;
     this.upload = undefined; /* Upload not supported yet */
+    this.timeout = 0;
 
     this._reset();
     this._method = null;
@@ -196,7 +198,7 @@ class XMLHttpRequestBase {
     this.setReadyState(this.OPENED);
   }
 
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     throw new Error('Subclass must define sendImpl method');
   }
 
@@ -208,7 +210,7 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    this.sendImpl(this._method, this._url, this._headers, data);
+    this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
 
   abort(): void {
