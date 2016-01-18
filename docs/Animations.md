@@ -213,13 +213,13 @@ respectively (`gestureState` is the second arg passed to the `PanResponder` hand
 ```javascript
 onScroll={Animated.event(
   // scrollX = e.nativeEvent.contentOffset.x
-  [{nativeEvent: {contentOffset: {x: scrollX}}}]   
+  [{nativeEvent: {contentOffset: {x: scrollX}}}]
 )}
 onPanResponderMove={Animated.event([
   null,                                          // ignore the native event
   // extract dx and dy from gestureState
   // like 'pan.x = gestureState.dx, pan.y = gestureState.dy'
-  {dx: pan.x, dy: pan.y}                         
+  {dx: pan.x, dy: pan.y}
 ]);
 ```
 
