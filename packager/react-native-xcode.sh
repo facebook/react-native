@@ -46,7 +46,14 @@ fi
 # npm global install path may be a non-standard location
 PATH="$(npm prefix -g)/bin:$PATH"
 
-react-native bundle \
+# check for NPM-installed react-native-cli
+if [[ -d ./node_modules/react-native-cli ]] && [ -z "$REACT_NATIVE_PATH" ]; then
+  REACT_NATIVE_PATH=./node_modules/.bin/react-native
+fi
+# fall back to global/$PATH
+[ -z "$REACT_NATIVE_PATH" ] && REACT_NATIVE_PATH=react-native
+
+$REACT_NATIVE_PATH bundle \
   --entry-file index.ios.js \
   --platform ios \
   --dev $DEV \
