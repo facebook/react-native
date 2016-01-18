@@ -247,7 +247,7 @@ class XMLHttpRequestBase {
     if (onreadystatechange) {
       // We should send an event to handler, but since we don't process that
       // event anywhere, let's leave it empty
-      onreadystatechange(null);
+      onreadystatechange.call(this, null);
     }
     if (newState === this.DONE && !this._aborted) {
       this._sendLoad();
