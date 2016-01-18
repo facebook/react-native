@@ -668,10 +668,9 @@ var TouchableMixin = {
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
-        this.pressOutDelayTimeout = setTimeout(
-          this.touchableHandleActivePressOut.bind(this, e),
-          this.touchableGetPressOutDelayMS()
-        );
+        this.pressOutDelayTimeout = setTimeout(() => {
+          this.touchableHandleActivePressOut(e);
+        }, this.touchableGetPressOutDelayMS());
       } else {
         this.touchableHandleActivePressOut(e);
       }
