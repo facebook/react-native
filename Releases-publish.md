@@ -1,3 +1,7 @@
+## Ideas for improvements
+
+We could simplify the process quite a bit by publishing the Android binaries to npm. This will increase the size of the npm package by about 3.3MB. To do that: after `installArchives`, move the binaries to somewhere where `npm publish` will pick them up. Then, change the `build.gradle` file(s) of your generated app so that Gradle will pick up the binaries from `node_modules`. This will likely also **fix issues with incompatible versions of JS and Android binaries** (e.g. [#4488](https://github.com/facebook/react-native/issues/4488)).
+
 ## Publish a release (same steps for an rc version, 0.x.0)
 
 Publish to Maven Central (Note: **We could get rid of this whole section by publishing binaries to npm instead**):
