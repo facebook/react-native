@@ -228,6 +228,7 @@ android {
         jniLibs.srcDir "$buildDir/react-ndk/exported"
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell']
         java {
+          srcDirs = ['src/main/java', 'src/main/libraries/soloader']
           exclude 'com/facebook/react/processing'
         }
     }
@@ -244,7 +245,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.8.1'
