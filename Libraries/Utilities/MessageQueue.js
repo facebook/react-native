@@ -110,7 +110,7 @@ class MessageQueue {
 
   processModuleConfig(config, moduleID) {
     const module = this._genModule(config, moduleID);
-    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable)
+    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
     return module;
   }
 
