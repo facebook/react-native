@@ -26,6 +26,6 @@ module.exports = {
   getCacheKey: createCacheKeyFunction([
     __filename,
     path.join(__dirname, '../packager/transformer.js'),
-    path.join(__dirname, '../node_modules/babel-core/package.json'),
+    require.resolve('babel-core/package.json'),
   ]),
 };
