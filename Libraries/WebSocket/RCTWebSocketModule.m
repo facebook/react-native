@@ -38,10 +38,12 @@ RCT_EXPORT_MODULE()
 
 - (void)dealloc
 {
-  for (RCTSRWebSocket *socket in _sockets.allValues) {
-    socket.delegate = nil;
-    [socket close];
-  }
+  @synchronized(_sockets) {
+    NSArray *allValues = _sockets.allValues;
+    for (RCTSRWebSocket *socket in allValues) {
+      socket.delegate = nil;
+      [socket close];
+  }}
 }
 
 RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
@@ -49,22 +51,33 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL socketID:(nonnull NSNumber *)socketID)
   RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
-  if (!_sockets) {
+  static dispatch_once_t once;
+  
+  dispatch_once(&once, ^{
     _sockets = [NSMutableDictionary new];
+  });
+  @synchronized(_sockets) {
+    _sockets[socketID] = webSocket;
   }
-  _sockets[socketID] = webSocket;
   [webSocket open];
 }
 
 RCT_EXPORT_METHOD(send:(NSString *)message socketID:(nonnull NSNumber *)socketID)
 {
-  [_sockets[socketID] send:message];
+  RCTSRWebSocket *socket = nil;
+  
+  @synchronized(_sockets) {
+    socket = _sockets[socketID];
+  }
+  [socket send:message];
 }
 
 RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 {
-  [_sockets[socketID] close];
-  [_sockets removeObjectForKey:socketID];
+  @synchronized(_sockets) {
+    [_sockets[socketID] close];
+    [_sockets removeObjectForKey:socketID];
+  }
 }
 
 #pragma mark - RCTSRWebSocketDelegate methods
