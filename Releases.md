@@ -49,10 +49,10 @@ Make absolutely sure basic iOS and Android workflow works on master:
     - http://localhost:4873/ will show 0.18.0-rc
   - Test that everything works:
     - `cd /tmp`
-    - `react-native init Zero12rc`
-    - `cd Zero12rc`
+    - `react-native init AwesomeApp`
+    - `cd AwesomeApp`
     - Check that `package.json`, `android/app/build.gradle` have correct versions (`^0.18.0-rc`, `com.facebook.react:react-native:0.18.+`)
-    - `open ios/Zero12rc.xcodeproj`
+    - `open ios/AwesomeApp.xcodeproj`
     - Hit the Run button in Xcode.
     - Packager should open in a new window, you should see the Welcome to React Native screen, Reload JS, try Chrome debugging - put a breakpoint somewhere in `index.ios.js` and Reload JS, Chrome debugger should stop on the breakpoint (we don't have tests for Chrome debugging)
     - Close the packager window, close Xcode
