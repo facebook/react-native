@@ -27,6 +27,7 @@ var invariant = require('invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
+var Networking = NativeModules.Networking;
 
 /**
  * <Image> - A react component for displaying different types of images,
@@ -110,6 +111,10 @@ var Image = React.createClass({
 
   statics: {
     resizeMode: ImageResizeMode,
+    /**
+     * Prefetch image for later use. Download remote image to the disk cache.
+     */
+    prefetch: (url) => { Networking .prefetchImage(url); },
   },
 
   mixins: [NativeMethodsMixin],

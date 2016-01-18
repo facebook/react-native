@@ -17,6 +17,7 @@
 #import "RCTHTTPRequestHandler.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTImageLoader.h"
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
@@ -458,6 +459,11 @@ RCT_EXPORT_METHOD(cancelRequest:(nonnull NSNumber *)requestID)
 {
   [_tasksByRequestID[requestID] cancel];
   [_tasksByRequestID removeObjectForKey:requestID];
+}
+
+RCT_EXPORT_METHOD(prefetchImage:(NSString *)url)
+{
+  [_bridge.imageLoader loadImageWithTag:url callback:^(NSError *error, UIImage *image) {}];
 }
 
 @end
