@@ -9,8 +9,6 @@
     mc:Ignorable="d">
 
     <Frame Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <rn:ReactRootView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="RootView">
-          <!--<Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Background="Red"></Canvas>-->
-        </rn:ReactRootView>
+        <rn:ReactRootView VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Name="RootView"/>
     </Frame>
 </Page>
