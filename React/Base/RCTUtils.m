@@ -21,6 +21,8 @@
 
 #import "RCTLog.h"
 
+NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
+
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
@@ -313,26 +315,33 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringi
   return error;
 }
 
-// TODO: Can we just replace RCTMakeError with this function instead?
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
+{
+  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified, nil, error);
+}
+
+// TODO: Can we just replace RCTMakeError with this function instead?
+NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
   NSMutableDictionary<NSString *, id> *errorInfo =
-    [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
     errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
-    errorInfo[@"code"] = @(error.code);
   } else {
     errorMessage = @"Unknown error from a native module";
     errorInfo[@"domain"] = RCTErrorDomain;
-    errorInfo[@"code"] = @-1;
   }
+  errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  // Allow for explicit overriding of the error message
+  errorMessage = message ?: errorMessage;
 
   return RCTMakeError(errorMessage, nil, errorInfo);
 }
+
 
 BOOL RCTRunningInTestEnvironment(void)
 {
