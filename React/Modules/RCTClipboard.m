@@ -34,4 +34,14 @@ RCT_EXPORT_METHOD(setString:(NSString *)content)
   clipboard.string = content;
 }
 
+RCT_REMAP_METHOD(getStringSync,
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+
+  resolve(@[RCTNullIfNil(clipboard.string)]);
+
+}
+
 @end

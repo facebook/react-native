@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.common.ReactConstants;
 
 import java.util.ArrayList;
@@ -47,32 +48,38 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
     return (ClipboardManager) reactContext.getSystemService(reactContext.CLIPBOARD_SERVICE);
   }
 
-  // @ReactMethod
-  // public void getString(Callback cb){
-  //   this.getString(cb,null);
-  // }
+  private String getStringInternal(){
+    ClipboardManager clipboard = getClipboardService();
+    ClipData clipData = clipboard.getPrimaryClip();
+    if (clipData == null) {
+      return "";
+    }
+    if (clipData.getItemCount() >= 1) {
+      ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
+      return "" + firstItem.getText();
+    } else {
+      return "";
+    }
+  }
 
   @ReactMethod
-  public void getString(Callback cb,Callback errorCb) {
+  public void getString(Callback cb) {
     try {
-      ClipboardManager clipboard = getClipboardService();
-      ClipData clipData = clipboard.getPrimaryClip();
-      if (clipData == null) {
-        cb.invoke("");
-        return;
-      }
-      if (clipData.getItemCount() >= 1) {
-        ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
-        String text = "" + firstItem.getText();
-        cb.invoke(text);
-      } else {
-        cb.invoke("");
-      }
+      String ret = this.getStringInternal();
+      cb.invoke(ret);
     } catch(Exception e) {
       FLog.w(ReactConstants.TAG, "Cannot get clipboard contents: " + e.getMessage());
-      if(errorCb!=null){
-        errorCb.invoke(e.getMessage());
-      }
+    }
+  }
+
+  @ReactMethod
+  public void getStringSync(Promise promise){
+    try {
+      String ret = this.getStringInternal();
+      promise.resolve(ret);
+    } catch(Exception e) {
+      FLog.w(ReactConstants.TAG, "Cannot get clipboard contents: " + e.getMessage());
+      promise.reject(e.getMessage());
     }
   }
 

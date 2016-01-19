@@ -12,11 +12,4 @@
 
 var Clipboard = require('NativeModules').Clipboard;
 
-module.exports = {
-  getString(cb){
-    Clipboard.getString(cb);
-  },
-  setString(content){
-    Clipboard.setString(content);
-  }
-};
+module.exports = Clipboard;
