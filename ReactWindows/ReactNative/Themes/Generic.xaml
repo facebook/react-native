@@ -9,39 +9,25 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:BorderedContentControl">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <!--<Border x:Name="LeftBorder" BorderBrush="{TemplateBinding LeftBorderBrush}" 
-                            BorderThickness="{TemplateBinding LeftBorderThickness}" 
-                            CornerRadius="{TemplateBinding LeftCornerRadius}" 
-                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <Border x:Name="TopBorder" BorderBrush="{TemplateBinding TopBorderBrush}" 
-                            BorderThickness="{TemplateBinding TopBorderThickness}" 
-                            CornerRadius="{TemplateBinding TopCornerRadius}"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <Border x:Name="RightBorder" BorderBrush="{TemplateBinding RightBorderBrush}" 
-                            BorderThickness="{TemplateBinding RightBorderThickness}" 
-                            CornerRadius="{TemplateBinding RightCornerRadius}"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <Border x:Name="BottomBorder" BorderBrush="{TemplateBinding BottomBorderBrush}" 
-                            BorderThickness="{TemplateBinding BottomBorderThickness}" 
-                            CornerRadius="{TemplateBinding BottomCornerRadius}"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        --><!--<Line x:Name="LeftBorderLine" ></Line>-->
                         <Path x:Name="LeftBorderPath"
                               Stroke="{TemplateBinding LeftBorderBrush}" 
                               StrokeThickness="{TemplateBinding LeftBorderThickness}"
                               Data="{TemplateBinding LeftBorderGeometry}">
-                            <!--<Path.Data>
-                                <LineGeometry x:Name="LeftBorderLineGeometry"
-                                                  EndPoint="{TemplateBinding LeftEndPoint}" 
-                                                  StartPoint="{TemplateBinding LeftStartPoint}"/>
-                                <GeometryGroup>
-                                    <EllipseGeometry x:Name="TopLeftEllipse" />
-                                    <LineGeometry x:Name="LeftBorderLineGeometry"
-                                                  EndPoint="{TemplateBinding LeftEndPoint}" 
-                                                  StartPoint="{TemplateBinding LeftStartPoint}"/>
-                                    <EllipseGeometry x:Name="BottomLeftEllipse" />
-                                </GeometryGroup>
-                            </Path.Data>-->
+                        </Path>
+                        <Path x:Name="TopBorderPath"
+                              Stroke="{TemplateBinding TopBorderBrush}" 
+                              StrokeThickness="{TemplateBinding TopBorderThickness}"
+                              Data="{TemplateBinding TopBorderGeometry}">
+                        </Path>
+                        <Path x:Name="RightBorderPath"
+                              Stroke="{TemplateBinding RightBorderBrush}" 
+                              StrokeThickness="{TemplateBinding RightBorderThickness}"
+                              Data="{TemplateBinding RightBorderGeometry}">
+                        </Path>
+                        <Path x:Name="BottomBorderPath"
+                              Stroke="{TemplateBinding BottomBorderBrush}" 
+                              StrokeThickness="{TemplateBinding BottomBorderThickness}"
+                              Data="{TemplateBinding BottomBorderGeometry}">
                         </Path>
                         <ContentPresenter Content="{TemplateBinding Content}"
                           ContentTemplate="{TemplateBinding ContentTemplate}"
