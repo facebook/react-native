@@ -19,5 +19,8 @@ package com.facebook.react.bridge;
 public interface Promise {
   void resolve(Object value);
   void reject(Throwable reason);
+  @Deprecated
   void reject(String reason);
+  void reject(String code, Throwable extra);
+  void reject(String code, String reason, Throwable extra);
 }

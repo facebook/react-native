@@ -15,6 +15,9 @@ package com.facebook.react.bridge;
 import javax.annotation.Nullable;
 
 public class PromiseImpl implements Promise {
+
+  private static final String DEFAULT_ERROR = "EUNSPECIFIED";
+
   private @Nullable Callback mResolve;
   private @Nullable Callback mReject;
 
@@ -32,18 +35,33 @@ public class PromiseImpl implements Promise {
 
   @Override
   public void reject(Throwable reason) {
-    reject(reason.getMessage());
+    reject(DEFAULT_ERROR, reason.getMessage(), reason);
   }
 
   @Override
+  @Deprecated
   public void reject(String reason) {
+    reject(DEFAULT_ERROR, reason, null);
+  }
+
+  @Override
+  public void reject(String code, Throwable extra) {
+    reject(code, extra.getMessage(), extra);
+  }
+
+  @Override
+  public void reject(String code, String reason, Throwable extra) {
     if (mReject != null) {
+      if (code == null) {
+        code = DEFAULT_ERROR;
+      }
       // The JavaScript side expects a map with at least the error message.
       // It is possible to expose all kind of information. It will be available on the JS
       // error instance.
-      // TODO(8850038): add more useful information, e.g. the native stack trace.
       WritableNativeMap errorInfo = new WritableNativeMap();
+      errorInfo.putString("code", code);
       errorInfo.putString("message", reason);
+      // TODO(8850038): add the stack trace info in, need to figure out way to serialize that
       mReject.invoke(errorInfo);
     }
   }
