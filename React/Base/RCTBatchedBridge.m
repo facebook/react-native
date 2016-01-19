@@ -482,6 +482,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   }
 
   _loading = NO;
+  [_javaScriptExecutor invalidate];
 
   [[NSNotificationCenter defaultCenter]
    postNotificationName:RCTJavaScriptDidFailToLoadNotification
