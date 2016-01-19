@@ -32,7 +32,6 @@ Slider (known as SeekBar)
 
 ```
 App State
-Camera Roll
 Media
 PushNotificationIOS
 ```
