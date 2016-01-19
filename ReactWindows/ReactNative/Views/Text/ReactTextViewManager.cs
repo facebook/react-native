@@ -1,4 +1,5 @@
 ﻿using ReactNative.UIManager;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 
@@ -18,7 +19,10 @@ namespace ReactNative.Views.Text
 
         protected override TextBlock CreateViewInstanceCore(ThemedReactContext reactContext)
         {
-            return new TextBlock();
+            return new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+            };
         }
 
         protected override ReactTextShadowNode CreateShadowNodeInstanceCore()
@@ -29,7 +33,7 @@ namespace ReactNative.Views.Text
         protected override void UpdateExtraData(TextBlock root, object extraData)
         {
             var inline = (Inline)extraData;
-
+            root.Inlines.Clear();
             root.Inlines.Add(inline);
         }
     }
