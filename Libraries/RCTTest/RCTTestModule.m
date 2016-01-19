@@ -62,7 +62,7 @@ RCT_REMAP_METHOD(shouldResolve, shouldResolve_resolve:(RCTPromiseResolveBlock)re
 
 RCT_REMAP_METHOD(shouldReject, shouldReject_resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 {
-  reject(nil);
+  reject(nil, nil, nil);
 }
 
 RCT_EXPORT_METHOD(markTestCompleted)
