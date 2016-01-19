@@ -17,8 +17,7 @@ namespace ReactNative.UIManager
         where TFrameworkElement : FrameworkElement
         where TLayoutShadowNode : LayoutShadowNode
     {
-        private const string PROP_BACKGROUND_COLOR = ViewProperties.BackgroundColor;
-        private const string PROM_DECOMPOSED_MATRIX = "decomposedMatrix";
+        private const string PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
         private const string PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
         private const string PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
         private const string PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
@@ -34,7 +33,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The framework element instance.</param>
         /// <param name="decomposedMatrix">The requested styling properties to set.</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_ROTATE)]
+        [ReactProperty(PROP_DECOMPOSED_MATRIX)]
         public void SetDecomposedMatrix(TFrameworkElement view, JObject decomposedMatrix)
         {
             if (decomposedMatrix == null)
@@ -106,31 +105,19 @@ namespace ReactNative.UIManager
             transform.TranslateY = distance;
         }
 
-        /// <summary>
-        /// Sets the rotateX property of the <typeparamref name="TFrameworkElement"/>.
-        /// </summary>
-        /// <param name="view">The WPF <typeparamref name="TFrameworkElement"/>.</param>
-        /// <param name="rotation">The rotation degrees</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_ROTATE_X, DefaultDouble = 1.0)]
-        public void SetRotationX(TFrameworkElement view, double rotation)
+        private void SetRotationX(TFrameworkElement view, double rotation)
         {
             var transform = EnsureTransform(view);
             transform.RotationX = rotation;
         }
 
-        /// <summary>
-        /// Sets the rotateY property of the <typeparamref name="TFrameworkElement"/>.
-        /// </summary>
-        /// <param name="view">The WPF <typeparamref name="TFrameworkElement"/>.</param>
-        /// <param name="rotation">The rotation degrees</param>
-        [ReactProperty(PROP_DECOMPOSED_MATRIX_ROTATE_Y, DefaultDouble = 1.0)]
-        public void SetRotationY(TFrameworkElement view, double rotation)
+        private void SetRotationY(TFrameworkElement view, double rotation)
         {
             var transform = EnsureTransform(view);
             transform.RotationY = rotation;
         }
 
-        protected void SetTransformMatrix(TFrameworkElement view, JObject matrix)
+        private void SetTransformMatrix(TFrameworkElement view, JObject matrix)
         {
             // TODO: eliminate closure in action.
             LookupAndDo<double>(matrix, PROP_DECOMPOSED_MATRIX_TRANSLATE_X, value => SetTranslationX(view, value));

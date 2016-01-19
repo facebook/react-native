@@ -124,7 +124,6 @@ namespace ReactNative.UIManager
             try
             {
                 Method.Invoke(instance, args);
-                
             }
             catch (TargetInvocationException ex)
             {

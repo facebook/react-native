@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using Windows.Foundation;
 using Windows.UI.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
@@ -204,7 +205,11 @@ namespace ReactNative.Views.Text
             //
             // TODO: determine another way to measure text elements.
             var shadowNode = (ReactTextShadowNode)node;
-            var textBlock = new TextBlock();
+            var textBlock = new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+            };
+
             textBlock.Inlines.Add(shadowNode._inline);
 
             try

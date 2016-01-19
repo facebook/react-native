@@ -28,7 +28,7 @@ namespace ReactNative.UIManager
             }
 
             var settersImpl = new Dictionary<string, IPropertySetter>();
-            var methods = type.GetTypeInfo().DeclaredMethods;
+            var methods = type.GetMethods();
             foreach (var method in methods)
             {
                 foreach (var setter in PropertySetter.CreateViewManagerSetters(method))
@@ -58,7 +58,7 @@ namespace ReactNative.UIManager
             }
 
             var settersImpl = new Dictionary<string, IPropertySetter>();
-            var methods = type.GetTypeInfo().DeclaredMethods;
+            var methods = type.GetMethods();
             foreach (var method in methods)
             {
                 foreach (var setter in PropertySetter.CreateShadowNodeSetters(method))
