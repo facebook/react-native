@@ -108,20 +108,14 @@ class AnExampleReactPackage implements ReactPackage {
   }
 ```
 
-The package needs to be provided to the **ReactInstanceManager** when it is built. To accomplish this you will need to insert an `.addPackage(new YourPackageName())` call to the `mReactInstanceManager = ReactInstanceManager.builder()` call chain.
-
-Refer to the code below and add the `addPackage` statement to your application's `MainActivity.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainActivity.java`.
-
+The package needs to be provided in the `getPackages` method of the `MainActivity.java` file. This file exists under the android folder in your react-native application directory. The path to this file is: `android/app/src/main/java/com/your-app-name/MainActivity.java`.
 
 ```java
-mReactInstanceManager = ReactInstanceManager.builder()
-  .setApplication(getApplication())
-  .setBundleAssetName("AnExampleApp.android.bundle")
-  .setJSMainModuleName("Examples/AnExampleApp/AnExampleApp.android")
-  .addPackage(new AnExampleReactPackage())  // <-- Add this line with your package name.
-  .setUseDeveloperSupport(true)
-  .setInitialLifecycleState(LifecycleState.RESUMED)
-  .build();
+protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+            new MainReactPackage(),
+            new AnExampleReactPackage()); // <-- Add this line with your package name.
+}
 ```
 
 To make it simpler to access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. This is not necessary but saves the consumers of your library the need to pull it off of `NativeModules` each time. This JavaScript file also becomes a good location for you to add any JavaScript side functionality.
