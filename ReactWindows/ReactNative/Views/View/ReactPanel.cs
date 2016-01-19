@@ -24,10 +24,7 @@ namespace ReactNative.Views.View
 
         public ReactPanel() : base()
         {
-            //Background = new SolidColorBrush(Colors.Blue);
-            //HorizontalAlignment = HorizontalAlignment.Stretch;
-            //VerticalAlignment = VerticalAlignment.Stretch;
-            this.SizeChanged += OnBoundsChanged;
+            SizeChanged += OnBoundsChanged;
         }
 
         public PointerEvents PointerEvents
