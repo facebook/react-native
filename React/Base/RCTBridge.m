@@ -57,6 +57,9 @@ void RCTRegisterModule(Class moduleClass)
 
   // Register module
   [RCTModuleClasses addObject:moduleClass];
+
+  objc_setAssociatedObject(moduleClass, &RCTBridgeModuleClassIsRegistered,
+                           @NO, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 /**
@@ -118,10 +121,6 @@ dispatch_queue_t RCTJSThread;
           if (![RCTModuleClasses containsObject:cls]) {
             RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
                        "RCT_EXPORT_MODULE()?", cls);
-
-            RCTRegisterModule(cls);
-            objc_setAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered,
-                                     @NO, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
           }
           break;
         }
