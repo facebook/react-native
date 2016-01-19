@@ -23,7 +23,17 @@ if (Platform.OS === 'ios') {
   var RCTStatusBarManager = require('NativeModules').StatusBarAndroid;
 }
 
+import type ReactElement from 'ReactElement';
+
+type DefaultProps = {
+  animated: boolean;
+};
+
 const StatusBar = React.createClass({
+  statics: {
+    _propStack: [],
+  },
+
   propTypes: {
     /**
      * If the status bar is hidden.
@@ -64,15 +74,13 @@ const StatusBar = React.createClass({
     networkActivityIndicatorVisible: React.PropTypes.bool,
   },
 
-  getDefaultProps() {
+  getDefaultProps(): DefaultProps {
     return {
       animated: false,
     };
   },
 
-  statics: {
-    _propStack: [],
-  },
+  _propStackIndex: 0,
 
   componentDidMount() {
     // Every time a StatusBar component is mounted, we push it's prop to a stack
@@ -105,7 +113,7 @@ const StatusBar = React.createClass({
   /**
    * Merges the prop stack with the default values.
    */
-  _mergeStackProps() {
+  _mergeStackProps(): Array<any> {
     return StatusBar._propStack.reduce((prev, cur) => {
       return Object.assign(prev, cur);
     }, {
@@ -120,7 +128,7 @@ const StatusBar = React.createClass({
   /**
    * Updates the native status bar with the props from the stack.
    */
-  _updateFromStack(animated: boolean) {
+  _updateFromStack(animated: boolean = false) {
     if (StatusBar._propStack.length === 0) {
       return;
     }
@@ -151,7 +159,7 @@ const StatusBar = React.createClass({
     }
   },
 
-  render() {
+  render(): ?ReactElement {
     return null;
   },
 });

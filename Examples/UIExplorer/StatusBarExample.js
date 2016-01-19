@@ -24,6 +24,17 @@ const {
   StatusBar,
 } = React;
 
+type BarStyle = 'default' | 'light-content';
+
+type State = {
+  animated: boolean,
+  color: string,
+  hidden?: boolean,
+  translucent?: boolean,
+  barStyle?: BarStyle,
+  networkActivityIndicatorVisible?: boolean
+};
+
 const colors = [
   '#ff0000',
   '#00ff00',
@@ -40,20 +51,24 @@ exports.title = '<StatusBar>';
 exports.description = 'Component for controlling the status bar';
 
 const StatusBarExample = React.createClass({
-  getInitialState() {
+  getInitialState(): State {
     return {
       animated: true,
       color: this._getColor(0),
     };
   },
+
   _colorIndex: 0,
+  _barStyleIndex: 0,
+
   _getColor(index: number) {
     return colors[index % colors.length];
   },
-  _barStyleIndex: 0,
-  _getBarStyle(index: number) {
+
+  _getBarStyle(index: number): BarStyle {
     return barStyles[index % barStyles.length];
   },
+
   render() {
     return (
       <View>
