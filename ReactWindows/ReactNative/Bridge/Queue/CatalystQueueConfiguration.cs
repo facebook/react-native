@@ -49,7 +49,7 @@ namespace ReactNative.Bridge.Queue
         /// <summary>
         /// The JavaScript thread.
         /// </summary>
-        public IMessageQueueThread JSQueueThread
+        public IMessageQueueThread JavaScriptQueueThread
         {
             get
             {

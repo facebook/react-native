@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReactNative.Bridge.Queue;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -205,6 +206,16 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
+        /// Asserts that the current thread is on the catalyst instance native
+        /// modules queue thread.
+        /// </summary>
+        public void AssertOnDispatcherQueueThread()
+        {
+            AssertCatalystInstance();
+            _catalystInstance.QueueConfiguration.DispatcherQueueThread.AssertOnThread();
+        }
+
+        /// <summary>
         /// Enqueues an action on the dispatcher queue thread.
         /// </summary>
         /// <param name="action">The action.</param>
@@ -222,41 +233,61 @@ namespace ReactNative.Bridge
         /// <b>true</b> if the call is from the JavaScript queue thread,
         /// <b>false</b> otherwise.
         /// </returns>
-        public bool IsOnJSQueueThread()
+        public bool IsOnJavaScriptQueueThread()
         {
             AssertCatalystInstance();
-            return _catalystInstance.QueueConfiguration.JSQueueThread.IsOnThread();
+            return _catalystInstance.QueueConfiguration.JavaScriptQueueThread.IsOnThread();
+        }
+
+        /// <summary>
+        /// Asserts that the current thread is on the catalyst instance
+        /// JavaScript queue thread.
+        /// </summary>
+        public void AssertOnJavaScriptQueueThread()
+        {
+            AssertCatalystInstance();
+            _catalystInstance.QueueConfiguration.JavaScriptQueueThread.AssertOnThread();
         }
 
         /// <summary>
         /// Enqueues an action on the JavaScript queue thread.
         /// </summary>
         /// <param name="action">The action.</param>
-        public void RunOnJSQueueThread(Action action)
+        public void RunOnJavaScriptQueueThread(Action action)
         {
             AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.JSQueueThread.RunOnQueue(action);
+            _catalystInstance.QueueConfiguration.JavaScriptQueueThread.RunOnQueue(action);
         }
 
         /// <summary>
-        /// Checks if the current thread is on the catalyst instance
-        /// native modules queue thread.
+        /// Checks if the current thread is on the catalyst instance native 
+        /// modules queue thread.
         /// </summary>
         /// <returns>
         /// <b>true</b> if the call is from the native modules queue thread,
         /// <b>false</b> otherwise.
         /// </returns>
-        public bool IsOnNativeModulesThread()
+        public bool IsOnNativeModulesQueueThread()
         {
             AssertCatalystInstance();
             return _catalystInstance.QueueConfiguration.NativeModulesQueueThread.IsOnThread();
         }
 
         /// <summary>
+        /// Asserts that the current thread is on the catalyst instance native
+        /// modules queue thread.
+        /// </summary>
+        public void AssertOnNativeModulesQueueThread()
+        {
+            AssertCatalystInstance();
+            _catalystInstance.QueueConfiguration.NativeModulesQueueThread.AssertOnThread();
+        }
+
+        /// <summary>
         /// Enqueues an action on the native modules queue thread.
         /// </summary>
         /// <param name="action">The action.</param>
-        public void RunOnNativeModulesThread(Action action)
+        public void RunOnNativeModulesQueueThread(Action action)
         {
             AssertCatalystInstance();
             _catalystInstance.QueueConfiguration.NativeModulesQueueThread.RunOnQueue(action);

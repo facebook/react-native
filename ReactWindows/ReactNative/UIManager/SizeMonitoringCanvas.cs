@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager
@@ -6,7 +7,7 @@ namespace ReactNative.UIManager
     /// <summary>
     /// allows registering for size change events. The main purpose for this class is to hide complexity of ReactRootView
     /// </summary>
-    public class SizeMonitoringPanel : Canvas
+    public class SizeMonitoringCanvas : Canvas
     {
         private SizeChangedEventHandler _sizeChangedEventHandler;
 
@@ -17,8 +18,17 @@ namespace ReactNative.UIManager
         /// <param name="sizeChangedEventHandler">The event handler.</param>
         public void SetOnSizeChangedListener(SizeChangedEventHandler sizeChangedEventHandler)
         {
-            _sizeChangedEventHandler = sizeChangedEventHandler;
-            SizeChanged += _sizeChangedEventHandler;
+            var current = _sizeChangedEventHandler;
+            if (current != null)
+            {
+                throw new InvalidOperationException("Size changed listener has already been set.");
+            }
+
+            if (sizeChangedEventHandler != null)
+            {
+                _sizeChangedEventHandler = sizeChangedEventHandler;
+                SizeChanged += _sizeChangedEventHandler;
+            }
         }
 
         /// <summary>
@@ -26,7 +36,11 @@ namespace ReactNative.UIManager
         /// </summary>
         public void RemoveSizeChanged()
         {
-            SizeChanged -= _sizeChangedEventHandler;
+            var sizeChangedEventHandler = _sizeChangedEventHandler;
+            if (sizeChangedEventHandler != null)
+            {
+                SizeChanged -= sizeChangedEventHandler;
+            }
         }
     }
 }

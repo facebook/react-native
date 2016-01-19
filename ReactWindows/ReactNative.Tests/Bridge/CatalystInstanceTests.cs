@@ -115,7 +115,7 @@ namespace ReactNative.Tests.Bridge
             };
 
             var instance = await DispatcherHelpers.CallOnDispatcherAsync(() => builder.Build());
-            instance.QueueConfiguration.JSQueueThread.RunOnQueue(() =>
+            instance.QueueConfiguration.JavaScriptQueueThread.RunOnQueue(() =>
             {
                 throw exception;
             });

@@ -72,7 +72,7 @@ namespace ReactNative.UIManager
         /// <param name="height">The height.</param>
         /// <param name="context">The context.</param>
         public void RegisterRootView(
-            SizeMonitoringPanel rootView,
+            SizeMonitoringCanvas rootView,
             int tag,
             int width,
             int height,

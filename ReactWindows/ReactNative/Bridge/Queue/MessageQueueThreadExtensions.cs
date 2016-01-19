@@ -15,7 +15,7 @@ namespace ReactNative.Bridge.Queue
         /// <exception cref="InvalidOperationException">
         /// Thrown if the assertion fails.
         /// </exception>
-        public static void AssertIsOnThread(this IMessageQueueThread actionQueue)
+        public static void AssertOnThread(this IMessageQueueThread actionQueue)
         {
             if (!actionQueue.IsOnThread())
             {

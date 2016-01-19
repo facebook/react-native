@@ -366,7 +366,7 @@ namespace ReactNative.Tests.UIManager.Events
             var enter = new AutoResetEvent(false);
             var exit = new AutoResetEvent(false);
 
-            reactContext.RunOnJSQueueThread(() =>
+            reactContext.RunOnJavaScriptQueueThread(() =>
             {
                 enter.Set();
                 exit.WaitOne();
