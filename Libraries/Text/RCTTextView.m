@@ -64,6 +64,35 @@
   UIScrollView *_scrollView;
 }
 
+static NSUInteger RCTApparentLengthOfText(NSString *text)
+{
+  NSUInteger length = 0;
+  for (NSUInteger i = 0, textLength = text.length; i < textLength; length++) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  
+  return length;
+}
+
+static void RCTPlaceCaretAtOffset(id<UITextInput> textInput, NSUInteger offset)
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
+static NSRange RCTLimitedRangeOfText(NSString *text, NSUInteger allowedLength)
+{
+  NSUInteger i = 0;
+  for (; allowedLength > 0; allowedLength--) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  return NSMakeRange(0, i);
+}
+
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
   RCTAssertParam(eventDispatcher);
@@ -320,27 +349,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     }
   }
 
-  if (_maxLength == nil) {
+  
+  // "Marked text, which is part of multistage text input represents
+  // provisionally inserted text the user has yet to confirm".
+  // So it may be not appropriate to count them up until they have
+  // been confirmed by user.
+  if (_maxLength == nil || textView.markedTextRange) {
     return YES;
   }
-  NSUInteger allowedLength = _maxLength.integerValue - textView.text.length + range.length;
-  if (text.length > allowedLength) {
-    if (text.length > 1) {
+  
+  NSUInteger allowedLength = _maxLength.integerValue - RCTApparentLengthOfText(textView.text) + RCTApparentLengthOfText([textView.text substringWithRange:range]);
+  NSUInteger replacementTextLength = RCTApparentLengthOfText(text);
+  
+  if (replacementTextLength > allowedLength) {
+    if (allowedLength > 0) {
       // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [text substringToIndex:allowedLength];
+      NSRange allowedRange = RCTLimitedRangeOfText(text, allowedLength);
+      NSString *limitedString = [text substringWithRange:allowedRange];
       NSMutableString *newString = textView.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textView.text = newString;
       // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textView positionFromPosition:textView.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textView.selectedTextRange = [textView textRangeFromPosition:insertEnd toPosition:insertEnd];
+      RCTPlaceCaretAtOffset(textView, range.location + allowedRange.length);
       [self textViewDidChange:textView];
     }
     return NO;
-  } else {
-    return YES;
   }
+  return YES;
 }
 
 - (void)textViewDidChangeSelection:(RCTUITextView *)textView
@@ -434,9 +469,40 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+  // Code in `-textView:shouldChangeTextInRange:replacementText` could handle most of
+  // cases. But there are exceptions. For instance, multistage input like Hanzi(Chinese),
+  // won't trigger `-textView:shouldChangeTextInRange:replacementText` when users confirm
+  // the marked text they have input by tapping the candidate bar of the keyboard. In
+  // these cases, truncating input string should happen in `-textViewDidChange:`.
+  // As we have done in `-textView:shouldChangeTextInRange:replacementText`, we won't
+  // do anything when `markedTextRange` is not nil, which means users have not confirmed
+  // what text to input.
+  if (!textView.markedTextRange) {
+    NSRange selectedTextRange = textView.selectedRange;
+    // It seems that it's impossible to have a textView which has some text selected after  
+    // its text have just changed, unless we set it programmatically.
+    if (self.maxLength && selectedTextRange.length == 0) {
+      NSInteger exceededLength = RCTApparentLengthOfText(textView.text) - _maxLength.integerValue;
+      if (exceededLength > 0) {
+        NSString *text = [textView.text substringWithRange:NSMakeRange(0, selectedTextRange.location)];
+        
+        NSUInteger i = text.length;
+        for (; exceededLength > 0; exceededLength--) {
+          NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i - 1];
+          i = range.location;
+        }
+        NSRange rangeToRemove = NSMakeRange(i, text.length - i);
+        NSMutableString *newString = [textView.text mutableCopy];
+        [newString replaceCharactersInRange:rangeToRemove withString:@""];
+        textView.text = newString;
+        RCTPlaceCaretAtOffset(textView, rangeToRemove.location);
+      }
+    }
+  }
+
   [self updateContentSize];
   [self _setPlaceholderVisibility];
-  _nativeEventCount++;
+    _nativeEventCount++;
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
                                  reactTag:self.reactTag
                                      text:textView.text

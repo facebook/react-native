@@ -21,6 +21,34 @@
 
 RCT_EXPORT_MODULE()
 
+static NSUInteger RCTApparentLengthOfText(NSString *text)
+{
+  NSUInteger length = 0;
+  for (NSUInteger i = 0, textLength = text.length; i < textLength; length++) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  
+  return length;
+}
+
+static void RCTPlaceCaretAtOffset(id<UITextInput> textInput, NSUInteger offset)
+{
+  UITextPosition *insertEnd = [textInput positionFromPosition:textInput.beginningOfDocument
+                                                       offset:offset];
+  textInput.selectedTextRange = [textInput textRangeFromPosition:insertEnd toPosition:insertEnd];
+}
+
+static NSRange RCTLimitedRangeOfText(NSString *text, NSUInteger allowedLength)
+{
+  NSUInteger i = 0;
+  for (; allowedLength > 0; allowedLength--) {
+    NSRange range = [text rangeOfComposedCharacterSequenceAtIndex:i];
+    i = NSMaxRange(range);
+  }
+  return NSMakeRange(0, i);
+}
+
 - (UIView *)view
 {
   RCTTextField *textField = [[RCTTextField alloc] initWithEventDispatcher:self.bridge.eventDispatcher];
@@ -37,27 +65,35 @@ RCT_EXPORT_MODULE()
     [textField sendKeyValueForString:string];
   }
 
-  if (textField.maxLength == nil || [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
+  
+  // "Marked text, which is part of multistage text input represents
+  // provisionally inserted text the user has yet to confirm".
+  // So it may be not appropriate to count them up until they have
+  // been confirmed by user.
+  if (textField.maxLength == nil ||
+      textField.markedTextRange ||
+      [string isEqualToString:@"\n"]) {  // Make sure forms can be submitted via return
     return YES;
   }
-  NSUInteger allowedLength = textField.maxLength.integerValue - textField.text.length + range.length;
-  if (string.length > allowedLength) {
-    if (string.length > 1) {
+  
+  NSUInteger allowedLength = textField.maxLength.integerValue - RCTApparentLengthOfText(textField.text) + RCTApparentLengthOfText([textField.text substringWithRange:range]);
+  NSUInteger replacementTextLength = RCTApparentLengthOfText(string);
+  
+  if (replacementTextLength > allowedLength) {
+    if (allowedLength > 0) {
       // Truncate the input string so the result is exactly maxLength
-      NSString *limitedString = [string substringToIndex:allowedLength];
+      NSRange allowedRange = RCTLimitedRangeOfText(string, allowedLength);
+      NSString *limitedString = [string substringWithRange:allowedRange];
       NSMutableString *newString = textField.text.mutableCopy;
       [newString replaceCharactersInRange:range withString:limitedString];
       textField.text = newString;
       // Collapse selection at end of insert to match normal paste behavior
-      UITextPosition *insertEnd = [textField positionFromPosition:textField.beginningOfDocument
-                                                          offset:(range.location + allowedLength)];
-      textField.selectedTextRange = [textField textRangeFromPosition:insertEnd toPosition:insertEnd];
+      RCTPlaceCaretAtOffset(textField, range.location + allowedRange.length);
       [textField textFieldDidChange];
     }
     return NO;
-  } else {
-    return YES;
   }
+  return YES;
 }
 
 // This method allows us to detect a `Backspace` keyPress
