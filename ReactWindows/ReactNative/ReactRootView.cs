@@ -18,7 +18,7 @@ namespace ReactNative
     /// child views and sending those events to JavaScript via the
     /// <see cref="UIManager.Events.RCTEventEmitter"/> module.
     /// </summary>
-    public class ReactRootView : SizeMonitoringPanel, IRootView
+    public class ReactRootView : SizeMonitoringCanvas, IRootView
     {
         private IReactInstanceManager _reactInstanceManager;
         private string _jsModuleName;

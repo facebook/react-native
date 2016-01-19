@@ -3,7 +3,7 @@
     /// <summary>
     /// View manager for react root view components.
     /// </summary>
-    public class RootViewManager : PanelViewGroupManager<SizeMonitoringPanel>
+    public class RootViewManager : PanelViewGroupManager<SizeMonitoringCanvas>
     {
         /// <summary>
         /// The name of the react root view.
@@ -21,9 +21,9 @@
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected override SizeMonitoringPanel CreateViewInstanceCore(ThemedReactContext reactContext)
+        protected override SizeMonitoringCanvas CreateViewInstanceCore(ThemedReactContext reactContext)
         {
-            return new SizeMonitoringPanel();
+            return new SizeMonitoringCanvas();
         }
     }
 }

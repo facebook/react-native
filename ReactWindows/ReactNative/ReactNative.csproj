@@ -235,7 +235,7 @@
     <Compile Include="UIManager\ReactPropertyBaseAttribute.cs" />
     <Compile Include="UIManager\ReactPropertyGroupAttribute.cs" />
     <Compile Include="UIManager\ISizeChangedListener.cs" />
-    <Compile Include="UIManager\SizeMonitoringPanel.cs" />
+    <Compile Include="UIManager\SizeMonitoringCanvas.cs" />
     <Compile Include="UIManager\NativeViewHierarchyManager.cs" />
     <Compile Include="UIManager\ReactPropertyAttribute.cs" />
     <Compile Include="UIManager\ReactShadowNode.cs" />

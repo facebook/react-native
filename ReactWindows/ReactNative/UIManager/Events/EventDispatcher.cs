@@ -312,7 +312,7 @@ namespace ReactNative.UIManager.Events
 
                         using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "ScheduleDispatchFrameCallback"))
                         {
-                            _parent._reactContext.RunOnJSQueueThread(Run);
+                            _parent._reactContext.RunOnJavaScriptQueueThread(Run);
                         }
                     }
                 }

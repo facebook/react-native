@@ -90,7 +90,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="rootView"></param>
         /// <returns></returns>
-        public int AddMeasuredRootView(SizeMonitoringPanel rootView)
+        public int AddMeasuredRootView(SizeMonitoringCanvas rootView)
         {
             var tag = _nextRootTag;
             _nextRootTag += RootViewTagIncrement;
@@ -102,8 +102,17 @@ namespace ReactNative.UIManager
             var context = new ThemedReactContext(Context);
             _uiImplementation.RegisterRootView(rootView, tag, width, height, context);
 
-            // TODO: ensure this gets unset
-            rootView.SetOnSizeChangedListener(OnSizeChanged);
+            rootView.SetOnSizeChangedListener((sender, args) =>
+            {
+                var newWidth = (int)Math.Floor(args.NewSize.Width); // TODO: round?
+                var newHeight = (int)Math.Floor(args.NewSize.Height); // TODO: round?
+
+                Context.RunOnDispatcherQueueThread(() =>
+                {
+                    Context.AssertOnDispatcherQueueThread();
+                    _uiImplementation.UpdateRootNodeSize(tag, newWidth, newHeight, _eventDispatcher);
+                });
+            });
             
             return tag;
         }
@@ -406,18 +415,6 @@ namespace ReactNative.UIManager
         {
             base.OnCatalystInstanceDispose();
             _eventDispatcher.OnCatalystInstanceDispose();
-        }
-
-        #endregion
-
-        #region SizeChangedEventHandler
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            //TODO: Need to adjust the styling of the panel based on the new
-            //width and height(e.NewSize). The adjustment needs to run on the 
-            //Native Modules thread off the react context(this.Context.RunOnNativeModulesThread)
-            throw new NotImplementedException("Size change behavior for root view still needs to be implemented");
         }
 
         #endregion

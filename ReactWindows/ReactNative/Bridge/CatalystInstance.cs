@@ -94,9 +94,9 @@ namespace ReactNative.Bridge
         {
             await _bundleLoader.InitializeAsync();
 
-            await QueueConfiguration.JSQueueThread.CallOnQueue(() =>
+            await QueueConfiguration.JavaScriptQueueThread.CallOnQueue(() =>
             {
-                QueueConfiguration.JSQueueThread.AssertIsOnThread();
+                QueueConfiguration.JavaScriptQueueThread.AssertOnThread();
 
                 var jsExecutor = _jsExecutorFactory();
 
@@ -127,9 +127,9 @@ namespace ReactNative.Bridge
                 return;
             }
 
-            QueueConfiguration.JSQueueThread.RunOnQueue(() =>
+            QueueConfiguration.JavaScriptQueueThread.RunOnQueue(() =>
             {
-                QueueConfiguration.JSQueueThread.AssertIsOnThread();
+                QueueConfiguration.JavaScriptQueueThread.AssertOnThread();
                 if (IsDisposed)
                 {
                     return;
@@ -144,9 +144,9 @@ namespace ReactNative.Bridge
 
         public /* TODO: internal? */ void InvokeFunction(int moduleId, int methodId, JArray arguments, string tracingName)
         {
-            QueueConfiguration.JSQueueThread.RunOnQueue(() =>
+            QueueConfiguration.JavaScriptQueueThread.RunOnQueue(() =>
             {
-                QueueConfiguration.JSQueueThread.AssertIsOnThread();
+                QueueConfiguration.JavaScriptQueueThread.AssertOnThread();
 
                 if (IsDisposed)
                 {
@@ -301,7 +301,7 @@ namespace ReactNative.Bridge
 
             public void Invoke(int moduleId, int methodId, JArray parameters)
             {
-                _parent.QueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
+                _parent.QueueConfiguration.NativeModulesQueueThread.AssertOnThread();
 
                 if (_parent.IsDisposed)
                 {
@@ -313,7 +313,7 @@ namespace ReactNative.Bridge
 
             public void OnBatchComplete()
             {
-                _parent.QueueConfiguration.NativeModulesQueueThread.AssertIsOnThread();
+                _parent.QueueConfiguration.NativeModulesQueueThread.AssertOnThread();
 
                 // The bridge may have been destroyed due to an exception
                 // during the batch. In that case native modules could be in a
