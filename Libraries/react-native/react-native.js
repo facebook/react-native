@@ -18,11 +18,14 @@ var ReactNative = {
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get Image() { return require('Image'); },
+  get ImageEditor() { return require('ImageEditor'); },
+  get ImageStore() { return require('ImageStore'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },
   get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
+  get PickerAndroid() { return require('PickerAndroid'); },
   get PickerIOS() { return require('PickerIOS'); },
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
@@ -32,6 +35,8 @@ var ReactNative = {
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
   get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
+  get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
+  get RefreshControl() { return require('RefreshControl'); },
   get SwitchAndroid() { return require('SwitchAndroid'); },
   get SwitchIOS() { return require('SwitchIOS'); },
   get TabBarIOS() { return require('TabBarIOS'); },
@@ -51,6 +56,7 @@ var ReactNative = {
   // APIs
   get ActionSheetIOS() { return require('ActionSheetIOS'); },
   get AdSupportIOS() { return require('AdSupportIOS'); },
+  get Alert() { return require('Alert'); },
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },
   get AppRegistry() { return require('AppRegistry'); },
@@ -85,6 +91,7 @@ var ReactNative = {
   get requireNativeComponent() { return require('requireNativeComponent'); },
 
   // Prop Types
+  get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
 
@@ -100,7 +107,7 @@ var ReactNative = {
     get createFragment() { return require('ReactFragment').create; },
     get update() { return require('update'); },
   },
-  
+
   // Note: this must be placed last to prevent eager
   // evaluation of the getter-wrapped submodules above
   ...require('React'),
@@ -108,11 +115,11 @@ var ReactNative = {
 
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactDefaultPerf'),
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactTestUtils'),
   });
 }

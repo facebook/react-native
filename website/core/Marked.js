@@ -811,13 +811,16 @@ Parser.prototype.tok = function() {
       return React.DOM.hr(null, null);
     }
     case 'heading': {
-      return Header(
-        {level: this.token.depth, toSlug: this.token.text},
-        this.inline.output(this.token.text)
+      return (
+        <Header
+          level={this.token.depth}
+          toSlug={this.token.text}>
+          {this.inline.output(this.token.text)}
+        </Header>
       );
     }
     case 'code': {
-      return Prism(null, this.token.text);
+      return <Prism>{this.token.text}</Prism>;
     }
     case 'table': {
       var table = []

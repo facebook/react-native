@@ -46,31 +46,6 @@ var ReactNativeBaseComponent = function(
 };
 
 /**
- * Generates and caches arrays of the form:
- *
- *    [0, 1, 2, 3]
- *    [0, 1, 2, 3, 4]
- *    [0, 1]
- *
- * @param {number} size Size of array to generate.
- * @return {Array<number>} Array with values that mirror the index.
- */
-var cachedIndexArray = function(size) {
-  var cachedResult = cachedIndexArray._cache[size];
-  if (!cachedResult) {
-    var arr = [];
-    for (var i = 0; i < size; i++) {
-      arr[i] = i;
-    }
-    cachedIndexArray._cache[size] = arr;
-    return arr;
-  } else {
-    return cachedResult;
-  }
-};
-cachedIndexArray._cache = {};
-
-/**
  * Mixin for containers that contain UIViews. NOTE: markup is rendered markup
  * which is a `viewID` ... see the return value for `mountComponent` !
  */
@@ -104,11 +79,11 @@ ReactNativeBaseComponent.Mixin = {
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
     if (mountImages.length) {
-      var indexes = cachedIndexArray(mountImages.length);
+      
       // TODO: Pool these per platform view class. Reusing the `mountImages`
       // array would likely be a jit deopt.
       var createdTags = [];
-      for (var i = 0; i < mountImages.length; i++) {
+      for (var i = 0, l = mountImages.length; i < l; i++) {
         var mountImage = mountImages[i];
         var childTag = mountImage.tag;
         var childID = mountImage.rootNodeID;
@@ -122,8 +97,7 @@ ReactNativeBaseComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      UIManager
-        .manageChildren(containerTag, null, null, createdTags, indexes, null);
+      UIManager.setChildren(containerTag, createdTags);
     }
   },
 

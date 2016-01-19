@@ -42,15 +42,6 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
 - (UIView *)view;
 
 /**
- * This method instantiates a native view using the props passed into the component.
- * This method should be used when you need to know about specific props in order to
- * initialize a view. By default, this just calls the -view method. Each prop will
- * still be set individually, after the view is created. Like the -view method,
- * -viewWithProps: should return a fresh instance each time it is called.
- */
-- (UIView *)viewWithProps:(NSDictionary<NSString *, id> *)props;
-
-/**
  * This method instantiates a shadow view to be managed by the module. If omitted,
  * an ordinary RCTShadowView instance will be created, which is typically fine for
  * most view types. As with the -view method, the -shadowView method should return

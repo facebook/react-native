@@ -5,7 +5,6 @@
 'use strict';
 
 jest
-  .dontMock('Map')
   .dontMock('NavigationTreeNode')
   .dontMock('invariant')
   .dontMock('immutable');

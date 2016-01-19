@@ -89,6 +89,13 @@ RCT_EXPORT_MODULE()
   [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
+RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
+{
+  callback(@[@{
+    @"height": @([UIApplication sharedApplication].statusBarFrame.size.height),
+  }]);
+}
+
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated)
 {

@@ -19,6 +19,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.AssertionException;
 import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 
@@ -26,7 +27,7 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
  * Encapsulates a Thread that has a {@link Looper} running on it that can accept Runnables.
  */
 @DoNotStrip
-/* package */ class MessageQueueThreadImpl implements MessageQueueThread {
+public class MessageQueueThreadImpl implements MessageQueueThread {
 
   private final String mName;
   private final Looper mLooper;
@@ -100,6 +101,7 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
    * Quits this queue's Looper. If that Looper was running on a different Thread than the current
    * Thread, also waits for the last message being processed to finish and the Thread to die.
    */
+  @Override
   public void quitSynchronous() {
     mIsFinished = true;
     mLooper.quit();
@@ -140,7 +142,25 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
       String name,
       QueueThreadExceptionHandler exceptionHandler) {
     Looper mainLooper = Looper.getMainLooper();
-    return new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
+    final MessageQueueThreadImpl mqt =
+        new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
+
+    // Ensure that the MQT is registered by the time this method returns
+    if (UiThreadUtil.isOnUiThread()) {
+      MessageQueueThreadRegistry.register(mqt);
+    } else {
+      final SimpleSettableFuture<Void> registrationFuture = new SimpleSettableFuture<>();
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              MessageQueueThreadRegistry.register(mqt);
+              registrationFuture.set(null);
+            }
+          });
+      registrationFuture.getOrThrow(5000, TimeUnit.MILLISECONDS);
+    }
+    return mqt;
   }
 
   /**
@@ -148,30 +168,29 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
    * running on it. Give it a name for easier debugging. When this method exits, the new
    * MessageQueueThreadImpl is ready to receive events.
    */
-  private static MessageQueueThreadImpl startNewBackgroundThread(
-      String name,
+  public static MessageQueueThreadImpl startNewBackgroundThread(
+      final String name,
       QueueThreadExceptionHandler exceptionHandler) {
-    final SimpleSettableFuture<Looper> simpleSettableFuture = new SimpleSettableFuture<>();
+    final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
+    final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
     Thread bgThread = new Thread(
         new Runnable() {
           @Override
           public void run() {
             Looper.prepare();
 
-            simpleSettableFuture.set(Looper.myLooper());
+            looperFuture.set(Looper.myLooper());
+            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow(5000, TimeUnit.MILLISECONDS));
 
             Looper.loop();
           }
         }, "mqt_" + name);
     bgThread.start();
 
-    try {
-      return new MessageQueueThreadImpl(
-          name,
-          simpleSettableFuture.get(5000, TimeUnit.MILLISECONDS),
-          exceptionHandler);
-    } catch (Throwable t) {
-      throw new RuntimeException(t);
-    }
+    Looper myLooper = looperFuture.getOrThrow(5000, TimeUnit.MILLISECONDS);
+    MessageQueueThreadImpl mqt = new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
+    mqtFuture.set(mqt);
+
+    return mqt;
   }
 }

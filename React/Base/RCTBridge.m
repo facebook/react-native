@@ -22,7 +22,7 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
-NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
+NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
@@ -87,6 +87,9 @@ BOOL RCTBridgeModuleClassIsRegistered(Class cls)
 }
 
 @implementation RCTBridge
+{
+  NSURL *_delegateBundleURL;
+}
 
 dispatch_queue_t RCTJSThread;
 
@@ -213,10 +216,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(__unused UIKeyCommand *command) {
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                                                        object:nil
-                                                                                      userInfo:nil];
-                                 }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                        object:nil
+                                                      userInfo:nil];
+  }];
 
 #endif
 }
@@ -256,7 +259,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainThread();
 
-  _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
+  // Only update bundleURL from delegate if delegate bundleURL has changed
+  NSURL *previousDelegateURL = _delegateBundleURL;
+  _delegateBundleURL = [self.delegate sourceURLForBridge:self];
+  if (_delegateBundleURL && ![_delegateBundleURL isEqual:previousDelegateURL]) {
+    _bundleURL = _delegateBundleURL;
+  }
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
@@ -304,6 +312,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @end
 
 @implementation RCTBridge(Deprecated)
+
+NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
 
 - (NSDictionary *)modules
 {

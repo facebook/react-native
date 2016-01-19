@@ -23,6 +23,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 {
   UIView *_legalLabel;
   CLLocationManager *_locationManager;
+  NSMutableArray<UIView *> *_reactSubviews;
 }
 
 - (instancetype)init
@@ -30,6 +31,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
   if ((self = [super init])) {
 
     _hasStartedRendering = NO;
+    _reactSubviews = [NSMutableArray new];
 
     // Find Apple link label
     for (UIView *subview in self.subviews) {
@@ -47,6 +49,21 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 - (void)dealloc
 {
   [_regionChangeObserveTimer invalidate];
+}
+
+- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+{
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(UIView *)subview
+{
+  [_reactSubviews removeObject:subview];
+}
+
+- (NSArray<UIView *> *)reactSubviews
+{
+  return _reactSubviews;
 }
 
 - (void)layoutSubviews
@@ -83,10 +100,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       }
     }
     super.showsUserLocation = showsUserLocation;
-
-    // If it needs to show user location, force map view centered
-    // on user's current location on user location updates
-    _followUserLocation = showsUserLocation;
   }
 }
 
@@ -111,7 +124,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
 // TODO: this doesn't preserve order. Should it? If so we should change the
 // algorithm. If not, it would be more efficient to use an NSSet
-- (void)setAnnotations:(RCTMapAnnotationArray *)annotations
+- (void)setAnnotations:(NSArray<RCTMapAnnotation *> *)annotations
 {
   NSMutableArray<NSString *> *newAnnotationIDs = [NSMutableArray new];
   NSMutableArray<RCTMapAnnotation *> *annotationsToDelete = [NSMutableArray new];
@@ -154,7 +167,7 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
 
 // TODO: this doesn't preserve order. Should it? If so we should change the
 // algorithm. If not, it would be more efficient to use an NSSet
-- (void)setOverlays:(RCTMapOverlayArray *)overlays
+- (void)setOverlays:(NSArray<RCTMapOverlay *> *)overlays
 {
   NSMutableArray *newOverlayIDs = [NSMutableArray new];
   NSMutableArray *overlaysToDelete = [NSMutableArray new];

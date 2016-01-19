@@ -163,10 +163,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // we temporarily block all textShouldChange events so they are not applied.
   _blockTextShouldChange = YES;
 
-  NSRange range = _textView.selectedRange;
+  UITextRange *selection = _textView.selectedTextRange;
+  NSInteger oldTextLength = _textView.attributedText.length;
+
   _textView.attributedText = _pendingAttributedText;
   _pendingAttributedText = nil;
-  _textView.selectedRange = range;
+
+  if (selection.empty) {
+    // maintain cursor position relative to the end of the old text
+    NSInteger start = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:selection.start];
+    NSInteger offsetFromEnd = oldTextLength - start;
+    NSInteger newOffset = _textView.attributedText.length - offsetFromEnd;
+    UITextPosition *position = [_textView positionFromPosition:_textView.beginningOfDocument offset:newOffset];
+    _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
+  }
+
   [_textView layoutIfNeeded];
 
   [self _setPlaceholderVisibility];
@@ -341,8 +352,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _previousSelectionRange = textView.selectedTextRange;
 
     UITextRange *selection = textView.selectedTextRange;
-    NSInteger start = [textView offsetFromPosition:[textView beginningOfDocument] toPosition:selection.start];
-    NSInteger end = [textView offsetFromPosition:[textView beginningOfDocument] toPosition:selection.end];
+    NSInteger start = [textView offsetFromPosition:textView.beginningOfDocument toPosition:selection.start];
+    NSInteger end = [textView offsetFromPosition:textView.beginningOfDocument toPosition:selection.end];
     _onSelectionChange(@{
       @"selection": @{
         @"start": @(start),
@@ -357,9 +368,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
   if (eventLag == 0 && ![text isEqualToString:_textView.text]) {
     UITextRange *selection = _textView.selectedTextRange;
+    NSInteger oldTextLength = _textView.text.length;
+
     _textView.text = text;
+
+    if (selection.empty) {
+      // maintain cursor position relative to the end of the old text
+      NSInteger start = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:selection.start];
+      NSInteger offsetFromEnd = oldTextLength - start;
+      NSInteger newOffset = text.length - offsetFromEnd;
+      UITextPosition *position = [_textView positionFromPosition:_textView.beginningOfDocument offset:newOffset];
+      _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
+    }
+
     [self _setPlaceholderVisibility];
-    _textView.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
+    [self updateContentSize]; //keep the text wrapping when the length of
+    //the textline has been extended longer than the length of textinputView
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }

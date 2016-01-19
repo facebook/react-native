@@ -2,20 +2,28 @@
 
 #pragma once
 
+#include <memory>
+#include <unordered_map>
 #include <JavaScriptCore/JSContextRef.h>
 #include "Executor.h"
 #include "JSCHelpers.h"
+#include "JSCWebWorker.h"
 
 namespace facebook {
 namespace react {
+
+class JMessageQueueThread;
 
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override;
 };
 
-class JSCExecutor : public JSExecutor {
+class JSCExecutor : public JSExecutor, public JSCWebWorkerOwner {
 public:
+  /**
+   * Should be invoked from the JS thread.
+   */
   explicit JSCExecutor(FlushImmediateCallback flushImmediateCallback);
   ~JSCExecutor() override;
 
@@ -41,10 +49,42 @@ public:
 
   void flushQueueImmediate(std::string queueJSON);
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
+  virtual void onMessageReceived(int workerId, const std::string& message) override;
+  virtual JSGlobalContextRef getContext() override;
+  virtual std::shared_ptr<JMessageQueueThread> getMessageQueueThread() override;
 
 private:
   JSGlobalContextRef m_context;
   FlushImmediateCallback m_flushImmediateCallback;
+  std::unordered_map<int, JSCWebWorker> m_webWorkers;
+  std::unordered_map<int, Object> m_webWorkerJSObjs;
+  std::shared_ptr<JMessageQueueThread> m_messageQueueThread;
+
+  int addWebWorker(const std::string& script, JSValueRef workerRef);
+  void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);
+  void terminateWebWorker(int worker);
+
+  static JSValueRef nativeStartWorker(
+      JSContextRef ctx,
+      JSObjectRef function,
+      JSObjectRef thisObject,
+      size_t argumentCount,
+      const JSValueRef arguments[],
+      JSValueRef *exception);
+  static JSValueRef nativePostMessageToWorker(
+      JSContextRef ctx,
+      JSObjectRef function,
+      JSObjectRef thisObject,
+      size_t argumentCount,
+      const JSValueRef arguments[],
+      JSValueRef *exception);
+  static JSValueRef nativeTerminateWorker(
+      JSContextRef ctx,
+      JSObjectRef function,
+      JSObjectRef thisObject,
+      size_t argumentCount,
+      const JSValueRef arguments[],
+      JSValueRef *exception);
 };
 
 } }

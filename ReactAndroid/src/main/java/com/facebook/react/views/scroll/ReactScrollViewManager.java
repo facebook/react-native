@@ -15,7 +15,7 @@ import java.util.Map;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
@@ -52,6 +52,19 @@ public class ReactScrollViewManager
     view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
+  /**
+   * Computing momentum events is potentially expensive since we post a runnable on the UI thread
+   * to see when it is done.  We only do that if {@param sendMomentumEvents} is set to true.  This
+   * is handled automatically in js by checking if there is a listener on the momentum events.
+   *
+   * @param view
+   * @param sendMomentumEvents
+   */
+  @ReactProp(name = "sendMomentumEvents")
+  public void setSendMomentumEvents(ReactScrollView view, boolean sendMomentumEvents) {
+    view.setSendMomentumEvents(sendMomentumEvents);
+  }
+
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
     return ReactScrollViewCommandHelper.getCommandsMap();
@@ -86,12 +99,12 @@ public class ReactScrollViewManager
 
   public static Map createExportedCustomDirectEventTypeConstants() {
     return MapBuilder.builder()
-        .put(ScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onScroll"))
-        .put("topScrollBeginDrag", MapBuilder.of("registrationName", "onScrollBeginDrag"))
-        .put("topScrollEndDrag", MapBuilder.of("registrationName", "onScrollEndDrag"))
-        .put("topScrollAnimationEnd", MapBuilder.of("registrationName", "onScrollAnimationEnd"))
-        .put("topMomentumScrollBegin", MapBuilder.of("registrationName", "onMomentumScrollBegin"))
-        .put("topMomentumScrollEnd", MapBuilder.of("registrationName", "onMomentumScrollEnd"))
+        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
+        .put(ScrollEventType.BEGIN_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollBeginDrag"))
+        .put(ScrollEventType.END_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollEndDrag"))
+        .put(ScrollEventType.ANIMATION_END.getJSEventName(), MapBuilder.of("registrationName", "onScrollAnimationEnd"))
+        .put(ScrollEventType.MOMENTUM_BEGIN.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
+        .put(ScrollEventType.MOMENTUM_END.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
   }
 }

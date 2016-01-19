@@ -7,7 +7,7 @@ permalink: docs/android-setup.html
 next: linux-windows-support
 ---
 
-This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.  
+This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
 
 ### Install Git
 
@@ -17,8 +17,8 @@ This guide describes basic steps of the Android development environment setup th
 
   - **On Linux**, install Git [via your package manager](https://git-scm.com/download/linux).
 
-  - **On Windows**, download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.  
-  
+  - **On Windows**, download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.
+
 ### Install the Android SDK (unless you have it)
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
@@ -35,11 +35,11 @@ __IMPORTANT__: Make sure the `ANDROID_HOME` environment variable points to your 
         # If you installed the SDK via Homebrew, otherwise ~/Library/Android/sdk
         export ANDROID_HOME=/usr/local/opt/android-sdk
   - **On Linux**, add this to your `~/.bashrc`, `~/.bash_profile` or whatever your shell uses:
-        
+
         export ANDROID_HOME=<path_where_you_unpacked_android_sdk>
 
-  - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`   
-   
+  - **On Windows**, go to `Control Panel` -> `System and Security` -> `System` -> `Change settings` -> `Advanced` -> `Environment variables` -> `New`
+
 __NOTE__: You need to restart the Command Prompt (Windows) / Terminal Emulator (Mac OS X, Linux) to apply the new Environment variables.
 
 
@@ -77,4 +77,21 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
   1. Run `android avd` and click on **Create...**
   ![Create AVD dialog](/react-native/img/CreateAVD.png)
   2. With the new AVD selected, click `Start...`
-5. To bring up the developer menu press F2
+5. To bring up the developer menu press F2 (or install [Frappé](http://getfrappe.com))
+
+### Windows Hyper-V Alternative
+
+The [Visual Studio Emulator for Android](https://www.visualstudio.com/en-us/features/msft-android-emulator-vs.aspx) is a free android emulator that is hardware accelerated via Hyper-V. It doesn't require you to install Visual Studio at all.
+
+To use it with react-native you just have to add a key and value to your registry:
+
+1. Open the Run Command (Windows+R)
+2. Enter `regedit.exe`
+3. In the Registry Editor navigate to `HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Android SDK Tools`
+4. Right Click on `Android SDK Tools` and choose `New > String Value`
+5. Set the name to `Path`
+6. Double Click the new `Path` Key and set the value to `C:\Program Files\Android\sdk`. The path value might be different on your machine.
+
+You will also need to run the command `adb reverse tcp:8081 tcp:8081` with this emulator.
+
+Then restart the emulator and when it runs you can just do `react-native run-android` as usual.

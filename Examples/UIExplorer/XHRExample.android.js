@@ -17,7 +17,6 @@
 
 var React = require('react-native');
 var {
-  PixelRatio,
   ProgressBarAndroid,
   StyleSheet,
   Text,
@@ -28,9 +27,10 @@ var {
 
 var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleCookies = require('./XHRExampleCookies');
+var XHRExampleFetch = require('./XHRExampleFetch');
 
 
-// TODO t7093728 This is a simlified XHRExample.ios.js.
+// TODO t7093728 This is a simplified XHRExample.ios.js.
 // Once we have Camera roll, Toast, Intent (for opening URLs)
 // we should make this consistent with iOS.
 
@@ -282,6 +282,11 @@ exports.examples = [{
     return <FormUploader/>;
   }
 }, {
+  title: 'Fetch Test',
+  render() {
+    return <XHRExampleFetch/>;
+  }
+}, {
   title: 'Headers',
   render() {
     return <XHRExampleHeaders/>;
@@ -306,7 +311,7 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 8,
     alignItems: 'center',
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'grey',
   },
   textButton: {
@@ -320,7 +325,6 @@ var styles = StyleSheet.create({
     borderRadius: 3,
     borderColor: 'grey',
     borderWidth: 1,
-    height: 30,
     paddingLeft: 8,
   },
   equalSign: {

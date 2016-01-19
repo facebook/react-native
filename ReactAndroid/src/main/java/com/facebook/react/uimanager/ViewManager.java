@@ -16,30 +16,22 @@ import java.util.Map;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.touch.CatalystInterceptingViewGroup;
 import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
  * responsible for creating and updating CSSNode subclasses used for calculating position and size
  * for the corresponding native view.
  */
+@ReactPropertyHolder
 public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
 
   public final void updateProperties(T viewToUpdate, CatalystStylesDiffMap props) {
-    Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
-        ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(getClass());
-    ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
-      if (setter != null) {
-        setter.updateViewProp(this, viewToUpdate, props);
-      }
-    }
+    ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }
 
@@ -92,7 +84,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
    * Called when view is detached from view hierarchy and allows for some additional cleanup by
    * the {@link ViewManager} subclass.
    */
-  public void onDropViewInstance(ThemedReactContext reactContext, T view) {
+  public void onDropViewInstance(T view) {
   }
 
   /**
@@ -204,6 +196,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
   }
 
   public Map<String, String> getNativeProps() {
-    return ViewManagersPropertyCache.getNativePropsForView(getClass(), getShadowNodeClass());
+    return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 }

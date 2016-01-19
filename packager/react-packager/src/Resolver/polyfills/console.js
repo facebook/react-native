@@ -474,8 +474,14 @@
       trace: getNativeLogFunction(LOG_LEVELS.trace),
       table: consoleTablePolyfill
     };
-    descriptor.value = console;
-    Object.defineProperty(global, 'console', descriptor);
+
+    // don't reassign to the original descriptor. breaks on ios7
+    Object.defineProperty(global, 'console', {
+      value: console,
+      configurable: descriptor ? descriptor.configurable : true,
+      enumerable: descriptor ? descriptor.enumerable : true,
+      writable: descriptor ? descriptor.writable : true,
+    });
 
     // If available, also call the original `console` method since that is
     // sometimes useful. Ex: on OS X, this will let you see rich output in

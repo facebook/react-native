@@ -9,22 +9,56 @@
 
 package com.facebook.react.views.scroll;
 
+import javax.annotation.Nullable;
+
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.views.view.ReactClippingViewGroup;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
-public class ReactHorizontalScrollView extends HorizontalScrollView {
+public class ReactHorizontalScrollView extends HorizontalScrollView implements
+    ReactClippingViewGroup {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
+  private boolean mRemoveClippedSubviews;
+  private boolean mSendMomentumEvents;
+  private boolean mDragging;
+  private boolean mFlinging;
+  private boolean mDoneFlinging;
+
+  private @Nullable Rect mClippingRect;
+
   public ReactHorizontalScrollView(Context context) {
     super(context);
+  }
+
+  @Override
+  public void setRemoveClippedSubviews(boolean removeClippedSubviews) {
+    if (removeClippedSubviews && mClippingRect == null) {
+      mClippingRect = new Rect();
+    }
+    mRemoveClippedSubviews = removeClippedSubviews;
+    updateClippingRect();
+  }
+
+  @Override
+  public boolean getRemoveClippedSubviews() {
+    return mRemoveClippedSubviews;
+  }
+
+  public void setSendMomentumEvents(boolean sendMomentumEvents) {
+    mSendMomentumEvents = sendMomentumEvents;
   }
 
   @Override
@@ -47,7 +81,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
     super.onScrollChanged(x, y, oldX, oldY);
 
     if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
-      ReactScrollViewHelper.emitScrollEvent(this, x, y);
+      if (mRemoveClippedSubviews) {
+        updateClippingRect();
+      }
+
+      if (mFlinging) {
+        mDoneFlinging = false;
+      }
+
+      ReactScrollViewHelper.emitScrollEvent(this);
     }
   }
 
@@ -55,9 +97,72 @@ public class ReactHorizontalScrollView extends HorizontalScrollView {
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
+      ReactScrollViewHelper.emitScrollBeginDragEvent(this);
+      mDragging = true;
       return true;
     }
 
     return false;
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    int action = ev.getAction() & MotionEvent.ACTION_MASK;
+    if (action == MotionEvent.ACTION_UP && mDragging) {
+      ReactScrollViewHelper.emitScrollEndDragEvent(this);
+      mDragging = false;
+    }
+    return super.onTouchEvent(ev);
+  }
+
+  @Override
+  public void fling(int velocityX) {
+    super.fling(velocityX);
+    if (mSendMomentumEvents) {
+      mFlinging = true;
+      ReactScrollViewHelper.emitScrollMomentumBeginEvent(this);
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          if (mDoneFlinging) {
+            mFlinging = false;
+            ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
+          } else {
+            mDoneFlinging = true;
+            ReactHorizontalScrollView.this.postOnAnimationDelayed(this, ReactScrollViewHelper.MOMENTUM_DELAY);
+          }
+        }
+      };
+      postOnAnimationDelayed(r, ReactScrollViewHelper.MOMENTUM_DELAY);
+    }
+  }
+
+
+  @Override
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    super.onSizeChanged(w, h, oldw, oldh);
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
+  }
+
+  @Override
+  public void updateClippingRect() {
+    if (!mRemoveClippedSubviews) {
+      return;
+    }
+
+    Assertions.assertNotNull(mClippingRect);
+
+    ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
+    View contentView = getChildAt(0);
+    if (contentView instanceof ReactClippingViewGroup) {
+      ((ReactClippingViewGroup) contentView).updateClippingRect();
+    }
+  }
+
+  @Override
+  public void getClippingRect(Rect outClippingRect) {
+    outClippingRect.set(Assertions.assertNotNull(mClippingRect));
   }
 }

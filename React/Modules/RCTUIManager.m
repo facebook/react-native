@@ -16,12 +16,15 @@
 #import "RCTAnimationType.h"
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTComponent.h"
 #import "RCTComponentData.h"
 #import "RCTConvert.h"
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTModuleData.h"
+#import "RCTModuleMethod.h"
 #import "RCTProfile.h"
 #import "RCTRootView.h"
 #import "RCTRootViewInternal.h"
@@ -347,7 +350,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRegisterRootViewNotification
                                                       object:self
-                                                    userInfo:@{ RCTUIManagerRootViewKey: rootView }];
+                                                    userInfo:@{RCTUIManagerRootViewKey: rootView}];
 }
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag
@@ -553,7 +556,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
-        if (callback && completionsCalled == frames.count - 1) {
+        if (callback && completionsCalled == frames.count) {
           callback(@[@(finished)]);
         }
       };
@@ -695,7 +698,7 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTUIManagerDidRemoveRootViewNotification
                                                         object:uiManager
-                                                      userInfo:@{ RCTUIManagerRootViewKey: rootView }];
+                                                      userInfo:@{RCTUIManagerRootViewKey: rootView}];
   }];
 }
 
@@ -718,6 +721,33 @@ RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
       addChildReactTags:addTags
           addAtIndices:removeAtIndices
         removeAtIndices:removeAtIndices];
+}
+
+RCT_EXPORT_METHOD(setChildren:(nonnull NSNumber *)containerTag
+                  reactTags:(NSArray<NSNumber *> *)reactTags)
+{
+  RCTSetChildren(containerTag, reactTags,
+                 (NSDictionary<NSNumber *, id<RCTComponent>> *)_shadowViewRegistry);
+
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+
+    RCTSetChildren(containerTag, reactTags,
+                   (NSDictionary<NSNumber *, id<RCTComponent>> *)viewRegistry);
+  }];
+}
+
+static void RCTSetChildren(NSNumber *containerTag,
+                           NSArray<NSNumber *> *reactTags,
+                           NSDictionary<NSNumber *, id<RCTComponent>> *registry)
+{
+  id<RCTComponent> container = registry[containerTag];
+  NSInteger index = 0;
+  for (NSNumber *reactTag in reactTags) {
+    id<RCTComponent> view = registry[reactTag];
+    if (view) {
+      [container insertReactSubview:view atIndex:index++];
+    }
+  }
 }
 
 RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerReactTag
@@ -813,7 +843,7 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
   UIColor *backgroundColor = shadowView.backgroundColor;
 
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    UIView *view = [componentData createViewWithTag:reactTag props:props];
+    UIView *view = [componentData createViewWithTag:reactTag];
     if (view) {
       if ([view respondsToSelector:@selector(setBackgroundColor:)]) {
         ((UIView *)view).backgroundColor = backgroundColor;
@@ -878,6 +908,20 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
       @(frame.size.height),
     ]);
   }];
+}
+
+RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
+                  commandID:(NSInteger)commandID
+                  commandArgs:(NSArray<id> *)commandArgs)
+{
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
+  Class managerClass = componentData.managerClass;
+  RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
+  id<RCTBridgeMethod> method = moduleData.methods[commandID];
+
+  NSArray *args = [@[reactTag] arrayByAddingObjectsFromArray:commandArgs];
+  [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
 }
 
 - (void)partialBatchDidFlush

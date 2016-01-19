@@ -94,7 +94,8 @@ var WebViewExample = React.createClass({
           automaticallyAdjustContentInsets={false}
           style={styles.webView}
           url={this.state.url}
-          javaScriptEnabledAndroid={true}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
           onNavigationStateChange={this.onNavigationStateChange}
           onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
           startInLoadingState={true}
@@ -148,7 +149,7 @@ var WebViewExample = React.createClass({
         url: url,
       });
     }
-    // dismiss keyoard
+    // dismiss keyboard
     this.refs[TEXT_INPUT_REF].blur();
   },
 

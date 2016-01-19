@@ -31,6 +31,7 @@ var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
+var processColor = require('processColor');
 
 var PropTypes = React.PropTypes;
 
@@ -184,7 +185,7 @@ var ScrollView = React.createClass({
     minimumZoomScale: PropTypes.number,
     /**
      * Fires at most once per frame during scrolling. The frequency of the
-     * events can be contolled using the `scrollEventThrottle` prop.
+     * events can be controlled using the `scrollEventThrottle` prop.
      */
     onScroll: PropTypes.func,
     /**
@@ -234,6 +235,13 @@ var ScrollView = React.createClass({
      * @platform ios
      */
     scrollsToTop: PropTypes.bool,
+    /**
+     * When true, momentum events will be sent from Android
+     * This is internal and set automatically by the framework if you have
+     * onMomentumScrollBegin or onMomentumScrollEnd set on your ScrollView
+     * @platform android
+     */
+    sendMomentumEvents: PropTypes.bool,
     /**
      * When true, shows a horizontal scroll indicator.
      */
@@ -287,19 +295,18 @@ var ScrollView = React.createClass({
     zoomScale: PropTypes.number,
 
     /**
-     * When defined, displays a UIRefreshControl.
-     * Invoked with a function to stop refreshing when the UIRefreshControl is animating.
+     * A RefreshControl component, used to provide pull-to-refresh
+     * functionality for the ScrollView.
      *
-     * ```
-     * (endRefreshing) => {
-     *      endRefreshing();
-     * }
-     * ```
-     *
+     * See [RefreshControl](http://facebook.github.io/react-native/docs/refreshcontrol.html).
+     */
+    refreshControl: PropTypes.element,
+
+    /**
+     * Deprecated - use `refreshControl` property instead.
      * @platform ios
      */
     onRefreshStart: PropTypes.func,
-
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -332,17 +339,17 @@ var ScrollView = React.createClass({
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY?: number, destX?: number) {
+  scrollTo: function(destY: number = 0, destX: number = 0, animated: boolean = true) {
     // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
+    this.getScrollResponder().scrollResponderScrollTo(destX, destY, animated);
   },
 
-  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
-    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollWithouthAnimationTo(
-      destX || 0,
-      destY || 0,
-    );
+  /**
+   * Deprecated, do not use.
+   */
+  scrollWithoutAnimationTo: function(destY: number = 0, destX: number = 0) {
+    console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
+    this.scrollTo(destX, destY, false);
   },
 
   handleScroll: function(e: Object) {
@@ -434,14 +441,17 @@ var ScrollView = React.createClass({
       onResponderTerminate: this.scrollResponderHandleTerminate,
       onResponderRelease: this.scrollResponderHandleResponderRelease,
       onResponderReject: this.scrollResponderHandleResponderReject,
+      sendMomentumEvents: (this.props.onMomentumScrollBegin || this.props.onMomentumScrollEnd) ? true : false,
     };
 
     var onRefreshStart = this.props.onRefreshStart;
-    // this is necessary because if we set it on props, even when empty,
-    // it'll trigger the default pull-to-refresh behaviour on native.
-    props.onRefreshStart = onRefreshStart
-      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
-      : null;
+    if (onRefreshStart) {
+      console.warn('onRefreshStart is deprecated. Use the refreshControl prop instead.');
+      // this is necessary because if we set it on props, even when empty,
+      // it'll trigger the default pull-to-refresh behavior on native.
+      props.onRefreshStart =
+        function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
+    }
 
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
@@ -458,6 +468,33 @@ var ScrollView = React.createClass({
       'ScrollViewClass must not be undefined'
     );
 
+    var refreshControl = this.props.refreshControl;
+    if (refreshControl) {
+      if (Platform.OS === 'ios') {
+        // On iOS the RefreshControl is a child of the ScrollView.
+        return (
+          <ScrollViewClass {...props} ref={SCROLLVIEW}>
+            {refreshControl}
+            {contentContainer}
+          </ScrollViewClass>
+        );
+      } else if (Platform.OS === 'android') {
+        // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
+        // Since the ScrollView is wrapped add the style props to the
+        // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
+        var refreshProps = refreshControl.props;
+        return (
+          <AndroidSwipeRefreshLayout
+            {...refreshProps}
+            colors={refreshProps.colors && refreshProps.colors.map(processColor)}
+            style={props.style}>
+            <ScrollViewClass {...props} style={styles.base} ref={SCROLLVIEW}>
+              {contentContainer}
+            </ScrollViewClass>
+          </AndroidSwipeRefreshLayout>
+        );
+      }
+    }
     return (
       <ScrollViewClass {...props} ref={SCROLLVIEW}>
         {contentContainer}
@@ -511,6 +548,7 @@ if (Platform.OS === 'android') {
     'AndroidHorizontalScrollView',
     ScrollView
   );
+  var AndroidSwipeRefreshLayout = requireNativeComponent('AndroidSwipeRefreshLayout');
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }

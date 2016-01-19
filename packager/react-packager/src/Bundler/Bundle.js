@@ -14,7 +14,7 @@ const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
 const Activity = require('../Activity');
 
-const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
+const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
 const minifyCode = code =>
   UglifyJS.minify(code, {fromString: true, ascii_only: true}).code;
@@ -56,6 +56,10 @@ class Bundle {
 
   getModules() {
     return this._modules;
+  }
+
+  getMainModuleId() {
+    return this._mainModuleId;
   }
 
   setNumPrependedModules(n) {
@@ -105,24 +109,6 @@ class Bundle {
     }
 
     this._source = _.pluck(this._modules, 'code').join('\n');
-
-    if (dev) {
-      return this._source;
-    }
-
-    const wpoActivity = Activity.startEvent('Whole Program Optimisations');
-    const result = require('babel-core').transform(this._source, {
-      retainLines: true,
-      compact: true,
-      plugins: require('../transforms/whole-program-optimisations'),
-      inputSourceMap: this.getSourceMap(),
-    });
-
-    this._source = result.code;
-    this._sourceMap = result.map;
-
-    Activity.endEvent(wpoActivity);
-
     return this._source;
   }
 
@@ -183,13 +169,29 @@ class Bundle {
       return this._minifiedSourceAndMap;
     }
 
-    const source = this._getSource(dev);
+    let source = this._getSource(dev);
+    let map = this.getSourceMap();
+
+    if (!dev) {
+      const wpoActivity = Activity.startEvent('Whole Program Optimisations');
+      const wpoResult = require('babel-core').transform(source, {
+        retainLines: true,
+        compact: true,
+        plugins: require('../transforms/whole-program-optimisations'),
+        inputSourceMap: map,
+      });
+      Activity.endEvent(wpoActivity);
+
+      source = wpoResult.code;
+      map = wpoResult.map;
+    }
+
     try {
       const minifyActivity = Activity.startEvent('minify');
       this._minifiedSourceAndMap = UglifyJS.minify(source, {
         fromString: true,
-        outSourceMap: 'bundle.js',
-        inSourceMap: this.getSourceMap(),
+        outSourceMap: this._sourceMapUrl,
+        inSourceMap: map,
         output: {ascii_only: true},
       });
       Activity.endEvent(minifyActivity);

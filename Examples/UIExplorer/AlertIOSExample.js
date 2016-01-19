@@ -24,77 +24,15 @@ var {
   AlertIOS,
 } = React;
 
+var { SimpleAlertExampleBlock } = require('./AlertExample');
+
 exports.framework = 'React';
 exports.title = 'AlertIOS';
 exports.description = 'iOS alerts and action sheets';
 exports.examples = [{
   title: 'Alerts',
   render() {
-    return (
-      <View>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            'My Alert Msg'
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with message and default button</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            null,
-            [
-              {text: 'Button', onPress: () => console.log('Button Pressed!')},
-            ]
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with only one button</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            'My Alert Msg',
-            [
-              {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
-              {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
-            ]
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with two buttons</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            null,
-            [
-              {text: 'Foo', onPress: () => console.log('Foo Pressed!')},
-              {text: 'Bar', onPress: () => console.log('Bar Pressed!')},
-              {text: 'Baz', onPress: () => console.log('Baz Pressed!')},
-            ]
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with 3 buttons</Text>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.wrapper}
-          onPress={() => AlertIOS.alert(
-            'Foo Title',
-            'My Alert Msg',
-            '..............'.split('').map((dot, index) => ({
-              text: 'Button ' + index,
-              onPress: () => console.log('Pressed ' + index)
-            }))
-          )}>
-          <View style={styles.button}>
-            <Text>Alert with too many buttons</Text>
-          </View>
-        </TouchableHighlight>
-      </View>
-    );
+    return <SimpleAlertExampleBlock />;
   }
 },
 {
@@ -108,9 +46,8 @@ exports.examples = [{
             'Hello World',
             null,
             [
-              {text: 'OK', onPress: (text) => console.log('OK pressed')},
-            ],
-            'default'
+              {text: 'OK', onPress: (text) => console.log('OK pressed'), type: 'default'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -118,7 +55,7 @@ exports.examples = [{
               {'default'}
             </Text>
           </View>
-          
+
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
@@ -126,9 +63,9 @@ exports.examples = [{
             'Plain Text Entry',
             null,
             [
-              {text: 'Submit', onPress: (text) => console.log('Text: ' + text)},
-            ],
-            'plain-text'
+              {text: 'Submit', onPress: (text) => console.log('Text: ' + text), type: 'plain-text'},
+              {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -136,7 +73,7 @@ exports.examples = [{
               plain-text
             </Text>
           </View>
-          
+
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
@@ -144,9 +81,9 @@ exports.examples = [{
             'Secure Text Entry',
             null,
             [
-              {text: 'Submit', onPress: (text) => console.log('Password: ' + text)},
-            ],
-            'secure-text'
+              {text: 'Submit', onPress: (text) => console.log('Password: ' + text), type: 'secure-text'},
+              {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -154,7 +91,7 @@ exports.examples = [{
               secure-text
             </Text>
           </View>
-          
+
         </TouchableHighlight>
         <TouchableHighlight
           style={styles.wrapper}
@@ -162,9 +99,9 @@ exports.examples = [{
             'Login & Password',
             null,
             [
-              {text: 'Submit', onPress: (details) => console.log('Login: ' + details.login + '; Password: ' + details.password)},
-            ],
-            'login-password'
+              {text: 'Submit', onPress: (details) => console.log('Login: ' + details.login + '; Password: ' + details.password), type: 'login-password'},
+              {text: 'Cancel', onPress: () => console.log('Cancel'), style: 'cancel'}
+            ]
           )}>
 
           <View style={styles.button}>
@@ -172,7 +109,7 @@ exports.examples = [{
               login-password
             </Text>
           </View>
-          
+
         </TouchableHighlight>
       </View>
     );
@@ -181,7 +118,7 @@ exports.examples = [{
 {
   title: 'Prompt',
   render(): React.Component {
-    return <PromptExample />
+    return <PromptExample />;
   }
 }];
 

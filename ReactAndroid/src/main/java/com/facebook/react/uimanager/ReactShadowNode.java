@@ -12,12 +12,10 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -42,6 +40,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
  * children (e.g. {@link #getNativeChildCount()}). See {@link NativeViewHierarchyOptimizer} for more
  * information.
  */
+@ReactPropertyHolder
 public class ReactShadowNode extends CSSNode {
 
   private int mReactTag;
@@ -170,17 +169,7 @@ public class ReactShadowNode extends CSSNode {
   }
 
   public final void updateProperties(CatalystStylesDiffMap props) {
-    Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
-        ViewManagersPropertyCache.getNativePropSettersForShadowNodeClass(getClass());
-    ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
-      if (setter != null) {
-        setter.updateShadowNodeProp(this, props);
-      }
-    }
+    ViewManagerPropertyUpdater.updateProps(this, props);
     onAfterUpdateTransaction();
   }
 
@@ -256,7 +245,7 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
@@ -264,7 +253,7 @@ public class ReactShadowNode extends CSSNode {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
   }
 
-  /* package */ boolean shouldNotifyOnLayout() {
+  public boolean shouldNotifyOnLayout() {
     return mShouldNotifyOnLayout;
   }
 

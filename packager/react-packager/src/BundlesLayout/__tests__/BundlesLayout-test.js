@@ -14,7 +14,7 @@ jest.dontMock('../index')
 var Promise = require('promise');
 var BundlesLayout = require('../index');
 var Resolver = require('../../Resolver');
-var loadCacheSync = require('../../lib/loadCacheSync');
+var loadCacheSync = require('../../DependencyResolver/Cache/lib/loadCacheSync');
 
 describe('BundlesLayout', () => {
   function newBundlesLayout(options) {

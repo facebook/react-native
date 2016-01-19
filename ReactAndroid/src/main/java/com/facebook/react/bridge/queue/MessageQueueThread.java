@@ -43,4 +43,11 @@ public interface MessageQueueThread {
    * {@link AssertionError}) if the assertion fails.
    */
   void assertIsOnThread();
+
+  /**
+   * Quits this MessageQueueThread. If called from this MessageQueueThread, this will be the last
+   * thing the thread runs. If called from a separate thread, this will block until the thread can
+   * be quit and joined.
+   */
+  void quitSynchronous();
 }

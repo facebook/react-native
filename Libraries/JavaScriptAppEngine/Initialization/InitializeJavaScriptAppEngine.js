@@ -117,15 +117,11 @@ function setUpTimers() {
 }
 
 function setUpAlert() {
-  var RCTAlertManager = require('NativeModules').AlertManager;
   if (!GLOBAL.alert) {
     GLOBAL.alert = function(text) {
-      var alertOpts = {
-        title: 'Alert',
-        message: '' + text,
-        buttons: [{'cancel': 'OK'}],
-      };
-      RCTAlertManager.alertWithArgs(alertOpts, function () {});
+      // Require Alert on demand. Requiring it too early can lead to issues
+      // with things like Platform not being fully initialized.
+      require('Alert').alert('Alert', '' + text);
     };
   }
 }
@@ -216,3 +212,8 @@ if (__DEV__) {
 }
 require('RCTDeviceEventEmitter');
 require('PerformanceLogger');
+
+if (__DEV__) {
+  // include this transform and it's dependencies on the bundle on dev mode
+  require('react-transform-hmr');
+}

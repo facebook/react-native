@@ -19,6 +19,7 @@ import android.app.Application;
 import android.content.Intent;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -159,6 +160,7 @@ public abstract class ReactInstanceManager {
     protected boolean mUseDeveloperSupport;
     protected @Nullable LifecycleState mInitialLifecycleState;
     protected @Nullable UIImplementationProvider mUIImplementationProvider;
+    protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
 
     protected Builder() {
     }
@@ -184,7 +186,7 @@ public abstract class ReactInstanceManager {
     /**
      * Path to the JS bundle file to be loaded from the file system.
      *
-     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle}
+     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle"}
      */
     public Builder setJSBundleFile(String jsBundleFile) {
       mJSBundleFile = jsBundleFile;
@@ -243,6 +245,16 @@ public abstract class ReactInstanceManager {
     }
 
     /**
+     * Set the exception handler for all native module calls. If not set, the default
+     * {@link DevSupportManager} will be used, which shows a redbox in dev mode and rethrows
+     * (crashes the app) in prod mode.
+     */
+    public Builder setNativeModuleCallExceptionHandler(NativeModuleCallExceptionHandler handler) {
+      mNativeModuleCallExceptionHandler = handler;
+      return this;
+    }
+
+    /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
      * <ul>
@@ -274,7 +286,8 @@ public abstract class ReactInstanceManager {
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,
           Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
-          mUIImplementationProvider);
+          mUIImplementationProvider,
+          mNativeModuleCallExceptionHandler);
     }
   }
 }

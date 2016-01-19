@@ -12,9 +12,10 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -38,9 +39,28 @@ public class ReactHorizontalScrollViewManager
     return new ReactHorizontalScrollView(context);
   }
 
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
+  }
+
+
   @ReactProp(name = "showsHorizontalScrollIndicator")
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
+  }
+
+  /**
+   * Computing momentum events is potentially expensive since we post a runnable on the UI thread
+   * to see when it is done.  We only do that if {@param sendMomentumEvents} is set to true.  This
+   * is handled automatically in js by checking if there is a listener on the momentum events.
+   *
+   * @param view
+   * @param sendMomentumEvents
+   */
+  @ReactProp(name = "sendMomentumEvents")
+  public void setSendMomentumEvents(ReactHorizontalScrollView view, boolean sendMomentumEvents) {
+    view.setSendMomentumEvents(sendMomentumEvents);
   }
 
   @Override

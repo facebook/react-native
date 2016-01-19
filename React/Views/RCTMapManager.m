@@ -41,6 +41,32 @@ RCT_ENUM_CONVERTER(MKPinAnnotationColor, (@{
 
 #endif
 
+@interface RCTMapAnnotationView : MKAnnotationView
+
+@property (nonatomic, strong) UIView *contentView;
+
+@end
+
+@implementation RCTMapAnnotationView
+
+- (void)setContentView:(UIView *)contentView
+{
+  [_contentView removeFromSuperview];
+  _contentView = contentView;
+  [self addSubview:_contentView];
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  self.bounds = (CGRect){
+    CGPointZero,
+    _contentView.frame.size,
+  };
+}
+
+@end
+
 @interface RCTMapManager() <MKMapViewDelegate>
 
 @end
@@ -59,6 +85,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsCompass, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(followUserLocation, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(zoomEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(rotateEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(pitchEnabled, BOOL)
@@ -67,8 +94,9 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
-RCT_EXPORT_VIEW_PROPERTY(annotations, RCTMapAnnotationArray)
-RCT_EXPORT_VIEW_PROPERTY(overlays, RCTMapOverlayArray)
+RCT_EXPORT_VIEW_PROPERTY(annotations, NSArray<RCTMapAnnotation *>)
+RCT_EXPORT_VIEW_PROPERTY(overlays, NSArray<RCTMapOverlay *>)
+RCT_EXPORT_VIEW_PROPERTY(onAnnotationDragStateChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
@@ -110,7 +138,6 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 - (void)mapView:(RCTMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
   if (mapView.onPress && [view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
-
     RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
     mapView.onPress(@{
       @"action": @"annotation-click",
@@ -125,77 +152,144 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (MKAnnotationView *)mapView:(__unused MKMapView *)mapView viewForAnnotation:(RCTMapAnnotation *)annotation
+- (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view
+                              didChangeDragState:(MKAnnotationViewDragState)newState
+                                    fromOldState:(MKAnnotationViewDragState)oldState
+{
+  static NSArray *states;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    states = @[@"idle", @"starting", @"dragging", @"canceling", @"ending"];
+  });
+
+  if ([view.annotation isKindOfClass:[RCTMapAnnotation class]]) {
+    RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
+    if (mapView.onAnnotationDragStateChange) {
+      mapView.onAnnotationDragStateChange(@{
+        @"state": states[newState],
+        @"oldState": states[oldState],
+        @"annotationId": annotation.identifier,
+        @"latitude": @(annotation.coordinate.latitude),
+        @"longitude": @(annotation.coordinate.longitude),
+      });
+    }
+  }
+}
+
+- (MKAnnotationView *)mapView:(RCTMap *)mapView
+            viewForAnnotation:(RCTMapAnnotation *)annotation
 {
   if (![annotation isKindOfClass:[RCTMapAnnotation class]]) {
     return nil;
   }
 
   MKAnnotationView *annotationView;
-  if (annotation.image) {
-    if (annotation.tintColor) {
+  if (annotation.viewIndex != NSNotFound) {
 
-      NSString *const reuseIdentifier = @"RCTImageViewAnnotation";
-      NSInteger imageViewTag = 99;
-      annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];
-      if (!annotationView) {
-        annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
-        UIImageView *imageView = [UIImageView new];
-        imageView.tag = imageViewTag;
-        [annotationView addSubview:imageView];
-      }
-
-      UIImageView *imageView = (UIImageView *)[annotationView viewWithTag:imageViewTag];
-      imageView.image = annotation.image;
-      imageView.tintColor = annotation.tintColor;
-      [imageView sizeToFit];
-      imageView.center = CGPointZero;
-
-    } else {
-
-      NSString *reuseIdentifier = NSStringFromClass([MKAnnotationView class]);
-      annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?: [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
-      annotationView.image = annotation.image;
+    NSString *reuseIdentifier = NSStringFromClass([RCTMapAnnotationView class]);
+    annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier];
+    if (!annotationView) {
+      annotationView = [[RCTMapAnnotationView alloc] initWithAnnotation:annotation
+                                                        reuseIdentifier:reuseIdentifier];
     }
+    UIView *reactView = mapView.reactSubviews[annotation.viewIndex];
+    ((RCTMapAnnotationView *)annotationView).contentView = reactView;
+
+  } else if (annotation.image) {
+
+    NSString *reuseIdentifier = NSStringFromClass([MKAnnotationView class]);
+    annotationView =
+      [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?:
+      [[MKAnnotationView alloc] initWithAnnotation:annotation
+                                   reuseIdentifier:reuseIdentifier];
+    annotationView.image = annotation.image;
 
   } else {
 
     NSString *reuseIdentifier = NSStringFromClass([MKPinAnnotationView class]);
-    annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?: [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:reuseIdentifier];
+    annotationView =
+      [mapView dequeueReusableAnnotationViewWithIdentifier:reuseIdentifier] ?:
+      [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+                                      reuseIdentifier:reuseIdentifier];
     ((MKPinAnnotationView *)annotationView).animatesDrop = annotation.animateDrop;
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0
 
     if (![annotationView respondsToSelector:@selector(pinTintColor)]) {
-      NSString *hexColor = annotation.tintColor ? RCTColorToHexString(annotation.tintColor.CGColor) : RCTMapPinRed;
-      ((MKPinAnnotationView *)annotationView).pinColor = [RCTConvert MKPinAnnotationColor:hexColor];
+      NSString *hexColor = annotation.tintColor ?
+        RCTColorToHexString(annotation.tintColor.CGColor) : RCTMapPinRed;
+      ((MKPinAnnotationView *)annotationView).pinColor =
+        [RCTConvert MKPinAnnotationColor:hexColor];
     } else
 
 #endif
 
     {
-      ((MKPinAnnotationView *)annotationView).pinTintColor = annotation.tintColor ?: [MKPinAnnotationView redPinColor];
+      ((MKPinAnnotationView *)annotationView).pinTintColor =
+        annotation.tintColor ?: [MKPinAnnotationView redPinColor];
     }
   }
-  annotationView.canShowCallout = true;
+  annotationView.canShowCallout = (annotation.title.length > 0);
 
-  annotationView.leftCalloutAccessoryView = nil;
-  if (annotation.hasLeftCallout) {
-    annotationView.leftCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  if (annotation.leftCalloutViewIndex != NSNotFound) {
+    annotationView.leftCalloutAccessoryView =
+      mapView.reactSubviews[annotation.leftCalloutViewIndex];
+  } else if (annotation.hasLeftCallout) {
+    annotationView.leftCalloutAccessoryView =
+      [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  } else {
+    annotationView.leftCalloutAccessoryView = nil;
   }
 
-  annotationView.rightCalloutAccessoryView = nil;
-  if (annotation.hasRightCallout) {
-    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  if (annotation.rightCalloutViewIndex != NSNotFound) {
+    annotationView.rightCalloutAccessoryView =
+      mapView.reactSubviews[annotation.rightCalloutViewIndex];
+  } else if (annotation.hasRightCallout) {
+    annotationView.rightCalloutAccessoryView =
+      [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  } else {
+    annotationView.rightCalloutAccessoryView = nil;
   }
+
+  //http://stackoverflow.com/questions/32581049/mapkit-ios-9-detailcalloutaccessoryview-usage
+  if ([annotationView respondsToSelector:@selector(detailCalloutAccessoryView)]) {
+    if (annotation.detailCalloutViewIndex != NSNotFound) {
+      UIView *calloutView = mapView.reactSubviews[annotation.detailCalloutViewIndex];
+      NSLayoutConstraint *widthConstraint =
+        [NSLayoutConstraint constraintWithItem:calloutView
+                                     attribute:NSLayoutAttributeWidth
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                    multiplier:1
+                                      constant:calloutView.frame.size.width];
+      [calloutView addConstraint:widthConstraint];
+      NSLayoutConstraint *heightConstraint =
+        [NSLayoutConstraint constraintWithItem:calloutView
+                                     attribute:NSLayoutAttributeHeight
+                                     relatedBy:NSLayoutRelationEqual
+                                        toItem:nil
+                                     attribute:NSLayoutAttributeNotAnAttribute
+                                    multiplier:1
+                                      constant:calloutView.frame.size.height];
+      [calloutView addConstraint:heightConstraint];
+      annotationView.detailCalloutAccessoryView = calloutView;
+    } else {
+      annotationView.detailCalloutAccessoryView = nil;
+    }
+  }
+
+  annotationView.draggable = annotation.draggable;
 
   return annotationView;
 }
 
-- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView rendererForOverlay:(RCTMapOverlay *)overlay
+- (MKOverlayRenderer *)mapView:(__unused MKMapView *)mapView
+            rendererForOverlay:(RCTMapOverlay *)overlay
 {
   if ([overlay isKindOfClass:[RCTMapOverlay class]]) {
-    MKPolylineRenderer *polylineRenderer = [[MKPolylineRenderer alloc] initWithPolyline:overlay];
+    MKPolylineRenderer *polylineRenderer =
+      [[MKPolylineRenderer alloc] initWithPolyline:overlay];
     polylineRenderer.strokeColor = overlay.strokeColor;
     polylineRenderer.lineWidth = overlay.lineWidth;
     return polylineRenderer;
@@ -204,11 +298,12 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   }
 }
 
-- (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
+- (void)mapView:(RCTMap *)mapView annotationView:(MKAnnotationView *)view
+                   calloutAccessoryControlTapped:(UIControl *)control
 {
   if (mapView.onPress) {
 
-    // Pass to js
+    // Pass to JS
     RCTMapAnnotation *annotation = (RCTMapAnnotation *)view.annotation;
     mapView.onPress(@{
       @"side": (control == view.leftCalloutAccessoryView) ? @"left" : @"right",
@@ -226,9 +321,6 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
     region.span.longitudeDelta = RCTMapDefaultSpan;
     region.center = location.coordinate;
     [mapView setRegion:region animated:YES];
-
-    // Move to user location only for the first time it loads up.
-    mapView.followUserLocation = NO;
   }
 }
 
@@ -236,13 +328,15 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   [self _regionChanged:mapView];
 
-  mapView.regionChangeObserveTimer = [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
-                                                             target:self
-                                                           selector:@selector(_onTick:)
-                                                           userInfo:@{ RCTMapViewKey: mapView }
-                                                            repeats:YES];
+  mapView.regionChangeObserveTimer =
+    [NSTimer timerWithTimeInterval:RCTMapRegionChangeObserveInterval
+                            target:self
+                          selector:@selector(_onTick:)
+                          userInfo:@{ RCTMapViewKey: mapView }
+                           repeats:YES];
 
-  [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer forMode:NSRunLoopCommonModes];
+  [[NSRunLoop mainRunLoop] addTimer:mapView.regionChangeObserveTimer
+                            forMode:NSRunLoopCommonModes];
 }
 
 - (void)mapView:(RCTMap *)mapView regionDidChangeAnimated:(__unused BOOL)animated
@@ -288,15 +382,18 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   // move, it's likely the map will auto zoom to max/min from time to time.
   // So let's try to make map zoom back to 99% max or 101% min so that there is
   // some buffer, and moving the map won't constantly hit the max/min bound.
-  if (mapView.maxDelta > FLT_EPSILON && region.span.longitudeDelta > mapView.maxDelta) {
+  if (mapView.maxDelta > FLT_EPSILON &&
+      region.span.longitudeDelta > mapView.maxDelta) {
     needZoom = YES;
     newLongitudeDelta = mapView.maxDelta * (1 - RCTMapZoomBoundBuffer);
-  } else if (mapView.minDelta > FLT_EPSILON && region.span.longitudeDelta < mapView.minDelta) {
+  } else if (mapView.minDelta > FLT_EPSILON &&
+             region.span.longitudeDelta < mapView.minDelta) {
     needZoom = YES;
     newLongitudeDelta = mapView.minDelta * (1 + RCTMapZoomBoundBuffer);
   }
   if (needZoom) {
-    region.span.latitudeDelta = region.span.latitudeDelta / region.span.longitudeDelta * newLongitudeDelta;
+    region.span.latitudeDelta =
+      region.span.latitudeDelta / region.span.longitudeDelta * newLongitudeDelta;
     region.span.longitudeDelta = newLongitudeDelta;
     mapView.region = region;
   }

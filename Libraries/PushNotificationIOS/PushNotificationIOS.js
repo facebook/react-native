@@ -30,7 +30,13 @@ var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
  * To get up and running, [configure your notifications with Apple](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
  * and your server-side system. To get an idea, [this is the Parse guide](https://parse.com/tutorials/ios-push-notifications).
  *
- * To enable support for `notification` and `register` events you need to augment your AppDelegate.
+ * [Manually link](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#manual-linking) the PushNotificationIOS library
+ *
+ * - Be sure to add the following to your `Header Search Paths`:
+ * `$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS`
+ * - Set the search to `recursive`
+ *
+ * Finally, to enable support for `notification` and `register` events you need to augment your AppDelegate.
  *
  * At the top of your `AppDelegate.m`:
  *
@@ -39,15 +45,20 @@ var NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
  * And then in your AppDelegate implementation add the following:
  *
  *   ```
- *   // Required for the register event.
+ *    // Required to register for notifications
+ *    - (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+ *    {
+ *     [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
+ *    }
+ *    // Required for the register event.
  *    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
  *    {
- *     [RCTPushNotificationManager application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+ *     [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
  *    }
  *    // Required for the notification event.
  *    - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
  *    {
- *     [RCTPushNotificationManager application:application didReceiveRemoteNotification:notification];
+ *     [RCTPushNotificationManager didReceiveRemoteNotification:notification];
  *    }
  *   ```
  */
@@ -63,6 +74,7 @@ class PushNotificationIOS {
    * details is an object containing:
    *
    * - `alertBody` : The message displayed in the notification alert.
+   * - `soundName` : The sound played when the notification is fired (optional).
    *
    */
   static presentLocalNotification(details: Object) {
@@ -76,6 +88,7 @@ class PushNotificationIOS {
    *
    * - `fireDate` : The date and time when the system should deliver the notification.
    * - `alertBody` : The message displayed in the notification alert.
+   * - `soundName` : The sound played when the notification is fired (optional).
    *
    */
   static scheduleLocalNotification(details: Object) {
@@ -235,7 +248,7 @@ class PushNotificationIOS {
   }
 
   /**
-   * You will never need to instansiate `PushNotificationIOS` yourself.
+   * You will never need to instantiate `PushNotificationIOS` yourself.
    * Listening to the `notification` event and invoking
    * `popInitialNotification` is sufficient
    */

@@ -18,7 +18,7 @@ public:
   JSThreadState(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Bridge::Callback&& callback) :
     m_callback(callback)
   {
-    m_jsExecutor = jsExecutorFactory->createJSExecutor([this, callback] (std::string queueJSON) {
+    m_jsExecutor = jsExecutorFactory->createJSExecutor([this, callback] (std::string queueJSON, bool isEndOfBatch) {
       m_callback(parseMethodCalls(queueJSON), false /* = isEndOfBatch */);
     });
   }

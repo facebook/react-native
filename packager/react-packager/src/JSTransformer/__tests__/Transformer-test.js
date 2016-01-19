@@ -13,8 +13,9 @@ jest
   .dontMock('../');
 
 jest.mock('fs');
+jest.setMock('temp', {path: () => '/arbitrary/path'});
 
-var Cache = require('../../Cache');
+var Cache = require('../../DependencyResolver/Cache');
 var Transformer = require('../');
 var fs = require('fs');
 

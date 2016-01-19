@@ -37,7 +37,7 @@ public abstract class JSBundleLoader {
 
       @Override
       public String getSourceUrl() {
-        return fileName;
+        return (fileName.startsWith("assets://") ? "" : "file://") + fileName;
       }
     };
   }
@@ -68,18 +68,22 @@ public abstract class JSBundleLoader {
   /**
    * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
    * the bundle from device as remote executor will have to do it anyway.
+   *
+   * @param proxySourceURL the URL to load the JS bundle from in Chrome
+   * @param realSourceURL the URL to report as the source URL, e.g. for asset loading
    */
   public static JSBundleLoader createRemoteDebuggerBundleLoader(
-      final String sourceURL) {
+      final String proxySourceURL,
+      final String realSourceURL) {
     return new JSBundleLoader() {
       @Override
       public void loadScript(ReactBridge bridge) {
-        bridge.loadScriptFromFile(null, sourceURL);
+        bridge.loadScriptFromFile(null, proxySourceURL);
       }
 
       @Override
       public String getSourceUrl() {
-        return sourceURL;
+        return realSourceURL;
       }
     };
   }

@@ -348,52 +348,43 @@ var ScrollResponderMixin = {
 
   /**
    * A helper function to scroll to a specific point  in the scrollview.
-   * This is currently used to help focus on child textview's, but this
+   * This is currently used to help focus on child textviews, but this
    * can also be used to quickly scroll to any element we want to focus
    */
-  scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
+  scrollResponderScrollTo: function(offsetX: number, offsetY: number, animated: boolean = true) {
     if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
         React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands.scrollTo,
+        UIManager.RCTScrollView.Commands[animated ? 'scrollTo' : 'scrollWithoutAnimationTo'],
         [Math.round(offsetX), Math.round(offsetY)],
       );
     } else {
       ScrollViewManager.scrollTo(
         React.findNodeHandle(this),
-        { x: offsetX, y: offsetY }
+        { x: offsetX, y: offsetY },
+        animated
       );
     }
   },
 
   /**
-   * Like `scrollResponderScrollTo` but immediately scrolls to the given
-   * position
+   * Deprecated, do not use.
    */
-  scrollResponderScrollWithouthAnimationTo: function(offsetX: number, offsetY: number) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands.scrollWithoutAnimationTo,
-        [offsetX, offsetY],
-      );
-    } else {
-      ScrollViewManager.scrollWithoutAnimationTo(
-        React.findNodeHandle(this),
-        { x: offsetX, y: offsetY }
-      );
-    }
+  scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
+    console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
+    self.scrollResponderScrollTo(offsetX, offsetY, false);
   },
 
   /**
    * A helper function to zoom to a specific rect in the scrollview.
    * @param {object} rect Should have shape {x, y, width, height}
+   * @param {bool} animated Specify whether zoom is instant or animated
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
+  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }, animated: boolean = true) {
     if (Platform.OS === 'android') {
       invariant('zoomToRect is not implemented');
     } else {
-      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect);
+      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect, animated);
     }
   },
 

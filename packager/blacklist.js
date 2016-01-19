@@ -10,39 +10,44 @@
 
 var path = require('path');
 
-// Don't forget to everything listed here to `testConfig.json`
+// Don't forget to everything listed here to `package.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  'node_modules/react-haste/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
-  'node_modules/react-haste/React.js',
-  'node_modules/react-haste/renderers/dom/ReactDOM.js',
+  /node_modules[/\\]react[/\\]dist[/\\].*/,
+  'node_modules/react/lib/React.js',
+  'node_modules/react/lib/ReactDOM.js',
 
   // For each of these fbjs files (especially the non-forks/stubs), we should
   // consider deleting the conflicting copy and just using the fbjs version.
-  'node_modules/fbjs-haste/__forks__/Map.js',
-  'node_modules/fbjs-haste/__forks__/Promise.js',
-  'node_modules/fbjs-haste/__forks__/fetch.js',
-  'node_modules/fbjs-haste/core/Deferred.js',
-  'node_modules/fbjs-haste/core/PromiseMap.js',
-  'node_modules/fbjs-haste/core/areEqual.js',
-  'node_modules/fbjs-haste/core/flattenArray.js',
-  'node_modules/fbjs-haste/core/isEmpty.js',
-  'node_modules/fbjs-haste/core/removeFromArray.js',
-  'node_modules/fbjs-haste/core/resolveImmediate.js',
-  'node_modules/fbjs-haste/core/sprintf.js',
-  'node_modules/fbjs-haste/crypto/crc32.js',
-  'node_modules/fbjs-haste/fetch/fetchWithRetries.js',
-  'node_modules/fbjs-haste/functional/everyObject.js',
-  'node_modules/fbjs-haste/functional/filterObject.js',
-  'node_modules/fbjs-haste/functional/forEachObject.js',
-  'node_modules/fbjs-haste/functional/someObject.js',
-  'node_modules/fbjs-haste/request/xhrSimpleDataSerializer.js',
-  'node_modules/fbjs-haste/stubs/ErrorUtils.js',
-  'node_modules/fbjs-haste/stubs/URI.js',
-  'node_modules/fbjs-haste/useragent/UserAgent.js',
-  'node_modules/fbjs-haste/utils/nullthrows.js',
+  //
+  // fbjs forks:
+  'node_modules/fbjs/lib/Map.js',
+  'node_modules/fbjs/lib/Promise.js',
+  'node_modules/fbjs/lib/fetch.js',
+  // fbjs stubs:
+  'node_modules/fbjs/lib/ErrorUtils.js',
+  'node_modules/fbjs/lib/URI.js',
+  // fbjs modules:
+  'node_modules/fbjs/lib/Deferred.js',
+  'node_modules/fbjs/lib/PromiseMap.js',
+  'node_modules/fbjs/lib/UserAgent.js',
+  'node_modules/fbjs/lib/areEqual.js',
+  'node_modules/fbjs/lib/base62.js',
+  'node_modules/fbjs/lib/crc32.js',
+  'node_modules/fbjs/lib/everyObject.js',
+  'node_modules/fbjs/lib/fetchWithRetries.js',
+  'node_modules/fbjs/lib/filterObject.js',
+  'node_modules/fbjs/lib/flattenArray.js',
+  'node_modules/fbjs/lib/forEachObject.js',
+  'node_modules/fbjs/lib/isEmpty.js',
+  'node_modules/fbjs/lib/nullthrows.js',
+  'node_modules/fbjs/lib/removeFromArray.js',
+  'node_modules/fbjs/lib/resolveImmediate.js',
+  'node_modules/fbjs/lib/someObject.js',
+  'node_modules/fbjs/lib/sprintf.js',
+  'node_modules/fbjs/lib/xhrSimpleDataSerializer.js',
 
-  // Those conflicts with the ones in fbjs-haste/. We need to blacklist the
+  // Those conflicts with the ones in fbjs/. We need to blacklist the
   // internal version otherwise they won't work in open source.
   'downstream/core/CSSCore.js',
   'downstream/core/TouchEventUtils.js',
@@ -63,14 +68,8 @@ var sharedBlacklist = [
   'downstream/core/invariant.js',
   'downstream/core/nativeRequestAnimationFrame.js',
   'downstream/core/toArray.js',
-  'downstream/functional/mapObject.js',
-  'downstream/key-mirror/keyMirror.js',
-  'downstream/key-mirror/keyOf.js',
-];
 
-// Raw unescaped patterns in case you need to use wildcards
-var sharedBlacklistWildcards = [
-  'website\/node_modules\/.*',
+  /website\/node_modules\/.*/,
 ];
 
 var platformBlacklists = {
@@ -88,10 +87,16 @@ var platformBlacklists = {
   ],
 };
 
-function escapeRegExp(str) {
-  var escaped = str.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-  // convert the '/' into an escaped local file separator
-  return escaped.replace(/\//g,'\\' + path.sep);
+function escapeRegExp(pattern) {
+  if (Object.prototype.toString.call(pattern) === '[object RegExp]') {
+    return pattern.source.replace(/\//g, path.sep);
+  } else if (typeof pattern === 'string') {
+    var escaped = pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    // convert the '/' into an escaped local file separator
+    return escaped.replace(/\//g,'\\' + path.sep);
+  } else {
+    throw new Error('Unexpected packager blacklist pattern: ' + pattern);
+  }
 }
 
 function blacklist(platform, additionalBlacklist) {
@@ -99,7 +104,6 @@ function blacklist(platform, additionalBlacklist) {
     (additionalBlacklist || []).concat(sharedBlacklist)
       .concat(platformBlacklists[platform] || [])
       .map(escapeRegExp)
-      .concat(sharedBlacklistWildcards)
       .join('|') +
     ')$'
   );

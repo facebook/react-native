@@ -128,7 +128,7 @@ class CameraRoll {
    *
    *   - local URI
    *   - assets-library tag
-   *   - a tag not maching any of the above, which means the image data will
+   *   - a tag not matching any of the above, which means the image data will
    * be stored in memory (and consume memory as long as the process is alive)
    *
    * @param successCallback Invoked with the value of `tag` on success.

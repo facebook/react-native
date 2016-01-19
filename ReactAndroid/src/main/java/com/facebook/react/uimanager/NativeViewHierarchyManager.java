@@ -420,13 +420,11 @@ public class NativeViewHierarchyManager {
   /**
    * Releases all references to given native View.
    */
-  private void dropView(View view) {
+  protected final void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      resolveViewManager(view.getId()).onDropViewInstance(
-          (ThemedReactContext) view.getContext(),
-          view);
+      resolveViewManager(view.getId()).onDropViewInstance(view);
     }
     ViewManager viewManager = mTagsToViewManagers.get(view.getId());
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
@@ -467,6 +465,11 @@ public class NativeViewHierarchyManager {
     }
 
     View rootView = (View) RootViewUtil.getRootView(v);
+    // It is possible that the RootView can't be found because this view is no longer on the screen
+    // and has been removed by clipping
+    if (rootView == null) {
+      throw new NoSuchNativeViewException("Native view " + tag + " is no longer on screen");
+    }
     rootView.getLocationInWindow(outputBuffer);
     int rootX = outputBuffer[0];
     int rootY = outputBuffer[1];

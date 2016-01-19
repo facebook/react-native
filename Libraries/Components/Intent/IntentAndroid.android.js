@@ -16,6 +16,26 @@ var invariant = require('invariant');
 /**
  * `IntentAndroid` gives you a general interface to handle external links.
  *
+ * ### Basic Usage
+ *
+ * #### Handling deep links
+ *
+ * If your app was launched from an external url registered to your app you can
+ * access and handle it from any component you want with
+ *
+ * ```
+ * componentDidMount() {
+ *   var url = IntentAndroid.getInitialURL(url => {
+ *     if (url) {
+ *       console.log('Initial url is: ' + url);
+ *     }
+ *   });
+ * }
+ * ```
+ *
+ * NOTE: For instructions on how to add support for deep linking,
+ * refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ *
  * #### Opening external links
  *
  * To start the corresponding activity for a link (web URL, email, contact etc.), call
@@ -73,6 +93,20 @@ class IntentAndroid {
       'A valid callback function is required'
     );
     IntentAndroidModule.canOpenURL(url, callback);
+  }
+
+  /**
+   * If the app launch was triggered by an app link with {@code Intent.ACTION_VIEW},
+   * it will give the link url, otherwise it will give `null`
+   *
+   * Refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
+   */
+  static getInitialURL(callback: Function) {
+    invariant(
+      typeof callback === 'function',
+      'A valid callback function is required'
+    );
+    IntentAndroidModule.getInitialURL(callback);
   }
 
   static _validateURL(url: string) {
