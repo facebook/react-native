@@ -13,7 +13,6 @@
 
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTLinkingManager = require('NativeModules').LinkingManager;
-var Map = require('Map');
 var invariant = require('invariant');
 
 var _notifHandlers = new Map();

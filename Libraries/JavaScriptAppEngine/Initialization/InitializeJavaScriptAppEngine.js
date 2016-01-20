@@ -150,10 +150,14 @@ function setUpGeolocation() {
   polyfillGlobal('geolocation', require('Geolocation'), GLOBAL.navigator);
 }
 
+function setUpMapAndSet() {
+  polyfillGlobal('Map', require('Map'));
+  polyfillGlobal('Set', require('Set'));
+}
+
 function setUpProduct() {
   Object.defineProperty(GLOBAL.navigator, 'product', {value: 'ReactNative'});
 }
-
 
 function setUpWebSockets() {
   polyfillGlobal('WebSocket', require('WebSocket'));
@@ -198,6 +202,7 @@ setUpPromise();
 setUpErrorHandler();
 setUpXHR();
 setUpGeolocation();
+setUpMapAndSet();
 setUpProduct();
 setUpWebSockets();
 setUpProfile();
