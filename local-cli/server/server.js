@@ -31,6 +31,10 @@ function _server(argv, config, resolve, reject) {
     default: 8081,
     type: 'string',
   }, {
+    command: 'host',
+    default: '',
+    type: 'string',
+  }, {
     command: 'root',
     type: 'string',
     description: 'add another root(s) to be used by the packager in this project',

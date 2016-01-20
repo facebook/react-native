@@ -44,7 +44,7 @@ function runServer(args, config, readyCallback) {
 
   const serverInstance = http.createServer(app).listen(
     args.port,
-    '::',
+    args.host,
     function() {
       attachHMRServer({
         httpServer: serverInstance,
