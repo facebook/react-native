@@ -1,5 +1,4 @@
-﻿
-namespace ReactNative.UIManager
+﻿namespace ReactNative.UIManager
 {
     /// <summary>
     /// View manager for react root view components.
