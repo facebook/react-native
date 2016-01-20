@@ -140,7 +140,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
       NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"socket closed"
+        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
       }];
       callback(error, nil);
       return;
