@@ -72,17 +72,12 @@
 
   /**
    * This is the error handler that is called when we encounter an exception
-   * when loading a module.
+   * when loading a module. This will report any errors encountered before
+   * ExceptionsManager is configured.
    */
   function setupErrorGuard() {
     var onError = function(e) {
-      global.console.error(
-        'Error: ' +
-        '\n stack: ' + e.stack +
-        '\n line: ' + e.line +
-        '\n message: ' + e.message,
-        e
-      );
+      global.console.error('Error: ' + e.message + ', stack:\n' + e.stack);
     };
     global.ErrorUtils.setGlobalHandler(onError);
   }
