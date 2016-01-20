@@ -163,7 +163,7 @@ NSString *RCTFormatLog(
     [log appendString:[formatter stringFromDate:timestamp]];
   }
   if (level) {
-    [log appendFormat:@"[%s]", RCTLogLevels[level - 1]];
+    [log appendFormat:@"[%s]", RCTLogLevels[level]];
   }
 
   [log appendFormat:@"[tid:%@]", RCTCurrentThreadName()];
