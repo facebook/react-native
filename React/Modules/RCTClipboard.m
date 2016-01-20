@@ -22,16 +22,21 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(getString:(RCTResponseSenderBlock)callback)
-{
-  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  callback(@[RCTNullIfNil(clipboard.string)]);
-}
 
 RCT_EXPORT_METHOD(setString:(NSString *)content)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = content;
+}
+
+RCT_REMAP_METHOD(getString,
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
+{
+  UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
+
+  resolve(@[RCTNullIfNil(clipboard.string)]);
+
 }
 
 @end

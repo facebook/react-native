@@ -23,19 +23,21 @@ var {
 } = React;
 
 var ClipboardExample = React.createClass({
-  getInitialState: function() {
+  getInitialState() {
     return {
       content: 'Content will appear here'
     };
   },
-  
-  _setContentToClipboard:function(){
+  async _setContentToClipboard(){
     Clipboard.setString('Hello World');
-    Clipboard.getString(content => {
+    try {
+      var content = await Clipboard.getString();
       this.setState({content});
-    });
+    } catch (e) {
+      this.setState({content:e.message});
+    }
+
   },
-  
   render() {
     return (
       <View>
@@ -55,6 +57,6 @@ exports.description = 'Show Clipboard contents.';
 exports.examples = [
   {
     title: 'Clipboard.setString() and getString()',
-    render(): ReactElement { return <ClipboardExample />; }
+    render() { return (<ClipboardExample />); }
   }
 ];
