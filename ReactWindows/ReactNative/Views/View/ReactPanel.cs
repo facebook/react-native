@@ -1,7 +1,6 @@
 ﻿using ReactNative.Touch;
 using ReactNative.UIManager;
 using System;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
