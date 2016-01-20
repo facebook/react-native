@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 137620341B31C53500677FF0 /* RCTImagePickerManager.m */; };
 		143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879341AAD238D00F088A5 /* RCTCameraRollManager.m */; };
-		8312EAEE1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8312EAED1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.m */; };
+		8312EAEE1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 8312EAED1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.m */; };
 		8312EAF11B85F071001867A2 /* RCTPhotoLibraryImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8312EAF01B85F071001867A2 /* RCTPhotoLibraryImageLoader.m */; };
 /* End PBXBuildFile section */
 
@@ -31,8 +31,8 @@
 		143879331AAD238D00F088A5 /* RCTCameraRollManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCameraRollManager.h; sourceTree = "<group>"; };
 		143879341AAD238D00F088A5 /* RCTCameraRollManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCameraRollManager.m; sourceTree = "<group>"; };
 		58B5115D1A9E6B3D00147676 /* libRCTCameraRoll.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTCameraRoll.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		8312EAEC1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAssetsLibraryImageLoader.h; sourceTree = "<group>"; };
-		8312EAED1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAssetsLibraryImageLoader.m; sourceTree = "<group>"; };
+		8312EAEC1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAssetsLibraryRequestHandler.h; sourceTree = "<group>"; };
+		8312EAED1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAssetsLibraryRequestHandler.m; sourceTree = "<group>"; };
 		8312EAEF1B85F071001867A2 /* RCTPhotoLibraryImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTPhotoLibraryImageLoader.h; sourceTree = "<group>"; };
 		8312EAF01B85F071001867A2 /* RCTPhotoLibraryImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTPhotoLibraryImageLoader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,8 +51,8 @@
 		58B511541A9E6B3D00147676 = {
 			isa = PBXGroup;
 			children = (
-				8312EAEC1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.h */,
-				8312EAED1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.m */,
+				8312EAEC1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.h */,
+				8312EAED1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.m */,
 				143879331AAD238D00F088A5 /* RCTCameraRollManager.h */,
 				143879341AAD238D00F088A5 /* RCTCameraRollManager.m */,
 				137620331B31C53500677FF0 /* RCTImagePickerManager.h */,
@@ -129,7 +129,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8312EAEE1B85EB7C001867A2 /* RCTAssetsLibraryImageLoader.m in Sources */,
+				8312EAEE1B85EB7C001867A2 /* RCTAssetsLibraryRequestHandler.m in Sources */,
 				8312EAF11B85F071001867A2 /* RCTPhotoLibraryImageLoader.m in Sources */,
 				137620351B31C53500677FF0 /* RCTImagePickerManager.m in Sources */,
 				143879351AAD238D00F088A5 /* RCTCameraRollManager.m in Sources */,

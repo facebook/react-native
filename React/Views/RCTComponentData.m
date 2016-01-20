@@ -172,6 +172,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
         // Ordinary property handlers
         NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
+        if (!typeSignature) {
+          RCTLogError(@"No +[RCTConvert %@] function found.", NSStringFromSelector(type));
+          return ^(__unused id<RCTComponent> view, __unused id json){};
+        }
         switch (typeSignature.methodReturnType[0]) {
 
   #define RCT_CASE(_value, _type) \

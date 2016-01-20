@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTURLRequestHandler.h"
+#import "RCTResizeMode.h"
 
 @class ALAssetsLibrary;
 
@@ -40,9 +41,19 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
-                                         resizeMode:(UIViewContentMode)resizeMode
+                                         resizeMode:(RCTResizeMode)resizeMode
                                       progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
+/**
+ * Loads an image without clipping the result to fit - used by RCTImageView.
+ */
+- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
  * Finds an appropriate image decoder and passes the target size, scale and
@@ -52,7 +63,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(UIViewContentMode)resizeMode
+                                        resizeMode:(RCTResizeMode)resizeMode
                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
@@ -96,7 +107,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(UIViewContentMode)resizeMode
+                                        resizeMode:(RCTResizeMode)resizeMode
                                    progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
@@ -134,7 +145,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(UIViewContentMode)resizeMode
+                                        resizeMode:(RCTResizeMode)resizeMode
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
 @optional

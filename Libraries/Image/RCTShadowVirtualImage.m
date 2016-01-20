@@ -46,7 +46,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     _cancellationBlock = [_bridge.imageLoader loadImageWithTag:source.imageURL.absoluteString
                                                           size:source.size
                                                          scale:source.scale
-                                                    resizeMode:UIViewContentModeScaleToFill
+                                                    resizeMode:RCTResizeModeStretch
                                                  progressBlock:nil
                                                completionBlock:^(NSError *error, UIImage *image) {
 

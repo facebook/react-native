@@ -9,6 +9,7 @@
 
 #import <UIKit/UIKit.h>
 #import "RCTImageComponent.h"
+#import "RCTResizeMode.h"
 
 @class RCTBridge;
 @class RCTImageSource;
