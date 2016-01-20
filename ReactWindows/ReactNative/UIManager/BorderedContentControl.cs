@@ -202,7 +202,7 @@ namespace ReactNative.UIManager
         {
             if (kind == CSSSpacingType.All)
             {
-
+                SetBorderWidth(width);
             }
             else
             {
