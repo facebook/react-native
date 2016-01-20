@@ -11,7 +11,6 @@
 
 'use strict';
 
-var Set = require('Set');
 var DeviceEventManager = require('NativeModules').DeviceEventManager;
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 

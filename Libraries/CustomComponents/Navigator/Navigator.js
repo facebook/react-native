@@ -30,7 +30,6 @@
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var Map = require('Map');
 var NavigationContext = require('NavigationContext');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 var NavigatorNavigationBar = require('NavigatorNavigationBar');
