@@ -145,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, assign) BOOL centerContent;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) RCTRefreshControl *refreshControl;
 
 @end
 
@@ -289,8 +289,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:
    ^(NSUInteger idx, __unused BOOL *stop) {
 
+    // If the subviews are out of sync with the sticky header indices don't
+    // do anything.
     if (idx >= subviewCount) {
-      RCTLogError(@"Sticky header index %zd was outside the range {0, %zd}", idx, subviewCount);
       return;
     }
 
@@ -888,7 +889,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
   _onRefreshStart = [onRefreshStart copy];
 
   if (!_scrollView.refreshControl) {
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    RCTRefreshControl *refreshControl = [[RCTRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _scrollView.refreshControl = refreshControl;
   }
