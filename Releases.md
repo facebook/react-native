@@ -29,7 +29,7 @@ Run:
 
 #### Check that everything works
 
-Make absolutely sure basic iOS and Android workflow works on master, see the instructions printed by `release.sh`.
+Make absolutely sure a basic iOS and Android workflow works on the release branch you've just created, see the instructions printed by `release.sh`.
   
 #### Push to github
 
