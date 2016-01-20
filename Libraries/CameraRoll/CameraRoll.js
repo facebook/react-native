@@ -35,7 +35,6 @@ var ASSET_TYPE_OPTIONS = [
   'Photos', // default
 ];
 
-
 // Flow treats Object and Array as disjoint types, currently.
 deepFreezeAndThrowOnMutationInDev((GROUP_TYPES_OPTIONS: any));
 deepFreezeAndThrowOnMutationInDev((ASSET_TYPE_OPTIONS: any));
@@ -118,8 +117,6 @@ class CameraRoll {
   static AssetTypeOptions: Array<string>;
   /**
    * Saves the image to the camera roll / gallery.
-   *
-   * The CameraRoll API is not yet implemented for Android.
    *
    * @param {string} tag On Android, this is a local URI, such
    * as `"file:///sdcard/img.png"`.
