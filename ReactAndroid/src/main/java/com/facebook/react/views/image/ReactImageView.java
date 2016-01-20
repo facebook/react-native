@@ -275,6 +275,9 @@ public class ReactImageView extends GenericDraweeView {
     roundingParams.setBorder(mBorderColor, mBorderWidth);
     if (mOverlayColor != Color.TRANSPARENT) {
         roundingParams.setOverlayColor(mOverlayColor);
+    } else {
+        // make sure the default rounding method is used.
+        roundingParams.setRoundingMethod(RoundingParams.RoundingMethod.BITMAP_ONLY);
     }
     hierarchy.setRoundingParams(roundingParams);
     hierarchy.setFadeDuration(
