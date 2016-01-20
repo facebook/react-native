@@ -82,6 +82,7 @@ public class ReactBridge extends Countable {
   public native void callFunction(int moduleId, int methodId, NativeArray arguments);
   public native void invokeCallback(int callbackID, NativeArray arguments);
   public native void setGlobalVariable(String propertyName, String jsonEncodedArgument);
+  public native long getJavaScriptContext();
   public native boolean supportsProfiling();
   public native void startProfiler(String title);
   public native void stopProfiler(String title, String filename);
