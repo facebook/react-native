@@ -83,7 +83,7 @@ function updateWarningMap(format, ...args): void {
   ].join(' ');
 
   const count = _warningMap.has(warning) ? _warningMap.get(warning) : 0;
-  _warningMap.set(warning, count + 2);
+  _warningMap.set(warning, count + 1);
   _warningEmitter.emit('warning', _warningMap);
 }
 
