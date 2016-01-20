@@ -938,11 +938,13 @@ var Navigator = React.createClass({
       'Cannot pop below zero'
     );
     var popIndex = this.state.presentedIndex - n;
+    var presentedRoute = this.state.routeStack[this.state.presentedIndex];
+    var popSceneConfig = this.props.configureScene(presentedRoute); // using the scene config of the currently presented view
     this._enableScene(popIndex);
     this._emitWillFocus(this.state.routeStack[popIndex]);
     this._transitionTo(
       popIndex,
-      null, // default velocity
+      popSceneConfig.defaultTransitionVelocity,
       null, // no spring jumping
       () => {
         this._cleanScenesPastIndex(popIndex);
