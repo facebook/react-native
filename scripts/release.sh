@@ -47,7 +47,6 @@ for i in "${artifacts_list[@]}"; do
    artifact_file="${artifacts_dir}/react-native-${RELEASE}.0${i}"
 
    [ -e "${artifact_file}" ] || error "Couldn't find file: ${artifact_file}"
-   [ -e "${artifact_file}.asc" ] || error "Couldn't find file: ${artifact_file}.asc"
 done
 
 success "Generated artifacts for Maven"
