@@ -109,8 +109,8 @@ namespace ReactNative.UIManager
         /// <param name="eventDispatcher">The event dispatcher.</param>
         public void UpdateRootNodeSize(
             int rootViewTag,
-            float newWidth,
-            float newHeight,
+            int newWidth,
+            int newHeight,
             EventDispatcher eventDispatcher)
         {
             var rootCssNode = _shadowNodeRegistry.GetNode(rootViewTag);
