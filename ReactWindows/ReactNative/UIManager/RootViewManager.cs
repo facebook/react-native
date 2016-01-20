@@ -1,5 +1,4 @@
-﻿using Windows.UI.Xaml.Controls;
-
+﻿
 namespace ReactNative.UIManager
 {
     /// <summary>
