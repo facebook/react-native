@@ -47,25 +47,20 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
     return (ClipboardManager) getReactApplicationContext().getSystemService(getReactApplicationContext().CLIPBOARD_SERVICE);
   }
 
-  private String getStringInternal(){
-    ClipboardManager clipboard = getClipboardService();
-    ClipData clipData = clipboard.getPrimaryClip();
-    if (clipData == null) {
-      return "";
-    }
-    if (clipData.getItemCount() >= 1) {
-      ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
-      return "" + firstItem.getText();
-    } else {
-      return "";
-    }
-  }
-
   @ReactMethod
   public void getString(Promise promise){
     try {
-      String ret = this.getStringInternal();
-      promise.resolve(ret);
+      ClipboardManager clipboard = getClipboardService();
+      ClipData clipData = clipboard.getPrimaryClip();
+      if (clipData == null) {
+        promise.resolve("");
+      }
+      if (clipData.getItemCount() >= 1) {
+        ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
+        promise.resolve("" + firstItem.getText());
+      } else {
+        promise.resolve("");
+      }
     } catch(Exception e) {
       promise.reject(e);
     }

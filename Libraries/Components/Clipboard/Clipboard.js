@@ -13,13 +13,13 @@
 var Clipboard = require('NativeModules').Clipboard;
 
 /**
- * `Clipboard` give you an interface for setting and getting content from Clipboard, which is supported both iOS and Android
+ * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
  */
 module.exports = {
   /**
    * Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
    * ```javascript
-   * async _getContent(){
+   * async _getContent() {
    *   var content = await Clipboard.getString();
    * }
    * ```
@@ -36,13 +36,13 @@ module.exports = {
   /**
    * Set content of string type. You can use following code to set clipboard content
    * ```javascript
-   * _setContent(){
+   * _setContent() {
    *   Clipboard.setString('hello world');
    * }
    * ```
    * @param this parameter is content that will be set into clipboard.
    */
-  setString(content){
+  setString(content) {
     Clipboard.setString(content);
   }
 };

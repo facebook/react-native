@@ -41,7 +41,7 @@ var ClipboardExample = React.createClass({
   render() {
     return (
       <View>
-        <Text onPress={()=>this._setContentToClipboard()} style={{color: 'blue'}}>
+        <Text onPress={this._setContentToClipboard} style={{color: 'blue'}}>
           Tap to put "Hello World" in the clipboard
         </Text>
         <Text style={{color: 'red', marginTop: 20}}>
