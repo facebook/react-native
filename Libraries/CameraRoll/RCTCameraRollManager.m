@@ -13,7 +13,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "RCTAssetsLibraryImageLoader.h"
+#import "RCTAssetsLibraryRequestHandler.h"
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTImageLoader.h"
