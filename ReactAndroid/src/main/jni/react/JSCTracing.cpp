@@ -419,18 +419,11 @@ static JSValueRef nativeTraceBeginLegacy(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  if (FBSYSTRACE_UNLIKELY(argumentCount < 1)) {
-    if (exception) {
-      *exception = facebook::react::makeJSCException(
-        ctx,
-        "nativeTraceBeginLegacy: requires TAG Argument");
+  if (FBSYSTRACE_LIKELY(argumentCount >= 1)) {
+    uint64_t tag = tagFromJSValue(ctx, arguments[0], exception);
+    if (!fbsystrace_is_tracing(tag)) {
+      return JSValueMakeUndefined(ctx);
     }
-    return JSValueMakeUndefined(ctx);
-  }
-
-  uint64_t tag = tagFromJSValue(ctx, arguments[0], exception);
-  if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
   }
 
   JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);
@@ -451,18 +444,11 @@ static JSValueRef nativeTraceEndLegacy(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  if (FBSYSTRACE_UNLIKELY(argumentCount < 1)) {
-    if (exception) {
-      *exception = facebook::react::makeJSCException(
-        ctx,
-        "nativeTraceBeginLegacy: requires TAG Argument");
+  if (FBSYSTRACE_LIKELY(argumentCount >= 1)) {
+    uint64_t tag = tagFromJSValue(ctx, arguments[0], exception);
+    if (!fbsystrace_is_tracing(tag)) {
+      return JSValueMakeUndefined(ctx);
     }
-    return JSValueMakeUndefined(ctx);
-  }
-
-  uint64_t tag = tagFromJSValue(ctx, arguments[0], exception);
-  if (!fbsystrace_is_tracing(tag)) {
-    return JSValueMakeUndefined(ctx);
   }
 
   JSStringRef title = JSStringCreateWithUTF8CString(ENABLED_FBSYSTRACE_PROFILE_NAME);

@@ -11,7 +11,6 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
-#import "RCTSRWebSocket.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -25,10 +24,6 @@
 {
   objc_setAssociatedObject(self, @selector(reactTag), reactTag, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
-
-@end
-
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
 
 @end
 
@@ -76,8 +71,10 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
 {
+  BOOL binary = [message isKindOfClass:[NSData class]];
   [_bridge.eventDispatcher sendDeviceEventWithName:@"websocketMessage" body:@{
-    @"data": message,
+    @"data": binary ? [message base64EncodedStringWithOptions:0] : message,
+    @"type": binary ? @"binary" : @"text",
     @"id": webSocket.reactTag
   }];
 }

@@ -100,10 +100,6 @@ const CGFloat RCTMapZoomBoundBuffer = 0.01;
       }
     }
     super.showsUserLocation = showsUserLocation;
-
-    // If it needs to show user location, force map view centered
-    // on user's current location on user location updates
-    _followUserLocation = showsUserLocation;
   }
 }
 

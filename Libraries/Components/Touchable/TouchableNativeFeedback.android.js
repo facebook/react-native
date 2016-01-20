@@ -17,19 +17,18 @@ var Touchable = require('Touchable');
 var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 var UIManager = require('UIManager');
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 var onlyChild = require('onlyChild');
 var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
-var rippleBackgroundPropType = createStrictShapeTypeChecker({
+var rippleBackgroundPropType = PropTypes.shape({
   type: React.PropTypes.oneOf(['RippleAndroid']),
   color: PropTypes.number,
   borderless: PropTypes.bool,
 });
 
-var themeAttributeBackgroundPropType = createStrictShapeTypeChecker({
+var themeAttributeBackgroundPropType = PropTypes.shape({
   type: React.PropTypes.oneOf(['ThemeAttrAndroid']),
   attribute: PropTypes.string.isRequired,
 });

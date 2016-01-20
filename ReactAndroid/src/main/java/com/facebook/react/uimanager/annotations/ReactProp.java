@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager.annotations;
 
 import javax.annotation.Nullable;
 
@@ -12,7 +12,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Use this annotation to annotate properties of native views that should be exposed to JS. This
- * annotation should only be used for setter methods of subclasses of {@link ViewManager}.
+ * annotation should only be used for setter methods of subclasses of
+ * {@link com.facebook.react.uimanager.ViewManager}.
  *
  * Each annotated method should return {@code void} and take exactly two arguments: first being
  * a view instance to be updated and second a value that should be set.
@@ -21,8 +22,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *  - primitives (int, boolean, double, float)
  *  - {@link String}
  *  - {@link Boolean}
- *  - {@link ReadableArray}
- *  - {@link ReadableMap}
+ *  - {@link com.facebook.react.bridge.ReadableArray}
+ *  - {@link com.facebook.react.bridge.ReadableMap}
  *
  * When property gets removed from the corresponding component in React, annotated setter will be
  * called with {@code null} in case of non-primitive value type or with a default value in case when

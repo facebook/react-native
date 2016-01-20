@@ -52,6 +52,10 @@ RCT_EXTERN BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector);
 RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
 RCT_EXTERN NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData);
 RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error);
+RCT_EXTERN NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *error);
+
+// The default error code that will be sent in the .code value of the Error object to js
+RCT_EXTERN NSString *const RCTErrorUnspecified;
 
 // Returns YES if React is running in a test environment
 RCT_EXTERN BOOL RCTRunningInTestEnvironment(void);
@@ -105,3 +109,7 @@ RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
+
+// URL manipulation
+RCT_EXTERN NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param);
+RCT_EXTERN NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value);

@@ -37,7 +37,6 @@ var TimerMixin = require('react-timer-mixin');
 var isEmpty = require('isEmpty');
 var logError = require('logError');
 var merge = require('merge');
-var shallowEqual = require('shallowEqual');
 
 var PropTypes = React.PropTypes;
 
@@ -199,11 +198,20 @@ var ListView = React.createClass({
      */
     onChangeVisibleRows: React.PropTypes.func,
     /**
-     * An experimental performance optimization for improving scroll perf of
+     * A performance optimization for improving scroll perf of
      * large lists, used in conjunction with overflow: 'hidden' on the row
-     * containers.  Use at your own risk.
+     * containers.  This is enabled by default.
      */
     removeClippedSubviews: React.PropTypes.bool,
+    /**
+     * An array of child indices determining which children get docked to the
+     * top of the screen when scrolling. For example, passing
+     * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
+     * top of the scroll view. This property is not supported in conjunction
+     * with `horizontal={true}`.
+     * @platform ios
+     */
+    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number),
   },
 
   /**
@@ -228,6 +236,10 @@ var ListView = React.createClass({
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
+  scrollTo: function(destY, destX) {
+    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
+  },
+
   setNativeProps: function(props) {
     this.refs[SCROLLVIEW_REF].setNativeProps(props);
   },
@@ -243,6 +255,7 @@ var ListView = React.createClass({
       renderScrollComponent: props => <ScrollView {...props} />,
       scrollRenderAheadDistance: DEFAULT_SCROLL_RENDER_AHEAD,
       onEndReachedThreshold: DEFAULT_END_REACHED_THRESHOLD,
+      stickyHeaderIndices: [],
     };
   },
 
@@ -268,7 +281,6 @@ var ListView = React.createClass({
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
     this._sentEndForContentLength = null;
-    this._lastScrollPropertiesCheckedForPaging = null;
   },
 
   componentDidMount: function() {
@@ -282,13 +294,22 @@ var ListView = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     if (this.props.dataSource !== nextProps.dataSource) {
       this.setState((state, props) => {
-        var rowsToRender = Math.min(
-          state.curRenderedRowsCount + props.pageSize,
-          props.dataSource.getRowCount()
-        );
         this._prevRenderedRowsCount = 0;
         return {
-          curRenderedRowsCount: rowsToRender,
+          curRenderedRowsCount: Math.min(
+            state.curRenderedRowsCount + props.pageSize,
+            props.dataSource.getRowCount()
+          ),
+        };
+      });
+    }
+    if (this.props.initialListSize !== nextProps.initialListSize) {
+      this.setState((state, props) => {
+        return {
+          curRenderedRowsCount: Math.max(
+            state.curRenderedRowsCount,
+            props.initialListSize
+          ),
         };
       });
     }
@@ -396,7 +417,7 @@ var ListView = React.createClass({
     }
     Object.assign(props, {
       onScroll: this._onScroll,
-      stickyHeaderIndices: sectionHeaderIndices,
+      stickyHeaderIndices: this.props.stickyHeaderIndices.concat(sectionHeaderIndices),
 
       // Do not pass these events downstream to ScrollView since they will be
       // registered in ListView's own ScrollResponder.Mixin
@@ -435,24 +456,24 @@ var ListView = React.createClass({
   },
 
   _onContentSizeChange: function(width, height) {
-    this.scrollProperties.contentLength = !this.props.horizontal ?
-      height : width;
-    this._updateVisibleRows();
-    this._renderMoreRowsIfNeeded();
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(width, height);
+    var contentLength = !this.props.horizontal ? height : width;
+    if (contentLength !== this.scrollProperties.contentLength) {
+      this.scrollProperties.contentLength = contentLength;
+      this._updateVisibleRows();
+      this._renderMoreRowsIfNeeded();
     }
+    this.props.onContentSizeChange && this.props.onContentSizeChange(width, height);
   },
 
   _onLayout: function(event) {
     var {width, height} = event.nativeEvent.layout;
-    this.scrollProperties.visibleLength = !this.props.horizontal ?
-      height : width;
-    this._updateVisibleRows();
-    this._renderMoreRowsIfNeeded();
-    if (this.props.onLayout) {
-      this.props.onLayout(event);
-    }
+    var visibleLength = !this.props.horizontal ? height : width;
+    if (visibleLength !== this.scrollProperties.visibleLength) {
+      this.scrollProperties.visibleLength = visibleLength;
+      this._updateVisibleRows();
+      this._renderMoreRowsIfNeeded();
+    } 
+    this.props.onLayout && this.props.onLayout(event);
   },
 
   _maybeCallOnEndReached: function(event) {
@@ -474,13 +495,7 @@ var ListView = React.createClass({
       this._maybeCallOnEndReached();
       return;
     }
-
-    if (shallowEqual(this._lastScrollPropertiesCheckedForPaging, this.scrollProperties)) {
-      // distance from end of feed hasn't changed since last check, avoid paging twice..
-      return;
-    }
-    this._lastScrollPropertiesCheckedForPaging = {...this.scrollProperties};
-
+ 
     var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
       this._pageInNewRows();

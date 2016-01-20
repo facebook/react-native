@@ -18,7 +18,7 @@ namespace react {
 
 class JSExecutor;
 
-typedef std::function<void(std::string)> FlushImmediateCallback;
+typedef std::function<void(std::string, bool)> FlushImmediateCallback;
 
 class JSExecutorFactory : public Countable {
 public:

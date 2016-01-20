@@ -424,9 +424,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      resolveViewManager(view.getId()).onDropViewInstance(
-          (ThemedReactContext) view.getContext(),
-          view);
+      resolveViewManager(view.getId()).onDropViewInstance(view);
     }
     ViewManager viewManager = mTagsToViewManagers.get(view.getId());
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {

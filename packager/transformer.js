@@ -15,6 +15,8 @@ const fs = require('fs');
 const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
+const ReactPackager = require('./react-packager');
+const resolvePlugins = require('./react-packager/src/JSTransformer/resolvePlugins');
 
 const babelRC =
   json5.parse(
@@ -35,28 +37,13 @@ function transform(src, filename, options) {
   if (options.inlineRequires) {
     extraPlugins.push(inlineRequires);
   }
-  config.plugins = extraPlugins.concat(config.plugins);
-
-  // Manually resolve all default Babel plugins. babel.transform will attempt to resolve
-  // all base plugins relative to the file it's compiling. This makes sure that we're
-  // using the plugins installed in the react-native package.
-  config.plugins = config.plugins.map(function(plugin) {
-    // Normalise plugin to an array.
-    if (!Array.isArray(plugin)) {
-      plugin = [plugin];
-    }
-    // Only resolve the plugin if it's a string reference.
-    if (typeof plugin[0] === 'string') {
-      plugin[0] = require(`babel-plugin-${plugin[0]}`);
-      plugin[0] = plugin[0].__esModule ? plugin[0].default : plugin[0];
-    }
-    return plugin;
-  });
+  config.plugins = resolvePlugins(extraPlugins.concat(config.plugins));
 
   const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {
-    code: result.code
+    code: result.code,
+    filename: filename,
   };
 }
 

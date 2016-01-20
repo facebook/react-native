@@ -25,7 +25,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.ConnectionPool;
@@ -33,6 +32,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
 import okio.Okio;
 import okio.Sink;
 
@@ -55,7 +55,7 @@ public class DevServerHelper {
   private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.bundle?platform=android&dev=%s";
+      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
@@ -91,6 +91,7 @@ public class DevServerHelper {
   private boolean mOnChangePollingEnabled;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
+  private @Nullable Call mDownloadBundleFromURLCall;
 
   public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
@@ -120,10 +121,17 @@ public class DevServerHelper {
   }
 
   /**
-   * @return whether we should enabled dev mode or not when requesting JS bundles.
+   * @return whether we should enable dev mode when requesting JS bundles.
    */
   private boolean getDevMode() {
     return mSettings.isJSDevModeEnabled();
+  }
+
+  /**
+   * @return whether we should enabled HMR when requesting JS bundles.
+   */
+  private boolean getHMR() {
+    return mSettings.isHotModuleReplacementEnabled();
   }
 
   /**
@@ -160,27 +168,41 @@ public class DevServerHelper {
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private static String createBundleURL(String host, String jsModulePath, boolean devMode) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode);
+  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr) {
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr);
   }
 
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
       final String jsModulePath,
       final File outputFile) {
-    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode());
+    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR());
     Request request = new Request.Builder()
         .url(bundleURL)
         .build();
-    Call call = mClient.newCall(request);
-    call.enqueue(new Callback() {
+    mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
+    mDownloadBundleFromURLCall.enqueue(new Callback() {
       @Override
       public void onFailure(Request request, IOException e) {
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
         callback.onFailure(e);
       }
 
       @Override
       public void onResponse(Response response) throws IOException {
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
         // Check for server errors. If the server error has the expected form, fail with more info.
         if (!response.isSuccessful()) {
           String body = response.body().string();
@@ -205,6 +227,13 @@ public class DevServerHelper {
         }
       }
     });
+  }
+
+  public void cancelDownloadBundleFromURL() {
+    if (mDownloadBundleFromURLCall != null) {
+      mDownloadBundleFromURLCall.cancel();
+      mDownloadBundleFromURLCall = null;
+    }
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -354,17 +383,17 @@ public class DevServerHelper {
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode());
+    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode());
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the Chrome proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode());
+    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR());
   }
 }

@@ -11,7 +11,7 @@
 const Promise = require('promise');
 const {EventEmitter} = require('events');
 
-const fs = require('fs');
+const fs = require('graceful-fs');
 const path = require('path');
 
 const readFile = Promise.denodeify(fs.readFile);
@@ -293,11 +293,11 @@ class File {
   }
 
   getFiles() {
-    const files = [];
+    let files = [];
     Object.keys(this.children).forEach(key => {
       const file = this.children[key];
       if (file.isDir) {
-        files.push(...file.getFiles());
+        files = files.concat(file.getFiles());
       } else {
         files.push(file);
       }

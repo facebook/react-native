@@ -35,8 +35,8 @@ NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
 
 #pragma mark - Constants
 
-NSString const *RCTProfileTraceEvents = @"traceEvents";
-NSString const *RCTProfileSamples = @"samples";
+NSString *const RCTProfileTraceEvents = @"traceEvents";
+NSString *const RCTProfileSamples = @"samples";
 NSString *const RCTProfilePrefix = @"rct_profile_";
 
 #pragma mark - Variables
@@ -273,12 +273,12 @@ static void RCTProfileHookInstance(id instance)
   object_setClass(instance, proxyClass);
 }
 
-static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *, NSDictionary *);
+static UIView *(*originalCreateView)(RCTComponentData *, SEL, NSNumber *);
 
-RCT_EXTERN UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag, NSDictionary *props);
-UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag, NSDictionary *props)
+RCT_EXTERN UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag);
+UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag)
 {
-  UIView *view = originalCreateView(self, _cmd, tag, props);
+  UIView *view = originalCreateView(self, _cmd, tag);
 
   RCTProfileHookInstance(view);
 
@@ -305,7 +305,7 @@ void RCTProfileHookModules(RCTBridge *bridge)
       RCTProfileHookInstance([bridge.uiManager viewForReactTag:view]);
     }
 
-    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:props:));
+    Method createView = class_getInstanceMethod([RCTComponentData class], @selector(createViewWithTag:));
 
     if (method_getImplementation(createView) != (IMP)RCTProfileCreateView) {
       originalCreateView = (typeof(originalCreateView))method_getImplementation(createView);

@@ -66,9 +66,9 @@ RCT_EXPORT_MODULE()
   [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
 
   if (![self connectToProxy]) {
-    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If \
-                you are running on the device, check if you have the right IP \
-                address in `RCTWebSocketExecutor.m`.", _url);
+    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If "
+                 "you are running on the device, check if you have the right IP "
+                 "address in `RCTWebSocketExecutor.m`.", _url);
     [self invalidate];
     return;
   }
@@ -80,8 +80,9 @@ RCT_EXPORT_MODULE()
     retries--;
   }
   if (!runtimeIsReady) {
-    RCTLogError(@"Runtime is not ready. Make sure Chrome is running and not "
-                "paused on a breakpoint or exception and try reloading again.");
+    RCTLogError(@"Runtime is not ready for debugging.\n "
+                 "- Make sure Packager server is running.\n"
+                 "- Make sure Chrome is running and not paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
     return;
   }
@@ -125,7 +126,11 @@ RCT_EXPORT_MODULE()
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
-  RCTLogError(@"WebSocket connection failed with error %@", error);
+  dispatch_semaphore_signal(_socketOpenSemaphore);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Give the setUp method an opportunity to report an error first
+    RCTLogError(@"WebSocket connection failed with error %@", error);
+  });
 }
 
 - (void)sendMessage:(NSDictionary<NSString *, id> *)message waitForReply:(RCTWSMessageCallback)callback
@@ -135,7 +140,7 @@ RCT_EXPORT_MODULE()
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
       NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"socket closed"
+        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
       }];
       callback(error, nil);
       return;

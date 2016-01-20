@@ -10,6 +10,7 @@
 
 jest.dontMock('../')
   .dontMock('underscore')
+  .dontMock('PixelRatio')
   .dontMock('../../DependencyResolver/lib/extractRequires')
   .dontMock('../../DependencyResolver/lib/replacePatterns');
 
@@ -51,7 +52,7 @@ describe('Resolver', function() {
   }
 
   function createModule(id, dependencies) {
-    var module = new Module();
+    var module = new Module({});
     module.getName.mockImpl(() => Promise.resolve(id));
     module.getDependencies.mockImpl(() => Promise.resolve(dependencies));
     return module;

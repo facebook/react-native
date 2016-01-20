@@ -267,7 +267,7 @@ RCT_EXPORT_MODULE()
 }
 ```
 
-You can see we're setting the manager as the delegate for every view that it vends, then in the delegate method `-mapView:regionDidChangeAnimated:` the region is combined with the `reactTag` target to make an event that is dispatched to the corresponding React component instance in your application via `sendInputEventWithName:body:`.  The event name `@"topChange"` maps to the `onChange` callback prop in JavaScript (mappings are [here](https://github.com/facebook/react-native/blob/master/React/Modules/RCTUIManager.m#L1165)).  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
+You can see we're setting the manager as the delegate for every view that it vends, then in the delegate method `-mapView:regionDidChangeAnimated:` the region is combined with the `reactTag` target to make an event that is dispatched to the corresponding React component instance in your application via `sendInputEventWithName:body:`.  The event name `@"topChange"` maps to the `onChange` callback prop in JavaScript.  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
 
 ```javascript
 // MapView.js

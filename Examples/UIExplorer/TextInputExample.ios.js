@@ -202,52 +202,52 @@ class TokenizedTextExample extends React.Component {
 
 var BlurOnSubmitExample = React.createClass({
   focusNextField(nextField) {
-    this.refs[nextField].focus()
+    this.refs[nextField].focus();
   },
 
   render: function() {
     return (
       <View>
         <TextInput
-          ref='1'
+          ref="1"
           style={styles.default}
-          placeholder='blurOnSubmit = false'
-          returnKeyType='next'
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('2')}
         />
         <TextInput
-          ref='2'
+          ref="2"
           style={styles.default}
-          keyboardType='email-address'
-          placeholder='blurOnSubmit = false'
-          returnKeyType='next'
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('3')}
         />
         <TextInput
-          ref='3'
+          ref="3"
           style={styles.default}
-          keyboardType='url'
-          placeholder='blurOnSubmit = false'
-          returnKeyType='next'
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('4')}
         />
         <TextInput
-          ref='4'
+          ref="4"
           style={styles.default}
-          keyboardType='numeric'
-          placeholder='blurOnSubmit = false'
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('5')}
         />
         <TextInput
-          ref='5'
+          ref="5"
           style={styles.default}
-          keyboardType='numbers-and-punctuation'
-          placeholder='blurOnSubmit = true'
-          returnKeyType='done'
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
         />
       </View>
     );
@@ -335,7 +335,7 @@ exports.examples = [
     }
   },
   {
-    title: "Live Re-Write (no spaces allowed)",
+    title: 'Live Re-Write (no spaces allowed)',
     render: function() {
       return <RewriteExampleInvalidCharacters />;
     }
@@ -582,8 +582,8 @@ exports.examples = [
         <View>
           <TextInput
             style={styles.multiline}
-            placeholder='blurOnSubmit = true'
-            returnKeyType='next'
+            placeholder="blurOnSubmit = true"
+            returnKeyType="next"
             blurOnSubmit={true}
             multiline={true}
             onSubmitEditing={event => alert(event.nativeEvent.text)}

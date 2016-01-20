@@ -136,9 +136,12 @@ class SocketClient {
     delete this._resolvers[message.id];
 
     if (message.type === 'error') {
-      resolver.reject(new Error(
-        message.data + '\n' + 'See logs ' + LOG_PATH
-      ));
+      const errorLog =
+        message.data && message.data.indexOf('TimeoutError') === -1
+          ? 'See logs ' + LOG_PATH
+          : getServerLogs();
+
+      resolver.reject(new Error(message.data + '\n' + errorLog));
     } else {
       resolver.resolve(message.data);
     }

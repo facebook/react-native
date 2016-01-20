@@ -134,14 +134,14 @@ var TextInput = React.createClass({
     keyboardType: PropTypes.oneOf([
       // Cross-platform
       'default',
-      'numeric',
       'email-address',
+      'numeric',
+      'phone-pad',
       // iOS-only
       'ascii-capable',
       'numbers-and-punctuation',
       'url',
       'number-pad',
-      'phone-pad',
       'name-phone-pad',
       'decimal-pad',
       'twitter',
@@ -216,6 +216,10 @@ var TextInput = React.createClass({
      * Callback that is called when text input ends.
      */
     onEndEditing: PropTypes.func,
+    /**
+     * Callback that is called when the text input selection is changed
+     */
+    onSelectionChange: PropTypes.func,
     /**
      * Callback that is called when the text input's submit button is pressed.
      * Invalid if multiline={true} is specified.
@@ -474,11 +478,23 @@ var TextInput = React.createClass({
   },
 
   _renderAndroid: function() {
-    var autoCapitalize = UIManager.UIText.AutocapitalizationType[this.props.autoCapitalize];
-    var textAlign =
-      UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
+    var onSelectionChange;
+    if (this.props.selectionState || this.props.onSelectionChange) {
+      onSelectionChange = (event: Event) => {
+        if (this.props.selectionState) {
+          var selection = event.nativeEvent.selection;
+          this.props.selectionState.update(selection.start, selection.end);
+        }
+        this.props.onSelectionChange && this.props.onSelectionChange(event);
+      };
+    }
+
+    var autoCapitalize =
+      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
+    var textAlign = UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
     var textAlignVertical =
       UIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
+
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);
@@ -489,6 +505,7 @@ var TextInput = React.createClass({
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
+
     var textContainer =
       <AndroidTextInput
         ref="input"
@@ -505,6 +522,7 @@ var TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onSelectionChange={onSelectionChange}
         onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}

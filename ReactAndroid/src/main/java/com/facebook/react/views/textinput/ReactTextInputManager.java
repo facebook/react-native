@@ -16,6 +16,7 @@ import java.util.Map;
 import android.graphics.PorterDuff;
 import android.os.SystemClock;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.TextWatcher;
@@ -25,16 +26,14 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-import android.text.InputFilter;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -55,8 +54,13 @@ public class ReactTextInputManager extends
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
+  private static final int INPUT_TYPE_KEYBOARD_NUMBERED =
+      InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+          InputType.TYPE_NUMBER_FLAG_SIGNED;
+
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
+  private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
 
   @Override
@@ -166,6 +170,15 @@ public class ReactTextInputManager extends
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
   }
 
+  @ReactProp(name = "onSelectionChange", defaultBoolean = false)
+  public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
+    if (onSelectionChange) {
+      view.setSelectionWatcher(new ReactSelectionWatcher(view));
+    } else {
+      view.setSelectionWatcher(null);
+    }
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -244,49 +257,55 @@ public class ReactTextInputManager extends
   public void setPassword(ReactEditText view, boolean password) {
     updateStagedInputTypeFlag(
         view,
-        password ? 0 : InputType.TYPE_TEXT_VARIATION_PASSWORD,
+        password ? 0 :
+            InputType.TYPE_NUMBER_VARIATION_PASSWORD | InputType.TYPE_TEXT_VARIATION_PASSWORD,
         password ? InputType.TYPE_TEXT_VARIATION_PASSWORD : 0);
+    checkPasswordType(view);
   }
 
-  @ReactProp(name = "autoCapitalize", defaultInt = InputType.TYPE_CLASS_TEXT)
+  @ReactProp(name = "autoCapitalize")
   public void setAutoCapitalize(ReactEditText view, int autoCapitalize) {
-    int flagsToSet = 0;
-    switch (autoCapitalize) {
-      case InputType.TYPE_TEXT_FLAG_CAP_SENTENCES:
-      case InputType.TYPE_TEXT_FLAG_CAP_WORDS:
-      case InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS:
-      case InputType.TYPE_CLASS_TEXT:
-        flagsToSet = autoCapitalize;
-        break;
-      default:
-        throw new
-            JSApplicationCausedNativeException("Invalid autoCapitalize value: " + autoCapitalize);
-    }
     updateStagedInputTypeFlag(
         view,
         InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_CAP_WORDS |
             InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
-        flagsToSet);
+        autoCapitalize);
   }
 
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
-    int flagsToSet = 0;
+    int flagsToSet = InputType.TYPE_CLASS_TEXT;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
-      flagsToSet = InputType.TYPE_CLASS_NUMBER;
+      flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
-      flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+      flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+    } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = InputType.TYPE_CLASS_PHONE;
     }
     updateStagedInputTypeFlag(
         view,
-        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+        INPUT_TYPE_KEYBOARD_NUMBERED | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
+            InputType.TYPE_CLASS_TEXT,
         flagsToSet);
+    checkPasswordType(view);
   }
 
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
     view.commitStagedInputType();
+  }
+
+  // Sets the correct password type, since numeric and text passwords have different types
+  private static void checkPasswordType(ReactEditText view) {
+    if ((view.getStagedInputType() & INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
+        (view.getStagedInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+      // Text input type is numbered password, remove text password variation, add numeric one
+      updateStagedInputTypeFlag(
+          view,
+          InputType.TYPE_TEXT_VARIATION_PASSWORD,
+          InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+    }
   }
 
   private static void updateStagedInputTypeFlag(
@@ -360,7 +379,7 @@ public class ReactTextInputManager extends
               newText,
               oldText,
               start,
-              count > 0 ? start + count - 1 : start + before));
+              start + before));
     }
 
     @Override
@@ -418,6 +437,40 @@ public class ReactTextInputManager extends
         });
   }
 
+  private class ReactSelectionWatcher implements SelectionWatcher {
+
+    private ReactEditText mReactEditText;
+    private EventDispatcher mEventDispatcher;
+    private int mPreviousSelectionStart;
+    private int mPreviousSelectionEnd;
+
+    public ReactSelectionWatcher(ReactEditText editText) {
+      mReactEditText = editText;
+      ReactContext reactContext = (ReactContext) editText.getContext();
+      mEventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+    }
+
+    @Override
+    public void onSelectionChanged(int start, int end) {
+      // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
+      // To prevent double calling back into js we cache the result of the previous call and only
+      // forward it on if we have new values
+      if (mPreviousSelectionStart != start || mPreviousSelectionEnd != end) {
+        mEventDispatcher.dispatchEvent(
+            new ReactTextInputSelectionEvent(
+                mReactEditText.getId(),
+                SystemClock.uptimeMillis(),
+                start,
+                end
+            )
+        );
+
+        mPreviousSelectionStart = start;
+        mPreviousSelectionEnd = end;
+      }
+    }
+  }
+
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
@@ -430,6 +483,16 @@ public class ReactTextInputManager extends
         MapBuilder.of(
             "top", Gravity.TOP,
             "center", Gravity.CENTER_VERTICAL,
-            "bottom", Gravity.BOTTOM));
+            "bottom", Gravity.BOTTOM),
+        "AutoCapitalizationType",
+        MapBuilder.of(
+            "none",
+            0,
+            "characters",
+            InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
+            "words",
+            InputType.TYPE_TEXT_FLAG_CAP_WORDS,
+            "sentences",
+            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
   }
 }

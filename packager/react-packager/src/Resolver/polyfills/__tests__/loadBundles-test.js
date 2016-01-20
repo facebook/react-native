@@ -34,8 +34,7 @@ describe('loadBundles', () => {
 
   pit('shouldn\'t request already loaded bundles', () => {
     loadBundles.mockImpl((bundles, callback) => callback());
-    return global
-      .__loadBundles(['bundle.0'])
+    return global.__loadBundles(['bundle.0'])
       .then(() => global.__loadBundles(['bundle.0']))
       .then(() => expect(loadBundlesCalls.length).toBe(1));
   });

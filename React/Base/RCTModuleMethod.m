@@ -335,8 +335,8 @@ SEL RCTParseMethodSignature(NSString *methodSignature, NSArray<RCTMethodArgument
           return NO;
         }
 
-        RCT_BLOCK_ARGUMENT(^(NSError *error) {
-          NSDictionary *errorJSON = RCTJSErrorFromNSError(error);
+        RCT_BLOCK_ARGUMENT(^(NSString *code, NSString *message, NSError *error) {
+          NSDictionary *errorJSON = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
           [bridge enqueueCallback:json args:@[errorJSON]];
         });
       )

@@ -15,7 +15,7 @@ const Promise = require('promise');
 const writeFile = require('../writeFile');
 const writeSourceMap = require('./write-sourcemap');
 const MAGIC_UNBUNDLE_NUMBER = require('./magic-number');
-const MAGIC_UNBUNDLE_FILENAME = '.unbundle';
+const MAGIC_UNBUNDLE_FILENAME = 'UNBUNDLE'; // must not start with a dot, as that won't go into the apk
 const MODULES_DIR = 'js-modules';
 
 /**
