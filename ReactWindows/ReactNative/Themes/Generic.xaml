@@ -11,30 +11,30 @@
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Path x:Name="LeftBorderPath"
                               Stroke="{TemplateBinding LeftBorderBrush}" 
-                              StrokeThickness="{TemplateBinding LeftBorderThickness}"
+                              StrokeThickness="{TemplateBinding LeftBorderWidth}"
                               Data="{TemplateBinding LeftBorderGeometry}">
                         </Path>
                         <Path x:Name="TopBorderPath"
                               Stroke="{TemplateBinding TopBorderBrush}" 
-                              StrokeThickness="{TemplateBinding TopBorderThickness}"
+                              StrokeThickness="{TemplateBinding TopBorderWidth}"
                               Data="{TemplateBinding TopBorderGeometry}">
                         </Path>
                         <Path x:Name="RightBorderPath"
                               Stroke="{TemplateBinding RightBorderBrush}" 
-                              StrokeThickness="{TemplateBinding RightBorderThickness}"
+                              StrokeThickness="{TemplateBinding RightBorderWidth}"
                               Data="{TemplateBinding RightBorderGeometry}">
                         </Path>
                         <Path x:Name="BottomBorderPath"
                               Stroke="{TemplateBinding BottomBorderBrush}" 
-                              StrokeThickness="{TemplateBinding BottomBorderThickness}"
+                              StrokeThickness="{TemplateBinding BottomBorderWidth}"
                               Data="{TemplateBinding BottomBorderGeometry}">
                         </Path>
                         <ContentPresenter Content="{TemplateBinding Content}"
-                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                          Margin="{TemplateBinding Padding}"
-                          ContentTransitions="{TemplateBinding ContentTransitions}"
-                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Margin="{TemplateBinding Padding}"
+                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
