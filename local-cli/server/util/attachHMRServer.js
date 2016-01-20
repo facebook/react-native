@@ -168,18 +168,18 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   entryFile: client.bundleEntry,
                   platform: client.platform,
                   modules: modulesToUpdate,
-                });
+                })
               })
-              .then(update => {
-                if (!client) {
+              .then(bundle => {
+                if (!client || !bundle) {
                   return;
                 }
 
-                // check we actually want to send an HMR update
-                if (update) {
+                const hmrUpdate = bundle.getSource();
+                if (hmrUpdate) {
                   return JSON.stringify({
                     type: 'update',
-                    body: update,
+                    body: hmrUpdate,
                   });
                 }
               })
@@ -206,15 +206,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
                 return JSON.stringify({type: 'error', body});
               })
-              .then(bundle => {
+              .then(update => {
                 if (!client) {
                   return;
                 }
 
-                // check we actually want to send an HMR update
-                if (bundle) {
-                  client.ws.send(bundle);
-                }
+                client.ws.send(update);
               });
             },
             () => {
