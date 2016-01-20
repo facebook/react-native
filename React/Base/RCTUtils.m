@@ -219,7 +219,13 @@ CGSize RCTScreenSize()
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTExecuteOnMainThread(^{
-      size = [UIScreen mainScreen].bounds.size;
+      if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedDescending) {
+        CGSize pixelSize = [UIScreen mainScreen].nativeBounds.size;
+        CGFloat scale = RCTScreenScale();
+        size = (CGSize){pixelSize.width / scale, pixelSize.height / scale};
+      } else {
+        size = [UIScreen mainScreen].bounds.size;
+      }
     }, YES);
   });
 
@@ -242,6 +248,14 @@ CGFloat RCTFloorPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
   return floor(value * scale) / scale;
+}
+
+CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
+{
+  return (CGSize){
+    ceil(pointSize.width * scale),
+    ceil(pointSize.height * scale),
+  };
 }
 
 void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
@@ -399,18 +413,6 @@ UIAlertView *RCTAlertView(NSString *title,
     [alertView addButtonWithTitle:buttonTitle];
   }
   return alertView;
-}
-
-BOOL RCTImageHasAlpha(CGImageRef image)
-{
-  switch (CGImageGetAlphaInfo(image)) {
-    case kCGImageAlphaNone:
-    case kCGImageAlphaNoneSkipLast:
-    case kCGImageAlphaNoneSkipFirst:
-      return NO;
-    default:
-      return YES;
-  }
 }
 
 NSError *RCTErrorWithMessage(NSString *message)

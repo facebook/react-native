@@ -40,6 +40,9 @@ RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
 
+// Convert a size in points to pixels, rounded up to the nearest integral size
+RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);
+
 // Method swizzling
 RCT_EXTERN void RCTSwapClassMethods(Class cls, SEL original, SEL replacement);
 RCT_EXTERN void RCTSwapInstanceMethods(Class cls, SEL original, SEL replacement);
@@ -77,9 +80,6 @@ RCT_EXTERN UIAlertView *RCTAlertView(NSString *title,
                                      id delegate,
                                      NSString *cancelButtonTitle,
                                      NSArray<NSString *> *otherButtonTitles);
-
-// Return YES if image has an alpha component
-RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 
 // Create an NSError in the RCTErrorDomain
 RCT_EXTERN NSError *RCTErrorWithMessage(NSString *message);

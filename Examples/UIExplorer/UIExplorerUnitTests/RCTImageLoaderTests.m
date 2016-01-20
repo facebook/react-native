@@ -41,7 +41,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageURLLoader> loader = [[RCTImageLoaderTestsURLLoader1 alloc] initWithPriority:1.0 canLoadImageURLHandler:^BOOL(__unused NSURL *requestURL) {
     return YES;
-  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
+  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
     progressHandler(1, 1);
     completionHandler(nil, image);
     return nil;
@@ -50,7 +50,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[loader, imageLoader]; } launchOptions:nil];
 
-  [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
+  [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
   } completionBlock:^(NSError *loadError, id loadedImage) {
@@ -65,7 +65,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageURLLoader> loader1 = [[RCTImageLoaderTestsURLLoader1 alloc] initWithPriority:1.0 canLoadImageURLHandler:^BOOL(__unused NSURL *requestURL) {
     return YES;
-  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
+  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler) {
     progressHandler(1, 1);
     completionHandler(nil, image);
     return nil;
@@ -73,7 +73,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageURLLoader> loader2 = [[RCTImageLoaderTestsURLLoader2 alloc] initWithPriority:0.5 canLoadImageURLHandler:^BOOL(__unused NSURL *requestURL) {
     return YES;
-  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, __unused RCTImageLoaderProgressBlock progressHandler, __unused RCTImageLoaderCompletionBlock completionHandler) {
+  } loadImageURLHandler:^RCTImageLoaderCancellationBlock(__unused NSURL *imageURL, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, __unused RCTImageLoaderProgressBlock progressHandler, __unused RCTImageLoaderCompletionBlock completionHandler) {
     XCTFail(@"Should not have used loader2");
     return nil;
   }];
@@ -81,7 +81,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[loader1, loader2, imageLoader]; } launchOptions:nil];
 
-  [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:UIViewContentModeScaleAspectFit progressBlock:^(int64_t progress, int64_t total) {
+  [imageLoader loadImageWithTag:@"http://facebook.github.io/react/img/logo_og.png" size:CGSizeMake(100, 100) scale:1.0 resizeMode:RCTResizeModeContain progressBlock:^(int64_t progress, int64_t total) {
     XCTAssertEqual(progress, 1);
     XCTAssertEqual(total, 1);
   } completionBlock:^(NSError *loadError, id loadedImage) {
@@ -97,7 +97,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageDataDecoder> decoder = [[RCTImageLoaderTestsDecoder1 alloc] initWithPriority:1.0 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
     return YES;
-  } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
+  } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
     XCTAssertEqualObjects(imageData, data);
     completionHandler(nil, image);
     return nil;
@@ -106,7 +106,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[decoder, imageLoader]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:UIViewContentModeScaleToFill completionBlock:^(NSError *decodeError, id decodedImage) {
+  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:RCTResizeModeStretch completionBlock:^(NSError *decodeError, id decodedImage) {
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
   }];
@@ -120,7 +120,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageDataDecoder> decoder1 = [[RCTImageLoaderTestsDecoder1 alloc] initWithPriority:1.0 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
     return YES;
-  } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
+  } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, RCTImageLoaderCompletionBlock completionHandler) {
     XCTAssertEqualObjects(imageData, data);
     completionHandler(nil, image);
     return nil;
@@ -128,7 +128,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
 
   id<RCTImageDataDecoder> decoder2 = [[RCTImageLoaderTestsDecoder2 alloc] initWithPriority:0.5 canDecodeImageDataHandler:^BOOL(__unused NSData *imageData) {
     return YES;
-  } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(__unused NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused UIViewContentMode resizeMode, __unused RCTImageLoaderCompletionBlock completionHandler) {
+  } decodeImageDataHandler:^RCTImageLoaderCancellationBlock(__unused NSData *imageData, __unused CGSize size, __unused CGFloat scale, __unused RCTResizeMode resizeMode, __unused RCTImageLoaderCompletionBlock completionHandler) {
     XCTFail(@"Should not have used decoder2");
     return nil;
   }];
@@ -136,7 +136,7 @@ RCTDefineImageDecoder(RCTImageLoaderTestsDecoder2)
   RCTImageLoader *imageLoader = [RCTImageLoader new];
   NS_VALID_UNTIL_END_OF_SCOPE RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:nil moduleProvider:^{ return @[decoder1, decoder2, imageLoader]; } launchOptions:nil];
 
-  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:UIViewContentModeScaleToFill completionBlock:^(NSError *decodeError, id decodedImage) {
+  RCTImageLoaderCancellationBlock cancelBlock = [imageLoader decodeImageData:data size:CGSizeMake(1, 1) scale:1.0 resizeMode:RCTResizeModeStretch completionBlock:^(NSError *decodeError, id decodedImage) {
     XCTAssertEqualObjects(decodedImage, image);
     XCTAssertNil(decodeError);
   }];

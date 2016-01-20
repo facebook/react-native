@@ -35,7 +35,7 @@ static CGSize RCTCeilSize(CGSize size, CGFloat scale)
 }
 
 CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
-                     CGFloat destScale, UIViewContentMode resizeMode)
+                     CGFloat destScale, RCTResizeMode resizeMode)
 {
   if (CGSizeEqualToSize(destSize, CGSizeZero)) {
     // Assume we require the largest size available
@@ -58,16 +58,16 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
   if (resizeMode != UIViewContentModeScaleToFill) {
     targetAspect = destSize.width / destSize.height;
     if (aspect == targetAspect) {
-      resizeMode = UIViewContentModeScaleToFill;
+      resizeMode = RCTResizeModeStretch;
     }
   }
 
   switch (resizeMode) {
-    case UIViewContentModeScaleToFill: // stretch
+    case RCTResizeModeStretch:
 
       return (CGRect){CGPointZero, RCTCeilSize(destSize, destScale)};
 
-    case UIViewContentModeScaleAspectFit: // contain
+    case RCTResizeModeContain:
 
       if (targetAspect <= aspect) { // target is taller than content
 
@@ -79,9 +79,15 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
         sourceSize.height = destSize.height = destSize.height;
         sourceSize.width = sourceSize.height * aspect;
       }
-      return (CGRect){CGPointZero, RCTCeilSize(sourceSize, destScale)};
+      return (CGRect){
+        {
+          RCTFloorValue((destSize.width - sourceSize.width) / 2, destScale),
+          RCTFloorValue((destSize.height - sourceSize.height) / 2, destScale),
+        },
+        RCTCeilSize(sourceSize, destScale)
+      };
 
-    case UIViewContentModeScaleAspectFill: // cover
+    case RCTResizeModeCover:
 
       if (targetAspect <= aspect) { // target is taller than content
 
@@ -103,21 +109,28 @@ CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize,
           RCTCeilSize(sourceSize, destScale)
         };
       }
-
-    default:
-
-      RCTLogError(@"A resizeMode value of %zd is not supported", resizeMode);
-      return (CGRect){CGPointZero, RCTCeilSize(destSize, destScale)};
   }
+}
+
+CGAffineTransform RCTTransformFromTargetRect(CGSize sourceSize, CGRect targetRect)
+{
+  CGAffineTransform transform = CGAffineTransformIdentity;
+  transform = CGAffineTransformTranslate(transform,
+                                         targetRect.origin.x,
+                                         targetRect.origin.y);
+  transform = CGAffineTransformScale(transform,
+                                     targetRect.size.width / sourceSize.width,
+                                     targetRect.size.height / sourceSize.height);
+  return transform;
 }
 
 CGSize RCTTargetSize(CGSize sourceSize, CGFloat sourceScale,
                      CGSize destSize, CGFloat destScale,
-                     UIViewContentMode resizeMode,
+                     RCTResizeMode resizeMode,
                      BOOL allowUpscaling)
 {
   switch (resizeMode) {
-    case UIViewContentModeScaleToFill: // stretch
+    case RCTResizeModeStretch:
 
       if (!allowUpscaling) {
         CGFloat scale = sourceScale / destScale;
@@ -143,7 +156,7 @@ CGSize RCTTargetSize(CGSize sourceSize, CGFloat sourceScale,
 
 BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
                           CGSize destSize, CGFloat destScale,
-                          UIViewContentMode resizeMode)
+                          RCTResizeMode resizeMode)
 {
   if (CGSizeEqualToSize(destSize, CGSizeZero)) {
     // Assume we require the largest size available
@@ -161,16 +174,16 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
     aspect = sourceSize.width / sourceSize.height;
     targetAspect = destSize.width / destSize.height;
     if (aspect == targetAspect) {
-      resizeMode = UIViewContentModeScaleToFill;
+      resizeMode = RCTResizeModeStretch;
     }
   }
 
   switch (resizeMode) {
-    case UIViewContentModeScaleToFill: // stretch
+    case RCTResizeModeStretch:
 
       return destSize.width > sourceSize.width || destSize.height > sourceSize.height;
 
-    case UIViewContentModeScaleAspectFit: // contain
+    case RCTResizeModeContain:
 
       if (targetAspect <= aspect) { // target is taller than content
 
@@ -181,7 +194,7 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
         return destSize.height > sourceSize.height;
       }
 
-    case UIViewContentModeScaleAspectFill: // cover
+    case RCTResizeModeCover:
 
       if (targetAspect <= aspect) { // target is taller than content
 
@@ -191,33 +204,20 @@ BOOL RCTUpscalingRequired(CGSize sourceSize, CGFloat sourceScale,
 
         return destSize.width > sourceSize.width;
       }
-
-    default:
-
-      RCTLogError(@"A resizeMode value of %zd is not supported", resizeMode);
-      return NO;
   }
-}
-
-CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
-{
-  return (CGSize){
-    ceil(pointSize.width * scale),
-    ceil(pointSize.height * scale),
-  };
 }
 
 UIImage *__nullable RCTDecodeImageWithData(NSData *data,
                                            CGSize destSize,
                                            CGFloat destScale,
-                                           UIViewContentMode resizeMode)
+                                           RCTResizeMode resizeMode)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
   if (!sourceRef) {
     return nil;
   }
 
-  // get original image size
+  // Get original image size
   CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(sourceRef, 0, NULL);
   if (!imageProperties) {
     CFRelease(sourceRef);
@@ -237,8 +237,14 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data,
     destScale = RCTScreenScale();
   }
 
-  // calculate target size
-  CGSize targetSize = RCTTargetSize(sourceSize, 1, destSize, destScale, resizeMode, YES);
+  if (resizeMode == UIViewContentModeScaleToFill) {
+    // Decoder cannot change aspect ratio, so RCTResizeModeStretch is equivalent
+    // to RCTResizeModeCover for our purposes
+    resizeMode = RCTResizeModeCover;
+  }
+
+  // Calculate target size
+  CGSize targetSize = RCTTargetSize(sourceSize, 1, destSize, destScale, resizeMode, NO);
   CGSize targetPixelSize = RCTSizeInPixels(targetSize, destScale);
   CGFloat maxPixelSize = fmax(fmin(sourceSize.width, targetPixelSize.width),
                               fmin(sourceSize.height, targetPixelSize.height));
@@ -250,14 +256,14 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data,
     (id)kCGImageSourceThumbnailMaxPixelSize: @(maxPixelSize),
   };
 
-  // get thumbnail
+  // Get thumbnail
   CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
   CFRelease(sourceRef);
   if (!imageRef) {
     return nil;
   }
 
-  // return image
+  // Return image
   UIImage *image = [UIImage imageWithCGImage:imageRef
                                        scale:destScale
                                  orientation:UIImageOrientationUp];
@@ -297,4 +303,34 @@ NSData *__nullable RCTGetImageData(CGImageRef image, float quality)
   }
   CFRelease(destination);
   return (__bridge_transfer NSData *)imageData;
+}
+
+UIImage *__nullable RCTTransformImage(UIImage *image,
+                                      CGSize destSize,
+                                      CGFloat destScale,
+                                      CGAffineTransform transform)
+{
+  if (destSize.width <= 0 | destSize.height <= 0 || destScale <= 0) {
+    return nil;
+  }
+
+  UIGraphicsBeginImageContextWithOptions(destSize, NO, destScale);
+  CGContextRef currentContext = UIGraphicsGetCurrentContext();
+  CGContextConcatCTM(currentContext, transform);
+  [image drawAtPoint:CGPointZero];
+  UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsGetCurrentContext();
+  return result;
+}
+
+BOOL RCTImageHasAlpha(CGImageRef image)
+{
+  switch (CGImageGetAlphaInfo(image)) {
+    case kCGImageAlphaNone:
+    case kCGImageAlphaNoneSkipLast:
+    case kCGImageAlphaNoneSkipFirst:
+      return NO;
+    default:
+      return YES;
+  }
 }
