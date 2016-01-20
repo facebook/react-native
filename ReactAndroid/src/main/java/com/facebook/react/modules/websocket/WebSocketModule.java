@@ -10,6 +10,7 @@
 package com.facebook.react.modules.websocket;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
@@ -17,6 +18,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -57,7 +62,8 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void connect(final String url, final int id) {
+  public void connect(final String url, @Nullable final ReadableArray protocols, @Nullable final ReadableMap options, final int id) {
+    // ignoring protocols, since OKHttp overrides them.
     OkHttpClient client = new OkHttpClient();
 
     client.setConnectTimeout(10, TimeUnit.SECONDS);
@@ -65,12 +71,21 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     // Disable timeouts for read
     client.setReadTimeout(0, TimeUnit.MINUTES);
 
-    Request request = new Request.Builder()
+    Request.Builder builder = new Request.Builder()
         .tag(id)
-        .url(url)
-        .build();
+        .url(url);
 
-    WebSocketCall.create(client, request).enqueue(new WebSocketListener() {
+    if (options != null && options.hasKey("origin")) {
+      if (ReadableType.String.equals(options.getType("origin"))) {
+        builder.addHeader("Origin", options.getString("origin"));
+      } else {
+        FLog.w(
+          ReactConstants.TAG,
+          "Ignoring: requested origin, value not a string");
+      }
+    }
+
+    WebSocketCall.create(client, builder.build()).enqueue(new WebSocketListener() {
 
       @Override
       public void onOpen(WebSocket webSocket, Response response) {

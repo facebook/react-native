@@ -26,15 +26,16 @@ var CLOSE_NORMAL = 1000;
  * Browser-compatible WebSockets implementation.
  *
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+ * See https://github.com/websockets/ws
  */
 class WebSocket extends WebSocketBase {
   _socketId: number;
   _subs: any;
 
-  connectToSocketImpl(url: string): void {
+  connectToSocketImpl(url: string, protocols: ?Array<string>, options: ?{origin?: string}): void {
     this._socketId = WebSocketId++;
 
-    RCTWebSocketModule.connect(url, this._socketId);
+    RCTWebSocketModule.connect(url, protocols, options, this._socketId);
 
     this._registerEvents(this._socketId);
   }

@@ -33,19 +33,23 @@ class WebSocketBase extends EventTarget {
   readyState: number;
   url: ?string;
 
-  constructor(url: string, protocols: ?any) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
     super();
     this.CONNECTING = 0;
     this.OPEN = 1;
     this.CLOSING = 2;
     this.CLOSED = 3;
 
-    if (!protocols) {
-      protocols = [];
+    if (typeof protocols === 'string') {
+      protocols = [protocols];
+    }
+
+    if (!Array.isArray(protocols)) {
+      protocols = null;
     }
 
     this.readyState = this.CONNECTING;
-    this.connectToSocketImpl(url);
+    this.connectToSocketImpl(url, protocols, options);
   }
 
   close(): void {
