@@ -1,173 +1,18 @@
 ﻿using Facebook.CSSLayout;
-using System.Diagnostics;
 using System.Numerics;
 using Windows.Foundation;
-using Windows.Foundation.Numerics;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Vector2 = System.Numerics.Vector2;
 
 namespace ReactNative.UIManager
 {
     /// <summary>
     /// A single child control for managing a border.
     /// </summary>
-    public class BorderedContentControl : ContentControl
+    public partial class BorderedContentControl : ContentControl
     {
-        #region DependencyProperties
-        public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register("CornerRadius",
-            typeof(CornerRadius),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public CornerRadius CornerRadius
-        {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
-        }
-        #region Left Border
-        public static readonly DependencyProperty LeftBorderGeometryProperty = DependencyProperty.Register("LeftBorderGeometry",
-            typeof(GeometryGroup),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public GeometryGroup LeftBorderGeometry
-        {
-            get { return (GeometryGroup)GetValue(LeftBorderGeometryProperty); }
-            set { SetValue(LeftBorderGeometryProperty, value); }
-        }
-
-        public static readonly DependencyProperty LeftBorderThicknessProperty = DependencyProperty.Register("LeftBorderThickness",
-            typeof(double),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public double LeftBorderThickness
-        {
-            get { return (double)GetValue(LeftBorderThicknessProperty); }
-            set { SetValue(LeftBorderThicknessProperty, value); }
-        }
-
-        public static readonly DependencyProperty LeftBorderBrushProperty = DependencyProperty.Register("LeftBorderBrush",
-            typeof(Brush),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-        public Brush LeftBorderBrush
-        {
-            get { return (Brush)GetValue(LeftBorderBrushProperty); }
-            set { SetValue(LeftBorderBrushProperty, value); }
-        }
-        #endregion
-
-        #region TopBorder
-        public static readonly DependencyProperty TopBorderGeometryProperty = DependencyProperty.Register("TopBorderGeometry",
-            typeof(GeometryGroup),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public GeometryGroup TopBorderGeometry
-        {
-            get { return (GeometryGroup)GetValue(TopBorderGeometryProperty); }
-            set { SetValue(TopBorderGeometryProperty, value); }
-        }
-
-        public static readonly DependencyProperty TopBorderThicknessProperty = DependencyProperty.Register("TopBorderThickness",
-            typeof(double),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public double TopBorderThickness
-        {
-            get { return (double)GetValue(TopBorderThicknessProperty); }
-            set { SetValue(TopBorderThicknessProperty, value); }
-        }
-
-        public static readonly DependencyProperty TopBorderBrushProperty = DependencyProperty.Register("TopBorderBrush",
-            typeof(Brush),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-        public Brush TopBorderBrush
-        {
-            get { return (Brush)GetValue(TopBorderBrushProperty); }
-            set { SetValue(TopBorderBrushProperty, value); }
-        }
-        #endregion
-
-        #region RightBorder
-        public static readonly DependencyProperty RightBorderGeometryProperty = DependencyProperty.Register("RightBorderGeometry",
-            typeof(GeometryGroup),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public GeometryGroup RightBorderGeometry
-        {
-            get { return (GeometryGroup)GetValue(RightBorderGeometryProperty); }
-            set { SetValue(RightBorderGeometryProperty, value); }
-        }
-
-        public static readonly DependencyProperty RightBorderThicknessProperty = DependencyProperty.Register("RightBorderThickness",
-            typeof(double),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public double RightBorderThickness
-        {
-            get { return (double)GetValue(RightBorderThicknessProperty); }
-            set { SetValue(RightBorderThicknessProperty, value); }
-        }
-
-        public static readonly DependencyProperty RightBorderBrushProperty = DependencyProperty.Register("RightBorderBrush",
-            typeof(Brush),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-        public Brush RightBorderBrush
-        {
-            get { return (Brush)GetValue(RightBorderBrushProperty); }
-            set { SetValue(RightBorderBrushProperty, value); }
-        }
-        #endregion
-
-        #region BottomBorder
-        public static readonly DependencyProperty BottomBorderGeometryProperty = DependencyProperty.Register("BottomBorderGeometry",
-             typeof(GeometryGroup),
-             typeof(BorderedContentControl),
-             new PropertyMetadata(null));
-
-        public GeometryGroup BottomBorderGeometry
-        {
-            get { return (GeometryGroup)GetValue(BottomBorderGeometryProperty); }
-            set { SetValue(BottomBorderGeometryProperty, value); }
-        }
-
-        public static readonly DependencyProperty BottomBorderThicknessProperty = DependencyProperty.Register("BottomBorderThickness",
-            typeof(double),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(null));
-
-        public double BottomBorderThickness
-        {
-            get { return (double)GetValue(BottomBorderThicknessProperty); }
-            set { SetValue(BottomBorderThicknessProperty, value); }
-        }
-
-        public static readonly DependencyProperty BottomBorderBrushProperty = DependencyProperty.Register("BottomBorderBrush",
-            typeof(Brush),
-            typeof(BorderedContentControl),
-            new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-        public Brush BottomBorderBrush
-        {
-            get { return (Brush)GetValue(BottomBorderBrushProperty); }
-            set { SetValue(BottomBorderBrushProperty, value); }
-        }
-        #endregion
-        #endregion
-
         /// <summary>
         /// Instantiates the <see cref="BorderedContentControl"/>.
         /// </summary>
@@ -204,26 +49,22 @@ namespace ReactNative.UIManager
             var leftGeometry = new GeometryGroup();
 
             // upper left lower corner
-            leftGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(upperLeftLowerPoint,
+            leftGeometry.Children.Add(CreateCornerGeometry(upperLeftLowerPoint,
                     upperLeftUpperPoint,
                     upperLeftCenterPoint,
-                    CornerRadius.TopLeft, SweepDirection.Clockwise)
-            });
+                    CornerRadius.TopLeft, 
+                    SweepDirection.Clockwise));
 
             leftGeometry.Children.Add(new LineGeometry() {StartPoint = upperLeftLowerPoint,
                 EndPoint = lowerLeftUpperPoint
             });
 
             // lower left upper half
-            leftGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(lowerLeftUpperPoint,
+            leftGeometry.Children.Add(CreateCornerGeometry(lowerLeftUpperPoint,
                     lowerLeftLowerPoint,
                     lowerLeftCenterPoint,
-                    CornerRadius.BottomLeft, SweepDirection.Counterclockwise)
-            });
+                    CornerRadius.BottomLeft, 
+                    SweepDirection.Counterclockwise));
 
             LeftBorderGeometry = leftGeometry;
 
@@ -231,13 +72,11 @@ namespace ReactNative.UIManager
             var topGeometry = new GeometryGroup();
 
             // upper left upper half
-            topGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(upperLeftUpperPoint,
+            topGeometry.Children.Add(CreateCornerGeometry(upperLeftUpperPoint,
                     upperLeftLowerPoint,
                     upperLeftCenterPoint,
-                    CornerRadius.TopLeft, SweepDirection.Counterclockwise)
-            });
+                    CornerRadius.TopLeft, 
+                    SweepDirection.Counterclockwise));
 
             topGeometry.Children.Add(new LineGeometry()
             {
@@ -246,13 +85,11 @@ namespace ReactNative.UIManager
             });
 
             // upper right upper half
-            topGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(upperRightUpperPoint,
+            topGeometry.Children.Add(CreateCornerGeometry(upperRightUpperPoint,
                     upperRightLowerPoint,
                     upperRightCenterPoint,
-                    CornerRadius.TopRight, SweepDirection.Clockwise)
-            });
+                    CornerRadius.TopRight, 
+                    SweepDirection.Clockwise));
 
             TopBorderGeometry = topGeometry;
 
@@ -260,13 +97,11 @@ namespace ReactNative.UIManager
             var rightGeometry = new GeometryGroup();
 
             //upper right lower half
-            rightGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(upperRightLowerPoint,
+            rightGeometry.Children.Add(CreateCornerGeometry(upperRightLowerPoint,
                     upperRightUpperPoint,
                     upperRightCenterPoint,
-                    CornerRadius.TopRight, SweepDirection.Counterclockwise)
-            });
+                    CornerRadius.TopRight, 
+                    SweepDirection.Counterclockwise));
 
             rightGeometry.Children.Add(new LineGeometry()
             {
@@ -275,13 +110,11 @@ namespace ReactNative.UIManager
             });
 
             // lower right upper half
-            rightGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(lowerRightUpperPoint,
+            rightGeometry.Children.Add(CreateCornerGeometry(lowerRightUpperPoint,
                     lowerRigthLowerPoint,
                     lowerRightCenterPoint,
-                    CornerRadius.BottomRight, SweepDirection.Clockwise)
-            });
+                    CornerRadius.BottomRight, 
+                    SweepDirection.Clockwise));
 
             RightBorderGeometry = rightGeometry;
 
@@ -289,13 +122,11 @@ namespace ReactNative.UIManager
             var bottomGeometry = new GeometryGroup();
 
             //lower right lower half
-            bottomGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(lowerRigthLowerPoint,
+            bottomGeometry.Children.Add(CreateCornerGeometry(lowerRigthLowerPoint,
                     lowerRightUpperPoint,
                     lowerRightCenterPoint,
-                    CornerRadius.BottomRight, SweepDirection.Counterclockwise)
-            });
+                    CornerRadius.BottomRight, 
+                    SweepDirection.Counterclockwise));
 
             bottomGeometry.Children.Add(new LineGeometry()
             {
@@ -304,35 +135,33 @@ namespace ReactNative.UIManager
             });
 
             // lower left lower half
-            bottomGeometry.Children.Add(new PathGeometry
-            {
-                Figures = CreateFiguresForCorner(lowerLeftLowerPoint,
+            bottomGeometry.Children.Add(CreateCornerGeometry(lowerLeftLowerPoint,
                     lowerLeftUpperPoint,
                     lowerLeftCenterPoint,
-                    CornerRadius.BottomLeft, SweepDirection.Clockwise)
-            });
+                    CornerRadius.BottomLeft, 
+                    SweepDirection.Clockwise));
 
             BottomBorderGeometry = bottomGeometry;
         }
 
-        private PathFigureCollection CreateFiguresForCorner(Point startPoint, Point endPoint, Point centerPoint, double radius, SweepDirection sweepDirection)
+        private PathGeometry CreateCornerGeometry(Point startPoint, Point endPoint, Point centerPoint, double radius, SweepDirection sweepDirection)
         {
-            var figures = new PathFigureCollection();
-            var figure = new PathFigure() {StartPoint = startPoint };
+            var geometry = new PathGeometry();
+
+            var figure = new PathFigure() { StartPoint = startPoint };
             if (radius > 0)
             {
-                figure.Segments.Add(GetArcSegment(startPoint, endPoint, centerPoint, radius, sweepDirection));
+                figure.Segments.Add(CreateArcSegment(startPoint, endPoint, centerPoint, radius, sweepDirection));
             }
             else
             {
-                figure.Segments.Add(new LineSegment() { Point = endPoint});
-                //figure.Segments.Add(new QuadraticBezierSegment() { Point1  = startPoint, Point2 = endPoint});
+                figure.Segments.Add(new LineSegment() { Point = endPoint });
             }
-            figures.Add(figure);
-            return figures;
+            geometry.Figures.Add(figure);
+            return geometry;
         }
 
-        private ArcSegment GetArcSegment(Point startPoint, Point endPoint, Point centerPoint, double radius, SweepDirection sweepDirection)
+        private ArcSegment CreateArcSegment(Point startPoint, Point endPoint, Point centerPoint, double radius, SweepDirection sweepDirection)
         {
             return new ArcSegment()
             {
