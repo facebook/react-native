@@ -648,6 +648,7 @@ var Navigator = React.createClass({
     if (this.spring.getCurrentValue() === 0) {
       // The spring is at zero, so the gesture is already complete
       this.spring.setCurrentValue(0).setAtRest();
+      this._detachGesture();
       this._completeTransition();
       return;
     }
