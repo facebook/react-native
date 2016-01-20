@@ -18,6 +18,7 @@ const Cache = require('../DependencyResolver/Cache');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
+const HMRBundle = require('./HMRBundle');
 const PrepackBundle = require('./PrepackBundle');
 const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
@@ -155,31 +156,54 @@ class Bundler {
     return this._bundlesLayout.generateLayout(main, isDev);
   }
 
-  bundle({
+  bundle(options) {
+    return this._bundle({
+      bundle: new Bundle(options.sourceMapUrl),
+      includeSystemDependencies: true,
+      ...options,
+    });
+  }
+
+  bundleForHMR(options) {
+    return this._bundle({
+      bundle: new HMRBundle(),
+      hot: true,
+      ...options,
+    });
+  }
+
+  _bundle({
+    bundle,
+    modules,
     entryFile,
     runModule: runMainModule,
     runBeforeMainModule,
-    sourceMapUrl,
     dev: isDev,
+    includeSystemDependencies,
     platform,
     unbundle: isUnbundle,
     hot: hot,
   }) {
-    // Const cannot have the same name as the method (babel/babel#2834)
-    const bbundle = new Bundle(sourceMapUrl);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    const moduleSystem = this._resolver.getModuleSystemDependencies(
-      { dev: isDev, platform, isUnbundle }
-    );
-
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
+      bundle.setMainModuleId(response.mainModuleId);
       transformEventId = Activity.startEvent('transform');
 
-      // Prepend the module system polyfill to the top of dependencies
-      var dependencies = moduleSystem.concat(response.dependencies);
+      const moduleSystemDeps = includeSystemDependencies
+        ? this._resolver.getModuleSystemDependencies(
+          { dev: isDev, platform, isUnbundle }
+        )
+        : [];
+
+      const modulesToProcess = modules || response.dependencies;
+      const dependencies = moduleSystemDeps.concat(modulesToProcess);
+
+      bundle.setNumPrependedModules && bundle.setNumPrependedModules(
+        response.numPrependedDependencies + moduleSystemDeps.length
+      );
 
       let bar;
       if (process.stdout.isTTY) {
@@ -191,34 +215,41 @@ class Bundler {
         });
       }
 
-      bbundle.setMainModuleId(response.mainModuleId);
-      bbundle.setNumPrependedModules(
-        response.numPrependedDependencies + moduleSystem.length);
       return Promise.all(
         dependencies.map(
-          module => this._transformModule(
-            bbundle,
+          module => {
+            return this._transformModule(
+              bundle,
+              response,
+              module,
+              platform,
+              hot,
+            ).then(transformed => {
+              if (bar) {
+                bar.tick();
+              }
+
+              return {
+                module,
+                transformed,
+              };
+            });
+          }
+        )
+      ).then(transformedModules => Promise.all(
+        transformedModules.map(({module, transformed}) => {
+          return bundle.addModule(
+            this._resolver,
             response,
             module,
-            platform,
-            hot,
-          ).then(transformed => {
-            if (bar) {
-              bar.tick();
-            }
-            return this._wrapTransformedModule(response, module, transformed);
-          })
-        )
-      );
-    }).then((transformedModules) => {
+            transformed,
+          );
+        })
+      ));
+    }).then(() => {
       Activity.endEvent(transformEventId);
-
-      transformedModules.forEach(function(moduleTransport) {
-        bbundle.addModule(moduleTransport);
-      });
-
-      bbundle.finalize({runBeforeMainModule, runMainModule});
-      return bbundle;
+      bundle.finalize({runBeforeMainModule, runMainModule});
+      return bundle;
     });
   }
 
@@ -282,35 +313,6 @@ class Bundler {
       bundle.finalize({runBeforeMainModule, runMainModule, mainModuleId });
       return bundle;
     });
-  }
-
-  bundleForHMR({entryFile, platform, modules}) {
-    return this.getDependencies(entryFile, /*isDev*/true, platform)
-      .then(response => {
-        return Promise.all(
-          modules.map(module => {
-            return Promise.all([
-              module.getName(),
-              this._transformModuleForHMR(module, platform),
-            ]).then(([moduleName, transformed]) => {
-              return this._resolver.resolveRequires(response,
-                module,
-                transformed.code,
-              ).then(({name, code}) => {
-                return (`
-                  __accept(
-                    '${moduleName}',
-                    function(global, require, module, exports) {
-                      ${code}
-                    }
-                  );
-                `);
-              });
-            });
-          })
-        );
-      })
-      .then(modules => modules.join('\n'));
   }
 
   _transformModuleForHMR(module, platform) {
@@ -399,23 +401,6 @@ class Bundler {
         ),
       );
     }
-  }
-
-  _wrapTransformedModule(response, module, transformed) {
-    return this._resolver.wrapModule(
-      response,
-      module,
-      transformed.code
-    ).then(
-      ({code, name}) => new ModuleTransport({
-        code,
-        name,
-        map: transformed.map,
-        sourceCode: transformed.sourceCode,
-        sourcePath: transformed.sourcePath,
-        virtual: transformed.virtual,
-      })
-    );
   }
 
   getGraphDebugInfo() {
