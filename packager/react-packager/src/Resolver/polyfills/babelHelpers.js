@@ -11,7 +11,7 @@
 /* eslint-disable strict */
 
 // Created by running:
-// require('babel-core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits  interopRequireDefault interopRequireWildcard objectWithoutProperties possibleConstructorReturn slicedToArray taggedTemplateLiteral toConsumableArray '.split(' '))
+// require('babel-core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits  interopRequireDefault interopRequireWildcard objectWithoutProperties possibleConstructorReturn slicedToArray taggedTemplateLiteral toArray toConsumableArray '.split(' '))
 // then replacing the `global` reference in the last line to also use `this`.
 //
 // actually, that's a lie, because babel6 omits _extends and createRawReactElement
@@ -214,6 +214,10 @@
         value: Object.freeze(raw)
       }
     }));
+  };
+
+  babelHelpers.toArray = function (arr) {
+    return Array.isArray(arr) ? arr : Array.from(arr);
   };
 
   babelHelpers.toConsumableArray = function (arr) {
