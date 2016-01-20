@@ -57,6 +57,7 @@ var ListViewSimpleExample = React.createClass({
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
           renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator} />}
         />
       </UIExplorerPage>
     );
@@ -74,7 +75,6 @@ var ListViewSimpleExample = React.createClass({
               {rowData + ' - ' + LOREM_IPSUM.substr(0, rowHash % 301 + 10)}
             </Text>
           </View>
-          <View style={styles.separator} />
         </View>
       </TouchableHighlight>
     );
