@@ -70,6 +70,7 @@ public class ViewProps {
   public static final String ON = "on";
   public static final String RESIZE_MODE = "resizeMode";
   public static final String TEXT_ALIGN = "textAlign";
+  public static final String TEXT_DECORATION_LINE = "textDecorationLine";
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
