@@ -71,6 +71,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   @SuppressLint("DeprecatedMethod")
   @ReactMethod
   public void setString(String text) {
+    ReactApplicationContext reactContext = getReactApplicationContext();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
       ClipData clipdata = ClipData.newPlainText(null, text);
       ClipboardManager clipboard = getClipboardService();
