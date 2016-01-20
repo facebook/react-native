@@ -44,8 +44,7 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   }
 
   private ClipboardManager getClipboardService() {
-    ReactApplicationContext reactContext = getReactApplicationContext();
-    return (ClipboardManager) reactContext.getSystemService(reactContext.CLIPBOARD_SERVICE);
+    return (ClipboardManager) getReactApplicationContext().getSystemService(getReactApplicationContext().CLIPBOARD_SERVICE);
   }
 
   private String getStringInternal(){
@@ -63,23 +62,12 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getString(Callback cb) {
-    try {
-      String ret = this.getStringInternal();
-      cb.invoke(ret);
-    } catch(Exception e) {
-      FLog.w(ReactConstants.TAG, "Cannot get clipboard contents: " + e.getMessage());
-    }
-  }
-
-  @ReactMethod
-  public void getStringSync(Promise promise){
+  public void getString(Promise promise){
     try {
       String ret = this.getStringInternal();
       promise.resolve(ret);
     } catch(Exception e) {
-      FLog.w(ReactConstants.TAG, "Cannot get clipboard contents: " + e.getMessage());
-      promise.reject(e.getMessage());
+      promise.reject(e);
     }
   }
 

@@ -1,0 +1,48 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule Clipboard
+ */
+'use strict';
+
+var Clipboard = require('NativeModules').Clipboard;
+
+/**
+ * `Clipboard` give you an interface for setting and getting content from Clipboard, which is supported both iOS and Android
+ */
+module.exports = {
+  /**
+   * Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
+   * ```javascript
+   * async _getContent(){
+   *   var content = await Clipboard.getString();
+   * }
+   * ```
+   * @param this parameter is deprecated. callback is function with one argument of string type
+   */
+  getString(callback) {
+    if (callback) {
+        console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
+        Clipboard.getString().then(callback);
+        return;
+    }
+    return Clipboard.getString();
+  },
+  /**
+   * Set content of string type. You can use following code to set clipboard content
+   * ```javascript
+   * _setContent(){
+   *   Clipboard.setString('hello world');
+   * }
+   * ```
+   * @param this parameter is content that will be set into clipboard.
+   */
+  setString(content){
+    Clipboard.setString(content);
+  }
+};
