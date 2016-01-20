@@ -11,7 +11,6 @@
  */
 'use strict';
 
-var Map = require('Map');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTPushNotificationManager = require('NativeModules').PushNotificationManager;
 var invariant = require('invariant');

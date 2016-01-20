@@ -14,7 +14,6 @@
 
 const EventEmitter = require('EventEmitter');
 import type EmitterSubscription from 'EmitterSubscription';
-const Map = require('Map');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
