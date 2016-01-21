@@ -35,6 +35,13 @@ Make absolutely sure a basic iOS and Android workflow works on the release branc
 
   - Check git history, the last commit should be "[0.19-rc] Bump version numbers" (with the correct version)
   - `git push origin 0.version_you_are_releasing-stable`
+  
+## Make sure we have release notes
+
+Post that we're ready to release so voluteers can write release notes:
+https://github.com/facebook/react-native/releases
+
+To through all the commits that went into a release, one way is to use the github compare view: https://github.com/facebook/react-native/compare/0.18-stable...0.19-stable
 
 ## Do a release
 
