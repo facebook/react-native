@@ -33,7 +33,7 @@ const trim = (str) =>
 describe('dead-module-elimination', () => {
   it('should inline __DEV__', () => {
     compare(
-      `__DEV__ = false;
+      `global.__DEV__ = false;
       var foo = __DEV__;`,
       `var foo = false;`
     );
@@ -41,7 +41,7 @@ describe('dead-module-elimination', () => {
 
   it('should accept unary operators with literals', () => {
     compare(
-      `__DEV__ = !1;
+      `global.__DEV__ = !1;
       var foo = __DEV__;`,
       `var foo = false;`
     );
@@ -49,7 +49,7 @@ describe('dead-module-elimination', () => {
 
   it('should kill dead branches', () => {
     compare(
-      `__DEV__ = false;
+      `global.__DEV__ = false;
       if (__DEV__) {
         doSomething();
       }`,
@@ -74,7 +74,7 @@ describe('dead-module-elimination', () => {
 
   it('should kill modules referenced only from dead branches', () => {
     compare(
-      `__DEV__ = false;
+      `global.__DEV__ = false;
       __d('bar', function() {});
       if (__DEV__) { require('bar'); }`,
       ``
@@ -83,7 +83,7 @@ describe('dead-module-elimination', () => {
 
   it('should replace logical expressions with the result', () => {
     compare(
-      `__DEV__ = false;
+      `global.__DEV__ = false;
       __d('bar', function() {});
       __DEV__ && require('bar');`,
       `false;`
@@ -92,7 +92,7 @@ describe('dead-module-elimination', () => {
 
   it('should keep if result branch', () => {
     compare(
-      `__DEV__ = false;
+      `global.__DEV__ = false;
       __d('bar', function() {});
       if (__DEV__) {
         killWithFire();
@@ -106,7 +106,7 @@ describe('dead-module-elimination', () => {
 
   it('should replace falsy ternaries with alternate expression', () => {
     compare(
-      `__DEV__ = false;
+      `global.__DEV__ = false;
       __DEV__ ? foo() : bar();
       `,
       `bar();`

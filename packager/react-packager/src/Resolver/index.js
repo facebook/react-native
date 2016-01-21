@@ -214,7 +214,9 @@ class Resolver {
 
   wrapModule(resolutionResponse, module, code) {
     if (module.isPolyfill()) {
-      return Promise.resolve({code});
+      return Promise.resolve({
+        code: definePolyfillCode(code),
+      });
     }
 
     return this.resolveRequires(resolutionResponse, module, code).then(
@@ -236,6 +238,14 @@ function defineModuleCode(moduleName, code) {
     'function(global, require, module, exports) {',
     `  ${code}`,
     '\n});',
+  ].join('');
+}
+
+function definePolyfillCode(code) {
+  return [
+    '(function(global) {',
+    code,
+    `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
 }
 
