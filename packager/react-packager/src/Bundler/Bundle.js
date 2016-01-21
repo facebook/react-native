@@ -14,6 +14,7 @@ const BundleBase = require('./BundleBase');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
 const Activity = require('../Activity');
+const crypto = require('crypto');
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
@@ -254,6 +255,11 @@ class Bundle extends BundleBase {
     ? [] : _.pluck(super.getModules(), 'sourceCode')
     };
     return map;
+  }
+
+  getEtag() {
+    var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
+    return eTag;
   }
 
   _getMappings() {

@@ -15,6 +15,7 @@ const ModuleTransport = require('../../lib/ModuleTransport');
 const Promise = require('Promise');
 const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const UglifyJS = require('uglify-js');
+const crypto = require('crypto');
 
 describe('Bundle', () => {
   var bundle;
@@ -299,6 +300,15 @@ describe('Bundle', () => {
       }).then(() => {
         expect(otherBundle.getJSModulePaths()).toEqual(['foo path']);
       });
+    });
+  });
+
+  describe('getEtag()', function() {
+    it('should return an etag', function() {
+      var bundle = new Bundle('test_url');
+      bundle.finalize({});
+      var eTag = crypto.createHash('md5').update(bundle.getSource()).digest('hex');
+      expect(bundle.getEtag()).toEqual(eTag);
     });
   });
 });

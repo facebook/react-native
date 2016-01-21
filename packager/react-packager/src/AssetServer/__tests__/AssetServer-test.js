@@ -185,7 +185,7 @@ describe('AssetServer', () => {
     });
   });
 
-  describe('assetSerer.getAssetData', () => {
+  describe('assetServer.getAssetData', () => {
     pit('should get assetData', () => {
       const hash = {
         update: jest.genMockFn(),
