@@ -79,11 +79,6 @@ function getPackagerServer(args, config) {
     assetRoots: args.assetRoots,
     assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
     resetCache: args.resetCache || args['reset-cache'],
-    polyfillModuleNames: [
-      require.resolve(
-        '../../Libraries/JavaScriptAppEngine/polyfills/document.js'
-      ),
-    ],
     verbose: args.verbose,
   });
 }
