@@ -101,6 +101,36 @@ var FadeToTheLeft = {
   },
 };
 
+var FadeToTheLeftIOS = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: -Math.round(Dimensions.get('window').width * 0.3), y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  opacity: {
+    from: 1,
+    to: 0.3,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+  translateX: {
+    from: 0,
+    to: -Math.round(Dimensions.get('window').width * 0.3),
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+};
+
 var FadeToTheRight = {
   ...FadeToTheLeft,
   transformTranslate: {
@@ -246,6 +276,31 @@ var FromTheRight = {
   scaleY: {
     value: 1,
     type: 'constant',
+  },
+};
+
+var FromTheRightIOS = {
+  ...FromTheRight,
+  shadowColor: {
+    value: '#000000',
+    type: 'constant',
+  },
+  shadowOpacity: {
+    from: 0.1,
+    to: 0.5,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: false,
+    round: 100,
+  },
+  shadowRadius: {
+    from: 2,
+    to: 6,
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
   },
 };
 
@@ -508,6 +563,18 @@ var NavigatorSceneConfigs = {
   PushFromRight: {
     ...BaseConfig,
     // We will want to customize this soon
+  },
+  PushFromRightIOS: {
+    ...BaseConfig,
+    // We will want to customize this soon
+    gestures: {
+      jumpBack: BaseLeftToRightGesture,
+      jumpForward: BaseRightToLeftGesture,
+    },
+    animationInterpolators: {
+      into: buildStyleInterpolator(FromTheRightIOS),
+      out: buildStyleInterpolator(FadeToTheLeftIOS),
+    },
   },
   FloatFromRight: {
     ...BaseConfig,
