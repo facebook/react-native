@@ -23,7 +23,7 @@
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
 
-NSString *RCTJSONStringify(id jsonObject, NSError **error)
+NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
   static NSSet<Class> *collectionTypes;
@@ -44,14 +44,14 @@ NSString *RCTJSONStringify(id jsonObject, NSError **error)
   }
 
   // Use Foundation JSON method
-  NSData *jsonData = [NSJSONSerialization
-                      dataWithJSONObject:jsonObject
-                      options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
-                      error:error];
+  NSData *jsonData = jsonObject ? [NSJSONSerialization
+                                   dataWithJSONObject:jsonObject
+                                   options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
+                                   error:error] : nil;
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
-static id _RCTJSONParse(NSString *jsonString, BOOL mutable, NSError **error)
+static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
   static SEL JSONKitMutableSelector = NULL;
@@ -110,12 +110,12 @@ static id _RCTJSONParse(NSString *jsonString, BOOL mutable, NSError **error)
   return nil;
 }
 
-id RCTJSONParse(NSString *jsonString, NSError **error)
+id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error)
 {
   return _RCTJSONParse(jsonString, NO, error);
 }
 
-id RCTJSONParseMutable(NSString *jsonString, NSError **error)
+id __nullable RCTJSONParseMutable(NSString *__nullable jsonString, NSError **error)
 {
   return _RCTJSONParse(jsonString, YES, error);
 }
@@ -311,18 +311,22 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-NSDictionary<NSString *, id> *RCTMakeError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData)
+NSDictionary<NSString *, id> *RCTMakeError(NSString *message,
+                                           id __nullable toStringify,
+                                           NSDictionary<NSString *, id> *__nullable extraData)
 {
   if (toStringify) {
     message = [message stringByAppendingString:[toStringify description]];
   }
 
-  NSMutableDictionary<NSString *, id> *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  NSMutableDictionary<NSString *, id> *error = [extraData mutableCopy] ?: [NSMutableDictionary new];
   error[@"message"] = message;
   return error;
 }
 
-NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary<NSString *, id> *extraData)
+NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
+                                                 id __nullable toStringify,
+                                                 NSDictionary<NSString *, id> *__nullable extraData)
 {
   NSDictionary<NSString *, id> *error = RCTMakeError(message, toStringify, extraData);
   RCTLogError(@"\nError: %@", error);
@@ -331,11 +335,15 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringi
 
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
-  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified, nil, error);
+  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified,
+                                             error.localizedDescription,
+                                             error);
 }
 
 // TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *error)
+NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code,
+                                                                  NSString *message,
+                                                                  NSError *__nullable error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
@@ -356,7 +364,6 @@ NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code
   return RCTMakeError(errorMessage, nil, errorInfo);
 }
 
-
 BOOL RCTRunningInTestEnvironment(void)
 {
   static BOOL isTestEnvironment = NO;
@@ -372,7 +379,7 @@ BOOL RCTRunningInAppExtension(void)
   return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
 }
 
-UIApplication *RCTSharedApplication(void)
+UIApplication *__nullable RCTSharedApplication(void)
 {
   if (RCTRunningInAppExtension()) {
     return nil;
@@ -380,7 +387,7 @@ UIApplication *RCTSharedApplication(void)
   return [[UIApplication class] performSelector:@selector(sharedApplication)];
 }
 
-UIWindow *RCTKeyWindow(void)
+UIWindow *__nullable RCTKeyWindow(void)
 {
   if (RCTRunningInAppExtension()) {
     return nil;
@@ -390,11 +397,11 @@ UIWindow *RCTKeyWindow(void)
   return RCTSharedApplication().keyWindow;
 }
 
-UIAlertView *RCTAlertView(NSString *title,
-                          NSString *message,
-                          id delegate,
-                          NSString *cancelButtonTitle,
-                          NSArray<NSString *> *otherButtonTitles)
+UIAlertView *__nullable RCTAlertView(NSString *title,
+                                     NSString *__nullable message,
+                                     id __nullable delegate,
+                                     NSString *__nullable cancelButtonTitle,
+                                     NSArray<NSString *> *__nullable otherButtonTitles)
 {
   if (RCTRunningInAppExtension()) {
     RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
@@ -421,12 +428,12 @@ NSError *RCTErrorWithMessage(NSString *message)
   return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 
-id RCTNullIfNil(id value)
+id RCTNullIfNil(id __nullable value)
 {
   return value ?: (id)kCFNull;
 }
 
-id RCTNilIfNull(id value)
+id __nullable RCTNilIfNull(id __nullable value)
 {
   return value == (id)kCFNull ? nil : value;
 }
@@ -443,14 +450,14 @@ NSURL *RCTDataURL(NSString *mimeType, NSData *data)
            [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
 }
 
-BOOL RCTIsGzippedData(NSData *); // exposed for unit testing purposes
-BOOL RCTIsGzippedData(NSData *data)
+BOOL RCTIsGzippedData(NSData *__nullable); // exposed for unit testing purposes
+BOOL RCTIsGzippedData(NSData *__nullable data)
 {
   UInt8 *bytes = (UInt8 *)data.bytes;
   return (data.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
 }
 
-NSData *RCTGzipData(NSData *input, float level)
+NSData *RCTGzipData(NSData *__nullable input, float level)
 {
   if (input.length == 0 || RCTIsGzippedData(input)) {
     return input;
@@ -493,7 +500,7 @@ NSData *RCTGzipData(NSData *input, float level)
   return output;
 }
 
-NSString *RCTBundlePathForURL(NSURL *URL)
+NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
 {
   if (!URL.fileURL) {
     // Not a file path
@@ -512,7 +519,7 @@ NSString *RCTBundlePathForURL(NSURL *URL)
   return path;
 }
 
-BOOL RCTIsXCAssetURL(NSURL *imageURL)
+BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL)
 {
   NSString *name = RCTBundlePathForURL(imageURL);
   if (name.pathComponents.count != 1) {
@@ -598,7 +605,7 @@ NSString *RCTUIKitLocalizedString(NSString *string)
   return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
 }
 
-NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param)
+NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param)
 {
   RCTAssertParam(param);
   if (!URL) {
@@ -618,7 +625,7 @@ NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param)
   return nil;
 }
 
-NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value)
+NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *param, NSString *__nullable value)
 {
   RCTAssertParam(param);
   if (!URL) {
