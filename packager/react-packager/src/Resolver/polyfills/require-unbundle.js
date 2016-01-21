@@ -10,6 +10,11 @@ const loadModule = ErrorUtils ?
   guardedLoadModule : loadModuleImplementation;
 
 function define(moduleId, factory) {
+  if (moduleId in modules) {
+    // prevent repeated calls to `global.nativeRequire` to overwrite modules
+    // that are already loaded
+    return;
+  }
   modules[moduleId] = {
     factory,
     hasError: false,
@@ -44,11 +49,26 @@ function loadModuleImplementation(moduleId, module) {
     throw moduleThrewError(moduleId);
   }
 
+  // `require` calls int  the require polyfill itself are not analyzed and
+  // replaced so that they use numeric module IDs.
+  // The systrace module will expose itself on the require function so that
+  // it can be used here.
+  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+  const {Systrace} = require;
+
   const exports = module.exports = {};
   const {factory} = module;
   try {
+    if (__DEV__) {
+      Systrace.beginEvent('JS_require_' + moduleId);
+    }
+
     const moduleObject = {exports};
     factory(global, require, moduleObject, exports);
+
+    if (__DEV__) {
+      Systrace.endEvent();
+    }
     return (module.exports = moduleObject.exports);
   } catch (e) {
     module.hasError = true;
@@ -67,4 +87,8 @@ function unknownModuleError(id) {
 
 function moduleThrewError(id) {
   return Error('Requiring module "' + id + '", which threw an exception.');
+}
+
+if (__DEV__) {
+  require.Systrace = { beginEvent: () => {}, endEvent: () => {} };
 }
