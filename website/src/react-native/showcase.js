@@ -531,6 +531,13 @@ var apps = [
     icon: 'http://7xk1ez.com2.z0.glb.qiniucdn.com/logo-mobile-0114logo_welcom.png',
     link: 'https://itunes.apple.com/us/app/ni-zao-me/id1025294933?l=zh&ls=1&mt=8',
     author: 'Scott Chen(@NZAOM)'
+  },
+  {
+    name: 'うたよみん',
+    icon: 'http://a4.mzstatic.com/jp/r30/Purple69/v4/19/8f/fa/198ffafe-66a6-d682-c8d1-47faf2b0badb/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/jp/app/minnano-duan-ge-tou-gaokomyuniti/id675671254?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.plasticaromantica.utayomin',
+    author: 'Takayuki IMAI'
   }
 ];
 
