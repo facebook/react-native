@@ -165,6 +165,18 @@ describe('processRequest', () => {
     });
 
     it('rebuilds the bundles that contain a file when that file is changed', () => {
+      testChangingFileWith(() => new Server(options));
+    });
+
+    it('rebuilds the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
+      testChangingFileWith(() => {
+        const server = new Server(options);
+        server.setHMRFileChangeListener(() => Promise.resolve());
+        return server;
+      });
+    });
+
+    function testChangingFileWith(createServer) {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
@@ -182,7 +194,7 @@ describe('processRequest', () => {
 
       Bundler.prototype.bundle = bundleFunc;
 
-      server = new Server(options);
+      server = createServer();
 
       requestHandler = server.processRequest.bind(server);
 
@@ -205,7 +217,7 @@ describe('processRequest', () => {
           expect(response).toEqual('this is the rebuilt source')
         );
       jest.runAllTicks();
-    });
+    }
   });
 
   describe('/onchange endpoint', () => {
