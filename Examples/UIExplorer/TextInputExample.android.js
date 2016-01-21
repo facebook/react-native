@@ -348,25 +348,19 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            textAlign="start"
-            textAlignVertical="top"
-            style={styles.multiline}
+            style={[styles.multiline, {textAlign: "left", textAlignVertical: "top"}]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            textAlign="center"
-            textAlignVertical="center"
-            style={[styles.multiline]}
+            style={[styles.multiline, {textAlign: "center", textAlignVertical: "center"}]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            textAlign="end"
-            textAlignVertical="bottom"
-            style={[styles.multiline, {color: 'blue'}]}>
+            style={[styles.multiline, {color: 'blue'}, {textAlign: "right", textAlignVertical: "bottom"}]}>
             <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
           </TextInput>
         </View>

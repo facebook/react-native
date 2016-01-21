@@ -28,6 +28,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.JSApplicationCausedNativeException;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -202,14 +204,34 @@ public class ReactTextInputManager extends
     }
   }
 
-  @ReactProp(name = "textAlign")
-  public void setTextAlign(ReactEditText view, int gravity) {
-    view.setGravityHorizontal(gravity);
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
+    if (textAlign == null || "auto".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.NO_GRAVITY);
+    } else if ("left".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.LEFT);
+    } else if ("right".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.RIGHT);
+    } else if ("center".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
   }
 
-  @ReactProp(name = "textAlignVertical")
-  public void setTextAlignVertical(ReactEditText view, int gravity) {
-    view.setGravityVertical(gravity);
+  @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
+  public void setTextAlignVertical(ReactEditText view, @Nullable String textAlignVertical) {
+    if (textAlignVertical == null || "auto".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.NO_GRAVITY);
+    } else if ("top".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.TOP);
+    } else if ("bottom".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.BOTTOM);
+    } else if ("center".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.CENTER_VERTICAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
+    }
   }
 
   @ReactProp(name = "editable", defaultBoolean = true)
@@ -474,16 +496,6 @@ public class ReactTextInputManager extends
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
-        "TextAlign",
-        MapBuilder.of(
-            "start", Gravity.START,
-            "center", Gravity.CENTER_HORIZONTAL,
-            "end", Gravity.END),
-        "TextAlignVertical",
-        MapBuilder.of(
-            "top", Gravity.TOP,
-            "center", Gravity.CENTER_VERTICAL,
-            "bottom", Gravity.BOTTOM),
         "AutoCapitalizationType",
         MapBuilder.of(
             "none",
