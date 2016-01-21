@@ -40,10 +40,10 @@ class Bundle extends BundleBase {
       response,
       module,
       transformed.code
-    ).then(({code, name}) => {
+    ).then(({code, id}) => {
       const moduleTransport = new ModuleTransport({
         code,
-        name,
+        name: id,
         map: transformed.map,
         sourceCode: transformed.sourceCode,
         sourcePath: transformed.sourcePath,
@@ -75,7 +75,7 @@ class Bundle extends BundleBase {
   }
 
   _addRequireCall(moduleId) {
-    const code = ';require("' + moduleId + '");';
+    const code = `;require(${JSON.stringify(moduleId)});`;
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
       name,
