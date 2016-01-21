@@ -372,7 +372,13 @@ class ResolutionRequest {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-          `Invalid directory ${potentialDirPath}`,
+`Invalid directory ${potentialDirPath}
+
+This might related to https://github.com/facebook/react-native/issues/4968
+To resolve try the following:
+  1. Clear watchman watches: \`watchman watch-del-all\`.
+  2. Delete the \`node_modules\` folder: \`rm -rf node_modules && npm install\`.
+  3. Reset packager cache: \`rm -fr $TMPDIR/react-*\` or \`npm start -- --reset-cache\`.`,
         );
       }
 
