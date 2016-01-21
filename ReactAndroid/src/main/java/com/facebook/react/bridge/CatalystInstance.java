@@ -12,6 +12,7 @@ package com.facebook.react.bridge;
 import java.util.Collection;
 
 import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.annotations.VisibleForTesting;
 
@@ -66,4 +67,7 @@ public interface CatalystInstance {
   boolean supportsProfiling();
   void startProfiler(String title);
   void stopProfiler(String title, String filename);
+
+  @VisibleForTesting
+  void setGlobalVariable(String propName, String jsonValue);
 }

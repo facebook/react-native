@@ -306,11 +306,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return mCatalystQueueConfiguration;
   }
 
-  @VisibleForTesting
-  public ReactBridge getBridge() {
-    return mBridge;
-  }
-
   @Override
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
     return Assertions.assertNotNull(mJSModuleRegistry).getJavaScriptModule(jsInterface);
@@ -364,6 +359,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public void stopProfiler(String title, String filename) {
     mBridge.stopProfiler(title, filename);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void setGlobalVariable(String propName, String jsonValue) {
+    mBridge.setGlobalVariable(propName, jsonValue);
   }
 
   private String buildModulesConfigJSONProperty(
