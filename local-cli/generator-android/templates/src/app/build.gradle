@@ -92,7 +92,7 @@ android {
     splits {
         abi {
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk true
+            universalApk false
             reset()
             include "armeabi-v7a", "x86"
         }
