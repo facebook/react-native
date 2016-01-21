@@ -18,7 +18,6 @@
 var React = require('react-native');
 var {
   Alert,
-  Platform,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -134,4 +133,4 @@ var styles = StyleSheet.create({
 module.exports = {
   AlertExample,
   SimpleAlertExampleBlock,
-}
+};
