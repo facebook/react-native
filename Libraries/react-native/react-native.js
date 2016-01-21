@@ -62,6 +62,7 @@ var ReactNative = {
   get AppRegistry() { return require('AppRegistry'); },
   get AppState() { return require('AppState'); },
   get AppStateIOS() { return require('AppStateIOS'); },
+  get AppState() { return require('AppState'); },
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); },
   get CameraRoll() { return require('CameraRoll'); },
