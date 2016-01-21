@@ -267,7 +267,7 @@ RCT_EXPORT_MODULE()
   self.shakeToShow = [_settings[@"shakeToShow"] ?: @YES boolValue];
   self.profilingEnabled = [_settings[@"profilingEnabled"] ?: @NO boolValue];
   self.liveReloadEnabled = [_settings[@"liveReloadEnabled"] ?: @NO boolValue];
-  self.hotLoadingEnabled = [_settings[@"hotLoadingEnabled"] ?: @YES boolValue];
+  self.hotLoadingEnabled = [_settings[@"hotLoadingEnabled"] ?: @NO boolValue];
   self.showFPS = [_settings[@"showFPS"] ?: @NO boolValue];
   self.executorClass = NSClassFromString(_executorOverride ?: _settings[@"executorClass"]);
 }
