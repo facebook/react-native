@@ -16,6 +16,7 @@
 let Systrace = require('Systrace');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
+let Platform = require('Platform');
 
 let invariant = require('invariant');
 let keyMirror = require('keyMirror');
@@ -318,10 +319,21 @@ class MessageQueue {
     if (type === MethodTypes.remoteAsync) {
       fn = function(...args) {
         return new Promise((resolve, reject) => {
-          self.__nativeCall(module, method, args, resolve, (errorData) => {
-            var error = createErrorFromErrorData(errorData);
-            reject(error);
-          });
+          self.__nativeCall(
+            module,
+            method,
+            args,
+            (data) => {
+              // iOS always wraps the data in an Array regardless of what the
+              // shape of the data so we strip it out
+              // Android sends the data back properly
+              // TODO: Remove this once iOS has support for Promises natively (t9774697)
+              resolve(Platform.OS == 'ios' ? data[0] : data);
+            },
+            (errorData) => {
+              var error = createErrorFromErrorData(errorData);
+              reject(error);
+            });
         });
       };
     } else {
