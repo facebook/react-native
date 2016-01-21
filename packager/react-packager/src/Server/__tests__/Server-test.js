@@ -14,7 +14,8 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../');
+    .dontMock('../')
+    .setMock('crypto');
 
 const Promise = require('promise');
 
@@ -34,12 +35,17 @@ describe('processRequest', () => {
      polyfillModuleNames: null
   };
 
-  const makeRequest = (reqHandler, requrl) => new Promise(resolve =>
+  const makeRequest = (reqHandler, requrl, reqOptions) => new Promise(resolve =>
     reqHandler(
-      { url: requrl },
+      { url: requrl, headers:{}, ...reqOptions },
       {
-        setHeader: jest.genMockFunction(),
-        end: res => resolve(res),
+        headers: {},
+        getHeader(header) { return this.headers[header]; },
+        setHeader(header, value) { this.headers[header] = value; },
+        end(body) {
+          this.body = body;
+          resolve(this);
+        },
       },
       { next: () => {} },
     )
@@ -55,6 +61,7 @@ describe('processRequest', () => {
       Promise.resolve({
         getSource: () => 'this is the source',
         getSourceMap: () => 'this is the source map',
+        getEtag: () => 'this is an etag',
       })
     );
 
@@ -76,9 +83,10 @@ describe('processRequest', () => {
   pit('returns JS bundle source on request of *.bundle', () => {
     return makeRequest(
       requestHandler,
-      'mybundle.bundle?runModule=true'
+      'mybundle.bundle?runModule=true',
+      null
     ).then(response =>
-      expect(response).toEqual('this is the source')
+      expect(response.body).toEqual('this is the source')
     );
   });
 
@@ -87,8 +95,27 @@ describe('processRequest', () => {
       requestHandler,
       'mybundle.runModule.bundle'
     ).then(response =>
-      expect(response).toEqual('this is the source')
+      expect(response.body).toEqual('this is the source')
     );
+  });
+
+  pit('returns ETag header on request of *.bundle', () => {
+    return makeRequest(
+      requestHandler,
+      'mybundle.bundle?runModule=true'
+    ).then(response => {
+      expect(response.getHeader('ETag')).toBeDefined()
+    });
+  });
+
+  pit('returns 304 on request of *.bundle when if-none-match equals the ETag', () => {
+    return makeRequest(
+      requestHandler,
+      'mybundle.bundle?runModule=true',
+      { headers : { 'if-none-match' : 'this is an etag' } }
+    ).then(response => {
+      expect(response.statusCode).toEqual(304)
+    });
   });
 
   pit('returns sourcemap on request of *.map', () => {
@@ -96,7 +123,7 @@ describe('processRequest', () => {
       requestHandler,
       'mybundle.map?runModule=true'
     ).then(response =>
-      expect(response).toEqual('this is the source map')
+      expect(response.body).toEqual('this is the source map')
     );
   });
 
@@ -105,7 +132,7 @@ describe('processRequest', () => {
       requestHandler,
       'index.ios.includeRequire.bundle'
     ).then(response => {
-      expect(response).toEqual('this is the source');
+      expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
         entryFile: 'index.ios.js',
         inlineSourceMap: false,
@@ -126,7 +153,7 @@ describe('processRequest', () => {
       requestHandler,
       'index.bundle?platform=ios'
     ).then(function(response) {
-      expect(response).toEqual('this is the source');
+      expect(response.body).toEqual('this is the source');
       expect(Bundler.prototype.bundle).toBeCalledWith({
         entryFile: 'index.js',
         inlineSourceMap: false,
@@ -183,12 +210,14 @@ describe('processRequest', () => {
           Promise.resolve({
             getSource: () => 'this is the first source',
             getSourceMap: () => {},
+            getEtag: () => () => 'this is an etag',
           })
         )
         .mockReturnValue(
           Promise.resolve({
             getSource: () => 'this is the rebuilt source',
             getSourceMap: () => {},
+            getEtag: () => () => 'this is an etag',
           })
         );
 
@@ -200,7 +229,7 @@ describe('processRequest', () => {
 
       makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .done(response => {
-          expect(response).toEqual('this is the first source');
+          expect(response.body).toEqual('this is the first source');
           expect(bundleFunc.mock.calls.length).toBe(1);
         });
 
@@ -214,7 +243,7 @@ describe('processRequest', () => {
 
       makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .done(response =>
-          expect(response).toEqual('this is the rebuilt source')
+          expect(response.body).toEqual('this is the rebuilt source')
         );
       jest.runAllTicks();
     }
