@@ -64,6 +64,7 @@ var APIS = [
   require('./AnimatedExample'),
   require('./AnimatedGratuitousApp/AnExApp'),
   require('./AppStateIOSExample'),
+  require('./AppStateExample'),
   require('./AsyncStorageExample'),
   require('./BorderExample'),
   require('./BoxShadowExample'),
