@@ -165,6 +165,11 @@ function _validateTransform(key, value, transformation) {
         stringifySafe(transformation),
       );
       break;
+    case 'perspective':
+      invariant(
+        value !== 0,
+        "Perspective transform must receive a non-zero value"
+      );
     default:
       invariant(
         typeof value === 'number',
