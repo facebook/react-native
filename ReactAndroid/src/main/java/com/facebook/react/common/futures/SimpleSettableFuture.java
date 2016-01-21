@@ -37,8 +37,8 @@ public class SimpleSettableFuture<T> implements Future<T> {
   }
 
   /**
-   * Sets the eception. If another thread has called {@link #get}, they will immediately receive the
-   * exception. set or setException must only be called once.
+   * Sets the exception. If another thread has called {@link #get}, they will immediately receive
+   * the exception. set or setException must only be called once.
    */
   public void setException(Exception exception) {
     checkNotSet();
@@ -61,10 +61,14 @@ public class SimpleSettableFuture<T> implements Future<T> {
     return mReadyLatch.getCount() == 0;
   }
 
-  @Deprecated
   @Override
-  public T get() throws InterruptedException, ExecutionException {
-    throw new UnsupportedOperationException("Must use a timeout");
+  public @Nullable T get() throws InterruptedException, ExecutionException {
+    mReadyLatch.await();
+    if (mException != null) {
+      throw new ExecutionException(mException);
+    }
+
+    return mResult;
   }
 
   /**
@@ -77,12 +81,8 @@ public class SimpleSettableFuture<T> implements Future<T> {
   @Override
   public @Nullable T get(long timeout, TimeUnit unit) throws
       InterruptedException, ExecutionException, TimeoutException {
-    try {
-      if (!mReadyLatch.await(timeout, unit)) {
-        throw new TimeoutException("Timed out waiting for result");
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+    if (!mReadyLatch.await(timeout, unit)) {
+      throw new TimeoutException("Timed out waiting for result");
     }
     if (mException != null) {
       throw new ExecutionException(mException);
