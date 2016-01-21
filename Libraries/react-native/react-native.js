@@ -60,6 +60,7 @@ var ReactNative = {
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },
   get AppRegistry() { return require('AppRegistry'); },
+  get AppState() { return require('AppState'); },
   get AppStateIOS() { return require('AppStateIOS'); },
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); },

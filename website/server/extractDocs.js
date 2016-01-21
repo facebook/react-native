@@ -225,6 +225,7 @@ var apis = [
   '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
+  '../Libraries/AppState/AppState.js',
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
