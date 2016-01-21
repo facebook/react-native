@@ -50,7 +50,7 @@ public class PromiseImpl implements Promise {
   }
 
   @Override
-  public void reject(String code, String reason, Throwable extra) {
+  public void reject(String code, String reason, @Nullable Throwable extra) {
     if (mReject != null) {
       if (code == null) {
         code = DEFAULT_ERROR;

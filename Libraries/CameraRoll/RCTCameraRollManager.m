@@ -79,13 +79,16 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
+NSString *const RCTErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
+NSString *const RCTErrorUnableToSave = @"E_UNABLE_TO_SAVE";
+
 RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
-                  successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseErrorBlock)errorCallback)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *loadError, UIImage *loadedImage) {
     if (loadError) {
-      errorCallback(loadError);
+      reject(RCTErrorUnableToLoad, nil, loadError);
       return;
     }
     // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
@@ -93,21 +96,21 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
       [_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
         if (saveError) {
           RCTLogWarn(@"Error saving cropped image: %@", saveError);
-          errorCallback(saveError);
+          reject(RCTErrorUnableToSave, nil, saveError);
         } else {
-          successCallback(@[assetURL.absoluteString]);
+          resolve(@[assetURL.absoluteString]);
         }
       }];
     });
   }];
 }
 
-static void RCTCallCallback(RCTResponseSenderBlock callback,
-                            NSArray<NSDictionary<NSString *, id> *> *assets,
-                            BOOL hasNextPage)
+static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
+                              NSArray<NSDictionary<NSString *, id> *> *assets,
+                              BOOL hasNextPage)
 {
   if (!assets.count) {
-    callback(@[@{
+    resolve(@[@{
       @"edges": assets,
       @"page_info": @{
         @"has_next_page": @NO,
@@ -115,7 +118,7 @@ static void RCTCallCallback(RCTResponseSenderBlock callback,
     }]);
     return;
   }
-  callback(@[@{
+  resolve(@[@{
     @"edges": assets,
     @"page_info": @{
       @"start_cursor": assets[0][@"node"][@"image"][@"uri"],
@@ -126,8 +129,8 @@ static void RCTCallCallback(RCTResponseSenderBlock callback,
 }
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
-                  successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseErrorBlock)errorCallback)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   NSUInteger first = [RCTConvert NSInteger:params[@"first"]];
   NSString *afterCursor = [RCTConvert NSString:params[@"after"]];
@@ -137,7 +140,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
-  BOOL __block calledCallback = NO;
+  BOOL __block resolvedPromise = NO;
   NSMutableArray<NSDictionary<NSString *, id> *> *assets = [NSMutableArray new];
 
   [_bridge.assetsLibrary enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
@@ -157,9 +160,9 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
             *stopAssets = YES;
             *stopGroups = YES;
             hasNextPage = YES;
-            RCTAssert(calledCallback == NO, @"Called the callback before we finished processing the results.");
-            RCTCallCallback(successCallback, assets, hasNextPage);
-            calledCallback = YES;
+            RCTAssert(resolvedPromise == NO, @"Resolved the promise before we finished processing the results.");
+            RCTResolvePromise(resolve, assets, hasNextPage);
+            resolvedPromise = YES;
             return;
           }
           CGSize dimensions = [result defaultRepresentation].dimensions;
@@ -188,18 +191,18 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
         }
       }];
     } else {
-      // Sometimes the enumeration continues even if we set stop above, so we guard against calling the callback
+      // Sometimes the enumeration continues even if we set stop above, so we guard against resolving the promise
       // multiple times here.
-      if (!calledCallback) {
-        RCTCallCallback(successCallback, assets, hasNextPage);
-        calledCallback = YES;
+      if (!resolvedPromise) {
+        RCTResolvePromise(resolve, assets, hasNextPage);
+        resolvedPromise = YES;
       }
     }
   } failureBlock:^(NSError *error) {
     if (error.code != ALAssetsLibraryAccessUserDeniedError) {
       RCTLogError(@"Failure while iterating through asset groups %@", error);
     }
-    errorCallback(error);
+    reject(RCTErrorUnableToLoad, nil, error);
   }];
 }
 
