@@ -141,7 +141,7 @@ var TouchableNativeFeedback = React.createClass({
   touchableHandleActivePressIn: function() {
     this.props.onPressIn && this.props.onPressIn();
     this._dispatchPressedStateChange(true);
-    this._dispatchHotspotUpdate(this.pressInLocation.pageX, this.pressInLocation.pageY);
+    this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
   },
 
   touchableHandleActivePressOut: function() {
