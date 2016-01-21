@@ -28,6 +28,7 @@ var ClipboardExample = React.createClass({
       content: 'Content will appear here'
     };
   },
+
   async _setClipboardContent(){
     Clipboard.setString('Hello World');
     try {
@@ -36,8 +37,8 @@ var ClipboardExample = React.createClass({
     } catch (e) {
       this.setState({content:e.message});
     }
-
   },
+
   render() {
     return (
       <View>
