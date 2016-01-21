@@ -174,7 +174,9 @@ function _validateTransform(key, value, transformation) {
       );
       invariant(
         value !== 0,
-        'Perspective transform must receive a non-zero value'
+        'Transform with key of "%s" cannot be zero: %s',
+        key,
+        stringifySafe(transformation),
       );
       break;
     default:
