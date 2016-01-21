@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <JavaScriptCore/JSContextRef.h>
@@ -29,6 +30,10 @@ public:
 
   virtual void executeApplicationScript(
     const std::string& script,
+    const std::string& sourceURL) override;
+  virtual void loadApplicationUnbundle(
+    JSModulesUnbundle&& unbundle,
+    const std::string& startupCode,
     const std::string& sourceURL) override;
   virtual std::string flush() override;
   virtual std::string callFunction(
@@ -59,10 +64,13 @@ private:
   std::unordered_map<int, JSCWebWorker> m_webWorkers;
   std::unordered_map<int, Object> m_webWorkerJSObjs;
   std::shared_ptr<JMessageQueueThread> m_messageQueueThread;
+  JSModulesUnbundle m_unbundle;
+  bool m_isUnbundleInitialized = false;
 
   int addWebWorker(const std::string& script, JSValueRef workerRef);
   void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);
   void terminateWebWorker(int worker);
+  void loadModule(uint32_t moduleId);
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,
@@ -85,6 +93,13 @@ private:
       size_t argumentCount,
       const JSValueRef arguments[],
       JSValueRef *exception);
+  static JSValueRef nativeRequire(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception);
 };
 
 } }

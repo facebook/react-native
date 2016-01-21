@@ -1,6 +1,6 @@
 'use strict';
 
-const {ErrorUtils, __nativeRequire} = global;
+const {ErrorUtils, nativeRequire} = global;
 global.require = require;
 global.__d = define;
 
@@ -32,7 +32,7 @@ function guardedLoadModule(moduleId, module) {
 
 function loadModuleImplementation(moduleId, module) {
   if (!module) {
-    __nativeRequire(moduleId);
+    nativeRequire(moduleId);
     module = modules[moduleId];
   }
 

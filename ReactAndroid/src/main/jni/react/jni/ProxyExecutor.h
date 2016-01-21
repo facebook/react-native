@@ -32,6 +32,10 @@ public:
   virtual void executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) override;
+  virtual void loadApplicationUnbundle(
+    JSModulesUnbundle&& bundle,
+    const std::string& startupCode,
+    const std::string& sourceURL) override;
   virtual std::string flush() override;
   virtual std::string callFunction(
     const double moduleId,

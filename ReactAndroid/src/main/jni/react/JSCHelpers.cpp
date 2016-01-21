@@ -41,13 +41,14 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
     FBLOGE("Got JS Exception: %s", exceptionText.c_str());
     auto line = exception.asObject().getProperty("line");
 
-    std::ostringstream lineInfo;
+    std::ostringstream locationInfo;
+    std::string file = String::adopt(source).str();
+    locationInfo << "(" << (file.length() ? file : "<unknown file>");
     if (line != nullptr && line.isNumber()) {
-      lineInfo << " (line " << line.asInteger() << " in the generated bundle)";
-    } else {
-      lineInfo << " (no line info)";
+      locationInfo << ":" << line.asInteger();
     }
-    throwJSExecutionException("%s%s", exceptionText.c_str(), lineInfo.str().c_str());
+    locationInfo << ")";
+    throwJSExecutionException("%s %s", exceptionText.c_str(), locationInfo.str().c_str());
   }
   return result;
 }

@@ -2,6 +2,7 @@
 
 #include "ProxyExecutor.h"
 
+#include <fb/assert.h>
 #include <jni/Environment.h>
 #include <jni/LocalReference.h>
 #include <jni/LocalString.h>
@@ -50,6 +51,11 @@ void ProxyExecutor::executeApplicationScript(
     jni::make_jstring(sourceURL).get());
 }
 
+void ProxyExecutor::loadApplicationUnbundle(JSModulesUnbundle&&, const std::string&, const std::string&) {
+  jni::throwNewJavaException(
+    "java/lang/UnsupportedOperationException",
+    "Loading application unbundles is not supported for proxy executors");
+}
 
 std::string ProxyExecutor::flush() {
   return executeJSCallWithProxy(m_executor.get(), "flushedQueue", std::vector<folly::dynamic>());

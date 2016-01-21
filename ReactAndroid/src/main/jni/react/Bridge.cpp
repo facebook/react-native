@@ -27,6 +27,13 @@ public:
     m_jsExecutor->executeApplicationScript(script, sourceURL);
   }
 
+  void loadApplicationUnbundle(
+      JSModulesUnbundle&& unbundle,
+      const std::string& startupCode,
+      const std::string& sourceURL) {
+    m_jsExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
+  }
+
   void flush() {
     auto returnedJSON = m_jsExecutor->flush();
     m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
@@ -93,6 +100,13 @@ Bridge::~Bridge() {
 
 void Bridge::executeApplicationScript(const std::string& script, const std::string& sourceURL) {
   m_threadState->executeApplicationScript(script, sourceURL);
+}
+
+void Bridge::loadApplicationUnbundle(
+    JSModulesUnbundle&& unbundle,
+    const std::string& startupCode,
+    const std::string& sourceURL) {
+  m_threadState->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
 }
 
 void Bridge::flush() {

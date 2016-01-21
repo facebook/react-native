@@ -11,6 +11,7 @@
 #include "Value.h"
 #include "Executor.h"
 #include "MethodCall.h"
+#include "JSModulesUnbundle.h"
 
 namespace folly {
 
@@ -45,7 +46,20 @@ public:
    */
   void invokeCallback(const double callbackId, const folly::dynamic& args);
 
+  /**
+   * Starts the JS application from an "bundle", i.e. a JavaScript file that
+   * contains code for all modules and a runtime that resolves and
+   * executes modules.
+   */
   void executeApplicationScript(const std::string& script, const std::string& sourceURL);
+  /**
+   * Starts the JS application from an "unbundle", i.e. a backend that stores
+   * and injects each module as individual file.
+   */
+  void loadApplicationUnbundle(
+    JSModulesUnbundle&& unbundle,
+    const std::string& startupCode,
+    const std::string& sourceURL);
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue);
   bool supportsProfiling();
   void startProfiler(const std::string& title);

@@ -3,7 +3,6 @@
 #include "Value.h"
 
 #include <jni/fbjni.h>
-#include <fb/log.h>
 
 #include "JSCHelpers.h"
 
