@@ -39,6 +39,11 @@ class ResolutionResponse {
     });
   }
 
+  getMainModule() {
+    this._assertFinalized();
+    return this._mainModule;
+  }
+
   pushDependency(module) {
     this._assertNotFinalized();
     if (this.dependencies.length === 0) {

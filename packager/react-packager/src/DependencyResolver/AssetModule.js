@@ -18,11 +18,17 @@ class AssetModule extends Module {
   }
 
   getDependencies() {
-    return Promise.resolve([]);
+    return Promise.resolve(['AssetRegistry']);
   }
 
   getAsyncDependencies() {
     return Promise.resolve([]);
+  }
+
+  getCode(assetData) {
+    return `module.exports = require('AssetRegistry').registerAsset(${
+      JSON.stringify(assetData)
+    });`;
   }
 
   read() {
