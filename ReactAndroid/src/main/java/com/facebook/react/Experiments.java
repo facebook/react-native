@@ -25,8 +25,6 @@ public class Experiments {
 
   /**
    * Enables an experiment
-   *
-   * @param experiment - the experiment to enable
    */
   public static void enableExperiment(String experiment) {
     if (enabledExperiments == null) {
@@ -37,8 +35,6 @@ public class Experiments {
 
   /**
    * Disables an experiment
-   *
-   * @param experiment - the experiment to disable
    */
   public static void disableExperiment(String experiment) {
     if (enabledExperiments != null) {
@@ -48,8 +44,6 @@ public class Experiments {
 
   /**
    * Checks if an experiment is enabled
-   *
-   * @param experiment - the experiment to check for
    */
   public static boolean isExperimentEnabled(String experiment) {
     return enabledExperiments != null && enabledExperiments.contains(experiment);
