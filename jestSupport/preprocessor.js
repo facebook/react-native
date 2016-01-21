@@ -16,8 +16,7 @@ const fs = require('fs');
 var babelCoreLocation = path.join(__dirname, '../node_modules/babel-core/package.json');
 try {
   fs.lstatSync(babelCoreLocation);
-}
-catch(e) {
+} catch(e) {
   babelCoreLocation = path.join(__dirname, '../../babel-core/package.json');
 }
 
