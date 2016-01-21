@@ -159,7 +159,6 @@
     <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
     <Compile Include="UIManager\CSSNodeExtensions.cs" />
-    <Compile Include="UIManager\BorderedContentControl.DependencyProperties.cs" />
     <Compile Include="UIManager\Events\IOnIntercepTextGotFocusEventListener.cs" />
     <Compile Include="UIManager\Events\IOnInterceptTextInputEventListener.cs" />
     <Compile Include="LifecycleState.cs" />
@@ -293,12 +292,6 @@
     <Reference Include="Facebook.CSSLayout">
       <HintPath>..\References\Facebook.CSSLayout.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

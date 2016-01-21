@@ -23,7 +23,7 @@ namespace ReactNative.Views.View
 
         public ReactPanel() : base()
         {
-            SizeChanged += OnBoundsChanged;
+            this.SizeChanged += OnBoundsChanged;
         }
 
         public PointerEvents PointerEvents
