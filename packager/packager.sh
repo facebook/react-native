@@ -9,3 +9,4 @@
 
 THIS_DIR=$(dirname "$0")
 node "$THIS_DIR/../local-cli/cli.js" start "$@"
+# Just testing the mention bot
