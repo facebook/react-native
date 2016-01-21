@@ -23,10 +23,10 @@ module.exports = {
    *   var content = await Clipboard.getString();
    * }
    * ```
-   * @param this parameter is deprecated. callback is function with one argument of string type
    */
-  getString(callback) {
-    if (callback) {
+  getString() {
+    if (arguments.length > 0) {
+        let callback = arguments[0];
         console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
         Clipboard.getString().then(callback);
         return;
