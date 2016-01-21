@@ -168,7 +168,7 @@ function _validateTransform(key, value, transformation) {
     case 'perspective':
       invariant(
         value !== 0,
-        "Perspective transform must receive a non-zero value"
+        'Perspective transform must receive a non-zero value'
       );
     default:
       invariant(
