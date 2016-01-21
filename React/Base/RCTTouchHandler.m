@@ -311,4 +311,10 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
   _dispatchedInitialTouches = NO;
 }
 
+- (void)cancel
+{
+  self.enabled = NO;
+  self.enabled = YES;
+}
+
 @end
