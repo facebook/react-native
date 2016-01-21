@@ -119,7 +119,7 @@ void _RCTAssertFormat(
 
 void RCTFatal(NSError *error)
 {
-  _RCTLogNativeInternal(RCTLogLevelFatal, NULL, 0, @"%@", [error localizedDescription]);
+  _RCTLogNativeInternal(RCTLogLevelFatal, NULL, 0, @"%@", error.localizedDescription);
 
   RCTFatalHandler fatalHandler = RCTGetFatalHandler();
   if (fatalHandler) {
@@ -128,8 +128,8 @@ void RCTFatal(NSError *error)
 #if DEBUG
     @try {
 #endif
-      NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, [error localizedDescription]];
-      NSString *message = RCTFormatError([error localizedDescription], error.userInfo[RCTJSStackTraceKey], 75);
+      NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, error.localizedDescription];
+      NSString *message = RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], 75);
       [NSException raise:name format:@"%@", message];
 #if DEBUG
     } @catch (NSException *e) {}
