@@ -10,16 +10,23 @@
 
 jest
   .setMock('worker-farm', () => () => undefined)
+  .dontMock('absolute-path')
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
+  .dontMock('../../DependencyResolver/AssetModule')
+  .dontMock('../../DependencyResolver/Module')
+  .dontMock('../../DependencyResolver/lib/getAssetDataFromName')
   .setMock('uglify-js')
   .dontMock('../');
 
 jest.mock('fs');
 
+var AssetModule = require('../../DependencyResolver/AssetModule');
 var Bundler = require('../');
 var JSTransformer = require('../../JSTransformer');
+var Module = require('../../DependencyResolver/Module');
 var Resolver = require('../../Resolver');
+
 var sizeOf = require('image-size');
 var fs = require('fs');
 
@@ -34,6 +41,14 @@ describe('Bundler', function() {
     isJSON,
     resolution,
   }) {
+    if (isAsset) {
+      const module = new AssetModule({
+        file: path,
+        cache: {get: () => Promise.resolve(path)}
+      });
+      module.getName = () => Promise.resolve(id);
+      return module;
+    }
     return {
       path,
       resolution,
@@ -51,6 +66,8 @@ describe('Bundler', function() {
   var bundler;
   var assetServer;
   var modules;
+  const width = 50;
+  const height = 100;
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
@@ -108,10 +125,12 @@ describe('Bundler', function() {
       }),
     ];
 
+    const mainModule = new Module({file: '/root/foo'});
     getDependencies.mockImpl(function() {
       return Promise.resolve({
         mainModuleId: 'foo',
-        dependencies: modules
+        dependencies: modules,
+        getMainModule: () => mainModule,
       });
     });
 
@@ -132,12 +151,13 @@ describe('Bundler', function() {
     wrapModule.mockImpl(function(response, module, code) {
       return module.getName().then(name => ({
         name,
+        id: name,
         code: 'lol ' + code + ' lol'
       }));
     });
 
     sizeOf.mockImpl(function(path, cb) {
-      cb(null, { width: 50, height: 100 });
+      cb(null, { width, height });
     });
   });
 
@@ -187,8 +207,8 @@ describe('Bundler', function() {
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
-          width: 25,
-          height: 50,
+          width,
+          height,
           scales: [1, 2, 3],
           files: [
             '/root/img/img.png',

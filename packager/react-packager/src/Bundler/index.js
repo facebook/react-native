@@ -102,6 +102,8 @@ class Bundler {
       mtime = '';
     }
 
+    this._getModuleId = createModuleIdGetter();
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
       cacheKey: [
@@ -122,6 +124,7 @@ class Bundler {
       fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
       cache: this._cache,
+      getModuleId: this._getModuleId,
     });
 
     this._bundlesLayout = new BundlesLayout({
@@ -187,9 +190,19 @@ class Bundler {
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
+    if (isDev) {
+      // `require` calls int  the require polyfill itself are not analyzed and
+      // replaced so that they use numeric module IDs. Therefore, we include
+      // the Systrace module before any other module, and it will set itself
+      // as property on the require function.
+      // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+      runBeforeMainModule = ['Systrace'].concat(runBeforeMainModule);
+    }
+
+    const modulesByName = Object.create(null);
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
-      bundle.setMainModuleId(response.mainModuleId);
+      bundle.setMainModuleId(this._getModuleId(response.getMainModule()));
       transformEventId = Activity.startEvent('transform');
 
       const moduleSystemDeps = includeSystemDependencies
@@ -225,6 +238,11 @@ class Bundler {
               platform,
               hot,
             ).then(transformed => {
+              return module.getName().then(name => {
+                modulesByName[name] = module;
+                return transformed;
+              });
+            }).then(transformed => {
               if (bar) {
                 bar.tick();
               }
@@ -248,7 +266,11 @@ class Bundler {
       ));
     }).then(() => {
       Activity.endEvent(transformEventId);
-      bundle.finalize({runBeforeMainModule, runMainModule});
+      const runBeforeIds = runBeforeMainModule
+        .map(name => modulesByName[name])
+        .filter(Boolean)
+        .map(this._getModuleId, this);
+      bundle.finalize({runBeforeMainModule: runBeforeIds, runMainModule});
       return bundle;
     });
   }
@@ -462,8 +484,7 @@ class Bundler {
         type: assetData.type,
       };
 
-      const ASSET_TEMPLATE = 'module.exports = require("AssetRegistry").registerAsset(%json);';
-      const code = ASSET_TEMPLATE.replace('%json', JSON.stringify(asset));
+      const code = module.getCode(asset);
 
       return {asset, code};
     });
@@ -522,12 +543,21 @@ function verifyRootExists(root) {
   assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
 }
 
-class DummyCache {
-  get(filepath, field, loaderCb) {
-    return loaderCb();
-  }
 
-  end(){}
-  invalidate(filepath){}
+function createModuleIdGetter() {
+  const fileToIdMap = Object.create(null);
+  let nextId = 0;
+  return (
+    ({path}) => {
+      if (!(path in fileToIdMap)) {
+        // can't be a number for now, since we also replace in import / export
+        // we can change that when we eventually change to analyzing dependencies
+        // on transformed modules
+        fileToIdMap[path] = String(nextId++);
+      }
+      return fileToIdMap[path];
+    }
+  );
 }
+
 module.exports = Bundler;
