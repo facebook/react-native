@@ -41,7 +41,7 @@ Make absolutely sure a basic iOS and Android workflow works on the release branc
 Post that we're ready to release so voluteers can write release notes:
 https://github.com/facebook/react-native/releases
 
-To through all the commits that went into a release, one way is to use the github compare view: https://github.com/facebook/react-native/compare/0.18-stable...0.19-stable
+To go through all the commits that went into a release, one way is to use the github compare view: https://github.com/facebook/react-native/compare/0.18-stable...0.19-stable
 
 ## Do a release
 
