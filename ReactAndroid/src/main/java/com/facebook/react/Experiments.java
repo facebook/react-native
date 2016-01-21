@@ -14,9 +14,8 @@ import java.util.Set;
 
 
 /**
- * This class exposes a way to enable/disable exprimental features in React Native.
+ * This class exposes a way to enable/disable experimental features in React Native.
  */
-
 public class Experiments {
 
   // Enables Hot Module Replacement menu item in the developer menu
@@ -37,7 +36,7 @@ public class Experiments {
   }
 
   /**
-   * Disbales an expriment
+   * Disables an experiment
    *
    * @param experiment - the experiment to disable
    */
@@ -48,7 +47,7 @@ public class Experiments {
   }
 
   /**
-   * Checks if an expriment is enabled
+   * Checks if an experiment is enabled
    *
    * @param experiment - the experiment to check for
    */
