@@ -14,6 +14,7 @@
 #include "Value.h"
 #include "jni/JMessageQueueThread.h"
 #include "jni/OnLoad.h"
+#include <react/JSCHelpers.h>
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include <react/JSCTracing.h>
@@ -152,12 +153,24 @@ void JSCExecutor::executeApplicationScript(
   env->DeleteLocalRef(startStringMarker);
   env->DeleteLocalRef(endStringMarker);
 
-  String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
     "sourceURL", sourceURL);
   #endif
-  evaluateScript(m_context, jsScript, jsSourceURL);
+  evaluateScript(m_context, jsScript, String(sourceURL.c_str()));
+}
+
+void JSCExecutor::loadApplicationUnbundle(
+    JSModulesUnbundle&& unbundle,
+    const std::string& startupCode,
+    const std::string& sourceURL) {
+
+  m_unbundle = std::move(unbundle);
+  if (!m_isUnbundleInitialized) {
+    m_isUnbundleInitialized = true;
+    installGlobalFunction(m_context, "nativeRequire", nativeRequire);
+  }
+  executeApplicationScript(startupCode, sourceURL);
 }
 
 std::string JSCExecutor::flush() {
@@ -238,6 +251,13 @@ void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
   m_flushImmediateCallback(queueJSON, false);
 }
 
+void JSCExecutor::loadModule(uint32_t moduleId) {
+  auto module = m_unbundle.getModule(moduleId);
+  auto sourceUrl = String::createExpectingAscii(module.name);
+  auto source = String::createExpectingAscii(module.code);
+  evaluateScript(m_context, source, sourceUrl);
+}
+
 // WebWorker impl
 
 JSGlobalContextRef JSCExecutor::getContext() {
@@ -287,11 +307,54 @@ void JSCExecutor::terminateWebWorker(int workerId) {
   m_webWorkerJSObjs.erase(workerId);
 }
 
+// Native JS hooks
+
+static JSValueRef makeInvalidModuleIdJSCException(
+    JSContextRef ctx,
+    const JSValueRef id,
+    JSValueRef *exception) {
+  std::string message = "Received invalid module ID: ";
+  message += String::adopt(JSValueToStringCopy(ctx, id, exception)).str();
+  return makeJSCException(ctx, message.c_str());
+}
+
+JSValueRef JSCExecutor::nativeRequire(
+  JSContextRef ctx,
+  JSObjectRef function,
+  JSObjectRef thisObject,
+  size_t argumentCount,
+  const JSValueRef arguments[],
+  JSValueRef *exception) {
+
+  if (argumentCount != 1) {
+    *exception = makeJSCException(ctx, "Got wrong number of args");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  JSCExecutor *executor;
+  try {
+    executor = s_globalContextRefToJSCExecutor.at(JSContextGetGlobalContext(ctx));
+  } catch (std::out_of_range& e) {
+    *exception = makeJSCException(ctx, "Global JS context didn't map to a valid executor");
+    return JSValueMakeUndefined(ctx);
+  }
+
+  double moduleId = JSValueToNumber(ctx, arguments[0], exception);
+  if (moduleId <= (double) UINT32_MAX && moduleId >= 0.0) {
+    try {
+      executor->loadModule(moduleId);
+    } catch (JSModulesUnbundle::ModuleNotFound&) {
+      *exception = makeInvalidModuleIdJSCException(ctx, arguments[0], exception);
+    }
+  } else {
+    *exception = makeInvalidModuleIdJSCException(ctx, arguments[0], exception);
+  }
+  return JSValueMakeUndefined(ctx);
+}
+
 static JSValueRef createErrorString(JSContextRef ctx, const char *msg) {
   return JSValueMakeString(ctx, String(msg));
 }
-
-// Native JS hooks
 
 static JSValueRef nativeFlushQueueImmediate(
     JSContextRef ctx,

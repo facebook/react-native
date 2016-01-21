@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <android/asset_manager.h>
 #include <string>
 #include <jni.h>
 
@@ -17,7 +18,7 @@ std::string loadScriptFromAssets(std::string assetName);
 /**
  * Helper method for loading JS script from android asset
  */
-std::string loadScriptFromAssets(JNIEnv *env, jobject assetManager, std::string assetName);
+std::string loadScriptFromAssets(AAssetManager *assetManager, std::string assetName);
 
 /**
  * Helper method for loading JS script from a file
