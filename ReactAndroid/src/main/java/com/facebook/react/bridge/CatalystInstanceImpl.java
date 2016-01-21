@@ -16,18 +16,17 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 
@@ -40,9 +39,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 @DoNotStrip
 public class CatalystInstanceImpl implements CatalystInstance {
-
-  private static final int BRIDGE_SETUP_TIMEOUT_MS = 30000;
-  private static final int LOAD_JS_BUNDLE_TIMEOUT_MS = 30000;
 
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
 
@@ -96,7 +92,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
                 Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
               }
             }
-          }).get(BRIDGE_SETUP_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+          }).get();
     } catch (Exception t) {
       throw new RuntimeException("Failed to initialize bridge", t);
     }
@@ -159,7 +155,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
               return true;
             }
-          }).get(LOAD_JS_BUNDLE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+          }).get();
     } catch (Exception t) {
       throw new RuntimeException(t);
     }
