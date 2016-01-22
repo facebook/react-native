@@ -51,8 +51,7 @@ class Dimensions {
    * Initial dimensions are set before `runApplication` is called so they should
    * be available before any other require's are run, but may be updated later.
    *
-   * Note: Although dimensions are available immediately, they may change (e.g
-   * due to device rotation) so any rendering logic or styles that depend on
+   * Note: Although dimensions are available immediately, they may change so any rendering logic or styles that depend on
    * these constants should try to call this function on every render, rather
    * than caching the value (for example, using inline styles rather than
    * setting a value in a `StyleSheet`).
