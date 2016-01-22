@@ -9,16 +9,7 @@
 
 #import "ARTRenderableManager.h"
 #import "RCTConvert+ART.h"
-#import "RCTConvert.h"
 #import "ARTCGFillRule.h"
-
-@implementation RCTConvert(FillRule)
-
-RCT_ENUM_CONVERTER(ARTCGFillRule, (@{
-  @"evenodd": @(kARTCGFillRuleEvenodd),
-  @"nonzero": @(kARTCGFillRuleNonzero),
-}), kARTCGFillRuleEvenodd, intValue)
-@end
 
 @implementation ARTRenderableManager
 
