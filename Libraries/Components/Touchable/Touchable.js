@@ -670,7 +670,7 @@ var TouchableMixin = {
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
-        this.pressOutDelayTimeout = this.setTimeout(function() {
+        this.pressOutDelayTimeout = setTimeout(() => {
           this.touchableHandleActivePressOut(e);
         }, this.touchableGetPressOutDelayMS());
       } else {
