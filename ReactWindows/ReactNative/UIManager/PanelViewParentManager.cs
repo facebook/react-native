@@ -9,7 +9,7 @@ namespace ReactNative.UIManager
     /// extending <see cref="Panel"/>.
     /// </summary>
     /// <typeparam name="TPanel">Type of panel.</typeparam>
-    public abstract class PanelViewGroupManager<TPanel> : ViewGroupManager
+    public abstract class PanelViewParentManager<TPanel> : ViewParentManager
         where TPanel : Panel
     {
         /// <summary>
@@ -54,9 +54,9 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Gets the number of children in the view group.
+        /// Gets the number of children for the view parent.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         /// <returns>The number of children.</returns>
         public sealed override int GetChildCount(FrameworkElement parent)
         {
@@ -88,7 +88,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Removes the child at the given index.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         /// <param name="index">The index.</param>
         public override void RemoveChildAt(FrameworkElement parent, int index)
         {
@@ -96,9 +96,9 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Removes all children from the view group.
+        /// Removes all children from the view parent.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         public override void RemoveAllChildren(FrameworkElement parent)
         {
             RemoveAllChildren((TPanel)parent);
@@ -225,9 +225,9 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Gets the number of children in the view group.
+        /// Gets the number of children in the view parent.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         /// <returns>The number of children.</returns>
         protected virtual int GetChildCount(TPanel parent)
         {
@@ -259,7 +259,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Removes the child at the given index.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         /// <param name="index">The index.</param>
         protected virtual void RemoveChildAt(TPanel parent, int index)
         {
@@ -267,9 +267,9 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Removes all children from the view group.
+        /// Removes all children from the view parent.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         protected virtual void RemoveAllChildren(TPanel parent)
         {
             parent.Children.Clear();

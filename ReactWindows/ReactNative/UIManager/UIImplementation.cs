@@ -735,17 +735,17 @@ namespace ReactNative.UIManager
                         node.ViewClass));
             }
 
-            var viewGroupManager = viewManager as ViewGroupManager;
-            if (viewGroupManager == null)
+            var viewParentManager = viewManager as ViewParentManager;
+            if (viewParentManager == null)
             {
                 throw new InvalidOperationException(
                     string.Format(
                         CultureInfo.InvariantCulture,
-                        "Trying to use view '{0}' as a parent but its manager is not a ViewGroupManager.",
+                        "Trying to use view '{0}' as a parent but its manager is not a ViewParentManager.",
                         node.ViewClass));
             }
 
-            if (viewGroupManager.NeedsCustomLayoutForChildren)
+            if (viewParentManager.NeedsCustomLayoutForChildren)
             {
                 throw new InvalidOperationException(
                     string.Format(

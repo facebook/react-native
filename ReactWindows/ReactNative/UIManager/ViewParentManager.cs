@@ -6,7 +6,7 @@ namespace ReactNative.UIManager
     /// <summary>
     /// Class providing child management API for view managers.
     /// </summary>
-    public abstract class ViewGroupManager : ViewManager
+    public abstract class ViewParentManager : ViewManager
     {
         /// <summary>
         /// The <see cref="Type"/> instance that represents the type of shadow
@@ -67,9 +67,9 @@ namespace ReactNative.UIManager
         public abstract void AddView(FrameworkElement parent, FrameworkElement child, int index);
 
         /// <summary>
-        /// Gets the number of children in the view group.
+        /// Gets the number of children in the view parent.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         /// <returns>The number of children.</returns>
         public abstract int GetChildCount(FrameworkElement parent);
 
@@ -84,14 +84,14 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Removes the child at the given index.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         /// <param name="index">The index.</param>
         public abstract void RemoveChildAt(FrameworkElement parent, int index);
 
         /// <summary>
-        /// Removes all children from the view group.
+        /// Removes all children from the view parent.
         /// </summary>
-        /// <param name="parent">The view group.</param>
+        /// <param name="parent">The view parent.</param>
         public abstract void RemoveAllChildren(FrameworkElement parent);
     }
 }
