@@ -67,12 +67,10 @@ RCT_EXPORT_MODULE()
     if (!_window && !RCTRunningInTestEnvironment()) {
       CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
       _window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
-      _window.backgroundColor = [UIColor blackColor];
       _window.windowLevel = UIWindowLevelStatusBar + 1;
 
       _label = [[UILabel alloc] initWithFrame:_window.bounds];
       _label.font = [UIFont systemFontOfSize:12.0];
-      _label.textColor = [UIColor grayColor];
       _label.textAlignment = NSTextAlignmentCenter;
 
       [_window addSubview:_label];
@@ -81,14 +79,17 @@ RCT_EXPORT_MODULE()
 
     NSString *source;
     if (URL.fileURL) {
+      _window.backgroundColor = [UIColor greenColor];
+      _label.textColor = [UIColor whiteColor];
       source = @"pre-bundled file";
     } else {
+      _window.backgroundColor = [UIColor blackColor];
+      _label.textColor = [UIColor grayColor];
       source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
     }
 
     _label.text = [NSString stringWithFormat:@"Loading from %@...", source];
     _window.hidden = NO;
-
   });
 }
 
