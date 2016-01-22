@@ -49,10 +49,6 @@ const validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
-  getModuleId: {
-    type: 'function',
-    required: true,
-  }
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -102,7 +98,6 @@ class Resolver {
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
     });
 
-    this._getModuleId = options.getModuleId;
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
   }
 
@@ -182,32 +177,36 @@ class Resolver {
       }
 
       const resolvedDeps = Object.create(null);
+      const resolvedDepsArr = [];
 
       return Promise.all(
         resolutionResponse.getResolvedDependencyPairs(module).map(
           ([depName, depModule]) => {
             if (depModule) {
-              resolvedDeps[depName] = this._getModuleId(depModule);
+              return depModule.getName().then(name => {
+                resolvedDeps[depName] = name;
+                resolvedDepsArr.push(name);
+              });
             }
           }
         )
       ).then(() => {
-        const replaceModuleId = (codeMatch, pre, quot, depName, post = '') => {
-          if (depName in resolvedDeps) {
-            const replacement = `${quot}${resolvedDeps[depName]}${quot}`;
-            return `${pre}${replacement} /* ${depName} */${post}`;
+        const relativizeCode = (codeMatch, pre, quot, depName, post) => {
+          const depId = resolvedDeps[depName];
+          if (depId) {
+            return pre + quot + depId + post;
           } else {
             return codeMatch;
           }
         };
 
         code = code
-          .replace(replacePatterns.IMPORT_RE, replaceModuleId)
-          .replace(replacePatterns.EXPORT_RE, replaceModuleId)
-          .replace(replacePatterns.REQUIRE_RE, replaceModuleId);
+          .replace(replacePatterns.IMPORT_RE, relativizeCode)
+          .replace(replacePatterns.EXPORT_RE, relativizeCode)
+          .replace(replacePatterns.REQUIRE_RE, relativizeCode);
 
         return module.getName().then(name => {
-          return {name, code, id: this._getModuleId(module)};
+          return {name, code};
         });
       });
     });
@@ -221,8 +220,8 @@ class Resolver {
     }
 
     return this.resolveRequires(resolutionResponse, module, code).then(
-      ({name, code, id}) => {
-        return {id, name, code: defineModuleCode(id, code, name)};
+      ({name, code}) => {
+        return {name, code: defineModuleCode(name, code)};
       });
   }
 
@@ -232,10 +231,10 @@ class Resolver {
 
 }
 
-function defineModuleCode(moduleId, code, verboseName = '') {
+function defineModuleCode(moduleName, code) {
   return [
     `__d(`,
-    `${JSON.stringify(moduleId)} /* ${verboseName} */ ,`,
+    `'${moduleName}',`,
     'function(global, require, module, exports) {',
     `  ${code}`,
     '\n});',

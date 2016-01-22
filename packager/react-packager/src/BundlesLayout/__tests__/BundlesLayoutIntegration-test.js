@@ -55,7 +55,6 @@ describe('BundlesLayout', () => {
         cache: new Cache(),
         assetExts: ['js', 'png'],
         assetRoots: ['/root'],
-        getModuleId: () => {},
       });
 
       return new BundlesLayout({
