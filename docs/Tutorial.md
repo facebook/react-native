@@ -59,6 +59,7 @@ We're going to render the title, year, and thumbnail for the movie. Since thumbn
 ```javascript
 import React, {
   AppRegistry,
+  Component,
   Image,
   StyleSheet,
   Text,
@@ -296,6 +297,7 @@ First things first: add the `ListView` import to the top of the file.
 ```javascript
 import React, {
   AppRegistry,
+  Component,
   Image,
   ListView,
   StyleSheet,
