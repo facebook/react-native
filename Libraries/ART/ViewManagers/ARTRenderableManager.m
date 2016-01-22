@@ -8,8 +8,17 @@
  */
 
 #import "ARTRenderableManager.h"
-
 #import "RCTConvert+ART.h"
+#import "RCTConvert.h"
+#import "ARTCGFillRule.h"
+
+@implementation RCTConvert(FillRule)
+
+RCT_ENUM_CONVERTER(ARTCGFillRule, (@{
+  @"evenodd": @(kARTCGFillRuleEvenodd),
+  @"nonzero": @(kARTCGFillRuleNonzero),
+}), kARTCGFillRuleEvenodd, intValue)
+@end
 
 @implementation ARTRenderableManager
 
@@ -26,5 +35,6 @@ RCT_EXPORT_VIEW_PROPERTY(strokeJoin, CGLineJoin)
 RCT_EXPORT_VIEW_PROPERTY(fill, ARTBrush)
 RCT_EXPORT_VIEW_PROPERTY(stroke, CGColor)
 RCT_EXPORT_VIEW_PROPERTY(strokeDash, ARTCGFloatArray)
+RCT_EXPORT_VIEW_PROPERTY(fillRule, ARTCGFillRule)
 
 @end
