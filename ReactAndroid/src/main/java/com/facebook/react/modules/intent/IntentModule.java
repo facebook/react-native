@@ -115,5 +115,42 @@ public class IntentModule extends ReactContextBaseJavaModule {
       throw new JSApplicationIllegalArgumentException(
           "Could not check if URL '" + url + "' can be opened: " + e.getMessage());
     }
+  } 
+
+  /**
+   * Open a chooser dialog to send data to other apps.
+   *
+   * Refer http://developer.android.com/intl/ko/training/sharing/send.html
+   * 
+   * @param options the data to send
+   * @param title the title of the chooser dialog
+   */
+  @ReactMethod
+  public void openChooserWithOptions(ReadableMap options, String title) {
+    if (options == null) {
+      throw new JSApplicationIllegalArgumentException("Invalid Options");
+    }
+
+    Activity currentActivity = getCurrentActivity();
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    if(options.hasKey("type")) {
+      intent.setTypeAndNormalize(options.getString("type"));
+    } else {
+      intent.setTypeAndNormalize("text/plain");
+    }
+    
+    if(options.hasKey("subject")) {
+      intent.putExtra(Intent.EXTRA_SUBJECT, options.getString("subject"));
+    }
+    if(options.hasKey("text")) {
+      intent.putExtra(Intent.EXTRA_TEXT, options.getString("text"));
+    }
+
+    if (currentActivity != null) {
+      currentActivity.startActivity(Intent.createChooser(intent, title));
+    } else {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      getReactApplicationContext().startActivity(Intent.createChooser(intent, title));
+    }
   }
 }

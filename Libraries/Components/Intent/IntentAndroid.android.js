@@ -109,6 +109,33 @@ class IntentAndroid {
     IntentAndroidModule.getInitialURL(callback);
   }
 
+  /**
+   * Open a chooser dialog to send data to other apps.
+   *
+   * Refer http://developer.android.com/intl/ko/training/sharing/send.html
+   * 
+   * @param {object} Options - the data to send
+   * @param {string} Title - the title of the chooser dialog
+   * @example 
+   *   var options = {
+   *     type: 'text/plain', //default
+   *     subject: 'React Native',
+   *     text: 'http://facebook.github.io/react-native/'
+   *   }
+   */
+  static openChooserWithOptions(options: Object, title: string) {
+    invariant(
+      typeof options === 'object',
+      'A valid option object is required'
+    );
+     invariant(
+      typeof title === 'string',
+      'Invalid Title: should be a string. Was: ' + title
+    );
+    IntentAndroidModule.openChooserWithOptions(options, title);
+  }
+
+
   static _validateURL(url: string) {
     invariant(
       typeof url === 'string',
