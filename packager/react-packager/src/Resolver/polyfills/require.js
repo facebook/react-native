@@ -59,29 +59,18 @@ function requireImpl(id) {
     );
   }
 
-
-  // `require` calls int  the require polyfill itself are not analyzed and
-  // replaced so that they use numeric module IDs.
-  // The systrace module will expose itself on the require function so that
-  // it can be used here.
-  // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
-  const {Systrace} = require;
   try {
     // We must optimistically mark mod as initialized before running the factory to keep any
     // require cycles inside the factory from causing an infinite require loop.
     mod.isInitialized = true;
 
-    if (__DEV__) {
-      Systrace.beginEvent('JS_require_' + id);
-    }
+    __DEV__ && Systrace().beginEvent('JS_require_' + id);
 
     // keep args in sync with with defineModuleCode in
     // packager/react-packager/src/Resolver/index.js
     mod.factory.call(global, global, require, mod.module, mod.module.exports);
 
-    if (__DEV__) {
-      Systrace.endEvent();
-    }
+    __DEV__ && Systrace().endEvent();
   } catch (e) {
     mod.hasError = true;
     mod.isInitialized = false;
@@ -91,9 +80,15 @@ function requireImpl(id) {
   return mod.module.exports;
 }
 
-if (__DEV__) {
-  require.Systrace = { beginEvent: () => {}, endEvent: () => {} };
-}
+const Systrace = __DEV__ && (() => {
+  var _Systrace;
+  try {
+    _Systrace = require('Systrace');
+  } catch (e) {}
+
+  return _Systrace && _Systrace.beginEvent ?
+    _Systrace : { beginEvent: () => {}, endEvent: () => {} };
+});
 
 global.__d = define;
 global.require = require;
