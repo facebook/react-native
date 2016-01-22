@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.webview;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.SystemClock;
@@ -27,15 +23,22 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of {@link WebView}
@@ -278,6 +281,19 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     } else {
       view.loadUrl(BLANK_URL);
     }
+  }
+
+  @ReactProp(name = "headers")
+  public void setUrlWithHeaders(WebView view, @Nullable ReadableMap urlWithHeaders) {
+    String url = urlWithHeaders.getString("url");
+    ReadableMap headerMap = urlWithHeaders.getMap("headers");
+    ReadableMapKeySetIterator iter = headerMap.keySetIterator();
+    HashMap<String, String> headers = new HashMap<>();
+    while (iter.hasNextKey()) {
+      String key = iter.nextKey();
+      headers.put(key, headerMap.getString(key));
+    }
+    view.loadUrl(url, headers);
   }
 
   @ReactProp(name = "url")
