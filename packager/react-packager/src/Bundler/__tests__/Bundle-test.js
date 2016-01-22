@@ -311,6 +311,31 @@ describe('Bundle', () => {
       expect(bundle.getEtag()).toEqual(eTag);
     });
   });
+
+  describe('main module name and id:', function() {
+    it('keeps distinct module names and IDs', function() {
+      const id = 'arbitrary module ID';
+      const name = 'arbitrary module name';
+      bundle.setMainModuleId(id);
+      bundle.setMainModuleName(name);
+
+      expect(bundle.getMainModuleId()).toEqual(id);
+      expect(bundle.getMainModuleName()).toEqual(name);
+    });
+
+    it('can serialize and deserialize module ID and name', function() {
+      const id = 'arbitrary module ID';
+      const name = 'arbitrary module name';
+      bundle.setMainModuleId(id);
+      bundle.setMainModuleName(name);
+      bundle.finalize({});
+
+      const deserialized = Bundle.fromJSON(bundle.toJSON());
+
+      expect(deserialized.getMainModuleId()).toEqual(id);
+      expect(deserialized.getMainModuleName()).toEqual(name);
+    });
+  });
 });
 
 
