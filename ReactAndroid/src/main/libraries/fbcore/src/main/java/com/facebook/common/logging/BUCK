@@ -1,0 +1,11 @@
+android_prebuilt_aar(
+    name = 'logging',
+    aar = ':fbcore-binary-aar',
+    visibility = ['//ReactAndroid/...'],
+)
+
+remote_file(
+    name = 'fbcore-binary-aar',
+    url = 'mvn:com.facebook.fresco:fbcore:aar:0.8.1',
+    sha1 = 'cc46b3d564139bf63bb41534c7a723ee8119ae5f',
+)

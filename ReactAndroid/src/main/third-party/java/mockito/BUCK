@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = 'mockito',
+    binary_jar = ':mockito-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'mockito-binary-jar',
+    url = 'mvn:org.mockito:mockito-core:jar:1.10.19',
+    sha1 = 'e8546f5bef4e061d8dd73895b4e8f40e3fe6effe',
+)

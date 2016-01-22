@@ -1,0 +1,73 @@
+android_library(
+    name = 'powermock',
+    exported_deps = [
+        ':powermock-api-mockito',
+        ':powermock-api-support',
+        ':powermock-module-junit4-rule',
+        ':powermock-classloading-xstream',
+        ':powermock-core',
+    ],
+    visibility = ['//ReactAndroid/...',],
+)
+
+prebuilt_jar(
+    name = 'powermock-core',
+    binary_jar = ':download-powermock-core',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-powermock-core',
+    url = 'mvn:org.powermock:powermock-core:jar:1.6.2',
+    sha1 = 'ea04e79244e19dcf0c3ccf6863c5b028b4b58c9c',
+)
+
+prebuilt_jar(
+    name = 'powermock-api-mockito',
+    binary_jar = ':download-powermock-api-mockito',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-powermock-api-mockito',
+    url = 'mvn:org.powermock:powermock-api-mockito:jar:1.6.2',
+    sha1 = 'c213230ae20a7b422f3d622a261d0e3427d2464c',
+)
+
+prebuilt_jar(
+    name = 'powermock-api-support',
+    binary_jar = ':download-powermock-api-support',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-powermock-api-support',
+    url = 'mvn:org.powermock:powermock-api-support:jar:1.6.2',
+    sha1 = '93b21413b4ee99b7bc0dd34e1416fdca96866aaf',
+)
+
+prebuilt_jar(
+    name = 'powermock-module-junit4-rule',
+    binary_jar = ':download-powermock-module-junit4-rule',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-powermock-module-junit4-rule',
+    url = 'mvn:org.powermock:powermock-module-junit4-rule:jar:1.6.2',
+    sha1 = '4847638c5729b9f203e21144b0bdb5d34d888473',
+)
+
+prebuilt_jar(
+    name = 'powermock-classloading-xstream',
+    binary_jar = ':download-powermock-classloading-xstream',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-powermock-classloading-xstream',
+    url = 'mvn:org.powermock:powermock-classloading-xstream:jar:1.6.2',
+    sha1 = '3ced31cd7024fe365b9f3c8082d22c02434577da',
+)
+
+

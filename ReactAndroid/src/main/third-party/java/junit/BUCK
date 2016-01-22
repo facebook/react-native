@@ -1,0 +1,11 @@
+prebuilt_jar(
+  name = 'junit',
+  binary_jar = ':download-junit',
+  visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+  name = 'download-junit',
+  url = 'mvn:junit:junit:jar:4.12',
+  sha1 = '2973d150c0dc1fefe998f834810d68f278ea58ec',
+)

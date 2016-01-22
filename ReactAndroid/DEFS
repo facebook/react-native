@@ -1,0 +1,53 @@
+# Helpers for referring to React Native open source code.
+#
+# This lets us build React Native:
+# - At Facebook by running buck from the root of the fb repo
+# - Outside of Facebook by running buck in the root of the git repo
+
+# Example: react_native_target('java/com/facebook/react/common:common')
+def react_native_target(path):
+  return '//ReactAndroid/src/main/' + path
+
+# Example: react_native_tests_target('java/com/facebook/react/modules:modules')
+def react_native_tests_target(path):
+  return '//ReactAndroid/src/test/' + path
+
+# Example: react_native_integration_tests_target('java/com/facebook/react/testing:testing')
+def react_native_integration_tests_target(path):
+  return '//ReactAndroid/src/androidTest/' + path
+
+# Helper for referring to non-RN code from RN OSS code.
+# Example: react_native_dep('java/com/facebook/systrace:systrace')
+def react_native_dep(path):
+  return '//ReactAndroid/src/main/' + path
+
+INTERNAL_APP = 'PUBLIC'
+
+# React property preprocessor
+original_android_library=android_library
+def android_library(
+  name,
+  deps=[],
+  annotation_processors=[],
+  annotation_processor_deps=[],
+  *args,
+  **kwargs):
+
+  common_processors = [
+    'com.facebook.react.processing.ReactPropertyProcessor',
+  ]
+  common_processor_deps = [
+    react_native_target('java/com/facebook/react/processing:processing'),
+  ]
+
+  if react_native_target('java/com/facebook/react/uimanager/annotations:annotations') in deps and name != 'processing':
+      annotation_processors = list(set(annotation_processors + common_processors))
+      annotation_processor_deps = list(set(annotation_processor_deps + common_processor_deps))
+
+  original_android_library(
+    name=name,
+    deps=deps,
+    annotation_processors=annotation_processors,
+    annotation_processor_deps=annotation_processor_deps,
+    *args,
+    **kwargs)

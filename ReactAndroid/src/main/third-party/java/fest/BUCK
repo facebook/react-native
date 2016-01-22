@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = 'fest',
+    binary_jar = ':fest-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'fest-binary-jar',
+    url = 'mvn:org.easytesting:fest-assert-core:jar:2.0M10',
+    sha1 = 'cb7c91cf614901928ae405f19d9bcdedf82781db',
+)
