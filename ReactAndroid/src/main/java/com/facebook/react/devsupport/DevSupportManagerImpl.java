@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.Experiments;
 import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
@@ -265,17 +266,21 @@ public class DevSupportManagerImpl implements DevSupportManager {
             handleReloadJS();
           }
         });
-    options.put(
-            mDevSettings.isHotModuleReplacementEnabled()
-                    ? mApplicationContext.getString(R.string.catalyst_hot_module_replacement_off)
-                    : mApplicationContext.getString(R.string.catalyst_hot_module_replacement),
-            new DevOptionHandler() {
-              @Override
-              public void onOptionSelected() {
-                mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
-                handleReloadJS();
-              }
-            });
+
+    if (Experiments.isExperimentEnabled(Experiments.HOT_MODULE_REPLACEMENT)) {
+      options.put(
+        mDevSettings.isHotModuleReplacementEnabled()
+          ? mApplicationContext.getString(R.string.catalyst_hot_module_replacement_off)
+          : mApplicationContext.getString(R.string.catalyst_hot_module_replacement),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
+            handleReloadJS();
+          }
+        });
+    }
+
     options.put(
         mDevSettings.isReloadOnJSChangeEnabled()
             ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
