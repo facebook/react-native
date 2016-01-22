@@ -341,14 +341,11 @@ class Bundle extends BundleBase {
   }
 
   toJSON() {
-    if (!this._finalized) {
-      throw new Error('Cannot serialize bundle unless finalized');
-    }
+    this.assertFinalized('Cannot serialize bundle unless finalized');
 
     return {
       ...super.toJSON(),
       sourceMapUrl: this._sourceMapUrl,
-      mainModuleId: super.getMainModuleId(),
       numPrependedModules: this._numPrependedModules,
       numRequireCalls: this._numRequireCalls,
     };
