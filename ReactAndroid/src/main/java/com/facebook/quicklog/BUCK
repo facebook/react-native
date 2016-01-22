@@ -1,0 +1,16 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'quicklog',
+  srcs = glob(['*.java']),
+  exported_deps = [
+    react_native_dep('java/com/facebook/quicklog/identifiers:identifiers'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':quicklog',
+)

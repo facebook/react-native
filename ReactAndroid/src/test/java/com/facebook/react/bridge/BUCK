@@ -1,0 +1,19 @@
+include_defs('//ReactAndroid/DEFS')
+
+STANDARD_TEST_SRCS = [
+  '**/*Test.java',
+]
+
+android_library(
+  name = 'testhelpers',
+  srcs = glob(['**/*.java'], excludes = STANDARD_TEST_SRCS),
+  deps = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_dep('third-party/java/mockito:mockito'),
+    react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
+  ],
+  visibility = [
+    'PUBLIC'
+  ],
+)
