@@ -289,8 +289,8 @@
     <Compile Include="UIManager\UIManagerModule.Constants.cs" />
     <Compile Include="UIManager\UIViewOperationQueue.cs" />
     <Compile Include="UIManager\ViewAtIndex.cs" />
-    <Compile Include="UIManager\ViewGroupManager.cs" />
-    <Compile Include="UIManager\PanelViewGroupManager.cs" />
+    <Compile Include="UIManager\ViewParentManager.cs" />
+    <Compile Include="UIManager\PanelViewParentManager.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManager.Generic.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />

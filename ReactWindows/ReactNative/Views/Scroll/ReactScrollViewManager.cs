@@ -10,7 +10,7 @@ namespace ReactNative.Views.Scroll
     /// <remarks>
     /// TODO: implement this as a proper ScrollViewer instead of a ListView.
     /// </remarks>
-    public class ReactScrollViewManager : ViewGroupManager
+    public class ReactScrollViewManager : ViewParentManager
     {
         private const string ReactClass = "RCTScrollView";
 

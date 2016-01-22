@@ -13,7 +13,7 @@ namespace ReactNative.Views.View
     /// aren't common, lazy initializes most of the storage needed for them. Also supports
     /// 3D transformations such as elevation depth.  
     /// </summary>
-    public class ReactCanvas : Canvas, IReactInterceptingViewGroup, IReactPointerEventsView
+    public class ReactCanvas : Canvas, IReactInterceptingViewParent, IReactPointerEventsView
     {
         /// <summary>
         /// Sets an elevation 3D transformation effect on the <see cref="ReactCanvas"/>.
