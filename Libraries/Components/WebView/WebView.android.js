@@ -53,6 +53,12 @@ var WebView = React.createClass({
     style: View.propTypes.style,
 
     /**
+     * Used on Android only, custom headers to be used when loading a URL in the WebView
+     * @platform android
+     */
+    headers: PropTypes.object,
+
+    /**
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
@@ -133,6 +139,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         url={this.props.url}
+        headers={this.props.headers}
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}

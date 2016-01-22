@@ -11,6 +11,7 @@ package com.facebook.react.views.webview;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.graphics.Bitmap;
@@ -27,6 +28,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -173,6 +176,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
    */
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
+    private @Nullable String url;
+    private @Nullable HashMap<String, String> headers;
 
     /**
      * WebView must be created with an context of the current activity
@@ -202,6 +207,28 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void setInjectedJavaScript(@Nullable String js) {
       injectedJS = js;
+    }
+
+    public String getUrl() {
+      return url;
+    }
+
+    public HashMap<String, String> getHeaders() {
+      return headers;
+    }
+
+    public void setUrl(@Nullable String url) {
+      this.url = url;
+    }
+
+    public void setHeaders(@Nullable HashMap<String, String> headers) {
+      this.headers = headers;
+    }
+
+    public void load() {
+      if (url != null && headers != null) {
+        loadUrl(url, headers);
+      }
     }
 
     public void callInjectedJavaScript() {
@@ -280,8 +307,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
+  @ReactProp(name = "headers")
+  public void setHeaders(ReactWebView view, @Nullable ReadableMap headers) {
+    HashMap<String, String> headerMap = new HashMap<>();
+    ReadableMapKeySetIterator iter = headers.keySetIterator();
+    while (iter.hasNextKey()) {
+      String key = iter.nextKey();
+      headerMap.put(key, headers.getString(key));
+    }
+    view.setHeaders(headerMap);
+    view.load();
+  }
+
   @ReactProp(name = "url")
-  public void setUrl(WebView view, @Nullable String url) {
+  public void setUrl(ReactWebView view, @Nullable String url) {
     // TODO(8495359): url and html are coupled as they both call loadUrl, therefore in case when
     // property url is removed in favor of property html being added in single transaction we may
     // end up in a state when blank url is loaded as it depends on the order of update operations!
@@ -292,7 +331,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       return;
     }
     if (url != null) {
-      view.loadUrl(url);
+      view.setUrl(url);
+      view.load();
     } else {
       view.loadUrl(BLANK_URL);
     }
