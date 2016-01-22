@@ -47,6 +47,8 @@ To go through all the commits that went into a release, one way is to use the gi
 
 Skip this for now, ping @mkonicek on messenger and he'll handle it. Docs [here](https://github.com/facebook/react-native/blob/master/Releases-publish.md).
 
+IMPORTANT:  `npm publish` will automatically set the latest tag. **When doing an RC release**, run `npm publish --tag next` - this way people need to opt in to get the RC release.
+
 ## Track bug reports from the community during the following two weeks and make sure they get fixed
 
 A good way to do this is to create a github issue and post about it so people can report bugs: https://github.com/facebook/react-native/issues/5201
