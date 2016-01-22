@@ -219,13 +219,7 @@ CGSize RCTScreenSize()
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTExecuteOnMainThread(^{
-      if ([[[UIDevice currentDevice] systemVersion] compare:@"8.0" options:NSNumericSearch] == NSOrderedDescending) {
-        CGSize pixelSize = [UIScreen mainScreen].nativeBounds.size;
-        CGFloat scale = RCTScreenScale();
-        size = (CGSize){pixelSize.width / scale, pixelSize.height / scale};
-      } else {
-        size = [UIScreen mainScreen].bounds.size;
-      }
+      size = [UIScreen mainScreen].bounds.size;
     }, YES);
   });
 
