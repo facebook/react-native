@@ -190,6 +190,7 @@ class Bundler {
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
       bundle.setMainModuleId(response.mainModuleId);
+      bundle.setMainModuleName(response.mainModuleId);
       transformEventId = Activity.startEvent('transform');
 
       const moduleSystemDeps = includeSystemDependencies
@@ -396,7 +397,7 @@ class Bundler {
       return this._transformer.loadFileAndTransform(
         path.resolve(module.path),
         this._getTransformOptions(
-          {bundleEntry: bundle.getMainModuleId(), modulePath: module.path},
+          {bundleEntry: bundle.getMainModuleName(), modulePath: module.path},
           {hot: hot},
         ),
       );
