@@ -419,7 +419,7 @@ exports.examples = [
     return (
       <View>
         <Text>
-          This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
+          This text contains an inline image <Image source={require('./flux.png')} style={{width: 30, height: 11, resizeMode: 'cover'}}/>. Neat, huh?
         </Text>
       </View>
     );
