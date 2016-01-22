@@ -133,13 +133,23 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
+    var urlProp, urlWithHeaders;
+    if(this.props.headers == null) {
+      urlProp = this.props.url;
+    } else {
+      urlWithHeaders = {
+        url: this.props.url,
+        headers: this.props.headers,
+      }
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        url={this.props.url}
-        headers={this.props.headers}
+        url={urlProp}
+        headers={urlWithHeaders}
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
