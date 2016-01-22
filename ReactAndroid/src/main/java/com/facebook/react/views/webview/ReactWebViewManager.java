@@ -9,10 +9,6 @@
 
 package com.facebook.react.views.webview;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
-
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.SystemClock;
@@ -27,6 +23,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -36,6 +34,11 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * Manages instances of {@link WebView}
@@ -280,8 +283,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
+  @ReactProp(name = "headers")
+  public void setUrlWithHeaders(ReactWebView view, @Nullable ReadableMap urlWithHeaders) {
+    String url = urlWithHeaders.getString("url");
+    ReadableMap headerMap = urlWithHeaders.getMap("headers");
+    ReadableMapKeySetIterator iter = headerMap.keySetIterator();
+    HashMap<String, String> headers = new HashMap<>();
+    while (iter.hasNextKey()) {
+      String key = iter.nextKey();
+      headers.put(key, headerMap.getString(key));
+    }
+    view.loadUrl(url, headers);
+  }
+
   @ReactProp(name = "url")
-  public void setUrl(WebView view, @Nullable String url) {
+  public void setUrl(ReactWebView view, @Nullable String url) {
     // TODO(8495359): url and html are coupled as they both call loadUrl, therefore in case when
     // property url is removed in favor of property html being added in single transaction we may
     // end up in a state when blank url is loaded as it depends on the order of update operations!
@@ -292,9 +308,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       return;
     }
     if (url != null) {
-      view.loadUrl(url);
+      view.loadUrl("http://www.cnn.com");
     } else {
-      view.loadUrl(BLANK_URL);
+      view.loadUrl("http://www.reddit.com");
     }
   }
 
@@ -334,3 +350,4 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
   }
 }
+
