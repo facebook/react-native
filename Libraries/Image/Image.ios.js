@@ -196,10 +196,10 @@ var Image = React.createClass({
 
   render: function() {
     var source = resolveAssetSource(this.props.source) || {};
-    var {width, height} = source;
+    var {width, height, uri} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
-    var isNetwork = source.uri && source.uri.match(/^https?:/);
+    var isNetwork = uri && uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
     var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
@@ -211,18 +211,21 @@ var Image = React.createClass({
     }
 
     if (this.context.isInAParentText) {
-      return <RCTVirtualImage source={source}/>;
-    } else {
-      return (
-        <RawImage
-          {...this.props}
-          style={style}
-          resizeMode={resizeMode}
-          tintColor={tintColor}
-          source={source}
-        />
-      );
+      RawImage = RCTVirtualImage;
+      if (!width || !height) {
+        console.warn('You must specify a width and height for the image %s', uri); 
+      }
     }
+
+    return (
+      <RawImage
+        {...this.props}
+        style={style}
+        resizeMode={resizeMode}
+        tintColor={tintColor}
+        source={source}
+      />
+    );
   },
 });
 
