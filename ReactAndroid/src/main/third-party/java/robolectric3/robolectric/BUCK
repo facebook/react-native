@@ -1,0 +1,45 @@
+android_library(
+    name = 'robolectric',
+    exported_deps = [
+        ':robolectric-core',
+        ':robolectric-resources',
+        ':robolectric-annotations',
+    ],
+    visibility = ['//ReactAndroid/...',],
+)
+
+prebuilt_jar(
+    name = 'robolectric-core',
+    binary_jar = ':robolectric-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'robolectric-binary-jar',
+    url = 'mvn:org.robolectric:robolectric:jar:3.0',
+    sha1 = 'f888cea3bc1a24110e315eb9827ab593610ea62f',
+)
+
+prebuilt_jar(
+    name = 'robolectric-resources',
+    binary_jar = ':robolectric-resources-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'robolectric-resources-binary-jar',
+    url = 'mvn:org.robolectric:robolectric-resources:jar:3.0',
+    sha1 = '1ab609054aab67cd13a434567467f4b4774f2465',
+)
+
+prebuilt_jar(
+    name = 'robolectric-annotations',
+    binary_jar = ':robolectric-annotations-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'robolectric-annotations-binary-jar',
+    url = 'mvn:org.robolectric:robolectric-annotations:jar:3.0',
+    sha1 = '2a6cfc072d7680694c1ff893c5dc8fec33163110',
+)

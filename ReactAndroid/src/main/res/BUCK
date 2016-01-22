@@ -1,0 +1,19 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_resource(
+  name = 'devsupport',
+  res = 'devsupport',
+  package = 'com.facebook.react',
+  visibility = [
+    react_native_target('java/com/facebook/react/devsupport/...'),
+  ],
+)
+
+android_resource(
+  name = 'shell',
+  res = 'shell',
+  package = 'com.facebook.react',
+  visibility = [
+    'PUBLIC',
+  ],
+)

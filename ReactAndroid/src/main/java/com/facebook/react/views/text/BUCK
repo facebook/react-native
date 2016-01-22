@@ -1,0 +1,26 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+  name = 'text',
+  srcs = glob(['*.java']),
+  deps = [
+    react_native_target('java/com/facebook/react/bridge:bridge'),
+    react_native_target('java/com/facebook/react/common:common'),
+    react_native_target('java/com/facebook/csslayout:csslayout'),
+    react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
+    react_native_dep('libraries/fresco/fresco-react-native:fbcore'),
+    react_native_dep('libraries/fresco/fresco-react-native:fresco-react-native'),
+    react_native_dep('libraries/fresco/fresco-react-native:fresco-drawee'),
+    react_native_dep('libraries/fresco/fresco-react-native:imagepipeline'),
+    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
+    react_native_dep('third-party/java/jsr-305:jsr-305'),
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+project_config(
+  src_target = ':text',
+)

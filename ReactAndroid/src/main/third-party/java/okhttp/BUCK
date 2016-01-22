@@ -1,0 +1,23 @@
+prebuilt_jar(
+    name = 'okhttp',
+    binary_jar = ':okhttp-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'okhttp-binary-jar',
+    url = 'mvn:com.squareup.okhttp:okhttp:jar:2.5.0',
+    sha1 = '4de2b4ed3445c37ec1720a7d214712e845a24636'
+)
+
+prebuilt_jar(
+    name = 'okhttp-ws',
+    binary_jar = ':okhttp-ws-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'okhttp-ws-binary-jar',
+    url = 'mvn:com.squareup.okhttp:okhttp-ws:jar:2.5.0',
+    sha1 = '0e9753b7dcae5deca92e871c5c759067070b07bc',
+)

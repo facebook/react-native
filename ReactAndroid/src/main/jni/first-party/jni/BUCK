@@ -1,0 +1,50 @@
+include_defs('//ReactAndroid/DEFS')
+
+cxx_library(
+  name = 'jni',
+  srcs = [
+    'Countable.cpp',
+    'Environment.cpp',
+    'fbjni.cpp',
+    'jni_helpers.cpp',
+    'LocalString.cpp',
+    'OnLoad.cpp',
+    'WeakReference.cpp',
+    'fbjni/Exceptions.cpp',
+    'fbjni/Hybrid.cpp',
+    'fbjni/References.cpp',
+  ],
+  platform_srcs = [
+    (r'.*\bandroid\b.*', [
+      'fbjni/android/ReferenceChecking.cpp',
+      ]),
+  ],
+  exported_headers = glob(['*.h', 'fbjni/*.h']),
+  header_namespace = 'jni',
+  soname = 'libfbjni.so',
+  preprocessor_flags = [
+    '-fexceptions',
+    '-DLOG_TAG="fbjni"',
+  ],
+  compiler_flags = [
+    '-fexceptions', 
+    '-frtti',
+  ],
+  # We want to use this library during bootstrap
+  can_be_asset = False,
+  exported_deps = [
+    react_native_target('jni/first-party/fb:fb'),
+    react_native_target('jni/third-party/android-ndk:log'),
+  ],
+  deps = [
+    # TODO Is this needed? Not used in the Gradle build.
+    # '//native/jni-hack:jni-hack',
+    # TODO should be react_native_target('java/com/facebook/jni:jni') but might not be needed as the bridge already depends on it.
+    # '//native/jni/java:java',
+  ],
+  visibility = ['PUBLIC'],
+)
+
+project_config(
+  src_target = ':jni',
+)

@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = 'core',
+    binary_jar = ':jackson-core-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'jackson-core-binary-jar',
+    url = 'mvn:com.fasterxml.jackson.core:jackson-core:jar:2.2.3',
+    sha1 = '1a0113da2cab5f4c216b4e5e7c1dbfaa67087e14',
+)
