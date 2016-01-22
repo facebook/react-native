@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReactNative.Bridge
@@ -29,6 +30,8 @@ namespace ReactNative.Bridge
 
         private bool _initialized;
 
+        private int _pendingJsCalls;
+
         private CatalystInstance(
             CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
             Func<IJavaScriptExecutor> jsExecutorFactory,
@@ -48,6 +51,10 @@ namespace ReactNative.Bridge
                 catalystQueueConfigurationSpec,
                 HandleException);
         }
+
+        public event EventHandler<BridgeBusyEventArgs> BridgeBusy;
+
+        public event EventHandler<BridgeIdleEventArgs> BridgeIdle;
 
         public bool IsDisposed
         {
@@ -113,7 +120,7 @@ namespace ReactNative.Bridge
                     _bridge.SetGlobalVariable("__fbBatchedBridgeConfig", BuildModulesConfig());
                 }
 
-                _bundleLoader.LoadScript(jsExecutor);
+                _bundleLoader.LoadScript(_bridge);
 
                 return _bridge;
             });
@@ -177,7 +184,11 @@ namespace ReactNative.Bridge
             IsDisposed = true;
             _registry.NotifyCatalystInstanceDispose();
             QueueConfiguration.Dispose();
-            // TODO: notify bridge idle listeners
+
+            if (Interlocked.Exchange(ref _pendingJsCalls, 0) != 0)
+            {
+                OnBridgeIdle();
+            }
         }
 
         private string BuildModulesConfig()
@@ -202,6 +213,40 @@ namespace ReactNative.Bridge
         {
             _nativeModuleCallExceptionHandler(ex);
             QueueConfiguration.DispatcherQueueThread.RunOnQueue(Dispose);
+        }
+
+        private void IncrementPendingJsCalls()
+        {
+            if (Interlocked.Increment(ref _pendingJsCalls) == 1)
+            {
+                OnBridgeBusy();
+            }
+        }
+
+        private void DecrementPendingJsCalls()
+        {
+            if (Interlocked.Decrement(ref _pendingJsCalls) == 0)
+            {
+                OnBridgeIdle();
+            }
+        }
+
+        private void OnBridgeIdle()
+        {
+            var bridgeIdle = BridgeIdle;
+            if (bridgeIdle != null)
+            {
+                bridgeIdle(this, new BridgeIdleEventArgs());
+            }
+        }
+
+        private void OnBridgeBusy()
+        {
+            var bridgeBusy = BridgeBusy;
+            if (bridgeBusy != null)
+            {
+                bridgeBusy(this, new BridgeBusyEventArgs());
+            }
         }
 
         public sealed class Builder
@@ -325,6 +370,8 @@ namespace ReactNative.Bridge
                         _parent._registry.OnBatchComplete();
                     }
                 }
+
+                _parent.DecrementPendingJsCalls();
             }
         }
     }

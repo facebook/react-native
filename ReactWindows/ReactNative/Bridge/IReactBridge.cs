@@ -30,5 +30,11 @@ namespace ReactNative.Bridge
         /// <param name="propertyName">The property name.</param>
         /// <param name="jsonEncodedArgument">The JSON-encoded value.</param>
         void SetGlobalVariable(string propertyName, string jsonEncodedArgument);
+
+        /// <summary>
+        /// Evaluates JavaScript.
+        /// </summary>
+        /// <param name="script">The script.</param>
+        void RunScript(string script);
     }
 }
