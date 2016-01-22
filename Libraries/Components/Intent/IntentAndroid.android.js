@@ -113,10 +113,10 @@ class IntentAndroid {
    * Open a chooser dialog to send data to other apps.
    *
    * Refer http://developer.android.com/intl/ko/training/sharing/send.html
-   * 
+   *
    * @param {object} Options - the data to send
    * @param {string} Title - the title of the chooser dialog
-   * @example 
+   * @example
    *   var options = {
    *     type: 'text/plain', //default
    *     subject: 'React Native',
