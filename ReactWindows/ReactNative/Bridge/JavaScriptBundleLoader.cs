@@ -28,7 +28,7 @@ namespace ReactNative.Bridge
         /// Loads the bundle into a JavaScript executor.
         /// </summary>
         /// <param name="executor">The JavaScript executor.</param>
-        public abstract void LoadScript(IJavaScriptExecutor executor);
+        public abstract void LoadScript(IReactBridge executor);
 
         /// <summary>
         /// This loader will read the file from the project directory.
@@ -75,7 +75,7 @@ namespace ReactNative.Bridge
                 }
             }
 
-            public override void LoadScript(IJavaScriptExecutor executor)
+            public override void LoadScript(IReactBridge bridge)
             {
                 if (_script == null)
                 {
@@ -84,7 +84,7 @@ namespace ReactNative.Bridge
 
                 try
                 {
-                    executor.RunScript(_script);
+                    bridge.RunScript(_script);
                 }
                 catch (Exception ex)
                 {

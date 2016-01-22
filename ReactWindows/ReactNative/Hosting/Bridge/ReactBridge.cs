@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
+using ReactNative.Common;
+using ReactNative.Tracing;
 using System;
 
 namespace ReactNative.Hosting.Bridge
@@ -11,6 +13,8 @@ namespace ReactNative.Hosting.Bridge
     /// </summary>
     public class ReactBridge : IReactBridge
     {
+        private static readonly JArray s_empty = new JArray();
+
         private readonly IJavaScriptExecutor _jsExecutor;
         private readonly IReactCallback _reactCallback;
         private readonly IMessageQueueThread _nativeModulesQueueThread;
@@ -91,11 +95,27 @@ namespace ReactNative.Hosting.Bridge
             _jsExecutor.SetGlobalVariable(propertyName, JToken.Parse(jsonEncodedArgument));
         }
 
+        /// <summary>
+        /// Evaluates JavaScript.
+        /// </summary>
+        /// <param name="script">The script.</param>
+        public void RunScript(string script)
+        {
+            if (script == null)
+                throw new ArgumentNullException(nameof(script));
+
+            _jsExecutor.RunScript(script);
+            var response = _jsExecutor.Call("BatchedBridge", "flushedQueue", s_empty);
+
+            ProcessResponse(response);
+        }
+
         private void ProcessResponse(JToken response)
         {
             var messages = response as JArray;
             if (messages == null)
             {
+                Tracer.Write(ReactConstants.Tag, "Empty JavaScript Queue");
                 return;
             }
 
