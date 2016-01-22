@@ -340,7 +340,7 @@ JSValueRef JSCExecutor::nativeRequire(
   }
 
   double moduleId = JSValueToNumber(ctx, arguments[0], exception);
-  if (moduleId <= (double) UINT32_MAX && moduleId >= 0.0) {
+  if (moduleId <= (double) std::numeric_limits<uint32_t>::max() && moduleId >= 0.0) {
     try {
       executor->loadModule(moduleId);
     } catch (JSModulesUnbundle::ModuleNotFound&) {
