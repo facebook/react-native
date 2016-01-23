@@ -33,8 +33,27 @@ var invariant = require('invariant');
  * }
  * ```
  *
- * NOTE: For instructions on how to add support for deep linking,
- * refer [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ * Example to add support for deep linking inside your React Native app.
+ * More Info: [Enabling Deep Links for App Content - Add Intent Filters for Your Deep Links](http://developer.android.com/training/app-indexing/deep-linking.html#adding-filters).
+ *
+ * Edit in `android/app/src/main/AndroidManifest.xml`
+ *
+ * ```
+ *  <intent-filter>
+ *    <action android:name="android.intent.action.VIEW" />
+ *    <category android:name="android.intent.category.DEFAULT" />
+ *    <category android:name="android.intent.category.BROWSABLE" />
+ *
+ *    <!-- Accepts URIs that begin with "http://www.facebook.com/react -->
+ *    <data android:scheme="http"
+ *       android:host="www.facebook.com"
+ *       android:pathPrefix="/react" />
+ *    <!-- note that the leading "/" is required for pathPrefix-->
+ *
+ *    <!-- Accepts URIs that begin with "facebook://react -->
+ *    <!-- <data android:scheme="facebook" android:host="react" /> -->
+ *  </intent-filter>
+ * ```
  *
  * #### Opening external links
  *
