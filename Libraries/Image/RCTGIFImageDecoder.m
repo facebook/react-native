@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(UIViewContentMode)resizeMode
+                                        resizeMode:(RCTResizeMode)resizeMode
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);

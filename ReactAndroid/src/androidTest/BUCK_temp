@@ -1,0 +1,66 @@
+include_defs('//ReactAndroid/DEFS')
+
+
+CATALYST_PRIMERY_DEX_PATTERNS =  [
+  '/CatalystAppShell^',
+  '/CatalystApplicationImpl^',
+  '^com/facebook/buck/android/support/exopackage/',
+  '/FbInstrumentationTestRunner^',
+  '/PrimaryDexFactories^',
+  '/Screenshot^',
+  '/DexmakerMockMaker^',
+  '/AndroidJUnitRunner^',
+  '/InstrumentationRunListener^',
+  '/ExposedInstrumentationApi^',
+  '/TestApplication^',
+  '/ApplicationWithInjector^',
+  '/RunListener^',
+]
+
+JS_BUNDLE_DEPS = [
+  #':intern-schema',
+#   '//java/com/facebook/graphql:schema',
+#   '//java/com/facebook/graphql/graphql-data:locate_node'
+]
+
+
+# instrumentation tests that will run for tests located in GitHub open sourced folder
+android_binary (
+  name = 'react_oss',
+  manifest = 'AndroidManifest.xml',
+  keystore = '//keystores:debug',
+  use_split_dex = True,
+  linear_alloc_hard_limit = 10 * 1024 * 1024,
+  primary_dex_patterns = CATALYST_PRIMERY_DEX_PATTERNS,
+  deps = [
+#     ':integration_test_oss_bundle_js',
+    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
+  #     '//java/com/facebook/catalyst/js/react-native-github/ReactAndroid/src/main/res:shell',
+  ],
+)
+
+# Building this rule will produce a file named messenger_test.apk
+android_instrumentation_apk(
+  name = 'react_oss_test_apk',
+  manifest = 'AndroidManifest.xml',
+  apk = ':react_oss',
+  deps = [
+#     react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
+    #     react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
+    #     '//java/com/facebook/catalyst:integration_test_oss_bundle_js#dev',
+  ],
+)
+
+
+
+android_instrumentation_test(
+  name = 'react_oss_test',
+  apk = ':react_oss_test_apk',
+)
+
+sh_binary(
+  name = 'integration_test_oss_bundle_js',
+  main = 'buildBundle.sh',
+#     deps = [':InstallReactNativeNodeModules'],
+  visibility = ['PUBLIC'],
+)

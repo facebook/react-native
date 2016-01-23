@@ -29,6 +29,7 @@ var COMPONENTS = [
   require('./ScrollViewSimpleExample'),
   require('./SwitchExample'),
   require('./RefreshControlExample'),
+  require('./PickerAndroidExample'),
   require('./PullToRefreshViewAndroidExample.android'),
   require('./TextExample.android'),
   require('./TextInputExample.android'),
@@ -42,6 +43,7 @@ var COMPONENTS = [
 var APIS = [
   require('./AccessibilityAndroidExample.android'),
   require('./AlertExample').AlertExample,
+  require('./AppStateExample'),
   require('./BorderExample'),
   require('./CameraRollExample'),
   require('./ClipboardExample'),

@@ -13,7 +13,6 @@ next: android-setup
 2. [Homebrew](http://brew.sh/) is the recommended way to install Watchman and Flow.
 3. Install [Node.js](https://nodejs.org/) 4.0 or newer.
   - Install **nvm** with [its setup instructions here](https://github.com/creationix/nvm#installation). Then run `nvm install node && nvm alias default node`, which installs the latest version of Node.js and sets up your terminal so you can run it by typing `node`. With nvm you can install multiple versions of Node.js and easily switch between them.
-  - If you are using Node 5.0 or newer, we recommend installing npm 2, which is much faster than npm 3. After installing Node, run `npm install -g npm@2`.
   - New to [npm](https://docs.npmjs.com/)?
 4. `brew install watchman`. We recommend installing [watchman](https://facebook.github.io/watchman/docs/install.html), otherwise you might hit a node file watching bug.
 5. `brew install flow`, if you want to use [flow](http://www.flowtype.org).

@@ -14,6 +14,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTImageUtils.h"
 
 #import "RCTImageStoreManager.h"
 #import "RCTImageLoader.h"
@@ -44,8 +45,6 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  NSString *resizeMode = cropData[@"resizeMode"] ?: @"contain";
-
   [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *error, UIImage *image) {
     if (error) {
       errorCallback(error);
@@ -53,17 +52,21 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
     }
 
     // Crop image
-    CGRect rectToDrawIn = {{-rect.origin.x, -rect.origin.y}, image.size};
-    UIGraphicsBeginImageContextWithOptions(rect.size, !RCTImageHasAlpha(image.CGImage), image.scale);
-    [image drawInRect:rectToDrawIn];
-    UIImage *croppedImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    CGSize targetSize = rect.size;
+    CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
+    CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
+    UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
 
+    // Scale image
     if (cropData[@"displaySize"]) {
-      CGSize targetSize = [RCTConvert CGSize:cropData[@"displaySize"]];
-      croppedImage = [self scaleImage:croppedImage targetSize:targetSize resizeMode:resizeMode];
+      targetSize = [RCTConvert CGSize:cropData[@"displaySize"]]; // in pixels
+      RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
+      targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
+      transform = RCTTransformFromTargetRect(image.size, targetRect);
+      croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
     }
 
+    // Store image
     [_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
       if (!croppedImageTag) {
         NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
@@ -74,51 +77,6 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
       successCallback(@[croppedImageTag]);
     }];
   }];
-}
-
-- (UIImage *)scaleImage:(UIImage *)image targetSize:(CGSize)targetSize resizeMode:(NSString *)resizeMode
-{
-  if (CGSizeEqualToSize(image.size, targetSize)) {
-    return image;
-  }
-
-  CGFloat imageRatio = image.size.width / image.size.height;
-  CGFloat targetRatio = targetSize.width / targetSize.height;
-
-  CGFloat newWidth = targetSize.width;
-  CGFloat newHeight = targetSize.height;
-
-  // contain vs cover
-  // http://blog.vjeux.com/2013/image/css-container-and-cover.html
-  if ([resizeMode isEqualToString:@"contain"]) {
-    if (imageRatio <= targetRatio) {
-      newWidth = targetSize.height * imageRatio;
-      newHeight = targetSize.height;
-    } else {
-      newWidth = targetSize.width;
-      newHeight = targetSize.width / imageRatio;
-    }
-  } else if ([resizeMode isEqualToString:@"cover"]) {
-    if (imageRatio <= targetRatio) {
-      newWidth = targetSize.width;
-      newHeight = targetSize.width / imageRatio;
-    } else {
-      newWidth = targetSize.height * imageRatio;
-      newHeight = targetSize.height;
-    }
-  } // else assume we're stretching the image
-
-  // prevent upscaling
-  newWidth = MIN(newWidth, image.size.width);
-  newHeight = MIN(newHeight, image.size.height);
-
-  // perform the scaling @1x because targetSize is in actual pixel width/height
-  UIGraphicsBeginImageContextWithOptions(targetSize, NO, 1.0f);
-  [image drawInRect:CGRectMake(0.f, 0.f, newWidth, newHeight)];
-  UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-
-  return scaledImage;
 }
 
 @end

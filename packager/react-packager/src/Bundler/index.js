@@ -18,6 +18,7 @@ const Cache = require('../DependencyResolver/Cache');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
+const HMRBundle = require('./HMRBundle');
 const PrepackBundle = require('./PrepackBundle');
 const Activity = require('../Activity');
 const ModuleTransport = require('../lib/ModuleTransport');
@@ -155,31 +156,55 @@ class Bundler {
     return this._bundlesLayout.generateLayout(main, isDev);
   }
 
-  bundle({
+  bundle(options) {
+    return this._bundle({
+      bundle: new Bundle(options.sourceMapUrl),
+      includeSystemDependencies: true,
+      ...options,
+    });
+  }
+
+  bundleForHMR(options) {
+    return this._bundle({
+      bundle: new HMRBundle(),
+      hot: true,
+      ...options,
+    });
+  }
+
+  _bundle({
+    bundle,
+    modules,
     entryFile,
     runModule: runMainModule,
     runBeforeMainModule,
-    sourceMapUrl,
     dev: isDev,
+    includeSystemDependencies,
     platform,
     unbundle: isUnbundle,
     hot: hot,
   }) {
-    // Const cannot have the same name as the method (babel/babel#2834)
-    const bbundle = new Bundle(sourceMapUrl);
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
 
-    const moduleSystem = this._resolver.getModuleSystemDependencies(
-      { dev: isDev, platform, isUnbundle }
-    );
-
     return this.getDependencies(entryFile, isDev, platform).then((response) => {
       Activity.endEvent(findEventId);
+      bundle.setMainModuleId(response.mainModuleId);
+      bundle.setMainModuleName(response.mainModuleId);
       transformEventId = Activity.startEvent('transform');
 
-      // Prepend the module system polyfill to the top of dependencies
-      var dependencies = moduleSystem.concat(response.dependencies);
+      const moduleSystemDeps = includeSystemDependencies
+        ? this._resolver.getModuleSystemDependencies(
+          { dev: isDev, platform, isUnbundle }
+        )
+        : [];
+
+      const modulesToProcess = modules || response.dependencies;
+      const dependencies = moduleSystemDeps.concat(modulesToProcess);
+
+      bundle.setNumPrependedModules && bundle.setNumPrependedModules(
+        response.numPrependedDependencies + moduleSystemDeps.length
+      );
 
       let bar;
       if (process.stdout.isTTY) {
@@ -191,34 +216,41 @@ class Bundler {
         });
       }
 
-      bbundle.setMainModuleId(response.mainModuleId);
-      bbundle.setNumPrependedModules(
-        response.numPrependedDependencies + moduleSystem.length);
       return Promise.all(
         dependencies.map(
-          module => this._transformModule(
-            bbundle,
+          module => {
+            return this._transformModule(
+              bundle,
+              response,
+              module,
+              platform,
+              hot,
+            ).then(transformed => {
+              if (bar) {
+                bar.tick();
+              }
+
+              return {
+                module,
+                transformed,
+              };
+            });
+          }
+        )
+      ).then(transformedModules => Promise.all(
+        transformedModules.map(({module, transformed}) => {
+          return bundle.addModule(
+            this._resolver,
             response,
             module,
-            platform,
-            hot,
-          ).then(transformed => {
-            if (bar) {
-              bar.tick();
-            }
-            return this._wrapTransformedModule(response, module, transformed);
-          })
-        )
-      );
-    }).then((transformedModules) => {
+            transformed,
+          );
+        })
+      ));
+    }).then(() => {
       Activity.endEvent(transformEventId);
-
-      transformedModules.forEach(function(moduleTransport) {
-        bbundle.addModule(moduleTransport);
-      });
-
-      bbundle.finalize({runBeforeMainModule, runMainModule});
-      return bbundle;
+      bundle.finalize({runBeforeMainModule, runMainModule});
+      return bundle;
     });
   }
 
@@ -284,37 +316,22 @@ class Bundler {
     });
   }
 
-  bundleForHMR({entryFile, platform, modules}) {
-    return this.getDependencies(entryFile, /*isDev*/true, platform)
-      .then(response => {
-        return Promise.all(
-          modules.map(module => {
-            return Promise.all([
-              module.getName(),
-              this._transformer.loadFileAndTransform(
-                module.path,
-                // TODO(martinb): pass non null main (t9527509)
-                this._getTransformOptions({main: null}, {hot: true}),
-              ),
-            ]).then(([moduleName, transformed]) => {
-              return this._resolver.resolveRequires(response,
-                module,
-                transformed.code,
-              ).then(({name, code}) => {
-                return (`
-                  __accept(
-                    '${moduleName}',
-                    function(global, require, module, exports) {
-                      ${code}
-                    }
-                  );
-                `);
-              });
-            });
-          })
-        );
-      })
-      .then(modules => modules.join('\n'));
+  _transformModuleForHMR(module, platform) {
+    if (module.isAsset()) {
+      return this._generateAssetObjAndCode(module, platform).then(
+        ({asset, code}) => {
+          return {
+            code,
+          };
+        }
+      );
+    } else {
+      return this._transformer.loadFileAndTransform(
+        module.path,
+        // TODO(martinb): pass non null main (t9527509)
+        this._getTransformOptions({main: null}, {hot: true}),
+      );
+    }
   }
 
   invalidateFile(filePath) {
@@ -371,44 +388,27 @@ class Bundler {
 
   _transformModule(bundle, response, module, platform = null, hot = false) {
     if (module.isAsset_DEPRECATED()) {
-      return this.generateAssetModule_DEPRECATED(bundle, module);
+      return this._generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
-      return this.generateAssetModule(bundle, module, platform);
+      return this._generateAssetModule(bundle, module, platform);
     } else if (module.isJSON()) {
       return generateJSONModule(module);
     } else {
       return this._transformer.loadFileAndTransform(
         path.resolve(module.path),
         this._getTransformOptions(
-          {bundleEntry: bundle.getMainModuleId(), modulePath: module.path},
+          {bundleEntry: bundle.getMainModuleName(), modulePath: module.path},
           {hot: hot},
         ),
       );
     }
   }
 
-  _wrapTransformedModule(response, module, transformed) {
-    return this._resolver.wrapModule(
-      response,
-      module,
-      transformed.code
-    ).then(
-      ({code, name}) => new ModuleTransport({
-        code,
-        name,
-        map: transformed.map,
-        sourceCode: transformed.sourceCode,
-        sourcePath: transformed.sourcePath,
-        virtual: transformed.virtual,
-      })
-    );
-  }
-
   getGraphDebugInfo() {
     return this._resolver.getDebugInfo();
   }
 
-  generateAssetModule_DEPRECATED(bundle, module) {
+  _generateAssetModule_DEPRECATED(bundle, module) {
     return Promise.all([
       sizeOf(module.path),
       module.getName(),
@@ -435,7 +435,7 @@ class Bundler {
     });
   }
 
-  generateAssetModule(bundle, module, platform = null) {
+  _generateAssetObjAndCode(module, platform = null) {
     const relPath = getPathRelativeToRoot(this._projectRoots, module.path);
     var assetUrlPath = path.join('/assets', path.dirname(relPath));
 
@@ -450,7 +450,7 @@ class Bundler {
     ]).then(function(res) {
       const dimensions = res[0];
       const assetData = res[1];
-      const img = {
+      const asset = {
         __packager_asset: true,
         fileSystemLocation: path.dirname(module.path),
         httpServerLocation: assetUrlPath,
@@ -463,11 +463,17 @@ class Bundler {
         type: assetData.type,
       };
 
-      bundle.addAsset(img);
-
       const ASSET_TEMPLATE = 'module.exports = require("AssetRegistry").registerAsset(%json);';
-      const code = ASSET_TEMPLATE.replace('%json', JSON.stringify(img));
+      const code = ASSET_TEMPLATE.replace('%json', JSON.stringify(asset));
 
+      return {asset, code};
+    });
+  }
+
+
+  _generateAssetModule(bundle, module, platform = null) {
+    return this._generateAssetObjAndCode(module, platform).then(({asset, code}) => {
+      bundle.addAsset(asset);
       return new ModuleTransport({
         code: code,
         sourceCode: code,

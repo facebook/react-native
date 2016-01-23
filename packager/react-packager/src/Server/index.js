@@ -430,7 +430,13 @@ class Server {
             dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
-          res.end(bundleSource);
+          res.setHeader('ETag', p.getEtag());
+          if (req.headers['if-none-match'] === res.getHeader('ETag')){
+            res.statusCode = 304;
+            res.end();
+          } else {
+            res.end(bundleSource);
+          }
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
           var sourceMap = p.getSourceMap({

@@ -18,7 +18,6 @@ var childProcess = require('child_process');
 var Config = require('./util/Config');
 var defaultConfig = require('./default.config');
 var dependencies = require('./dependencies/dependencies');
-var fs = require('fs');
 var generate = require('./generate/generate');
 var library = require('./library/library');
 var link = require('./library/link');

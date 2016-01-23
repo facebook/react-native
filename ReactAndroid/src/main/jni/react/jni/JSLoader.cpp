@@ -2,7 +2,6 @@
 
 #include "JSLoader.h"
 
-#include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <jni/Environment.h>
 #include <fstream>
@@ -10,7 +9,6 @@
 #include <streambuf>
 #include <string>
 #include <fb/log.h>
-
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
@@ -29,19 +27,16 @@ std::string loadScriptFromAssets(std::string assetName) {
     gApplicationHolderClass,
     gGetApplicationMethod);
   jobject assetManager = env->CallObjectMethod(application, gGetAssetManagerMethod);
-  return loadScriptFromAssets(env, assetManager, assetName);
+  return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager), assetName);
 }
 
 std::string loadScriptFromAssets(
-    JNIEnv *env,
-    jobject assetManager,
+    AAssetManager *manager,
     std::string assetName) {
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_loadScriptFromAssets",
     "assetName", assetName);
   #endif
-
-  auto manager = AAssetManager_fromJava(env, assetManager);
   if (manager) {
     auto asset = AAssetManager_open(
       manager,
@@ -90,7 +85,7 @@ void registerJSLoaderNatives() {
   jclass applicationHolderClass = env->FindClass("com/facebook/react/common/ApplicationHolder");
   gApplicationHolderClass = (jclass)env->NewGlobalRef(applicationHolderClass);
   gGetApplicationMethod = env->GetStaticMethodID(applicationHolderClass, "getApplication", "()Landroid/app/Application;");
-  
+
   jclass appClass = env->FindClass("android/app/Application");
   gGetAssetManagerMethod = env->GetMethodID(appClass, "getAssets", "()Landroid/content/res/AssetManager;");
 }
