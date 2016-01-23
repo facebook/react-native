@@ -99,6 +99,7 @@ const Text = React.createClass({
     testID: React.PropTypes.string,
     /**
      * Specifies should fonts scale to respect Text Size accessibility setting on iOS.
+     * @platform ios
      */
     allowFontScaling: React.PropTypes.bool,
   },
