@@ -217,6 +217,12 @@ var apps = [
     author: 'Liubomyr Mykhalchenko (@liubko)',
   },
   {
+    name: 'Feline for Product Hunt',
+    icon: 'https://lh3.googleusercontent.com/MCoiCCwUan0dxzqRR_Mrr7kO308roYdI2aTsIpUGYWzUmpJT1-R2_J04weQKFEd3Mg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.arjunkomath.product_hunt&hl=en',
+    author: 'Arjun Komath',
+  },
+  {
     name: 'Foodstand',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/33/c1/3b/33c13b88-8ec2-23c1-56bb-712ad9938290/icon350x350.jpeg',
     link: 'https://www.thefoodstand.com/download',
