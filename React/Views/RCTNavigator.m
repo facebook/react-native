@@ -361,6 +361,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextFromViewControllerKey];
     RCTWrapperViewController *toController =
       (RCTWrapperViewController *)[context viewControllerForKey:UITransitionContextToViewControllerKey];
+      
+    // This may be triggered by a navigation controller unrelated to me: if so, ignore.
+    if (fromController.navigationController != _navigationController ||
+        toController.navigationController != _navigationController) {
+      return;
+    }
+    
     NSUInteger indexOfFrom = [_currentViews indexOfObject:fromController.navItem];
     NSUInteger indexOfTo = [_currentViews indexOfObject:toController.navItem];
     CGFloat destination = indexOfFrom < indexOfTo ? 1.0 : -1.0;
