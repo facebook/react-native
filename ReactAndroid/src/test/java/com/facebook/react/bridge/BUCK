@@ -12,7 +12,8 @@ android_library(
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
     react_native_dep('third-party/java/mockito:mockito'),
     react_native_dep('third-party/java/robolectric3/robolectric:robolectric'),
-  ],
+    react_native_tests_target('java/org/mockito/configuration:configuration'),
+],
   visibility = [
     'PUBLIC'
   ],

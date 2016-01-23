@@ -14,7 +14,6 @@ android_library(
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
     react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
     react_native_dep('third-party/android/support/v4:lib-support-v4'),
-    react_native_dep('third-party/java/guava:guava'),
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
     react_native_dep('third-party/java/junit:junit'),
