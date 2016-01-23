@@ -235,7 +235,7 @@ namespace ReactNative
             var currentReactContext = _currentReactContext;
             if (currentReactContext != null)
             {
-                currentReactContext.OnDestroy();
+                currentReactContext.Dispose();
                 _currentReactContext = null;
                 _hasStartedCreatingInitialContext = false;
             }
@@ -469,7 +469,7 @@ namespace ReactNative
                 DetachViewFromInstance(rootView, reactContext.CatalystInstance);
             }
 
-            reactContext.OnDestroy();
+            reactContext.Dispose();
             // TODO: add dev manager and memory pressure hooks
         }
 

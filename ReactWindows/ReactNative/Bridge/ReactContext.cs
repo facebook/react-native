@@ -10,7 +10,7 @@ namespace ReactNative.Bridge
     /// Abstract context wrapper for the catalyst instance to manage
     /// lifecycle events.
     /// </summary>
-    public class ReactContext
+    public class ReactContext : IDisposable
     {
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly List<ILifecycleEventListener> _lifecycleEventListeners =
@@ -163,7 +163,7 @@ namespace ReactNative.Bridge
         /// <summary>
         /// Called by the host when the application shuts down.
         /// </summary>
-        public void OnDestroy()
+        public void Dispose()
         {
             DispatcherHelpers.AssertOnDispatcher();
 

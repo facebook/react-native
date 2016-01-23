@@ -16,5 +16,9 @@ var BatchedBridge =
     {
         CallbackCalls.push([callbackId, args]);
         return [[],[],[]];
+    },
+    "flushedQueue": function(args)
+    {
+        return [[],[],[]];
     }
 }

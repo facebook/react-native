@@ -27,7 +27,7 @@ namespace ReactNative.Tests
         }
 
         [TestMethod]
-        public void ReactInstanceManager_ArgumentChecks()
+        public async Task ReactInstanceManager_ArgumentChecks()
         {
             var manager = CreateReactInstanceManager();
 
@@ -46,6 +46,8 @@ namespace ReactNative.Tests
             AssertEx.Throws<ArgumentNullException>(
                 () => manager.OnResume(null),
                 ex => Assert.AreEqual("onBackPressed", ex.ParamName));
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         [TestMethod]
@@ -62,6 +64,8 @@ namespace ReactNative.Tests
 
             Assert.IsTrue(waitHandle.WaitOne());
             Assert.AreEqual(jsBundleFile, manager.SourceUrl);
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         [TestMethod]
@@ -73,12 +77,24 @@ namespace ReactNative.Tests
             var waitHandle = new AutoResetEvent(false);
             manager.ReactContextInitialized += (sender, args) => waitHandle.Set();
 
-            await AssertEx.ThrowsAsync<InvalidOperationException>(() =>
-                DispatcherHelpers.RunOnDispatcherAsync(() =>
+            var caught = false;
+            await DispatcherHelpers.RunOnDispatcherAsync(() =>
+            {
+                manager.CreateReactContextInBackground();
+
+                try
                 {
                     manager.CreateReactContextInBackground();
-                    manager.CreateReactContextInBackground();
-                }));
+                }
+                catch (InvalidOperationException)
+                {
+                    caught = true;
+                }
+            });
+
+            Assert.IsTrue(caught);
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         [TestMethod]
@@ -99,6 +115,8 @@ namespace ReactNative.Tests
             Assert.IsTrue(waitHandle.WaitOne());
             Assert.IsTrue(waitHandle.WaitOne());
             Assert.AreEqual(jsBundleFile, manager.SourceUrl);
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         [TestMethod]
@@ -107,12 +125,22 @@ namespace ReactNative.Tests
             var jsBundleFile = "ms-appx:///Resources/test.js";
             var manager = CreateReactInstanceManager(jsBundleFile);
 
-            var waitHandle = new AutoResetEvent(false);
-            manager.ReactContextInitialized += (sender, args) => waitHandle.Set();
+            var caught = false;
+            await DispatcherHelpers.RunOnDispatcherAsync(() =>
+            {
+                try
+                {
+                    manager.RecreateReactContextInBackground();
+                }
+                catch (InvalidOperationException)
+                {
+                    caught = true;
+                }
+            });
 
-            await AssertEx.ThrowsAsync<InvalidOperationException>(() =>
-                DispatcherHelpers.RunOnDispatcherAsync(() =>
-                    manager.RecreateReactContextInBackground()));
+            Assert.IsTrue(caught);
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         [TestMethod]
@@ -127,6 +155,8 @@ namespace ReactNative.Tests
             });
 
             Assert.IsTrue(waitHandle.WaitOne());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         [TestMethod]
@@ -144,13 +174,14 @@ namespace ReactNative.Tests
             Assert.IsTrue(waitHandle.WaitOne());
             Assert.AreEqual(jsBundleFile, manager.SourceUrl);
 
-            await DispatcherHelpers.RunOnDispatcherAsync(
-                () => manager.OnDestroy());
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
 
             await DispatcherHelpers.RunOnDispatcherAsync(
                 () => manager.CreateReactContextInBackground());
 
             Assert.IsTrue(waitHandle.WaitOne());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(manager.OnDestroy);
         }
 
         private static ReactInstanceManager CreateReactInstanceManager()
