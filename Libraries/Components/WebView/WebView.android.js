@@ -134,13 +134,13 @@ var WebView = React.createClass({
     }
 
     var urlProp, urlWithHeaders;
-    if(this.props.headers == null) {
+    if (this.props.headers == null) {
       urlProp = this.props.url;
     } else {
       urlWithHeaders = {
         url: this.props.url,
         headers: this.props.headers,
-      }
+      };
     }
 
     var webView =
