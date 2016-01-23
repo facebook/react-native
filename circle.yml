@@ -13,12 +13,21 @@ machine:
 
 dependencies:
   pre:
+  # BUCK
+  - if [[ ! -e buck ]]; then git clone https://github.com/facebook/buck.git; fi
+  - cd buck && ant
+  - buck/bin/buck --version
+  - buck/bin/buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+  - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react
+  - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+  - buck/bin/buck fetch ReactAndroid/src/androidTest/java/com/facebook/react/tests
   # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
   - npm install -g npm@3.2
   - source scripts/circle-ci-android-setup.sh && getAndroidSDK
   - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
   cache_directories:
   - "ReactAndroid/build/downloads"
+  - "buck-out"
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
@@ -29,6 +38,13 @@ test:
             timeout: 360
     - source scripts/circle-ci-android-setup.sh && waitForAVD
   override:
+    # buck tests
+    - buck/bin/buck test ReactAndroid/src/test/java/com/facebook/react/modules
+    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
+    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
+    # temp, we can't run instrumentation tests yet
+    - buck/bin/buck build ReactAndroid/src/androidTest/java/com/facebook/react/tests
+
     # unit tests
     - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
     # build JS bundle for instrumentation tests
