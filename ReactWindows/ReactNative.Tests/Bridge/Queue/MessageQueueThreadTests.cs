@@ -120,5 +120,31 @@ namespace ReactNative.Tests.Bridge.Queue
                 }
             }
         }
+
+        [TestMethod]
+        public async Task MessageQueueThread_Dispose()
+        {
+            var uiThread = await CallOnDispatcherAsync(() => MessageQueueThread.Create(MessageQueueThreadSpec.DispatcherThreadSpec, ex => { Assert.Fail(); }));
+            var backgroundThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("background", MessageQueueThreadKind.BackgroundSingleThread), ex => { Assert.Fail(); });
+            var taskPoolThread = MessageQueueThread.Create(MessageQueueThreadSpec.Create("any", MessageQueueThreadKind.BackgroundAnyThread), ex => { Assert.Fail(); });
+
+            var queueThreads = new[]
+            {
+                uiThread,
+                backgroundThread,
+                taskPoolThread
+            };
+
+            foreach (var queueThread in queueThreads)
+            {
+                queueThread.Dispose();
+                AssertEx.Throws<ObjectDisposedException>(
+                    () => queueThread.RunOnQueue(() => { }), 
+                    ex => Assert.AreEqual("this", ex.ObjectName));
+                AssertEx.Throws<ObjectDisposedException>(
+                    () => queueThread.IsOnThread(),
+                    ex => Assert.AreEqual("this", ex.ObjectName));
+            }
+        }
     }
 }

@@ -14,17 +14,18 @@ namespace ReactNative.Tests.UIManager.Events
     public class EventDispatcherTests
     {
         [TestMethod]
-        public void EventDispatcher_ArgumentChecks()
+        public async Task EventDispatcher_ArgumentChecks()
         {
             AssertEx.Throws<ArgumentNullException>(() => new EventDispatcher(null), ex => Assert.AreEqual("reactContext", ex.ParamName));
 
             var context = new ReactContext();
             var dispatcher = new EventDispatcher(context);
             AssertEx.Throws<ArgumentNullException>(() => dispatcher.DispatchEvent(null), ex => Assert.AreEqual("event", ex.ParamName));
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
-        public void EventDispatcher_IncorrectThreadCalls()
+        public async Task EventDispatcher_IncorrectThreadCalls()
         {
             var context = new ReactContext();
             var dispatcher = new EventDispatcher(context);
@@ -33,16 +34,22 @@ namespace ReactNative.Tests.UIManager.Events
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnSuspend());
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnSuspend());
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnCatalystInstanceDispose());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
         public async Task EventDispatcher_EventDispatches()
         {
-            var dispatched = new AutoResetEvent(false);
+            var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                dispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -52,7 +59,9 @@ namespace ReactNative.Tests.UIManager.Events
             var testEvent = new MockEvent(42, TimeSpan.Zero, "Foo");
             dispatcher.DispatchEvent(testEvent);
 
-            Assert.IsTrue(dispatched.WaitOne());
+            Assert.IsTrue(waitDispatched.WaitOne());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -61,8 +70,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -80,6 +93,8 @@ namespace ReactNative.Tests.UIManager.Events
 
             Assert.IsTrue(waitDispatched.WaitOne());
             Assert.IsTrue(waitDispatched.WaitOne());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -88,8 +103,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -103,6 +122,8 @@ namespace ReactNative.Tests.UIManager.Events
                 dispatcher.DispatchEvent(testEvent);
                 Assert.IsTrue(waitDispatched.WaitOne());
             }
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -111,8 +132,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -139,7 +164,9 @@ namespace ReactNative.Tests.UIManager.Events
             Assert.IsFalse(waitDispatched.WaitOne(500));
 
             // Second event is disposed after dispatch
-            Assert.IsTrue(disposed.WaitOne()); 
+            Assert.IsTrue(disposed.WaitOne());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -148,8 +175,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -177,8 +208,9 @@ namespace ReactNative.Tests.UIManager.Events
 
             // Second event is disposed after dispatch
             Assert.IsTrue(disposed.WaitOne());
-        }
 
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
+        }
 
         [TestMethod]
         public async Task EventDispatcher_EventsNotCoalesced()
@@ -186,8 +218,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -223,6 +259,8 @@ namespace ReactNative.Tests.UIManager.Events
                 Assert.IsTrue(waitDispatched.WaitOne());
                 Assert.IsTrue(waitDispatched.WaitOne());
             }
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -231,8 +269,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -248,6 +290,8 @@ namespace ReactNative.Tests.UIManager.Events
             }
 
             Assert.IsFalse(waitDispatched.WaitOne(500));
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -256,8 +300,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -273,6 +321,8 @@ namespace ReactNative.Tests.UIManager.Events
             }
 
             Assert.IsFalse(waitDispatched.WaitOne(500));
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -281,8 +331,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -298,6 +352,8 @@ namespace ReactNative.Tests.UIManager.Events
             }
 
             Assert.IsFalse(waitDispatched.WaitOne(500));
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         [TestMethod]
@@ -306,8 +362,12 @@ namespace ReactNative.Tests.UIManager.Events
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
-                waitDispatched.Set();
-                return default(JToken);
+                if (p1 == "callFunctionReturnFlushedQueue")
+                {
+                    waitDispatched.Set();
+                }
+
+                return JArray.Parse("[[],[],[]]");
             });
 
             var context = await CreateContextAsync(executor);
@@ -323,6 +383,8 @@ namespace ReactNative.Tests.UIManager.Events
 
             await DispatcherHelpers.RunOnDispatcherAsync(dispatcher.OnResume);
             Assert.IsTrue(waitDispatched.WaitOne());
+
+            await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
 
         private static async Task<ReactContext> CreateContextAsync(IJavaScriptExecutor executor)

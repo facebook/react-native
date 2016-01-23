@@ -5,7 +5,6 @@ using ReactNative.Bridge.Queue;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.System.Threading;
 
 namespace ReactNative.Tests.Bridge
 {
@@ -44,6 +43,8 @@ namespace ReactNative.Tests.Bridge
             var firstJSModule = instance.GetJavaScriptModule<TestJavaScriptModule>();
             var secondJSModule = instance.GetJavaScriptModule<TestJavaScriptModule>();
             Assert.AreSame(firstJSModule, secondJSModule);
+
+            await DispatcherHelpers.RunOnDispatcherAsync(instance.Dispose);
         }
 
         [TestMethod]
@@ -70,9 +71,21 @@ namespace ReactNative.Tests.Bridge
 
             var instance = await DispatcherHelpers.CallOnDispatcherAsync(() => builder.Build());
             await DispatcherHelpers.RunOnDispatcherAsync(() => instance.Initialize());
-            await AssertEx.ThrowsAsync<InvalidOperationException>(() =>
-                DispatcherHelpers.RunOnDispatcherAsync(() => instance.Initialize()));
 
+            var caught = false;
+            await DispatcherHelpers.RunOnDispatcherAsync(() =>
+            {
+                try
+                {
+                    instance.Initialize();
+                }
+                catch (InvalidOperationException)
+                {
+                    caught = true;
+                }
+            });
+
+            Assert.IsTrue(caught);
             Assert.AreEqual(1, module.InitializeCalls);
 
             await DispatcherHelpers.RunOnDispatcherAsync(() => instance.Dispose());
@@ -126,7 +139,6 @@ namespace ReactNative.Tests.Bridge
             Assert.IsTrue(eventHandler.WaitOne());
             Assert.IsTrue(instance.IsDisposed);
         }
-
 
         class TestNativeModule : NativeModuleBase
         {

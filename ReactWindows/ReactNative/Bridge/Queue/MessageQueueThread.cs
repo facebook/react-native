@@ -16,7 +16,7 @@ namespace ReactNative.Bridge.Queue
     /// </summary>
     public abstract class MessageQueueThread : IMessageQueueThread, IDisposable
     {
-        private bool _disposed;
+        private int _disposed;
 
         private MessageQueueThread() { }
 
@@ -27,7 +27,7 @@ namespace ReactNative.Bridge.Queue
         {
             get
             {
-                return _disposed;
+                return _disposed > 0;
             }
         }
 
@@ -93,13 +93,13 @@ namespace ReactNative.Bridge.Queue
         {
             if (disposing)
             {
-                _disposed = true;
+                Interlocked.Increment(ref _disposed);
             }
         }
 
         private void AssertNotDisposed()
         {
-            if (_disposed)
+            if (IsDisposed)
             {
                 throw new ObjectDisposedException("this");
             }
@@ -189,6 +189,7 @@ namespace ReactNative.Bridge.Queue
             private readonly Action<Exception> _handler;
             private readonly BlockingCollection<Action> _queue;
             private readonly ThreadLocal<bool> _indicator;
+            private readonly ManualResetEvent _doneHandle;
             private readonly IAsyncAction _asyncAction;
 
             public SingleBackgroundMessageQueueThread(string name, Action<Exception> handler)
@@ -197,10 +198,12 @@ namespace ReactNative.Bridge.Queue
                 _handler = handler;
                 _queue = new BlockingCollection<Action>();
                 _indicator = new ThreadLocal<bool>();
+                _doneHandle = new ManualResetEvent(false);
                 _asyncAction = ThreadPool.RunAsync(_ =>
                 {
                     _indicator.Value = true;
                     Run();
+                    _doneHandle.Set();
                 }, 
                 WorkItemPriority.Normal);
             }
@@ -221,6 +224,7 @@ namespace ReactNative.Bridge.Queue
 
                 // Unblock the background thread.
                 Enqueue(s_canary);
+                _doneHandle.WaitOne();
             }
 
             private void Run()
@@ -247,6 +251,8 @@ namespace ReactNative.Bridge.Queue
 
         class AnyBackgroundMessageQueueThread : MessageQueueThread
         {
+            private readonly object _gate = new object();
+
             private readonly string _name;
             private readonly Action<Exception> _handler;
             private readonly TaskScheduler _taskScheduler;
@@ -266,13 +272,28 @@ namespace ReactNative.Bridge.Queue
                 {
                     try
                     {
-                        action();
+                        lock (_gate)
+                        {
+                            if (!IsDisposed)
+                            {
+                                action();
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
                         _handler(ex);
                     }
                 });
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                // Warning: will deadlock if disposed from own queue thread.
+                lock (_gate)
+                {
+                    base.Dispose(disposing);
+                }
             }
 
             protected override bool IsOnThreadCore()
