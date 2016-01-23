@@ -2,10 +2,17 @@ android_library(
     name = 'powermock',
     exported_deps = [
         ':powermock-api-mockito',
+        ':mockito-all',
         ':powermock-api-support',
         ':powermock-module-junit4-rule',
+        ':powermock-classloading-base',
         ':powermock-classloading-xstream',
+        ':xstream',
         ':powermock-core',
+        ':powermock-reflect',
+        ':javassist',
+        ':xmlpull',
+        ':xpp3'
     ],
     visibility = ['//ReactAndroid/...',],
 )
@@ -70,4 +77,86 @@ remote_file(
     sha1 = '3ced31cd7024fe365b9f3c8082d22c02434577da',
 )
 
+prebuilt_jar(
+    name = 'powermock-classloading-base',
+    binary_jar = ':download-powermock-classloading-base',
+    visibility = ['//ReactAndroid/...',],
+)
 
+remote_file(
+    name = 'download-powermock-classloading-base',
+    url = 'mvn:org.powermock:powermock-classloading-base:jar:1.6.2',
+    sha1 = 'c8bfc10731a02d3b241892cf2c334a754d473ca7',
+)
+
+prebuilt_jar(
+    name = 'xstream',
+    binary_jar = ':download-xstream',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-xstream',
+    url = 'mvn:com.thoughtworks.xstream:xstream:jar:1.4.2',
+    sha1 = '97e5013f391487cce4de6b0eebcde21549e91872',
+)
+
+prebuilt_jar(
+    name = 'powermock-reflect',
+    binary_jar = ':download-powermock-reflect',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-powermock-reflect',
+    url = 'mvn:org.powermock:powermock-reflect:jar:1.6.2',
+    sha1 = '1af1bbd1207c3ecdcf64973e6f9d57dcd17cc145',
+)
+
+prebuilt_jar(
+    name = 'javassist',
+    binary_jar = ':download-javassist',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-javassist',
+    url = 'mvn:org.javassist:javassist:jar:3.20.0-GA',
+    sha1 = 'a9cbcdfb7e9f86fbc74d3afae65f2248bfbf82a0',
+)
+
+prebuilt_jar(
+    name = 'mockito-all',
+    binary_jar = ':download-mockito-all',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-mockito-all',
+    url = 'mvn:org.mockito:mockito-all:jar:1.10.19',
+    sha1 = '539df70269cc254a58cccc5d8e43286b4a73bf30',
+)
+
+prebuilt_jar(
+    name = 'xmlpull',
+    binary_jar = ':download-xmlpull',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-xmlpull',
+    url = 'mvn:xmlpull:xmlpull:jar:1.1.3.1',
+    sha1 = '2b8e230d2ab644e4ecaa94db7cdedbc40c805dfa',
+)
+
+prebuilt_jar(
+    name = 'xpp3',
+    binary_jar = ':download-xpp3',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'download-xpp3',
+    url = 'mvn:xpp3:xpp3_min:jar:1.1.4c',
+    sha1 = '19d4e90b43059058f6e056f794f0ea4030d60b86',
+)
