@@ -85,10 +85,20 @@ const StatusBarExample = React.createClass({
             style={styles.wrapper}
             onPress={() => this.setState({animated: !this.state.animated})}>
             <View style={styles.button}>
-              <Text>Set animated {!this.state.animated ? 'true' : 'false'}</Text>
+              <Text>Set animated `{!this.state.animated ? 'true' : 'false'}`</Text>
             </View>
           </TouchableHighlight>
         </View>
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => this.setState({hidden: !this.state.hidden})}>
+            <View style={styles.button}>
+              <Text>Set hidden `{!this.state.hidden ? 'true' : 'false'}`</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <Text style={styles.title}>iOS</Text>
         <View>
           <TouchableHighlight
             style={styles.wrapper}
@@ -97,19 +107,24 @@ const StatusBarExample = React.createClass({
               this.setState({barStyle: this._getBarStyle(this._barStyleIndex)});
             }}>
             <View style={styles.button}>
-              <Text>Set style {this._getBarStyle(this._barStyleIndex + 1)}</Text>
+              <Text>Set style `{this._getBarStyle(this._barStyleIndex + 1)}`</Text>
             </View>
           </TouchableHighlight>
         </View>
         <View>
           <TouchableHighlight
             style={styles.wrapper}
-            onPress={() => this.setState({animated: !this.state.animated})}>
+            onPress={() => this.setState({
+              networkActivityIndicatorVisible: !this.state.networkActivityIndicatorVisible,
+            })}>
             <View style={styles.button}>
-              <Text>Set animated {!this.state.animated ? 'true' : 'false'}</Text>
+              <Text>
+                Set networkActivityIndicatorVisible `{!this.state.networkActivityIndicatorVisible ? 'true' : 'false'}`
+              </Text>
             </View>
           </TouchableHighlight>
         </View>
+        <Text style={styles.title}>Android</Text>
         <View>
           <TouchableHighlight
             style={styles.wrapper}
@@ -118,7 +133,7 @@ const StatusBarExample = React.createClass({
               this.setState({color: this._getColor(this._colorIndex)});
             }}>
             <View style={[styles.button, {backgroundColor: this._getColor(this._colorIndex + 1)}]}>
-              <Text>Set color</Text>
+              <Text>Set color `{this._getColor(this._colorIndex + 1)}`</Text>
             </View>
           </TouchableHighlight>
         </View>
@@ -132,16 +147,7 @@ const StatusBarExample = React.createClass({
               });
             }}>
             <View style={styles.button}>
-              <Text>Set translucent {!this.state.translucent ? 'true' : 'false'}</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => this.setState({hidden: !this.state.hidden})}>
-            <View style={styles.button}>
-              <Text>Set hidden {!this.state.hidden ? 'true' : 'false'}</Text>
+              <Text>Set translucent `{!this.state.translucent ? 'true' : 'false'}`</Text>
             </View>
           </TouchableHighlight>
         </View>
@@ -151,7 +157,7 @@ const StatusBarExample = React.createClass({
 });
 
 exports.examples = [{
-  title: 'Status Bar Style',
+  title: 'Status Bar',
   render() {
     return <StatusBarExample />;
   },
@@ -167,4 +173,9 @@ var styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     padding: 10,
   },
+  title: {
+    marginTop: 16,
+    marginBottom: 8,
+    fontWeight: 'bold',
+  }
 });

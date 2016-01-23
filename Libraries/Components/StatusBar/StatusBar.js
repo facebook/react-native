@@ -31,7 +31,7 @@ type DefaultProps = {
 
 const StatusBar = React.createClass({
   statics: {
-    _propStack: [],
+    _propsStack: [],
   },
 
   propTypes: {
@@ -80,41 +80,36 @@ const StatusBar = React.createClass({
     };
   },
 
-  _propStackIndex: 0,
-
   componentDidMount() {
     // Every time a StatusBar component is mounted, we push it's prop to a stack
     // and always update the native status bar with the props from the top of then
     // stack. This allows having multiple StatusBar components and the one that is
     // added last or is deeper in the view hierachy will have priority.
-    this._propStackIndex = StatusBar._propStack.length;
-    StatusBar._propStack.push(this.props);
-    this._updateFromStack(this.props.animated);
+    StatusBar._propsStack.push(this.props);
+    this._updatePropsStack(this.props.animated);
   },
 
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
-    // TODO: This will break if a component is unmount while it's not at then
-    // top of the stack.
-    StatusBar._propStack.pop();
-    this._updateFromStack(this.props.animated);
+    const index = StatusBar._propsStack.indexOf(this.props);
+    StatusBar._propsStack.splice(index, 1);
+
+    this._updatePropsStack(this.props.animated);
   },
 
-  componentDidUpdate() {
-    StatusBar._propStack[this._propStackIndex] = this.props;
-    // Only the StatusBar that is on top of the stack can send it's props
-    // to the native status bar.
-    if (this._propStackIndex === StatusBar._propStack.length - 1) {
-      this._updateFromStack(this.props.animated);
-    }
+  componentDidUpdate(oldProps: Object) {
+    const index = StatusBar._propsStack.indexOf(oldProps);
+    StatusBar._propsStack[index] = this.props;
+
+    this._updatePropsStack(this.props.animated);
   },
 
   /**
    * Merges the prop stack with the default values.
    */
-  _mergeStackProps(): Array<any> {
-    return StatusBar._propStack.reduce((prev, cur) => {
+  _mergePropsStack(propsStack: Array<Object>): Object {
+    return propsStack.reduce((prev, cur) => {
       return Object.assign(prev, cur);
     }, {
       color: 'black',
@@ -128,32 +123,29 @@ const StatusBar = React.createClass({
   /**
    * Updates the native status bar with the props from the stack.
    */
-  _updateFromStack(animated: boolean = false) {
-    if (StatusBar._propStack.length === 0) {
-      return;
-    }
-    const props = this._mergeStackProps();
-    // TODO: check if props changed.
+  _updatePropsStack(animated: boolean = false) {
+    const props = this._mergePropsStack(StatusBar._propsStack);
+
     if (Platform.OS === 'ios') {
-      if (typeof props.barStyle !== 'undefined') {
+      if (props.barStyle !== undefined) {
         RCTStatusBarManager.setStyle(props.barStyle, animated);
       }
-      if (typeof props.hidden !== 'undefined') {
-        RCTStatusBarManager.setHidden(props.hidden, animated);
+      if (props.hidden !== undefined) {
+        RCTStatusBarManager.setHidden(props.hidden, animated ? 'fade' : 'none');
       }
-      if (typeof props.networkActivityIndicatorVisible !== 'undefined') {
+      if (props.networkActivityIndicatorVisible !== undefined) {
         RCTStatusBarManager.setNetworkActivityIndicatorVisible(
           props.networkActivityIndicatorVisible
         );
       }
     } else if (Platform.OS === 'android') {
-      if (typeof props.color !== 'undefined') {
+      if (props.color !== undefined) {
         RCTStatusBarManager.setColor(processColor(props.color), animated);
       }
-      if (typeof props.hidden !== 'undefined') {
+      if (props.hidden !== undefined) {
         RCTStatusBarManager.setHidden(props.hidden);
       }
-      if (typeof props.translucent !== 'undefined') {
+      if (props.translucent !== undefined) {
         RCTStatusBarManager.setTranslucent(props.translucent);
       }
     }
