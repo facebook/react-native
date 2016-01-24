@@ -10,6 +10,13 @@
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on envoronment variables (including PWD) set by Xcode
 
+# There is no point in creating an offline package for simulator builds
+# because the packager is supposed to be running during development anyways
+if [[ "$PLATFORM_NAME" = "iphonesimulator" ]]; then
+  echo "Skipping bundling for Simulator platform"
+  exit 0;
+fi
+
 case "$CONFIGURATION" in
   Debug)
     DEV=true
