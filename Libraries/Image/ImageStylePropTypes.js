@@ -33,7 +33,16 @@ var ImageStylePropTypes = {
   // iOS-Specific style to "tint" an image.
   // It changes the color of all the non-transparent pixels to the tintColor
   tintColor: ColorPropType,
-  opacity: ReactPropTypes.number,
+  opacity: ReactPropTypes.number,  
+  /**
+  * Android-Specific style to allow rounded corners based on a solid color.
+  * Specifying an overlayColor will cause Fresco to switch to its other rounding
+  * corners rendering mode, OVERLAY_COLOR, and will draw rounded corners (configured using borderRadius)
+  * by overlaying the solid color specified.
+  * a null or transparent overlayColor will default back to BITMAP_ONLY.
+  * @platform android
+  */
+  overlayColor: ReactPropTypes.string,
 };
 
 module.exports = ImageStylePropTypes;
