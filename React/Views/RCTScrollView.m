@@ -275,6 +275,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   UIView *contentView = [self contentView];
   CGFloat scrollTop = self.bounds.origin.y + self.contentInset.top;
+  // If the RefreshControl is refreshing, remove it's height so sticky headers are
+  // positioned properly when scrolling down while refreshing.
+  if (self.refreshControl != nil && self.refreshControl.refreshing) {
+    scrollTop -= self.refreshControl.frame.size.height;
+  }
 
   // Find the section headers that need to be docked
   __block UIView *previousHeader = nil;
