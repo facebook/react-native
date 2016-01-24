@@ -47,5 +47,6 @@ ReactNativeStyleAttributes.shadowColor = colorAttributes;
 ReactNativeStyleAttributes.textDecorationColor = colorAttributes;
 ReactNativeStyleAttributes.tintColor = colorAttributes;
 ReactNativeStyleAttributes.textShadowColor = colorAttributes;
+ReactNativeStyleAttributes.overlayColor = colorAttributes;
 
 module.exports = ReactNativeStyleAttributes;
