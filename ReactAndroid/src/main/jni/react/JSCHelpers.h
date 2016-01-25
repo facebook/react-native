@@ -20,6 +20,6 @@ JSValueRef makeJSCException(
     JSContextRef ctx,
     const char* exception_text);
 
-JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source);
+JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source, const char *cachePath = nullptr);
 
 } }
