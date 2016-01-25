@@ -23,11 +23,11 @@ case "$CONFIGURATION" in
     ;;
 esac
 
+# Path to react-native folder inside node_modules
+REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 # Xcode project file for React Native apps is located in ios/ subfolder
 cd ..
-
-set -x
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
@@ -43,10 +43,25 @@ if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
   eval "$($HOME/.nodenv/bin/nodenv init -)"
 fi
 
-# npm global install path may be a non-standard location
-PATH="$(npm prefix -g)/bin:$PATH"
+[ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
-react-native bundle \
+nodejs_not_found()
+{
+  echo "error: Can't find '$NODE_BINARY' binary to build React Native bundle" >&2
+  echo "If you have non-standard nodejs installation, select your project in Xcode," >&2
+  echo "find 'Build Phases' - 'Bundle React Native code and images'" >&2
+  echo "and change NODE_BINARY to absolute path to your node executable" >&2
+  echo "(you can find it by invoking 'which node' in the terminal)" >&2
+  exit 2
+}
+
+type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
+
+# Print commands before executing them (useful for troubleshooting)
+set -x
+DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+
+$NODE_BINARY $REACT_NATIVE_DIR/local-cli/cli.js bundle \
   --entry-file index.ios.js \
   --platform ios \
   --dev $DEV \
