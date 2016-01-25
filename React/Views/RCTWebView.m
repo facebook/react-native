@@ -92,6 +92,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView loadHTMLString:HTML baseURL:nil];
 }
 
+- (void)setDecelerationNormalEnabled:(BOOL *)decelerationNormalEnabled
+{
+  // The default decelerationRate is UIScrollViewDecelerationFast. Allow user
+  // to override and set to normal in order to give the WebView the same
+  // "momentum" scrolling as other iOS views.
+  if (decelerationNormalEnabled) {
+    _webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
+  }
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];

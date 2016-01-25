@@ -118,6 +118,15 @@ var WebView = React.createClass({
      */
     bounces: PropTypes.bool,
     /**
+     * Used on iOS only. Setting this to true enables "momentum" scrolling
+     * (default iOS scroll behavior) on the WebView.
+     * default value `false`
+     * **NOTE** By default WebView sets a faster deceleration rate.
+     * Enabling this may cause rendering performance to suffer.
+     * @platform ios
+     */
+    decelerationNormalEnabled: PropTypes.bool,
+    /**
      * @platform ios
      */
     scrollEnabled: PropTypes.bool,
@@ -238,6 +247,7 @@ var WebView = React.createClass({
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
+        decelerationNormalEnabled={this.props.decelerationNormalEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
