@@ -462,7 +462,7 @@ var ScrollView = React.createClass({
 
     var decelerationRate = this.props.decelerationRate;
     if (decelerationRate) {
-      props.decelerationRate = ScrollView.getDecelerationRate(decelerationRate)
+      props.decelerationRate = ScrollView.getDecelerationRate(decelerationRate);
     }
 
     var ScrollViewClass;
