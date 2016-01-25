@@ -267,7 +267,11 @@ var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
     docgen.parse(
       fs.readFileSync(filepath),
       docgenHelpers.findExportedObject,
-      [docgen.handlers.propTypeHandler, docgen.handlers.propTypeCompositionHandler]
+      [
+        docgen.handlers.propTypeHandler,
+        docgen.handlers.propTypeCompositionHandler,
+        docgen.handlers.propDocBlockHandler,
+      ]
     );
 
   return docs;
