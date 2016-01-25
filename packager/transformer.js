@@ -63,7 +63,7 @@ function buildBabelConfig(filename, options) {
 
   config.plugins = extraPlugins.concat(config.plugins);
 
-  return Object.assign({}, babelRC, extraConfig);
+  return Object.assign({}, babelRC, config);
 }
 
 function transform(src, filename, options) {
