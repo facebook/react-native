@@ -23,7 +23,7 @@ module.exports = {
     'transform-react-display-name',
     'transform-react-jsx',
     'transform-regenerator',
-    'transform-es2015-for-of',
+    ['transform-es2015-for-of', { loose: true }],
   ],
   retainLines: true,
   sourceMaps: false,
