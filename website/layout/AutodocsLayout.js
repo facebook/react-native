@@ -65,6 +65,35 @@ function renderType(type) {
   return type.name;
 }
 
+function sortByPlatform(props, nameA, nameB) {
+  var a = props[nameA];
+  var b = props[nameB];
+
+  if (a.platforms && !b.platforms) {
+    return 1;
+  }
+  if (b.platforms && !a.platforms) {
+    return -1;
+  }
+
+  // Cheap hack: use < on arrays of strings to compare the two platforms
+  if (a.platforms < b.platforms) {
+    return -1;
+  }
+  if (a.platforms > b.platforms) {
+    return 1;
+  }
+
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+
+  return 0;
+}
+
 var ComponentDoc = React.createClass({
   renderProp: function(name, prop) {
     return (
@@ -96,8 +125,28 @@ var ComponentDoc = React.createClass({
     );
   },
 
+  renderStylesheetProp: function(name, prop) {
+    return (
+      <div className="prop" key={name}>
+        <h6 className="propTitle">
+          {prop.platforms && prop.platforms.map(platform =>
+            <span className="platform">{platform}</span>
+          )}
+          {name}
+          {' '}
+          {prop.type && <span className="propType">
+            {renderType(prop.type)}
+          </span>}
+          {' '}
+          {prop.description && <Marked>{prop.description}</Marked>}
+        </h6>
+      </div>
+    );
+  },
+
   renderStylesheetProps: function(stylesheetName) {
     var style = this.props.content.styles[stylesheetName];
+    this.extractPlatformFromProps(style.props);
     return (
       <div className="compactProps">
         {(style.composes || []).map((name) => {
@@ -121,17 +170,10 @@ var ComponentDoc = React.createClass({
             </div>
           );
         })}
-        {Object.keys(style.props).map((name) =>
-          <div className="prop" key={name}>
-            <h6 className="propTitle">
-              {name}
-              {' '}
-              {style.props[name].type && <span className="propType">
-                {renderType(style.props[name].type)}
-              </span>}
-            </h6>
-          </div>
-        )}
+        {Object.keys(style.props)
+          .sort(sortByPlatform.bind(null, style.props))
+          .map((name) => this.renderStylesheetProp(name, style.props[name]))
+        }
       </div>
     );
   },
@@ -143,27 +185,9 @@ var ComponentDoc = React.createClass({
           this.renderCompose(name)
         )}
         {Object.keys(props)
-          .sort((nameA, nameB) => {
-            var a = props[nameA];
-            var b = props[nameB];
-
-            if (a.platforms && !b.platforms) {
-              return 1;
-            }
-            if (b.platforms && !a.platforms) {
-              return -1;
-            }
-            if (nameA < nameB) {
-              return -1;
-            }
-            if (nameA > nameB) {
-              return 1;
-            }
-            return 0;
-          })
-          .map((name) =>
-          this.renderProp(name, props[name])
-        )}
+          .sort(sortByPlatform.bind(null, props))
+          .map((name) => this.renderProp(name, props[name]))
+        }
       </div>
     );
   },
