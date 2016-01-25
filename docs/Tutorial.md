@@ -463,7 +463,7 @@ class AwesomeProject extends Component {
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -492,7 +492,7 @@ var styles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: '#F5FCFF',
   },
-}
+});
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 ```
