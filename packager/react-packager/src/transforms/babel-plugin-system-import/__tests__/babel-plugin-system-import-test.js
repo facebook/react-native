@@ -14,17 +14,17 @@ const BundlesLayout = require('../../../BundlesLayout');
 
 const testData = {
   isolated: {
-    input:  'System.import("moduleA");',
+    input:  'System.' + 'import("moduleA");',
     output: 'loadBundles(["bundle.0"]);'
   },
   single: {
-    input:  'System.import("moduleA").then(function (bundleA) {});',
+    input:  'System.' + 'import("moduleA").then(function (bundleA) {});',
     output: 'loadBundles(["bundle.0"]).then(function (bundleA) {});'
   },
   multiple: {
     input: [
       'Promise.all([',
-        'System.import("moduleA"), System.import("moduleB"),',
+        'System.' + 'import("moduleA"), System.' + 'import("moduleB"),',
       ']).then(function (bundlesA, bundlesB) {});',
     ].join('\n'),
     output: [
@@ -46,9 +46,9 @@ describe('System.import', () => {
 
   function transform(source) {
     return babel.transform(source, {
-      plugins: [require('../')],
-      blacklist: ['strict'],
-      extra: { bundlesLayout: layout },
+      plugins: [
+        [require('../'), { bundlesLayout: layout }]
+      ],
     }).code;
   }
 

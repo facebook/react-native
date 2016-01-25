@@ -16,7 +16,6 @@
 var React = require('react-native');
 var {
   Navigator,
-  PixelRatio,
   ScrollView,
   StyleSheet,
   Text,
@@ -134,7 +133,7 @@ var TabBarExample = React.createClass({
       <Navigator
         ref={this._setNavigatorRef}
         style={styles.container}
-        initialRoute={{ message: "First Scene", }}
+        initialRoute={{ message: 'First Scene', }}
         renderScene={this.renderScene}
         configureScene={(route) => {
           if (route.sceneConfig) {
@@ -190,7 +189,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {

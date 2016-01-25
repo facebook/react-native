@@ -16,6 +16,7 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
+var UIManager = require('UIManager');
 var View = require('View');
 
 var invariant = require('invariant');
@@ -75,6 +76,9 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   </View>
 );
 
+/**
+ * Renders a native WebView.
+ */
 var WebView = React.createClass({
   statics: {
     JSNavigationScheme: JSNavigationScheme,
@@ -82,31 +86,87 @@ var WebView = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     url: PropTypes.string,
     html: PropTypes.string,
+    /**
+     * Function that returns a view to show if there's an error.
+     */
     renderError: PropTypes.func, // view to show if there's an error
-    renderLoading: PropTypes.func, // loading indicator to show
+    /**
+     * Function that returns a loading indicator.
+     */
+    renderLoading: PropTypes.func,
+    /**
+     * Invoked when load finish
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load fails
+     */
+    onError: PropTypes.func,
+    /**
+     * @platform ios
+     */
     bounces: PropTypes.bool,
+    /**
+     * @platform ios
+     */
     scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+
     /**
-     * Used for android only, JS is enabled by default for WebView on iOS
+     * Used on Android only, JS is enabled by default for WebView on iOS
+     * @platform android
      */
-    javaScriptEnabledAndroid: PropTypes.bool,
+    javaScriptEnabled: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether DOM Storage is enabled or not
+     * @platform android
+     */
+    domStorageEnabled: PropTypes.bool,
+
     /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
 
     /**
-     * Used for iOS only, sets whether the webpage scales to fit the view and the
-     * user can change the scale
+     * Sets whether the webpage scales to fit the view and the user can change the scale.
+     * @platform ios
      */
     scalesPageToFit: PropTypes.bool,
+
+    /**
+     * Allows custom handling of any webview requests by a JS handler. Return true
+     * or false from this method to continue loading the request.
+     * @platform ios
+     */
+    onShouldStartLoadWithRequest: PropTypes.func,
+
+    /**
+     * Determines whether HTML5 videos play inline or use the native full-screen
+     * controller.
+     * default value `false`
+     * **NOTE** : "In order for video to play inline, not only does this
+     * property need to be set to true, but the video element in the HTML
+     * document must also include the webkit-playsinline attribute."
+     * @platform ios
+     */
+    allowsInlineMediaPlayback: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -152,6 +212,22 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
+    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
+      var shouldStart = this.props.onShouldStartLoadWithRequest &&
+        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+      RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
+    });
+
+    var {javaScriptEnabled, domStorageEnabled} = this.props;
+    if (this.props.javaScriptEnabledAndroid) {
+      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
+      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
+    }
+    if (this.props.domStorageEnabledAndroid) {
+      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
+      domStorageEnabled = this.props.domStorageEnabledAndroid;
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -167,7 +243,9 @@ var WebView = React.createClass({
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
+        allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
       />;
 
     return (
@@ -179,15 +257,27 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTWebViewManager.goForward(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.goForward,
+      null
+    );
   },
 
   goBack: function() {
-    RCTWebViewManager.goBack(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.goBack,
+      null
+    );
   },
 
   reload: function() {
-    RCTWebViewManager.reload(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.reload,
+      null
+    );
   },
 
   /**
@@ -205,11 +295,16 @@ var WebView = React.createClass({
   },
 
   onLoadingStart: function(event: Event) {
+    var onLoadStart = this.props.onLoadStart;
+    onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
   },
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
+    var {onError, onLoadEnd} = this.props;
+    onError && onError(event);
+    onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
@@ -219,6 +314,9 @@ var WebView = React.createClass({
   },
 
   onLoadingFinish: function(event: Event) {
+    var {onLoad, onLoadEnd} = this.props;
+    onLoad && onLoad(event);
+    onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });

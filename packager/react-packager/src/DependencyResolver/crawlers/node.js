@@ -1,8 +1,8 @@
 'use strict';
 
 const Promise = require('promise');
-const debug = require('debug')('DependencyGraph');
-const fs = require('fs');
+const debug = require('debug')('ReactNativePackager:DependencyGraph');
+const fs = require('graceful-fs');
 const path = require('path');
 
 const readDir = Promise.denodeify(fs.readdir);

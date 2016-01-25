@@ -26,12 +26,12 @@ var styles = StyleSheet.create({
   },
   border1: {
     borderWidth: 10,
-    borderColor: '#a52a2a',
+    borderColor: 'brown',
   },
   borderRadius: {
     borderWidth: 10,
     borderRadius: 10,
-    borderColor: '#00ffff',
+    borderColor: 'cyan',
   },
   border2: {
     borderWidth: 10,
@@ -82,7 +82,7 @@ var styles = StyleSheet.create({
   },
   border7: {
     borderWidth: 10,
-    borderColor: 'rgba(255,0,0,0.5)',
+    borderColor: '#f007',
     borderRadius: 30,
     overflow: 'hidden',
   },
@@ -91,10 +91,17 @@ var styles = StyleSheet.create({
     width: 100,
     height: 100
   },
+  border8: {
+    width: 60,
+    height: 60,
+    borderColor: 'black',
+    marginRight: 10,
+    backgroundColor: 'lightgrey',
+  },
 });
 
 exports.title = 'Border';
-exports.description = 'View borders';
+exports.description = 'Demonstrates some of the border styles available to Views.';
 exports.examples = [
   {
     title: 'Equal-Width / Same-Color',
@@ -155,6 +162,20 @@ exports.examples = [
       return (
         <View style={[styles.box, styles.border7]}>
           <View style={styles.border7_inner} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Single Borders',
+    description: 'top, left, bottom right',
+    render() {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <View style={[styles.box, styles.border8, {borderTopWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderLeftWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderBottomWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderRightWidth: 5}]} />
         </View>
       );
     }

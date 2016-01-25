@@ -16,14 +16,12 @@
 
 var React = require('react-native');
 var {
-  PixelRatio,
   Navigator,
   ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
   TouchableOpacity,
-  View,
 } = React;
 
 var cssVar = require('cssVar');
@@ -165,7 +163,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {

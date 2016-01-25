@@ -10,81 +10,87 @@
 
 const _ = require('underscore');
 const base64VLQ = require('./base64-vlq');
+const BundleBase = require('./BundleBase');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
+const Activity = require('../Activity');
+const crypto = require('crypto');
 
-const SOURCEMAPPING_URL = '\n\/\/@ sourceMappingURL=';
+const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
-class Bundle {
+const minifyCode = code =>
+  UglifyJS.minify(code, {fromString: true, ascii_only: true}).code;
+const getCode = x => x.code;
+const getMinifiedCode = x => minifyCode(x.code);
+const getNameAndCode = ({name, code}) => ({name, code});
+const getNameAndMinifiedCode =
+  ({name, code}) => ({name, code: minifyCode(code)});
+
+class Bundle extends BundleBase {
   constructor(sourceMapUrl) {
-    this._finalized = false;
-    this._modules = [];
-    this._assets = [];
+    super();
+    this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
+    this._numPrependedModules = 0;
+    this._numRequireCalls = 0;
   }
 
-  setMainModuleId(moduleId) {
-    this._mainModuleId = moduleId;
+  addModule(resolver, response, module, transformed) {
+    return resolver.wrapModule(
+      response,
+      module,
+      transformed.code
+    ).then(({code, name}) => {
+      const moduleTransport = new ModuleTransport({
+        code,
+        name,
+        map: transformed.map,
+        sourceCode: transformed.sourceCode,
+        sourcePath: transformed.sourcePath,
+        virtual: transformed.virtual,
+      });
+
+      // If we get a map from the transformer we'll switch to a mode
+      // were we're combining the source maps as opposed to
+      if (!this._shouldCombineSourceMaps && moduleTransport.map != null) {
+        this._shouldCombineSourceMaps = true;
+      }
+
+      super.addModule(moduleTransport);
+    });
   }
 
-  addModule(module) {
-    if (!(module instanceof ModuleTransport)) {
-      throw new Error('Expeceted a ModuleTransport object');
-    }
-
-    // If we get a map from the transformer we'll switch to a mode
-    // were we're combining the source maps as opposed to
-    if (!this._shouldCombineSourceMaps && module.map != null) {
-      this._shouldCombineSourceMaps = true;
-    }
-
-    this._modules.push(module);
-  }
-
-  getModules() {
-    return this._modules;
-  }
-
-  addAsset(asset) {
-    this._assets.push(asset);
+  setNumPrependedModules(n) {
+    this._numPrependedModules = n;
   }
 
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
-      const runCode = ';require("' + this._mainModuleId + '");';
-      this.addModule(new ModuleTransport({
-        code: runCode,
-        virtual: true,
-        sourceCode: runCode,
-        sourcePath: 'RunMainModule.js'
-      }));
+      options.runBeforeMainModule.forEach(this._addRequireCall, this);
+      this._addRequireCall(super.getMainModuleId());
     }
 
-    Object.freeze(this._modules);
-    Object.seal(this._modules);
-    Object.freeze(this._assets);
-    Object.seal(this._assets);
-    this._finalized = true;
+    super.finalize();
   }
 
-  _assertFinalized() {
-    if (!this._finalized) {
-      throw new Error('Bundle needs to be finalized before getting any source');
-    }
+  _addRequireCall(moduleId) {
+    const code = ';require("' + moduleId + '");';
+    const name = 'require-' + moduleId;
+    super.addModule(new ModuleTransport({
+      name,
+      code,
+      virtual: true,
+      sourceCode: code,
+      sourcePath: name + '.js',
+    }));
+    this._numRequireCalls += 1;
   }
 
-  _getSource() {
-    if (this._source == null) {
-      this._source = _.pluck(this._modules, 'code').join('\n');
-    }
-    return this._source;
-  }
-
-  _getInlineSourceMap() {
+  _getInlineSourceMap(dev) {
     if (this._inlineSourceMap == null) {
-      const sourceMap = this.getSourceMap({excludeSource: true});
+      const sourceMap = this.getSourceMap({excludeSource: true, dev});
       /*eslint-env node*/
       const encoded = new Buffer(JSON.stringify(sourceMap)).toString('base64');
       this._inlineSourceMap = 'data:application/json;base64,' + encoded;
@@ -93,18 +99,18 @@ class Bundle {
   }
 
   getSource(options) {
-    this._assertFinalized();
+    super.assertFinalized();
 
     options = options || {};
 
     if (options.minify) {
-      return this.getMinifiedSourceAndMap().code;
+      return this.getMinifiedSourceAndMap(options.dev).code;
     }
 
-    let source = this._getSource();
+    let source = super.getSource();
 
     if (options.inlineSourceMap) {
-      source += SOURCEMAPPING_URL + this._getInlineSourceMap();
+      source += SOURCEMAPPING_URL + this._getInlineSourceMap(options.dev);
     } else if (this._sourceMapUrl) {
       source += SOURCEMAPPING_URL + this._sourceMapUrl;
     }
@@ -112,16 +118,60 @@ class Bundle {
     return source;
   }
 
-  getMinifiedSourceAndMap() {
-    this._assertFinalized();
+  getUnbundle({minify}) {
+    const allModules = super.getModules().slice();
+    const prependedModules = this._numPrependedModules;
+    const requireCalls = this._numRequireCalls;
 
-    const source = this._getSource();
-    try {
-      return UglifyJS.minify(source, {
-        fromString: true,
-        outSourceMap: 'bundle.js',
-        inSourceMap: this.getSourceMap(),
+    const modules =
+      allModules
+        .splice(prependedModules, allModules.length - requireCalls - prependedModules);
+    const startupCode =
+      allModules
+        .map(minify ? getMinifiedCode : getCode)
+        .join('\n');
+
+    return {
+      startupCode,
+      modules:
+        modules.map(minify ? getNameAndMinifiedCode : getNameAndCode)
+    };
+  }
+
+  getMinifiedSourceAndMap(dev) {
+    super.assertFinalized();
+
+    if (this._minifiedSourceAndMap) {
+      return this._minifiedSourceAndMap;
+    }
+
+    let source = this.getSource();
+    let map = this.getSourceMap();
+
+    if (!dev) {
+      const wpoActivity = Activity.startEvent('Whole Program Optimisations');
+      const wpoResult = require('babel-core').transform(source, {
+        retainLines: true,
+        compact: true,
+        plugins: require('../transforms/whole-program-optimisations'),
+        inputSourceMap: map,
       });
+      Activity.endEvent(wpoActivity);
+
+      source = wpoResult.code;
+      map = wpoResult.map;
+    }
+
+    try {
+      const minifyActivity = Activity.startEvent('minify');
+      this._minifiedSourceAndMap = UglifyJS.minify(source, {
+        fromString: true,
+        outSourceMap: this._sourceMapUrl,
+        inSourceMap: map,
+        output: {ascii_only: true},
+      });
+      Activity.endEvent(minifyActivity);
+      return this._minifiedSourceAndMap;
     } catch(e) {
       // Sometimes, when somebody is using a new syntax feature that we
       // don't yet have transform for, the untransformed line is sent to
@@ -161,7 +211,7 @@ class Bundle {
     };
 
     let line = 0;
-    this._modules.forEach(function(module) {
+    super.getModules().forEach(function(module) {
       let map = module.map;
       if (module.virtual) {
         map = generateSourceMapForVirtualModule(module);
@@ -182,9 +232,13 @@ class Bundle {
   }
 
   getSourceMap(options) {
-    this._assertFinalized();
+    super.assertFinalized();
 
     options = options || {};
+
+    if (options.minify) {
+      return this.getMinifiedSourceAndMap(options.dev).map;
+    }
 
     if (this._shouldCombineSourceMaps) {
       return this._getCombinedSourceMaps(options);
@@ -193,22 +247,23 @@ class Bundle {
     const mappings = this._getMappings();
     const map = {
       file: 'bundle.js',
-      sources: _.pluck(this._modules, 'sourcePath'),
+      sources: _.pluck(super.getModules(), 'sourcePath'),
       version: 3,
       names: [],
       mappings: mappings,
       sourcesContent: options.excludeSource
-    ? [] : _.pluck(this._modules, 'sourceCode')
+    ? [] : _.pluck(super.getModules(), 'sourceCode')
     };
     return map;
   }
 
-  getAssets() {
-    return this._assets;
+  getEtag() {
+    var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
+    return eTag;
   }
 
   _getMappings() {
-    const modules = this._modules;
+    const modules = super.getModules();
 
     // The first line mapping in our package is basically the base64vlq code for
     // zeros (A).
@@ -255,7 +310,7 @@ class Bundle {
   }
 
   getJSModulePaths() {
-    return this._modules.filter(function(module) {
+    return super.getModules().filter(function(module) {
       // Filter out non-js files. Like images etc.
       return !module.virtual;
     }).map(function(module) {
@@ -265,7 +320,7 @@ class Bundle {
 
   getDebugInfo() {
     return [
-      '<div><h3>Main Module:</h3> ' + this._mainModuleId + '</div>',
+      '<div><h3>Main Module:</h3> ' + super.getMainModuleId() + '</div>',
       '<style>',
       'pre.collapsed {',
       '  height: 10px;',
@@ -277,7 +332,7 @@ class Bundle {
       '}',
       '</style>',
       '<h3> Module paths and transformed code: </h3>',
-      this._modules.map(function(m) {
+      super.getModules().map(function(m) {
         return '<div> <h4> Path: </h4>' + m.sourcePath + '<br/> <h4> Source: </h4>' +
                '<code><pre class="collapsed" onclick="this.classList.remove(\'collapsed\')">' +
                _.escape(m.code) + '</pre></code></div>';
@@ -286,31 +341,24 @@ class Bundle {
   }
 
   toJSON() {
-    if (!this._finalized) {
-      throw new Error('Cannot serialize bundle unless finalized');
-    }
+    this.assertFinalized('Cannot serialize bundle unless finalized');
 
     return {
-      modules: this._modules,
-      assets: this._assets,
+      ...super.toJSON(),
       sourceMapUrl: this._sourceMapUrl,
-      shouldCombineSourceMaps: this._shouldCombineSourceMaps,
-      mainModuleId: this._mainModuleId,
+      numPrependedModules: this._numPrependedModules,
+      numRequireCalls: this._numRequireCalls,
     };
   }
 
   static fromJSON(json) {
     const bundle = new Bundle(json.sourceMapUrl);
-    bundle._mainModuleId = json.mainModuleId;
-    bundle._assets = json.assets;
-    bundle._modules = json.modules;
-    bundle._sourceMapUrl = json.sourceMapUrl;
 
-    Object.freeze(bundle._modules);
-    Object.seal(bundle._modules);
-    Object.freeze(bundle._assets);
-    Object.seal(bundle._assets);
-    bundle._finalized = true;
+    bundle._sourceMapUrl = json.sourceMapUrl;
+    bundle._numPrependedModules = json.numPrependedModules;
+    bundle._numRequireCalls = json.numRequireCalls;
+
+    BundleBase.fromJSON(bundle, json);
 
     return bundle;
   }

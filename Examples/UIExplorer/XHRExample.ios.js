@@ -21,7 +21,6 @@ var {
   CameraRoll,
   Image,
   LinkingIOS,
-  PixelRatio,
   ProgressViewIOS,
   StyleSheet,
   Text,
@@ -29,6 +28,9 @@ var {
   TouchableHighlight,
   View,
 } = React;
+
+var XHRExampleHeaders = require('./XHRExampleHeaders');
+var XHRExampleFetch = require('./XHRExampleFetch');
 
 class Downloader extends React.Component {
 
@@ -302,7 +304,6 @@ class FormUploader extends React.Component {
   }
 }
 
-
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
 exports.description = 'XMLHttpRequest';
@@ -315,6 +316,16 @@ exports.examples = [{
   title: 'multipart/form-data Upload',
   render() {
     return <FormUploader/>;
+  }
+}, {
+  title: 'Fetch Test',
+  render() {
+    return <XHRExampleFetch/>;
+  }
+}, {
+  title: 'Headers',
+  render() {
+    return <XHRExampleHeaders/>;
   }
 }];
 
@@ -331,7 +342,7 @@ var styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 8,
     alignItems: 'center',
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'grey',
   },
   photoLabel: {

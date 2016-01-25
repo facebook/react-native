@@ -13,26 +13,27 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .mock('net')
     .dontMock('../SocketClient');
 
+var Bundle = require('../../Bundler/Bundle');
+var SocketClient = require('../SocketClient');
+var bser = require('bser');
+var net = require('net');
+
 describe('SocketClient', () => {
-  let SocketClient;
   let sock;
   let bunser;
 
   beforeEach(() => {
-    SocketClient = require('../SocketClient');
-
     const {EventEmitter} = require.requireActual('events');
     sock = new EventEmitter();
     sock.write = jest.genMockFn();
 
-    require('net').connect.mockImpl(() => sock);
+    net.connect.mockImpl(() => sock);
 
-    const bser = require('bser');
     bunser = new EventEmitter();
-    require('bser').BunserBuf.mockImpl(() => bunser);
+    bser.BunserBuf.mockImpl(() => bunser);
     bser.dumpToBuffer.mockImpl((a) => a);
 
-    require('../../Bundler/Bundle').fromJSON.mockImpl((a) => a);
+    Bundle.fromJSON.mockImpl((a) => a);
   });
 
   pit('create a connection', () => {
@@ -40,7 +41,7 @@ describe('SocketClient', () => {
     sock.emit('connect');
     return client.onReady().then(c => {
       expect(c).toBe(client);
-      expect(require('net').connect).toBeCalledWith('/sock');
+      expect(net.connect).toBeCalledWith('/sock');
     });
   });
 

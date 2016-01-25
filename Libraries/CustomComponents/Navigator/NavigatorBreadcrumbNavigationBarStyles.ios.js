@@ -27,14 +27,14 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
+var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 var merge = require('merge');
 
 var SCREEN_WIDTH = Dimensions.get('window').width;
-var STATUS_BAR_HEIGHT = NavigatorNavigationBarStyles.General.StatusBarHeight;
-var NAV_BAR_HEIGHT = NavigatorNavigationBarStyles.General.NavBarHeight;
+var STATUS_BAR_HEIGHT = NavigatorNavigationBarStylesIOS.General.StatusBarHeight;
+var NAV_BAR_HEIGHT = NavigatorNavigationBarStylesIOS.General.NavBarHeight;
 
 var SPACING = 4;
 var ICON_WIDTH = 40;
@@ -136,7 +136,7 @@ CENTER[0] = {
   Title: merge(FIRST_TITLE_BASE, {opacity: 1}),
   RightItem: CENTER[0].RightItem,
 };
-LEFT[0].Title = merge(FIRST_TITLE_BASE, {left: - SCREEN_WIDTH / 4, opacity: 0});
+LEFT[0].Title = merge(FIRST_TITLE_BASE, {left: -SCREEN_WIDTH / 4, opacity: 0});
 RIGHT[0].Title = merge(FIRST_TITLE_BASE, {opacity: 0});
 
 

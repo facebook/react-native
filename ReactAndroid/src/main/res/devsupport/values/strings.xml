@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="catalyst_reloadjs" project="catalyst" translatable="false">Reload JS</string>
+  <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug in Chrome</string>
+  <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Chrome Debugging</string>
+  <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Module Replacement</string>
+  <string name="catalyst_hot_module_replacement_off" project="catalyst" translatable="false">Disable Hot Module Replacement</string>
+  <string name="catalyst_live_reload" project="catalyst" translatable="false">Enable Live Reload</string>
+  <string name="catalyst_live_reload_off" project="catalyst" translatable="false">Disable Live Reload</string>
+  <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Enable Perf Monitor</string>
+  <string name="catalyst_perf_monitor_off" project="catalyst" translatable="false">Disable Perf Monitor</string>
+  <string name="catalyst_settings" project="catalyst" translatable="false">Dev Settings</string>
+  <string name="catalyst_settings_title" project="catalyst" translatable="false">Catalyst Dev Settings</string>
+  <string name="catalyst_jsload_title" project="catalyst" translatable="false">Please wait…</string>
+  <string name="catalyst_jsload_message" project="catalyst" translatable="false">Fetching JS bundle</string>
+  <string name="catalyst_jsload_error" project="catalyst" translatable="false">Unable to download JS bundle from the dev server.\n\nTry the following to fix the issue:\n• Ensure that the packager server is running\n• Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run \'adb devices\' to see a list of connected devices\n• If you\'re on a physical device connected to the same machine, run \'adb reverse tcp:8081 tcp:8081\' to forward requests from your device\n• If your device is on the same Wi-Fi network, set \'Debug server host &amp; port for device\' in \'Dev settings\' to your machine\'s IP address and the port of the local dev server - e.g. 10.0.1.1:8081</string>
+  <string name="catalyst_remotedbg_message" project="catalyst" translatable="false">Connecting to remote debugger</string>
+  <string name="catalyst_remotedbg_error" project="catalyst" translatable="false">Unable to connect with remote debugger</string>
+  <string name="catalyst_element_inspector" project="catalyst" translatable="false">Show Inspector</string>
+  <string name="catalyst_element_inspector_off" project="catalyst" translatable="false">Hide Inspector</string>
+  <string name="catalyst_start_profile" project="catalyst" translatable="false">Start Profile</string>
+  <string name="catalyst_stop_profile" project="catalyst" translatable="false">Stop Profile</string>
+</resources>

@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 
 - (ARTNode *)node
 {
-  return [[ARTGroup alloc] init];
+  return [ARTGroup new];
 }
 
 @end

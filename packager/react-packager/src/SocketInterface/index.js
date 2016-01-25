@@ -13,37 +13,55 @@ const SocketClient = require('./SocketClient');
 const SocketServer = require('./SocketServer');
 const _ = require('underscore');
 const crypto = require('crypto');
-const debug = require('debug')('ReactPackager:SocketInterface');
+const debug = require('debug')('ReactNativePackager:SocketInterface');
 const fs = require('fs');
 const net = require('net');
 const path = require('path');
 const tmpdir = require('os').tmpdir();
 const {spawn} = require('child_process');
 
-const CREATE_SERVER_TIMEOUT = 60000;
+const CREATE_SERVER_TIMEOUT = 5 * 60 * 1000;
 
 const SocketInterface = {
   getOrCreateSocketFor(options) {
     return new Promise((resolve, reject) => {
       const hash = crypto.createHash('md5');
       Object.keys(options).sort().forEach(key => {
-        if (options[key] && typeof options[key] !== 'string') {
-          hash.update(JSON.stringify(options[key]));
-        } else {
-          hash.update(options[key]);
+        const value = options[key];
+        if (value) {
+          hash.update(
+            options[key] != null && typeof value === 'string'
+              ? value
+              : JSON.stringify(value)
+          );
         }
       });
 
-      const sockPath = path.join(
+      let sockPath = path.join(
         tmpdir,
         'react-packager-' + hash.digest('hex')
       );
+      if (process.platform === 'win32'){
+        // on Windows, use a named pipe, convert sockPath into a valid pipe name
+        // based on https://gist.github.com/domenic/2790533
+        sockPath = sockPath.replace(/^\//, '')
+        sockPath = sockPath.replace(/\//g, '-')
+        sockPath = '\\\\.\\pipe\\' + sockPath
+      }
 
-      if (fs.existsSync(sockPath)) {
+      if (existsSync(sockPath)) {
         var sock = net.connect(sockPath);
         sock.on('connect', () => {
-          sock.end();
-          resolve(SocketClient.create(sockPath));
+          SocketClient.create(sockPath).then(
+            client => {
+              sock.end();
+              resolve(client);
+            },
+            error => {
+              sock.end();
+              reject(error);
+            }
+          );
         });
         sock.on('error', (e) => {
           try {
@@ -82,7 +100,7 @@ function createServer(resolve, reject, options, sockPath) {
 
   // Enable server debugging by default since it's going to a log file.
   const env = _.clone(process.env);
-  env.DEBUG = 'ReactPackager:SocketServer';
+  env.DEBUG = 'ReactNativePackager:SocketServer';
 
   // We have to go through the main entry point to make sure
   // we go through the babel require hook.
@@ -115,6 +133,15 @@ function createServer(resolve, reject, options, sockPath) {
     type: 'createSocketServer',
     data: { sockPath, options }
   });
+}
+
+function existsSync(filename) {
+  try {
+    fs.accessSync(filename);
+    return true;
+  } catch(ex) {
+    return false;
+  }
 }
 
 module.exports = SocketInterface;

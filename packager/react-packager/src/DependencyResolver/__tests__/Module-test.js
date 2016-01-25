@@ -11,43 +11,53 @@
 jest
   .dontMock('absolute-path')
   .dontMock('../fastfs')
-  .dontMock('../replacePatterns')
+  .dontMock('../lib/extractRequires')
+  .dontMock('../lib/replacePatterns')
   .dontMock('../DependencyGraph/docblock')
-  .dontMock('../../FileWatcher')
   .dontMock('../Module');
 
 jest
   .mock('fs');
 
+const Fastfs = require('../fastfs');
+const Module = require('../Module');
+const ModuleCache = require('../ModuleCache');
+const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
+const Promise = require('promise');
+const fs = require('graceful-fs');
+
 describe('Module', () => {
-  var Fastfs;
-  var Module;
-  var ModuleCache;
-  var Promise;
-  var fs;
+  const fileWatcher = {
+    on: () =>  this,
+    isWatchman: () => Promise.resolve(false),
+  };
 
-  const FileWatcher = require('../../FileWatcher');
-  const fileWatcher = new FileWatcher(['/root']);
+  const Cache = jest.genMockFn();
+  Cache.prototype.get = jest.genMockFn().mockImplementation(
+    (filepath, field, cb) => cb(filepath)
+  );
+  Cache.prototype.invalidate = jest.genMockFn();
+  Cache.prototype.end = jest.genMockFn();
 
-  beforeEach(function() {
-    Fastfs = require('../fastfs');
-    Module = require('../Module');
-    ModuleCache = require('../ModuleCache');
-    Promise = require('promise');
-    fs = require('fs');
-  });
 
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
-      var fastfs = new Fastfs(
+      const fastfs = new Fastfs(
         'test',
         ['/root'],
         fileWatcher,
         {crawling: Promise.resolve(['/root/index.js']), ignore: []},
       );
+      const cache = new Cache();
 
       return fastfs.build().then(() => {
-        var module = new Module('/root/index.js', fastfs, new ModuleCache(fastfs));
+        const module = new Module({
+          file: '/root/index.js',
+          fastfs,
+          moduleCache: new ModuleCache(fastfs, cache),
+          cache: cache,
+          depGraphHelpers: new DependencyGraphHelpers(),
+        });
 
         return module.getAsyncDependencies().then(actual =>
           expect(actual).toEqual(expected)
@@ -58,8 +68,8 @@ describe('Module', () => {
     pit('should recognize single dependency', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import("dep1")',
-        }
+          'index.js': 'System.' + 'import("dep1")',
+        },
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
@@ -68,8 +78,8 @@ describe('Module', () => {
     pit('should parse single quoted dependencies', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import(\'dep1\')',
-        }
+          'index.js': 'System.' + 'import(\'dep1\')',
+        },
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
@@ -79,10 +89,10 @@ describe('Module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': [
-            'System.import("dep1")',
-            'System.import("dep2")',
+            'System.' + 'import("dep1")',
+            'System.' + 'import("dep2")',
           ].join('\n'),
-        }
+        },
       });
 
       return expectAsyncDependenciesToEqual([
@@ -94,11 +104,51 @@ describe('Module', () => {
     pit('parse fine new lines', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import(\n"dep1"\n)',
-        }
+          'index.js': 'System.' + 'import(\n"dep1"\n)',
+        },
       });
 
       return expectAsyncDependenciesToEqual([['dep1']]);
+    });
+  });
+
+  describe('Extrators', () => {
+
+    function createModuleWithExtractor(extractor) {
+      const fastfs = new Fastfs(
+        'test',
+        ['/root'],
+        fileWatcher,
+        {crawling: Promise.resolve(['/root/index.js']), ignore: []},
+      );
+      const cache = new Cache();
+
+      return fastfs.build().then(() => {
+        return new Module({
+          file: '/root/index.js',
+          fastfs,
+          moduleCache: new ModuleCache(fastfs, cache),
+          cache,
+          extractor,
+          depGraphHelpers: new DependencyGraphHelpers(),
+        });
+      });
+    }
+
+    pit('uses custom require extractors if specified', () => {
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': '',
+        },
+      });
+
+      return createModuleWithExtractor(
+        code => ({deps: {sync: ['foo', 'bar']}})
+      ).then(module =>
+        module.getDependencies().then(actual =>
+          expect(actual).toEqual(['foo', 'bar'])
+        )
+      );
     });
   });
 });

@@ -11,6 +11,9 @@
  */
 'use strict';
 
+var RCTNetworking = require('RCTNetworking');
+var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
@@ -29,6 +32,15 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   status: number;
+  timeout: number;
+  responseURL: ?string;
+
+  upload: ?{
+    onprogress?: (event: Object) => void;
+  };
+
+  _requestId: ?number;
+  _subscriptions: [any];
 
   _method: ?string;
   _url: ?string;
@@ -47,6 +59,7 @@ class XMLHttpRequestBase {
     this.onreadystatechange = null;
     this.onload = null;
     this.upload = undefined; /* Upload not supported yet */
+    this.timeout = 0;
 
     this._reset();
     this._method = null;
@@ -59,10 +72,88 @@ class XMLHttpRequestBase {
     this.responseHeaders = undefined;
     this.responseText = '';
     this.status = 0;
+    delete this.responseURL;
+
+    this._requestId = null;
 
     this._headers = {};
     this._sent = false;
     this._lowerCaseResponseHeaders = {};
+
+    this._clearSubscriptions();
+  }
+
+  didCreateRequest(requestId: number): void {
+    this._requestId = requestId;
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didSendNetworkData',
+      (args) => this._didUploadProgress.call(this, ...args)
+    ));
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didReceiveNetworkResponse',
+      (args) => this._didReceiveResponse.call(this, ...args)
+    ));
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didReceiveNetworkData',
+      (args) =>  this._didReceiveData.call(this, ...args)
+    ));
+    this._subscriptions.push(RCTDeviceEventEmitter.addListener(
+      'didCompleteNetworkResponse',
+      (args) => this._didCompleteResponse.call(this, ...args)
+    ));
+  }
+
+  _didUploadProgress(requestId: number, progress: number, total: number): void {
+    if (requestId === this._requestId && this.upload && this.upload.onprogress) {
+      var event = {
+        lengthComputable: true,
+        loaded: progress,
+        total,
+      };
+      this.upload.onprogress(event);
+    }
+  }
+
+  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object, responseURL: ?string): void {
+    if (requestId === this._requestId) {
+      this.status = status;
+      this.setResponseHeaders(responseHeaders);
+      this.setReadyState(this.HEADERS_RECEIVED);
+      if (responseURL || responseURL === '') {
+        this.responseURL = responseURL;
+      } else {
+        delete this.responseURL;
+      }
+    }
+  }
+
+  _didReceiveData(requestId: number, responseText: string): void {
+    if (requestId === this._requestId) {
+      if (!this.responseText) {
+        this.responseText = responseText;
+      } else {
+        this.responseText += responseText;
+      }
+      this.setReadyState(this.LOADING);
+    }
+  }
+
+  _didCompleteResponse(requestId: number, error: string): void {
+    if (requestId === this._requestId) {
+      if (error) {
+        this.responseText = error;
+      }
+      this._clearSubscriptions();
+      this._requestId = null;
+      this.setReadyState(this.DONE);
+    }
+  }
+
+  _clearSubscriptions(): void {
+    (this._subscriptions || []).forEach(sub => {
+      sub.remove();
+    });
+    this._subscriptions = [];
   }
 
   getAllResponseHeaders(): ?string {
@@ -97,6 +188,9 @@ class XMLHttpRequestBase {
       // async is default
       throw new Error('Synchronous http requests are not supported');
     }
+    if (!url) {
+      throw new Error('Cannot load an empty url');
+    }
     this._reset();
     this._method = method;
     this._url = url;
@@ -104,12 +198,8 @@ class XMLHttpRequestBase {
     this.setReadyState(this.OPENED);
   }
 
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     throw new Error('Subclass must define sendImpl method');
-  }
-
-  abortImpl(): void {
-    throw new Error('Subclass must define abortImpl method');
   }
 
   send(data: any): void {
@@ -120,12 +210,14 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    this.sendImpl(this._method, this._url, this._headers, data);
+    this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
 
   abort(): void {
     this._aborted = true;
-    this.abortImpl();
+    if (this._requestId) {
+      RCTNetworking.abortRequest(this._requestId);
+    }
     // only call onreadystatechange if there is something to abort,
     // below logic is per spec
     if (!(this.readyState === this.UNSENT ||
@@ -136,16 +228,6 @@ class XMLHttpRequestBase {
     }
     // Reset again after, in case modified in handler
     this._reset();
-  }
-
-  callback(status: number, responseHeaders: ?Object, responseText: string): void {
-    if (this._aborted) {
-      return;
-    }
-    this.status = status;
-    this.setResponseHeaders(responseHeaders || {});
-    this.responseText = responseText;
-    this.setReadyState(this.DONE);
   }
 
   setResponseHeaders(responseHeaders: ?Object): void {
@@ -165,7 +247,7 @@ class XMLHttpRequestBase {
     if (onreadystatechange) {
       // We should send an event to handler, but since we don't process that
       // event anywhere, let's leave it empty
-      onreadystatechange(null);
+      onreadystatechange.call(this, null);
     }
     if (newState === this.DONE && !this._aborted) {
       this._sendLoad();

@@ -11,11 +11,11 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var UIManager = require('UIManager');
 
 var invariant = require('invariant');
 
-var dimensions = NativeModules.UIManager.Dimensions;
+var dimensions = UIManager.Dimensions;
 
 // We calculate the window dimensions in JS so that we don't encounter loss of
 // precision in transferring the dimensions (which could be non-integers) over
@@ -56,6 +56,8 @@ class Dimensions {
    * these constants should try to call this function on every render, rather
    * than caching the value (for example, using inline styles rather than
    * setting a value in a `StyleSheet`).
+   *
+   * Example: `var {height, width} = Dimensions.get('window');`
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.

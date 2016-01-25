@@ -9,12 +9,16 @@
 
 #import "ARTBrush.h"
 
+#import "RCTDefines.h"
+
 @implementation ARTBrush
 
 - (instancetype)initWithArray:(NSArray *)data
 {
   return [super init];
 }
+
+RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (BOOL)applyFillColor:(CGContextRef)context
 {

@@ -26,7 +26,7 @@
 {
   BOOL _tabsChanged;
   UITabBarController *_tabController;
-  NSMutableArray *_tabViews;
+  NSMutableArray<RCTTabBarItem *> *_tabViews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -50,14 +50,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)dealloc
 {
   _tabController.delegate = nil;
+  [_tabController removeFromParentViewController];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<RCTTabBarItem *> *)reactSubviews
 {
   return _tabViews;
 }
 
-- (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTTabBarItem *)view atIndex:(NSInteger)atIndex
 {
   if (![view isKindOfClass:[RCTTabBarItem class]]) {
     RCTLogError(@"subview should be of type RCTTabBarItem");
@@ -67,7 +68,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabsChanged = YES;
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTTabBarItem *)subview
 {
   if (_tabViews.count == 0) {
     RCTLogError(@"should have at least one view to remove a subview");
@@ -80,6 +81,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  [self reactAddControllerToClosestParent:_tabController];
   _tabController.view.frame = self.bounds;
 }
 
@@ -91,7 +93,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if (_tabsChanged) {
 
-    NSMutableArray *viewControllers = [NSMutableArray array];
+    NSMutableArray<UIViewController *> *viewControllers = [NSMutableArray array];
     for (RCTTabBarItem *tab in [self reactSubviews]) {
       UIViewController *controller = tab.reactViewController;
       if (!controller) {
@@ -104,7 +106,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _tabsChanged = NO;
   }
 
-  [[self reactSubviews] enumerateObjectsUsingBlock:
+  [_tabViews enumerateObjectsUsingBlock:
    ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
     UIViewController *controller = _tabController.viewControllers[index];
     controller.tabBarItem = tab.barItem;
@@ -147,7 +149,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
-  RCTTabBarItem *tab = [self reactSubviews][index];
+  RCTTabBarItem *tab = _tabViews[index];
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }

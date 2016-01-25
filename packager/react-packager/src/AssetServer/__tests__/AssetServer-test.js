@@ -1,7 +1,8 @@
 'use strict';
 
 jest
-  .dontMock('../../lib/getAssetDataFromName')
+  .dontMock('../../DependencyResolver/lib/getPlatformExtension')
+  .dontMock('../../DependencyResolver/lib/getAssetDataFromName')
   .dontMock('../');
 
 jest
@@ -10,17 +11,11 @@ jest
 
 const Promise = require('promise');
 
+var AssetServer = require('../');
+var crypto = require('crypto');
+var fs = require('fs');
+
 describe('AssetServer', () => {
-  let AssetServer;
-  let crypto;
-  let fs;
-
-  beforeEach(() => {
-    AssetServer = require('../');
-    crypto = require('crypto');
-    fs = require('fs');
-  });
-
   describe('assetServer.get', () => {
     pit('should work for the simple case', () => {
       const server = new AssetServer({
@@ -46,6 +41,43 @@ describe('AssetServer', () => {
         )
       );
     });
+
+    pit('should work for the simple case with platform ext', () => {
+      const server = new AssetServer({
+        projectRoots: ['/root'],
+        assetExts: ['png'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'b.ios.png': 'b ios image',
+            'b.android.png': 'b android image',
+            'c.png': 'c general image',
+            'c.android.png': 'c android image',
+          }
+        }
+      });
+
+      return Promise.all([
+        server.get('imgs/b.png', 'ios').then(
+          data => expect(data).toBe('b ios image')
+        ),
+        server.get('imgs/b.png', 'android').then(
+          data => expect(data).toBe('b android image')
+        ),
+        server.get('imgs/c.png', 'android').then(
+          data => expect(data).toBe('c android image')
+        ),
+        server.get('imgs/c.png', 'ios').then(
+          data => expect(data).toBe('c general image')
+        ),
+        server.get('imgs/c.png').then(
+          data => expect(data).toBe('c general image')
+        ),
+      ]);
+    });
+
 
     pit('should work for the simple case with jpg', () => {
       const server = new AssetServer({
@@ -95,6 +127,37 @@ describe('AssetServer', () => {
       );
     });
 
+    pit('should pick the bigger one with platform ext', () => {
+      const server = new AssetServer({
+        projectRoots: ['/root'],
+        assetExts: ['png'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'b@1x.png': 'b1 image',
+            'b@2x.png': 'b2 image',
+            'b@4x.png': 'b4 image',
+            'b@4.5x.png': 'b4.5 image',
+            'b@1x.ios.png': 'b1 ios image',
+            'b@2x.ios.png': 'b2 ios image',
+            'b@4x.ios.png': 'b4 ios image',
+            'b@4.5x.ios.png': 'b4.5 ios image',
+          }
+        }
+      });
+
+      return Promise.all([
+        server.get('imgs/b@3x.png').then(data =>
+          expect(data).toBe('b4 image')
+        ),
+        server.get('imgs/b@3x.png', 'ios').then(data =>
+          expect(data).toBe('b4 ios image')
+        ),
+      ]);
+    });
+
     pit('should support multiple project roots', () => {
       const server = new AssetServer({
         projectRoots: ['/root', '/root2'],
@@ -122,7 +185,7 @@ describe('AssetServer', () => {
     });
   });
 
-  describe('assetSerer.getAssetData', () => {
+  describe('assetServer.getAssetData', () => {
     pit('should get assetData', () => {
       const hash = {
         update: jest.genMockFn(),
@@ -154,6 +217,12 @@ describe('AssetServer', () => {
           type: 'png',
           name: 'b',
           scales: [1, 2, 4, 4.5],
+          files: [
+            '/root/imgs/b@1x.png',
+            '/root/imgs/b@2x.png',
+            '/root/imgs/b@4x.png',
+            '/root/imgs/b@4.5x.png',
+          ],
           hash: 'wow such hash',
         });
       });
@@ -190,6 +259,12 @@ describe('AssetServer', () => {
           type: 'jpg',
           name: 'b',
           scales: [1, 2, 4, 4.5],
+          files: [
+            '/root/imgs/b@1x.jpg',
+            '/root/imgs/b@2x.jpg',
+            '/root/imgs/b@4x.jpg',
+            '/root/imgs/b@4.5x.jpg',
+          ],
           hash: 'wow such hash',
         });
       });

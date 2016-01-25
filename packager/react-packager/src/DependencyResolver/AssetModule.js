@@ -2,7 +2,7 @@
 
 const Module = require('./Module');
 const Promise = require('promise');
-const getAssetDataFromName = require('../lib/getAssetDataFromName');
+const getAssetDataFromName = require('./lib/getAssetDataFromName');
 
 class AssetModule extends Module {
   constructor(...args) {
@@ -25,7 +25,7 @@ class AssetModule extends Module {
     return Promise.resolve([]);
   }
 
-  _read() {
+  read() {
     return Promise.resolve({});
   }
 

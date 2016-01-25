@@ -33,7 +33,6 @@ var createReactNativeComponentClass = function(
 
     this._rootNodeID = null;
     this._renderedChildren = null;
-    this.previousFlattenedStyle = null;
   };
   Constructor.displayName = viewConfig.uiViewClassName;
   Constructor.viewConfig = viewConfig;

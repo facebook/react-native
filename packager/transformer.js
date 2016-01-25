@@ -10,55 +10,47 @@
  */
 'use strict';
 
-var babel = require('babel-core');
+const babel = require('babel-core');
+const fs = require('fs');
+const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
+const json5 = require('json5');
+const path = require('path');
+const ReactPackager = require('./react-packager');
+const resolvePlugins = require('./react-packager/src/JSTransformer/resolvePlugins');
 
-function transform(srcTxt, filename, options) {
-  var plugins = [];
+const babelRC =
+  json5.parse(
+    fs.readFileSync(
+      path.resolve(__dirname, 'react-packager', '.babelrc')));
 
-  if (process.env.NODE_ENV === 'production') {
-    plugins = plugins.concat(['node-env-inline', 'dunderscore-dev-inline']);
-  }
+function transform(src, filename, options) {
+  options = options || {};
 
-  var result = babel.transform(srcTxt, {
-    retainLines: true,
-    compact: true,
-    comments: false,
-    filename: filename,
-    whitelist: [
-      'es6.arrowFunctions',
-      'es6.blockScoping',
-      'es6.classes',
-      'es6.destructuring',
-      'es6.parameters',
-      'es6.properties.computed',
-      'es6.properties.shorthand',
-      'es6.spread',
-      'es6.templateLiterals',
-      'es7.asyncFunctions',
-      'es7.trailingFunctionCommas',
-      'es7.objectRestSpread',
-      'flow',
-      'react',
-      'regenerator',
-    ],
-    plugins: plugins,
+  const extraPlugins = ['external-helpers-2'];
+  const extraConfig = {
+    filename,
     sourceFileName: filename,
-    sourceMaps: false,
-    extra: options || {},
-  });
+  };
+
+  const config = Object.assign({}, babelRC, extraConfig);
+
+  if (options.inlineRequires) {
+    extraPlugins.push(inlineRequires);
+  }
+  config.plugins = resolvePlugins(extraPlugins.concat(config.plugins));
+
+  const result = babel.transform(src, Object.assign({}, babelRC, config));
 
   return {
     code: result.code,
+    filename: filename,
   };
 }
 
 module.exports = function(data, callback) {
-  var result;
+  let result;
   try {
-    result = transform(
-      data.sourceCode,
-      data.filename
-    );
+    result = transform(data.sourceCode, data.filename, data.options);
   } catch (e) {
     callback(e);
     return;

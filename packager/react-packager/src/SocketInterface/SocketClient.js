@@ -9,9 +9,11 @@
 'use strict';
 
 const Bundle = require('../Bundler/Bundle');
+const PrepackBundle = require('../Bundler/PrepackBundle');
 const Promise = require('promise');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketClient');
+const debug = require('debug')('ReactNativePackager:SocketClient');
+const fs = require('fs');
 const net = require('net');
 const path  = require('path');
 const tmpdir = require('os').tmpdir();
@@ -28,15 +30,50 @@ class SocketClient {
 
     this._sock = net.connect(sockPath);
     this._ready = new Promise((resolve, reject) => {
-      this._sock.on('connect', () => resolve(this));
-      this._sock.on('error', (e) => reject(e));
+      this._sock.on('connect', () => {
+        this._sock.removeAllListeners('error');
+        process.on('uncaughtException', (error) => {
+          console.error('uncaught error', error.stack);
+          setImmediate(() => process.exit(1));
+        });
+        resolve(this);
+      });
+      this._sock.on('error', (e) => {
+        e.message = `Error connecting to server on ${sockPath} ` +
+                    `with error: ${e.message}`;
+        e.message += getServerLogs();
+
+        reject(e);
+      });
     });
 
     this._resolvers = Object.create(null);
     const bunser = new bser.BunserBuf();
     this._sock.on('data', (buf) => bunser.append(buf));
-
     bunser.on('value', (message) => this._handleMessage(message));
+
+    this._sock.on('close', () => {
+      if (!this._closing) {
+        const terminate = (result) => {
+          const sockPathExists = fs.existsSync(sockPath);
+          throw new Error(
+            'Server closed unexpectedly.\n' +
+            'Server ping connection attempt result: ' + result + '\n' +
+            'Socket path: `' + sockPath + '` ' +
+            (sockPathExists ? ' exists.' : 'doesn\'t exist') + '\n' +
+            getServerLogs()
+          );
+        };
+
+        // before throwing ping the server to see if it's still alive
+        const socket = net.connect(sockPath);
+        socket.on('connect', () => {
+          socket.end();
+          terminate('OK');
+        });
+        socket.on('error', error => terminate(error));
+      }
+    });
   }
 
   onReady() {
@@ -50,11 +87,25 @@ class SocketClient {
     });
   }
 
+  getOrderedDependencyPaths(main) {
+    return this._send({
+      type: 'getOrderedDependencyPaths',
+      data: main,
+    });
+  }
+
   buildBundle(options) {
     return this._send({
       type: 'buildBundle',
       data: options,
     }).then(json => Bundle.fromJSON(json));
+  }
+
+  buildPrepackBundle(options) {
+    return this._send({
+      type: 'buildPrepackBundle',
+      data: options,
+    }).then(json => PrepackBundle.fromJSON(json));
   }
 
   _send(message) {
@@ -85,9 +136,12 @@ class SocketClient {
     delete this._resolvers[message.id];
 
     if (message.type === 'error') {
-      resolver.reject(new Error(
-        message.data + '\n' + 'See logs ' + LOG_PATH
-      ));
+      const errorLog =
+        message.data && message.data.indexOf('TimeoutError') === -1
+          ? 'See logs ' + LOG_PATH
+          : getServerLogs();
+
+      resolver.reject(new Error(message.data + '\n' + errorLog));
     } else {
       resolver.resolve(message.data);
     }
@@ -95,6 +149,7 @@ class SocketClient {
 
   close() {
     debug('closing connection');
+    this._closing = true;
     this._sock.end();
   }
 }
@@ -104,4 +159,12 @@ module.exports = SocketClient;
 function uid(len) {
   len = len || 7;
   return Math.random().toString(35).substr(2, len);
+}
+
+function getServerLogs() {
+  if (fs.existsSync(LOG_PATH)) {
+    return '\nServer logs:\n' + fs.readFileSync(LOG_PATH, 'utf8');
+  }
+
+  return '';
 }

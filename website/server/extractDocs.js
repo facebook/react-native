@@ -14,6 +14,14 @@ var path = require('path');
 var slugify = require('../core/slugify');
 var jsDocs = require('../jsdocs/jsdocs.js');
 
+var ANDROID_SUFFIX = 'android';
+var CROSS_SUFFIX = 'cross';
+var IOS_SUFFIX = 'ios';
+
+function endsWith(str, suffix) {
+  return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
 function getNameFromPath(filepath) {
   var ext = null;
   while (ext = path.extname(filepath)) {
@@ -26,14 +34,30 @@ function getNameFromPath(filepath) {
     return 'Transforms';
   } else if (filepath === 'TabBarItemIOS') {
     return 'TabBarIOS.Item';
+  } else if (filepath === 'AnimatedImplementation') {
+    return 'Animated';
   }
   return filepath;
 }
 
-function getExample(componentName) {
+function getPlatformFromPath(filepath) {
+  var ext = null;
+  while (ext = path.extname(filepath)) {
+    filepath = path.basename(filepath, ext);
+  }
+
+  if (endsWith(filepath, 'Android')) {
+    return ANDROID_SUFFIX;
+  } else if (endsWith(filepath, 'IOS')) {
+    return IOS_SUFFIX;
+  }
+  return CROSS_SUFFIX;
+}
+
+function getExample(componentName, componentPlatform) {
   var path = '../Examples/UIExplorer/' + componentName + 'Example.js';
   if (!fs.existsSync(path)) {
-    path = '../Examples/UIExplorer/' + componentName + 'Example.ios.js';
+    path = '../Examples/UIExplorer/' + componentName + 'Example.'+ componentPlatform +'.js';
     if (!fs.existsSync(path)) {
       return;
     }
@@ -83,18 +107,20 @@ function getNextComponent(i) {
 
 function componentsToMarkdown(type, json, filepath, i, styles) {
   var componentName = getNameFromPath(filepath);
-
+  var componentPlatform = getPlatformFromPath(filepath);
   var docFilePath = '../docs/' + componentName + '.md';
+
   if (fs.existsSync(docFilePath)) {
     json.fullDescription = fs.readFileSync(docFilePath).toString();
   }
   json.type = type;
   json.filepath = filepath.replace(/^\.\.\//, '');
   json.componentName = componentName;
+  json.componentPlatform = componentPlatform;
   if (styles) {
     json.styles = styles;
   }
-  json.example = getExample(componentName);
+  json.example = getExample(componentName, componentPlatform);
 
   // Put Flexbox into the Polyfills category
   var category = (type === 'style' ? 'Polyfills' : type + 's');
@@ -107,6 +133,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'layout: autodocs',
     'category: ' + category,
     'permalink: docs/' + slugify(componentName) + '.html',
+    'platform: ' + componentPlatform,
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName),
@@ -161,46 +188,60 @@ function renderStyle(filepath) {
 var components = [
   '../Libraries/Components/ActivityIndicatorIOS/ActivityIndicatorIOS.ios.js',
   '../Libraries/Components/DatePicker/DatePickerIOS.ios.js',
+  '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.android.js',
   '../Libraries/Image/Image.ios.js',
   '../Libraries/CustomComponents/ListView/ListView.js',
   '../Libraries/Components/MapView/MapView.js',
-  '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Modal/Modal.js',
+  '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
+  '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
+  '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
+  '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
-  '../Libraries/Components/SwitchIOS/SwitchIOS.ios.js',
+  '../Libraries/Components/Switch/Switch.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
   '../Libraries/Text/Text.js',
   '../Libraries/Components/TextInput/TextInput.js',
+  '../Libraries/Components/ToolbarAndroid/ToolbarAndroid.android.js',
   '../Libraries/Components/Touchable/TouchableHighlight.js',
+  '../Libraries/Components/Touchable/TouchableNativeFeedback.android.js',
   '../Libraries/Components/Touchable/TouchableOpacity.js',
   '../Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   '../Libraries/Components/View/View.js',
+  '../Libraries/Components/ViewPager/ViewPagerAndroid.android.js',
   '../Libraries/Components/WebView/WebView.ios.js',
 ];
 
 var apis = [
   '../Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  '../Libraries/Utilities/Alert.js',
   '../Libraries/Utilities/AlertIOS.js',
-  '../Libraries/Animated/Animated.js',
+  '../Libraries/Animated/src/AnimatedImplementation.js',
   '../Libraries/AppRegistry/AppRegistry.js',
   '../Libraries/AppStateIOS/AppStateIOS.ios.js',
-  '../Libraries/Storage/AsyncStorage.ios.js',
+  '../Libraries/AppState/AppState.js',
+  '../Libraries/Storage/AsyncStorage.js',
+  '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Utilities/Dimensions.js',
+  '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
+  '../Libraries/ReactIOS/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
   '../Libraries/vendor/react/browser/eventPlugins/PanResponder.js',
   '../Libraries/Utilities/PixelRatio.js',
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
+  '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
@@ -226,7 +267,11 @@ var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
     docgen.parse(
       fs.readFileSync(filepath),
       docgenHelpers.findExportedObject,
-      [docgen.handlers.propTypeHandler]
+      [
+        docgen.handlers.propTypeHandler,
+        docgen.handlers.propTypeCompositionHandler,
+        docgen.handlers.propDocBlockHandler,
+      ]
     );
 
   return docs;

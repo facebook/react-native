@@ -67,14 +67,14 @@
       [[UIBarButtonItem alloc] initWithImage:_leftButtonIcon
                                        style:UIBarButtonItemStylePlain
                                       target:self
-                                      action:@selector(handleNavLeftButtonTapped)];
+                                      action:@selector(handleLeftButtonPress)];
 
     } else if (_leftButtonTitle.length) {
       _leftButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_leftButtonTitle
                                        style:UIBarButtonItemStylePlain
                                       target:self
-                                      action:@selector(handleNavLeftButtonTapped)];
+                                      action:@selector(handleLeftButtonPress)];
     } else {
       _leftButtonItem = nil;
     }
@@ -82,10 +82,10 @@
   return _leftButtonItem;
 }
 
-- (void)handleNavLeftButtonTapped
+- (void)handleLeftButtonPress
 {
-  if (_onNavLeftButtonTap) {
-    _onNavLeftButtonTap(nil);
+  if (_onLeftButtonPress) {
+    _onLeftButtonPress(nil);
   }
 }
 
@@ -109,14 +109,14 @@
       [[UIBarButtonItem alloc] initWithImage:_rightButtonIcon
                                        style:UIBarButtonItemStylePlain
                                       target:self
-                                      action:@selector(handleNavRightButtonTapped)];
+                                      action:@selector(handleRightButtonPress)];
 
     } else if (_rightButtonTitle.length) {
       _rightButtonItem =
       [[UIBarButtonItem alloc] initWithTitle:_rightButtonTitle
                                        style:UIBarButtonItemStylePlain
                                       target:self
-                                      action:@selector(handleNavRightButtonTapped)];
+                                      action:@selector(handleRightButtonPress)];
     } else {
       _rightButtonItem = nil;
     }
@@ -124,10 +124,10 @@
   return _rightButtonItem;
 }
 
-- (void)handleNavRightButtonTapped
+- (void)handleRightButtonPress
 {
-  if (_onNavRightButtonTap) {
-    _onNavRightButtonTap(nil);
+  if (_onRightButtonPress) {
+    _onRightButtonPress(nil);
   }
 }
 

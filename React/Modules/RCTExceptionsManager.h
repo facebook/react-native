@@ -13,15 +13,17 @@
 
 @protocol RCTExceptionsManagerDelegate <NSObject>
 
-- (void)handleSoftJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
-- (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
-- (void)updateJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack;
+- (void)handleSoftJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId;
+- (void)handleFatalJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId;
+
+@optional
+- (void)updateJSExceptionWithMessage:(NSString *)message stack:(NSArray *)stack exceptionId:(NSNumber *)exceptionId;
 
 @end
 
 @interface RCTExceptionsManager : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate;
 
 @property (nonatomic, assign) NSUInteger maxReloadAttempts;
 

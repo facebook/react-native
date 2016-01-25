@@ -36,7 +36,7 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/TicTacToe/TicTacToeApp.bundle?platform=ios"];
+  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/Examples/TicTacToe/TicTacToeApp.bundle?platform=ios&dev=true"];
 
   /**
    * OPTION 2
@@ -56,7 +56,7 @@
                                                    launchOptions:launchOptions];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [[UIViewController alloc] init];
+  UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];

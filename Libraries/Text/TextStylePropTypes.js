@@ -12,11 +12,12 @@
 'use strict';
 
 var ReactPropTypes = require('ReactPropTypes');
+var ColorPropType = require('ColorPropType');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 // TODO: use spread instead of Object.assign/create after #6560135 is fixed
 var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
-  color: ReactPropTypes.string,
+  color: ColorPropType,
   fontFamily: ReactPropTypes.string,
   fontSize: ReactPropTypes.number,
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
@@ -29,6 +30,11 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['normal' /*default*/, 'bold',
      '100', '200', '300', '400', '500', '600', '700', '800', '900']
   ),
+  textShadowOffset: ReactPropTypes.shape(
+    {width: ReactPropTypes.number, height: ReactPropTypes.number}
+  ),
+  textShadowRadius: ReactPropTypes.number,
+  textShadowColor: ColorPropType,
   /**
    * @platform ios
    */
@@ -39,6 +45,12 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
    */
   textAlign: ReactPropTypes.oneOf(
     ['auto' /*default*/, 'left', 'right', 'center', 'justify']
+  ),
+  /**
+   * @platform android
+   */
+  textAlignVertical: ReactPropTypes.oneOf(
+    ['auto' /*default*/, 'top', 'bottom', 'center']
   ),
   /**
    * @platform ios
@@ -55,7 +67,7 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   /**
    * @platform ios
    */
-  textDecorationColor: ReactPropTypes.string,
+  textDecorationColor: ColorPropType,
   /**
    * @platform ios
    */
@@ -63,20 +75,5 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
     ['auto' /*default*/, 'ltr', 'rtl']
   ),
 });
-
-// Text doesn't support padding correctly (#4841912)
-var unsupportedProps = Object.keys({
-  padding: null,
-  paddingTop: null,
-  paddingLeft: null,
-  paddingRight: null,
-  paddingBottom: null,
-  paddingVertical: null,
-  paddingHorizontal: null,
-});
-
-for (var ii = 0; ii < unsupportedProps.length; ii++) {
-  delete TextStylePropTypes[unsupportedProps[ii]];
-}
 
 module.exports = TextStylePropTypes;

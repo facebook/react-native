@@ -2,6 +2,7 @@
 
 # Abort the mission if any command fails
 set -e
+set -x
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname $SCRIPTS)
@@ -13,9 +14,9 @@ TEMP=$(mktemp -d /tmp/react-native-XXXXXXXX)
 export REACT_PACKAGER_LOG="$TEMP/server.log"
 
 # To make sure we actually installed the local version
-# of react-native, we will create a temp file inside SampleApp
+# of react-native, we will create a temp file inside the template
 # and check that it exists after `react-native init`
-MARKER=$(mktemp $ROOT/local-cli/generator-ios/templates/main/XXXXXXXX)
+MARKER=$(mktemp $ROOT/local-cli/generator-ios/templates/app/XXXXXXXX)
 
 function cleanup {
   EXIT_CODE=$?
@@ -58,16 +59,15 @@ npm unpublish react-native-cli --force
 npm publish $ROOT
 npm publish $ROOT/react-native-cli
 
-
 npm install -g react-native-cli
-react-native init EndToEndTest
+react-native init EndToEndTest --verbose
 cd EndToEndTest/ios
 
 # Make sure we installed local version of react-native
-ls `basename $MARKER` > /dev/null
+ls EndToEndTest/`basename $MARKER` > /dev/null
 
 flow --retries 10
 
-node ../node_modules/react-native/packager/packager.js --nonPersistent &
+../node_modules/react-native/packager/packager.sh --nonPersistent &
 SERVER_PID=$!
 xctool -scheme EndToEndTest -sdk iphonesimulator test

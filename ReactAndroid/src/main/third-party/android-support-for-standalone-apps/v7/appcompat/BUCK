@@ -1,0 +1,36 @@
+android_prebuilt_aar(
+    name = 'appcompat-23.1',
+    aar = ':appcompat-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+# Unpack resources from the appcompat aar and merge their ids into the
+# generated com.facebook.react.R class.
+#
+# We do this for compatibility with Gradle: we build the open source
+# version React Native with both Buck and Gradle. See for example
+# ReactToolbarManager.java where we access the appcompat resources
+# via com.facebook.react.R.
+android_resource(
+    name = 'res-for-react-native',
+    res = ':res-unpacker-cmd',
+    package = 'com.facebook.react',
+    visibility = ['//ReactAndroid/...',],
+)
+
+genrule(
+    name = 'res-unpacker-cmd',
+    cmd = '$(exe :res-unpacker) $(location :appcompat-binary-aar) $OUT',
+    out = 'res',
+)
+
+python_binary(
+    name = 'res-unpacker',
+    main = 'res-unpacker.py',
+)
+
+remote_file(
+    name = 'appcompat-binary-aar',
+    url = 'mvn:com.android.support:appcompat-v7:aar:23.0.1',
+    sha1 = '7d659f671541394a8bc2b9f909950aa2a5ec87ff',
+)

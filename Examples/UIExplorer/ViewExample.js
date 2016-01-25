@@ -40,16 +40,6 @@ var ViewBorderStyleExample = React.createClass({
   },
 
   render() {
-    if (Platform.OS !== 'android') {
-      return (
-        <View style={{backgroundColor: 'red'}}>
-          <Text style={{color: 'white'}}>
-            borderStyle is only supported on android for now.
-          </Text>
-        </View>
-      );
-    }
-
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
         <View>
@@ -85,7 +75,9 @@ var ViewBorderStyleExample = React.createClass({
 });
 
 exports.title = '<View>';
-exports.description = 'Basic building block of all UI.';
+exports.description = 'Basic building block of all UI, examples that ' +
+  'demonstrate some of the many styles available.';
+
 exports.displayName = 'ViewExample';
 exports.examples = [
   {

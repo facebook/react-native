@@ -16,6 +16,8 @@
 
 #if RCT_DEV
 
+static BOOL isEnabled = YES;
+
 @implementation RCTDevLoadingView
 {
   UIWindow *_window;
@@ -27,21 +29,9 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
++ (void)setEnabled:(BOOL)enabled
 {
-  if ((self = [super init])) {
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hide)
-                                                 name:RCTJavaScriptDidLoadNotification
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(hide)
-                                                 name:RCTJavaScriptDidFailToLoadNotification
-                                               object:nil];
-  }
-  return self;
+  isEnabled = enabled;
 }
 
 - (void)dealloc
@@ -52,23 +42,35 @@ RCT_EXPORT_MODULE()
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(hide)
+                                               name:RCTJavaScriptDidLoadNotification
+                                             object:nil];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(hide)
+                                               name:RCTJavaScriptDidFailToLoadNotification
+                                             object:nil];
   [self showWithURL:bridge.bundleURL];
 }
 
 - (void)showWithURL:(NSURL *)URL
 {
+  if (!isEnabled) {
+    return;
+  }
+
   dispatch_async(dispatch_get_main_queue(), ^{
 
     _showDate = [NSDate date];
     if (!_window && !RCTRunningInTestEnvironment()) {
       CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
       _window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenWidth, 22)];
-      _window.backgroundColor = [UIColor blackColor];
       _window.windowLevel = UIWindowLevelStatusBar + 1;
 
       _label = [[UILabel alloc] initWithFrame:_window.bounds];
       _label.font = [UIFont systemFontOfSize:12.0];
-      _label.textColor = [UIColor grayColor];
       _label.textAlignment = NSTextAlignmentCenter;
 
       [_window addSubview:_label];
@@ -77,19 +79,26 @@ RCT_EXPORT_MODULE()
 
     NSString *source;
     if (URL.fileURL) {
+      _window.backgroundColor = [UIColor greenColor];
+      _label.textColor = [UIColor whiteColor];
       source = @"pre-bundled file";
     } else {
+      _window.backgroundColor = [UIColor blackColor];
+      _label.textColor = [UIColor grayColor];
       source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
     }
 
     _label.text = [NSString stringWithFormat:@"Loading from %@...", source];
     _window.hidden = NO;
-
   });
 }
 
 - (void)hide
 {
+  if (!isEnabled) {
+    return;
+  }
+
   dispatch_async(dispatch_get_main_queue(), ^{
 
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
@@ -117,6 +126,7 @@ RCT_EXPORT_MODULE()
 @implementation RCTDevLoadingView
 
 + (NSString *)moduleName { return nil; }
++ (void)setEnabled:(BOOL)enabled { }
 
 @end
 

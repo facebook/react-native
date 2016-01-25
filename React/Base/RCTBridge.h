@@ -25,24 +25,28 @@
 RCT_EXTERN NSString *const RCTReloadNotification;
 
 /**
- * This notification fires when the bridge starts loading.
+ * This notification fires when the bridge starts loading the JS bundle.
  */
 RCT_EXTERN NSString *const RCTJavaScriptWillStartLoadingNotification;
 
 /**
- * This notification fires when the bridge has finished loading.
+ * This notification fires when the bridge has finished loading the JS bundle.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidLoadNotification;
 
 /**
- * This notification fires when the bridge failed to load.
+ * This notification fires when the bridge failed to load the JS bundle. The
+ * `error` key can be used to determine the error that occured.
  */
 RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 
 /**
- * This notification fires when the bridge created all registered native modules
+ * This notification fires each time a native module is instantiated. The
+ * `module` key will contain a reference to the newly-created module instance.
+ * Note that this notification may be fired before the module is available via
+ * the `[bridge moduleForClass:]` method.
  */
-RCT_EXTERN NSString *const RCTDidCreateNativeModules;
+RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
 
 /**
  * This block can be used to instantiate modules that require additional
@@ -52,12 +56,17 @@ RCT_EXTERN NSString *const RCTDidCreateNativeModules;
  * For this reason, the block should always return new module instances, and
  * module instances should not be shared between bridges.
  */
-typedef NSArray *(^RCTBridgeModuleProviderBlock)(void);
+typedef NSArray<id<RCTBridgeModule>> *(^RCTBridgeModuleProviderBlock)(void);
 
 /**
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
+
+/**
+ * This function checks if a class has been registered
+ */
+RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
 
 /**
  * Async batched bridge used to communicate with the JavaScript application.
@@ -98,19 +107,27 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 
 /**
- * DEPRECATED: Do not use.
+ * Retrieve a bridge module instance by name or class. Note that modules are
+ * lazily instantiated, so calling these methods for the first time with a given
+ * module name/class may cause the class to be sychronously instantiated,
+ * blocking both the calling thread and main thread for a short time.
  */
-#define RCT_IMPORT_METHOD(module, method) \
-  _Pragma("message(\"This macro is no longer required\")")
+- (id)moduleForName:(NSString *)moduleName;
+- (id)moduleForClass:(Class)moduleClass;
+
+/**
+ * All registered bridge module classes.
+ */
+@property (nonatomic, copy, readonly) NSArray<Class> *moduleClasses;
 
 /**
  * URL of the script that was loaded into the bridge.
  */
-@property (nonatomic, strong) NSURL *bundleURL;
+@property (nonatomic, strong, readonly) NSURL *bundleURL;
 
 /**
- * The class of the executor currently being used *or* to be used after the next
- * reload.
+ * The class of the executor currently being used. Changes to this value will
+ * take effect after the bridge is reloaded.
  */
 @property (nonatomic, strong) Class executorClass;
 
@@ -131,11 +148,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
 
 /**
- * A dictionary of all registered RCTBridgeModule instances, keyed by moduleName.
- */
-@property (nonatomic, copy, readonly) NSDictionary *modules;
-
-/**
  * The launch options that were used to initialize the bridge.
  */
 @property (nonatomic, copy, readonly) NSDictionary *launchOptions;
@@ -151,13 +163,41 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 @property (nonatomic, readonly, getter=isValid) BOOL valid;
 
 /**
- * The block passed in the constructor with pre-initialized modules
- */
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
-
-/**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reload;
+
+/**
+ * Says whether bridge has started recieving calls from javascript.
+ */
+- (BOOL)isBatchActive;
+
+@end
+
+/**
+ * These features are deprecated and should not be used.
+ */
+@interface RCTBridge (Deprecated)
+
+/**
+ * This notification used to fire after all native modules has been initialized,
+ * but now that native modules are instantiated lazily on demand, its original
+ * purpose is meaningless.
+ *
+ * If you need to access a module, you can do so as soon as the bridge has been
+ * initialized, by calling `[bridge moduleForClass:]`. If you need to know when
+ * an individual module has been instantiated, add an observer for the
+ * `RCTDidInitializeModuleNotification` instead.
+ */
+RCT_EXTERN NSString *const RCTDidCreateNativeModules
+__deprecated_msg("Use RCTDidInitializeModuleNotification to observe init of individual modules");
+
+/**
+ * Accessing the modules property causes all modules to be eagerly initialized,
+ * which stalls the main thread. Use moduleClasses to enumerate through modules
+ * without causing them to be instantiated.
+ */
+@property (nonatomic, copy, readonly) NSDictionary *modules
+__deprecated_msg("Use moduleClasses and/or moduleForName: instead");
 
 @end

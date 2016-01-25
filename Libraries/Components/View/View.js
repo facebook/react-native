@@ -13,14 +13,14 @@
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
 var React = require('React');
 var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheetPropType = require('StyleSheetPropType');
+var UIManager = require('UIManager');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var requireNativeComponent = require('requireNativeComponent');
 
 var stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
@@ -42,6 +42,13 @@ var AccessibilityTraits = [
   'adjustable',
   'allowsDirectInteraction',
   'pageTurn',
+];
+
+var AccessibilityComponentType = [
+  'none',
+  'button',
+  'radiobutton_checked',
+  'radiobutton_unchecked',
 ];
 
 /**
@@ -76,6 +83,11 @@ var View = React.createClass({
     validAttributes: ReactNativeViewAttributes.RCTView
   },
 
+  statics: {
+    AccessibilityTraits,
+    AccessibilityComponentType,
+  },
+
   propTypes: {
     /**
      * When true, indicates that the view is an accessibility element. By default,
@@ -95,12 +107,7 @@ var View = React.createClass({
      * native one. Works for Android only.
      * @platform android
      */
-    accessibilityComponentType: PropTypes.oneOf([
-      'none',
-      'button',
-      'radiobutton_checked',
-      'radiobutton_unchecked',
-    ]),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentType),
 
     /**
      * Indicates to accessibility services whether the user should be notified
@@ -152,7 +159,7 @@ var View = React.createClass({
      * When `accessible` is true, the system will try to invoke this function
      * when the user performs accessibility tap gesture.
      */
-    onAcccessibilityTap: PropTypes.func,
+    onAccessibilityTap: PropTypes.func,
 
     /**
      * When `accessible` is true, the system will invoke this function when the
@@ -171,7 +178,6 @@ var View = React.createClass({
      * `TouchableHighlight` or `TouchableOpacity`. Check out `Touchable.js`,
      * `ScrollResponder.js` and `ResponderEventPlugin.js` for more discussion.
      */
-    onMoveShouldSetResponder: PropTypes.func,
     onResponderGrant: PropTypes.func,
     onResponderMove: PropTypes.func,
     onResponderReject: PropTypes.func,
@@ -180,6 +186,8 @@ var View = React.createClass({
     onResponderTerminationRequest: PropTypes.func,
     onStartShouldSetResponder: PropTypes.func,
     onStartShouldSetResponderCapture: PropTypes.func,
+    onMoveShouldSetResponder: PropTypes.func,
+    onMoveShouldSetResponderCapture: PropTypes.func,
 
     /**
      * Invoked on mount and layout changes with
@@ -304,17 +312,22 @@ var View = React.createClass({
   },
 
   render: function() {
+    // WARNING: This method will not be used in production mode as in that mode we
+    // replace wrapper component View with generated native wrapper RCTView. Avoid
+    // adding functionality this component that you'd want to be available in both
+    // dev and prod modes.
     return <RCTView {...this.props} />;
   },
 });
 
-var RCTView = createReactNativeComponentClass({
-  validAttributes: ReactNativeViewAttributes.RCTView,
-  uiViewClassName: 'RCTView',
+var RCTView = requireNativeComponent('RCTView', View, {
+  nativeOnly: {
+    nativeBackgroundAndroid: true,
+  }
 });
-RCTView.propTypes = View.propTypes;
+
 if (__DEV__) {
-  var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
+  var viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
   for (var prop in viewConfig.nativeProps) {
     var viewAny: any = View; // Appease flow
     if (!viewAny.propTypes[prop] && !ReactNativeStyleAttributes[prop]) {

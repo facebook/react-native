@@ -27,9 +27,10 @@
 'use strict';
 
 var NavigatorBreadcrumbNavigationBarStyles = require('NavigatorBreadcrumbNavigationBarStyles');
-var NavigatorNavigationBarStyles = require('NavigatorNavigationBarStyles');
+var NavigatorNavigationBarStylesAndroid = require('NavigatorNavigationBarStylesAndroid');
+var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
+var Platform = require('Platform');
 var React = require('React');
-var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
@@ -38,16 +39,18 @@ var { Map } = require('immutable');
 var invariant = require('invariant');
 
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
+var NavigatorNavigationBarStyles = Platform.OS === 'android' ?
+  NavigatorNavigationBarStylesAndroid : NavigatorNavigationBarStylesIOS;
 var PropTypes = React.PropTypes;
 
 /**
  * Reusable props objects.
  */
-var CRUMB_PROPS = Interpolators.map(() => {return {style: {}};});
-var ICON_PROPS = Interpolators.map(() => {return {style: {}};});
-var SEPARATOR_PROPS = Interpolators.map(() => {return {style: {}};});
-var TITLE_PROPS = Interpolators.map(() => {return {style: {}};});
-var RIGHT_BUTTON_PROPS = Interpolators.map(() => {return {style: {}};});
+var CRUMB_PROPS = Interpolators.map(() => ({style: {}}));
+var ICON_PROPS = Interpolators.map(() => ({style: {}}));
+var SEPARATOR_PROPS = Interpolators.map(() => ({style: {}}));
+var TITLE_PROPS = Interpolators.map(() => ({style: {}}));
+var RIGHT_BUTTON_PROPS = Interpolators.map(() => ({style: {}}));
 
 
 var navStatePresentedIndex = function(navState) {
@@ -202,7 +205,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
 
     var breadcrumbDescriptor = (
-      <View ref={'crumb_' + index} style={firstStyles.Crumb}>
+      <View
+        key={'crumb_' + index}
+        ref={'crumb_' + index}
+        style={firstStyles.Crumb}>
         <View ref={'icon_' + index} style={firstStyles.Icon}>
           {navBarRouteMapper.iconForRoute(route, this.props.navigator)}
         </View>
@@ -228,7 +234,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
 
     var titleDescriptor = (
-      <View ref={'title_' + index} style={firstStyles.Title}>
+      <View
+        key={'title_' + index}
+        ref={'title_' + index}
+        style={firstStyles.Title}>
         {titleContent}
       </View>
     );
@@ -250,7 +259,10 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     }
     var firstStyles = initStyle(index, navStatePresentedIndex(this.props.navState));
     var rightButtonDescriptor = (
-      <View ref={'right_' + index} style={firstStyles.RightItem}>
+      <View
+        key={'right_' + index}
+        ref={'right_' + index}
+        style={firstStyles.RightItem}>
         {rightContent}
       </View>
     );

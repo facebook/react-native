@@ -21,10 +21,12 @@
 
 #import "RCTLog.h"
 
-NSString *RCTJSONStringify(id jsonObject, NSError **error)
+NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
+
+NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
-  static NSSet *collectionTypes;
+  static NSSet<Class> *collectionTypes;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     SEL selector = NSSelectorFromString(@"JSONStringWithOptions:error:");
@@ -42,14 +44,14 @@ NSString *RCTJSONStringify(id jsonObject, NSError **error)
   }
 
   // Use Foundation JSON method
-  NSData *jsonData = [NSJSONSerialization
-                      dataWithJSONObject:jsonObject
-                      options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
-                      error:error];
+  NSData *jsonData = jsonObject ? [NSJSONSerialization
+                                   dataWithJSONObject:jsonObject
+                                   options:(NSJSONWritingOptions)NSJSONReadingAllowFragments
+                                   error:error] : nil;
   return jsonData ? [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] : nil;
 }
 
-static id _RCTJSONParse(NSString *jsonString, BOOL mutable, NSError **error)
+static id __nullable _RCTJSONParse(NSString *__nullable jsonString, BOOL mutable, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
   static SEL JSONKitMutableSelector = NULL;
@@ -108,12 +110,12 @@ static id _RCTJSONParse(NSString *jsonString, BOOL mutable, NSError **error)
   return nil;
 }
 
-id RCTJSONParse(NSString *jsonString, NSError **error)
+id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error)
 {
   return _RCTJSONParse(jsonString, NO, error);
 }
 
-id RCTJSONParseMutable(NSString *jsonString, NSError **error)
+id __nullable RCTJSONParseMutable(NSString *__nullable jsonString, NSError **error)
 {
   return _RCTJSONParse(jsonString, YES, error);
 }
@@ -121,7 +123,7 @@ id RCTJSONParseMutable(NSString *jsonString, NSError **error)
 id RCTJSONClean(id object)
 {
   static dispatch_once_t onceToken;
-  static NSSet *validLeafTypes;
+  static NSSet<Class> *validLeafTypes;
   dispatch_once(&onceToken, ^{
     validLeafTypes = [[NSSet alloc] initWithArray:@[
       [NSString class],
@@ -137,7 +139,7 @@ id RCTJSONClean(id object)
 
   if ([object isKindOfClass:[NSDictionary class]]) {
     __block BOOL copy = NO;
-    NSMutableDictionary *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
+    NSMutableDictionary<NSString *, id> *values = [[NSMutableDictionary alloc] initWithCapacity:[object count]];
     [object enumerateKeysAndObjectsUsingBlock:^(NSString *key, id item, __unused BOOL *stop) {
       id value = RCTJSONClean(item);
       values[key] = value;
@@ -183,18 +185,29 @@ NSString *RCTMD5Hash(NSString *string)
   ];
 }
 
+void RCTExecuteOnMainThread(dispatch_block_t block, BOOL sync)
+{
+  if ([NSThread isMainThread]) {
+    block();
+  } else if (sync) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      block();
+    });
+  } else {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      block();
+    });
+  }
+}
+
 CGFloat RCTScreenScale()
 {
   static CGFloat scale;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (![NSThread isMainThread]) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        scale = [UIScreen mainScreen].scale;
-      });
-    } else {
+    RCTExecuteOnMainThread(^{
       scale = [UIScreen mainScreen].scale;
-    }
+    }, YES);
   });
 
   return scale;
@@ -205,13 +218,9 @@ CGSize RCTScreenSize()
   static CGSize size;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (![NSThread isMainThread]) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        size = [UIScreen mainScreen].bounds.size;
-      });
-    } else {
+    RCTExecuteOnMainThread(^{
       size = [UIScreen mainScreen].bounds.size;
-    }
+    }, YES);
   });
 
   return size;
@@ -233,6 +242,14 @@ CGFloat RCTFloorPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();
   return floor(value * scale) / scale;
+}
+
+CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale)
+{
+  return (CGSize){
+    ceil(pointSize.width * scale),
+    ceil(pointSize.height * scale),
+  };
 }
 
 void RCTSwapClassMethods(Class cls, SEL original, SEL replacement)
@@ -288,41 +305,55 @@ BOOL RCTClassOverridesInstanceMethod(Class cls, SEL selector)
   return NO;
 }
 
-NSDictionary *RCTMakeError(NSString *message, id toStringify, NSDictionary *extraData)
+NSDictionary<NSString *, id> *RCTMakeError(NSString *message,
+                                           id __nullable toStringify,
+                                           NSDictionary<NSString *, id> *__nullable extraData)
 {
   if (toStringify) {
     message = [message stringByAppendingString:[toStringify description]];
   }
 
-  NSMutableDictionary *error = [NSMutableDictionary dictionaryWithDictionary:extraData];
+  NSMutableDictionary<NSString *, id> *error = [extraData mutableCopy] ?: [NSMutableDictionary new];
   error[@"message"] = message;
   return error;
 }
 
-NSDictionary *RCTMakeAndLogError(NSString *message, id toStringify, NSDictionary *extraData)
+NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
+                                                 id __nullable toStringify,
+                                                 NSDictionary<NSString *, id> *__nullable extraData)
 {
-  id error = RCTMakeError(message, toStringify, extraData);
+  NSDictionary<NSString *, id> *error = RCTMakeError(message, toStringify, extraData);
   RCTLogError(@"\nError: %@", error);
   return error;
 }
 
+NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
+{
+  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified,
+                                             error.localizedDescription,
+                                             error);
+}
+
 // TODO: Can we just replace RCTMakeError with this function instead?
-NSDictionary *RCTJSErrorFromNSError(NSError *error)
+NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code,
+                                                                  NSString *message,
+                                                                  NSError *__nullable error)
 {
   NSString *errorMessage;
-  NSArray *stackTrace = [NSThread callStackSymbols];
-  NSMutableDictionary *errorInfo =
+  NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
+  NSMutableDictionary<NSString *, id> *errorInfo =
   [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
     errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
-    errorInfo[@"code"] = @(error.code);
   } else {
     errorMessage = @"Unknown error from a native module";
     errorInfo[@"domain"] = RCTErrorDomain;
-    errorInfo[@"code"] = @-1;
   }
+  errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  // Allow for explicit overriding of the error message
+  errorMessage = message ?: errorMessage;
 
   return RCTMakeError(errorMessage, nil, errorInfo);
 }
@@ -337,33 +368,73 @@ BOOL RCTRunningInTestEnvironment(void)
   return isTestEnvironment;
 }
 
-BOOL RCTImageHasAlpha(CGImageRef image)
+BOOL RCTRunningInAppExtension(void)
 {
-  switch (CGImageGetAlphaInfo(image)) {
-    case kCGImageAlphaNone:
-    case kCGImageAlphaNoneSkipLast:
-    case kCGImageAlphaNoneSkipFirst:
-      return NO;
-    default:
-      return YES;
+  return [[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"];
+}
+
+UIApplication *__nullable RCTSharedApplication(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
   }
+  return [[UIApplication class] performSelector:@selector(sharedApplication)];
+}
+
+UIWindow *__nullable RCTKeyWindow(void)
+{
+  if (RCTRunningInAppExtension()) {
+    return nil;
+  }
+
+  // TODO: replace with a more robust solution
+  return RCTSharedApplication().keyWindow;
+}
+
+UIAlertView *__nullable RCTAlertView(NSString *title,
+                                     NSString *__nullable message,
+                                     id __nullable delegate,
+                                     NSString *__nullable cancelButtonTitle,
+                                     NSArray<NSString *> *__nullable otherButtonTitles)
+{
+  if (RCTRunningInAppExtension()) {
+    RCTLogError(@"RCTAlertView is unavailable when running in an app extension");
+    return nil;
+  }
+
+  UIAlertView *alertView = [UIAlertView new];
+  alertView.title = title;
+  alertView.message = message;
+  alertView.delegate = delegate;
+  if (cancelButtonTitle != nil) {
+    [alertView addButtonWithTitle:cancelButtonTitle];
+    alertView.cancelButtonIndex = 0;
+  }
+  for (NSString *buttonTitle in otherButtonTitles) {
+    [alertView addButtonWithTitle:buttonTitle];
+  }
+  return alertView;
 }
 
 NSError *RCTErrorWithMessage(NSString *message)
 {
-  NSDictionary *errorInfo = @{NSLocalizedDescriptionKey: message};
-  NSError *error = [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
-  return error;
+  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
+  return [[NSError alloc] initWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 }
 
-id RCTNullIfNil(id value)
+id RCTNullIfNil(id __nullable value)
 {
   return value ?: (id)kCFNull;
 }
 
-id RCTNilIfNull(id value)
+id __nullable RCTNilIfNull(id __nullable value)
 {
   return value == (id)kCFNull ? nil : value;
+}
+
+RCT_EXTERN double RCTZeroIfNaN(double value)
+{
+  return isnan(value) || isinf(value) ? 0 : value;
 }
 
 NSURL *RCTDataURL(NSString *mimeType, NSData *data)
@@ -373,14 +444,14 @@ NSURL *RCTDataURL(NSString *mimeType, NSData *data)
            [data base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]]];
 }
 
-BOOL RCTIsGzippedData(NSData *); // exposed for unit testing purposes
-BOOL RCTIsGzippedData(NSData *data)
+BOOL RCTIsGzippedData(NSData *__nullable); // exposed for unit testing purposes
+BOOL RCTIsGzippedData(NSData *__nullable data)
 {
   UInt8 *bytes = (UInt8 *)data.bytes;
   return (data.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
 }
 
-NSData *RCTGzipData(NSData *input, float level)
+NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
 {
   if (input.length == 0 || RCTIsGzippedData(input)) {
     return input;
@@ -421,4 +492,183 @@ NSData *RCTGzipData(NSData *input, float level)
   dlclose(libz);
 
   return output;
+}
+
+NSString *__nullable  RCTBundlePathForURL(NSURL *__nullable URL)
+{
+  if (!URL.fileURL) {
+    // Not a file path
+    return nil;
+  }
+  NSString *path = URL.path;
+  NSString *bundlePath = [[NSBundle mainBundle] resourcePath];
+  if (![path hasPrefix:bundlePath]) {
+    // Not a bundle-relative file
+    return nil;
+  }
+  path = [path substringFromIndex:bundlePath.length];
+  if ([path hasPrefix:@"/"]) {
+    path = [path substringFromIndex:1];
+  }
+  return path;
+}
+
+BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL)
+{
+  NSString *name = RCTBundlePathForURL(imageURL);
+  if (name.pathComponents.count != 1) {
+    // URL is invalid, or is a file path, not an XCAsset identifier
+    return NO;
+  }
+  NSString *extension = [name pathExtension];
+  if (extension.length && ![extension isEqualToString:@"png"]) {
+    // Not a png
+    return NO;
+  }
+  extension = extension.length ? nil : @"png";
+  if ([[NSBundle mainBundle] pathForResource:name ofType:extension]) {
+    // File actually exists in bundle, so is not an XCAsset
+    return NO;
+  }
+  return YES;
+}
+
+static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
+{
+  CGColorSpaceModel model = CGColorSpaceGetModel(CGColorGetColorSpace(color));
+  const CGFloat *components = CGColorGetComponents(color);
+  switch (model)
+  {
+    case kCGColorSpaceModelMonochrome:
+    {
+      rgba[0] = components[0];
+      rgba[1] = components[0];
+      rgba[2] = components[0];
+      rgba[3] = components[1];
+      break;
+    }
+    case kCGColorSpaceModelRGB:
+    {
+      rgba[0] = components[0];
+      rgba[1] = components[1];
+      rgba[2] = components[2];
+      rgba[3] = components[3];
+      break;
+    }
+    case kCGColorSpaceModelCMYK:
+    case kCGColorSpaceModelDeviceN:
+    case kCGColorSpaceModelIndexed:
+    case kCGColorSpaceModelLab:
+    case kCGColorSpaceModelPattern:
+    case kCGColorSpaceModelUnknown:
+    {
+
+#ifdef RCT_DEBUG
+      //unsupported format
+      RCTLogError(@"Unsupported color model: %i", model);
+#endif
+
+      rgba[0] = 0.0;
+      rgba[1] = 0.0;
+      rgba[2] = 0.0;
+      rgba[3] = 1.0;
+      break;
+    }
+  }
+}
+
+NSString *RCTColorToHexString(CGColorRef color)
+{
+  CGFloat rgba[4];
+  RCTGetRGBAColorComponents(color, rgba);
+  uint8_t r = rgba[0]*255;
+  uint8_t g = rgba[1]*255;
+  uint8_t b = rgba[2]*255;
+  uint8_t a = rgba[3]*255;
+  if (a < 255) {
+    return [NSString stringWithFormat:@"#%02x%02x%02x%02x", r, g, b, a];
+  } else {
+    return [NSString stringWithFormat:@"#%02x%02x%02x", r, g, b];
+  }
+}
+
+// (https://github.com/0xced/XCDFormInputAccessoryView/blob/master/XCDFormInputAccessoryView/XCDFormInputAccessoryView.m#L10-L14)
+NSString *RCTUIKitLocalizedString(NSString *string)
+{
+  NSBundle *UIKitBundle = [NSBundle bundleForClass:[UIApplication class]];
+  return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
+}
+
+NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param)
+{
+  RCTAssertParam(param);
+  if (!URL) {
+    return nil;
+  }
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL
+                                           resolvingAgainstBaseURL:YES];
+
+  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
+  for (NSString *item in [components.percentEncodedQuery componentsSeparatedByString:@"&"].reverseObjectEnumerator) {
+    NSArray *keyValue = [item componentsSeparatedByString:@"="];
+    NSString *key = [keyValue.firstObject stringByRemovingPercentEncoding];
+    if ([key isEqualToString:param]) {
+      return [keyValue.lastObject stringByRemovingPercentEncoding];
+    }
+  }
+  return nil;
+}
+
+NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *param, NSString *__nullable value)
+{
+  RCTAssertParam(param);
+  if (!URL) {
+    return nil;
+  }
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL
+                                           resolvingAgainstBaseURL:YES];
+
+  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
+
+  // Unhelpfully, iOS doesn't provide this set as a constant
+  static NSCharacterSet *URLParamCharacterSet;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSMutableCharacterSet *characterSet = [NSMutableCharacterSet new];
+    [characterSet formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    [characterSet removeCharactersInString:@"&=?"];
+    URLParamCharacterSet = [characterSet copy];
+  });
+
+  NSString *encodedParam =
+  [param stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
+  __block NSInteger paramIndex = NSNotFound;
+  NSMutableArray *queryItems = [[components.percentEncodedQuery componentsSeparatedByString:@"&"] mutableCopy];
+  [queryItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:
+   ^(NSString *item, NSUInteger i, BOOL *stop) {
+     NSArray *keyValue = [item componentsSeparatedByString:@"="];
+     if ([keyValue.firstObject isEqualToString:encodedParam]) {
+       paramIndex = i;
+       *stop = YES;
+     }
+   }];
+
+  if (!value) {
+    if (paramIndex != NSNotFound) {
+      [queryItems removeObjectAtIndex:paramIndex];
+    }
+  } else {
+    NSString *encodedValue =
+    [value stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
+    NSString *newItem = [encodedParam stringByAppendingFormat:@"=%@", encodedValue];
+    if (paramIndex == NSNotFound) {
+      [queryItems addObject:newItem];
+    } else {
+      [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
+    }
+  }
+  components.percentEncodedQuery = [queryItems componentsJoinedByString:@"&"];
+  return components.URL;
 }

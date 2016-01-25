@@ -11,19 +11,25 @@
 
 #import "RCTBridge.h"
 #import "RCTURLRequestHandler.h"
+#import "RCTResizeMode.h"
 
 @class ALAssetsLibrary;
 
 typedef void (^RCTImageLoaderProgressBlock)(int64_t progress, int64_t total);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* UIImage or CAAnimation */);
-typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, id image /* NSData, UIImage, CAAnimation */);
+typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef void (^RCTImageLoaderCancellationBlock)(void);
+
+@interface UIImage (React)
+
+@property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
+
+@end
 
 @interface RCTImageLoader : NSObject <RCTBridgeModule, RCTURLRequestHandler>
 
 /**
  * Loads the specified image at the highest available resolution.
- * Can be called from any thread, will always call callback on main thread.
+ * Can be called from any thread, will call back on an unspecified thread.
  */
 - (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                            callback:(RCTImageLoaderCompletionBlock)callback;
@@ -35,19 +41,37 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 - (RCTImageLoaderCancellationBlock)loadImageWithTag:(NSString *)imageTag
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
-                                         resizeMode:(UIViewContentMode)resizeMode
+                                         resizeMode:(RCTResizeMode)resizeMode
                                       progressBlock:(RCTImageLoaderProgressBlock)progressBlock
                                     completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
+ * Loads an image without clipping the result to fit - used by RCTImageView.
+ */
+- (RCTImageLoaderCancellationBlock)loadImageWithoutClipping:(NSString *)imageTag
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                              progressBlock:(RCTImageLoaderProgressBlock)progressBlock
+                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
+/**
  * Finds an appropriate image decoder and passes the target size, scale and
- * resizeMode for optimal image decoding.
+ * resizeMode for optimal image decoding. Can be called from any thread,
+ * will call callback on an unspecified thread.
  */
 - (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
-                                        resizeMode:(UIViewContentMode)resizeMode
+                                        resizeMode:(RCTResizeMode)resizeMode
                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
+/**
+ * Get image size, in pixels. This method will do the least work possible to get
+ * the information, and won't decode the image if it doesn't have to.
+ */
+- (RCTImageLoaderCancellationBlock)getImageSize:(NSString *)imageTag
+                                          block:(void(^)(NSError *error, CGSize size))completionBlock;
 
 @end
 
@@ -61,7 +85,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 @end
 
 /**
- * Provides the interface needed to register an image data loader. Image data
+ * Provides the interface needed to register an image loader. Image data
  * loaders are also bridge modules, so should be registered using
  * RCT_EXPORT_MODULE().
  */
@@ -80,18 +104,23 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * has finished. The method should also return a cancellation block, if
  * applicable.
  */
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(RCTResizeMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
 @optional
 
 /**
  * If more than one RCTImageURLLoader responds YES to `-canLoadImageURL:`
- * then `imageLoaderPriority` is used to determine which one to use. The handler
+ * then `loaderPriority` is used to determine which one to use. The loader
  * with the highest priority will be selected. Default priority is zero. If
- * two or more valid handlers have the same priority, the selection order is
+ * two or more valid loaders have the same priority, the selection order is
  * undefined.
  */
-- (float)imageLoaderPriority;
+- (float)loaderPriority;
 
 @end
 
@@ -99,7 +128,7 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * Provides the interface needed to register an image decoder. Image decoders
  * are also bridge modules, so should be registered using RCT_EXPORT_MODULE().
  */
-@protocol RCTImageDecoder <RCTBridgeModule>
+@protocol RCTImageDataDecoder <RCTBridgeModule>
 
 /**
  * Indicates whether this handler is capable of decoding the specified data.
@@ -113,17 +142,21 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
  * completionHandler when the decoding operation  has finished. The method
  * should also return a cancellation block, if applicable.
  */
-- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(RCTResizeMode)resizeMode
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
 
 @optional
 
 /**
- * If more than one RCTImageDecoder responds YES to `-canDecodeImageData:`
- * then `imageDecoderPriority` is used to determine which one to use. The
- * handler with the highest priority will be selected. Default priority is zero.
- * If two or more valid handlers have the same priority, the selection order is
+ * If more than one RCTImageDataDecoder responds YES to `-canDecodeImageData:`
+ * then `decoderPriority` is used to determine which one to use. The decoder
+ * with the highest priority will be selected. Default priority is zero.
+ * If two or more valid decoders have the same priority, the selection order is
  * undefined.
  */
-- (float)imageDecoderPriority;
+- (float)decoderPriority;
 
 @end

@@ -47,12 +47,12 @@
   return _canLoadImageURLHandler(requestURL);
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   return _loadImageURLHandler(imageURL, size, scale, resizeMode, progressHandler, completionHandler);
 }
 
-- (float)imageLoaderPriority
+- (float)loaderPriority
 {
   return _priority;
 }
@@ -61,8 +61,8 @@
 
 @implementation RCTConcreteImageDecoder
 {
-  RCTImageDecoderCanDecodeImageDataHandler _canDecodeImageDataHandler;
-  RCTImageDecoderDecodeImageDataHandler _decodeImageDataHandler;
+  RCTImageDataDecoderCanDecodeImageDataHandler _canDecodeImageDataHandler;
+  RCTImageDataDecoderDecodeImageDataHandler _decodeImageDataHandler;
   float _priority;
 }
 
@@ -76,7 +76,7 @@
   return nil;
 }
 
-- (instancetype)initWithPriority:(float)priority canDecodeImageDataHandler:(RCTImageDecoderCanDecodeImageDataHandler)canDecodeImageDataHandler decodeImageDataHandler:(RCTImageDecoderDecodeImageDataHandler)decodeImageDataHandler
+- (instancetype)initWithPriority:(float)priority canDecodeImageDataHandler:(RCTImageDataDecoderCanDecodeImageDataHandler)canDecodeImageDataHandler decodeImageDataHandler:(RCTImageDataDecoderDecodeImageDataHandler)decodeImageDataHandler
 {
   if ((self = [super init])) {
     _canDecodeImageDataHandler = [canDecodeImageDataHandler copy];
@@ -92,12 +92,12 @@
   return _canDecodeImageDataHandler(imageData);
 }
 
-- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)decodeImageData:(NSData *)imageData size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   return _decodeImageDataHandler(imageData, size, scale, resizeMode, completionHandler);
 }
 
-- (float)imageDecoderPriority
+- (float)decoderPriority
 {
   return _priority;
 }

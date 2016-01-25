@@ -25,7 +25,7 @@
   return self;
 }
 
-- (void)setValues:(NSArray *)values
+- (void)setValues:(NSArray<NSString *> *)values
 {
   _values = [values copy];
   [self removeAllSegments];
@@ -43,6 +43,7 @@
 
 - (void)didChange
 {
+  _selectedIndex = self.selectedSegmentIndex;
   if (_onChange) {
     _onChange(@{
       @"value": [self titleForSegmentAtIndex:_selectedIndex],

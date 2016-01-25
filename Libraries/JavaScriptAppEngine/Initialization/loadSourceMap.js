@@ -39,7 +39,7 @@ function fetchSourceMap(): Promise {
     return Promise.reject(new Error('RCTNetworking module is not available'));
   }
 
-  return new Promise(RCTSourceCode.getScriptText)
+  return RCTSourceCode.getScriptText()
     .then(extractSourceMapURL)
     .then((url) => {
       if (url === null) {
@@ -48,7 +48,7 @@ function fetchSourceMap(): Promise {
       return Promise.resolve(url);
     })
     .then(fetch)
-    .then(response => response.text())
+    .then(response => response.text());
 }
 
 function extractSourceMapURL({url, text, fullSourceMappingURL}): ?string {

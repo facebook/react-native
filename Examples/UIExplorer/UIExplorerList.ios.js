@@ -19,10 +19,9 @@ var React = require('react-native');
 var {
   AppRegistry,
   Settings,
+  SnapshotViewIOS,
   StyleSheet,
 } = React;
-
-var { TestModule } = React.addons;
 
 import type { NavigationContext } from 'NavigationContext';
 
@@ -43,14 +42,16 @@ var COMPONENTS = [
   require('./NavigatorIOSExample'),
   require('./PickerIOSExample'),
   require('./ProgressViewIOSExample'),
+  require('./RefreshControlExample'),
   require('./ScrollViewExample'),
   require('./SegmentedControlIOSExample'),
   require('./SliderIOSExample'),
-  require('./SwitchIOSExample'),
+  require('./SwitchExample'),
   require('./TabBarIOSExample'),
   require('./TextExample.ios'),
   require('./TextInputExample.ios'),
   require('./TouchableExample'),
+  require('./TransparentHitTestExample'),
   require('./ViewExample'),
   require('./WebViewExample'),
 ];
@@ -60,44 +61,29 @@ var APIS = [
   require('./ActionSheetIOSExample'),
   require('./AdSupportIOSExample'),
   require('./AlertIOSExample'),
-  require('./AnimationExample/AnExApp'),
+  require('./AnimatedExample'),
+  require('./AnimatedGratuitousApp/AnExApp'),
   require('./AppStateIOSExample'),
+  require('./AppStateExample'),
   require('./AsyncStorageExample'),
   require('./BorderExample'),
-  require('./CameraRollExample.ios'),
+  require('./BoxShadowExample'),
+  require('./CameraRollExample'),
+  require('./ClipboardExample'),
   require('./GeolocationExample'),
   require('./LayoutExample'),
   require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./PushNotificationIOSExample'),
+  require('./RCTRootViewIOSExample'),
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
+  require('./TransformExample'),
   require('./VibrationIOSExample'),
   require('./XHRExample.ios'),
   require('./ImageEditingExample'),
 ];
-
-// Register suitable examples for snapshot tests
-COMPONENTS.concat(APIS).forEach((Example) => {
-  if (Example.displayName) {
-    var Snapshotter = React.createClass({
-      componentDidMount: function() {
-        // View is still blank after first RAF :\
-        global.requestAnimationFrame(() =>
-          global.requestAnimationFrame(() => TestModule.verifySnapshot(
-            TestModule.markTestPassed
-          )
-        ));
-      },
-      render: function() {
-        var Renderable = UIExplorerListBase.makeRenderable(Example);
-        return <Renderable />;
-      },
-    });
-    AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
-  }
-});
 
 type Props = {
   navigator: {
@@ -146,6 +132,25 @@ class UIExplorerList extends React.Component {
 
   onPressRow(example: any) {
     this._openExample(example);
+  }
+
+  // Register suitable examples for snapshot tests
+  static registerComponents() {
+    COMPONENTS.concat(APIS).forEach((Example) => {
+      if (Example.displayName) {
+        var Snapshotter = React.createClass({
+          render: function() {
+            var Renderable = UIExplorerListBase.makeRenderable(Example);
+            return (
+              <SnapshotViewIOS>
+                <Renderable />
+              </SnapshotViewIOS>
+            );
+          },
+        });
+        AppRegistry.registerComponent(Example.displayName, () => Snapshotter);
+      }
+    });
   }
 }
 

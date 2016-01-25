@@ -7,14 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebSocketBase
- *
  */
 'use strict';
+
+var EventTarget = require('event-target-shim');
 
 /**
  * Shared base for platform-specific WebSocket implementations.
  */
-class WebSocketBase {
+class WebSocketBase extends EventTarget {
   CONNECTING: number;
   OPEN: number;
   CLOSING: number;
@@ -32,34 +33,41 @@ class WebSocketBase {
   readyState: number;
   url: ?string;
 
-  constructor(url: string, protocols: ?any) {
+  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
+    super();
     this.CONNECTING = 0;
     this.OPEN = 1;
     this.CLOSING = 2;
     this.CLOSED = 3;
 
-    if (!protocols) {
-      protocols = [];
+    if (typeof protocols === 'string') {
+      protocols = [protocols];
     }
 
-    this.connectToSocketImpl(url);
+    if (!Array.isArray(protocols)) {
+      protocols = null;
+    }
+
+    this.readyState = this.CONNECTING;
+    this.connectToSocketImpl(url, protocols, options);
   }
 
   close(): void {
-    if (this.readyState === WebSocketBase.CLOSING ||
-        this.readyState === WebSocketBase.CLOSED) {
+    if (this.readyState === this.CLOSING ||
+        this.readyState === this.CLOSED) {
       return;
     }
 
-    if (this.readyState === WebSocketBase.CONNECTING) {
+    if (this.readyState === this.CONNECTING) {
       this.cancelConnectionImpl();
     }
 
+    this.readyState = this.CLOSING;
     this.closeConnectionImpl();
   }
 
   send(data: any): void {
-    if (this.readyState === WebSocketBase.CONNECTING) {
+    if (this.readyState === this.CONNECTING) {
       throw new Error('INVALID_STATE_ERR');
     }
 
@@ -91,7 +99,11 @@ class WebSocketBase {
   sendArrayBufferImpl(): void {
     throw new Error('Subclass must define sendArrayBufferImpl method');
   }
-
 }
+
+WebSocketBase.CONNECTING = 0;
+WebSocketBase.OPEN = 1;
+WebSocketBase.CLOSING = 2;
+WebSocketBase.CLOSED = 3;
 
 module.exports = WebSocketBase;

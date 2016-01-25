@@ -12,17 +12,13 @@
 'use strict';
 
 var NativeMethodsMixin = require('NativeMethodsMixin');
+var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
 var ReactMultiChild = require('ReactMultiChild');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
-var styleDiffer = require('styleDiffer');
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
-var diffRawProperties = require('diffRawProperties');
-var flattenStyle = require('flattenStyle');
-var precomputeStyle = require('precomputeStyle');
 var warning = require('warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
@@ -35,6 +31,8 @@ type ReactNativeBaseComponentViewConfig = {
   uiViewClassName: string;
 }
 
+// require('UIManagerStatTracker').install(); // uncomment to enable
+
 /**
  * @constructor ReactNativeBaseComponent
  * @extends ReactComponent
@@ -46,31 +44,6 @@ var ReactNativeBaseComponent = function(
 ) {
   this.viewConfig = viewConfig;
 };
-
-/**
- * Generates and caches arrays of the form:
- *
- *    [0, 1, 2, 3]
- *    [0, 1, 2, 3, 4]
- *    [0, 1]
- *
- * @param {number} size Size of array to generate.
- * @return {Array<number>} Array with values that mirror the index.
- */
-var cachedIndexArray = function(size) {
-  var cachedResult = cachedIndexArray._cache[size];
-  if (!cachedResult) {
-    var arr = [];
-    for (var i = 0; i < size; i++) {
-      arr[i] = i;
-    }
-    cachedIndexArray._cache[size] = arr;
-    return arr;
-  } else {
-    return cachedResult;
-  }
-};
-cachedIndexArray._cache = {};
 
 /**
  * Mixin for containers that contain UIViews. NOTE: markup is rendered markup
@@ -106,11 +79,11 @@ ReactNativeBaseComponent.Mixin = {
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
     if (mountImages.length) {
-      var indexes = cachedIndexArray(mountImages.length);
+      
       // TODO: Pool these per platform view class. Reusing the `mountImages`
       // array would likely be a jit deopt.
       var createdTags = [];
-      for (var i = 0; i < mountImages.length; i++) {
+      for (var i = 0, l = mountImages.length; i < l; i++) {
         var mountImage = mountImages[i];
         var childTag = mountImage.tag;
         var childID = mountImage.rootNodeID;
@@ -124,57 +97,9 @@ ReactNativeBaseComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      RCTUIManager
-        .manageChildren(containerTag, null, null, createdTags, indexes, null);
+      UIManager.setChildren(containerTag, createdTags);
     }
   },
-
-
-  /**
-   * Beware, this function has side effect to store this.previousFlattenedStyle!
-   *
-   * @param {!object} prevProps Previous properties
-   * @param {!object} nextProps Next properties
-   * @param {!object} validAttributes Set of valid attributes and how they
-   *                  should be diffed
-   */
-  computeUpdatedProperties: function(prevProps, nextProps, validAttributes) {
-    if (__DEV__) {
-      for (var key in nextProps) {
-        if (nextProps.hasOwnProperty(key) &&
-            nextProps[key] &&
-            validAttributes[key]) {
-          deepFreezeAndThrowOnMutationInDev(nextProps[key]);
-        }
-      }
-    }
-
-    var updatePayload = diffRawProperties(
-      null, // updatePayload
-      prevProps,
-      nextProps,
-      validAttributes
-    );
-
-    // The style property is a deeply nested element which includes numbers
-    // to represent static objects. Most of the time, it doesn't change across
-    // renders, so it's faster to spend the time checking if it is different
-    // before actually doing the expensive flattening operation in order to
-    // compute the diff.
-    if (styleDiffer(nextProps.style, prevProps.style)) {
-      var nextFlattenedStyle = precomputeStyle(flattenStyle(nextProps.style));
-      updatePayload = diffRawProperties(
-        updatePayload,
-        this.previousFlattenedStyle,
-        nextFlattenedStyle,
-        ReactNativeStyleAttributes
-      );
-      this.previousFlattenedStyle = nextFlattenedStyle;
-    }
-
-    return updatePayload;
-  },
-
 
   /**
    * Updates the component's currently mounted representation.
@@ -188,14 +113,18 @@ ReactNativeBaseComponent.Mixin = {
     var prevElement = this._currentElement;
     this._currentElement = nextElement;
 
-    var updatePayload = this.computeUpdatedProperties(
+    if (__DEV__) {
+      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+    }
+
+    var updatePayload = ReactNativeAttributePayload.diff(
       prevElement.props,
       nextElement.props,
       this.viewConfig.validAttributes
     );
 
     if (updatePayload) {
-      RCTUIManager.updateView(
+      UIManager.updateView(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
         this.viewConfig.uiViewClassName,
         updatePayload
@@ -250,15 +179,17 @@ ReactNativeBaseComponent.Mixin = {
 
     var tag = ReactNativeTagHandles.allocateTag();
 
-    this.previousFlattenedStyle = {};
-    var updatePayload = this.computeUpdatedProperties(
-      {}, // previous props
-      this._currentElement.props, // next props
+    if (__DEV__) {
+      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+    }
+
+    var updatePayload = ReactNativeAttributePayload.create(
+      this._currentElement.props,
       this.viewConfig.validAttributes
     );
 
     var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
-    RCTUIManager.createView(
+    UIManager.createView(
       tag,
       this.viewConfig.uiViewClassName,
       nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,

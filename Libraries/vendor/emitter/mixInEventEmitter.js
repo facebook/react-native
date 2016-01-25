@@ -49,11 +49,12 @@ var TYPES_KEY = keyOf({__types: true});
  */
 function mixInEventEmitter(klass, types) {
   invariant(types, 'Must supply set of valid event types');
-  invariant(!this.__eventEmitter, 'An active emitter is already mixed in');
 
   // If this is a constructor, write to the prototype, otherwise write to the
   // singleton object.
   var target = klass.prototype || klass;
+
+  invariant(!target.__eventEmitter, 'An active emitter is already mixed in');
 
   var ctor = klass.constructor;
   if (ctor) {

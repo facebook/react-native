@@ -8,26 +8,19 @@
  */
 'use strict';
 
-jest.dontMock('../index');
-jest.mock('fs');
+jest.dontMock('../index')
+    .mock('fs');
 
-const Promise = require('promise');
+var Promise = require('promise');
+var BundlesLayout = require('../index');
+var Resolver = require('../../Resolver');
+var loadCacheSync = require('../../DependencyResolver/Cache/lib/loadCacheSync');
 
 describe('BundlesLayout', () => {
-  let BundlesLayout;
-  let DependencyResolver;
-  let loadCacheSync;
-
-  beforeEach(() => {
-    BundlesLayout = require('../index');
-    DependencyResolver = require('../../DependencyResolver');
-    loadCacheSync = require('../../lib/loadCacheSync');
-  });
-
   function newBundlesLayout(options) {
     return new BundlesLayout(Object.assign({
       projectRoots: ['/root'],
-      dependencyResolver: new DependencyResolver(),
+      dependencyResolver: new Resolver(),
     }, options));
   }
 
@@ -45,7 +38,7 @@ describe('BundlesLayout', () => {
       }
 
       pit('should bundle sync dependencies', () => {
-        DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        Resolver.prototype.getDependencies.mockImpl((path) => {
           switch (path) {
             case '/root/index.js':
               return Promise.resolve({
@@ -74,7 +67,7 @@ describe('BundlesLayout', () => {
       });
 
       pit('should separate async dependencies into different bundle', () => {
-        DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        Resolver.prototype.getDependencies.mockImpl((path) => {
           switch (path) {
             case '/root/index.js':
               return Promise.resolve({
@@ -107,7 +100,7 @@ describe('BundlesLayout', () => {
       });
 
       pit('separate async dependencies of async dependencies', () => {
-        DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        Resolver.prototype.getDependencies.mockImpl((path) => {
           switch (path) {
             case '/root/index.js':
               return Promise.resolve({
@@ -149,7 +142,7 @@ describe('BundlesLayout', () => {
       });
 
       pit('separate bundle sync dependencies of async ones on same bundle', () => {
-        DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        Resolver.prototype.getDependencies.mockImpl((path) => {
           switch (path) {
             case '/root/index.js':
               return Promise.resolve({
@@ -187,7 +180,7 @@ describe('BundlesLayout', () => {
       });
 
       pit('separate cache in which bundle is each dependency', () => {
-        DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        Resolver.prototype.getDependencies.mockImpl((path) => {
           switch (path) {
             case '/root/index.js':
               return Promise.resolve({
@@ -225,7 +218,7 @@ describe('BundlesLayout', () => {
       });
 
       pit('separate cache in which bundle is each dependency', () => {
-        DependencyResolver.prototype.getDependencies.mockImpl((path) => {
+        Resolver.prototype.getDependencies.mockImpl((path) => {
           switch (path) {
             case '/root/index.js':
               return Promise.resolve({

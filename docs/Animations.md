@@ -167,10 +167,12 @@ Input | Output
 `interpolation` also supports arbitrary easing functions, many of which are
 already implemented in the
 [`Easing`](https://github.com/facebook/react-native/blob/master/Libraries/Animation/Animated/Easing.js)
-class including quadradic, exponential, and bezier curves as well as functions
-like step and bounce.  `interpolation` also has configurable behavior for
-extrapolation, the default being `'extend'`, but `'clamp'` is also very useful
-to prevent the output value from exceeding `outputRange`.
+class including quadratic, exponential, and bezier curves as well as functions
+like step and bounce. `interpolation` also has configurable behavior for
+extrapolating the `outputRange`. You can set the extrapolation by setting the `extrapolate`,
+`extrapolateLeft` or `extrapolateRight` options. The default value is
+`extend` but you can use `clamp` to prevent the output value from exceeding
+`outputRange`.
 
 #### Tracking Dynamic Values
 
@@ -210,11 +212,14 @@ respectively (`gestureState` is the second arg passed to the `PanResponder` hand
 
 ```javascript
 onScroll={Animated.event(
-  [{nativeEvent: {contentOffset: {x: scrollX}}}]   // scrollX = e.nativeEvent.contentOffset.x
+  // scrollX = e.nativeEvent.contentOffset.x
+  [{nativeEvent: {contentOffset: {x: scrollX}}}]
 )}
 onPanResponderMove={Animated.event([
   null,                                          // ignore the native event
-  {dx: pan.x, dy: pan.y}                         // extract dx and dy from gestureState
+  // extract dx and dy from gestureState
+  // like 'pan.x = gestureState.dx, pan.y = gestureState.dy'
+  {dx: pan.x, dy: pan.y}
 ]);
 ```
 
@@ -242,7 +247,7 @@ vertical panning.
 
 The above API gives a powerful tool for expressing all sorts of animations in a
 concise, robust, and performant way.  Check out more example code in
-[UIExplorer/AnimationExample](https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/AnimationExample).  Of course there may still be times where `Animated`
+[UIExplorer/AnimationExample](https://github.com/facebook/react-native/tree/master/Examples/UIExplorer/AnimatedGratuitousApp).  Of course there may still be times where `Animated`
 doesn't support what you need, and the following sections cover other animation
 systems.
 
@@ -307,7 +312,7 @@ for more information.
 familiar with. It accepts a function as its only argument and calls that
 function before the next repaint. It is an essential building block for
 animations that underlies all of the JavaScript-based animation APIs.  In
-general, you shouldn't need to call this yourself - the animation API's will
+general, you shouldn't need to call this yourself - the animation APIs will
 manage frame updates for you.
 
 ### react-tween-state (Not recommended - use [Animated](#animated) instead)
@@ -458,7 +463,7 @@ use this.
 
 ![](/react-native/img/Rebound.gif) Screenshot from
 [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view).
-You can run a simlar example [here](https://rnplay.org/apps/qHU_5w).
+You can run a similar example [here](https://rnplay.org/apps/qHU_5w).
 
 #### A sidenote about setNativeProps
 
@@ -473,16 +478,13 @@ might be helpful if the component that we are updating is deeply nested
 and hasn't been optimized with `shouldComponentUpdate`.
 
 ```javascript
-// Outside of our React component
-var precomputeStyle = require('precomputeStyle');
-
 // Back inside of the App component, replace the scrollSpring listener
 // in componentWillMount with this:
 this._scrollSpring.addListener({
   onSpringUpdate: () => {
     if (!this._photo) { return }
     var v = this._scrollSpring.getCurrentValue();
-    var newProps = precomputeStyle({transform: [{scaleX: v}, {scaleY: v}]});
+    var newProps = {style: {transform: [{scaleX: v}, {scaleY: v}]}};
     this._photo.setNativeProps(newProps);
   },
 });
@@ -530,7 +532,9 @@ make them customizable, React Native exposes a
 [NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
 
 ```javascript
-var SCREEN_WIDTH = require('Dimensions').get('window').width;
+var React = require('react-native');
+var { Dimensions } = React;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 
 var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
@@ -542,7 +546,7 @@ var CustomLeftToRightGesture = Object.assign({}, BaseConfig.gestures.pop, {
 });
 
 var CustomSceneConfig = Object.assign({}, BaseConfig, {
-  // A very tighly wound spring will make this transition fast
+  // A very tightly wound spring will make this transition fast
   springTension: 100,
   springFriction: 1,
 
