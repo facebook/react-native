@@ -29,6 +29,11 @@ var RCTWebViewManager = require('NativeModules').WebViewManager;
 var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
 
+var DECELERATION_RATE_FAST = 0.9
+var DECELERATION_RATE_FAST_STR = 'fast'
+var DECELERATION_RATE_NORMAL = 0.998
+var DECELERATION_RATE_NORMAL_STR = 'normal'
+
 var WebViewState = keyMirror({
   IDLE: null,
   LOADING: null,
@@ -118,14 +123,19 @@ var WebView = React.createClass({
      */
     bounces: PropTypes.bool,
     /**
-     * Used on iOS only. Setting this to true enables "momentum" scrolling
-     * (default iOS scroll behavior) on the WebView.
-     * default value `false`
-     * **NOTE** By default WebView sets a faster deceleration rate.
-     * Enabling this may cause rendering performance to suffer.
+     * A floating-point number that determines how quickly the scroll view
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `'normal'` and `'fast'` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
+     *   - Normal: 0.998
+     *   - Fast: 0.9 (the default for iOS WebView)
      * @platform ios
      */
-    decelerationNormalEnabled: PropTypes.bool,
+     decelerationRate: PropTypes.oneOfType([
+       PropTypes.oneOf([DECELERATION_RATE_NORMAL_STR, DECELERATION_RATE_FAST_STR]),
+       PropTypes.number,
+     ]),
     /**
      * @platform ios
      */
@@ -237,6 +247,13 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
+    var { decelerationRate } = this.props;
+    if (decelerationRate === DECELERATION_RATE_FAST_STR) {
+      decelerationRate = DECELERATION_RATE_FAST
+    } else if (decelerationRate === DECELERATION_RATE_NORMAL_STR) {
+      decelerationRate = DECELERATION_RATE_NORMAL
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -247,7 +264,7 @@ var WebView = React.createClass({
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
-        decelerationNormalEnabled={this.props.decelerationNormalEnabled}
+        decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
