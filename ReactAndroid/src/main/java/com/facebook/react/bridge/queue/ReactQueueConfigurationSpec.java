@@ -14,17 +14,17 @@ import javax.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 
 /**
- * Spec for creating a CatalystQueueConfiguration. This exists so that CatalystInstance is able to
+ * Spec for creating a ReactQueueConfiguration. This exists so that CatalystInstance is able to
  * set Exception handlers on the MessageQueueThreads it uses and it would not be super clean if the
  * threads were configured, then passed to CatalystInstance where they are configured more. These
  * specs allows the Threads to be created fully configured.
  */
-public class CatalystQueueConfigurationSpec {
+public class ReactQueueConfigurationSpec {
 
   private final MessageQueueThreadSpec mNativeModulesQueueThreadSpec;
   private final MessageQueueThreadSpec mJSQueueThreadSpec;
 
-  private CatalystQueueConfigurationSpec(
+  private ReactQueueConfigurationSpec(
       MessageQueueThreadSpec nativeModulesQueueThreadSpec,
       MessageQueueThreadSpec jsQueueThreadSpec) {
     mNativeModulesQueueThreadSpec = nativeModulesQueueThreadSpec;
@@ -43,7 +43,7 @@ public class CatalystQueueConfigurationSpec {
     return new Builder();
   }
 
-  public static CatalystQueueConfigurationSpec createDefault() {
+  public static ReactQueueConfigurationSpec createDefault() {
     return builder()
         .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("js"))
         .setNativeModulesQueueThreadSpec(
@@ -70,8 +70,8 @@ public class CatalystQueueConfigurationSpec {
       return this;
     }
 
-    public CatalystQueueConfigurationSpec build() {
-      return new CatalystQueueConfigurationSpec(
+    public ReactQueueConfigurationSpec build() {
+      return new ReactQueueConfigurationSpec(
           Assertions.assertNotNull(mNativeModulesQueueSpec),
           Assertions.assertNotNull(mJSQueueSpec));
     }

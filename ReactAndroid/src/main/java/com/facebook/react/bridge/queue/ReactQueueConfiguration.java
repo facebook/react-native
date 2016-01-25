@@ -18,7 +18,7 @@ package com.facebook.react.bridge.queue;
  * Native Modules Queue Thread: The thread and Looper that native modules are invoked on.
  * JS Queue Thread: The thread and Looper that JS is executed on.
  */
-public interface CatalystQueueConfiguration {
+public interface ReactQueueConfiguration {
   MessageQueueThread getUIQueueThread();
   MessageQueueThread getNativeModulesQueueThread();
   MessageQueueThread getJSQueueThread();

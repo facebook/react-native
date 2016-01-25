@@ -18,7 +18,7 @@ import com.facebook.react.bridge.JSCJavaScriptExecutor;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.JavaScriptModulesConfig;
-import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
+import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 
 import com.android.internal.util.Predicate;
 
@@ -38,7 +38,7 @@ public class ReactTestHelper {
 
     public CatalystInstanceImpl build() {
       CatalystInstanceImpl instance = mTestCase.new ReactTestInstanceBuilder()
-          .setCatalystQueueConfigurationSpec(CatalystQueueConfigurationSpec.createDefault())
+          .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
           .setJSExecutor(new JSCJavaScriptExecutor())
           .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModulesConfig(mJSModulesConfigBuilder.build())

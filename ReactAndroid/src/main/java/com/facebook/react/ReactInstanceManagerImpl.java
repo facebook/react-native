@@ -46,7 +46,7 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.queue.CatalystQueueConfigurationSpec;
+import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -711,7 +711,7 @@ import com.facebook.systrace.Systrace;
         ? mNativeModuleCallExceptionHandler
         : mDevSupportManager;
     CatalystInstanceImpl.Builder catalystInstanceBuilder = new CatalystInstanceImpl.Builder()
-        .setCatalystQueueConfigurationSpec(CatalystQueueConfigurationSpec.createDefault())
+        .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
         .setJSExecutor(jsExecutor)
         .setRegistry(nativeModuleRegistry)
         .setJSModulesConfig(javaScriptModulesConfig)

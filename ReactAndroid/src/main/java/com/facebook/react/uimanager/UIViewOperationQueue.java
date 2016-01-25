@@ -78,9 +78,9 @@ public class UIViewOperationQueue {
 
   private final class UpdatePropertiesOperation extends ViewOperation {
 
-    private final CatalystStylesDiffMap mProps;
+    private final ReactStylesDiffMap mProps;
 
-    private UpdatePropertiesOperation(int tag, CatalystStylesDiffMap props) {
+    private UpdatePropertiesOperation(int tag, ReactStylesDiffMap props) {
       super(tag);
       mProps = props;
     }
@@ -127,13 +127,13 @@ public class UIViewOperationQueue {
 
     private final ThemedReactContext mThemedContext;
     private final String mClassName;
-    private final @Nullable CatalystStylesDiffMap mInitialProps;
+    private final @Nullable ReactStylesDiffMap mInitialProps;
 
     public CreateViewOperation(
         ThemedReactContext themedContext,
         int tag,
         String className,
-        @Nullable CatalystStylesDiffMap initialProps) {
+        @Nullable ReactStylesDiffMap initialProps) {
       super(tag);
       mThemedContext = themedContext;
       mClassName = className;
@@ -567,7 +567,7 @@ public class UIViewOperationQueue {
       ThemedReactContext themedContext,
       int viewReactTag,
       String viewClassName,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      @Nullable ReactStylesDiffMap initialProps) {
     mOperations.add(
         new CreateViewOperation(
             themedContext,
@@ -576,7 +576,7 @@ public class UIViewOperationQueue {
             initialProps));
   }
 
-  public void enqueueUpdateProperties(int reactTag, String className, CatalystStylesDiffMap props) {
+  public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
 
