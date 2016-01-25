@@ -112,10 +112,12 @@
     <Compile Include="Internal\Constants\DictionaryHelpers.cs" />
     <Compile Include="Internal\JavaScriptHelpers.cs" />
     <Compile Include="Internal\DispatcherHelpers.cs" />
+    <Compile Include="Internal\MockCallback.cs" />
     <Compile Include="Internal\MockCatalystInstance.cs" />
     <Compile Include="Internal\MockInvocationHandler.cs" />
     <Compile Include="Internal\MockJavaScriptExecutor.cs" />
     <Compile Include="Internal\MockEvent.cs" />
+    <Compile Include="Modules\AppState\AppStateModuleTests.cs" />
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitterTests.cs" />
     <Compile Include="Modules\Toast\ToastNotificationTests.cs" />
