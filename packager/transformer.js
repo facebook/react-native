@@ -18,23 +18,50 @@ const json5 = require('json5');
 const path = require('path');
 const ReactPackager = require('./react-packager');
 
-const projectBabelRCPath = path.resolve(__dirname, '..', '..', '..', '.babelrc');
+/**
+ * Return a memoized function that checks for the existence of a
+ * project level .babelrc file, and if it doesn't exist, reads the
+ * default RN babelrc file and uses that.
+ */
+const getBabelRC = (function() {
+  let babelRC = null;
 
-let babelRC = { plugins: [] };
+  return function _getBabelRC(projectRoots) {
+    if (babelRC !== null) {
+      return babelRC;
+    }
 
-// If a babelrc exists in the project,
-// don't use the one provided with react-native.
-if (!fs.existsSync(projectBabelRCPath)) {
-  babelRC = json5.parse(
-    fs.readFileSync(
-      path.resolve(__dirname, 'react-packager', 'rn-babelrc.json')));
-}
+    babelRC = { plugins: [] }; // empty babelrc for merging
+
+    // Let's look for the .babelrc in the first project root.
+    // In the future let's look into adding a command line option to specify
+    // this location.
+    //
+    // NOTE: we're not reading the project's .babelrc here. We leave it up to
+    // Babel to do that automatically and apply the transforms accordingly
+    // (which works because we pass in `filename` and `sourceFilename` to
+    // Babel when we transform).
+    const projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+
+    // If a .babelrc file doesn't exist in the project,
+    // use the Babel config provided with react-native.
+    if (!fs.existsSync(projectBabelRCPath)) {
+      babelRC = json5.parse(
+        fs.readFileSync(
+          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json')));
+    }
+
+    return babelRC;
+  }
+})();
 
 /**
  * Given a filename and options, build a Babel
  * config object with the appropriate plugins.
  */
 function buildBabelConfig(filename, options) {
+  const babelRC = getBabelRC(options.projectRoots);
+
   const extraConfig = {
     filename,
     sourceFileName: filename,
