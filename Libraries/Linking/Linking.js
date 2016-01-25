@@ -14,9 +14,10 @@
 const Platform = require('Platform');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const {
-  IntentAndroid: IntentAndroidModule,
-  LinkingManager: RCTLinkingManager
+  IntentAndroid,
+  LinkingManager: LinkingManagerIOS
 } = require('NativeModules');
+const LinkingManager = Platform.OS === 'android' ? IntentAndroid : LinkingManagerIOS;
 const invariant = require('invariant');
 const Map = require('Map');
 
@@ -55,7 +56,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
  * {
- *   return [RCTLinkingManager application:application openURL:url
+ *   return [LinkingManager application:application openURL:url
  *                       sourceApplication:sourceApplication annotation:annotation];
  * }
  *
@@ -63,7 +64,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
  * {
- *  return [RCTLinkingManager application:application
+ *  return [LinkingManager application:application
  *                   continueUserActivity:userActivity
  *                     restorationHandler:restorationHandler];
  * }
@@ -163,12 +164,7 @@ class Linking {
    */
   static openURL(url: string) {
     this._validateURL(url);
-
-    if (Platform.OS === 'android') {
-      return IntentAndroidModule.openURL(url);
-    } else {
-      return Promise.resolve(RCTLinkingManager.openURL(url));
-    }
+    return LinkingManager.openURL(url);
   }
 
   /**
@@ -183,12 +179,7 @@ class Linking {
    */
   static canOpenURL(url: string) {
     this._validateURL(url);
-
-    if (Platform.OS === 'android') {
-      return IntentAndroidModule.canOpenURL(url);
-    } else {
-      return new Promise(resolve => RCTLinkingManager.canOpenURL(url, resolve));
-    }
+    return LinkingManager.canOpenURL(url);
   }
 
   /**
@@ -199,9 +190,9 @@ class Linking {
    */
   static getInitialURL() {
     if (Platform.OS === 'android') {
-      return IntentAndroidModule.getInitialURL();
+      return IntentAndroid.getInitialURL();
     } else {
-      return Promise.resolve(RCTLinkingManager.initialURL);
+      return Promise.resolve(LinkingManagerIOS.initialURL);
     }
   }
 

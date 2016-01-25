@@ -87,7 +87,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
         getReactApplicationContext().startActivity(intent);
       }
 
-      promise.resolve(null);
+      promise.resolve(true);
     } catch (Exception e) {
       promise.reject(new JSApplicationIllegalArgumentException(
           "Could not open URL '" + url + "': " + e.getMessage()));
