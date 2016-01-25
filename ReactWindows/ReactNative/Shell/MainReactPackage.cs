@@ -1,5 +1,7 @@
 ﻿using ReactNative.Bridge;
+using ReactNative.Modules.AppState;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.Toast;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
 using ReactNative.Views.Scroll;
@@ -21,6 +23,15 @@ namespace ReactNative.Shell
         {
             return new List<INativeModule>
             {
+                new AppStateModule(reactContext),
+                //new AsyncStorageModule(reactContext),
+                //new CameraRollManager(reactContext),
+                //new ClipboardModule(reactContext),
+                //new DialogModule(reactContext),
+                //new LocationModule(reactContext),
+                //new NetworkingModule(reactContext),
+                //new NetInfoModule(reactContext),
+                new ToastModule(reactContext),
                 new WebSocketModule(reactContext),
             };
         }

@@ -155,6 +155,7 @@
     <Compile Include="Bridge\ReactContextNativeModuleBase.cs" />
     <Compile Include="Common\ReactConstants.cs" />
     <Compile Include="CoreModulesPackage.cs" />
+    <Compile Include="Modules\AppState\AppStateModule.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
