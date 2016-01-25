@@ -492,7 +492,7 @@ var styles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: '#F5FCFF',
   },
-});
+}
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
 ```
