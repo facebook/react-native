@@ -1041,6 +1041,11 @@ div[data-twttr-id] iframe {
   margin-top: 0;
 }
 
+.compactProps .propTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
 .prop {
   padding: 5px 10px;
 }
