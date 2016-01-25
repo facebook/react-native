@@ -87,10 +87,10 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 #pragma mark - Public API
 
 // TODO: remove error callback - not needed except by Subscribable interface
-RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTResponseSenderBlock)getSuccess
-                  withErrorCallback:(__unused RCTResponseSenderBlock)getError)
+RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  getSuccess(@[@{@"network_info": _status}]);
+  resolve(@[@{@"network_info": _status}]);
 }
 
 @end

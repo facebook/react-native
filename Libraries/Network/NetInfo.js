@@ -135,8 +135,12 @@ const _isConnectedSubscriptions = new Map();
  * monetary costs, data limitations or battery/performance issues.
  *
  * ```
- * NetInfo.isConnectionExpensive((isConnectionExpensive) => {
+ * NetInfo.isConnectionExpensive()
+ * .then(isConnectionExpensive => {
  *   console.log('Connection is ' + (isConnectionExpensive ? 'Expensive' : 'Not Expensive'));
+ * })
+ * .catch(error => {
+ *   console.error(error);
  * });
  * ```
  *
@@ -146,7 +150,7 @@ const _isConnectedSubscriptions = new Map();
  * internet connectivity.
  *
  * ```
- * NetInfo.isConnected.fetch().done((isConnected) => {
+ * NetInfo.isConnected.fetch().then(isConnected => {
  *   console.log('First, is ' + (isConnected ? 'online' : 'offline'));
  * });
  * function handleFirstConnectivityChange(isConnected) {
@@ -189,14 +193,7 @@ const NetInfo = {
   },
 
   fetch(): Promise {
-    return new Promise((resolve, reject) => {
-      RCTNetInfo.getCurrentConnectivity(
-        function(resp) {
-          resolve(resp.network_info);
-        },
-        reject
-      );
-    });
+    return RCTNetInfo.getCurrentConnectivity().then(resp => resp.network_info);
   },
 
   isConnected: {
@@ -233,14 +230,25 @@ const NetInfo = {
     },
   },
 
-  isConnectionExpensive(callback: (metered: ?boolean, error?: string) => void): void {
+  isConnectionExpensive(): Promise {
+    if (arguments.length > 0) {
+      console.warn('NetInfo.isConnectionMetered(callback) is deprecated. Use the returned Promise instead.');
+      const callback = arguments[1];
+      if (Platform.OS === 'android') {
+        RCTNetInfo.isConnectionMetered().then(
+          metered => callback(metered),
+          error => callback(null, error)
+        );
+      } else {
+        callback(null, 'Unsupported');
+      }
+      return;
+    }
     if (Platform.OS === 'android') {
-      RCTNetInfo.isConnectionMetered((_isMetered) => {
-        callback(_isMetered);
-      });
+      return RCTNetInfo.isConnectionMetered();
     } else {
       // TODO t9296080 consider polyfill and more features later on
-      callback(null, "Unsupported");
+      Promise.reject(new Error('Currently not supported on iOS'));
     }
   },
 };
