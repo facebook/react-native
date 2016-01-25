@@ -24,15 +24,17 @@ RCT_EXPORT_MODULE()
 - (void)setScriptText:(NSString *)scriptText {}
 #endif
 
-RCT_EXPORT_METHOD(getScriptText:(RCTResponseSenderBlock)successCallback
-                  failureCallback:(RCTResponseErrorBlock)failureCallback)
+NSString *const RCTErrorUnavailable = @"E_SOURCE_CODE_UNAVAILABLE";
+
+RCT_EXPORT_METHOD(getScriptText:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
   if (RCT_DEV && self.scriptData && self.scriptURL) {
     NSString *scriptText = [[NSString alloc] initWithData:self.scriptData encoding:NSUTF8StringEncoding];
 
-    successCallback(@[@{@"text": scriptText, @"url": self.scriptURL.absoluteString}]);
+    resolve(@[@{@"text": scriptText, @"url": self.scriptURL.absoluteString}]);
   } else {
-    failureCallback(RCTErrorWithMessage(@"Source code is not available"));
+    reject(RCTErrorUnavailable, nil, RCTErrorWithMessage(@"Source code is not available"));
   }
 }
 
