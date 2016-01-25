@@ -29,10 +29,10 @@ var RCTWebViewManager = require('NativeModules').WebViewManager;
 var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
 
-var DECELERATION_RATE_FAST = 0.9
-var DECELERATION_RATE_FAST_STR = 'fast'
-var DECELERATION_RATE_NORMAL = 0.998
-var DECELERATION_RATE_NORMAL_STR = 'normal'
+var DECELERATION_RATE_FAST = 0.9;
+var DECELERATION_RATE_FAST_STR = 'fast';
+var DECELERATION_RATE_NORMAL = 0.998;
+var DECELERATION_RATE_NORMAL_STR = 'normal';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -132,10 +132,10 @@ var WebView = React.createClass({
      *   - Fast: 0.9 (the default for iOS WebView)
      * @platform ios
      */
-     decelerationRate: PropTypes.oneOfType([
-       PropTypes.oneOf([DECELERATION_RATE_NORMAL_STR, DECELERATION_RATE_FAST_STR]),
-       PropTypes.number,
-     ]),
+    decelerationRate: PropTypes.oneOfType([
+      PropTypes.oneOf([DECELERATION_RATE_NORMAL_STR, DECELERATION_RATE_FAST_STR]),
+      PropTypes.number,
+    ]),
     /**
      * @platform ios
      */
@@ -249,9 +249,9 @@ var WebView = React.createClass({
 
     var { decelerationRate } = this.props;
     if (decelerationRate === DECELERATION_RATE_FAST_STR) {
-      decelerationRate = DECELERATION_RATE_FAST
+      decelerationRate = DECELERATION_RATE_FAST;
     } else if (decelerationRate === DECELERATION_RATE_NORMAL_STR) {
-      decelerationRate = DECELERATION_RATE_NORMAL
+      decelerationRate = DECELERATION_RATE_NORMAL;
     }
 
     var webView =
