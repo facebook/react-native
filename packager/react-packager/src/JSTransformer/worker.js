@@ -9,29 +9,25 @@
 'use strict';
 
 var babel = require('babel-core');
-var resolvePlugins = require('./resolvePlugins');
-var Transforms = require('../transforms');
+var makeInternalPreset = require('babel-preset-react-native/internal');
 
 // Runs internal transforms on the given sourceCode. Note that internal
 // transforms should be run after the external ones to ensure that they run on
 // Javascript code
 function internalTransforms(sourceCode, filename, options) {
-  var plugins = resolvePlugins(Transforms.getAll(options));
-  if (plugins.length === 0) {
+  if (!options.hot) {
     return {
       code: sourceCode,
       filename: filename,
     };
   }
 
+  var presets = [ makeInternalPreset(options) ];
+
   var result = babel.transform(sourceCode, {
-    retainLines: true,
-    compact: true,
-    comments: false,
     filename: filename,
     sourceFileName: filename,
-    sourceMaps: false,
-    plugins: plugins,
+    presets: presets
   });
 
   return {

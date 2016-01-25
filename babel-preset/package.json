@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-react-native",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Babel preset for React Native applications",
   "main": "index.js",
   "repository": "https://github.com/facebook/react-native/tree/master/babel-preset",
@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/facebook/react-native/tree/master/babel-preset/README.md",
   "dependencies": {
+    "babel-plugin-react-transform": "2.0.0-beta1",
     "babel-plugin-syntax-async-functions": "^6.3.13",
     "babel-plugin-syntax-class-properties": "^6.3.13",
     "babel-plugin-syntax-flow": "^6.3.13",
@@ -38,6 +39,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
     "babel-plugin-transform-react-display-name": "^6.4.0",
     "babel-plugin-transform-react-jsx": "^6.4.0",
-    "babel-plugin-transform-regenerator": "^6.3.26"
+    "babel-plugin-transform-regenerator": "^6.3.26",
+    "react-transform-hmr": "^1.0.1"
   }
 }
