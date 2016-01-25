@@ -27,7 +27,7 @@ let babelRC = { plugins: [] };
 if (!fs.existsSync(projectBabelRCPath)) {
   babelRC = json5.parse(
     fs.readFileSync(
-      path.resolve(__dirname, 'react-packager', '.babelrc.json')));
+      path.resolve(__dirname, 'react-packager', 'rn-babelrc.json')));
 }
 
 /**
