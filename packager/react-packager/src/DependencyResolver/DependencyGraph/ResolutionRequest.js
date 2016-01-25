@@ -350,8 +350,6 @@ class ResolutionRequest {
         file = potentialModulePath + '.native.js';
       } else if (this._fastfs.fileExists(potentialModulePath + '.js')) {
         file = potentialModulePath + '.js';
-      } else if (this._fastfs.fileExists(potentialModulePath + '.jsx')) {
-        file = potentialModulePath + '.jsx';
       } else if (this._fastfs.fileExists(potentialModulePath + '.json')) {
         file = potentialModulePath + '.json';
       } else {

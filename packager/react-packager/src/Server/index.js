@@ -151,7 +151,6 @@ class Server {
         dir: dir,
         globs: [
           '**/*.js',
-          '**/*.jsx',
           '**/*.json',
         ].concat(assetGlobs),
       };
