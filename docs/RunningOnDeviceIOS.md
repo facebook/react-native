@@ -23,24 +23,11 @@ You can iterate quickly on device using development server. To do that, your lap
 
 ## Using offline bundle
 
-You can also pack all the JavaScript code within the app itself. This way you can test it without development server running and submit the app to the AppStore.
+When you run your app on device, we pack all the JavaScript code and the images used into the app's resources. This way you can test it without development server running and submit the app to the AppStore.
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
-2. Follow the instructions for "OPTION 2":
-  * Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
-  * Run the `react-native bundle --platform ios --dev false --entry-file index.ios.js --bundle-output iOS/main.jsbundle` command in terminal from the root directory of your app
-
-The bundle script supports a couple of flags:
-
-* `--dev` - a boolean with a default value of `true`. With the `--dev true` flag, the bundled JavaScript code turns on useful development warnings and limits performance optimizations. For production it is recommended to pass `--dev false`. Also for production, be sure to have your native build configuration set to `Release` (e.g., Xcode's Release configuration for iOS and gradle's `assembleRelease` task for Android) in order to disable things like the shake-to-show developer menu.
-* `--minify` - pipe the JS code through UglifyJS.
-
-Note that on 0.14 we'll change the API of `react-native bundle`. The major changes are: 
-
-* API is now `entry-file <path>` based instead of url based.
-* Need to specify which platform you're bundling for `--platform <ios|android>`.
-* Option `--out` has been renamed for `--bundle-output`.
-* Source maps are no longer automatically generated. Need to specify `--sourcemap-output <path>` 
+2. Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
+3. The JS bundle will be built for dev or prod depending on your app's scheme (Debug = development build with warnings, Release = minified prod build with perf optimizations).
 
 ## Disabling in-app developer menu
 
@@ -50,4 +37,4 @@ When building your app for production, your app's scheme should be set to `Relea
 
 If `curl` command fails make sure the packager is running. Also try adding `--ipv4` flag to the end of it.
 
-If you started your project a while ago, `main.jsbundle` might not be included into Xcode project. To add it, right click on your project directory and click "Add Files to ..." - choose the `main.jsbundle` file that you generated.
+Note that since [v0.14](https://github.com/facebook/react-native/releases/tag/0.14.0) JS and images are automatically packaged into the iOS app using `Bundle React Native code and images` Xcode build phase.
