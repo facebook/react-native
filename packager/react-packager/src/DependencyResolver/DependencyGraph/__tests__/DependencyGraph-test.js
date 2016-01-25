@@ -1774,6 +1774,85 @@ describe('DependencyGraph', function() {
         });
       });
 
+      pit('should support browser mapping of a package to a file ("' + fieldName + '")', function() {
+        var root = '/root';
+        fs.__setMockFilesystem({
+          'root': {
+            'index.js': [
+              '/**',
+              ' * @providesModule index',
+              ' */',
+              'require("aPackage")',
+            ].join('\n'),
+            'aPackage': {
+              'package.json': JSON.stringify(replaceBrowserField({
+                name: 'aPackage',
+                browser: {
+                  'node-package': './dir/browser.js',
+                },
+              }, fieldName)),
+              'index.js': 'require("./dir/ooga")',
+              'dir': {
+                'ooga.js': 'require("node-package")',
+                'browser.js': 'some browser code',
+              },
+              'node-package': {
+                'package.json': JSON.stringify({
+                  'name': 'node-package',
+                }),
+                'index.js': 'some node code',
+              },
+            },
+          },
+        });
+
+        const dgraph = new DependencyGraph({
+          ...defaults,
+          roots: [root],
+        });
+        return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+          expect(deps)
+            .toEqual([
+              { id: 'index',
+                path: '/root/index.js',
+                dependencies: ['aPackage'],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              { id: 'aPackage/index.js',
+                path: '/root/aPackage/index.js',
+                dependencies: ['./dir/ooga'],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              { id: 'aPackage/dir/ooga.js',
+                path: '/root/aPackage/dir/ooga.js',
+                dependencies: ['node-package'],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+              { id: 'aPackage/dir/browser.js',
+                path: '/root/aPackage/dir/browser.js',
+                dependencies: [],
+                isAsset: false,
+                isAsset_DEPRECATED: false,
+                isJSON: false,
+                isPolyfill: false,
+                resolution: undefined,
+              },
+            ]);
+        });
+      });
+
       pit('should support browser mapping for packages ("' + fieldName + '")', function() {
         var root = '/root';
         fs.__setMockFilesystem({
