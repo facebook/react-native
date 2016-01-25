@@ -16,7 +16,7 @@ import java.util.Map;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -30,7 +30,7 @@ import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 @ReactPropertyHolder
 public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
 
-  public final void updateProperties(T viewToUpdate, CatalystStylesDiffMap props) {
+  public final void updateProperties(T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -43,8 +43,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode> {
       JSResponderHandler jsResponderHandler) {
     T view = createViewInstance(reactContext);
     addEventEmitters(reactContext, view);
-    if (view instanceof CatalystInterceptingViewGroup) {
-      ((CatalystInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
+    if (view instanceof ReactInterceptingViewGroup) {
+      ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
     return view;
   }
