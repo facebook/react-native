@@ -11,12 +11,12 @@
 'use strict';
 
 const babel = require('babel-core');
+const externalHelpersPlugin = require('babel-plugin-external-helpers');
+const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const fs = require('fs');
-const inlineRequires = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
 const ReactPackager = require('./react-packager');
-
 
 const projectBabelRCPath = path.resolve(__dirname, '..', '..', '..', '.babelrc');
 
@@ -55,10 +55,10 @@ function buildBabelConfig(filename, options) {
   }
 
   // Add extra plugins
-  const extraPlugins = [require('babel-plugin-external-helpers')];
+  const extraPlugins = [externalHelpersPlugin];
 
   if (options.inlineRequires) {
-    extraPlugins.push(inlineRequires);
+    extraPlugins.push(inlineRequiresPlugin);
   }
 
   config.plugins = extraPlugins.concat(config.plugins);
