@@ -12,7 +12,7 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewProps;
@@ -50,7 +50,7 @@ import com.facebook.react.uimanager.ViewProps;
   private int mMoveToIndexInParent;
   private boolean mIsOverflowVisible = true;
 
-  /* package */ void handleUpdateProperties(CatalystStylesDiffMap styles) {
+  /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (!mountsToView()) {
       // Make sure we mount this FlatShadowNode to a View if any of these properties are present.
       if (styles.hasKey(PROP_DECOMPOSED_MATRIX) ||

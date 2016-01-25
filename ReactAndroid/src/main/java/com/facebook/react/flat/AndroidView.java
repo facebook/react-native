@@ -10,7 +10,7 @@
 package com.facebook.react.flat;
 
 import com.facebook.csslayout.CSSNode;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -70,7 +70,7 @@ import com.facebook.react.uimanager.ViewManager;
   }
 
   @Override
-  /* package*/ void handleUpdateProperties(CatalystStylesDiffMap styles) {
+  /* package*/ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (mReactShadowNode != null) {
       mReactShadowNode.updateProperties(styles);
     }

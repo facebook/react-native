@@ -20,7 +20,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.ViewManager;
@@ -121,7 +121,7 @@ public class FlatUIImplementation extends UIImplementation {
   protected void handleCreateView(
       ReactShadowNode cssNode,
       int rootViewTag,
-      @Nullable CatalystStylesDiffMap styles) {
+      @Nullable ReactStylesDiffMap styles) {
     FlatShadowNode node = (FlatShadowNode) cssNode;
 
     if (styles != null) {
@@ -138,7 +138,7 @@ public class FlatUIImplementation extends UIImplementation {
   protected void handleUpdateView(
       ReactShadowNode cssNode,
       String className,
-      CatalystStylesDiffMap styles) {
+      ReactStylesDiffMap styles) {
     FlatShadowNode node = (FlatShadowNode) cssNode;
 
     node.handleUpdateProperties(styles);

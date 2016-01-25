@@ -26,7 +26,7 @@ import android.view.ViewParent;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundView;
@@ -39,7 +39,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
  * array of DrawCommands, executing them one by one.
  */
 /* package */ final class FlatViewGroup extends ViewGroup
-    implements CatalystInterceptingViewGroup, ReactCompoundView, ReactPointerEventsView {
+    implements ReactInterceptingViewGroup, ReactCompoundView, ReactPointerEventsView {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */

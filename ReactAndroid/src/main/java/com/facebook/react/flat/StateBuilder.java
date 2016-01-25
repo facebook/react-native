@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.OnLayoutEvent;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
@@ -127,7 +127,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   /* package */ void ensureBackingViewIsCreated(
       FlatShadowNode node,
       int tag,
-      @Nullable CatalystStylesDiffMap styles) {
+      @Nullable ReactStylesDiffMap styles) {
     if (node.isBackingViewCreated()) {
       if (styles != null) {
         // if the View is already created, make sure propagate new styles.
