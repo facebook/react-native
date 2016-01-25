@@ -16,6 +16,7 @@ var Platform = require('Platform');
 var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
+var ScrollViewConsts = require('UIManager').RCTScrollView.Constants;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ScrollResponder = require('ScrollResponder');
@@ -130,12 +131,18 @@ var ScrollView = React.createClass({
     contentContainerStyle: StyleSheetPropType(ViewStylePropTypes),
     /**
      * A floating-point number that determines how quickly the scroll view
-     * decelerates after the user lifts their finger. Reasonable choices include
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
      *   - Normal: 0.998 (the default)
      *   - Fast: 0.9
      * @platform ios
      */
-    decelerationRate: PropTypes.number,
+    decelerationRate: PropTypes.oneOfType([
+      PropTypes.oneOf(['fast', 'normal']),
+      PropTypes.number,
+    ]),
     /**
      * When true, the scroll view's children are arranged horizontally in a row
      * instead of vertically in a column. The default value is false.
@@ -453,6 +460,11 @@ var ScrollView = React.createClass({
         function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
     }
 
+    var decelerationRate = this.props.decelerationRate;
+    if (decelerationRate && typeof decelerationRate === 'string') {
+      props.decelerationRate = ScrollView.getDecelerationRate(decelerationRate)
+    }
+
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
       ScrollViewClass = RCTScrollView;
@@ -551,6 +563,20 @@ if (Platform.OS === 'android') {
   var AndroidSwipeRefreshLayout = requireNativeComponent('AndroidSwipeRefreshLayout');
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
+}
+
+ScrollView.getDecelerationRate = function(decelerationRate) {
+  var ScrollViewDecelerationRateNormal = ScrollViewConsts && ScrollViewConsts.DecelerationRate.normal;
+  var ScrollViewDecelerationRateFast = ScrollViewConsts && ScrollViewConsts.DecelerationRate.fast;
+
+  if (typeof decelerationRate === 'string') {
+    if (decelerationRate === 'fast') {
+      return ScrollViewDecelerationRateFast;
+    } else if (decelerationRate === 'normal') {
+      return ScrollViewDecelerationRateNormal;
+    }
+  }
+  return decelerationRate;
 }
 
 module.exports = ScrollView;

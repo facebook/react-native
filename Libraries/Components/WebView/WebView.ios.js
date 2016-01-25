@@ -18,6 +18,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+var ScrollView = require('ScrollView')
 
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
@@ -28,11 +29,6 @@ var RCTWebViewManager = require('NativeModules').WebViewManager;
 
 var BGWASH = 'rgba(255,255,255,0.8)';
 var RCT_WEBVIEW_REF = 'webview';
-
-var DECELERATION_RATE_FAST = 0.9;
-var DECELERATION_RATE_FAST_STR = 'fast';
-var DECELERATION_RATE_NORMAL = 0.998;
-var DECELERATION_RATE_NORMAL_STR = 'normal';
 
 var WebViewState = keyMirror({
   IDLE: null,
@@ -125,7 +121,7 @@ var WebView = React.createClass({
     /**
      * A floating-point number that determines how quickly the scroll view
      * decelerates after the user lifts their finger. You may also use string
-     * shortcuts `'normal'` and `'fast'` which match the underlying iOS settings
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
      * for `UIScrollViewDecelerationRateNormal` and
      * `UIScrollViewDecelerationRateFast` respectively.
      *   - Normal: 0.998
@@ -133,7 +129,7 @@ var WebView = React.createClass({
      * @platform ios
      */
     decelerationRate: PropTypes.oneOfType([
-      PropTypes.oneOf([DECELERATION_RATE_NORMAL_STR, DECELERATION_RATE_FAST_STR]),
+      PropTypes.oneOf(['fast', 'normal']),
       PropTypes.number,
     ]),
     /**
@@ -247,12 +243,8 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
-    var { decelerationRate } = this.props;
-    if (decelerationRate === DECELERATION_RATE_FAST_STR) {
-      decelerationRate = DECELERATION_RATE_FAST;
-    } else if (decelerationRate === DECELERATION_RATE_NORMAL_STR) {
-      decelerationRate = DECELERATION_RATE_NORMAL;
-    }
+
+    var decelerationRate = ScrollView.getDecelerationRate(this.props.decelerationRate)
 
     var webView =
       <RCTWebView
