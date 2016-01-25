@@ -20,6 +20,7 @@ var UIManager = require('UIManager');
 var View = require('View');
 var ScrollView = require('ScrollView')
 
+var processDecelerationRate = require('processDecelerationRate');
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var requireNativeComponent = require('requireNativeComponent');
@@ -128,10 +129,7 @@ var WebView = React.createClass({
      *   - Fast: 0.9 (the default for iOS WebView)
      * @platform ios
      */
-    decelerationRate: PropTypes.oneOfType([
-      PropTypes.oneOf(['fast', 'normal']),
-      PropTypes.number,
-    ]),
+    decelerationRate: ScrollView.propTypes.decelerationRate,
     /**
      * @platform ios
      */
@@ -243,8 +241,7 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
-
-    var decelerationRate = ScrollView.getDecelerationRate(this.props.decelerationRate)
+    var decelerationRate = processDecelerationRate(this.props.decelerationRate);
 
     var webView =
       <RCTWebView

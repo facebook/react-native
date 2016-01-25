@@ -16,7 +16,6 @@ var Platform = require('Platform');
 var PointPropType = require('PointPropType');
 var RCTScrollView = require('NativeModules').UIManager.RCTScrollView;
 var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
-var ScrollViewConsts = require('UIManager').RCTScrollView.Constants;
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var ScrollResponder = require('ScrollResponder');
@@ -33,7 +32,7 @@ var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
 var processColor = require('processColor');
-
+var processDecelerationRate = require('processDecelerationRate');
 var PropTypes = React.PropTypes;
 
 var SCROLLVIEW = 'ScrollView';
@@ -460,9 +459,9 @@ var ScrollView = React.createClass({
         function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
     }
 
-    var decelerationRate = this.props.decelerationRate;
+    var { decelerationRate } = this.props;
     if (decelerationRate) {
-      props.decelerationRate = ScrollView.getDecelerationRate(decelerationRate);
+      props.decelerationRate = processDecelerationRate(decelerationRate);
     }
 
     var ScrollViewClass;
@@ -563,20 +562,6 @@ if (Platform.OS === 'android') {
   var AndroidSwipeRefreshLayout = requireNativeComponent('AndroidSwipeRefreshLayout');
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
-}
-
-ScrollView.getDecelerationRate = function(decelerationRate) {
-  var ScrollViewDecelerationRateNormal = ScrollViewConsts && ScrollViewConsts.DecelerationRate.normal;
-  var ScrollViewDecelerationRateFast = ScrollViewConsts && ScrollViewConsts.DecelerationRate.fast;
-
-  if (typeof decelerationRate === 'string') {
-    if (decelerationRate === 'fast') {
-      return ScrollViewDecelerationRateFast;
-    } else if (decelerationRate === 'normal') {
-      return ScrollViewDecelerationRateNormal;
-    }
-  }
-  return decelerationRate;
 }
 
 module.exports = ScrollView;
