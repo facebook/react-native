@@ -15,13 +15,13 @@ import android.os.Looper;
 
 import com.facebook.react.common.MapBuilder;
 
-public class CatalystQueueConfigurationImpl implements CatalystQueueConfiguration {
+public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
 
   private final MessageQueueThreadImpl mUIQueueThread;
   private final MessageQueueThreadImpl mNativeModulesQueueThread;
   private final MessageQueueThreadImpl mJSQueueThread;
 
-  private CatalystQueueConfigurationImpl(
+  private ReactQueueConfigurationImpl(
       MessageQueueThreadImpl uiQueueThread,
       MessageQueueThreadImpl nativeModulesQueueThread,
       MessageQueueThreadImpl jsQueueThread) {
@@ -58,8 +58,8 @@ public class CatalystQueueConfigurationImpl implements CatalystQueueConfiguratio
     }
   }
 
-  public static CatalystQueueConfigurationImpl create(
-      CatalystQueueConfigurationSpec spec,
+  public static ReactQueueConfigurationImpl create(
+      ReactQueueConfigurationSpec spec,
       QueueThreadExceptionHandler exceptionHandler) {
     Map<MessageQueueThreadSpec, MessageQueueThreadImpl> specsToThreads = MapBuilder.newHashMap();
 
@@ -80,6 +80,6 @@ public class CatalystQueueConfigurationImpl implements CatalystQueueConfiguratio
           MessageQueueThreadImpl.create(spec.getNativeModulesQueueThreadSpec(), exceptionHandler);
     }
 
-    return new CatalystQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread);
+    return new ReactQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread);
   }
 }

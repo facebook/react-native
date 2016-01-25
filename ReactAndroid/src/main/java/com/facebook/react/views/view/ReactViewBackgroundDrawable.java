@@ -315,7 +315,7 @@ import com.facebook.csslayout.Spacing;
   }
 
   private int getBorderColor(int position) {
-    // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
+    // Check ReactStylesDiffMap#getColorInt() to see why this is needed
     return mBorderColor != null ? (int) (long) mBorderColor.get(position) : DEFAULT_BORDER_COLOR;
   }
 }
