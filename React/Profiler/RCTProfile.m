@@ -81,7 +81,7 @@ static systrace_arg_t *RCTProfileSystraceArgsFromNSDictionary(NSDictionary *args
     systrace_args[i].key = keyc;
     systrace_args[i].key_len = (int)strlen(keyc);
 
-    const char *valuec = RCTJSONStringify(value, nil).UTF8String;
+    const char *valuec = RCTJSONStringify(value, NULL).UTF8String;
     systrace_args[i].value = valuec;
     systrace_args[i].value_len = (int)strlen(valuec);
     i++;
