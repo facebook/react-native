@@ -59,7 +59,6 @@ import com.facebook.react.common.ReactConstants;
  */
 public class CameraRollManager extends ReactContextBaseJavaModule {
 
-  private static final String TAG = "Catalyst/CameraRollManager";
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
   private static final String ERROR_UNABLE_TO_SAVE = "E_UNABLE_TO_SAVE";
@@ -145,7 +144,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         pictures.mkdirs();
         if (!pictures.isDirectory()) {
-          mPromise.reject(ERROR_UNABLE_TO_LOAD, "External storage pictures directory not available", null);
+          mPromise.reject(ERROR_UNABLE_TO_LOAD, "External storage pictures directory not available");
           return;
         }
         File dest = new File(pictures, source.getName());
@@ -178,7 +177,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
                 if (uri != null) {
                   mPromise.resolve(uri.toString());
                 } else {
-                  mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery", null);
+                  mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery");
                 }
               }
             });
@@ -302,7 +301,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
             Images.Media.DATE_TAKEN + " DESC, " + Images.Media.DATE_MODIFIED + " DESC LIMIT " +
                 (mFirst + 1)); // set LIMIT to first + 1 so that we know how to populate page_info
         if (photos == null) {
-          mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get photos", null);
+          mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get photos");
         } else {
           try {
             putEdges(resolver, photos, response, mFirst);
@@ -412,7 +411,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         width = options.outWidth;
         height = options.outHeight;
       } catch (IOException e) {
-        FLog.e(TAG, "Could not get width/height for " + photoUri.toString(), e);
+        FLog.e(ReactConstants.TAG, "Could not get width/height for " + photoUri.toString(), e);
         return false;
       }
     }
