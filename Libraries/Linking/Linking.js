@@ -115,7 +115,7 @@ class Linking {
    */
   static addEventListener(type: string, handler: Function) {
     if (Platform.OS === 'android') {
-        console.error('Linking.addEventListener is not supported on Android');
+        console.warn('Linking.addEventListener is not supported on Android');
     } else {
       invariant(
         type === 'url',
@@ -136,7 +136,7 @@ class Linking {
    */
   static removeEventListener(type: string, handler: Function ) {
     if (Platform.OS === 'android') {
-        console.error('Linking.removeEventListener is not supported on Android');
+        console.warn('Linking.removeEventListener is not supported on Android');
     } else {
       invariant(
         type === 'url',
