@@ -95,6 +95,9 @@ namespace ReactNative
         {
             var builder = new ReactInstanceManager.Builder
             {
+#if DEBUG
+                UseDeveloperSupport = true,
+#endif
                 InitialLifecycleState = LifecycleState.Resumed,
                 JavaScriptBundleFile = jsBundleFile,
             };

@@ -1,4 +1,5 @@
 using ReactNative.Bridge;
+using ReactNative.DevSupport;
 using ReactNative.Modules.Core;
 using ReactNative.UIManager;
 using ReactNative.Views;
@@ -34,6 +35,11 @@ namespace ReactNative
         /// Event triggered when a react context has been initialized.
         /// </summary>
         event EventHandler<ReactContextInitializedEventArgs> ReactContextInitialized;
+
+        /// <summary>
+        /// The developer support manager for the instance.
+        /// </summary>
+        IDevSupportManager DevSupportManager { get; }
 
         /// <summary>
         /// Signals whether <see cref="CreateReactContextInBackground"/> has 

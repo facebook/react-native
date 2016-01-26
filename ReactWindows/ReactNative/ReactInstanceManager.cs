@@ -1,6 +1,7 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Bridge.Queue;
 using ReactNative.Common;
+using ReactNative.DevSupport;
 using ReactNative.Hosting.Bridge;
 using ReactNative.Modules.Core;
 using ReactNative.Tracing;
@@ -43,7 +44,10 @@ namespace ReactNative
         private readonly List<ReactRootView> _attachedRootViews = new List<ReactRootView>();
 
         private readonly string _jsBundleFile;
+        private readonly string _jsMainModuleName;
         private readonly IReadOnlyList<IReactPackage> _packages;
+        private readonly IDevSupportManager _devSupportManager;
+        private readonly bool _useDeveloperSupport;
         private readonly UIImplementationProvider _uiImplementationProvider;
         private readonly Action<Exception> _nativeModuleCallExceptionHandler;
 
@@ -56,9 +60,16 @@ namespace ReactNative
         private ReactContext _currentReactContext;
         private Action _defaultBackButtonHandler;
 
+        /// <summary>
+        /// Event triggered when a react context has been initialized.
+        /// </summary>
+        public event EventHandler<ReactContextInitializedEventArgs> ReactContextInitialized;
+
         private ReactInstanceManager(
             string jsBundleFile,
+            string jsMainModuleName,
             IReadOnlyList<IReactPackage> packages, 
+            bool useDeveloperSupport,
             LifecycleState initialLifecycleState,
             UIImplementationProvider uiImplementationProvider,
             Action<Exception> nativeModuleCallExceptionHandler)
@@ -69,17 +80,29 @@ namespace ReactNative
                 throw new ArgumentNullException(nameof(uiImplementationProvider));
 
             _jsBundleFile = jsBundleFile;
+            _jsMainModuleName = jsMainModuleName;
             _packages = packages;
+
+            _useDeveloperSupport = useDeveloperSupport;
+            _devSupportManager = _useDeveloperSupport
+                ? (IDevSupportManager)new DevSupportManager(_jsMainModuleName)
+                : new DisabledDevSupportManager();
+
             _lifecycleState = initialLifecycleState;
             _uiImplementationProvider = uiImplementationProvider;
-            _nativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler 
-                ?? /* TODO: use dev support manager */ (_ => { });
+            _nativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
         }
 
         /// <summary>
-        /// Event triggered when a react context has been initialized.
+        /// The developer support manager for the instance.
         /// </summary>
-        public event EventHandler<ReactContextInitializedEventArgs> ReactContextInitialized;
+        public IDevSupportManager DevSupportManager
+        {
+            get
+            {
+                return _devSupportManager;
+            }
+        }
 
         /// <summary>
         /// Signals whether <see cref="CreateReactContextInBackground"/> has 
@@ -324,6 +347,12 @@ namespace ReactNative
         private void RecreateReactContextInBackgroundInner()
         {
             DispatcherHelpers.AssertOnDispatcher();
+
+            if (!DispatcherHelpers.IsInitialized)
+            {
+                DispatcherHelpers.Initialize();
+            }
+
             // TODO: handle developer support loading.
             RecreateReactContextInBackgroundFromBundleFile();
         }
@@ -516,6 +545,7 @@ namespace ReactNative
                 javaScriptModulesConfig = jsModulesBuilder.Build();
             }
 
+            var exceptionHandler = _nativeModuleCallExceptionHandler ?? _devSupportManager.HandleException;
             var catalystInstanceBuilder = new CatalystInstance.Builder
             {
                 QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
@@ -523,7 +553,7 @@ namespace ReactNative
                 Registry = nativeModuleRegistry,
                 JavaScriptModulesConfig = javaScriptModulesConfig,
                 BundleLoader = jsBundleLoader,
-                NativeModuleCallExceptionHandler = _nativeModuleCallExceptionHandler,
+                NativeModuleCallExceptionHandler = exceptionHandler,
             };
 
             var catalystInstance = default(CatalystInstance);
@@ -586,9 +616,11 @@ namespace ReactNative
         /// </summary>
         public sealed class Builder
         {
-            private readonly List<IReactPackage> _packages = new List<IReactPackage>();
+            private List<IReactPackage> _packages = new List<IReactPackage>();
 
+            private bool _useDeveloperSupport;
             private string _jsBundleFile;
+            private string _jsMainModuleName;
             private LifecycleState? _initialLifecycleState;
             private UIImplementationProvider _uiImplementationProvider;
             private Action<Exception> _nativeModuleCallExceptionHandler;
@@ -617,13 +649,39 @@ namespace ReactNative
             }
 
             /// <summary>
+            /// Path to the applications main module on the packager server.
+            /// </summary>
+            public string JavaScriptMainModuleName
+            {
+                set
+                {
+                    _jsMainModuleName = value;
+                }
+            }
+
+            /// <summary>
             /// The mutable list of react packages.
             /// </summary>
-            public IList<IReactPackage> Packages
+            public List<IReactPackage> Packages
             {
                 get
                 {
                     return _packages;
+                }
+                set
+                {
+                    _packages = value;
+                }
+            }
+
+            /// <summary>
+            /// Signals whether the application should enable developer support.
+            /// </summary>
+            public bool UseDeveloperSupport
+            {
+                set
+                {
+                    _useDeveloperSupport = value;
                 }
             }
 
@@ -658,6 +716,16 @@ namespace ReactNative
                 AssertNotNull(_jsBundleFile, nameof(JavaScriptBundleFile));
                 AssertNotNull(_initialLifecycleState, nameof(InitialLifecycleState));
 
+                if (!_useDeveloperSupport && _jsBundleFile == null)
+                {
+                    throw new InvalidOperationException("JavaScript bundle file has to be provided when dev support is disabled.");
+                }
+
+                if (_jsBundleFile == null && _jsMainModuleName == null)
+                {
+                    throw new InvalidOperationException("Either the main module name of the JavaScript bundle file must be provided.");
+                }
+
                 if (_uiImplementationProvider == null)
                 {
                     _uiImplementationProvider = new UIImplementationProvider();
@@ -665,7 +733,9 @@ namespace ReactNative
 
                 return new ReactInstanceManager(
                     _jsBundleFile,
+                    _jsMainModuleName,
                     _packages,
+                    _useDeveloperSupport,
                     _initialLifecycleState.Value,
                     _uiImplementationProvider,
                     _nativeModuleCallExceptionHandler);
