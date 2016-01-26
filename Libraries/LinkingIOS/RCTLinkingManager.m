@@ -73,26 +73,30 @@ continueUserActivity:(NSUserActivity *)userActivity
                                               body:notification.userInfo];
 }
 
-RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
+RCT_EXPORT_METHOD(openURL:(NSURL *)URL
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  // TODO: we should really return success/failure via a callback here
+  // TODO: we should really report success/failure via the promise here
   // Doesn't really matter what thread we call this on since it exits the app
   [RCTSharedApplication() openURL:URL];
+  resolve(@[@YES]);
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
-                  callback:(RCTResponseSenderBlock)callback)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     // Technically Today widgets can open urls, but supporting that would require
     // a reference to the NSExtensionContext
-    callback(@[@NO]);
+    resolve(@[@NO]);
     return;
   }
 
   // This can be expensive, so we deliberately don't call on main thread
   BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
-  callback(@[@(canOpen)]);
+  resolve(@[@(canOpen)]);
 }
 
 @end
