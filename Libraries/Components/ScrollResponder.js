@@ -372,7 +372,7 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
     console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
-    self.scrollResponderScrollTo(offsetX, offsetY, false);
+    this.scrollResponderScrollTo(offsetX, offsetY, false);
   },
 
   /**
