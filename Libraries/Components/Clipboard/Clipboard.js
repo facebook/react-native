@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule Clipboard
+ * @flow
  */
 'use strict';
 
@@ -24,7 +25,7 @@ module.exports = {
    * }
    * ```
    */
-  getString() {
+  getString(): Promise<string> {
     if (arguments.length > 0) {
         let callback = arguments[0];
         console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
@@ -40,9 +41,8 @@ module.exports = {
    *   Clipboard.setString('hello world');
    * }
    * ```
-   * @param this parameter is content that will be set into clipboard.
    */
-  setString(content) {
+  setString(content: string) {
     Clipboard.setString(content);
   }
 };
