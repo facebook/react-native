@@ -26,10 +26,10 @@ module.exports = {
    */
   getString() {
     if (arguments.length > 0) {
-        let callback = arguments[0];
-        console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
-        Clipboard.getString().then(callback);
-        return;
+      let callback = arguments[0];
+      console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
+      Clipboard.getString().then(callback);
+      return;
     }
     return Clipboard.getString();
   },
@@ -40,7 +40,7 @@ module.exports = {
    *   Clipboard.setString('hello world');
    * }
    * ```
-   * @param this parameter is content that will be set into clipboard.
+   * @param the content to be stored in the clipboard.
    */
   setString(content) {
     Clipboard.setString(content);

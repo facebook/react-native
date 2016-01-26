@@ -6,22 +6,19 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule ToastAndroid
- * @noflow
+ * @providesModule TimePickerAndroid
+ * @flow
  */
 'use strict';
 
 var warning = require('warning');
 
-var ToastAndroid = {
-
-  show: function (
-    message: string,
-    duration: number
-  ): void {
-    warning(false, 'ToastAndroid is not supported on this platform.');
+const TimePickerAndroid = {
+  async open(options: Object): Promise<Object> {
+    return Promise.reject({
+      message: 'TimePickerAndroid is not supported on this platform.'
+    });
   },
+}
 
-};
-
-module.exports = ToastAndroid;
+module.exports = TimePickerAndroid;

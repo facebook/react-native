@@ -17,16 +17,19 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
+import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.dialog.DialogModule;
+import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
+import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
-import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
@@ -50,7 +53,6 @@ import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.webview.ReactWebViewManager;
-import com.facebook.react.modules.clipboard.ClipboardModule;
 
 /**
  * Package defining basic modules and view managers.
@@ -64,12 +66,14 @@ public class MainReactPackage implements ReactPackage {
       new AsyncStorageModule(reactContext),
       new CameraRollManager(reactContext),
       new ClipboardModule(reactContext),
+      new DatePickerDialogModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),
       new NetInfoModule(reactContext),
+      new TimePickerDialogModule(reactContext),
       new ToastModule(reactContext),
       new WebSocketModule(reactContext));
   }
