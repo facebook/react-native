@@ -22,7 +22,6 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
-class JSThreadState;
 class Bridge : public Countable {
 public:
   typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
@@ -68,11 +67,11 @@ public:
   void handleMemoryPressureCritical();
 private:
   Callback m_callback;
-  std::unique_ptr<JSThreadState> m_threadState;
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
+  std::unique_ptr<JSExecutor> m_jsExecutor;
 };
 
 } }
