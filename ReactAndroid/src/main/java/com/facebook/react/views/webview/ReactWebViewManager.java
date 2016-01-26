@@ -274,6 +274,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
   }
 
+  @Deprecated
   @ReactProp(name = "html")
   public void setHtml(WebView view, @Nullable String html) {
     if (html != null) {
@@ -283,19 +284,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
   }
 
-  @ReactProp(name = "headers")
-  public void setUrlWithHeaders(WebView view, @Nullable ReadableMap urlWithHeaders) {
-    String url = urlWithHeaders.getString("url");
-    ReadableMap headerMap = urlWithHeaders.getMap("headers");
-    ReadableMapKeySetIterator iter = headerMap.keySetIterator();
-    HashMap<String, String> headers = new HashMap<>();
-    while (iter.hasNextKey()) {
-      String key = iter.nextKey();
-      headers.put(key, headerMap.getString(key));
-    }
-    view.loadUrl(url, headers);
-  }
-
+  @Deprecated
   @ReactProp(name = "url")
   public void setUrl(WebView view, @Nullable String url) {
     // TODO(8495359): url and html are coupled as they both call loadUrl, therefore in case when
@@ -309,6 +298,26 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
     if (url != null) {
       view.loadUrl(url);
+    } else {
+      view.loadUrl(BLANK_URL);
+    }
+  }
+
+  @ReactProp(name = "source")
+  public void setSource(WebView view, @Nullable ReadableMap source) {
+    if (source.hasKey("html")) {
+      view.loadData(source.getString("html"), HTML_MIME_TYPE, HTML_ENCODING);
+    } else if(source.hasKey("url")) {
+      HashMap<String, String> headerMap = new HashMap<>();
+      if (source.hasKey("headers")) {
+        ReadableMap headers = source.getMap("headers");
+        ReadableMapKeySetIterator iter = headers.keySetIterator();
+        while (iter.hasNextKey()) {
+          String key = iter.nextKey();
+          headerMap.put(key, headers.getString(key));
+        }
+      }
+      view.loadUrl(source.getString("url"), headerMap);
     } else {
       view.loadUrl(BLANK_URL);
     }
