@@ -162,7 +162,7 @@ class Linking {
    *
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
    */
-  static openURL(url: string) {
+  static openURL(url: string): Promise<boolean> {
     this._validateURL(url);
     return LinkingManager.openURL(url);
   }
@@ -177,7 +177,7 @@ class Linking {
    *
    * @param URL the URL to open
    */
-  static canOpenURL(url: string) {
+  static canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
     return LinkingManager.canOpenURL(url);
   }
@@ -188,7 +188,7 @@ class Linking {
    *
    * NOTE: To support deep linking on Android, refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
    */
-  static getInitialURL() {
+  static getInitialURL(): Promise<?string> {
     if (Platform.OS === 'android') {
       return IntentAndroid.getInitialURL();
     } else {
