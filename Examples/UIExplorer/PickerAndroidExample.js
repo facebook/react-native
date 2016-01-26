@@ -27,6 +27,12 @@ const {
 const Item = PickerAndroid.Item;
 
 const PickerAndroidExample = React.createClass({
+
+  statics: {
+    title: '<PickerAndroid>',
+    description: 'Provides multiple options to choose from, using either a dropdown menu or a dialog.',
+  },
+
   getInitialState: function() {
     return {
       selected1: 'key1',
@@ -124,19 +130,11 @@ const PickerAndroidExample = React.createClass({
     this.setState({mode: newMode});
   },
 
-  onSelect: function(key, value) {
+  onSelect: function(key: string, value: string) {
     const newState = {};
     newState[key] = value;
     this.setState(newState);
   },
 });
 
-exports.title = '<PickerAndroid>';
-exports.displayName = 'PickerAndroidExample';
-exports.description = 'The Android Picker component provides multiple options to choose from';
-exports.examples = [
-  {
-    title: 'PickerAndroidExample',
-    render(): ReactElement { return <PickerAndroidExample />; }
-  },
-];
+module.exports = PickerAndroidExample;

@@ -463,7 +463,7 @@ class AwesomeProject extends Component {
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

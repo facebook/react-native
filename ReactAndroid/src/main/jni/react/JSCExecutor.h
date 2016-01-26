@@ -71,6 +71,7 @@ private:
   void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);
   void terminateWebWorker(int worker);
   void loadModule(uint32_t moduleId);
+  std::string getDeviceCacheDir();
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,

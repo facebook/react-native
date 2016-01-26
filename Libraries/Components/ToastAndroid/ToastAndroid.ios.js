@@ -19,7 +19,7 @@ var ToastAndroid = {
     message: string,
     duration: number
   ): void {
-    warning(false, 'Cannot use ToastAndroid on iOS.');
+    warning(false, 'ToastAndroid is not supported on this platform.');
   },
 
 };

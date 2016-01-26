@@ -88,6 +88,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     }
   }
 
+  @ReactProp(name = "overlayColor")
+  public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
+    if (overlayColor == null) {
+      view.setOverlayColor(Color.TRANSPARENT);
+    } else {
+      view.setOverlayColor(overlayColor);
+    }
+  }
+
   @ReactProp(name = "borderWidth")
   public void setBorderWidth(ReactImageView view, float borderWidth) {
     view.setBorderWidth(borderWidth);

@@ -134,9 +134,13 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       this._setPropsIfExists('title_' + index, TITLE_PROPS[index]);
     }
     var right = this.refs['right_' + index];
-    if (right &&
-        interpolate.RightItem(RIGHT_BUTTON_PROPS[index].style, amount)) {
-      right.setNativeProps(RIGHT_BUTTON_PROPS[index]);
+
+    const rightButtonStyle = RIGHT_BUTTON_PROPS[index].style;
+    if (right && interpolate.RightItem(rightButtonStyle, amount)) {
+      right.setNativeProps({
+        style: rightButtonStyle,
+        pointerEvents: rightButtonStyle.opacity === 0 ? 'none' : 'auto',
+      });
     }
   },
 

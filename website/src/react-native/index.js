@@ -345,7 +345,7 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
   }
 
   @Override
-  public void updateView(MyCustomView view, CatalystStylesDiffMap props) {
+  public void updateView(MyCustomView view, ReactStylesDiffMap props) {
     super.updateView(view, props);
 
     if (props.hasKey(PROP_MY_CUSTOM_PROPERTY)) {

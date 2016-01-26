@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.touch.CatalystInterceptingViewGroup;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.PointerEvents;
@@ -34,7 +34,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    CatalystInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
