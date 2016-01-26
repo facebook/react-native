@@ -168,7 +168,7 @@ public class ReactShadowNode extends CSSNode {
   public void onBeforeLayout() {
   }
 
-  public final void updateProperties(CatalystStylesDiffMap props) {
+  public final void updateProperties(ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, props);
     onAfterUpdateTransaction();
   }

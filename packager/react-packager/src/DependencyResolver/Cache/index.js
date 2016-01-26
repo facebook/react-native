@@ -51,7 +51,7 @@ class Cache {
       throw new Error('Use absolute paths');
     }
 
-    var recordP = this._has(filepath, field)
+    var recordP = this.has(filepath, field)
       ? this._data[filepath].data[field]
       : this._set(filepath, field, loaderCb(filepath));
 
@@ -59,7 +59,7 @@ class Cache {
   }
 
   invalidate(filepath) {
-    if (this._has(filepath)) {
+    if (this.has(filepath)) {
       delete this._data[filepath];
     }
   }
@@ -68,7 +68,7 @@ class Cache {
     return this._persistCache();
   }
 
-  _has(filepath, field) {
+  has(filepath, field) {
     return Object.prototype.hasOwnProperty.call(this._data, filepath) &&
       (!field || Object.prototype.hasOwnProperty.call(this._data[filepath].data, field));
   }

@@ -34,23 +34,28 @@ public class PromiseImpl implements Promise {
   }
 
   @Override
-  public void reject(Throwable reason) {
-    reject(DEFAULT_ERROR, reason.getMessage(), reason);
+  public void reject(String code, String message) {
+    reject(code, message, /*Throwable*/null);
   }
 
   @Override
   @Deprecated
-  public void reject(String reason) {
-    reject(DEFAULT_ERROR, reason, null);
+  public void reject(String message) {
+    reject(DEFAULT_ERROR, message, /*Throwable*/null);
   }
 
   @Override
-  public void reject(String code, Throwable extra) {
-    reject(code, extra.getMessage(), extra);
+  public void reject(String code, Throwable e) {
+    reject(code, e.getMessage(), e);
   }
 
   @Override
-  public void reject(String code, String reason, @Nullable Throwable extra) {
+  public void reject(Throwable e) {
+    reject(DEFAULT_ERROR, e.getMessage(), e);
+  }
+
+  @Override
+  public void reject(String code, String message, @Nullable Throwable e) {
     if (mReject != null) {
       if (code == null) {
         code = DEFAULT_ERROR;
@@ -60,7 +65,7 @@ public class PromiseImpl implements Promise {
       // error instance.
       WritableNativeMap errorInfo = new WritableNativeMap();
       errorInfo.putString("code", code);
-      errorInfo.putString("message", reason);
+      errorInfo.putString("message", message);
       // TODO(8850038): add the stack trace info in, need to figure out way to serialize that
       mReject.invoke(errorInfo);
     }

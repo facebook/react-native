@@ -34,11 +34,11 @@ import com.facebook.react.bridge.ReadableMap;
  * property shouldn't be updated (whereas in all other cases it should be updated to the new value
  * or the property should be reset).
  */
-public class CatalystStylesDiffMap {
+public class ReactStylesDiffMap {
 
   /* package */ final ReadableMap mBackingMap;
 
-  public CatalystStylesDiffMap(ReadableMap props) {
+  public ReactStylesDiffMap(ReadableMap props) {
     mBackingMap = props;
   }
 

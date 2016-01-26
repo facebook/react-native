@@ -30,7 +30,7 @@ var UIExplorerPage = require('./UIExplorerPage');
 
 var ListViewSimpleExample = React.createClass({
   statics: {
-    title: '<ListView> - Simple',
+    title: '<ListView>',
     description: 'Performant, scrollable list of data.'
   },
 
@@ -50,7 +50,7 @@ var ListViewSimpleExample = React.createClass({
   render: function() {
     return (
       <UIExplorerPage
-        title={this.props.navigator ? null : '<ListView> - Simple'}
+        title={this.props.navigator ? null : '<ListView>'}
         noSpacer={true}
         noScroll={true}>
         <ListView

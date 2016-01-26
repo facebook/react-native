@@ -16,7 +16,7 @@ package com.facebook.react.touch;
  * which then is used to control touch event flow in cases in which they requested to be intercepted
  * by some parent view based on a JS gesture detector.
  */
-public interface CatalystInterceptingViewGroup {
+public interface ReactInterceptingViewGroup {
 
   /**
    * A {@link ViewGroup} instance that implement this interface is responsible for storing the
