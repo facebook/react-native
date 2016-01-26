@@ -1,5 +1,6 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.Debug;
 using ReactNative.Tracing;
 using ReactNative.UIManager;
 using ReactNative.UIManager.Events;
@@ -53,8 +54,11 @@ namespace ReactNative
             return new List<INativeModule>
             {
                 new DeviceEventManagerModule(reactContext, _hardwareBackButtonHandler),
-                new ExceptionsManagerModule(),
+                new ExceptionsManagerModule(_reactInstanceManager.DevSupportManager),
                 new Timing(reactContext),
+                new SourceCodeModule(
+                    _reactInstanceManager.SourceUrl,
+                    _reactInstanceManager.DevSupportManager.SourceMapUrl),
                 uiManagerModule,
             };
         }
