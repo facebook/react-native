@@ -134,15 +134,13 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
-    var htmlProp, urlProp, sourceProp;
-    if(this.props.html) {
-      console.warn('html is deprecated. Use source instead.');
-      htmlProp = this.props.html;
-    } else if(this.props.url) {
-      console.warn('url is deprecated. Use source instead.');
-      urlProp = this.props.url;
-    } else {
-      sourceProp = this.props.source;
+    var source = this.props.source || {};
+    if (this.props.html) {
+      console.warn('WebView: html is deprecated. Use source prop instead.');
+      source.html = this.props.html;
+    } else if (this.props.url) {
+      console.warn('WebView: url is deprecated. Use source prop instead.');
+      source.url = this.props.url;
     }
 
     var webView =
@@ -150,9 +148,7 @@ var WebView = React.createClass({
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        html={htmlProp}
-        url={urlProp}
-        source={sourceProp}
+        source={source}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={javaScriptEnabled}

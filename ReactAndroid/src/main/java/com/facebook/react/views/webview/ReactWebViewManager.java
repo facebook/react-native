@@ -274,35 +274,6 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     ((ReactWebView) view).setInjectedJavaScript(injectedJavaScript);
   }
 
-  @Deprecated
-  @ReactProp(name = "html")
-  public void setHtml(WebView view, @Nullable String html) {
-    if (html != null) {
-      view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
-    } else {
-      view.loadUrl(BLANK_URL);
-    }
-  }
-
-  @Deprecated
-  @ReactProp(name = "url")
-  public void setUrl(WebView view, @Nullable String url) {
-    // TODO(8495359): url and html are coupled as they both call loadUrl, therefore in case when
-    // property url is removed in favor of property html being added in single transaction we may
-    // end up in a state when blank url is loaded as it depends on the order of update operations!
-
-    String currentUrl = view.getUrl();
-    if (currentUrl != null && currentUrl.equals(url)) {
-      // We are already loading it so no need to stomp over it and start again
-      return;
-    }
-    if (url != null) {
-      view.loadUrl(url);
-    } else {
-      view.loadUrl(BLANK_URL);
-    }
-  }
-
   @ReactProp(name = "source")
   public void setSource(WebView view, @Nullable ReadableMap source) {
     if (source.hasKey("html")) {
