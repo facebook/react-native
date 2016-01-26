@@ -278,7 +278,7 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
   [attributedString enumerateAttribute:NSParagraphStyleAttributeName inRange:(NSRange){0, attributedString.length} options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
     if (value) {
       NSParagraphStyle *paragraphStyle = (NSParagraphStyle *)value;
-      CGFloat maximumLineHeight = round(paragraphStyle.maximumLineHeight / self.fontSizeMultiplier);
+      CGFloat maximumLineHeight = round(paragraphStyle.maximumLineHeight / (self.fontSizeMultiplier > 0.0 ? self.fontSizeMultiplier : 1.0));
       if (maximumLineHeight > self.lineHeight) {
         self.lineHeight = maximumLineHeight;
       }
