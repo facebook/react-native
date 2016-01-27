@@ -19,7 +19,11 @@ function resolveSourceMaps(sourceMapInstance, stackFrame) {
       column: stackFrame.column,
     });
     if (orig) {
-      stackFrame.file = orig.source;
+      // remove query string if any
+      const queryStringStartIndex = orig.source.indexOf('?');
+      stackFrame.file = queryStringStartIndex === -1
+        ? orig.source
+        : orig.source.substring(0, queryStringStartIndex);
       stackFrame.lineNumber = orig.line;
       stackFrame.column = orig.column;
     }
@@ -27,7 +31,7 @@ function resolveSourceMaps(sourceMapInstance, stackFrame) {
   }
 }
 
-function parseErrorStack(e, sourceMapInstance) {
+function parseErrorStack(e, sourceMaps) {
   if (!e || !e.stack) {
     return [];
   }
@@ -39,8 +43,17 @@ function parseErrorStack(e, sourceMapInstance) {
     stack.shift();
   }
 
-  if (sourceMapInstance) {
-    stack.forEach(resolveSourceMaps.bind(null, sourceMapInstance));
+  if (sourceMaps) {
+    sourceMaps.forEach((sourceMap, index) => {
+      stack.forEach(frame => {
+        if (frame.file.indexOf(sourceMap.file) !== -1 ||
+            frame.file.replace('.map', '.bundle').indexOf(
+              sourceMap.file
+            ) !== -1) {
+          resolveSourceMaps(sourceMap, frame);
+        }
+      });
+    });
   }
 
   return stack;

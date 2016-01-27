@@ -309,7 +309,7 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)dismiss
+RCT_EXPORT_METHOD(dismiss)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [_window dismiss];

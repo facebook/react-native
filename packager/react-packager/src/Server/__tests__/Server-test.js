@@ -144,6 +144,7 @@ describe('processRequest', () => {
         platform: undefined,
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
+        entryModuleOnly: false,
       });
     });
   });
@@ -165,6 +166,7 @@ describe('processRequest', () => {
         platform: 'ios',
         runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
         unbundle: false,
+        entryModuleOnly: false,
       });
     });
   });
@@ -321,6 +323,7 @@ describe('processRequest', () => {
           platform: undefined,
           runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
           unbundle: false,
+          entryModuleOnly: false,
         })
       );
     });
@@ -341,6 +344,7 @@ describe('processRequest', () => {
             platform: undefined,
             runBeforeMainModule: ['InitializeJavaScriptAppEngine'],
             unbundle: false,
+            entryModuleOnly: false,
           })
         );
     });

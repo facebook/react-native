@@ -171,17 +171,18 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 })
               })
               .then(bundle => {
-                if (!client || !bundle) {
+                if (!client || !bundle || bundle.isEmpty()) {
                   return;
                 }
 
-                const hmrUpdate = bundle.getSource();
-                if (hmrUpdate) {
-                  return JSON.stringify({
-                    type: 'update',
-                    body: hmrUpdate,
-                  });
-                }
+                return JSON.stringify({
+                  type: 'update',
+                  body: {
+                    modules: bundle.getModulesCode(),
+                    sourceURLs: bundle.getSourceURLs(),
+                    sourceMappingURLs: bundle.getSourceMappingURLs(),
+                  },
+                });
               })
               .catch(error => {
                 // send errors to the client instead of killing packager server
@@ -207,7 +208,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return JSON.stringify({type: 'error', body});
               })
               .then(update => {
-                if (!client) {
+                if (!client || !update) {
                   return;
                 }
 
