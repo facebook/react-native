@@ -71,6 +71,7 @@ var APIS = [
   require('./CameraRollExample'),
   require('./ClipboardExample'),
   require('./GeolocationExample'),
+  require('./ImageEditingExample'),
   require('./LayoutExample'),
   require('./NetInfoExample'),
   require('./PanResponderExample'),
@@ -82,7 +83,6 @@ var APIS = [
   require('./TransformExample'),
   require('./VibrationIOSExample'),
   require('./XHRExample.ios'),
-  require('./ImageEditingExample'),
 ];
 
 type Props = {
