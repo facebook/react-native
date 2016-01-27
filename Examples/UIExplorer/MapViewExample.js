@@ -321,6 +321,20 @@ exports.examples = [
     }
   },
   {
+    title: 'Annotation focus example',
+    render() {
+      return <AnnotationExample style={styles.map} annotation={{
+        title: 'More Info...',
+        onFocus: () => {
+          alert('Annotation gets focus');
+        },
+        onBlur: () => {
+          alert('Annotation lost focus');
+        }
+      }}/>;
+    }
+  },
+  {
     title: 'Draggable pin',
     render() {
       return <AnnotationExample style={styles.map} annotation={{
