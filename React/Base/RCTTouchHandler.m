@@ -108,11 +108,9 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     }
 
     // Create touch
-    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:11];
+    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:RCTMaxTouches];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
-    reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
-    reactTouch[@"changedTouches"] = (id)kCFNull; // and as a Touch object, so making this JIT friendly.
 
     // Add to arrays
     [_touchViews addObject:targetView];
@@ -151,10 +149,11 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"locationY"] = @(touchViewLocation.y);
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
 
-  if ([nativeTouch.view respondsToSelector:@selector(traitCollection)] &&
-      [nativeTouch.view.traitCollection respondsToSelector:@selector(forceTouchCapability)]) {
-
-    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force/nativeTouch.maximumPossibleForce));
+  // TODO: force for a 'normal' touch is usually 1.0;
+  // should we expose a `normalTouchForce` constant somewhere (which would
+  // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
+  if (RCTForceTouchAvailable()) {
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
   }
 }
 
