@@ -1076,6 +1076,26 @@ div[data-twttr-id] iframe {
   -ms-user-select: none;
 }
 
+.color {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  position: relative;
+  top: 5px;
+}
+
+.color::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
 .edit-github {
   font-size: 15px;
   font-weight: normal;
