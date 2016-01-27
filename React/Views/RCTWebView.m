@@ -35,6 +35,11 @@ NSString *const RCTJSNavigationScheme = @"react-js-navigation";
   NSString *_injectedJavaScript;
 }
 
+- (void)dealloc
+{
+  _webView.delegate = nil;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
