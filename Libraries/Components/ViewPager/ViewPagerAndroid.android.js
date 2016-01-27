@@ -19,11 +19,13 @@ var requireNativeComponent = require('requireNativeComponent');
 
 var VIEWPAGER_REF = 'viewPager';
 
-var VIEWPAGER_PAGE_SCROLL_STATES = [
-  'idle',
-  'dragging',
-  'settling',
-];
+type Event = Object;
+
+export type ViewPagerScrollState = $Enum<{
+  idle: string;
+  dragging: string;
+  settling: string;
+}>;
 
 /**
  * Container that allows to flip left and right between child views. Each
@@ -162,7 +164,7 @@ var ViewPagerAndroid = React.createClass({
 
   _onPageScrollStateChanged: function(e: Event) {
     if (this.props.onPageScrollStateChanged) {
-      this.props.onPageScrollStateChanged(VIEWPAGER_PAGE_SCROLL_STATES[e.nativeEvent.pageScrollState]);
+      this.props.onPageScrollStateChanged(e.nativeEvent.pageScrollState);
     }
   },
 
