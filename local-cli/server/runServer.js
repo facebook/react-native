@@ -33,8 +33,6 @@ function runServer(args, config, readyCallback) {
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
-    // Temporarily disable flow check until it's more stable
-    //.use(getFlowTypeCheckMiddleware(args))
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
