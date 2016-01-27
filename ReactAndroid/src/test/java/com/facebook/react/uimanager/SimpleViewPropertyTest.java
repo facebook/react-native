@@ -1,0 +1,105 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+package com.facebook.react.uimanager;
+
+import java.util.Map;
+
+import android.view.View;
+
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.touch.JSResponderHandler;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.uimanager.annotations.ReactProp;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.RobolectricTestRunner;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.offset;
+
+/**
+ * Verify {@link View} view property being applied properly by {@link SimpleViewManager}
+ */
+@RunWith(RobolectricTestRunner.class)
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+public class SimpleViewPropertyTest {
+
+  @Rule
+  public PowerMockRule rule = new PowerMockRule();
+
+  private static class ConcreteViewManager extends SimpleViewManager<View> {
+
+    @ReactProp(name = "foo")
+    public void setFoo(View view, boolean foo) {
+    }
+
+    @ReactProp(name = "bar")
+    public void setBar(View view, ReadableMap bar) {
+    }
+
+    @Override
+    protected View createViewInstance(ThemedReactContext reactContext) {
+      return new View(reactContext);
+    }
+
+    @Override
+    public String getName() {
+      return "View";
+    }
+  }
+
+  private ReactApplicationContext mContext;
+  private CatalystInstance mCatalystInstanceMock;
+  private ThemedReactContext mThemedContext;
+  private ConcreteViewManager mManager;
+
+  @Before
+  public void setup() {
+    mContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
+    mContext.initializeWithInstance(mCatalystInstanceMock);
+    mThemedContext = new ThemedReactContext(mContext, mContext);
+    mManager = new ConcreteViewManager();
+  }
+
+  public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
+    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+  }
+
+  @Test
+  public void testOpacity() {
+    View view = mManager.createView(mThemedContext, new JSResponderHandler());
+
+    mManager.updateProperties(view, buildStyles());
+    assertThat(view.getAlpha()).isEqualTo(1.0f);
+
+    mManager.updateProperties(view, buildStyles("opacity", 0.31));
+    assertThat(view.getAlpha()).isEqualTo(0.31f, offset(1e-5f));
+
+    mManager.updateProperties(view, buildStyles("opacity", null));
+    assertThat(view.getAlpha()).isEqualTo(1.0f);
+  }
+
+  @Test
+  public void testGetNativeProps() {
+    Map<String, String> nativeProps = mManager.getNativeProps();
+    assertThat(nativeProps.get("foo")).isEqualTo("boolean");
+    assertThat(nativeProps.get("bar")).isEqualTo("Map");
+  }
+}
