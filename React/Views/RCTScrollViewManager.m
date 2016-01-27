@@ -29,6 +29,12 @@ RCT_ENUM_CONVERTER(UIScrollViewKeyboardDismissMode, (@{
   @"onDrag": @(UIScrollViewKeyboardDismissModeOnDrag),
 }), UIScrollViewKeyboardDismissModeNone, integerValue)
 
+RCT_ENUM_CONVERTER(UIScrollViewIndicatorStyle, (@{
+  @"default": @(UIScrollViewIndicatorStyleDefault),
+  @"black": @(UIScrollViewIndicatorStyleBlack),
+  @"white": @(UIScrollViewIndicatorStyleWhite),
+}), UIScrollViewIndicatorStyleDefault, integerValue)
+
 @end
 
 @implementation RCTScrollViewManager
@@ -49,6 +55,7 @@ RCT_EXPORT_VIEW_PROPERTY(centerContent, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(decelerationRate, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(directionalLockEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(indicatorStyle, UIScrollViewIndicatorStyle)
 RCT_EXPORT_VIEW_PROPERTY(keyboardDismissMode, UIScrollViewKeyboardDismissMode)
 RCT_EXPORT_VIEW_PROPERTY(maximumZoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minimumZoomScale, CGFloat)

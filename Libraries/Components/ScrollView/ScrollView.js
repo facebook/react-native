@@ -142,6 +142,18 @@ var ScrollView = React.createClass({
      */
     horizontal: PropTypes.bool,
     /**
+     * The style of the scroll indicators.
+     *   - `default` (the default), same as `black`.
+     *   - `black`, scroll indicator is black. This style is good against a white content background.
+     *   - `white`, scroll indicator is white. This style is good against a black content background.
+     * @platform ios
+     */
+    indicatorStyle: PropTypes.oneOf([
+      'default', // default
+      'black',
+      'white',
+    ]),
+    /**
      * When true, the ScrollView will try to lock to only vertical or horizontal
      * scrolling while dragging.  The default value is false.
      * @platform ios
@@ -524,6 +536,7 @@ var validAttributes = {
   contentOffset: {diff: pointsDiffer},
   decelerationRate: true,
   horizontal: true,
+  indicatorStyle: true,
   keyboardDismissMode: true,
   keyboardShouldPersistTaps: true,
   maximumZoomScale: true,
