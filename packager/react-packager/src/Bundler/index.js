@@ -143,7 +143,9 @@ class Bundler {
     this._assetServer = opts.assetServer;
 
     if (opts.getTransformOptionsModulePath) {
-      this._getTransformOptionsModule = require(opts.getTransformOptionsModulePath);
+      this._transformOptionsModule = require(
+        opts.getTransformOptionsModulePath
+      );
     }
   }
 
@@ -224,6 +226,7 @@ class Bundler {
               response,
               module,
               platform,
+              isDev,
               hot,
             ).then(transformed => {
               if (bar) {
@@ -289,7 +292,8 @@ class Bundler {
             bundle,
             response,
             module,
-            platform
+            platform,
+            isDev,
           ).then(transformed => {
             if (bar) {
               bar.tick();
@@ -326,15 +330,22 @@ class Bundler {
         }
       );
     } else {
-      return this._transformer.loadFileAndTransform(
-        module.path,
-        // TODO(martinb): pass non null main (t9527509)
-        this._getTransformOptions({main: null}, {hot: true}),
-      );
+      // TODO(martinb): pass non null main (t9527509)
+      return this._getTransformOptions(
+        {main: null, dev: true, platform: 'ios'}, // TODO(martinb): avoid hard-coding platform
+        {hot: true},
+      ).then(options => {
+        return this._transformer.loadFileAndTransform(module.path, options);
+      });
     }
   }
 
   invalidateFile(filePath) {
+    if (this._transformOptionsModule) {
+      this._transformOptionsModule.onFileChange &&
+        this._transformOptionsModule.onFileChange();
+    }
+
     this._transformer.invalidateFile(filePath);
   }
 
@@ -386,7 +397,7 @@ class Bundler {
     );
   }
 
-  _transformModule(bundle, response, module, platform = null, hot = false) {
+  _transformModule(bundle, response, module, platform = null, dev = true, hot = false) {
     if (module.isAsset_DEPRECATED()) {
       return this._generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
@@ -394,13 +405,20 @@ class Bundler {
     } else if (module.isJSON()) {
       return generateJSONModule(module);
     } else {
-      return this._transformer.loadFileAndTransform(
-        path.resolve(module.path),
-        this._getTransformOptions(
-          {bundleEntry: bundle.getMainModuleName(), modulePath: module.path},
-          {hot: hot},
-        ),
-      );
+      return this._getTransformOptions(
+        {
+          bundleEntry: bundle.getMainModuleName(),
+          platform: platform,
+          dev: dev,
+          modulePath: module.path,
+        },
+        {hot: hot},
+      ).then(options => {
+        return this._transformer.loadFileAndTransform(
+          path.resolve(module.path),
+          options,
+        );
+      });
     }
   }
 
@@ -484,11 +502,20 @@ class Bundler {
   }
 
   _getTransformOptions(config, options) {
-    const transformerOptions = this._getTransformOptionsModule
-      ? this._getTransformOptionsModule(config)
-      : null;
+    const transformerOptions = this._transformOptionsModule
+      ? this._transformOptionsModule.get(Object.assign(
+          {
+            bundler: this,
+            platform: options.platform,
+            dev: options.dev,
+          },
+          config,
+        ))
+      : Promise.resolve(null);
 
-    return {...options, ...transformerOptions};
+    return transformerOptions.then(overrides => {
+      return {...options, ...overrides};
+    });
   }
 }
 
