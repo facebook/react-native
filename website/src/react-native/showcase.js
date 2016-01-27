@@ -455,7 +455,8 @@ var apps = [
   {
     name: 'ShareHows',
     icon: 'http://a4.mzstatic.com/us/r30/Purple5/v4/78/1c/83/781c8325-a1e1-4afc-f106-a629bcf3c6ef/icon175x175.png',
-    link: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
+    linkAppStore: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=kr.dobbit.sharehows',
     author: 'Dobbit Co., Ltd.'
   },
   {
