@@ -23,6 +23,7 @@ var {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  UIManager,
   View,
 } = React;
 
@@ -85,6 +86,13 @@ exports.examples = [
   render: function(): ReactElement {
     return <TouchableDelayEvents />;
   },
+}, {
+  title: '3D Touch / Force Touch',
+  description: 'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
+  render: function(): ReactElement {
+    return <ForceTouchExample />;
+  },
+  platform: 'ios',
 }];
 
 var TextOnPressBox = React.createClass({
@@ -133,18 +141,18 @@ var TouchableFeedbackEvents = React.createClass({
     return (
       <View testID="touchable_feedback_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
-        <TouchableOpacity
-          style={styles.wrapper}
-          testID="touchable_feedback_events_button"
-          onPress={() => this._appendEvent('press')}
-          onPressIn={() => this._appendEvent('pressIn')}
-          onPressOut={() => this._appendEvent('pressOut')}
-          onLongPress={() => this._appendEvent('longPress')}>
-          <Text style={styles.button}>
-            Press Me
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.wrapper}
+            testID="touchable_feedback_events_button"
+            onPress={() => this._appendEvent('press')}
+            onPressIn={() => this._appendEvent('pressIn')}
+            onPressOut={() => this._appendEvent('pressOut')}
+            onLongPress={() => this._appendEvent('longPress')}>
+            <Text style={styles.button}>
+              Press Me
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View testID="touchable_feedback_events_console" style={styles.eventLogBox}>
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
@@ -169,21 +177,21 @@ var TouchableDelayEvents = React.createClass({
     return (
       <View testID="touchable_delay_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
-        <TouchableOpacity
-          style={styles.wrapper}
-          testID="touchable_delay_events_button"
-          onPress={() => this._appendEvent('press')}
-          delayPressIn={400}
-          onPressIn={() => this._appendEvent('pressIn - 400ms delay')}
-          delayPressOut={1000}
-          onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
-          delayLongPress={800}
-          onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
-          <Text style={styles.button}>
-            Press Me
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.wrapper}
+            testID="touchable_delay_events_button"
+            onPress={() => this._appendEvent('press')}
+            delayPressIn={400}
+            onPressIn={() => this._appendEvent('pressIn - 400ms delay')}
+            delayPressOut={1000}
+            onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
+            delayLongPress={800}
+            onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
+            <Text style={styles.button}>
+              Press Me
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.eventLogBox} testID="touchable_delay_events_console">
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
@@ -195,6 +203,40 @@ var TouchableDelayEvents = React.createClass({
     var eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
+  },
+});
+
+var ForceTouchExample = React.createClass({
+  getInitialState: function() {
+    return {
+      force: 0,
+    };
+  },
+  _renderConsoleText: function() {
+    return View.forceTouchAvailable ?
+      'Force: ' + this.state.force.toFixed(3) :
+      '3D Touch is not available on this device';
+  },
+  render: function() {
+    return (
+      <View testID="touchable_3dtouch_event">
+        <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
+          <Text>{this._renderConsoleText()}</Text>
+        </View>
+        <View style={[styles.row, {justifyContent: 'center'}]}>
+          <View
+            style={styles.wrapper}
+            testID="touchable_3dtouch_button"
+            onStartShouldSetResponder={() => true}
+            onResponderMove={(event) => this.setState({force: event.nativeEvent.force})}
+            onResponderRelease={(event) => this.setState({force: 0})}>
+            <Text style={styles.button}>
+              Press Me
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
   },
 });
 
@@ -240,6 +282,14 @@ var styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
+  },
+  forceTouchBox: {
+    padding: 10,
+    margin: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#f0f0f0',
+    backgroundColor: '#f9f9f9',
+    alignItems: 'center',
   },
   textBlock: {
     fontWeight: '500',

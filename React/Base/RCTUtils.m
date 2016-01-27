@@ -434,6 +434,19 @@ UIWindow *__nullable RCTKeyWindow(void)
   return RCTSharedApplication().keyWindow;
 }
 
+BOOL RCTForceTouchAvailable(void)
+{
+  static BOOL forceSupported;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    forceSupported = [UITraitCollection class] &&
+    [UITraitCollection instancesRespondToSelector:@selector(forceTouchCapability)];
+  });
+
+  return forceSupported &&
+    (RCTKeyWindow() ?: [UIView new]).traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable;
+}
+
 UIAlertView *__nullable RCTAlertView(NSString *title,
                                      NSString *__nullable message,
                                      id __nullable delegate,
@@ -475,7 +488,7 @@ id __nullable RCTNilIfNull(id __nullable value)
   return value == (id)kCFNull ? nil : value;
 }
 
-RCT_EXTERN double RCTZeroIfNaN(double value)
+double RCTZeroIfNaN(double value)
 {
   return isnan(value) || isinf(value) ? 0 : value;
 }

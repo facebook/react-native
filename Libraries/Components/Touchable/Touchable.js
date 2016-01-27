@@ -49,24 +49,24 @@ var queryLayoutByID = require('queryLayoutByID');
  *
  * - Choose the rendered component who's touches should start the interactive
  *   sequence. On that rendered node, forward all `Touchable` responder
- *   handlers. You can choose any rendered node you like. Choose a node who's
+ *   handlers. You can choose any rendered node you like. Choose a node whose
  *   hit target you'd like to instigate the interaction sequence:
  *
  *   // In render function:
  *   return (
- *     <div
+ *     <View
  *       onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
  *       onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
  *       onResponderGrant={this.touchableHandleResponderGrant}
  *       onResponderMove={this.touchableHandleResponderMove}
  *       onResponderRelease={this.touchableHandleResponderRelease}
  *       onResponderTerminate={this.touchableHandleResponderTerminate}>
- *       <div>
+ *       <View>
  *         Even though the hit detection/interactions are triggered by the
  *         wrapping (typically larger) node, we usually end up implementing
  *         custom logic that highlights this inner one.
- *       </div>
- *     </div>
+ *       </View>
+ *     </View>
  *   );
  *
  * - You may set up your own handlers for each of these events, so long as you
