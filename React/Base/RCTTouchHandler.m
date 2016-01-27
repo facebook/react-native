@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     }
 
     // Create touch
-    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
+    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:11];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
     reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
@@ -150,6 +150,12 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"locationX"] = @(touchViewLocation.x);
   reactTouch[@"locationY"] = @(touchViewLocation.y);
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
+
+  if ([nativeTouch.view respondsToSelector:@selector(traitCollection)] &&
+      [nativeTouch.view.traitCollection respondsToSelector:@selector(forceTouchCapability)]) {
+
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force/nativeTouch.maximumPossibleForce));
+  }
 }
 
 /**
