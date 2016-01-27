@@ -51,6 +51,7 @@ class ImageStore {
    * Note that it is very inefficient to transfer large quantities of binary
    * data between JS and native code, so you should avoid calling this more
    * than necessary.
+   * @platform ios
    */
   static addImageFromBase64(
     base64ImageData: string,

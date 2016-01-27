@@ -19,6 +19,8 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
+import com.facebook.react.modules.camera.ImageEditingManager;
+import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
@@ -69,6 +71,8 @@ public class MainReactPackage implements ReactPackage {
       new DatePickerDialogModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
+      new ImageEditingManager(reactContext),
+      new ImageStoreManager(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),

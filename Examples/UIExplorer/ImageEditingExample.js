@@ -67,22 +67,21 @@ class SquareImageCropper extends React.Component {
     this._fetchRandomPhoto();
   }
 
-  _fetchRandomPhoto() {
-    CameraRoll.getPhotos(
-      {first: PAGE_SIZE},
-      (data) => {
-        if (!this._isMounted) {
-          return;
-        }
-        var edges = data.edges;
-        var edge = edges[Math.floor(Math.random() * edges.length)];
-        var randomPhoto = edge && edge.node && edge.node.image;
-        if (randomPhoto) {
-          this.setState({randomPhoto});
-        }
-      },
-      (error) => undefined
-    );
+  async _fetchRandomPhoto() {
+    try {
+      const data = await CameraRoll.getPhotos({first: PAGE_SIZE});
+      if (!this._isMounted) {
+        return;
+      }
+      var edges = data.edges;
+      var edge = edges[Math.floor(Math.random() * edges.length)];
+      var randomPhoto = edge && edge.node && edge.node.image;
+      if (randomPhoto) {
+        this.setState({randomPhoto});
+      }
+    } catch (error) {
+      console.warn("Can't get a photo from camera roll", error);
+    }
   }
 
   componentWillUnmount() {
@@ -209,6 +208,8 @@ class ImageCropper extends React.Component {
         height: this.props.size.height,
       };
     }
+    // a quick hack for android because Android ScrollView does not have zoom feature
+    this._scaledImageSize.width = 2 * this._scaledImageSize.width;
     this._contentOffset = {
       x: (this._scaledImageSize.width - this.props.size.width) / 2,
       y: (this._scaledImageSize.height - this.props.size.height) / 2,
