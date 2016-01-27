@@ -166,9 +166,58 @@ class Bundler {
     });
   }
 
+  _sourceHMRURL(platform, path) {
+    return this._hmrURL(
+      'http://localhost:8081', // TODO: (martinb) avoid hardcoding
+      platform,
+      'bundle',
+      path,
+    );
+  }
+
+  _sourceMappingHMRURL(platform, path) {
+    // Chrome expects `sourceURL` when eval'ing code
+    return this._hmrURL(
+      '\/\/# sourceURL=',
+      platform,
+      'map',
+      path,
+    );
+  }
+
+  _hmrURL(prefix, platform, extensionOverride, path) {
+    const matchingRoot = this._projectRoots.find(root => path.startsWith(root));
+
+    if (!matchingRoot) {
+      throw new Error('No matching project root for ', path);
+    }
+
+    const extensionStart = path.lastIndexOf('.');
+    let resource = path.substring(
+      matchingRoot.length,
+      extensionStart !== -1 ? extensionStart : undefined,
+    );
+
+    const extension = extensionStart !== -1
+      ? path.substring(extensionStart + 1)
+      : null;
+
+    return (
+      prefix + resource +
+      '.' + extensionOverride + '?' +
+      'platform=' + platform + '&runModule=false&entryModuleOnly=true&hot=true'
+    );
+  }
+
   bundleForHMR(options) {
     return this._bundle({
-      bundle: new HMRBundle(),
+      bundle: new HMRBundle({
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
+        sourceMappingURLFn: this._sourceMappingHMRURL.bind(
+          this,
+          options.platform,
+        ),
+      }),
       hot: true,
       ...options,
     });
@@ -185,6 +234,7 @@ class Bundler {
     platform,
     unbundle: isUnbundle,
     hot: hot,
+    entryModuleOnly,
   }) {
     const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
@@ -195,18 +245,25 @@ class Bundler {
       bundle.setMainModuleName(response.mainModuleId);
       transformEventId = Activity.startEvent('transform');
 
-      const moduleSystemDeps = includeSystemDependencies
-        ? this._resolver.getModuleSystemDependencies(
-          { dev: isDev, platform, isUnbundle }
-        )
-        : [];
+      let dependencies;
+      if (entryModuleOnly) {
+        dependencies = response.dependencies.filter(module =>
+          module.path.endsWith(entryFile)
+        );
+      } else {
+        const moduleSystemDeps = includeSystemDependencies
+          ? this._resolver.getModuleSystemDependencies(
+            { dev: isDev, platform, isUnbundle }
+          )
+          : [];
 
-      const modulesToProcess = modules || response.dependencies;
-      const dependencies = moduleSystemDeps.concat(modulesToProcess);
+        const modulesToProcess = modules || response.dependencies;
+        const dependencies = moduleSystemDeps.concat(modulesToProcess);
 
-      bundle.setNumPrependedModules && bundle.setNumPrependedModules(
-        response.numPrependedDependencies + moduleSystemDeps.length
-      );
+        bundle.setNumPrependedModules && bundle.setNumPrependedModules(
+          response.numPrependedDependencies + moduleSystemDeps.length
+        );
+      }
 
       let bar;
       if (process.stdout.isTTY) {

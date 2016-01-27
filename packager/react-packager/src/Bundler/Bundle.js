@@ -206,7 +206,7 @@ class Bundle extends BundleBase {
   _getCombinedSourceMaps(options) {
     const result = {
       version: 3,
-      file: 'bundle.js',
+      file: this._getSourceMapFile(),
       sections: [],
     };
 
@@ -246,7 +246,7 @@ class Bundle extends BundleBase {
 
     const mappings = this._getMappings();
     const map = {
-      file: 'bundle.js',
+      file: this._getSourceMapFile(),
       sources: _.pluck(super.getModules(), 'sourcePath'),
       version: 3,
       names: [],
@@ -260,6 +260,12 @@ class Bundle extends BundleBase {
   getEtag() {
     var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
     return eTag;
+  }
+
+  _getSourceMapFile() {
+    return this._sourceMapUrl
+      ? this._sourceMapUrl.replace('.map', '.bundle')
+      : 'bundle.js';
   }
 
   _getMappings() {

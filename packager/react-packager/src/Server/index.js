@@ -118,6 +118,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  entryModuleOnly: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -527,6 +531,11 @@ class Server {
         false
       ),
       platform: platform,
+      entryModuleOnly: this._getBoolOptionFromQuery(
+        urlObj.query,
+        'entryModuleOnly',
+        false,
+      ),
     };
   }
 
