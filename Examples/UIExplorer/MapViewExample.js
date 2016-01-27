@@ -313,7 +313,7 @@ exports.examples = [
             }}>
             <Image
               style={{width:30, height:30}}
-              source={require('image!uie_thumb_selected')}
+              source={require('./uie_thumb_selected.png')}
             />
           </TouchableOpacity>
         ),
