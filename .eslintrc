@@ -43,7 +43,28 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false
+    "pit": false,
+
+    // Flow global types.
+    "ReactComponent": false,
+    "ReactClass": false,
+    "ReactElement": false,
+    "ReactPropsCheckType": false,
+    "ReactPropsChainableTypeChecker": false,
+    "ReactPropTypes": false,
+    "$Either": false,
+    "$All": false,
+    "$Tuple": false,
+    "$Supertype": false,
+    "$Subtype": false,
+    "$Shape": false,
+    "$Diff": false,
+    "$Keys": false,
+    "$Enum": false,
+    "$Exports": false,
+    "$FlowIssue": false,
+    "$FlowFixMe": false,
+    "$FixMe": false
   },
 
   "rules": {
