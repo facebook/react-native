@@ -48,7 +48,7 @@ import com.facebook.react.uimanager.ViewProps;
   private @Nullable DrawView mDrawView;
   private @Nullable DrawBackgroundColor mDrawBackground;
   private int mMoveToIndexInParent;
-  private boolean mIsOverflowVisible = true;
+  private boolean mClipToBounds = false;
 
   /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (!mountsToView()) {
@@ -101,12 +101,12 @@ import com.facebook.react.uimanager.ViewProps;
 
   @ReactProp(name = "overflow")
   public void setOverflow(String overflow) {
-    mIsOverflowVisible = "visible".equals(overflow);
+    mClipToBounds = "hidden".equals(overflow);
     invalidate();
   }
 
-  public final boolean isOverflowVisible() {
-    return mIsOverflowVisible;
+  public final boolean clipToBounds() {
+    return mClipToBounds;
   }
 
   @Override

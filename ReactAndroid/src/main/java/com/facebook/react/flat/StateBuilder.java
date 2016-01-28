@@ -375,7 +375,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     node.collectState(this, left, top, right, bottom, clipLeft, clipTop, clipRight, clipBottom);
 
-    if (node.isOverflowVisible()) {
+    if (!node.clipToBounds()) {
       clipLeft = parentClipLeft;
       clipTop = parentClipTop;
       clipRight = parentClipRight;
