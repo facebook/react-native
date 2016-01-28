@@ -507,10 +507,6 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH, dimensions)
 RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT, dimensions)
-RCT_DIMENSIONS_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
-RCT_DIMENSIONS_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
-RCT_DIMENSIONS_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
-RCT_DIMENSIONS_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 
