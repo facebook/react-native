@@ -164,7 +164,7 @@
     <Compile Include="DevSupport\IDevSupportManager.cs" />
     <Compile Include="Modules\AppState\AppStateModule.cs" />
     <Compile Include="Modules\Core\JavaScriptException.cs" />
-    <Compile Include="Modules\Debug\SourceCodeModule.cs" />
+    <Compile Include="Modules\Core\SourceCodeModule.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
