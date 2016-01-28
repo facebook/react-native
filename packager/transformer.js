@@ -41,11 +41,14 @@ const getBabelRC = (function() {
     // Babel to do that automatically and apply the transforms accordingly
     // (which works because we pass in `filename` and `sourceFilename` to
     // Babel when we transform).
-    const projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    let projectBabelRCPath;
+    if (projectRoots && projectRoots.length > 0) {
+      projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
+    }
 
     // If a .babelrc file doesn't exist in the project,
     // use the Babel config provided with react-native.
-    if (!fs.existsSync(projectBabelRCPath)) {
+    if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
       babelRC = json5.parse(
         fs.readFileSync(
           path.resolve(__dirname, 'react-packager', 'rn-babelrc.json')));
