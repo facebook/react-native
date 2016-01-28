@@ -48,6 +48,11 @@ public class ReactScrollViewHelper {
 
   private static void emitScrollEvent(ViewGroup scrollView, ScrollEventType scrollEventType) {
     View contentView = scrollView.getChildAt(0);
+
+    if (contentView == null) {
+      return;
+    }
+
     ReactContext reactContext = (ReactContext) scrollView.getContext();
     reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
         ScrollEvent.obtain(
