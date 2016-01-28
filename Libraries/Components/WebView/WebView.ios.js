@@ -18,7 +18,9 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
+var ScrollView = require('ScrollView')
 
+var processDecelerationRate = require('processDecelerationRate');
 var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var requireNativeComponent = require('requireNativeComponent');
@@ -117,6 +119,17 @@ var WebView = React.createClass({
      * @platform ios
      */
     bounces: PropTypes.bool,
+    /**
+     * A floating-point number that determines how quickly the scroll view
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
+     *   - Normal: 0.998
+     *   - Fast: 0.9 (the default for iOS WebView)
+     * @platform ios
+     */
+    decelerationRate: ScrollView.propTypes.decelerationRate,
     /**
      * @platform ios
      */
@@ -228,6 +241,8 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
+    var decelerationRate = processDecelerationRate(this.props.decelerationRate);
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -238,6 +253,7 @@ var WebView = React.createClass({
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
+        decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
