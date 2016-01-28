@@ -258,7 +258,7 @@ class Bundler {
           : [];
 
         const modulesToProcess = modules || response.dependencies;
-        const dependencies = moduleSystemDeps.concat(modulesToProcess);
+        dependencies = moduleSystemDeps.concat(modulesToProcess);
 
         bundle.setNumPrependedModules && bundle.setNumPrependedModules(
           response.numPrependedDependencies + moduleSystemDeps.length
