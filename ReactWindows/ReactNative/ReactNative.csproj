@@ -302,7 +302,10 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="JavaScript\lib\" />
+    <Folder Include="JavaScript\uwp-native\" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Facebook.CSSLayout">
       <HintPath>..\References\Facebook.CSSLayout.dll</HintPath>
