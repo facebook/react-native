@@ -22,6 +22,7 @@ var {
   Image,
   ImageEditor,
   NativeModules,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -187,31 +188,49 @@ class SquareImageCropper extends React.Component {
 }
 
 class ImageCropper extends React.Component {
-  _scaledImageSize: ImageSize;
   _contentOffset: ImageOffset;
+  _maximumZoomScale: number;
+  _minimumZoomScale: number;
+  _scaledImageSize: ImageSize;
+  _horizontal: boolean;
 
   componentWillMount() {
     // Scale an image to the minimum size that is large enough to completely
     // fill the crop box.
     var widthRatio = this.props.image.width / this.props.size.width;
     var heightRatio = this.props.image.height / this.props.size.height;
-    if (widthRatio < heightRatio) {
-      this._scaledImageSize = {
-        width: this.props.size.width,
-        height: this.props.image.height / widthRatio,
-      };
-    } else {
+    this._horizontal = widthRatio > heightRatio;
+    if (this._horizontal) {
       this._scaledImageSize = {
         width: this.props.image.width / heightRatio,
         height: this.props.size.height,
       };
+    } else {
+      this._scaledImageSize = {
+        width: this.props.size.width,
+        height: this.props.image.height / widthRatio,
+      };
+      if (Platform.OS === 'android') {
+        // hack to work around Android ScrollView a) not supporting zoom, and
+        // b) not supporting vertical scrolling when nested inside another
+        // vertical ScrollView (which it is, when displayed inside UIExplorer)
+        this._scaledImageSize.width *= 2;
+        this._scaledImageSize.height *= 2;
+        this._horizontal = true;
+      }
     }
-    // a quick hack for android because Android ScrollView does not have zoom feature
-    this._scaledImageSize.width = 2 * this._scaledImageSize.width;
     this._contentOffset = {
       x: (this._scaledImageSize.width - this.props.size.width) / 2,
       y: (this._scaledImageSize.height - this.props.size.height) / 2,
     };
+    this._maximumZoomScale = Math.min(
+      this.props.image.width / this._scaledImageSize.width,
+      this.props.image.height / this._scaledImageSize.height
+    );
+    this._minimumZoomScale = Math.max(
+      this.props.size.width / this._scaledImageSize.width,
+      this.props.size.height / this._scaledImageSize.height 
+    );
     this._updateTransformData(
       this._contentOffset,
       this._scaledImageSize,
@@ -253,8 +272,9 @@ class ImageCropper extends React.Component {
         automaticallyAdjustContentInsets={false}
         contentOffset={this._contentOffset}
         decelerationRate="fast"
-        horizontal={true}
-        maximumZoomScale={3.0}
+        horizontal={this._horizontal}
+        maximumZoomScale={this._maximumZoomScale}
+        minimumZoomScale={this._minimumZoomScale}
         onMomentumScrollEnd={this._onScroll.bind(this)}
         onScrollEndDrag={this._onScroll.bind(this)}
         showsHorizontalScrollIndicator={false}
