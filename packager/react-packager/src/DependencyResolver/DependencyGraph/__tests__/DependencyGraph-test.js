@@ -4117,11 +4117,11 @@ describe('DependencyGraph', function() {
       return dgraph.getDependencies('/root/index.js')
         .then(response => response.finalize())
         .then(response => {
-          expect(response.mocks).toBe(null);
+          expect(response.mocks).toEqual({});
         });
     });
 
-    pit('retrieves a list of all mocks in the system', () => {
+    pit('retrieves a list of all required mocks', () => {
       var root = '/root';
       fs.__setMockFilesystem({
         'root': {
@@ -4133,6 +4133,7 @@ describe('DependencyGraph', function() {
             '/**',
             ' * @providesModule b',
             ' */',
+            'require("A");',
           ].join('\n'),
         },
       });
