@@ -13,6 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Media3D;
@@ -29,6 +30,7 @@ namespace ReactNative.Views.TextInput
         private const string PROP_ROTATION_X = "rotationX";
         private const string PROP_PLACEHOLDER = "placeholder";
         private const string PROP_TEXT_ALIGN = "textAlign";
+        private const string PROP_VERITCAL_TEXT_ALIGN = "textAlignVertical";
         private const string PROP_MAX_LENGTH = "maxLength";
         private const string PROP_TEXT = "text";
         private const string PROP_IS_EDITABLE = "editable";
@@ -104,11 +106,37 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(PROP_TEXT_ALIGN)]
         public void SetTextAlign(TextBox view, string alignment)
         {
-            var textAlignment = default(TextAlignment);
+            var textAlignment = default(HorizontalAlignment);
             if (Enum.TryParse(alignment, out textAlignment))
             {
-                view.TextAlignment = textAlignment;
+                view.HorizontalAlignment = textAlignment;
             }
+        }
+
+        /// <summary>
+        /// Sets the text alignment property on the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="view">The text input box control.</param>
+        /// <param name="alignment">The text alignment.</param>
+        [ReactProperty(PROP_VERITCAL_TEXT_ALIGN)]
+        public void SetTextVerticalAlign(TextBox view, string alignment)
+        {
+            var textAlignment = default(VerticalAlignment);
+            if (Enum.TryParse(alignment, out textAlignment))
+            {
+                view.VerticalAlignment = textAlignment;
+            }
+        }
+
+        /// <summary>
+        /// Sets the editablity property on the <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="view">The text input box control.</param>
+        /// <param name="editable">The text alignment.</param>
+        [ReactProperty(PROP_IS_EDITABLE)]
+        public void SetEditable(TextBox view, bool editable)
+        {
+            view.IsReadOnly = editable;
         }
 
         /// <summary>
@@ -127,12 +155,9 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="color"></param>
         [ReactProperty(ViewProperties.Color)]
-        public void SetColor(TextBox view, uint? color)
+        public void SetColor(TextBox view, uint color)
         {
-            if (color.HasValue)
-            {
-                view.Foreground = new SolidColorBrush(ColorHelpers.Parse(color.Value));
-            }
+            view.Foreground = new SolidColorBrush(ColorHelpers.Parse(color));
         }
 
         /// <summary>
@@ -165,7 +190,15 @@ namespace ReactNative.Views.TextInput
         public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
         {
             var senderTextInput = (TextBox)sender;
-            GetEventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
+            if(HasFocus(senderTextInput.FocusState))
+            {
+                GetEventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
+            }            
+        }
+
+        private static bool HasFocus(FocusState state)
+        {
+            return state == FocusState.Keyboard || state == FocusState.Programmatic;
         }
 
         /// <summary>
@@ -189,7 +222,10 @@ namespace ReactNative.Views.TextInput
         protected override void OnDropViewInstance(ThemedReactContext reactContext, TextBox view)
         {
             view.TextChanged -= this.OnInterceptTextChangeEvent;
-            view.GotFocus -= this.OnInterceptGotFocusEvent;
+            //TODO: Need to figure out how to get this to work. Scared that there is no way to truly detect the focus event 
+            //of a TextBox. Spent 5 hours trying every variation imagineable.
+            //view.GotFocus -= this.OnInterceptGotFocusEvent;
+            
             view.LostFocus -= this.OnInterceptLostFocusEvent;
         }
 
@@ -211,8 +247,19 @@ namespace ReactNative.Views.TextInput
         protected override void AddEventEmitters(ThemedReactContext reactContext, TextBox view)
         {
             view.TextChanged += this.OnInterceptTextChangeEvent;
-            view.GotFocus += this.OnInterceptGotFocusEvent;
+            //TODO: Commenting out until we're able to figure how to gracefully support on focus event behavior. 
+            //view.GotFocus += this.OnInterceptGotFocusEvent;
             view.LostFocus += this.OnInterceptLostFocusEvent;
+        }
+
+        /// <summary>
+        /// Sets the border width for a <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="text"></param>
+        [ReactProperty(ViewProperties.BorderWidth)]
+        public void SetBorderWidth(TextBox root, int border)
+        {
+            root.BorderThickness = new Thickness(border);
         }
 
         protected override void UpdateExtraData(TextBox root, object extraData)
@@ -251,7 +298,7 @@ namespace ReactNative.Views.TextInput
        
         private EventDispatcher GetEventDispatcher(TextBox textBox)
         {
-            return textBox?.GetReactContext().CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
+            return textBox?.GetReactContext().GetNativeModule<UIManagerModule>().EventDispatcher;
         }
     }
 }

@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace ReactNative.Views.TextInput
 {
-    class ReactTextInputFocusEvent : Event
+    /// <summary>
+    /// Emits events to <see cref="RCTEventEmitter"/> for onfocus changes to <see cref="TextBox"/>.
+    /// </summary>
+    public class ReactTextInputFocusEvent : Event
     {
         public static readonly String EVENT_NAME = "topFocus";
 
@@ -25,12 +28,26 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
+        /// Disabling event coalescing.
+        /// </summary>
+        /// <remarks>
+        /// Return false if the event can never be coalesced.
+        /// </remarks>
+        public override bool CanCoalesce
+        {
+            get
+            {
+                return false;
+            }
+        }
+        
+        /// <summary>
         /// Push the on focus event up to the event emitter.
         /// </summary>
         /// <param name="rctEventEmitter">The event emitter to dispatch the event to.</param>
         public override void Dispatch(RCTEventEmitter eventEmitter)
         {
-            eventEmitter.receiveEvent(this.ViewTag, this.EventName, this.GetEventJavascriptProperties);
+            eventEmitter.receiveEvent(ViewTag, EventName, this.GetEventJavascriptProperties);
         }
 
         private JObject GetEventJavascriptProperties

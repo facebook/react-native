@@ -11,12 +11,26 @@ namespace ReactNative.Views.TextInput
     /// <summary>
     /// Event emitted by <see cref="TextBox"/> native view when the control gains focus.
     /// </summary>
-    class ReactTextInputBlurEvent : Event
+    class ReactTextInputBlurEvent : EventBase
     {
         public static readonly String EVENT_NAME = "topBlur";
 
-        public ReactTextInputBlurEvent(int viewId) : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
+        public ReactTextInputBlurEvent(int viewId) : base(viewId)
         {
+        }
+
+        /// <summary>
+        /// Disabling event coalescing.
+        /// </summary>
+        /// <remarks>
+        /// Return false if the event can never be coalesced.
+        /// </remarks>
+        public override bool CanCoalesce
+        {
+            get
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -27,26 +41,6 @@ namespace ReactNative.Views.TextInput
             get
             {
                 return EVENT_NAME;
-            }
-        }
-
-        /// <summary>
-        /// Push the event up to the event emitter.
-        /// </summary>
-        /// <param name="rctEventEmitter">The event emitter to dispatch the event to.</param>
-        public override void Dispatch(RCTEventEmitter eventEmitter)
-        {
-            eventEmitter.receiveEvent(this.ViewTag, this.EventName, this.GetEventJavascriptProperties);
-        }
-
-        private JObject GetEventJavascriptProperties
-        {
-            get
-            {
-                return new JObject()
-                {
-                    {"target", this.ViewTag }
-                };
             }
         }
     }

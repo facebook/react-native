@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -28,6 +29,11 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         public FontWeight? FontWeight { get; set; }
 
+        /// <summary>
+        /// Sets / Gets the border background <see cref="Brush"/> of a <see cref="TextBox"/>.
+        /// </summary>
+        public Color BorderBackground { get; set; }
+        
         /// <summary>
         /// Sets / Gets the font family of a <see cref="TextBox"/>.
         /// </summary>
