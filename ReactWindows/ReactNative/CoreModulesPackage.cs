@@ -5,7 +5,6 @@ using ReactNative.UIManager;
 using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
 
 namespace ReactNative
 {
