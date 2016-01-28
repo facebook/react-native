@@ -20,12 +20,20 @@ var slugify = require('slugify');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
+function renderEnumValue(value) {
+  // Use single quote strings even when we are given double quotes
+  if (value.match(/^"(.+)"$/)) {
+    return "'" + value.slice(1, -1) + "'";
+  }
+  return value;
+}
+
 function renderType(type) {
   if (type.name === 'enum') {
     if (typeof type.value === 'string') {
       return type.value;
     }
-    return 'enum(' + type.value.map((v) => v.value).join(', ') + ')';
+    return 'enum(' + type.value.map((v) => renderEnumValue(v.value)).join(', ') + ')';
   }
 
   if (type.name === 'shape') {
