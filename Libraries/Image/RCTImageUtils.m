@@ -321,7 +321,7 @@ UIImage *__nullable RCTTransformImage(UIImage *image,
   CGContextConcatCTM(currentContext, transform);
   [image drawAtPoint:CGPointZero];
   UIImage *result = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsGetCurrentContext();
+  UIGraphicsEndImageContext();
   return result;
 }
 
