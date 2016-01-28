@@ -227,7 +227,7 @@ namespace ReactNative.UIManager
                         e => e));
 
             var result = default(object);
-            if (!lookup.TryGetValue(value.ToLowerInvariant(), out result))
+            if (!lookup.TryGetValue(value.ToLowerInvariant().Replace("-", ""), out result))
             {
                 throw new ArgumentOutOfRangeException(
                     paramName,

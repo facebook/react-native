@@ -38,6 +38,20 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
+        /// Disabling event coalescing.
+        /// </summary>
+        /// <remarks>
+        /// Return false if the event can never be coalesced.
+        /// </remarks>
+        public override bool CanCoalesce
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Push the event up to the event emitter.
         /// </summary>
         /// <param name="rctEventEmitter">The event emitter to dispatch the event to.</param>
@@ -53,9 +67,8 @@ namespace ReactNative.Views.TextInput
                 return new JObject()
                 {
                     { "width", _ContentWidth },
-                    { "height", _ContentWidth },
+                    { "height", _ContentHeight },
                     { "text", _Text },
-                    { "width", _ContentWidth },
                     {"target", this.ViewTag }
                 };
             }

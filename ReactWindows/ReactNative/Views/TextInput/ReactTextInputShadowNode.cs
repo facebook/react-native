@@ -139,7 +139,21 @@ namespace ReactNative.Views.TextInput
             _textBoxStyle.Text = text;
             MarkUpdated();
         }
-        
+
+        /// <summary>
+        /// Sets the the backgrund border color for a <see cref="TextBox"/>.
+        /// </summary>
+        /// <param name="text"></param>
+        [ReactProperty(ViewProperties.BorderColor)]
+        public void SetBorderColor(uint? color)
+        {
+            if (color.HasValue)
+            {
+                _textBoxStyle.BorderBackground = ColorHelpers.Parse(color.Value);
+                MarkUpdated();
+            }
+        }
+
         /// <summary>
         /// Marks the node as updated/dirty. This occurs on any property 
         /// changes affecting the measurement of the <see cref="TextBox"/>.
@@ -160,17 +174,18 @@ namespace ReactNative.Views.TextInput
                                  node.GetPaddingSpace(CSSSpacingType.Right), node.GetPaddingSpace(CSSSpacingType.Bottom));
         }
 
-        private static MeasureOutput MeasureText(CSSNode node, float width, float height)
+        protected virtual MeasureOutput MeasureText(CSSNode node, float width, float height)
         {
             var shadowNode = (ReactTextInputShadowNode)node;
-            var textBlock = new TextBox();
-            shadowNode._textBoxStyle.Padding = PaddingThickness(shadowNode);
-            textBlock.SetReactTextBoxProperties(shadowNode._textBoxStyle);
-
+            var textBox = new TextBox();
+ 
+            textBox.SetReactTextBoxProperties(shadowNode._textBoxStyle);
+            
+            var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
             var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
-            textBlock.Measure(new Size(width, adjustedHeight));
-
-            return new MeasureOutput((float)textBlock.DesiredSize.Width, (float)textBlock.DesiredSize.Height);
+            textBox.MaxHeight = adjustedHeight;
+            textBox.MaxWidth = adjustedWidth;
+            return new MeasureOutput((float)textBox.DesiredSize.Width, (float)textBox.DesiredSize.Height);
         }
     }
 }

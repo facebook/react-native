@@ -1,5 +1,6 @@
 ﻿using ReactNative.Views.TextInput;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.TextInput
 {
@@ -36,6 +37,11 @@ namespace ReactNative.Views.TextInput
                 textBox.FontFamily = reactProperties.FontFamily;
             }
 
+            if (reactProperties.BorderBackground != null)
+            {
+                textBox.BorderBrush = new SolidColorBrush(reactProperties.BorderBackground);
+            }
+            
             if (reactProperties.Padding.HasValue)
             {
                 textBox.Padding = reactProperties.Padding.Value;

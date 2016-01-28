@@ -28,7 +28,10 @@ namespace ReactNative.UIManager
         {
             DefaultStyleKey = typeof(BorderedContentControl);
             BorderBrush = s_defaultBorderBrush;
-            base.Content = content;
+            if (content != null)
+            {
+                base.Content = content;
+            }
         }
 
         private bool HasCustomBorder
@@ -51,7 +54,7 @@ namespace ReactNative.UIManager
         {
             get
             {
-                if (!HasCustomBorder)
+                if (!HasCustomBorder || HasImageComponent)
                 {
                     return (UIElement)base.Content;
                 }
@@ -235,20 +238,40 @@ namespace ReactNative.UIManager
             }
         }
 
+        private bool HasImageComponent
+        {
+            get
+            {
+                return base.Content != null &&
+                       base.Content.GetType() == typeof(Border) &&
+                       ((Border)base.Content).Background != null;
+            }
+        }
+
         private void EnsureBorder()
         {
             if (HasCustomBorder)
             {
                 return;
             }
-
+            
             var inner = Content;
-            base.Content = null;
             _customBorder = new Border();
             _customBorder.BorderThickness = BorderThickness;
             _customBorder.BorderBrush = BorderBrush;
+
+            if(HasImageComponent)
+            {
+                var borderImage = inner as Border;
+                _customBorder.Background = borderImage.Background;
+            }
+            else
+            {
+                _customBorder.Child = inner;
+            }
+
+            base.Content = null;
             base.Content = _customBorder;
-            _customBorder.Child = inner;
         }
 
         private void EnsureSideBorders()
