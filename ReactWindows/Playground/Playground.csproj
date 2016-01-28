@@ -96,9 +96,6 @@
     <Content Include="Resources\main.jsbundle">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\main.dev.jsbundle">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
