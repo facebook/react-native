@@ -17,12 +17,6 @@ var Transforms = require('../transforms');
 // Javascript code
 function internalTransforms(sourceCode, filename, options) {
   var plugins = resolvePlugins(Transforms.getAll(options));
-  if (plugins.length === 0) {
-    return {
-      code: sourceCode,
-      filename: filename,
-    };
-  }
 
   var result = babel.transform(sourceCode, {
     retainLines: true,

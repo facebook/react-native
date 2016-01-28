@@ -8,6 +8,8 @@
  */
 'use strict';
 
+const inlinePlatformVariablesPlugin = require('./babel-plugin-transform-inline-platform-variables');
+
 exports.getAll = function(options) {
   var plugins = [];
   if (options.hot) {
@@ -26,8 +28,11 @@ exports.getAll = function(options) {
       'transform-es2015-constants',
       ['transform-es2015-modules-commonjs', {strict: false, allowTopLevelThis: true}],
     ]);
+  } else {
+    plugins = plugins.concat([
+      [inlinePlatformVariablePlugins, {platform: options.platform}]
+    ]);
   }
 
   return plugins;
 };
-
