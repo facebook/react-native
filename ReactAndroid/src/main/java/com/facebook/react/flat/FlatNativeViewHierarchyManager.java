@@ -45,6 +45,11 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
     FlatViewGroup root = new FlatViewGroup(themedContext);
     view.addView(root);
 
+    // When unmounting, ReactInstanceManager.detachViewFromInstance() will check id of the
+    // top-level View (SizeMonitoringFrameLayout) and pass it back to JS. We want that View's id to
+    // be set, otherwise NativeViewHierarchyManager will not be able to cleanup properly.
+    view.setId(tag);
+
     addRootViewGroup(tag, root, themedContext);
   }
 
