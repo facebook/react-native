@@ -30,8 +30,6 @@ var {
   View,
 } = React;
 
-var RCTScrollViewConsts = UIManager.RCTScrollView.Constants;
-
 var PAGE_SIZE = 20;
 
 type ImageOffset = {
@@ -249,17 +247,12 @@ class ImageCropper extends React.Component {
   }
 
   render() {
-    var decelerationRate =
-      RCTScrollViewConsts && RCTScrollViewConsts.DecelerationRate ?
-        RCTScrollViewConsts.DecelerationRate.Fast :
-        0;
-
     return (
       <ScrollView
         alwaysBounceVertical={true}
         automaticallyAdjustContentInsets={false}
         contentOffset={this._contentOffset}
-        decelerationRate={decelerationRate}
+        decelerationRate="fast"
         horizontal={true}
         maximumZoomScale={3.0}
         onMomentumScrollEnd={this._onScroll.bind(this)}

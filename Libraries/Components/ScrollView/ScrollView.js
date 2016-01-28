@@ -32,7 +32,7 @@ var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
 var processColor = require('processColor');
-
+var processDecelerationRate = require('processDecelerationRate');
 var PropTypes = React.PropTypes;
 
 var SCROLLVIEW = 'ScrollView';
@@ -130,12 +130,18 @@ var ScrollView = React.createClass({
     contentContainerStyle: StyleSheetPropType(ViewStylePropTypes),
     /**
      * A floating-point number that determines how quickly the scroll view
-     * decelerates after the user lifts their finger. Reasonable choices include
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
      *   - Normal: 0.998 (the default)
      *   - Fast: 0.9
      * @platform ios
      */
-    decelerationRate: PropTypes.number,
+    decelerationRate: PropTypes.oneOfType([
+      PropTypes.oneOf(['fast', 'normal']),
+      PropTypes.number,
+    ]),
     /**
      * When true, the scroll view's children are arranged horizontally in a row
      * instead of vertically in a column. The default value is false.
@@ -463,6 +469,11 @@ var ScrollView = React.createClass({
       // it'll trigger the default pull-to-refresh behavior on native.
       props.onRefreshStart =
         function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
+    }
+
+    var { decelerationRate } = this.props;
+    if (decelerationRate) {
+      props.decelerationRate = processDecelerationRate(decelerationRate);
     }
 
     var ScrollViewClass;

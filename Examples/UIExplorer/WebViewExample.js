@@ -96,6 +96,7 @@ var WebViewExample = React.createClass({
           url={this.state.url}
           javaScriptEnabled={true}
           domStorageEnabled={true}
+          decelerationRate="normal"
           onNavigationStateChange={this.onNavigationStateChange}
           onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
           startInLoadingState={true}
