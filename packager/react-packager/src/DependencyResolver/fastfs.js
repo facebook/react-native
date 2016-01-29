@@ -14,6 +14,7 @@ const {EventEmitter} = require('events');
 const fs = require('graceful-fs');
 const path = require('path');
 
+const open = Promise.denodeify(fs.open);
 const readFile = Promise.denodeify(fs.readFile);
 const stat = Promise.denodeify(fs.stat);
 
@@ -112,6 +113,14 @@ class Fastfs extends EventEmitter {
       throw new Error(`Unable to find file with path: ${filePath}`);
     }
     return file.read();
+  }
+
+  readWhile(filePath, predicate) {
+    const file = this._getFile(filePath);
+    if (!file) {
+      throw new Error(`Unable to find file with path: ${filePath}`);
+    }
+    return file.readWhile(predicate);
   }
 
   closest(filePath, name) {
@@ -239,6 +248,44 @@ class File {
       this._read = readFile(this.path, 'utf8');
     }
     return this._read;
+  }
+
+  readWhile(predicate) {
+    const CHUNK_SIZE = 512;
+    let result = '';
+
+    return open(this.path, 'r').then(fd => {
+      /* global Buffer: true */
+      const buffer = new Buffer(CHUNK_SIZE);
+      const p = new Promise((resolve, reject) => {
+        let counter = 0;
+        const callback = (error, bytesRead) => {
+          if (error) {
+            reject();
+            return;
+          }
+
+          const chunk = buffer.toString('utf8', 0, bytesRead);
+          result += chunk;
+          if (bytesRead > 0 && predicate(chunk, counter++, result)) {
+            readChunk(fd, buffer, callback);
+          } else {
+            if (bytesRead === 0 && !this._read) { // reached EOF
+              this._read = Promise.resolve(result);
+            }
+            resolve(result);
+          }
+        };
+        readChunk(fd, buffer, callback);
+      });
+
+      p.catch(() => fs.close(fd));
+      return p;
+    });
+
+    function readChunk(fd, buffer, callback) {
+      fs.read(fd, buffer, 0, CHUNK_SIZE, null, callback);
+    }
   }
 
   stat() {
