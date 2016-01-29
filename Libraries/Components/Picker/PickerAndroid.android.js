@@ -125,6 +125,7 @@ var styles = StyleSheet.create({
     // surrounding view to ensure it gets rendered.
     // TODO would be better to export a native constant for this,
     // like in iOS the RCTDatePickerManager.m
+    width: 80,
     height: 50,
   },
 });
