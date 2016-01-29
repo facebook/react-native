@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactNative.Views.TextInput
 {
@@ -13,35 +9,34 @@ namespace ReactNative.Views.TextInput
     /// </summary>
     class ReactTextChangedEvent : Event
     {
-        public static readonly String EVENT_NAME = "topChange";
-        private String _Text;
-        private double _ContentWidth;
-        private double _ContentHeight;
+        private readonly string _text;
+        private readonly double _contextWidth;
+        private readonly double _contentHeight;
 
-        public ReactTextChangedEvent(int viewId, string text, double contentSizeWidth,
-                                     double contentSizeHeight) : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
+        public ReactTextChangedEvent(int viewId, string text, double contentWidth, double contentHeight) 
+            : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
         {
-            _Text = text;
-            _ContentWidth = contentSizeWidth;
-            _ContentHeight = contentSizeHeight;
+            _text = text;
+            _contextWidth = contentWidth;
+            _contentHeight = contentHeight;
         }
 
         /// <summary>
-        /// Gets the name of the Event
+        /// The name of the event.
         /// </summary>
         public override string EventName
         {
             get
             {
-                return EVENT_NAME;
+                return "topChange";
             }
         }
 
         /// <summary>
-        /// Disabling event coalescing.
+        /// Text change events cannot be coalesced.
         /// </summary>
         /// <remarks>
-        /// Return false if the event can never be coalesced.
+        /// Return <code>false</code> if the event can never be coalesced.
         /// </remarks>
         public override bool CanCoalesce
         {
@@ -54,7 +49,7 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Push the event up to the event emitter.
         /// </summary>
-        /// <param name="rctEventEmitter">The event emitter to dispatch the event to.</param>
+        /// <param name="rctEventEmitter">The event emitter.</param>
         public override void Dispatch(RCTEventEmitter rctEventEmitter)
         {
             rctEventEmitter.receiveEvent(this.ViewTag, this.EventName, this.GetEventJavascriptProperties);
@@ -66,10 +61,10 @@ namespace ReactNative.Views.TextInput
             {
                 return new JObject()
                 {
-                    { "width", _ContentWidth },
-                    { "height", _ContentHeight },
-                    { "text", _Text },
-                    {"target", this.ViewTag }
+                    { "width", _contextWidth },
+                    { "height", _contentHeight },
+                    { "text", _text },
+                    { "target", ViewTag }
                 };
             }
         }

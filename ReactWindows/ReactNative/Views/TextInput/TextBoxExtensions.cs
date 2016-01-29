@@ -37,9 +37,9 @@ namespace ReactNative.Views.TextInput
                 textBox.FontFamily = reactProperties.FontFamily;
             }
 
-            if (reactProperties.BorderBackground != null)
+            if (reactProperties.BorderColor.HasValue)
             {
-                textBox.BorderBrush = new SolidColorBrush(reactProperties.BorderBackground);
+                textBox.BorderBrush = new SolidColorBrush(reactProperties.BorderColor.Value);
             }
             
             if (reactProperties.Padding.HasValue)
