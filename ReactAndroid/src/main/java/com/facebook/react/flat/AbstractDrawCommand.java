@@ -140,7 +140,7 @@ import android.graphics.Canvas;
   protected abstract void onDraw(Canvas canvas);
 
   protected boolean shouldClip() {
-    return mLeft != mClipLeft || mTop != mClipTop || mRight != mClipRight || mBottom != mClipBottom;
+    return mLeft < mClipLeft || mTop < mClipTop || mRight > mClipRight || mBottom > mClipBottom;
   }
 
   protected void onBoundsChanged() {

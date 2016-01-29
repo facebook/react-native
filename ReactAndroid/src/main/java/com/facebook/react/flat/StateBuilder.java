@@ -347,10 +347,10 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float top,
       float right,
       float bottom,
-      float parentClipLeft,
-      float parentClipTop,
-      float parentClipRight,
-      float parentClipBottom,
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom,
       boolean isAndroidView,
       boolean needsCustomLayoutForChildren) {
     if (node.hasNewLayout()) {
@@ -368,19 +368,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
               Math.round(bottom - top)));
     }
 
-    float clipLeft = Math.max(left, parentClipLeft);
-    float clipTop = Math.max(top, parentClipTop);
-    float clipRight = Math.min(right, parentClipRight);
-    float clipBottom = Math.min(bottom, parentClipBottom);
+    if (node.clipToBounds()) {
+      clipLeft = Math.max(left, clipLeft);
+      clipTop = Math.max(top, clipTop);
+      clipRight = Math.min(right, clipRight);
+      clipBottom = Math.min(bottom, clipBottom);
+    }
 
     node.collectState(this, left, top, right, bottom, clipLeft, clipTop, clipRight, clipBottom);
-
-    if (!node.clipToBounds()) {
-      clipLeft = parentClipLeft;
-      clipTop = parentClipTop;
-      clipRight = parentClipRight;
-      clipBottom = parentClipBottom;
-    }
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       FlatShadowNode child = (FlatShadowNode) node.getChildAt(i);

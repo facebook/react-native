@@ -186,16 +186,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     top += padding.get(Spacing.TOP);
 
     // these are actual right/bottom coordinates where this DrawCommand will draw.
-    float layoutRight = left + mDrawCommand.getLayoutWidth();
-    float layoutBottom = top + mDrawCommand.getLayoutHeight();
-
-    // We need to adjust right/bottom because Layout size is in many cases different than the
-    // current node's size. We could use layoutRight/layoutBottom instead of taking the minumum of
-    // (right,layoutRight) and that would work correctly, but it will also make AbstractDrawCommand
-    // clip when the clipping is not really necessary (because it doesn't like draw bounds smaller
-    // than clip bounds).
-    right = Math.max(right, layoutRight);
-    bottom = Math.max(bottom, layoutBottom);
+    right = left + mDrawCommand.getLayoutWidth();
+    bottom = top + mDrawCommand.getLayoutHeight();
 
     mDrawCommand = (DrawTextLayout) mDrawCommand.updateBoundsAndFreeze(
         left,
