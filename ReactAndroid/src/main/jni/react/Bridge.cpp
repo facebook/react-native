@@ -22,7 +22,7 @@ Bridge::Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback call
     if (*destroyed) {
       return;
     }
-    m_callback(parseMethodCalls(queueJSON), isEndOfBatch);
+    this->callback(parseMethodCalls(queueJSON), isEndOfBatch);
   });
 }
 
@@ -30,6 +30,12 @@ Bridge::Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback call
 Bridge::~Bridge() {
   *m_destroyed = true;
   m_jsExecutor.reset();
+}
+
+void Bridge::callback(std::vector<MethodCall> calls, bool isEndOfBatch) {
+  bool isStartOfBatch = !m_hasNotifyBatchStart;
+  m_hasNotifyBatchStart = true;
+  m_callback(calls, isStartOfBatch, isEndOfBatch);
 }
 
 void Bridge::executeApplicationScript(const std::string& script, const std::string& sourceURL) {
@@ -40,6 +46,7 @@ void Bridge::loadApplicationUnbundle(
     JSModulesUnbundle&& unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
+  m_hasNotifyBatchStart = false;
   m_jsExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
 }
 
@@ -48,7 +55,7 @@ void Bridge::flush() {
     return;
   }
   auto returnedJSON = m_jsExecutor->flush();
-  m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+  callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
 }
 
 void Bridge::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
@@ -58,8 +65,9 @@ void Bridge::callFunction(const double moduleId, const double methodId, const fo
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.callFunction");
   #endif
+  m_hasNotifyBatchStart = false;
   auto returnedJSON = m_jsExecutor->callFunction(moduleId, methodId, arguments);
-  m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+  callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
 }
 
 void Bridge::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
@@ -69,8 +77,9 @@ void Bridge::invokeCallback(const double callbackId, const folly::dynamic& argum
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
   #endif
+  m_hasNotifyBatchStart = false;
   auto returnedJSON = m_jsExecutor->invokeCallback(callbackId, arguments);
-  m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+  callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
 }
 
 void Bridge::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
