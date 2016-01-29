@@ -25,6 +25,7 @@ var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var deepDiffer = require('deepDiffer');
+var deprecatedPropType = require('deprecatedPropType');
 var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
@@ -321,10 +322,12 @@ var ScrollView = React.createClass({
     refreshControl: PropTypes.element,
 
     /**
-     * Deprecated - use `refreshControl` property instead.
      * @platform ios
      */
-    onRefreshStart: PropTypes.func,
+    onRefreshStart: deprecatedPropType(
+      PropTypes.func,
+      'Use the `refreshControl` prop instead.'
+    ),
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -464,7 +467,6 @@ var ScrollView = React.createClass({
 
     var onRefreshStart = this.props.onRefreshStart;
     if (onRefreshStart) {
-      console.warn('onRefreshStart is deprecated. Use the refreshControl prop instead.');
       // this is necessary because if we set it on props, even when empty,
       // it'll trigger the default pull-to-refresh behavior on native.
       props.onRefreshStart =
