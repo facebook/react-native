@@ -10,7 +10,7 @@ Future releases:
 - 0.18.0 - Jan 18
 - **0.19 branch cut**, 0.19.0-rc - **week of Jan 18**
 - 0.19.0 - Feb 1
-- **0.20 branch cut**, 0.19.0-rc - **week of Feb 1**
+- **0.20 branch cut**, 0.20.0-rc - **week of Feb 1**
 - 0.20.0 - Feb 15
 - ...
 
