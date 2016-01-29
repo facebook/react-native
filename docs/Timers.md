@@ -4,6 +4,7 @@ title: Timers
 layout: docs
 category: Polyfills
 permalink: docs/timers.html
+next: colors
 ---
 
 Timers are an important part of an application and React Native implements the [browser timers](https://developer.mozilla.org/en-US/Add-ons/Code_snippets/Timers).
