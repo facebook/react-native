@@ -13,7 +13,7 @@
 const babel = require('babel-core');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
-const makeHotConfig = require('babel-preset-react-native/configs/hot');
+const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
 const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
@@ -52,7 +52,8 @@ const getBabelRC = (function() {
     if (!projectBabelRCPath || !fs.existsSync(projectBabelRCPath)) {
       babelRC = json5.parse(
         fs.readFileSync(
-          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json')));
+          path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
+        );
     }
 
     return babelRC;
@@ -83,8 +84,8 @@ function buildBabelConfig(filename, options) {
   config.plugins = extraPlugins.concat(config.plugins);
 
   if (options.hot) {
-    const hotConfig = makeHotConfig(options);
-    config = Object.assign({}, config, hotConfig);
+    const hmrConfig = makeHMRConfig(options);
+    config = Object.assign({}, config, hmrConfig);
   }
 
   return Object.assign({}, babelRC, config);
