@@ -135,10 +135,12 @@ module.exports = function () {
     visitor: {
       Program(path) {
         path.traverse(firstPass);
-        while (hasDeadModules(requires)) {
+        var counter = 0;
+        while (hasDeadModules(requires) && counter < 3) {
           _requires = requires;
           requires = {};
           path.traverse(secondPass);
+          counter++;
         }
       }
     }
