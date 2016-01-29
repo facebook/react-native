@@ -1096,6 +1096,28 @@ div[data-twttr-id] iframe {
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
+.deprecated {
+  margin-bottom: 24px;
+}
+
+.deprecatedTitle {
+  margin-bottom: 6px;
+  line-height: 18px;
+  font-weight: bold;
+  color: #ffa500;
+}
+
+.deprecatedIcon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: top;
+}
+
+.deprecatedMessage {
+  margin-left: 26px;
+}
+
 .edit-github {
   font-size: 15px;
   font-weight: normal;
