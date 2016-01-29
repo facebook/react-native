@@ -18,16 +18,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import android.util.SparseArray;
 import android.view.Choreographer;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.WritableArray;
-import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.common.SystemClock;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.uimanager.ReactChoreographer;
 
 /**
  * Native module for JS timer execution. Timers fire on frame boundaries.
@@ -124,7 +123,6 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     mJSTimersModule = getReactApplicationContext().getCatalystInstance()
         .getJSModule(JSTimersExecution.class);
     getReactApplicationContext().addLifecycleEventListener(this);
-    setChoreographerCallback();
   }
 
   @Override
