@@ -11,7 +11,8 @@ using Windows.UI.Xaml.Media;
 namespace ReactNative.Views.TextInput
 {
     /// <summary>
-    /// This extension of <see cref="LayoutShadowNode"/> is responsible for measuring the layout for Native <see cref="TextBox"/>.
+    /// This extension of <see cref="LayoutShadowNode"/> is responsible for 
+    /// measuring the layout for Native <see cref="TextBox"/>.
     /// </summary>
     public class ReactTextInputShadowNode : LayoutShadowNode
     {
@@ -149,7 +150,7 @@ namespace ReactNative.Views.TextInput
         {
             if (color.HasValue)
             {
-                _textBoxStyle.BorderBackground = ColorHelpers.Parse(color.Value);
+                _textBoxStyle.BorderColor = ColorHelpers.Parse(color.Value);
                 MarkUpdated();
             }
         }
@@ -181,10 +182,16 @@ namespace ReactNative.Views.TextInput
  
             textBox.SetReactTextBoxProperties(shadowNode._textBoxStyle);
             
-            var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
-            var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
-            textBox.MaxHeight = adjustedHeight;
-            textBox.MaxWidth = adjustedWidth;
+            if (!float.IsNaN(width))
+            {
+                textBox.MaxWidth = width;
+            }
+
+            if (!float.IsNaN(height))
+            {
+                textBox.MaxHeight = height;
+            }
+
             return new MeasureOutput((float)textBox.DesiredSize.Width, (float)textBox.DesiredSize.Height);
         }
     }

@@ -49,7 +49,3 @@ node_modules
 
 # OS X
 .DS_Store
-
-#JS
-**/*/*.jsbundle
-*.swp

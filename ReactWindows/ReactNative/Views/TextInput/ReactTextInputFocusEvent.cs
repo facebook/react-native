@@ -1,21 +1,17 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactNative.Views.TextInput
 {
     /// <summary>
-    /// Emits events to <see cref="RCTEventEmitter"/> for onfocus changes to <see cref="TextBox"/>.
+    /// Emits events to <see cref="RCTEventEmitter"/> for focus changes to 
+    /// <see cref="Windows.UI.Xaml.TextBox"/>.
     /// </summary>
-    public class ReactTextInputFocusEvent : Event
+    class ReactTextInputFocusEvent : Event
     {
-        public static readonly String EVENT_NAME = "topFocus";
-
-        public ReactTextInputFocusEvent(int viewId) : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
+        public ReactTextInputFocusEvent(int viewId) 
+            : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
         {
         }
 
@@ -23,7 +19,7 @@ namespace ReactNative.Views.TextInput
         {
             get
             {
-                return EVENT_NAME;
+                return "topFocus";
             }
         }
 
@@ -40,25 +36,19 @@ namespace ReactNative.Views.TextInput
                 return false;
             }
         }
-        
+
         /// <summary>
-        /// Push the on focus event up to the event emitter.
+        /// Dispatch this event to JavaScript using the given event emitter.
         /// </summary>
-        /// <param name="rctEventEmitter">The event emitter to dispatch the event to.</param>
+        /// <param name="eventEmitter">The event emitter.</param>
         public override void Dispatch(RCTEventEmitter eventEmitter)
         {
-            eventEmitter.receiveEvent(ViewTag, EventName, this.GetEventJavascriptProperties);
-        }
-
-        private JObject GetEventJavascriptProperties
-        {
-            get
+            var eventData = new JObject()
             {
-                return new JObject()
-                {
-                    {"target", this.ViewTag }
-                };
-            }
+                { "target", ViewTag },
+            };
+
+            eventEmitter.receiveEvent(ViewTag, EventName, eventData);
         }
     }
 }

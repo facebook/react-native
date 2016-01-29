@@ -1,23 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
-using ReactNative.Bridge;
 using ReactNative.UIManager;
 using ReactNative.UIManager.Events;
-using ReactNative.Views.View;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Media3D;
-using Windows.UI.Xaml.Shapes;
 
 namespace ReactNative.Views.TextInput
 {
@@ -49,35 +37,47 @@ namespace ReactNative.Views.TextInput
             {
                 return new Dictionary<string, object>()
                 {
-                    { "topFocus", new Dictionary<string, object>()
                     {
-                        { "phasedRegistrationNames", new Dictionary<string, string>()
+                        "topFocus",
+                        new Dictionary<string, object>()
                         {
-                                                        { "bubbled" , "onFocus" },
-                                                        { "captured" , "onFocusCapture" }
+                            {
+                                "phasedRegistrationNames",
+                                new Dictionary<string, string>()
+                                {
+                                    { "bubbled" , "onFocus" },
+                                    { "captured" , "onFocusCapture" }
+                                }
+                            }
                         }
-                        }
-                    }
                     },
-                    { "topEndEditing", new Dictionary<string, object>()
                     {
-                        { "phasedRegistrationNames", new Dictionary<string, string>()
+                        "topEndEditing",
+                        new Dictionary<string, object>()
                         {
-                                                        { "bubbled" , "onEndEditing" },
-                                                        { "captured" , "onEndEditingCapture" }
+                            {
+                                "phasedRegistrationNames",
+                                new Dictionary<string, string>()
+                                {
+                                    { "bubbled" , "onEndEditing" },
+                                    { "captured" , "onEndEditingCapture" }
+                                }
+                            }
                         }
-                        }
-                    }
                     },
-                    { "topBlur", new Dictionary<string, object>()
                     {
-                        { "phasedRegistrationNames", new Dictionary<string, string>()
+                        "topBlur",
+                        new Dictionary<string, object>()
                         {
-                                                        { "bubbled" , "onBlur" },
-                                                        { "captured" , "onBlurCapture" }
+                            {
+                                "phasedRegistrationNames",
+                                new Dictionary<string, string>()
+                                {
+                                    { "bubbled" , "onBlur" },
+                                    { "captured" , "onBlurCapture" }
+                                }
+                            }
                         }
-                        }
-                    }
                     },
                 };
             }
@@ -106,10 +106,10 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(PROP_TEXT_ALIGN)]
         public void SetTextAlign(TextBox view, string alignment)
         {
-            var textAlignment = default(HorizontalAlignment);
+            var textAlignment = default(TextAlignment);
             if (Enum.TryParse(alignment, out textAlignment))
             {
-                view.HorizontalAlignment = textAlignment;
+                view.TextAlignment = textAlignment;
             }
         }
 
@@ -118,13 +118,16 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="view">The text input box control.</param>
         /// <param name="alignment">The text alignment.</param>
+        /// <remarks>
+        /// TODO: test this out.
+        /// </remarks>
         [ReactProperty(PROP_VERITCAL_TEXT_ALIGN)]
         public void SetTextVerticalAlign(TextBox view, string alignment)
         {
             var textAlignment = default(VerticalAlignment);
             if (Enum.TryParse(alignment, out textAlignment))
             {
-                view.VerticalAlignment = textAlignment;
+                view.VerticalContentAlignment = textAlignment;
             }
         }
 
@@ -153,11 +156,17 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Sets the foreground color property on the <see cref="TextBox"/>.
         /// </summary>
-        /// <param name="color"></param>
-        [ReactProperty(ViewProperties.Color)]
-        public void SetColor(TextBox view, uint color)
+        /// <param name="color">The masked color value.</param>
+        /// <remarks>
+        /// TODO: test and get working.
+        /// </remarks>
+        [ReactProperty(ViewProperties.Color, CustomType = "Color")]
+        public void SetColor(TextBox view, uint? color)
         {
-            view.Foreground = new SolidColorBrush(ColorHelpers.Parse(color));
+            if (color.HasValue)
+            {
+                view.Foreground = new SolidColorBrush(ColorHelpers.Parse(color.Value));
+            }
         }
 
         /// <summary>
@@ -183,25 +192,6 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
-        /// The <see cref="TextBox"/> event interceptor for focus gained events for the native control.
-        /// </summary>
-        /// <param name="sender">The source sender view.</param>
-        /// <param name="event">The received event args</param>
-        public void OnInterceptGotFocusEvent(object sender, RoutedEventArgs @event)
-        {
-            var senderTextInput = (TextBox)sender;
-            if(HasFocus(senderTextInput.FocusState))
-            {
-                GetEventDispatcher(senderTextInput).DispatchEvent(new ReactTextInputFocusEvent(senderTextInput.GetTag()));
-            }            
-        }
-
-        private static bool HasFocus(FocusState state)
-        {
-            return state == FocusState.Keyboard || state == FocusState.Programmatic;
-        }
-
-        /// <summary>
         /// The <see cref="TextBox"/> event interceptor for text change events for the native control.
         /// </summary>
         /// <param name="sender">The source sender view.</param>
@@ -222,10 +212,7 @@ namespace ReactNative.Views.TextInput
         protected override void OnDropViewInstance(ThemedReactContext reactContext, TextBox view)
         {
             view.TextChanged -= this.OnInterceptTextChangeEvent;
-            //TODO: Need to figure out how to get this to work. Scared that there is no way to truly detect the focus event 
-            //of a TextBox. Spent 5 hours trying every variation imagineable.
-            //view.GotFocus -= this.OnInterceptGotFocusEvent;
-            
+            // TODO: Figure out how to get intercept focus to work this to work.
             view.LostFocus -= this.OnInterceptLostFocusEvent;
         }
 
@@ -247,8 +234,7 @@ namespace ReactNative.Views.TextInput
         protected override void AddEventEmitters(ThemedReactContext reactContext, TextBox view)
         {
             view.TextChanged += this.OnInterceptTextChangeEvent;
-            //TODO: Commenting out until we're able to figure how to gracefully support on focus event behavior. 
-            //view.GotFocus += this.OnInterceptGotFocusEvent;
+            // TODO: Figure out how to get intercept focus to work this to work.
             view.LostFocus += this.OnInterceptLostFocusEvent;
         }
 

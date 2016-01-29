@@ -405,9 +405,8 @@ namespace ReactNative
                 var reactContext = await CreateReactContextAsync(jsExecutorFactory, jsBundleLoader);
                 SetupReactContext(reactContext);
             }
-            catch(Exception e)
+            catch
             {
-                
                 // TODO: add exception handler through dev support manager.
             }
             finally

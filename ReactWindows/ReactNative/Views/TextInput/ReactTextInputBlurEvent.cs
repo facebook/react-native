@@ -1,22 +1,29 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.UIManager.Events;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactNative.Views.TextInput
 {
     /// <summary>
-    /// Event emitted by <see cref="TextBox"/> native view when the control gains focus.
+    /// Event emitted by <see cref="Windows.UI.Xaml.Controls.TextBox"/> native 
+    /// view when the control gains focus.
     /// </summary>
-    class ReactTextInputBlurEvent : EventBase
+    class ReactTextInputBlurEvent : Event
     {
-        public static readonly String EVENT_NAME = "topBlur";
-
-        public ReactTextInputBlurEvent(int viewId) : base(viewId)
+        public ReactTextInputBlurEvent(int viewId) 
+            : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
         {
+        }
+
+        /// <summary>
+        /// Gets the name of the Event
+        /// </summary>
+        public override string EventName
+        {
+            get
+            {
+                return "topBlur";
+            }
         }
 
         /// <summary>
@@ -32,16 +39,18 @@ namespace ReactNative.Views.TextInput
                 return false;
             }
         }
-
         /// <summary>
-        /// Gets the name of the Event
+        /// Dispatch this event to JavaScript using the given event emitter.
         /// </summary>
-        public override string EventName
+        /// <param name="eventEmitter">The event emitter.</param>
+        public override void Dispatch(RCTEventEmitter eventEmitter)
         {
-            get
+            var eventData = new JObject
             {
-                return EVENT_NAME;
-            }
+                { "target", ViewTag },
+            };
+
+            eventEmitter.receiveEvent(ViewTag, EventName, eventData);
         }
     }
 }

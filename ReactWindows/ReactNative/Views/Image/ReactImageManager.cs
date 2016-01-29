@@ -2,9 +2,6 @@
 using ReactNative.UIManager.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -14,14 +11,17 @@ namespace ReactNative.Views.Image
 {
     /// <summary>
     /// The view manager responsible for rendering native <see cref="ImageControl"/>.
-    /// TODO. Implememt tincolor property and fadeDuration animation support
+    /// TODO: Implememt tintColor property and fadeDuration animation support.
     /// </summary>
-    public class ReactImageManager : SimpleViewManager<BorderedContentControl>
+    public class ReactImageManager : SimpleViewManager<Border>
     {
         private const string ReactClass = "RCTImageView";
         private const string PROP_SOURCE = "source";
         private const string PROP_URI = "uri";
 
+        /// <summary>
+        /// The view manager name.
+        /// </summary>
         public override string Name
         {
             get
@@ -30,114 +30,47 @@ namespace ReactNative.Views.Image
             }
         }
 
+        /// <summary>
+        /// The view manager event constants.
+        /// </summary>
         public override IReadOnlyDictionary<string, object> ExportedCustomDirectEventTypeConstants
         {
             get
             {
                 return new Dictionary<string, object>
-                    {
-                        { "topLoadEnd", new Dictionary<string, object> { { "registrationName", "onLoadEnd" } } },
-                        { "topLoadStart", new Dictionary<string, object> { { "registrationName", "onLoadStart" } } },
-                    };
-            }
-        }
-
-        protected override BorderedContentControl CreateViewInstanceCore(ThemedReactContext reactContext)
-        {
-            return new BorderedContentControl(new Border());
-        }
-
-        /// <summary>
-        /// The <see cref="BorderedContentControl"/> event interceptor for image load start events for the native control.
-        /// </summary>
-        /// <param name="sender">The source sender view.</param>
-        /// <param name="event">The received event args</param>
-        public void OnInterceptImageLoadingEvent(FrameworkElement sender, object e)
-        {
-            var senderImage = (BorderedContentControl)sender;
-
-            var borderComponent = senderImage.Content as Border;
-            var imageBrush = default(ImageBrush);
-
-            if (borderComponent != null && TryParseBorderImage(borderComponent, out imageBrush))
-            {
-                var bitmapImage = imageBrush.ImageSource as BitmapImage;
-                bitmapImage.DecodePixelHeight = (int)sender.Height;
-                bitmapImage.DecodePixelWidth = (int)sender.Width;
-                imageBrush.Stretch = Stretch.Fill;
-            }
-
-            GetEventDispatcher(senderImage).DispatchEvent(new ReactImageLoadingEvent(senderImage.GetTag()));
-        }
-
-        private bool TryParseBorderImage(Border border, out ImageBrush backgroundImage)
-        {
-            if (border !=null && border.Background != null && border.Background.GetType() == typeof(ImageBrush))
-            {
-                backgroundImage = border.Background as ImageBrush;
-
-                return true;
-            }
-            else
-            {
-                backgroundImage = null;
-                return false;
+                {
+                    { "topLoadEnd", new Dictionary<string, object> { { "registrationName", "onLoadEnd" } } },
+                    { "topLoadStart", new Dictionary<string, object> { { "registrationName", "onLoadStart" } } },
+                };
             }
         }
 
         /// <summary>
-        /// The <see cref="BorderedContentControl"/> event interceptor for image load completed events for the native control.
-        /// </summary>
-        /// <param name="sender">The source sender view.</param>
-        /// <param name="event">The received event args</param>
-        public void OnInterceptImageLoadedEvent(object sender, RoutedEventArgs e)
-        {
-            var senderImage = (BorderedContentControl)sender;
-            GetEventDispatcher(senderImage).DispatchEvent(new ReactImageLoadedEvent(senderImage.GetTag()));
-        }
-
-        private EventDispatcher GetEventDispatcher(BorderedContentControl image)
-        {
-            return image?.GetReactContext().CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
-        }
-
-        /// <summary>
-        /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The <see cref="TextBox"/> view instance.</param>
-        protected override void AddEventEmitters(ThemedReactContext reactContext, BorderedContentControl view)
-        {
-            view.Loading += this.OnInterceptImageLoadingEvent;
-            view.Loaded += this.OnInterceptImageLoadedEvent;
-        }
-
-        /// <summary>
-        /// Sets the <see cref="BrushImage"/> source for the background of a <see cref="BorderedContentControl"/>.
+        /// Sets the <see cref="ImageBrush"/> source for the background of a <see cref="Border"/>.
         /// </summary>
         /// <param name="view">The text input box control.</param>
         /// <param name="degrees">The text alignment.</param>
         [ReactProperty(PROP_SOURCE)]
-        public void SetSource(BorderedContentControl view, Dictionary<string, string> sourceMap)
+        public void SetSource(Border view, Dictionary<string, string> sourceMap)
         {
             var imageSrcURL = default(Uri);
             var source = default(string);
 
-            if (sourceMap!=null && sourceMap.TryGetValue(PROP_URI, out source))
+            if (sourceMap != null && sourceMap.TryGetValue(PROP_URI, out source))
             {
-                if(!Uri.TryCreate(source, UriKind.Absolute, out imageSrcURL))
+                if (!Uri.TryCreate(source, UriKind.Absolute, out imageSrcURL))
                 {
                     imageSrcURL = new Uri("ms-appx://" + source);
                 }
 
-                if (imageSrcURL != null && view.Content.GetType() == typeof(Border))
+                if (imageSrcURL != null)
                 {
                     var backgroundImage = new ImageBrush()
                     {
                         ImageSource = new BitmapImage(imageSrcURL)
                     };
 
-                    ((Border)view.Content).Background = backgroundImage;
+                    view.Background = backgroundImage;
                 }
             }
         }
@@ -148,9 +81,26 @@ namespace ReactNative.Views.Image
         /// <param name="view">The view panel.</param>
         /// <param name="radius">The border radius value.</param>
         [ReactProperty("borderRadius")]
-        public void SetBorderRadius(BorderedContentControl view, double radius)
+        public void SetBorderRadius(Border view, double radius)
         {
-            view.SetBorderRadius(radius);
+            view.CornerRadius = new CornerRadius(radius);
+        }
+
+        /// <summary>
+        /// Set the border color of the <see cref="ReactPanel"/>.
+        /// </summary>
+        /// <param name="view">The view panel.</param>
+        /// <param name="index">The property index.</param>
+        /// <param name="color">The color hex code.</param>
+        [ReactProperty("borderColor", CustomType = "Color")]
+        public void SetBorderColor(Border view, uint? color)
+        {
+            // TODO: what if color is null?
+            if (color.HasValue)
+            {
+                var brush = new SolidColorBrush(ColorHelpers.Parse(color.Value));
+                view.BorderBrush = brush;
+            }
         }
 
         /// <summary>
@@ -166,45 +116,84 @@ namespace ReactNative.Views.Image
             ViewProperties.BorderTopWidth,
             ViewProperties.BorderBottomWidth,
             DefaultDouble = double.NaN)]
-        public void SetBorderWidth(BorderedContentControl view, int index, double width)
+        public void SetBorderWidth(Border view, int index, double width)
         {
             view.SetBorderWidth(ViewProperties.BorderSpacingTypes[index], width);
         }
 
         /// <summary>
-        /// Set the border color of the <see cref="ReactPanel"/>.
+        /// Creates the image view instance.
         /// </summary>
-        /// <param name="view">The view panel.</param>
-        /// <param name="index">The property index.</param>
-        /// <param name="color">The color hex code.</param>
-        [ReactPropertyGroup(
-            "borderColor",
-            "borderLeftColor",
-            "borderRightColor",
-            "borderTopColor",
-            "borderBottomColor",
-            CustomType = "Color")]
-        public void SetBorderColor(BorderedContentControl view, int index, uint? color)
+        /// <param name="reactContext">The react context.</param>
+        /// <returns>The image view instance.</returns>
+        protected override Border CreateViewInstanceCore(ThemedReactContext reactContext)
         {
-            // TODO: what if color is null?
-            if (color.HasValue)
-            {
-                view.SetBorderColor(ViewProperties.BorderSpacingTypes[index], color.Value);
-            }
+            return new Border();
         }
 
         /// <summary>
-        /// Called when the <see cref="BorderedContentControl"/> is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ViewManager{BorderedContentControl}"/>
-        /// subclass. Unregister all event handlers for the <see cref="BorderedContentControl"/>.
+        /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The <see cref="BorderedContentControl"/>.</param>
-        protected override void OnDropViewInstance(ThemedReactContext reactContext, BorderedContentControl view)
+        /// <param name="view">The <see cref="TextBox"/> view instance.</param>
+        protected override void AddEventEmitters(ThemedReactContext reactContext, Border view)
         {
-            view.Loaded -= this.OnInterceptImageLoadedEvent;
-            view.Loading -= this.OnInterceptImageLoadingEvent;
+            view.Loading += OnInterceptImageLoadingEvent;
+            view.Loaded += OnInterceptImageLoadedEvent;
         }
 
+        /// <summary>
+        /// Called when the <see cref="Border"/> is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ViewManager{Border}"/>
+        /// subclass. Unregister all event handlers for the <see cref="Border"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The <see cref="Border"/>.</param>
+        protected override void OnDropViewInstance(ThemedReactContext reactContext, Border view)
+        {
+            view.Loaded -= OnInterceptImageLoadedEvent;
+            view.Loading -= OnInterceptImageLoadingEvent;
+        }
+
+        /// <summary>
+        /// The <see cref="Border"/> event interceptor for image load start events for the native control.
+        /// </summary>
+        /// <param name="sender">The source sender view.</param>
+        /// <param name="event">The received event arguments.</param>
+        protected void OnInterceptImageLoadingEvent(FrameworkElement sender, object e)
+        {
+            var border = (Border)sender;
+            var imageBrush = GetImageBrush(border);
+            if (imageBrush != null)
+            {
+                var bitmapImage = imageBrush.ImageSource as BitmapImage;
+                bitmapImage.DecodePixelHeight = (int)sender.Height;
+                bitmapImage.DecodePixelWidth = (int)sender.Width;
+                imageBrush.Stretch = Stretch.Fill;
+            }
+
+            GetEventDispatcher(border).DispatchEvent(new ReactImageLoadEvent(border.GetTag(), ReactImageLoadEvent.OnLoadStart));
+        }
+
+        /// <summary>
+        /// The <see cref="Border"/> event interceptor for image load completed events for the native control.
+        /// </summary>
+        /// <param name="sender">The source sender view.</param>
+        /// <param name="event">The received event arguments.</param>
+        protected void OnInterceptImageLoadedEvent(object sender, RoutedEventArgs e)
+        {
+            var senderImage = (Border)sender;
+            GetEventDispatcher(senderImage).DispatchEvent(new ReactImageLoadEvent(senderImage.GetTag(), ReactImageLoadEvent.OnLoadEnd));
+        }
+
+        private ImageBrush GetImageBrush(Border border)
+        {
+            return border.Background as ImageBrush;
+        }
+
+        private static EventDispatcher GetEventDispatcher(FrameworkElement image)
+        {
+            return image.GetReactContext().CatalystInstance.GetNativeModule<UIManagerModule>().EventDispatcher;
+        }
     }
 }

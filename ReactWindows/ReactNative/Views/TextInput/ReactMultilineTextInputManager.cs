@@ -1,27 +1,25 @@
 ﻿using ReactNative.UIManager;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.Views.TextInput
 {
     /// <summary>
-    /// Native component to support a multiline <see cref="TextBox"/> Control. 
+    /// Native component to support a multiline <see cref="TextBox"/> control. 
     /// </summary>
     class ReactMultilineTextInputManager : ReactTextInputManager
     {
-        private static readonly string REACT_CLASS = "RCTTextView";
+        private static readonly string ReactClass = "RCTTextView";
         private const string PROP_MULTILINE = "multiline";
 
+        /// <summary>
+        /// The name of the view manager.
+        /// </summary>
         public override string Name
         {
             get
             {
-                return REACT_CLASS;
+                return ReactClass;
             }
         }
 

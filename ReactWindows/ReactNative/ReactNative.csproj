@@ -169,9 +169,9 @@
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
     <Compile Include="UIManager\BorderedContentControl.cs" />
+    <Compile Include="UIManager\BorderExtensions.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
     <Compile Include="UIManager\CSSNodeExtensions.cs" />
-    <Compile Include="UIManager\Events\EventBase.cs" />
     <Compile Include="UIManager\Events\IOnIntercepTextGotFocusEventListener.cs" />
     <Compile Include="UIManager\Events\IOnInterceptTextInputEventListener.cs" />
     <Compile Include="LifecycleState.cs" />
@@ -231,8 +231,7 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
-    <Compile Include="Views\Image\ReactImageLoadedEvent.cs" />
-    <Compile Include="Views\Image\ReactImageLoadingEvent.cs" />
+    <Compile Include="Views\Image\ReactImageLoadEvent.cs" />
     <Compile Include="Views\Image\ReactImageManager.cs" />
     <Compile Include="Views\Image\ReactVirtualImageManager.cs" />
     <Compile Include="Views\TextInput\ReactMultilineTextInputManager.cs" />
@@ -301,10 +300,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="JavaScript\lib\" />
-    <Folder Include="JavaScript\uwp-native\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Facebook.CSSLayout">
