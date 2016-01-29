@@ -11,7 +11,7 @@
 jest
   .dontMock('Interpolation')
   .dontMock('Easing')
-  .dontMock('tinycolor');
+  .dontMock('normalizeColor');
 
 var Interpolation = require('Interpolation');
 var Easing = require('Easing');
@@ -216,12 +216,12 @@ describe('Interpolation', () => {
   it('should work with output ranges as string', () => {
     var interpolation = Interpolation.create({
       inputRange: [0, 1],
-      outputRange: ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.5)'],
+      outputRange: ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.4)'],
     });
 
     expect(interpolation(0)).toBe('rgba(0, 100, 200, 0)');
-    expect(interpolation(0.5)).toBe('rgba(25, 125, 225, 0.25)');
-    expect(interpolation(1)).toBe('rgba(50, 150, 250, 0.5)');
+    expect(interpolation(0.5)).toBe('rgba(25, 125, 225, 0.2)');
+    expect(interpolation(1)).toBe('rgba(50, 150, 250, 0.4)');
   });
 
   it('should work with output ranges as short hex string', () => {
@@ -249,11 +249,11 @@ describe('Interpolation', () => {
   it('should work with output ranges with mixed hex and rgba strings', () => {
     var interpolation = Interpolation.create({
       inputRange: [0, 1],
-      outputRange: ['rgba(100, 120, 140, .5)', '#87FC70'],
+      outputRange: ['rgba(100, 120, 140, .4)', '#87FC70'],
     });
 
-    expect(interpolation(0)).toBe('rgba(100, 120, 140, 0.5)');
-    expect(interpolation(0.5)).toBe('rgba(117.5, 186, 126, 0.75)');
+    expect(interpolation(0)).toBe('rgba(100, 120, 140, 0.4)');
+    expect(interpolation(0.5)).toBe('rgba(117.5, 186, 126, 0.7)');
     expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
   });
 

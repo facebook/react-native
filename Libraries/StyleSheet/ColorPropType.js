@@ -9,26 +9,38 @@
   * @providesModule ColorPropType
   */
 'use strict';
+
 var ReactPropTypes = require('ReactPropTypes');
-var tinycolor = require('tinycolor');
 
-var colorValidator = function (props, propName) {
-  var selectedColor = props[propName];
-  if (selectedColor === null || selectedColor === undefined || selectedColor.toString().trim() === '') {
+var normalizeColor = require('normalizeColor');
+
+var ColorPropType = function(props, propName) {
+  var color = props[propName];
+  if (color === undefined || color === null) {
+    return;
+  }
+
+  if (typeof color === 'number') {
+    // Developers should not use a number, but we are using the prop type
+    // both for user provided colors and for transformed ones. This isn't ideal
+    // and should be fixed but will do for now...
+    return;
+  }
+
+  if (normalizeColor(color) === null) {
     return new Error(
-      `Invalid argument supplied to ${propName}.Expected a string like #123ADF or 'red'.`
-    );
+`Invalid color supplied to ${propName}: ${color}. Valid color formats are
+  - #f0f (#rgb)
+  - #f0fc (#rgba)
+  - #ff00ff (#rrggbb)
+  - #ff00ff00 (#rrggbbaa)
+  - rgb(255, 255, 255)
+  - rgba(255, 255, 255, 1.0)
+  - hsl(360, 100%, 100%)
+  - hsla(360, 100%, 100%, 1.0)
+  - transparent
+  - red`);
   }
-
-  if (tinycolor(selectedColor.toString().trim()).isValid()) {
-    return null;
-  }
-
-  return new Error(
-    `Invalid argument supplied to ${propName}.Expected a string like #123ADF or 'red'.`
-  );
 };
-
-var ColorPropType = ReactPropTypes.oneOfType([colorValidator, ReactPropTypes.number]);
 
 module.exports = ColorPropType;
