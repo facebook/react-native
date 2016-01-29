@@ -36,6 +36,7 @@ describe('BundlesLayout', () => {
     'polyfills/String.prototype.es6.js',
     'polyfills/Array.prototype.es6.js',
     'polyfills/Array.es6.js',
+    'polyfills/Object.es7.js',
     'polyfills/babelHelpers.js',
   ];
   const baseFs = getBaseFs();
