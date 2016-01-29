@@ -43,6 +43,10 @@ var MODE_DROPDOWN = 'dropdown';
  *       <Picker.Item label="Java" value="java" />
  *       <Picker.Item label="JavaScript" value="js" />
  *     </Picker>
+ *
+ * Note: The picker has a default fixed height which you can modify
+ * using `style` if needed. To set the width, you can use `style`
+ * as well, e.g. to set a fixed width or stretch the picker horizontally.
  */
 var Picker = React.createClass({
 
