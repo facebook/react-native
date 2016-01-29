@@ -129,10 +129,6 @@ import com.facebook.react.views.image.ImageLoadEvent;
       }
     }
 
-    SoftAssertions.assertCondition(
-        mPointerEvents != PointerEvents.BOX_NONE,
-        "TouchTargetHelper should not allow returning getId() when pointer events are BOX_NONE");
-
     // no children found
     return getId();
   }
