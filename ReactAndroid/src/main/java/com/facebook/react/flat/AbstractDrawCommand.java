@@ -32,6 +32,7 @@ import android.graphics.Canvas;
 
   @Override
   public final void draw(FlatViewGroup parent, Canvas canvas) {
+    onPreDraw(parent, canvas);
     if (shouldClip()) {
       canvas.save();
       canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
@@ -40,6 +41,9 @@ import android.graphics.Canvas;
     } else {
       onDraw(canvas);
     }
+  }
+
+  protected void onPreDraw(FlatViewGroup parent, Canvas canvas) {
   }
 
   /**

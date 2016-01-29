@@ -127,6 +127,11 @@ import com.facebook.react.views.image.ImageResizeMode;
     }
   }
 
+  @ReactProp(name = "fadeDuration")
+  public void setFadeDuration(int durationMs) {
+    getMutableDrawImage().setFadeDuration(durationMs);
+  }
+
   private T getMutableDrawImage() {
     if (mDrawImage.isFrozen()) {
       mDrawImage = (T) mDrawImage.mutableCopy();

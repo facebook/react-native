@@ -22,42 +22,44 @@ import com.facebook.imagepipeline.request.ImageRequest;
    * Returns true if an image source was assigned to the DrawImage.
    * A DrawImage with no source will not draw anything.
    */
-  public boolean hasImageRequest();
+  boolean hasImageRequest();
 
   /**
    * Assigns a new image request to the DrawImage, or null to clear the image request.
    */
-  public void setImageRequest(@Nullable ImageRequest imageRequest);
+  void setImageRequest(@Nullable ImageRequest imageRequest);
 
   /**
    * Assigns a tint color to apply to the image drawn.
    */
-  public void setTintColor(int tintColor);
+  void setTintColor(int tintColor);
 
   /**
    * Assigns a scale type to draw to the image with.
    */
-  public void setScaleType(ScaleType scaleType);
+  void setScaleType(ScaleType scaleType);
 
   /**
    * Returns a scale type to draw to the image with.
    */
-  public ScaleType getScaleType();
+  ScaleType getScaleType();
 
   /**
    * React tag used for dispatching ImageLoadEvents, or 0 to ignore events.
    */
-  public void setReactTag(int reactTag);
+  void setReactTag(int reactTag);
 
-  public void setBorderWidth(float borderWidth);
+  void setBorderWidth(float borderWidth);
 
-  public float getBorderWidth();
+  float getBorderWidth();
 
-  public void setBorderRadius(float borderRadius);
+  void setBorderRadius(float borderRadius);
 
-  public float getBorderRadius();
+  float getBorderRadius();
 
-  public void setBorderColor(int borderColor);
+  void setBorderColor(int borderColor);
 
-  public int getBorderColor();
+  int getBorderColor();
+
+  void setFadeDuration(int fadeDuration);
 }

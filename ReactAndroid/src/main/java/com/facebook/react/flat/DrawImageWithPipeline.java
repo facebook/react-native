@@ -25,6 +25,7 @@ import com.facebook.drawee.drawable.ScalingUtils.ScaleType;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.image.ImageResizeMode;
+import com.facebook.react.views.image.ReactImageView;
 
 /**
  * DrawImageWithPipeline is DrawCommand that can draw a local or remote image.
@@ -45,6 +46,10 @@ import com.facebook.react.views.image.ImageResizeMode;
   private @Nullable BitmapShader mBitmapShader;
   private boolean mForceClip;
   private int mReactTag;
+
+  // variables used for fading the image in
+  private long mFirstDrawTime = -1;
+  private int mFadeDuration = ReactImageView.REMOTE_IMAGE_FADE_DURATION_MS;
 
   @Override
   public boolean hasImageRequest() {
@@ -84,6 +89,39 @@ import com.facebook.react.views.image.ImageResizeMode;
   @Override
   public void setReactTag(int reactTag) {
     mReactTag = reactTag;
+  }
+
+  @Override
+  public void setFadeDuration(int fadeDuration) {
+    mFadeDuration = fadeDuration;
+  }
+
+  @Override
+  protected void onPreDraw(FlatViewGroup parent, Canvas canvas) {
+    super.onPreDraw(parent, canvas);
+
+    Bitmap bitmap = Assertions.assumeNotNull(mRequestHelper).getBitmap();
+    if (bitmap == null) {
+      mFirstDrawTime = 0;
+    } else {
+      if (mFirstDrawTime == -1) {
+        PAINT.setAlpha(255);
+      } else {
+        long currentDrawingTime = parent.getDrawingTime();
+        if (mFirstDrawTime == 0) {
+          mFirstDrawTime = currentDrawingTime - 16; // -16 to skip one draw cycle, so that we start
+          // with a non-zero alpha (otherwise, we waste 16ms doing nothing during this cycle).
+        }
+        int alpha = (int) (255.0f * (1.0f * (currentDrawingTime - mFirstDrawTime) / mFadeDuration));
+        if (alpha >= 255) {
+          mFirstDrawTime = -1;
+          alpha = 255;
+        } else {
+          Assertions.assumeNotNull(mCallback).invalidate();
+        }
+        PAINT.setAlpha(alpha);
+      }
+    }
   }
 
   @Override
@@ -184,7 +222,6 @@ import com.facebook.react.views.image.ImageResizeMode;
     final float scale;
 
     if (mScaleType == ScaleType.CENTER_INSIDE) {
-      final float ratio;
       if (containerWidth >= imageWidth && containerHeight >= imageHeight) {
         scale = 1.0f;
       } else {

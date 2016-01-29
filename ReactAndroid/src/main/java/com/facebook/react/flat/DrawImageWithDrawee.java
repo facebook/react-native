@@ -24,6 +24,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.image.ImageLoadEvent;
 import com.facebook.react.views.image.ImageResizeMode;
+import com.facebook.react.views.image.ReactImageView;
 
 /**
  * DrawImageWithDrawee is DrawCommand that can draw a local or remote image.
@@ -39,6 +40,7 @@ import com.facebook.react.views.image.ImageResizeMode;
   private float mBorderRadius;
   private int mBorderColor;
   private int mReactTag;
+  private int mFadeDuration = ReactImageView.REMOTE_IMAGE_FADE_DURATION_MS;
   private @Nullable FlatViewGroup.InvalidateCallback mCallback;
 
   @Override
@@ -105,6 +107,11 @@ import com.facebook.react.views.image.ImageResizeMode;
   }
 
   @Override
+  public void setFadeDuration(int fadeDuration) {
+    mFadeDuration = fadeDuration;
+  }
+
+  @Override
   public void setReactTag(int reactTag) {
     mReactTag = reactTag;
   }
@@ -138,6 +145,7 @@ import com.facebook.react.views.image.ImageResizeMode;
 
     hierarchy.setActualImageScaleType(mScaleType);
     hierarchy.setActualImageColorFilter(mColorFilter);
+    hierarchy.setFadeDuration(mFadeDuration);
 
     hierarchy.getTopLevelDrawable().setBounds(
         Math.round(getLeft()),
