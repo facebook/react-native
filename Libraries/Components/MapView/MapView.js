@@ -22,6 +22,7 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const deprecatedPropType = require('deprecatedPropType');
 const processColor = require('processColor');
 const resolveAssetSource = require('resolveAssetSource');
 const requireNativeComponent = require('requireNativeComponent');
@@ -64,7 +65,7 @@ const MapView = React.createClass({
      * @platform ios
      */
     followUserLocation: React.PropTypes.bool,
-    
+
     /**
      * If `false` points of interest won't be displayed on the map.
      * Default value is `true`.
@@ -160,7 +161,7 @@ const MapView = React.createClass({
        * Whether the pin drop should be animated or not
        */
       animateDrop: React.PropTypes.bool,
-      
+
       /**
        * Whether the pin should be draggable or not
        */
@@ -168,7 +169,7 @@ const MapView = React.createClass({
 
       /**
        * Event that fires when the annotation drag state changes.
-       */  
+       */
       onDragStateChange: React.PropTypes.func,
 
       /**
@@ -213,11 +214,22 @@ const MapView = React.createClass({
       /**
        * Deprecated. Use the left/right/detailsCalloutView props instead.
        */
-      hasLeftCallout: React.PropTypes.bool,
-      hasRightCallout: React.PropTypes.bool,
-      onLeftCalloutPress: React.PropTypes.func,
-      onRightCalloutPress: React.PropTypes.func,
-
+      hasLeftCallout: deprecatedPropType(
+        React.PropTypes.bool,
+        'Use `leftCalloutView` instead.'
+      ),
+      hasRightCallout: deprecatedPropType(
+        React.PropTypes.bool,
+        'Use `rightCalloutView` instead.'
+      ),
+      onLeftCalloutPress: deprecatedPropType(
+        React.PropTypes.func,
+        'Use `leftCalloutView` instead.'
+      ),
+      onRightCalloutPress: deprecatedPropType(
+        React.PropTypes.func,
+        'Use `rightCalloutView` instead.'
+      ),
     })),
 
     /**
@@ -335,18 +347,7 @@ const MapView = React.createClass({
           style: [styles.calloutView, detailCalloutView.props.style || {}]
         }));
       }
-      if (__DEV__) {
-        ['hasLeftCallout', 'onLeftCalloutPress'].forEach(key => {
-          if (annotation[key]) {
-            console.warn('`' + key + '` is deprecated. Use leftCalloutView instead.');
-          }
-        });
-        ['hasRightCallout', 'onRightCalloutPress'].forEach(key => {
-          if (annotation[key]) {
-            console.warn('`' + key + '` is deprecated. Use rightCalloutView instead.');
-          }
-        });
-      }
+
       let result = {
         ...annotation,
         tintColor: tintColor && processColor(tintColor),

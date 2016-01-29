@@ -149,7 +149,10 @@ function renderComponent(filepath) {
   var json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedOrFirst,
-    docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
+    docgen.defaultHandlers.concat([
+      docgenHelpers.stylePropTypeHandler,
+      docgenHelpers.deprecatedPropTypeHandler,
+    ])
   );
 
   return componentsToMarkdown('component', json, filepath, n++, styleDocs);

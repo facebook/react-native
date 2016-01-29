@@ -12,6 +12,7 @@
 'use strict';
 
 var ReactPropTypes = require('ReactPropTypes');
+var deprecatedPropType = require('deprecatedPropType');
 
 var ArrayOfNumberPropType = ReactPropTypes.arrayOf(ReactPropTypes.number);
 
@@ -49,11 +50,11 @@ var TransformPropTypes = {
   transformMatrix: TransformMatrixPropType,
 
   /* Deprecated transform props used on Android only */
-  scaleX: ReactPropTypes.number,
-  scaleY: ReactPropTypes.number,
-  rotation: ReactPropTypes.number,
-  translateX: ReactPropTypes.number,
-  translateY: ReactPropTypes.number,
+  scaleX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  scaleY: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  rotation: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  translateX: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
+  translateY: deprecatedPropType(ReactPropTypes.number, 'Use the transform prop instead.'),
 };
 
 module.exports = TransformPropTypes;
