@@ -37,7 +37,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Modal: require('Modal'),
   Navigator: require('Navigator'),
   NavigatorIOS: require('NavigatorIOS'),
-  PickerAndroid: require('PickerAndroid'),
+  Picker: require('Picker'),
   PickerIOS: require('PickerIOS'),
   ProgressBarAndroid: require('ProgressBarAndroid'),
   ProgressViewIOS: require('ProgressViewIOS'),

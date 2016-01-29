@@ -128,7 +128,7 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
       }
 
       TextView textView = (TextView) convertView;
-      textView.setText(item.getString("text"));
+      textView.setText(item.getString("label"));
       if (!isDropdown && mPrimaryTextColor != null) {
         textView.setTextColor(mPrimaryTextColor);
       } else if (item.hasKey("color") && !item.isNull("color")) {
