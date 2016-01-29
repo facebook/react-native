@@ -44,7 +44,8 @@ import com.facebook.react.views.image.ReactImageView;
   private @Nullable FlatViewGroup.InvalidateCallback mCallback;
   private @Nullable Path mPathForRoundedBitmap;
   private @Nullable BitmapShader mBitmapShader;
-  private boolean mForceClip;
+  private float mHorizontalPadding;
+  private float mVerticalPadding;
   private int mReactTag;
 
   // variables used for fading the image in
@@ -149,7 +150,10 @@ import com.facebook.react.views.image.ReactImageView;
 
   @Override
   protected boolean shouldClip() {
-    return mForceClip || super.shouldClip();
+    return getLeft() + mHorizontalPadding < getClipLeft() ||
+        getTop() + mVerticalPadding < getClipTop() ||
+        getRight() - mHorizontalPadding > getClipRight() ||
+        getBottom() - mVerticalPadding < getClipBottom();
   }
 
   @Override
@@ -211,11 +215,10 @@ import com.facebook.react.views.image.ReactImageView;
     float imageWidth = (float) bitmap.getWidth();
     float imageHeight = (float) bitmap.getHeight();
 
-    mForceClip = false;
-
     if (mScaleType == ScaleType.FIT_XY) {
       mTransform.setScale(containerWidth / imageWidth, containerHeight / imageHeight);
       mTransform.postTranslate(left, top);
+      mHorizontalPadding = mVerticalPadding = 0;
       return;
     }
 
@@ -231,13 +234,11 @@ import com.facebook.react.views.image.ReactImageView;
       scale = Math.max(containerWidth / imageWidth, containerHeight / imageHeight);
     }
 
-    float paddingLeft = (containerWidth - imageWidth * scale) / 2;
-    float paddingTop = (containerHeight - imageHeight * scale) / 2;
-
-    mForceClip = paddingLeft < 0 || paddingTop < 0;
+    mHorizontalPadding = (containerWidth - imageWidth * scale) / 2;
+    mVerticalPadding = (containerHeight - imageHeight * scale) / 2;
 
     mTransform.setScale(scale, scale);
-    mTransform.postTranslate(left + paddingLeft, top + paddingTop);
+    mTransform.postTranslate(left + mHorizontalPadding, top + mVerticalPadding);
 
     if (mBitmapShader != null) {
       mBitmapShader.setLocalMatrix(mTransform);

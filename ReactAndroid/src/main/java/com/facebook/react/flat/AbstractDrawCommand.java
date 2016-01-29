@@ -137,6 +137,22 @@ import android.graphics.Canvas;
     return mBottom;
   }
 
+  public final float getClipLeft() {
+    return mClipLeft;
+  }
+
+  public final float getClipTop() {
+    return mClipTop;
+  }
+
+  public final float getClipRight() {
+    return mClipRight;
+  }
+
+  public final float getClipBottom() {
+    return mClipBottom;
+  }
+
   protected abstract void onDraw(Canvas canvas);
 
   protected boolean shouldClip() {
