@@ -9,9 +9,10 @@
  * @providesModule Interpolation
  * @flow
  */
+/* eslint no-bitwise: 0 */
 'use strict';
 
-var tinycolor = require('tinycolor');
+var normalizeColor = require('normalizeColor');
 
 // TODO(#7644673): fix this hack once github jest actually checks invariants
 var invariant = function(condition, message) {
@@ -164,16 +165,20 @@ function interpolate(
   return result;
 }
 
-function colorToRgba(
-  input: string
-): string {
-  var color = tinycolor(input);
-  if (color.isValid()) {
-    var {r, g, b, a} = color.toRgb();
-    return `rgba(${r}, ${g}, ${b}, ${a === undefined ? 1 : a})`;
-  } else {
+function colorToRgba(input: string): string {
+  var int32Color = normalizeColor(input);
+  if (int32Color === null) {
     return input;
   }
+
+  int32Color = int32Color || 0; // $FlowIssue
+
+  var a = ((int32Color & 0xff000000) >>> 24) / 255;
+  var r = (int32Color & 0x00ff0000) >>> 16;
+  var g = (int32Color & 0x0000ff00) >>> 8;
+  var b = int32Color & 0x000000ff;
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 var stringShapeRegex = /[0-9\.-]+/g;
