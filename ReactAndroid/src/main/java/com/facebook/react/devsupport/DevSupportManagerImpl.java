@@ -266,17 +266,6 @@ public class DevSupportManagerImpl implements DevSupportManager {
           }
         });
     options.put(
-            mDevSettings.isHotModuleReplacementEnabled()
-                    ? mApplicationContext.getString(R.string.catalyst_hot_module_replacement_off)
-                    : mApplicationContext.getString(R.string.catalyst_hot_module_replacement),
-            new DevOptionHandler() {
-              @Override
-              public void onOptionSelected() {
-                mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
-                handleReloadJS();
-              }
-            });
-    options.put(
         mDevSettings.isReloadOnJSChangeEnabled()
             ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
             : mApplicationContext.getString(R.string.catalyst_live_reload),
