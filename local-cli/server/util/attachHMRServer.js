@@ -74,6 +74,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             dependenciesCache,
             dependenciesModulesCache,
             shallowDependencies,
+            resolutionResponse: response,
           };
         });
       });
@@ -123,7 +124,23 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 // to the client may have changed
                 const oldDependencies = client.shallowDependencies[filename];
                 if (arrayEquals(deps, oldDependencies)) {
-                  return [packagerServer.getModuleForPath(filename)];
+                  // Need to create a resolution response to pass to the bundler
+                  // to process requires after transform. By providing a
+                  // specific response we can compute a non recursive one which
+                  // is the least we need and improve performance.
+                  return packagerServer.getDependencies({
+                    platform: client.platform,
+                    dev: true,
+                    entryFile: filename,
+                    recursive: true,
+                  }).then(response => {
+                    const module = packagerServer.getModuleForPath(filename);
+
+                    return {
+                      modulesToUpdate: [module],
+                      resolutionResponse: response,
+                    };
+                  });
                 }
 
                 // if there're new dependencies compare the full list of
@@ -133,9 +150,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     dependenciesCache,
                     dependenciesModulesCache,
                     shallowDependencies,
+                    resolutionResponse,
                   }) => {
                     if (!client) {
-                      return [];
+                      return {};
                     }
 
                     // build list of modules for which we'll send HMR updates
@@ -151,10 +169,13 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     client.dependenciesModulesCache = dependenciesModulesCache;
                     client.shallowDependencies = shallowDependencies;
 
-                    return modulesToUpdate;
+                    return {
+                      modulesToUpdate,
+                      resolutionResponse,
+                    };
                   });
               })
-              .then(modulesToUpdate => {
+              .then(({modulesToUpdate, resolutionResponse}) => {
                 if (!client) {
                   return;
                 }
@@ -168,6 +189,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   entryFile: client.bundleEntry,
                   platform: client.platform,
                   modules: modulesToUpdate,
+                  resolutionResponse,
                 })
               })
               .then(bundle => {

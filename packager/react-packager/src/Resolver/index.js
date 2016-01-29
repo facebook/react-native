@@ -64,6 +64,10 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'boolean',
     default: false
   },
+  recursive: {
+    type: 'boolean',
+    default: true,
+  },
 });
 
 class Resolver {
@@ -116,15 +120,17 @@ class Resolver {
   getDependencies(main, options) {
     const opts = getDependenciesValidateOpts(options);
 
-    return this._depGraph.getDependencies(main, opts.platform).then(
-      resolutionResponse => {
-        this._getPolyfillDependencies().reverse().forEach(
-          polyfill => resolutionResponse.prependDependency(polyfill)
-        );
+    return this._depGraph.getDependencies(
+      main,
+      opts.platform,
+      opts.recursive,
+    ).then(resolutionResponse => {
+      this._getPolyfillDependencies().reverse().forEach(
+        polyfill => resolutionResponse.prependDependency(polyfill)
+      );
 
-        return resolutionResponse.finalize();
-      }
-    );
+      return resolutionResponse.finalize();
+    });
   }
 
   getModuleSystemDependencies(options) {

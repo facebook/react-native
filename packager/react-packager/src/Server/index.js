@@ -137,6 +137,10 @@ const dependencyOpts = declareOpts({
     type: 'string',
     required: true,
   },
+  recursive: {
+    type: 'boolean',
+    default: true,
+  },
 });
 
 class Server {
@@ -269,6 +273,7 @@ class Server {
         opts.entryFile,
         opts.dev,
         opts.platform,
+        opts.recursive,
       );
     });
   }

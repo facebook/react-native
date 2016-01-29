@@ -206,11 +206,12 @@ describe('Bundler', function() {
   });
 
   pit('gets the list of dependencies from the resolver', function() {
-    return bundler.getDependencies('/root/foo.js', true)
-      .then(
-        () => expect(getDependencies)
-                .toBeCalledWith('/root/foo.js', { dev: true })
-      );
+    return bundler.getDependencies('/root/foo.js', true).then(() =>
+      expect(getDependencies).toBeCalledWith(
+        '/root/foo.js',
+        { dev: true, recursive: true },
+      )
+    );
   });
 
   describe('getOrderedDependencyPaths', () => {
