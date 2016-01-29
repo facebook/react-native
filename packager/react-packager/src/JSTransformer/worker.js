@@ -15,14 +15,16 @@ var makeInternalPreset = require('babel-preset-react-native/internal');
 // transforms should be run after the external ones to ensure that they run on
 // Javascript code
 function internalTransforms(sourceCode, filename, options) {
-  if (!options.hot) {
+  var internalPreset = makeInternalPreset(options);
+
+  if (!internalPreset) {
     return {
       code: sourceCode,
       filename: filename,
     };
   }
 
-  var presets = [ makeInternalPreset(options) ];
+  var presets = [ internalPreset ];
 
   var result = babel.transform(sourceCode, {
     filename: filename,

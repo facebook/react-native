@@ -12,8 +12,9 @@
 
 const babel = require('babel-core');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
-const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const fs = require('fs');
+const makeHotPreset = require('babel-preset-react-native/hot');
+const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
 const ReactPackager = require('./react-packager');
@@ -85,7 +86,12 @@ function buildBabelConfig(filename, options) {
   }
 
   // Add extra plugins
-  const extraPlugins = [externalHelpersPlugin];
+  let extraPlugins = [externalHelpersPlugin];
+
+  if (options.hot) {
+    const hotPreset = makeHotPreset(options);
+    extraPlugins = extraPlugins.concat(hotPreset.plugins);
+  }
 
   if (options.inlineRequires) {
     extraPlugins.push(inlineRequiresPlugin);
