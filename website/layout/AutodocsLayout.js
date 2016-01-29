@@ -119,6 +119,15 @@ var ComponentDoc = React.createClass({
             {renderType(prop.type)}
           </span>}
         </Header>
+        {prop.deprecationMessage && <div className="deprecated">
+          <div className="deprecatedTitle">
+            <img className="deprecatedIcon" src="/react-native/img/Warning.png" />
+            <span>Deprecated</span>
+          </div>
+          <div className="deprecatedMessage">
+            <Marked>{prop.deprecationMessage}</Marked>
+          </div>
+        </div>}
         {prop.type && prop.type.name === 'stylesheet' &&
           this.renderStylesheetProps(prop.type.value)}
         {prop.description && <Marked>{prop.description}</Marked>}
