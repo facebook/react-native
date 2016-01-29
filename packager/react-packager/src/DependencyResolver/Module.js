@@ -15,7 +15,15 @@ const extractRequires = require('./lib/extractRequires');
 
 class Module {
 
-  constructor({ file, fastfs, moduleCache, cache, extractor, depGraphHelpers }) {
+  constructor({
+    file,
+    fastfs,
+    moduleCache,
+    cache,
+    extractor = extractRequires,
+    transformCode,
+    depGraphHelpers,
+  }) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -27,6 +35,7 @@ class Module {
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._extractor = extractor;
+    this._transformCode = transformCode;
     this._depGraphHelpers = depGraphHelpers;
   }
 
@@ -36,6 +45,10 @@ class Module {
       'isHaste',
       () => this.read().then(data => !!data.id)
     );
+  }
+
+  getCode() {
+    return this.read().then(({code}) => code);
   }
 
   getName() {
@@ -114,13 +127,22 @@ class Module {
         if (this.isJSON() || 'extern' in moduleDocBlock) {
           data.dependencies = [];
           data.asyncDependencies = [];
+          data.code = content;
+          return data;
         } else {
-          var dependencies = (this._extractor || extractRequires)(content).deps;
-          data.dependencies = dependencies.sync;
-          data.asyncDependencies = dependencies.async;
-        }
+          const transformCode = this._transformCode;
+          const codePromise = transformCode
+              ? transformCode(this, content)
+              : Promise.resolve({code: content});
 
-        return data;
+          return codePromise.then(({code, dependencies, asyncDependencies}) => {
+            const {deps} = this._extractor(code);
+            data.dependencies = dependencies || deps.sync;
+            data.asyncDependencies = asyncDependencies || deps.async;
+            data.code = code;
+            return data;
+          });
+        }
       });
     }
 

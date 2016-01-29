@@ -42,6 +42,7 @@ class DependencyGraph {
     extensions,
     mocksPattern,
     extractRequires,
+    transformCode,
     shouldThrowOnUnresolvedErrors = () => true,
   }) {
     this._opts = {
@@ -54,13 +55,13 @@ class DependencyGraph {
       providesModuleNodeModules,
       platforms: platforms || [],
       preferNativePlatform: preferNativePlatform || false,
-      cache,
       extensions: extensions || ['js', 'json'],
       mocksPattern,
       extractRequires,
       shouldThrowOnUnresolvedErrors,
+      transformCode
     };
-    this._cache = this._opts.cache;
+    this._cache = cache;
     this._helpers = new DependencyGraphHelpers(this._opts);
     this.load().catch((err) => {
       // This only happens at initialization. Live errors are easier to recover from.
@@ -98,12 +99,13 @@ class DependencyGraph {
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
-    this._moduleCache = new ModuleCache(
-      this._fastfs,
-      this._cache,
-      this._opts.extractRequires,
-      this._helpers
-    );
+    this._moduleCache = new ModuleCache({
+      fastfs: this._fastfs,
+      cache: this._cache,
+      extractRequires: this._opts.extractRequires,
+      transformCode: this._opts.transformCode,
+      depGraphHelpers: this._helpers,
+    });
 
     this._hasteMap = new HasteMap({
       fastfs: this._fastfs,

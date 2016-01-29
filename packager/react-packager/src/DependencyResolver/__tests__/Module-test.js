@@ -26,74 +26,74 @@ const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelper
 const Promise = require('promise');
 const fs = require('graceful-fs');
 
+function mockIndexFile(indexJs) {
+  fs.__setMockFilesystem({'root': {'index.js': indexJs}});
+}
+
 describe('Module', () => {
   const fileWatcher = {
     on: () =>  this,
     isWatchman: () => Promise.resolve(false),
   };
+  const fileName = '/root/index.js';
 
-  const Cache = jest.genMockFn();
-  Cache.prototype.get = jest.genMockFn().mockImplementation(
-    (filepath, field, cb) => cb(filepath)
-  );
-  Cache.prototype.invalidate = jest.genMockFn();
-  Cache.prototype.end = jest.genMockFn();
+  let cache, fastfs;
 
+  const createCache = () => ({
+    get: jest.genMockFn().mockImplementation(
+      (filepath, field, cb) => cb(filepath)
+    ),
+    invalidate: jest.genMockFn(),
+    end: jest.genMockFn(),
+  });
+
+  const createModule = (options) =>
+    new Module({
+      cache,
+      fastfs,
+      file: fileName,
+      depGraphHelpers: new DependencyGraphHelpers(),
+      moduleCache: new ModuleCache({fastfs, cache}),
+      ...options,
+    });
+
+  beforeEach(function(done) {
+    cache = createCache();
+    fastfs = new Fastfs(
+      'test',
+      ['/root'],
+      fileWatcher,
+      {crawling: Promise.resolve([fileName]), ignore: []},
+    );
+
+    fastfs.build().then(done);
+  });
 
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
-      const fastfs = new Fastfs(
-        'test',
-        ['/root'],
-        fileWatcher,
-        {crawling: Promise.resolve(['/root/index.js']), ignore: []},
+      const module = createModule();
+      return module.getAsyncDependencies().then(actual =>
+        expect(actual).toEqual(expected)
       );
-      const cache = new Cache();
-
-      return fastfs.build().then(() => {
-        const module = new Module({
-          file: '/root/index.js',
-          fastfs,
-          moduleCache: new ModuleCache(fastfs, cache),
-          cache: cache,
-          depGraphHelpers: new DependencyGraphHelpers(),
-        });
-
-        return module.getAsyncDependencies().then(actual =>
-          expect(actual).toEqual(expected)
-        );
-      });
     }
 
     pit('should recognize single dependency', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': 'System.' + 'import("dep1")',
-        },
-      });
+      mockIndexFile('System.' + 'import("dep1")');
 
       return expectAsyncDependenciesToEqual([['dep1']]);
     });
 
     pit('should parse single quoted dependencies', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': 'System.' + 'import(\'dep1\')',
-        },
-      });
+      mockIndexFile('System.' + 'import(\'dep1\')');
 
       return expectAsyncDependenciesToEqual([['dep1']]);
     });
 
     pit('should parse multiple async dependencies on the same module', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': [
-            'System.' + 'import("dep1")',
-            'System.' + 'import("dep2")',
-          ].join('\n'),
-        },
-      });
+      mockIndexFile([
+        'System.' + 'import("dep1")',
+        'System.' + 'import("dep2")',
+      ].join('\n'));
 
       return expectAsyncDependenciesToEqual([
         ['dep1'],
@@ -102,53 +102,125 @@ describe('Module', () => {
     });
 
     pit('parse fine new lines', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': 'System.' + 'import(\n"dep1"\n)',
-        },
-      });
+      mockIndexFile('System.' + 'import(\n"dep1"\n)');
 
       return expectAsyncDependenciesToEqual([['dep1']]);
     });
   });
 
+  describe('Code', () => {
+    const fileContents = 'arbitrary(code)';
+    beforeEach(function() {
+      mockIndexFile(fileContents);
+    });
+
+    pit('exposes file contents as `code` property on the data exposed by `read()`', () =>
+      createModule().read().then(({code}) =>
+        expect(code).toBe(fileContents))
+    );
+
+    pit('exposes file contes via the `getCode()` method', () =>
+      createModule().getCode().then(code =>
+        expect(code).toBe(fileContents))
+    );
+
+    pit('does not save the code in the cache', () =>
+      createModule().getCode().then(() =>
+        expect(cache.get).not.toBeCalled()
+      )
+    );
+  });
+
   describe('Extrators', () => {
 
-    function createModuleWithExtractor(extractor) {
-      const fastfs = new Fastfs(
-        'test',
-        ['/root'],
-        fileWatcher,
-        {crawling: Promise.resolve(['/root/index.js']), ignore: []},
-      );
-      const cache = new Cache();
-
-      return fastfs.build().then(() => {
-        return new Module({
-          file: '/root/index.js',
-          fastfs,
-          moduleCache: new ModuleCache(fastfs, cache),
-          cache,
-          extractor,
-          depGraphHelpers: new DependencyGraphHelpers(),
-        });
-      });
-    }
-
     pit('uses custom require extractors if specified', () => {
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': '',
-        },
+      mockIndexFile('');
+      const module = createModule({
+        extractor: code => ({deps: {sync: ['foo', 'bar']}}),
       });
 
-      return createModuleWithExtractor(
-        code => ({deps: {sync: ['foo', 'bar']}})
-      ).then(module =>
-        module.getDependencies().then(actual =>
-          expect(actual).toEqual(['foo', 'bar'])
-        )
-      );
+      return module.getDependencies().then(actual =>
+        expect(actual).toEqual(['foo', 'bar']));
+    });
+  });
+
+  describe('Custom Code Transform', () => {
+    let transformCode;
+    const fileContents = 'arbitrary(code);';
+    const exampleCode = `
+      require('a');
+      System.import('b');
+      require('c');`;
+
+    beforeEach(function() {
+      transformCode = jest.genMockFn();
+      mockIndexFile(fileContents);
+      transformCode.mockReturnValue(Promise.resolve({code: ''}));
+    });
+
+    pit('passes the module and file contents to the transform function when reading', () => {
+      const module = createModule({transformCode});
+      return module.read()
+        .then(() => {
+          expect(transformCode).toBeCalledWith(module, fileContents);
+        });
+    });
+
+    pit('uses the code that `transformCode` resolves to to extract dependencies', () => {
+      transformCode.mockReturnValue(Promise.resolve({code: exampleCode}));
+      const module = createModule({transformCode});
+
+      return Promise.all([
+        module.getDependencies(),
+        module.getAsyncDependencies(),
+      ]).then(([dependencies, asyncDependencies]) => {
+        expect(dependencies).toEqual(['a', 'c']);
+        expect(asyncDependencies).toEqual([['b']]);
+      });
+    });
+
+    pit('uses dependencies that `transformCode` resolves to, instead of extracting them', () => {
+      const mockedDependencies = ['foo', 'bar'];
+      transformCode.mockReturnValue(Promise.resolve({
+        code: exampleCode,
+        dependencies: mockedDependencies,
+      }));
+      const module = createModule({transformCode});
+
+      return Promise.all([
+        module.getDependencies(),
+        module.getAsyncDependencies(),
+      ]).then(([dependencies, asyncDependencies]) => {
+        expect(dependencies).toEqual(mockedDependencies);
+        expect(asyncDependencies).toEqual([['b']]);
+      });
+    });
+
+    pit('uses async dependencies that `transformCode` resolves to, instead of extracting them', () => {
+      const mockedAsyncDependencies = [['foo', 'bar'], ['baz']];
+      transformCode.mockReturnValue(Promise.resolve({
+        code: exampleCode,
+        asyncDependencies: mockedAsyncDependencies,
+      }));
+      const module = createModule({transformCode});
+
+      return Promise.all([
+        module.getDependencies(),
+        module.getAsyncDependencies(),
+      ]).then(([dependencies, asyncDependencies]) => {
+        expect(dependencies).toEqual(['a', 'c']);
+        expect(asyncDependencies).toEqual(mockedAsyncDependencies);
+      });
+    });
+
+    pit('exposes the transformed code rather than the raw file contents', () => {
+      transformCode.mockReturnValue(Promise.resolve({code: exampleCode}));
+      const module = createModule({transformCode});
+      return Promise.all([module.read(), module.getCode()])
+        .then(([data, code]) => {
+          expect(data.code).toBe(exampleCode);
+          expect(code).toBe(exampleCode);
+        });
     });
   });
 });
