@@ -157,6 +157,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),
+      path.join(__dirname, 'polyfills/Object.es7.js'),
       path.join(__dirname, 'polyfills/babelHelpers.js'),
     ].concat(this._polyfillModuleNames);
 
