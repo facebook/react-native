@@ -7,13 +7,21 @@ const path = require('path');
 
 class ModuleCache {
 
-  constructor(fastfs, cache, extractRequires, depGraphHelpers) {
+  constructor({
+    fastfs,
+    cache,
+    extractRequires,
+    transformCode,
+    depGraphHelpers,
+  }) {
     this._moduleCache = Object.create(null);
     this._packageCache = Object.create(null);
     this._fastfs = fastfs;
     this._cache = cache;
     this._extractRequires = extractRequires;
+    this._transformCode = transformCode;
     this._depGraphHelpers = depGraphHelpers;
+
     fastfs.on('change', this._processFileChange.bind(this));
   }
 
@@ -26,6 +34,7 @@ class ModuleCache {
         moduleCache: this,
         cache: this._cache,
         extractor: this._extractRequires,
+        transformCode: this._transformCode,
         depGraphHelpers: this._depGraphHelpers,
       });
     }
