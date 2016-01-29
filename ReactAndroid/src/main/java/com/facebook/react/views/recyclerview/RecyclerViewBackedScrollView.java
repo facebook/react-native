@@ -114,25 +114,57 @@ public class RecyclerViewBackedScrollView extends RecyclerView {
     }
 
     public int getTopOffsetForItem(int index) {
+      // This method is frequently called from the "onScroll" handler of the "RecyclerView" with an
+      // index of first visible item of the view. Implementation of this method takes advantage of
+      // that fact by caching the value for the last index that this method has been called with.
+      //
+      // There are a 2 cases that we optimize for:
+      // 1) The visible item doesn't change between subsequent "onScroll" calls, in that case we
+      //    don't need to calculate anything, just return the cached value
+      // 2) The next visible item will be the one that is adjacent to the item that we store the
+      //    cached value for: index + 1 when scrolling down or index - 1 when scrolling up. Then it
+      //    is sufficient to add/subtract height of item at the "last index"
+      //
+      // The implementation accounts for the cases when next index is not necessarily a subsequent
+      // number of the cached one. In which case we try to minimize the number of rows we will loop
+      // through.
       if (mLastRequestedPosition != index) {
-        int sum = 0;
-        int startIndex = 0;
-
-        if (mLastRequestedPosition != -1) {
-          sum = mOffsetForLastPosition;
-          startIndex = mLastRequestedPosition;
-        }
+        int sum;
 
         if (mLastRequestedPosition < index) {
+          // This can either happen when we're scrolling down or if the cached value has never been
+          // calculated
+          int startIndex;
+
+          if (mLastRequestedPosition != -1) {
+            // We already have the value cached, let's use it and only add heights of the items
+            // starting at the index we have the cached value for
+            sum = mOffsetForLastPosition;
+            startIndex = mLastRequestedPosition;
+          } else {
+            sum = 0;
+            startIndex = 0;
+          }
+
           for (int i = startIndex; i < index; i++) {
             sum += mReactListAdapter.mViews.get(i).getMeasuredHeight();
           }
         } else {
+          // We are scrolling up, we can either use cached value and subtract heights of rows
+          // between mLastRequestPosition and index, or we can calculate the height starting from 0
+          // (this can be quite a frequent case as well, when the list implements "jump to the top"
+          // action). We just go for the option that require less calculations
           if (index < (mLastRequestedPosition - index)) {
+            // index is relatively small, it's faster to calculate the sum starting from 0
+            sum = 0;
             for (int i = 0; i < index; i++) {
               sum += mReactListAdapter.mViews.get(i).getMeasuredHeight();
             }
           } else {
+            // index is "closer" to the last cached index than it is to 0. We can reuse cached sum
+            // and calculate the new sum by subtracting heights of the elements between
+            // "mLastRequestPosition" and "index"
+            sum = mOffsetForLastPosition;
             for (int i = mLastRequestedPosition - 1; i >= index; i--) {
               sum -= mReactListAdapter.mViews.get(i).getMeasuredHeight();
             }
