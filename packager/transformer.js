@@ -13,7 +13,7 @@
 const babel = require('babel-core');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
-const makeHotPreset = require('babel-preset-react-native/hot');
+const makeHotConfig = require('babel-preset-react-native/configs/hot');
 const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
@@ -71,33 +71,21 @@ function buildBabelConfig(filename, options) {
     sourceFileName: filename,
   };
 
-  const config = Object.assign({}, babelRC, extraConfig);
-  if (options.hot) {
-    extraPlugins.push([
-      'react-transform',
-      {
-        transforms: [{
-          transform: 'react-transform-hmr/lib/index.js',
-          imports: ['React'],
-          locals: ['module'],
-        }]
-      },
-    ]);
-  }
+  let config = Object.assign({}, babelRC, extraConfig);
 
   // Add extra plugins
-  let extraPlugins = [externalHelpersPlugin];
-
-  if (options.hot) {
-    const hotPreset = makeHotPreset(options);
-    extraPlugins = extraPlugins.concat(hotPreset.plugins);
-  }
+  const extraPlugins = [externalHelpersPlugin];
 
   if (options.inlineRequires) {
     extraPlugins.push(inlineRequiresPlugin);
   }
 
   config.plugins = extraPlugins.concat(config.plugins);
+
+  if (options.hot) {
+    const hotConfig = makeHotConfig(options);
+    config = Object.assign({}, config, hotConfig);
+  }
 
   return Object.assign({}, babelRC, config);
 }
