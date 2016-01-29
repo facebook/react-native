@@ -9,25 +9,6 @@
 'use strict';
 
 exports.getAll = function(options) {
-  var plugins = [];
-  if (options.hot) {
-    plugins = plugins.concat([
-      [
-        'react-transform',
-        {
-          transforms: [{
-            transform: 'react-transform-hmr/lib/index.js',
-            imports: ['React'],
-            locals: ['module'],
-          }]
-        },
-      ],
-      'transform-es2015-block-scoping',
-      'transform-es2015-constants',
-      ['transform-es2015-modules-commonjs', {strict: false, allowTopLevelThis: true}],
-    ]);
-  }
-
-  return plugins;
+  return [];
 };
 

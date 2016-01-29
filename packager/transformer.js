@@ -33,6 +33,18 @@ function transform(src, filename, options) {
   };
 
   const config = Object.assign({}, babelRC, extraConfig);
+  if (options.hot) {
+    extraPlugins.push([
+      'react-transform',
+      {
+        transforms: [{
+          transform: 'react-transform-hmr/lib/index.js',
+          imports: ['React'],
+          locals: ['module'],
+        }]
+      },
+    ]);
+  }
 
   if (options.inlineRequires) {
     extraPlugins.push(inlineRequires);
