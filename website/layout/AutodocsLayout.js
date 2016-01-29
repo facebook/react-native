@@ -57,6 +57,9 @@ function renderType(type) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
       return <a href={slugify(name) + '.html#style'}>{name}#style</a>
     }
+    if (type.raw === 'ColorPropType') {
+      return <a href={'colors.html'}>color</a>
+    }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
     }
