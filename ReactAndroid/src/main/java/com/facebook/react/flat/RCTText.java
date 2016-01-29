@@ -20,11 +20,12 @@ import android.text.TextUtils;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
+import com.facebook.csslayout.Spacing;
 import com.facebook.fbui.widget.text.staticlayouthelper.StaticLayoutHelper;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * RCTText is a top-level node for text. It extends {@link RCTVirtualText} because it can contain
@@ -66,7 +67,6 @@ import com.facebook.react.uimanager.ViewProps;
   @Override
   public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
     CharSequence text = getText();
-
     if (TextUtils.isEmpty(text)) {
       // to indicate that we don't have anything to display
       mText = null;
@@ -179,6 +179,11 @@ import com.facebook.react.uimanager.ViewProps;
           mBoringLayoutMetrics,
           INCLUDE_PADDING));
     }
+
+    Spacing padding = getPadding();
+
+    left += padding.get(Spacing.LEFT);
+    top += padding.get(Spacing.TOP);
 
     // these are actual right/bottom coordinates where this DrawCommand will draw.
     float layoutRight = left + mDrawCommand.getLayoutWidth();
