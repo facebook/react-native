@@ -25,7 +25,7 @@ var ReactNative = {
   get Modal() { return require('Modal'); },
   get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
-  get PickerAndroid() { return require('PickerAndroid'); },
+  get Picker() { return require('Picker'); },
   get PickerIOS() { return require('PickerIOS'); },
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
