@@ -186,7 +186,7 @@ class ListViewDataSource {
       typeof this._sectionHeaderHasChanged === 'function',
       'Must provide a sectionHeaderHasChanged function with section data.'
     );
-    var newSource = new ListViewDataSource({
+    var newSource = new this.constructor({
       getRowData: this._getRowData,
       getSectionHeaderData: this._getSectionHeaderData,
       rowHasChanged: this._rowHasChanged,
