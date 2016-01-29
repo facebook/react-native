@@ -158,7 +158,7 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryFile);
   }
 
-  getDependencies(entryPath, platform) {
+  getDependencies(entryPath, platform, recursive = true) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);
       const absPath = this._getAbsolutePath(entryPath);
@@ -177,7 +177,11 @@ class DependencyGraph {
       const response = new ResolutionResponse();
 
       return Promise.all([
-        req.getOrderedDependencies(response, this._opts.mocksPattern),
+        req.getOrderedDependencies(
+          response,
+          this._opts.mocksPattern,
+          recursive,
+        ),
         req.getAsyncDependencies(response),
       ]).then(() => response);
     });

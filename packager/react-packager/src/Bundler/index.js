@@ -235,14 +235,48 @@ class Bundler {
     unbundle: isUnbundle,
     hot: hot,
     entryModuleOnly,
+    resolutionResponse,
   }) {
-    const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
+    const moduleSystemDeps = includeSystemDependencies
+      ? this._resolver.getModuleSystemDependencies(
+        { dev: isDev, platform, isUnbundle }
+      )
+      : [];
 
-    return this.getDependencies(entryFile, isDev, platform).then((response) => {
-      Activity.endEvent(findEventId);
-      bundle.setMainModuleId(response.mainModuleId);
-      bundle.setMainModuleName(response.mainModuleId);
+    const findModules = () => {
+      const findEventId = Activity.startEvent('find dependencies');
+      return this.getDependencies(entryFile, isDev, platform).then(response => {
+        Activity.endEvent(findEventId);
+        bundle.setMainModuleId(response.mainModuleId);
+        bundle.setMainModuleName(response.mainModuleId);
+        if (!entryModuleOnly && bundle.setNumPrependedModules) {
+          bundle.setNumPrependedModules(
+            response.numPrependedDependencies + moduleSystemDeps.length
+          );
+        }
+
+        return {
+          response,
+          modulesToProcess: response.dependencies,
+        };
+      });
+    };
+
+    const useProvidedModules = () => {
+      const moduleId = this._resolver.getModuleForPath(entryFile);
+      bundle.setMainModuleId(moduleId);
+      bundle.setMainModuleName(moduleId);
+      return Promise.resolve({
+        response: resolutionResponse,
+        modulesToProcess: modules
+      });
+    };
+
+    return (
+      modules ? useProvidedModules() : findModules()
+    ).then(({response, modulesToProcess}) => {
+
       transformEventId = Activity.startEvent('transform');
 
       let dependencies;
@@ -259,10 +293,6 @@ class Bundler {
 
         const modulesToProcess = modules || response.dependencies;
         dependencies = moduleSystemDeps.concat(modulesToProcess);
-
-        bundle.setNumPrependedModules && bundle.setNumPrependedModules(
-          response.numPrependedDependencies + moduleSystemDeps.length
-        );
       }
 
       let bar;
@@ -280,7 +310,6 @@ class Bundler {
           module => {
             return this._transformModule(
               bundle,
-              response,
               module,
               platform,
               isDev,
@@ -347,7 +376,6 @@ class Bundler {
         response.dependencies.map(
           module => this._transformModule(
             bundle,
-            response,
             module,
             platform,
             isDev,
@@ -418,8 +446,15 @@ class Bundler {
     return this._resolver.getModuleForPath(entryFile);
   }
 
-  getDependencies(main, isDev, platform) {
-    return this._resolver.getDependencies(main, { dev: isDev, platform });
+  getDependencies(main, isDev, platform, recursive = true) {
+    return this._resolver.getDependencies(
+      main,
+      {
+        dev: isDev,
+        platform,
+        recursive,
+      },
+    );
   }
 
   getOrderedDependencyPaths({ entryFile, dev, platform }) {
@@ -454,7 +489,7 @@ class Bundler {
     );
   }
 
-  _transformModule(bundle, response, module, platform = null, dev = true, hot = false) {
+  _transformModule(bundle, module, platform = null, dev = true, hot = false) {
     if (module.isAsset_DEPRECATED()) {
       return this._generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {

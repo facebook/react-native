@@ -103,7 +103,7 @@ class ResolutionRequest {
       );
   }
 
-  getOrderedDependencies(response, mocksPattern) {
+  getOrderedDependencies(response, mocksPattern, recursive = true) {
     return this._getAllMocks(mocksPattern).then(allMocks => {
       const entry = this._moduleCache.getModule(this._entryPath);
       const mocks = Object.create(null);
@@ -163,7 +163,9 @@ class ResolutionRequest {
             p = p.then(() => {
               if (!visited[modDep.hash()]) {
                 visited[modDep.hash()] = true;
-                return collect(modDep);
+                if (recursive) {
+                  return collect(modDep);
+                }
               }
               return null;
             });

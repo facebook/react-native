@@ -186,7 +186,8 @@ describe('Resolver', function() {
       return depResolver.getDependencies('/root/index.js', { dev: true })
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
-          expect(DependencyGraph.mock.instances[0].getDependencies).toBeCalledWith('/root/index.js', undefined);
+          expect(DependencyGraph.mock.instances[0].getDependencies)
+              .toBeCalledWith('/root/index.js', undefined, true);
           expect(result.dependencies[0]).toBe(Polyfill.mock.instances[0]);
           expect(result.dependencies[result.dependencies.length - 1])
               .toBe(module);
