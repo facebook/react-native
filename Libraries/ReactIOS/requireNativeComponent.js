@@ -111,7 +111,7 @@ var TypeToProcessorMap = {
   CGColor: processColor,
   CGColorArray: processColor,
   UIColor: processColor,
-  UIColorArray: processColor,
+  UIColorArray: colors => colors && colors.map(processColor),
   CGImage: resolveAssetSource,
   UIImage: resolveAssetSource,
   RCTImageSource: resolveAssetSource,

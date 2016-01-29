@@ -49,24 +49,12 @@ describe('processColor', () => {
       expect(colorFromString).toEqual(expectedInt);
     });
 
-    it('should convert rgb x, y, z', () => {
-      var colorFromString = processColor('rgb 10, 20, 30');
-      var expectedInt = 0xFF0A141E;
-      expect(colorFromString).toEqual(expectedInt);
-    });
-
   });
 
   describe('RGBA strings', () => {
 
     it('should convert rgba(x, y, z, a)', () => {
       var colorFromString = processColor('rgba(10, 20, 30, 0.4)');
-      var expectedInt = 0x660A141E;
-      expect(colorFromString).toEqual(expectedInt);
-    });
-
-    it('should convert rgba x, y, z, a', () => {
-      var colorFromString = processColor('rgba 10, 20, 30, 0.4');
       var expectedInt = 0x660A141E;
       expect(colorFromString).toEqual(expectedInt);
     });
@@ -81,24 +69,12 @@ describe('processColor', () => {
       expect(colorFromString).toEqual(expectedInt);
     });
 
-    it('should convert hsl x, y%, z%', () => {
-      var colorFromString = processColor('hsl 318, 69%, 55%');
-      var expectedInt = 0xFFDB3DAC;
-      expect(colorFromString).toEqual(expectedInt);
-    });
-
   });
 
   describe('HSL strings', () => {
 
     it('should convert hsla(x, y%, z%, a)', () => {
       var colorFromString = processColor('hsla(318, 69%, 55%, 0.25)');
-      var expectedInt = 0x40DB3DAC;
-      expect(colorFromString).toEqual(expectedInt);
-    });
-
-    it('should convert hsla x, y%, z%, a', () => {
-      var colorFromString = processColor('hsla 318, 69%, 55%, 0.25');
       var expectedInt = 0x40DB3DAC;
       expect(colorFromString).toEqual(expectedInt);
     });
