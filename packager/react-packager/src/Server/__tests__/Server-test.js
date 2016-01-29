@@ -194,18 +194,6 @@ describe('processRequest', () => {
     });
 
     it('rebuilds the bundles that contain a file when that file is changed', () => {
-      testChangingFileWith(() => new Server(options));
-    });
-
-    it('rebuilds the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
-      testChangingFileWith(() => {
-        const server = new Server(options);
-        server.setHMRFileChangeListener(() => Promise.resolve());
-        return server;
-      });
-    });
-
-    function testChangingFileWith(createServer) {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
@@ -225,7 +213,7 @@ describe('processRequest', () => {
 
       Bundler.prototype.bundle = bundleFunc;
 
-      server = createServer();
+      server = new Server(options);
 
       requestHandler = server.processRequest.bind(server);
 
@@ -248,7 +236,55 @@ describe('processRequest', () => {
           expect(response.body).toEqual('this is the rebuilt source')
         );
       jest.runAllTicks();
-    }
+    });
+
+    it('rebuilds the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
+      const bundleFunc = jest.genMockFunction();
+      bundleFunc
+        .mockReturnValueOnce(
+          Promise.resolve({
+            getSource: () => 'this is the first source',
+            getSourceMap: () => {},
+            getEtag: () => () => 'this is an etag',
+          })
+        )
+        .mockReturnValue(
+          Promise.resolve({
+            getSource: () => 'this is the rebuilt source',
+            getSourceMap: () => {},
+            getEtag: () => () => 'this is an etag',
+          })
+        );
+
+      Bundler.prototype.bundle = bundleFunc;
+
+      const server = new Server(options);
+      server.setHMRFileChangeListener(() => {});
+
+      requestHandler = server.processRequest.bind(server);
+
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+        .done(response => {
+          expect(response.body).toEqual('this is the first source');
+          expect(bundleFunc.mock.calls.length).toBe(1);
+        });
+
+      jest.runAllTicks();
+
+      triggerFileChange('all','path/file.js', options.projectRoots[0]);
+      jest.runAllTimers();
+      jest.runAllTicks();
+
+      expect(bundleFunc.mock.calls.length).toBe(1);
+      server.setHMRFileChangeListener(null);
+
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
+        .done(response => {
+          expect(response.body).toEqual('this is the rebuilt source');
+          expect(bundleFunc.mock.calls.length).toBe(2);
+        });
+      jest.runAllTicks();
+    });
   });
 
   describe('/onchange endpoint', () => {

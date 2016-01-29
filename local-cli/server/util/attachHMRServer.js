@@ -109,10 +109,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
         packagerServer.setHMRFileChangeListener((filename, stat) => {
           if (!client) {
-            return Promise.resolve();
+            return;
           }
 
-          return stat.then(() => {
+          stat.then(() => {
             return packagerServer.getShallowDependencies(filename)
               .then(deps => {
                 if (!client) {
