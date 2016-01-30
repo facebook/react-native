@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const resolvePlugins = require('./lib/resolvePlugins');
+const resolvePlugins = require('../lib/resolvePlugins');
 
 module.exports = function(options) {
   return {

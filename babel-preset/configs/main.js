@@ -8,10 +8,12 @@
  */
 'use strict';
 
+const resolvePlugins = require('../lib/resolvePlugins');
+
 module.exports = {
   comments: false,
   compact: true,
-  plugins: [
+  plugins: resolvePlugins([
     'syntax-async-functions',
     'syntax-class-properties',
     'syntax-trailing-function-commas',
@@ -34,7 +36,7 @@ module.exports = {
     'transform-react-jsx',
     'transform-regenerator',
     ['transform-es2015-for-of', { loose: true }],
-  ],
+  ]),
   retainLines: true,
   sourceMaps: false,
 };
