@@ -7,7 +7,7 @@ using System.Threading;
 namespace ReactNative.Bridge
 {
     /// <summary>
-    /// Abstract context wrapper for the catalyst instance to manage
+    /// Abstract context wrapper for the react instance to manage
     /// lifecycle events.
     /// </summary>
     public class ReactContext : IDisposable
@@ -16,28 +16,28 @@ namespace ReactNative.Bridge
         private readonly List<ILifecycleEventListener> _lifecycleEventListeners =
             new List<ILifecycleEventListener>();
 
-        private ICatalystInstance _catalystInstance;
+        private IReactInstance _reactInstance;
 
         /// <summary>
-        /// The catalyst instance associated with the context.
+        /// The react instance associated with the context.
         /// </summary>
-        public ICatalystInstance CatalystInstance
+        public IReactInstance ReactInstance
         {
             get
             {
-                AssertCatalystInstance();
-                return _catalystInstance;
+                AssertReactInstance();
+                return _reactInstance;
             }
         }
 
         /// <summary>
-        /// Checks if the context has an active <see cref="ICatalystInstance"/>.
+        /// Checks if the context has an active <see cref="IReactInstance"/>.
         /// </summary>
-        public bool HasActiveCatalystInstance
+        public bool HasActiveReactInstance
         {
             get
             {
-                return _catalystInstance != null && !_catalystInstance.IsDisposed;
+                return _reactInstance != null && !_reactInstance.IsDisposed;
             }
         }
 
@@ -52,35 +52,35 @@ namespace ReactNative.Bridge
 
         /// <summary>
         /// Gets the instance of the <see cref="IJavaScriptModule"/> associated
-        /// with the <see cref="ICatalystInstance"/>.
+        /// with the <see cref="IReactInstance"/>.
         /// </summary>
         /// <typeparam name="T">Type of JavaScript module.</typeparam>
         /// <returns>The JavaScript module instance.</returns>
         public T GetJavaScriptModule<T>() 
             where T : IJavaScriptModule
         {
-            AssertCatalystInstance();
-            return _catalystInstance.GetJavaScriptModule<T>();
+            AssertReactInstance();
+            return _reactInstance.GetJavaScriptModule<T>();
         }
 
         /// <summary>
         /// Gets the instance of the <see cref="INativeModule"/> associated
-        /// with the <see cref="ICatalystInstance"/>.
+        /// with the <see cref="IReactInstance"/>.
         /// </summary>
         /// <typeparam name="T">Type of native module.</typeparam>
         /// <returns>The native module instance.</returns>
         public T GetNativeModule<T>()
             where T : INativeModule
         {
-            AssertCatalystInstance();
-            return _catalystInstance.GetNativeModule<T>();
+            AssertReactInstance();
+            return _reactInstance.GetNativeModule<T>();
         }
 
         /// <summary>
         /// Adds a lifecycle event listener to the context.
         /// </summary>
         /// <param name="listener">The listener.</param>
-        public void AddLifecycleEventListener(ILifecycleEventListener listener)
+        public virtual void AddLifecycleEventListener(ILifecycleEventListener listener)
         {
             _lock.EnterWriteLock();
             try
@@ -97,7 +97,7 @@ namespace ReactNative.Bridge
         /// Removes a lifecycle event listener from the context.
         /// </summary>
         /// <param name="listener">The listener.</param>
-        public void RemoveLifecycleEventListener(ILifecycleEventListener listener)
+        public virtual void RemoveLifecycleEventListener(ILifecycleEventListener listener)
         {
             _lock.EnterWriteLock();
             try
@@ -184,15 +184,15 @@ namespace ReactNative.Bridge
                 listener.OnDestroy();
             }
 
-            var catalystInstance = _catalystInstance;
-            if (catalystInstance != null)
+            var reactInstance = _reactInstance;
+            if (reactInstance != null)
             {
-                catalystInstance.Dispose();
+                reactInstance.Dispose();
             }
         }
 
         /// <summary>
-        /// Checks if the current thread is on the catalyst instance dispatcher
+        /// Checks if the current thread is on the react instance dispatcher
         /// queue thread.
         /// </summary>
         /// <returns>
@@ -201,18 +201,18 @@ namespace ReactNative.Bridge
         /// </returns>
         public bool IsOnDispatcherQueueThread()
         {
-            AssertCatalystInstance();
-            return _catalystInstance.QueueConfiguration.DispatcherQueueThread.IsOnThread();
+            AssertReactInstance();
+            return _reactInstance.QueueConfiguration.DispatcherQueueThread.IsOnThread();
         }
 
         /// <summary>
-        /// Asserts that the current thread is on the catalyst instance native
+        /// Asserts that the current thread is on the react instance native
         /// modules queue thread.
         /// </summary>
         public void AssertOnDispatcherQueueThread()
         {
-            AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.DispatcherQueueThread.AssertOnThread();
+            AssertReactInstance();
+            _reactInstance.QueueConfiguration.DispatcherQueueThread.AssertOnThread();
         }
 
         /// <summary>
@@ -221,12 +221,12 @@ namespace ReactNative.Bridge
         /// <param name="action">The action.</param>
         public void RunOnDispatcherQueueThread(Action action)
         {
-            AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.DispatcherQueueThread.RunOnQueue(action);
+            AssertReactInstance();
+            _reactInstance.QueueConfiguration.DispatcherQueueThread.RunOnQueue(action);
         }
 
         /// <summary>
-        /// Checks if the current thread is on the catalyst instance
+        /// Checks if the current thread is on the react instance
         /// JavaScript queue thread.
         /// </summary>
         /// <returns>
@@ -235,18 +235,18 @@ namespace ReactNative.Bridge
         /// </returns>
         public bool IsOnJavaScriptQueueThread()
         {
-            AssertCatalystInstance();
-            return _catalystInstance.QueueConfiguration.JavaScriptQueueThread.IsOnThread();
+            AssertReactInstance();
+            return _reactInstance.QueueConfiguration.JavaScriptQueueThread.IsOnThread();
         }
 
         /// <summary>
-        /// Asserts that the current thread is on the catalyst instance
+        /// Asserts that the current thread is on the react instance
         /// JavaScript queue thread.
         /// </summary>
         public void AssertOnJavaScriptQueueThread()
         {
-            AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.JavaScriptQueueThread.AssertOnThread();
+            AssertReactInstance();
+            _reactInstance.QueueConfiguration.JavaScriptQueueThread.AssertOnThread();
         }
 
         /// <summary>
@@ -255,12 +255,12 @@ namespace ReactNative.Bridge
         /// <param name="action">The action.</param>
         public void RunOnJavaScriptQueueThread(Action action)
         {
-            AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.JavaScriptQueueThread.RunOnQueue(action);
+            AssertReactInstance();
+            _reactInstance.QueueConfiguration.JavaScriptQueueThread.RunOnQueue(action);
         }
 
         /// <summary>
-        /// Checks if the current thread is on the catalyst instance native 
+        /// Checks if the current thread is on the react instance native 
         /// modules queue thread.
         /// </summary>
         /// <returns>
@@ -269,18 +269,18 @@ namespace ReactNative.Bridge
         /// </returns>
         public bool IsOnNativeModulesQueueThread()
         {
-            AssertCatalystInstance();
-            return _catalystInstance.QueueConfiguration.NativeModulesQueueThread.IsOnThread();
+            AssertReactInstance();
+            return _reactInstance.QueueConfiguration.NativeModulesQueueThread.IsOnThread();
         }
 
         /// <summary>
-        /// Asserts that the current thread is on the catalyst instance native
+        /// Asserts that the current thread is on the react instance native
         /// modules queue thread.
         /// </summary>
         public void AssertOnNativeModulesQueueThread()
         {
-            AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.NativeModulesQueueThread.AssertOnThread();
+            AssertReactInstance();
+            _reactInstance.QueueConfiguration.NativeModulesQueueThread.AssertOnThread();
         }
 
         /// <summary>
@@ -289,8 +289,8 @@ namespace ReactNative.Bridge
         /// <param name="action">The action.</param>
         public void RunOnNativeModulesQueueThread(Action action)
         {
-            AssertCatalystInstance();
-            _catalystInstance.QueueConfiguration.NativeModulesQueueThread.RunOnQueue(action);
+            AssertReactInstance();
+            _reactInstance.QueueConfiguration.NativeModulesQueueThread.RunOnQueue(action);
         }
 
         /// <summary>
@@ -302,8 +302,8 @@ namespace ReactNative.Bridge
         public void HandleException(Exception exception)
         {
             var nativeModuleCallExceptionHandler = NativeModuleCallExceptionHandler;
-            if (_catalystInstance != null &&
-                !_catalystInstance.IsDisposed &&
+            if (_reactInstance != null &&
+                !_reactInstance.IsDisposed &&
                 nativeModuleCallExceptionHandler != null)
             {
                 nativeModuleCallExceptionHandler(exception);
@@ -316,31 +316,31 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
-        /// Set and initialize the <see cref="ICatalystInstance"/> instance
+        /// Set and initialize the <see cref="IReactInstance"/> instance
         /// for this context.
         /// </summary>
-        /// <param name="instance">The catalyst instance.</param>
+        /// <param name="instance">The react instance.</param>
         /// <remarks>
         /// This method should be called exactly once.
         /// </remarks>
-        internal void InitializeWithInstance(ICatalystInstance instance)
+        internal void InitializeWithInstance(IReactInstance instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
 
-            if (_catalystInstance != null)
+            if (_reactInstance != null)
             {
-                throw new InvalidOperationException("Catalyst instance has already been set.");
+                throw new InvalidOperationException("React instance has already been set.");
             }
 
-            _catalystInstance = instance;
+            _reactInstance = instance;
         }
 
-        private void AssertCatalystInstance()
+        private void AssertReactInstance()
         {
-            if (_catalystInstance == null)
+            if (_reactInstance == null)
             {
-                throw new InvalidOperationException("Catalyst instance has not been set.");
+                throw new InvalidOperationException("React instance has not been set.");
             }
         }
     }

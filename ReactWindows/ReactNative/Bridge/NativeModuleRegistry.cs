@@ -88,12 +88,12 @@ namespace ReactNative.Bridge
         /// <summary>
         /// Invoke a method on a native module.
         /// </summary>
-        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="reactInstance">The react instance.</param>
         /// <param name="moduleId">The module ID.</param>
         /// <param name="methodId">The method ID.</param>
         /// <param name="parameters">The parameters.</param>
         internal /* TODO: public? */ void Invoke(
-            ICatalystInstance catalystInstance,
+            IReactInstance reactInstance,
             int moduleId,
             int methodId,
             JArray parameters)
@@ -103,17 +103,17 @@ namespace ReactNative.Bridge
             if (_moduleTable.Count < moduleId)
                 throw new ArgumentOutOfRangeException("Call to unknown module: " + moduleId, nameof(moduleId));
 
-            _moduleTable[moduleId].Invoke(catalystInstance, methodId, parameters);
+            _moduleTable[moduleId].Invoke(reactInstance, methodId, parameters);
         }
 
         /// <summary>
-        /// Hook to notify modules that the <see cref="ICatalystInstance"/> has
+        /// Hook to notify modules that the <see cref="IReactInstance"/> has
         /// been initialized.
         /// </summary>
-        internal /* TODO: public? */ void NotifyCatalystInstanceInitialize()
+        internal /* TODO: public? */ void NotifyReactInstanceInitialize()
         {
             DispatcherHelpers.AssertOnDispatcher();
-            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyCatalystInstanceInitialize"))
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyReactInstanceInitialize"))
             {
                 foreach (var module in _moduleInstances.Values)
                 {
@@ -123,17 +123,17 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
-        /// Hook to notify modules that the <see cref="ICatalystInstance"/> has
+        /// Hook to notify modules that the <see cref="IReactInstance"/> has
         /// been disposed.
         /// </summary>
-        internal /* TODO: public? */ void NotifyCatalystInstanceDispose()
+        internal /* TODO: public? */ void NotifyReactInstanceDispose()
         {
             DispatcherHelpers.AssertOnDispatcher();
-            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyCatalystInstanceDestroy"))
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyReactInstanceDestroy"))
             {
                 foreach (var module in _moduleInstances.Values)
                 {
-                    module.OnCatalystInstanceDispose();
+                    module.OnReactInstanceDispose();
                 }
             }
         }
@@ -166,9 +166,9 @@ namespace ReactNative.Bridge
 
             public INativeModule Target { get; }
 
-            public void Invoke(ICatalystInstance catalystInstance, int methodId, JArray parameters)
+            public void Invoke(IReactInstance reactInstance, int methodId, JArray parameters)
             {
-                _methods[methodId].Method.Invoke(catalystInstance, parameters);
+                _methods[methodId].Method.Invoke(reactInstance, parameters);
             }
 
             public void WriteModuleDescription(JsonWriter writer)

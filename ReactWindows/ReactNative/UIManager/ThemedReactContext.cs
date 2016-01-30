@@ -1,26 +1,25 @@
-﻿
+﻿using ReactNative.Bridge;
+
 namespace ReactNative.UIManager
 {
-    using ReactNative.Bridge;
-
     public class ThemedReactContext : ReactContext
     {
-        private readonly ReactContext mReactContext;
+        private readonly ReactContext _reactContext;
 
-        public ThemedReactContext(ReactContext reactApplicationContext) {
-             InitializeWithInstance(reactApplicationContext.CatalystInstance);
-             mReactContext = reactApplicationContext;
-        }
-
-        public void addLifecycleEventListener(ILifecycleEventListener listener)
+        public ThemedReactContext(ReactContext reactApplicationContext)
         {
-            mReactContext.AddLifecycleEventListener(listener);
+             InitializeWithInstance(reactApplicationContext.ReactInstance);
+             _reactContext = reactApplicationContext;
         }
 
-        public void removeLifecycleEventListener(ILifecycleEventListener listener)
+        public override void AddLifecycleEventListener(ILifecycleEventListener listener)
         {
-            mReactContext.RemoveLifecycleEventListener(listener);
+            _reactContext.AddLifecycleEventListener(listener);
         }
 
+        public override void RemoveLifecycleEventListener(ILifecycleEventListener listener)
+        {
+            _reactContext.RemoveLifecycleEventListener(listener);
+        }
     }
 }

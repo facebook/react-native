@@ -7,27 +7,27 @@ using System.Threading.Tasks;
 
 namespace ReactNative.Tests
 {
-    class MockCatalystInstance : ICatalystInstance
+    class MockReactInstance : IReactInstance
     {
         private readonly Action<int, JArray> _callback;
         private readonly Action<int, int, JArray, string> _function;
 
-        public MockCatalystInstance()
+        public MockReactInstance()
             : this((_, __) => { }, (p0, p1, p2, p3) => { })
         {
         }
 
-        public MockCatalystInstance(Action<int, JArray> callback)
+        public MockReactInstance(Action<int, JArray> callback)
             : this(callback, (p0, p1, p2, p3) => { })
         {
         }
 
-        public MockCatalystInstance(Action<int, int, JArray, string> function)
+        public MockReactInstance(Action<int, int, JArray, string> function)
             : this((_, __) => { }, function)
         {
         }
 
-        public MockCatalystInstance(Action<int, JArray> callback, Action<int, int, JArray, string> function)
+        public MockReactInstance(Action<int, JArray> callback, Action<int, int, JArray, string> function)
         {
             _callback = callback;
             _function = function;
@@ -49,7 +49,7 @@ namespace ReactNative.Tests
             }
         }
 
-        public ICatalystQueueConfiguration QueueConfiguration
+        public IReactQueueConfiguration QueueConfiguration
         {
             get
             {

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager.Events
 {
     /// <summary>
     /// The interface for defining the methods for receiving and losing <see cref="TextBox"/> control focus.
     /// </summary>
-    public interface IOnIntercepTextFocusEventListener
+    public interface IOnInterceptTextFocusEventListener
     {
         void OnInterceptLostFocusEvent(object sender, RoutedEventArgs @event);
 

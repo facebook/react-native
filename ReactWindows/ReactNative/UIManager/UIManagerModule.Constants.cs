@@ -1,11 +1,9 @@
 ﻿using ReactNative.UIManager.Events;
 using System.Collections.Generic;
+using Map = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ReactNative.UIManager
 {
-    using Windows.UI.Xaml;
-    using Map = Dictionary<string, object>;
-
     public partial class UIManagerModule
     {
         private const string CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";

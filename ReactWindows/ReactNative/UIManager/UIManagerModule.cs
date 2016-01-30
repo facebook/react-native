@@ -407,10 +407,10 @@ namespace ReactNative.UIManager
 
         #region NativeModuleBase
 
-        public override void OnCatalystInstanceDispose()
+        public override void OnReactInstanceDispose()
         {
-            base.OnCatalystInstanceDispose();
-            _eventDispatcher.OnCatalystInstanceDispose();
+            base.OnReactInstanceDispose();
+            _eventDispatcher.OnReactInstanceDispose();
         }
 
         #endregion

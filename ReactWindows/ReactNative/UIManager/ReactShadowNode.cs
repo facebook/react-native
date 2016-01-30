@@ -328,7 +328,7 @@ namespace ReactNative.UIManager
         /// Updates the properties of the node.
         /// </summary>
         /// <param name="properties">The properties.</param>
-        public void UpdateProperties(CatalystStylesDiffMap properties)
+        public void UpdateProperties(ReactStylesDiffMap properties)
         {
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForShadowNodeType(GetType());
             foreach (var key in properties.Keys)

@@ -26,7 +26,7 @@ namespace ReactNative
         /// </summary>
         /// <param name="method">The method.</param>
         /// <returns>The invocation delegate.</returns>
-        public abstract Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method);
+        public abstract Action<INativeModule, IReactInstance, JArray> Create(INativeModule module, MethodInfo method);
 
         /// <summary>
         /// Extracts the native method type from the method.
@@ -88,12 +88,12 @@ namespace ReactNative
         /// Create a callback.
         /// </summary>
         /// <param name="callbackToken">The callback ID token.</param>
-        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="reactInstance">The react instance.</param>
         /// <returns>The callback.</returns>
-        protected static ICallback CreateCallback(JToken callbackToken, ICatalystInstance catalystInstance)
+        protected static ICallback CreateCallback(JToken callbackToken, IReactInstance reactInstance)
         {
             var id = callbackToken.Value<int>();
-            return new Callback(id, catalystInstance);
+            return new Callback(id, reactInstance);
         }
 
         /// <summary>
@@ -101,12 +101,12 @@ namespace ReactNative
         /// </summary>
         /// <param name="resolveToken">The resolve callback ID token.</param>
         /// <param name="rejectToken">The reject callback ID token.</param>
-        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="reactInstance">The react instance.</param>
         /// <returns>The promise.</returns>
-        protected static IPromise CreatePromise(JToken resolveToken, JToken rejectToken, ICatalystInstance catalystInstance)
+        protected static IPromise CreatePromise(JToken resolveToken, JToken rejectToken, IReactInstance reactInstance)
         {
-            var resolveCallback = CreateCallback(resolveToken, catalystInstance);
-            var rejectCallback = CreateCallback(rejectToken, catalystInstance);
+            var resolveCallback = CreateCallback(resolveToken, reactInstance);
+            var rejectCallback = CreateCallback(rejectToken, reactInstance);
             return new Promise(resolveCallback, rejectCallback);
         }
 
@@ -115,9 +115,9 @@ namespace ReactNative
             private static readonly object[] s_empty = new object[0];
 
             private readonly int _id;
-            private readonly ICatalystInstance _instance;
+            private readonly IReactInstance _instance;
 
-            public Callback(int id, ICatalystInstance instance)
+            public Callback(int id, IReactInstance instance)
             {
                 _id = id;
                 _instance = instance;

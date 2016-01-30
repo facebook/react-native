@@ -4,17 +4,17 @@ namespace ReactNative.Bridge.Queue
 {
     /// <summary>
     /// Specifies which <see cref="IMessageQueueThread"/>s must be used to run
-    /// the various contexts of execution within catalyst (dispatcher, native
+    /// the various contexts of execution within react (dispatcher, native
     /// modules, and JS). Some of these queue *may* be the same but should be
     /// coded against as if they are different.
     /// </summary>
-    class CatalystQueueConfiguration : ICatalystQueueConfiguration
+    class ReactQueueConfiguration : IReactQueueConfiguration
     {
         private readonly MessageQueueThread _dispatcherQueueThread;
         private readonly MessageQueueThread _nativeModulesQueueThread;
         private readonly MessageQueueThread _jsQueueThread;
 
-        private CatalystQueueConfiguration(
+        private ReactQueueConfiguration(
             MessageQueueThread dispatcherQueueThread,
             MessageQueueThread nativeModulesQueueThread,
             MessageQueueThread jsQueueThread)
@@ -61,7 +61,7 @@ namespace ReactNative.Bridge.Queue
         /// Disposes the queue configuration.
         /// </summary>
         /// <remarks>
-        /// Should be called whenever the corresponding <see cref="ICatalystInstance"/>
+        /// Should be called whenever the corresponding <see cref="IReactInstance"/>
         /// is disposed.
         /// </remarks>
         public void Dispose()
@@ -77,8 +77,8 @@ namespace ReactNative.Bridge.Queue
         /// <param name="spec">The configuration specification.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
         /// <returns>The queue configuration.</returns>
-        public static CatalystQueueConfiguration Create(
-            CatalystQueueConfigurationSpec spec,
+        public static ReactQueueConfiguration Create(
+            ReactQueueConfigurationSpec spec,
             Action<Exception> exceptionHandler)
         {
             var dispatcherThreadSpec = MessageQueueThreadSpec.DispatcherThreadSpec;
@@ -92,7 +92,7 @@ namespace ReactNative.Bridge.Queue
                 ? MessageQueueThread.Create(spec.NativeModulesQueueThreadSpec, exceptionHandler)
                 : dispatcherThread;
 
-            return new CatalystQueueConfiguration(dispatcherThread, nativeModulesThread, jsThread);
+            return new ReactQueueConfiguration(dispatcherThread, nativeModulesThread, jsThread);
         }
     }
 }

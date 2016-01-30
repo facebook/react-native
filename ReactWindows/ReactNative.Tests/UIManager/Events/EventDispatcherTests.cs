@@ -33,7 +33,7 @@ namespace ReactNative.Tests.UIManager.Events
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnResume());
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnSuspend());
             AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnSuspend());
-            AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnCatalystInstanceDispose());
+            AssertEx.Throws<InvalidOperationException>(() => dispatcher.OnReactInstanceDispose());
 
             await DispatcherHelpers.RunOnDispatcherAsync(context.Dispose);
         }
@@ -41,6 +41,7 @@ namespace ReactNative.Tests.UIManager.Events
         [TestMethod]
         public async Task EventDispatcher_EventDispatches()
         {
+            // TODO: check non-determinism
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
@@ -100,6 +101,7 @@ namespace ReactNative.Tests.UIManager.Events
         [TestMethod]
         public async Task EventDispatcher_MultipleDispatches()
         {
+            // TODO: check non-determinism
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
@@ -326,7 +328,7 @@ namespace ReactNative.Tests.UIManager.Events
         }
 
         [TestMethod]
-        public async Task EventDispatcher_OnCatalystInstanceDispose_EventDoesNotDispatch()
+        public async Task EventDispatcher_OnReactInstanceDispose_EventDoesNotDispatch()
         {
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
@@ -348,7 +350,7 @@ namespace ReactNative.Tests.UIManager.Events
             using (BlockJavaScriptThread(context))
             {
                 dispatcher.DispatchEvent(testEvent);
-                await DispatcherHelpers.RunOnDispatcherAsync(dispatcher.OnCatalystInstanceDispose);
+                await DispatcherHelpers.RunOnDispatcherAsync(dispatcher.OnReactInstanceDispose);
             }
 
             Assert.IsFalse(waitDispatched.WaitOne(500));
@@ -359,6 +361,7 @@ namespace ReactNative.Tests.UIManager.Events
         [TestMethod]
         public async Task EventDispatcher_DispatchedAfterSuspend_ThenResume()
         {
+            // TODO: check non-determinism
             var waitDispatched = new AutoResetEvent(false);
             var executor = new MockJavaScriptExecutor((p0, p1, p2) =>
             {
@@ -389,23 +392,23 @@ namespace ReactNative.Tests.UIManager.Events
 
         private static async Task<ReactContext> CreateContextAsync(IJavaScriptExecutor executor)
         {
-            var catalystInstance = await DispatcherHelpers.CallOnDispatcherAsync(() => CreateCatalystInstance(executor));
-            await InitializeCatalystInstanceAsync(catalystInstance);
+            var reactInstance = await DispatcherHelpers.CallOnDispatcherAsync(() => CreateReactInstance(executor));
+            await InitializeReactInstanceAsync(reactInstance);
             var context = new ReactContext();
-            context.InitializeWithInstance(catalystInstance);
+            context.InitializeWithInstance(reactInstance);
             return context;
         }
 
-        private static CatalystInstance CreateCatalystInstance(IJavaScriptExecutor executor)
+        private static ReactInstance CreateReactInstance(IJavaScriptExecutor executor)
         {
             var registry = new NativeModuleRegistry.Builder().Build();
             var jsModules = new JavaScriptModulesConfig.Builder()
                 .Add<RCTEventEmitter>()
                 .Build();
 
-            var instance = new CatalystInstance.Builder
+            var instance = new ReactInstance.Builder
             {
-                QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
+                QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 BundleLoader = JavaScriptBundleLoader.CreateFileLoader("ms-appx:///Resources/test.js"),
                 JavaScriptModulesConfig = jsModules,
                 Registry = registry,
@@ -418,9 +421,9 @@ namespace ReactNative.Tests.UIManager.Events
             return instance;
         }
 
-        private static Task InitializeCatalystInstanceAsync(CatalystInstance catalystInstance)
+        private static Task InitializeReactInstanceAsync(ReactInstance reactInstance)
         {
-            return catalystInstance.InitializeBridgeAsync();
+            return reactInstance.InitializeBridgeAsync();
         }
 
         private static IDisposable BlockJavaScriptThread(ReactContext reactContext)

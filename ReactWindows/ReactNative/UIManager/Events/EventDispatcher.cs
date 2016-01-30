@@ -160,9 +160,9 @@ namespace ReactNative.UIManager.Events
         }
 
         /// <summary>
-        /// Called before the catalyst instance is disposed.
+        /// Called before the react instance is disposed.
         /// </summary>
-        public void OnCatalystInstanceDispose()
+        public void OnReactInstanceDispose()
         {
             ClearCallback();
         }

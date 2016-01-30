@@ -16,15 +16,15 @@ namespace ReactNative.Tests.Bridge
         [TestMethod]
         public void JavaScriptModuleRegistry_ArgumentChecks()
         {
-            var catalystInstance = new MockCatalystInstance();
+            var reactInstance = new MockReactInstance();
             var config = new JavaScriptModulesConfig.Builder().Build();
 
             AssertEx.Throws<ArgumentNullException>(
                 () => new JavaScriptModuleRegistry(null, config),
-                ex => Assert.AreEqual("catalystInstance", ex.ParamName));
+                ex => Assert.AreEqual("reactInstance", ex.ParamName));
 
             AssertEx.Throws<ArgumentNullException>(
-                () => new JavaScriptModuleRegistry(catalystInstance, null),
+                () => new JavaScriptModuleRegistry(reactInstance, null),
                 ex => Assert.AreEqual("config", ex.ParamName));
         }
 
@@ -41,7 +41,7 @@ namespace ReactNative.Tests.Bridge
             var moduleIds = new List<int>();
             var methodIds = new List<int>();
             var argsList = new List<JArray>();
-            var catalystInstance = new MockCatalystInstance((moduleId, methodId, args, tracingName) =>
+            var reactInstance = new MockReactInstance((moduleId, methodId, args, tracingName) =>
             {
                 moduleIds.Add(moduleId);
                 methodIds.Add(methodId);
@@ -49,7 +49,7 @@ namespace ReactNative.Tests.Bridge
                 are.Set();
             });
 
-            var registry = new JavaScriptModuleRegistry(catalystInstance, config);
+            var registry = new JavaScriptModuleRegistry(reactInstance, config);
             var module = registry.GetJavaScriptModule<TestJavaScriptModule>();
 
             module.Foo(42);
@@ -71,8 +71,8 @@ namespace ReactNative.Tests.Bridge
         public void JavaScriptModuleRegistry_InvalidModule_Throws()
         {
             var config = new JavaScriptModulesConfig.Builder().Build();
-            var catalystInstance = new MockCatalystInstance();
-            var registry = new JavaScriptModuleRegistry(catalystInstance, config);
+            var reactInstance = new MockReactInstance();
+            var registry = new JavaScriptModuleRegistry(reactInstance, config);
             AssertEx.Throws<InvalidOperationException>(() => registry.GetJavaScriptModule<TestJavaScriptModule>());
         }
 

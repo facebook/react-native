@@ -17,8 +17,8 @@ namespace ReactNative.Bridge
         private static readonly ConstructorInfo s_newArgumentException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new ArgumentException(default(string), default(string)));
         private static readonly ConstructorInfo s_newNativeArgumentParseException = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new NativeArgumentsParseException(default(string), default(string)));
         private static readonly ConstructorInfo s_newNativeArgumentParseExceptionInner = (ConstructorInfo)ReflectionHelpers.InfoOf(() => new NativeArgumentsParseException(default(string), default(string), default(Exception)));
-        private static readonly MethodInfo s_createCallback = ((MethodInfo)ReflectionHelpers.InfoOf(() => CreateCallback(default(JToken), default(ICatalystInstance))));
-        private static readonly MethodInfo s_createPromise = ((MethodInfo)ReflectionHelpers.InfoOf(() => CreatePromise(default(JToken), default(JToken), default(ICatalystInstance))));
+        private static readonly MethodInfo s_createCallback = ((MethodInfo)ReflectionHelpers.InfoOf(() => CreateCallback(default(JToken), default(IReactInstance))));
+        private static readonly MethodInfo s_createPromise = ((MethodInfo)ReflectionHelpers.InfoOf(() => CreatePromise(default(JToken), default(JToken), default(IReactInstance))));
         private static readonly MethodInfo s_toObject = ((MethodInfo)ReflectionHelpers.InfoOf((JToken token) => token.ToObject(typeof(Type))));
         private static readonly MethodInfo s_stringFormat = (MethodInfo)ReflectionHelpers.InfoOf(() => string.Format(default(IFormatProvider), default(string), default(object)));
         private static readonly MethodInfo s_getIndex = (MethodInfo)ReflectionHelpers.InfoOf((JArray arr) => arr[0]);
@@ -37,12 +37,12 @@ namespace ReactNative.Bridge
         /// </summary>
         /// <param name="method">The method.</param>
         /// <returns>The invocation delegate.</returns>
-        public override Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method)
+        public override Action<INativeModule, IReactInstance, JArray> Create(INativeModule module, MethodInfo method)
         {
             return GenerateExpression(module, method).Compile();
         }
 
-        private static Expression<Action<INativeModule, ICatalystInstance, JArray>> GenerateExpression(INativeModule module, MethodInfo method)
+        private static Expression<Action<INativeModule, IReactInstance, JArray>> GenerateExpression(INativeModule module, MethodInfo method)
         {
             var parameterInfos = method.GetParameters();
 
@@ -53,7 +53,7 @@ namespace ReactNative.Bridge
             var extractExpressions = new Expression[n];
 
             var moduleInstanceParameter = Expression.Parameter(typeof(INativeModule), "moduleInstance");
-            var catalystInstanceParameter = Expression.Parameter(typeof(ICatalystInstance), "catalystInstance");
+            var reactInstanceParameter = Expression.Parameter(typeof(IReactInstance), "reactInstance");
             var jsArgumentsParameter = Expression.Parameter(typeof(JArray), "jsArguments");
 
             for (var i = 0; i < n; ++i)
@@ -66,7 +66,7 @@ namespace ReactNative.Bridge
                     parameterInfo.ParameterType,
                     parameterExpression,
                     jsArgumentsParameter,
-                    catalystInstanceParameter,
+                    reactInstanceParameter,
                     jsArgumentsParameter.Name,
                     module.Name,
                     method.Name,
@@ -79,13 +79,13 @@ namespace ReactNative.Bridge
             // if (moduleInstance == null)
             //     throw new ArgumentNullException(nameof(moduleInstance));
             //
-            blockStatements[0] = CreateNullCheckExpression<ICatalystInstance>(moduleInstanceParameter);
+            blockStatements[0] = CreateNullCheckExpression<IReactInstance>(moduleInstanceParameter);
 
             //
-            // if (catalystInstance == null)
-            //     throw new ArgumentNullException(nameof(catalystInstance));
+            // if (reactInstance == null)
+            //     throw new ArgumentNullException(nameof(reactInstance));
             //
-            blockStatements[1] = CreateNullCheckExpression<ICatalystInstance>(catalystInstanceParameter);
+            blockStatements[1] = CreateNullCheckExpression<IReactInstance>(reactInstanceParameter);
 
             //
             // if (jsArguments == null)
@@ -143,10 +143,10 @@ namespace ReactNative.Bridge
                 method,
                 parameterExpressions);
 
-            return Expression.Lambda<Action<INativeModule, ICatalystInstance, JArray>>(
+            return Expression.Lambda<Action<INativeModule, IReactInstance, JArray>>(
                 Expression.Block(parameterExpressions, blockStatements),
                 moduleInstanceParameter,
-                catalystInstanceParameter,
+                reactInstanceParameter,
                 jsArgumentsParameter
             );
         }
@@ -155,7 +155,7 @@ namespace ReactNative.Bridge
             Type type,
             Expression leftExpression,
             Expression argumentsExpression,
-            Expression catalystInstanceExpression,
+            Expression reactInstanceExpression,
             string parameterName,
             string moduleName,
             string methodName,
@@ -199,7 +199,7 @@ namespace ReactNative.Bridge
             if (type == typeof(ICallback))
             {
                 //
-                // CreateCallback(jsArguments[i], catalystInstance);
+                // CreateCallback(jsArguments[i], reactInstance);
                 //
                 valueExpression = Expression.Call(
                     s_createCallback,
@@ -208,7 +208,7 @@ namespace ReactNative.Bridge
                         s_getIndex,
                         Expression.Constant(argumentIndex)
                     ),
-                    catalystInstanceExpression);
+                    reactInstanceExpression);
             }
             else if (type == typeof(IPromise))
             {
@@ -216,7 +216,7 @@ namespace ReactNative.Bridge
                 // if (i > jsArguments.Count - 2)
                 //     throw new NativeArgumentsParseException(...);
                 //
-                // CreatePromise(jsArguments[i], jsArguments[i + 1], catalystInstance);
+                // CreatePromise(jsArguments[i], jsArguments[i + 1], reactInstance);
                 //
                 valueExpression = Expression.Condition(
                     Expression.Equal(
@@ -241,7 +241,7 @@ namespace ReactNative.Bridge
                             s_getIndex,
                             Expression.Constant(argumentIndex + 1)
                         ),
-                        catalystInstanceExpression
+                        reactInstanceExpression
                     ),
                     Expression.Throw(
                         Expression.New(

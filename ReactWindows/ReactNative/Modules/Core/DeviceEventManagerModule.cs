@@ -55,7 +55,7 @@ namespace ReactNative.Modules.Core
         }
 
         /// <summary>
-        /// Invokes the default back handler for the host of this catalyst 
+        /// Invokes the default back handler for the host of this react 
         /// instance. This should be invoked if JavaScript does not want to
         /// handle the back press itself.
         /// </summary>

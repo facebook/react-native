@@ -71,7 +71,7 @@ namespace ReactNative.UIManager
             }
         }
 
-        public void UpdateShadowNodeProperty(ReactShadowNode shadowNode, CatalystStylesDiffMap properties)
+        public void UpdateShadowNodeProperty(ReactShadowNode shadowNode, ReactStylesDiffMap properties)
         {
             if (shadowNode == null)
                 throw new ArgumentNullException(nameof(shadowNode));
@@ -81,7 +81,7 @@ namespace ReactNative.UIManager
             Invoke(shadowNode, GetShadowNodeArgs(properties));
         }
 
-        public void UpdateViewManagerProperty(ViewManager viewManager, FrameworkElement view, CatalystStylesDiffMap properties)
+        public void UpdateViewManagerProperty(ViewManager viewManager, FrameworkElement view, ReactStylesDiffMap properties)
         {
             if (viewManager == null)
                 throw new ArgumentNullException(nameof(viewManager));
@@ -91,12 +91,12 @@ namespace ReactNative.UIManager
             Invoke(viewManager, GetViewManagerArgs(view, properties));
         }
 
-        protected virtual object[] GetShadowNodeArgs(CatalystStylesDiffMap properties)
+        protected virtual object[] GetShadowNodeArgs(ReactStylesDiffMap properties)
         {
             throw new NotSupportedException("ReactShadowNode properties cannot be changed with this setter.");
         }
 
-        protected virtual object[] GetViewManagerArgs(FrameworkElement view, CatalystStylesDiffMap properties)
+        protected virtual object[] GetViewManagerArgs(FrameworkElement view, ReactStylesDiffMap properties)
         {
             throw new NotSupportedException("ViewManager properties cannot be changed with this setter.");
         }
@@ -107,7 +107,7 @@ namespace ReactNative.UIManager
         {
         }
 
-        protected object ExtractProperty(CatalystStylesDiffMap properties)
+        protected object ExtractProperty(ReactStylesDiffMap properties)
         {
             var result = properties.GetProperty(Name, PropertyType);
             var defaultFunc = default(Func<ReactPropertyBaseAttribute, object>);
@@ -242,7 +242,7 @@ namespace ReactNative.UIManager
                 return parameters[1].ParameterType;
             }
 
-            protected override object[] GetViewManagerArgs(FrameworkElement view, CatalystStylesDiffMap properties)
+            protected override object[] GetViewManagerArgs(FrameworkElement view, ReactStylesDiffMap properties)
             {
                 s_args[0] = view;
                 s_args[1] = ExtractProperty(properties);
@@ -302,7 +302,7 @@ namespace ReactNative.UIManager
                 return parameters[2].ParameterType;
             }
 
-            protected override object[] GetViewManagerArgs(FrameworkElement view, CatalystStylesDiffMap properties)
+            protected override object[] GetViewManagerArgs(FrameworkElement view, ReactStylesDiffMap properties)
             {
                 s_args[0] = view;
                 s_args[1] = _index;
@@ -341,7 +341,7 @@ namespace ReactNative.UIManager
                 return  parameters[0].ParameterType;
             }
 
-            protected override object[] GetShadowNodeArgs(CatalystStylesDiffMap properties)
+            protected override object[] GetShadowNodeArgs(ReactStylesDiffMap properties)
             {
                 s_args[0] = properties.GetProperty(Name, PropertyType);
                 return s_args;
@@ -390,7 +390,7 @@ namespace ReactNative.UIManager
                 return parameters[1].ParameterType;
             }
 
-            protected override object[] GetShadowNodeArgs(CatalystStylesDiffMap properties)
+            protected override object[] GetShadowNodeArgs(ReactStylesDiffMap properties)
             {
                 s_args[0] = _index;
                 s_args[1] = ExtractProperty(properties);

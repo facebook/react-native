@@ -15,8 +15,8 @@ namespace ReactNative.Bridge
         /// <summary>
         /// Invoke the native method.
         /// </summary>
-        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="reactInstance">The react instance.</param>
         /// <param name="jsArguments">The arguments.</param>
-        void Invoke(ICatalystInstance catalystInstance, JArray jsArguments);
+        void Invoke(IReactInstance reactInstance, JArray jsArguments);
     }
 }

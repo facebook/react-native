@@ -20,9 +20,9 @@ namespace ReactNative.UIManager
     /// corresponding instances of <see cref="ViewManager"/>. The 
     /// <see cref="UIManagerModule"/> communicates with this class by it's
     /// public interface methods:
-    /// - <see cref="UpdateProperties(int, string, CatalystStylesDiffMap)"/>
+    /// - <see cref="UpdateProperties(int, string, ReactStylesDiffMap)"/>
     /// - <see cref="UpdateLayout(int, int, int, int, int, int)"/>
-    /// - <see cref="CreateView(ThemedReactContext, int, string, CatalystStylesDiffMap)"/>
+    /// - <see cref="CreateView(ThemedReactContext, int, string, ReactStylesDiffMap)"/>
     /// - <see cref="ManageChildren(int, int[], ViewAtIndex[], int[])"/>
     /// executing all the scheduled operations at the end of the JavaScript batch.
     /// </summary>
@@ -43,9 +43,8 @@ namespace ReactNative.UIManager
     /// 
     /// TODO: 
     /// 1) AnimationRegistry
-    /// 2) UpdateLayout
-    /// 3) Measure
-    /// 4) ShowPopupMenu
+    /// 2) Measure
+    /// 3) ShowPopupMenu
     /// </remarks>
     public class NativeViewHierarchyManager
     {
@@ -86,7 +85,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="tag">The view tag.</param>
         /// <param name="properties">The properties.</param>
-        public void UpdateProperties(int tag, CatalystStylesDiffMap properties)
+        public void UpdateProperties(int tag, ReactStylesDiffMap properties)
         {
             DispatcherHelpers.AssertOnDispatcher();
             var viewManager = ResolveViewManager(tag);
@@ -151,7 +150,7 @@ namespace ReactNative.UIManager
         /// <param name="tag">The tag.</param>
         /// <param name="className">The class name.</param>
         /// <param name="initialProperties">The properties.</param>
-        public void CreateView(ThemedReactContext themedContext, int tag, string className, CatalystStylesDiffMap initialProperties)
+        public void CreateView(ThemedReactContext themedContext, int tag, string className, ReactStylesDiffMap initialProperties)
         {
             DispatcherHelpers.AssertOnDispatcher();
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_VIEW, "NativeViewHierarcyManager.CreateView")

@@ -7,15 +7,15 @@ namespace ReactNative.UIManager
     /// <summary>
     /// A simple container for react properties for views.
     /// </summary>
-    public class CatalystStylesDiffMap
+    public class ReactStylesDiffMap
     {
         private readonly JObject _properties;
 
         /// <summary>
-        /// Instantiates the <see cref="CatalystStylesDiffMap"/>.
+        /// Instantiates the <see cref="ReactStylesDiffMap"/>.
         /// </summary>
         /// <param name="properties">The property map.</param>
-        public CatalystStylesDiffMap(JObject properties)
+        public ReactStylesDiffMap(JObject properties)
         {
             if (properties == null)
                 throw new ArgumentNullException(nameof(properties));

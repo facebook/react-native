@@ -18,12 +18,11 @@ namespace ReactNative.UIManager
     /// </summary>
     public class UIViewOperationQueue
     {
-        private readonly int[] _measureBuffer = new int[4];
-
         private readonly object _operationsLock = new object();
-        private IList<Action> _operations = new List<Action>();
         private readonly NativeViewHierarchyManager _nativeViewHierarchyManager;
         private readonly ReactContext _reactContext;
+
+        private IList<Action> _operations = new List<Action>();
 
         /// <summary>
         /// Instantiates the <see cref="UIViewOperationQueue"/>.
@@ -165,7 +164,7 @@ namespace ReactNative.UIManager
             ThemedReactContext themedContext,
             int viewReactTag,
             string viewClassName,
-            CatalystStylesDiffMap initialProperties)
+            ReactStylesDiffMap initialProperties)
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.CreateView(
                 themedContext,
@@ -199,7 +198,7 @@ namespace ReactNative.UIManager
         /// <param name="tag">The view tag.</param>
         /// <param name="className">The class name.</param>
         /// <param name="properties">The properties.</param>
-        public void EnqueueUpdateProperties(int tag, string className, CatalystStylesDiffMap properties)
+        public void EnqueueUpdateProperties(int tag, string className, ReactStylesDiffMap properties)
         {
             EnqueueOperation(() =>
                 _nativeViewHierarchyManager.UpdateProperties(tag, properties));

@@ -62,7 +62,6 @@ namespace ReactNative.UIManager
 
         public const string BorderWidth = "borderWidth";
         public const string BorderLeftWidth = "borderLeftWidth";
-        public const string BorderColor = "borderColor";
         public const string BorderTopWidth = "borderTopWidth";
         public const string BorderRightWidth = "borderRightWidth";
         public const string BorderBottomWidth = "borderBottomWidth";

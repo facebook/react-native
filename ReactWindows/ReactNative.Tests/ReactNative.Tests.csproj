@@ -95,7 +95,7 @@
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bridge\CatalystInstanceTests.cs" />
+    <Compile Include="Bridge\ReactInstanceTests.cs" />
     <Compile Include="Bridge\JavaScriptModuleBaseTests.cs" />
     <Compile Include="Bridge\JavaScriptModuleRegistryTests.cs" />
     <Compile Include="Bridge\JavaScriptModulesConfigTests.cs" />
@@ -110,7 +110,7 @@
     <Compile Include="Internal\JavaScriptHelpers.cs" />
     <Compile Include="Internal\DispatcherHelpers.cs" />
     <Compile Include="Internal\MockCallback.cs" />
-    <Compile Include="Internal\MockCatalystInstance.cs" />
+    <Compile Include="Internal\MockReactInstance.cs" />
     <Compile Include="Internal\MockInvocationHandler.cs" />
     <Compile Include="Internal\MockJavaScriptExecutor.cs" />
     <Compile Include="Internal\MockEvent.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactInstanceManagerTests.cs" />
     <Compile Include="UIManager\AppRegistryTests.cs" />
-    <Compile Include="UIManager\CatalystStylesDiffMapTests.cs" />
+    <Compile Include="UIManager\ReactStylesDiffMapTests.cs" />
     <Compile Include="UIManager\Events\EventDispatcherTests.cs" />
     <Compile Include="UIManager\Events\EventTests.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitterTests.cs" />
