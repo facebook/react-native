@@ -352,6 +352,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
   },
+  {
+    name: '點・教',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/35/d2/4f/35d24f6d-c1f2-4051-638a-4794fb8fa7c1/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/dian-jiao/id1069765453?mt=8',
+    author: 'Taosheng Publishing House / Vanport Software Consultancy Limited',
+  },
 ];
 
 var showcase = React.createClass({
