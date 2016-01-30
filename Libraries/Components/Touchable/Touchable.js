@@ -593,7 +593,7 @@ var TouchableMixin = {
     var curState = this.state.touchable.touchState;
     var nextState = Transitions[curState] && Transitions[curState][signal];
     if (!responderID && signal === Signals.RESPONDER_RELEASE) {
-      return
+      return;
     }
     if (!nextState) {
       throw new Error(
