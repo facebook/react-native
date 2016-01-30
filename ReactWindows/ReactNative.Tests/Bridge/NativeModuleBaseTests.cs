@@ -44,12 +44,12 @@ namespace ReactNative.Tests.Bridge
 
             testModule.Initialize();
 
-            var catalystInstance = new MockCatalystInstance();
+            var reactInstance = new MockReactInstance();
             AssertEx.Throws<ArgumentNullException>(
                 () => testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(null, new JArray()),
-                ex => Assert.AreEqual("catalystInstance", ex.ParamName));
+                ex => Assert.AreEqual("reactInstance", ex.ParamName));
             AssertEx.Throws<ArgumentNullException>(
-                () => testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, null),
+                () => testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(reactInstance, null),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
         }
 
@@ -60,9 +60,9 @@ namespace ReactNative.Tests.Bridge
 
             testModule.Initialize();
 
-            var catalystInstance = new MockCatalystInstance();
+            var reactInstance = new MockReactInstance();
             AssertEx.Throws<NativeArgumentsParseException>(
-                () => testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, new JArray()),
+                () => testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(reactInstance, new JArray()),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
         }
 
@@ -73,9 +73,9 @@ namespace ReactNative.Tests.Bridge
 
             testModule.Initialize();
 
-            var catalystInstance = new MockCatalystInstance();
+            var reactInstance = new MockReactInstance();
             AssertEx.Throws<NativeArgumentsParseException>(
-                () => testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, JArray.FromObject(new[] { default(object) })),
+                () => testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(reactInstance, JArray.FromObject(new[] { default(object) })),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
         }
 
@@ -90,13 +90,13 @@ namespace ReactNative.Tests.Bridge
 
             Assert.AreEqual(2, testModule.Methods.Count);
 
-            var catalystInstance = new MockCatalystInstance();
-            testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, new JArray());
-            testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(catalystInstance, new JArray());
+            var reactInstance = new MockReactInstance();
+            testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(reactInstance, new JArray());
+            testModule.Methods[nameof(TestNativeModule.Foo)].Invoke(reactInstance, new JArray());
             Assert.AreEqual(2, fooCount);
 
-            testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
-            testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(catalystInstance, JArray.FromObject(new[] { 17 }));
+            testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(reactInstance, JArray.FromObject(new[] { 42 }));
+            testModule.Methods[nameof(TestNativeModule.Bar)].Invoke(reactInstance, JArray.FromObject(new[] { 17 }));
             Assert.AreEqual(59, barSum);
         }
 
@@ -110,13 +110,13 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
             });
 
-            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
+            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42 }));
             Assert.AreEqual(42, id);
             Assert.IsTrue(args.Cast<object>().SequenceEqual(callbackArgs));
         }
@@ -131,14 +131,14 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
             });
 
             AssertEx.Throws<NativeArgumentsParseException>(
-                () => module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { default(object) })),
+                () => module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { default(object) })),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
         }
 
@@ -151,13 +151,13 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
             });
 
-            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 }));
+            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42 }));
             Assert.AreEqual(0, args.Count);
         }
 
@@ -170,13 +170,13 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
             });
 
-            module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42, 43 }));
+            module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42, 43 }));
             Assert.AreEqual(42, id);
             Assert.IsTrue(args.SequenceEqual(new[] { 17 }));
         }
@@ -185,7 +185,7 @@ namespace ReactNative.Tests.Bridge
         public void NativeModuleBase_CompiledDelegateFactory_Perf()
         {
             var module = new PerfNativeModule(CompiledReactDelegateFactory.Instance);
-            var catalystInstance = new MockCatalystInstance();
+            var reactInstance = new MockReactInstance();
             var args = JArray.FromObject(new[] { 42 });
 
             module.Initialize();
@@ -193,7 +193,7 @@ namespace ReactNative.Tests.Bridge
             var n = 100000;
             for (var i = 0; i < n; ++i)
             {
-                module.Methods[nameof(PerfNativeModule.Foo)].Invoke(catalystInstance, args);
+                module.Methods[nameof(PerfNativeModule.Foo)].Invoke(reactInstance, args);
             }
         }
 
@@ -206,18 +206,18 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<int>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<int>>();
             });
 
             AssertEx.Throws<NativeArgumentsParseException>(
-                () => module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { default(object), 43 })),
+                () => module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { default(object), 43 })),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
 
             AssertEx.Throws<NativeArgumentsParseException>(
-                () => module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42, default(object) })),
+                () => module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42, default(object) })),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
         }
 
@@ -230,14 +230,14 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<object>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<object>>();
             });
 
             AssertEx.Throws<NativeArgumentsParseException>(
-                () => module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42 })),
+                () => module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42 })),
                 ex => Assert.AreEqual("jsArguments", ex.ParamName));
         }
 
@@ -252,13 +252,13 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(Dictionary<string, string>[]);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<Dictionary<string, string>[]>();
             });
 
-            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42, 43 }));
+            module.Methods[nameof(CallbackNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42, 43 }));
             Assert.AreEqual(43, id);
             Assert.AreEqual(1, args.Length);
             var d = args[0];
@@ -277,13 +277,13 @@ namespace ReactNative.Tests.Bridge
             var id = default(int);
             var args = default(List<object>);
 
-            var catalystInstance = new MockCatalystInstance((i, a) =>
+            var reactInstance = new MockReactInstance((i, a) =>
             {
                 id = i;
                 args = a.ToObject<List<object>>();
             });
 
-            module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(catalystInstance, JArray.FromObject(new[] { 42, 43 }));
+            module.Methods[nameof(PromiseNativeModule.Foo)].Invoke(reactInstance, JArray.FromObject(new[] { 42, 43 }));
             Assert.AreEqual(1, args.Count);
             Assert.IsNull(args[0]);
         }
@@ -292,7 +292,7 @@ namespace ReactNative.Tests.Bridge
         public void NativeModuleBase_ReflectionDelegateFactory_Perf()
         {
             var module = new PerfNativeModule(ReflectionReactDelegateFactory.Instance);
-            var catalystInstance = new MockCatalystInstance();
+            var reactInstance = new MockReactInstance();
             var args = JArray.FromObject(new[] { 42 });
 
             module.Initialize();
@@ -300,7 +300,7 @@ namespace ReactNative.Tests.Bridge
             var n = 100000;
             for (var i = 0; i < n; ++i)
             {
-                module.Methods[nameof(PerfNativeModule.Foo)].Invoke(catalystInstance, args);
+                module.Methods[nameof(PerfNativeModule.Foo)].Invoke(reactInstance, args);
             }
         }
 

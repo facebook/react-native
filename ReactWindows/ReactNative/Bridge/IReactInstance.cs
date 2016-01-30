@@ -10,7 +10,7 @@ namespace ReactNative.Bridge
     /// environment allowing the invocation of JavaScript methods and lets a
     /// set of native APIs be invokable from JavaScript as well.
     /// </summary>
-    public interface ICatalystInstance : ICancelable
+    public interface IReactInstance : ICancelable
     {
         /// <summary>
         /// Enumerates the available native modules.
@@ -18,12 +18,9 @@ namespace ReactNative.Bridge
         IEnumerable<INativeModule> NativeModules { get; }
 
         /// <summary>
-        /// The catalyst queue configuration.
+        /// The react queue configuration.
         /// </summary>
-        /// <remarks>
-        /// TODO: is it okay for this to be public?
-        /// </remarks>
-        ICatalystQueueConfiguration QueueConfiguration { get; }
+        IReactQueueConfiguration QueueConfiguration { get; }
 
         /// <summary>
         /// Initializes the instance.

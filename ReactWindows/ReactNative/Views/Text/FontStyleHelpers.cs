@@ -4,45 +4,35 @@ namespace ReactNative.Views.Text
 {
     static class FontStyleHelpers
     {
-        public static bool TryParseFontWeightString(string fontWeightString, out FontWeight fontWeight)
+        public static FontWeight? ParseFontWeight(string fontWeightString)
         {
             var fontWeightNumeric = fontWeightString != null
                 ? ParseNumericFontWeight(fontWeightString)
                 : -1;
 
-            fontWeight = default(FontWeight);
-
             if (fontWeightNumeric >= 500 || fontWeightString == "bold")
             {
-                fontWeight = FontWeights.Bold;
-                return true;
+                return FontWeights.Bold;
             }
             else if (fontWeightString == "normal" || (fontWeightNumeric != -1 && fontWeightNumeric < 500))
             {
-                fontWeight = FontWeights.Normal;
-                return true;
+                return FontWeights.Normal;
             }
 
-            return false;
+            return null;
         }
 
-        public static bool TryParseFontStyleString(string fontStyleString, out FontStyle fontStyle)
+        public static FontStyle? ParseFontStyle(string fontStyleString)
         {
-            fontStyle = default(FontStyle);
-
             switch (fontStyleString)
             {
                 case "italic":
-                    fontStyle = FontStyle.Italic;
-                    break;
+                    return FontStyle.Italic;
                 case "normal":
-                    fontStyle = FontStyle.Normal;
-                    break;
+                    return FontStyle.Normal;
                 default:
-                    return false;
+                    return null;
             }
-
-            return true;
         }
 
         private static int ParseNumericFontWeight(string fontWeightString)

@@ -25,19 +25,19 @@ namespace ReactNative.Bridge
         /// </summary>
         /// <param name="method">The method.</param>
         /// <returns>The invocation delegate.</returns>
-        public override Action<INativeModule, ICatalystInstance, JArray> Create(INativeModule module, MethodInfo method)
+        public override Action<INativeModule, IReactInstance, JArray> Create(INativeModule module, MethodInfo method)
         {
             var extractors = CreateExtractors(module, method);
             var expectedArguments = extractors.Sum(e => e.ExpectedArguments);
             var extractFunctions = extractors.Select(e => e.ExtractFunction).ToList();
 
-            return (moduleInstance, catalystInstance, arguments) => 
+            return (moduleInstance, reactInstance, arguments) => 
                 Invoke(
                     method, 
                     expectedArguments,
                     extractFunctions,
                     moduleInstance,
-                    catalystInstance,
+                    reactInstance,
                     arguments);
         }
 
@@ -66,13 +66,13 @@ namespace ReactNative.Bridge
             {
                 return new Extractor(
                     1,
-                    (catalystInstance, arguments, index) =>
+                    (reactInstance, arguments, index) =>
                     {
                         try
                         {
                             return new Result(
                                 index + 1, 
-                                CreateCallback(arguments[index], catalystInstance));
+                                CreateCallback(arguments[index], reactInstance));
                         }
                         catch (Exception ex)
                         {
@@ -87,7 +87,7 @@ namespace ReactNative.Bridge
             {
                 return new Extractor(
                     2,
-                    (catalystInstance, arguments, index) =>
+                    (reactInstance, arguments, index) =>
                     {
                         var nextIndex = index + 1;
                         if (nextIndex >= arguments.Count)
@@ -101,7 +101,7 @@ namespace ReactNative.Bridge
                         {
                             return new Result(
                                 nextIndex + 1,
-                                CreatePromise(arguments[index], arguments[nextIndex], catalystInstance));
+                                CreatePromise(arguments[index], arguments[nextIndex], reactInstance));
                         }
                         catch (Exception ex)
                         {
@@ -116,7 +116,7 @@ namespace ReactNative.Bridge
             {
                 return new Extractor(
                     1,
-                    (catalystInstance, arguments, index) =>
+                    (reactInstance, arguments, index) =>
                     {
                         try
                         {
@@ -138,15 +138,15 @@ namespace ReactNative.Bridge
         private static void Invoke(
             MethodInfo method,
             int expectedArguments,
-            IList<Func<ICatalystInstance, JArray, int, Result>> extractors,
+            IList<Func<IReactInstance, JArray, int, Result>> extractors,
             INativeModule moduleInstance,
-            ICatalystInstance catalystInstance,
+            IReactInstance reactInstance,
             JArray jsArguments)
         {
             if (moduleInstance == null)
                 throw new ArgumentNullException(nameof(moduleInstance));
-            if (catalystInstance == null)
-                throw new ArgumentNullException(nameof(catalystInstance));
+            if (reactInstance == null)
+                throw new ArgumentNullException(nameof(reactInstance));
             if (jsArguments == null)
                 throw new ArgumentNullException(nameof(jsArguments));
 
@@ -168,7 +168,7 @@ namespace ReactNative.Bridge
             var args = new object[extractors.Count];
             for (var j = 0; j < c; ++j)
             {
-                var result = extractors[j](catalystInstance, jsArguments, idx);
+                var result = extractors[j](reactInstance, jsArguments, idx);
                 args[j] = result.Value;
                 idx = result.NextIndex;
             }
@@ -191,14 +191,14 @@ namespace ReactNative.Bridge
 
         private struct Extractor
         {
-            public Extractor(int expectedArguments, Func<ICatalystInstance, JArray, int, Result> extractFunction)
+            public Extractor(int expectedArguments, Func<IReactInstance, JArray, int, Result> extractFunction)
             {
                 ExpectedArguments = expectedArguments;
                 ExtractFunction = extractFunction;
             }
 
             public int ExpectedArguments { get; }
-            public Func<ICatalystInstance, JArray, int, Result> ExtractFunction { get; }
+            public Func<IReactInstance, JArray, int, Result> ExtractFunction { get; }
         }
     }
 }

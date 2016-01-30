@@ -14,12 +14,10 @@ namespace ReactNative.UIManager
     /// An class that is used to receive React commands from JavaScript and 
     /// translate them into a shadow node hierarchy that is then mapped to a
     /// native view hierarchy.
-    /// 
-    /// TODO:
-    /// 1. View registration for root and children
-    /// 2. Shadow DOM item updates
-    /// 3. Animation support
     /// </summary>
+    /// <remarks>
+    /// TODO: Animation support
+    /// </remarks>
     public class UIImplementation
     {
         private readonly int[] _measureBuffer = new int[4];
@@ -146,10 +144,10 @@ namespace ReactNative.UIManager
 
             _shadowNodeRegistry.AddNode(cssNode);
 
-            var styles = default(CatalystStylesDiffMap);
+            var styles = default(ReactStylesDiffMap);
             if (properties != null)
             {
-                styles = new CatalystStylesDiffMap(properties);
+                styles = new ReactStylesDiffMap(properties);
                 cssNode.UpdateProperties(styles);
             }
 
@@ -189,7 +187,7 @@ namespace ReactNative.UIManager
 
             if (properties != null)
             {
-                var styles = new CatalystStylesDiffMap(properties);
+                var styles = new ReactStylesDiffMap(properties);
                 cssNode.UpdateProperties(styles);
                 HandleUpdateView(cssNode, className, styles);
             }
@@ -568,7 +566,7 @@ namespace ReactNative.UIManager
         {
         }
 
-        private void HandleCreateView(ReactShadowNode cssNode, int rootViewTag, CatalystStylesDiffMap styles)
+        private void HandleCreateView(ReactShadowNode cssNode, int rootViewTag, ReactStylesDiffMap styles)
         {
             if (!cssNode.IsVirtual)
             {
@@ -579,7 +577,7 @@ namespace ReactNative.UIManager
         private void HandleUpdateView(
             ReactShadowNode cssNode,
             string className,
-            CatalystStylesDiffMap styles)
+            ReactStylesDiffMap styles)
         {
             if (!cssNode.IsVirtual)
             {

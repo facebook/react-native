@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace ReactNative.Tests.Bridge
 {
     [TestClass]
-    public class CatalystInstanceTests
+    public class ReactInstanceTests
     {
         [TestMethod]
-        public async Task CatalystInstance_GetModules()
+        public async Task ReactInstance_GetModules()
         {
             var module = new TestNativeModule();
 
@@ -25,9 +25,9 @@ namespace ReactNative.Tests.Bridge
                 .Build();
 
             var executor = new MockJavaScriptExecutor((p0, p1, p2) => JValue.CreateNull());
-            var builder = new CatalystInstance.Builder()
+            var builder = new ReactInstance.Builder()
             {
-                QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
+                QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutorFactory = () => executor,
@@ -48,7 +48,7 @@ namespace ReactNative.Tests.Bridge
         }
 
         [TestMethod]
-        public async Task CatalystInstance_Initialize_Dispose()
+        public async Task ReactInstance_Initialize_Dispose()
         {
             var module = new TestNativeModule();
 
@@ -59,9 +59,9 @@ namespace ReactNative.Tests.Bridge
             var jsConfig = new JavaScriptModulesConfig.Builder().Build();
 
             var executor = new MockJavaScriptExecutor((p0, p1, p2) => JValue.CreateNull());
-            var builder = new CatalystInstance.Builder()
+            var builder = new ReactInstance.Builder()
             {
-                QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
+                QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutorFactory = () => executor,
@@ -89,17 +89,17 @@ namespace ReactNative.Tests.Bridge
             Assert.AreEqual(1, module.InitializeCalls);
 
             await DispatcherHelpers.RunOnDispatcherAsync(() => instance.Dispose());
-            Assert.AreEqual(1, module.OnCatalystInstanceDisposeCalls);
+            Assert.AreEqual(1, module.OnReactInstanceDisposeCalls);
 
             // Dispose is idempotent
             await DispatcherHelpers.RunOnDispatcherAsync(() => instance.Dispose());
-            Assert.AreEqual(1, module.OnCatalystInstanceDisposeCalls);
+            Assert.AreEqual(1, module.OnReactInstanceDisposeCalls);
 
             Assert.IsTrue(instance.IsDisposed);
         }
 
         [TestMethod]
-        public async Task CatalystInstance_ExceptionHandled_Disposes()
+        public async Task ReactInstance_ExceptionHandled_Disposes()
         {
             var eventHandler = new AutoResetEvent(false);
             var module = new OnDisposeNativeModule(() => eventHandler.Set());
@@ -117,9 +117,9 @@ namespace ReactNative.Tests.Bridge
                 Task.Run(() => tcs.SetResult(ex));
             });
 
-            var builder = new CatalystInstance.Builder()
+            var builder = new ReactInstance.Builder()
             {
-                QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
+                QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 Registry = registry,
                 JavaScriptModulesConfig = jsConfig,
                 JavaScriptExecutorFactory = () => executor,
@@ -148,7 +148,7 @@ namespace ReactNative.Tests.Bridge
                 set;
             }
 
-            public int OnCatalystInstanceDisposeCalls
+            public int OnReactInstanceDisposeCalls
             {
                 get;
                 set;
@@ -167,9 +167,9 @@ namespace ReactNative.Tests.Bridge
                 InitializeCalls++;
             }
 
-            public override void OnCatalystInstanceDispose()
+            public override void OnReactInstanceDispose()
             {
-                OnCatalystInstanceDisposeCalls++;
+                OnReactInstanceDisposeCalls++;
             }
         }
 
@@ -190,7 +190,7 @@ namespace ReactNative.Tests.Bridge
                 }
             }
 
-            public override void OnCatalystInstanceDispose()
+            public override void OnReactInstanceDispose()
             {
                 _onDispose();
             }

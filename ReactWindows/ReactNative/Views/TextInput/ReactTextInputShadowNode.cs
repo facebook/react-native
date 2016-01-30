@@ -101,14 +101,13 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
-            var fontWeight = default(FontWeight);
-            if (FontStyleHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
+            var fontWeight = FontStyleHelpers.ParseFontWeight(fontWeightString);
+            if (_textBoxStyle.FontWeight.HasValue != fontWeight.HasValue ||
+                (_textBoxStyle.FontWeight.HasValue && fontWeight.HasValue &&
+                _textBoxStyle.FontWeight.Value.Weight != fontWeight.Value.Weight))
             {
-                if (_textBoxStyle.FontWeight.HasValue || _textBoxStyle.FontWeight.Value.Weight != fontWeight.Weight)
-                {
-                    _textBoxStyle.FontWeight = fontWeight;
-                    MarkUpdated();
-                }
+                _textBoxStyle.FontWeight = fontWeight;
+                MarkUpdated();
             }
         }
 
@@ -119,14 +118,11 @@ namespace ReactNative.Views.TextInput
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
-            var fontStyle = default(FontStyle);
-            if (FontStyleHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
+            var fontStyle = FontStyleHelpers.ParseFontStyle(fontStyleString);
+            if (_textBoxStyle.FontStyle != fontStyle)
             {
-                if (_textBoxStyle.FontStyle != fontStyle)
-                {
-                    _textBoxStyle.FontStyle = fontStyle;
-                    MarkUpdated();
-                }
+                _textBoxStyle.FontStyle = fontStyle;
+                MarkUpdated();
             }
         }
 
@@ -145,7 +141,7 @@ namespace ReactNative.Views.TextInput
         /// Sets the the backgrund border color for a <see cref="TextBox"/>.
         /// </summary>
         /// <param name="text"></param>
-        [ReactProperty(ViewProperties.BorderColor)]
+        [ReactProperty("borderColor")]
         public void SetBorderColor(uint? color)
         {
             if (color.HasValue)

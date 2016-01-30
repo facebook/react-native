@@ -3,7 +3,7 @@
 namespace ReactNative.Bridge
 {
     /// <summary>
-    /// A native module whose API can be provided to JavaScript catalyst
+    /// A native module whose API can be provided to JavaScript react
     /// instances. 
     /// </summary>
     /// <remarks>
@@ -42,15 +42,15 @@ namespace ReactNative.Bridge
         string Name { get; }
 
         /// <summary>
-        /// Called after the creation of a <see cref="ICatalystInstance"/>, in
-        /// order to initialize native modules that require the catalyst or
+        /// Called after the creation of a <see cref="IReactInstance"/>, in
+        /// order to initialize native modules that require the react or
         /// JavaScript modules.
         /// </summary>
         void Initialize();
 
         /// <summary>
-        /// Called before a <see cref="ICatalystInstance"/> is disposed.
+        /// Called before a <see cref="IReactInstance"/> is disposed.
         /// </summary>
-        void OnCatalystInstanceDispose();
+        void OnReactInstanceDispose();
     }
 }

@@ -7,7 +7,7 @@ namespace ReactNative.Bridge
 {
     /// <summary>
     /// A class that stores JavaScript bundle information and allows the
-    /// <see cref="ICatalystInstance"/> to load a correct bundle through the
+    /// <see cref="IReactInstance"/> to load a correct bundle through the
     /// <see cref="IReactBridge"/>.
     /// </summary>
     public abstract class JavaScriptBundleLoader

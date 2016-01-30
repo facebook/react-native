@@ -168,28 +168,24 @@ namespace ReactNative.Views.Text
         [ReactProperty(ViewProperties.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
-            var fontWeight = default(FontWeight);
-            if (FontStyleHelpers.TryParseFontWeightString(fontWeightString, out fontWeight))
+            var fontWeight = FontStyleHelpers.ParseFontWeight(fontWeightString);
+            if (_fontWeight.HasValue != fontWeight.HasValue ||
+                (_fontWeight.HasValue && fontWeight.HasValue &&
+                _fontWeight.Value.Weight != fontWeight.Value.Weight))
             {
-                if (_fontWeight.HasValue && _fontWeight.Value.Weight != fontWeight.Weight)
-                {
-                    _fontWeight = fontWeight;
-                    MarkUpdated();
-                }
+                _fontWeight = fontWeight;
+                MarkUpdated();
             }
         }
 
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
-            var fontStyle = default(FontStyle);
-            if (FontStyleHelpers.TryParseFontStyleString(fontStyleString, out fontStyle))
+            var fontStyle = FontStyleHelpers.ParseFontStyle(fontStyleString);
+            if (_fontStyle != fontStyle)
             {
-                if (_fontStyle != fontStyle)
-                {
-                    _fontStyle = fontStyle;
-                    MarkUpdated();
-                }
+                _fontStyle = fontStyle;
+                MarkUpdated();
             }
         }
 

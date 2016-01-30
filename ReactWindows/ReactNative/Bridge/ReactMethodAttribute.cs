@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ReactNative
+namespace ReactNative.Bridge
 {
     /// <summary>
     /// An attribute for annotating methods in an

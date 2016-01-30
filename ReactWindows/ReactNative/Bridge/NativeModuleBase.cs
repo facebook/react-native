@@ -9,9 +9,9 @@ using System.Reflection;
 namespace ReactNative.Bridge
 {
     /// <summary>
-    /// Base class for catalyst native modules. Implementations can be linked
+    /// Base class for react native modules. Implementations can be linked
     /// to lifecycle events, such as the creation and disposal of the
-    /// <see cref="ICatalystInstance"/> by overriding the appropriate methods.
+    /// <see cref="IReactInstance"/> by overriding the appropriate methods.
     /// 
     /// Native methods are exposed to JavaScript with the
     /// <see cref="ReactMethodAttribute"/> annotation. These methods may only
@@ -28,7 +28,7 @@ namespace ReactNative.Bridge
     /// </summary>
     /// <remarks>
     /// Default implementations of <see cref="Initialize"/> and 
-    /// <see cref="OnCatalystInstanceDispose"/> are provided for convenience.
+    /// <see cref="OnReactInstanceDispose"/> are provided for convenience.
     /// Subclasses need not call these base methods should they choose to
     /// override them.
     /// </remarks>
@@ -117,8 +117,8 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
-        /// Called after the creation of a <see cref="ICatalystInstance"/>, in
-        /// order to initialize native modules that require the catalyst or
+        /// Called after the creation of a <see cref="IReactInstance"/>, in
+        /// order to initialize native modules that require the react or
         /// JavaScript modules.
         /// </summary>
         public virtual void Initialize()
@@ -126,9 +126,9 @@ namespace ReactNative.Bridge
         }
 
         /// <summary>
-        /// Called before a <see cref="ICatalystInstance"/> is disposed.
+        /// Called before a <see cref="IReactInstance"/> is disposed.
         /// </summary>
-        public virtual void OnCatalystInstanceDispose()
+        public virtual void OnReactInstanceDispose()
         {
         }
 
@@ -168,7 +168,7 @@ namespace ReactNative.Bridge
         class NativeMethod : INativeMethod
         {
             private readonly NativeModuleBase _instance;
-            private readonly Lazy<Action<INativeModule, ICatalystInstance, JArray>> _invokeDelegate;
+            private readonly Lazy<Action<INativeModule, IReactInstance, JArray>> _invokeDelegate;
 
             public NativeMethod(NativeModuleBase instance, MethodInfo method)
             {
@@ -176,7 +176,7 @@ namespace ReactNative.Bridge
 
                 var delegateFactory = instance._delegateFactory;
                 delegateFactory.Validate(method);
-                _invokeDelegate = new Lazy<Action<INativeModule, ICatalystInstance, JArray>>(() => delegateFactory.Create(instance, method));
+                _invokeDelegate = new Lazy<Action<INativeModule, IReactInstance, JArray>>(() => delegateFactory.Create(instance, method));
                 Type = delegateFactory.GetMethodType(method);
             }
 
@@ -185,11 +185,11 @@ namespace ReactNative.Bridge
                 get;
             }
 
-            public void Invoke(ICatalystInstance catalystInstance, JArray jsArguments)
+            public void Invoke(IReactInstance reactInstance, JArray jsArguments)
             {
                 using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "callNativeModuleMethod"))
                 {
-                    _invokeDelegate.Value(_instance, catalystInstance, jsArguments);
+                    _invokeDelegate.Value(_instance, reactInstance, jsArguments);
                 }
             }
         }

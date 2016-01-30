@@ -53,7 +53,7 @@ namespace ReactNative.Tests.UIManager
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(typeof(ViewManagerValueTest));
             Assert.AreEqual(3, setters.Count);
 
-            var properties = new CatalystStylesDiffMap(new JObject
+            var properties = new ReactStylesDiffMap(new JObject
             {
                 { "Foo", "v1" },
                 { "Bar1", "v2" },
@@ -85,7 +85,7 @@ namespace ReactNative.Tests.UIManager
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForShadowNodeType(typeof(ShadowNodeValueTest));
             Assert.AreEqual(3, setters.Count);
 
-            var properties = new CatalystStylesDiffMap(new JObject
+            var properties = new ReactStylesDiffMap(new JObject
             {
                 { "Foo", 42 },
                 { "Qux1", "v2" },
@@ -127,7 +127,7 @@ namespace ReactNative.Tests.UIManager
             var instance = new DefaultsTest();
             var setters = ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(typeof(DefaultsTest));
 
-            var properties = new CatalystStylesDiffMap(new JObject());
+            var properties = new ReactStylesDiffMap(new JObject());
 
             instance.ByteValue = byte.MaxValue;
             instance.SByteValue = sbyte.MaxValue;

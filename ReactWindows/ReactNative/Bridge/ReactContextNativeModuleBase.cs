@@ -3,7 +3,7 @@
 namespace ReactNative.Bridge
 {
     /// <summary>
-    /// Base class for catalyst native modules that require access to the 
+    /// Base class for react native modules that require access to the 
     /// <see cref="ReactContext"/>.
     /// </summary>
     public abstract class ReactContextNativeModuleBase : NativeModuleBase

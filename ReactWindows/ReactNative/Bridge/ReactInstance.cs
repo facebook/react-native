@@ -17,7 +17,7 @@ namespace ReactNative.Bridge
     /// A higher level API on top of the <see cref="IJavaScriptExecutor" /> and module registries. This provides an
     /// environment allowing the invocation of JavaScript methods.
     /// </summary>
-    class CatalystInstance : ICatalystInstance, IDisposable
+    class ReactInstance : IReactInstance, IDisposable
     {
         private readonly NativeModuleRegistry _registry;
         private readonly JavaScriptModuleRegistry _jsRegistry;
@@ -32,8 +32,8 @@ namespace ReactNative.Bridge
 
         private int _pendingJsCalls;
 
-        private CatalystInstance(
-            CatalystQueueConfigurationSpec catalystQueueConfigurationSpec,
+        private ReactInstance(
+            ReactQueueConfigurationSpec reactQueueConfigurationSpec,
             Func<IJavaScriptExecutor> jsExecutorFactory,
             NativeModuleRegistry registry,
             JavaScriptModulesConfig jsModulesConfig,
@@ -47,8 +47,8 @@ namespace ReactNative.Bridge
             _bundleLoader = bundleLoader;
             _jsRegistry = new JavaScriptModuleRegistry(this, _jsModulesConfig);
 
-            QueueConfiguration = CatalystQueueConfiguration.Create(
-                catalystQueueConfigurationSpec,
+            QueueConfiguration = ReactQueueConfiguration.Create(
+                reactQueueConfigurationSpec,
                 HandleException);
         }
 
@@ -70,7 +70,7 @@ namespace ReactNative.Bridge
             }
         }
 
-        public ICatalystQueueConfiguration QueueConfiguration
+        public IReactQueueConfiguration QueueConfiguration
         {
             get;
         } 
@@ -90,11 +90,11 @@ namespace ReactNative.Bridge
             DispatcherHelpers.AssertOnDispatcher();
             if (_initialized)
             {
-                throw new InvalidOperationException("This catalyst instance has already been initialized.");
+                throw new InvalidOperationException("This react instance has already been initialized.");
             }
 
             _initialized = true;
-            _registry.NotifyCatalystInstanceInitialize();
+            _registry.NotifyReactInstanceInitialize();
         }
 
         public async Task InitializeBridgeAsync()
@@ -182,7 +182,7 @@ namespace ReactNative.Bridge
             }
 
             IsDisposed = true;
-            _registry.NotifyCatalystInstanceDispose();
+            _registry.NotifyReactInstanceDispose();
             QueueConfiguration.Dispose();
 
             if (Interlocked.Exchange(ref _pendingJsCalls, 0) != 0)
@@ -251,18 +251,18 @@ namespace ReactNative.Bridge
 
         public sealed class Builder
         {
-            private CatalystQueueConfigurationSpec _catalystQueueConfigurationSpec;
+            private ReactQueueConfigurationSpec _reactQueueConfigurationSpec;
             private NativeModuleRegistry _registry;
             private JavaScriptModulesConfig _jsModulesConfig;
             private Func<IJavaScriptExecutor> _jsExecutorFactory;
             private JavaScriptBundleLoader _bundleLoader;
             private Action<Exception> _nativeModuleCallExceptionHandler;
 
-            public CatalystQueueConfigurationSpec QueueConfigurationSpec
+            public ReactQueueConfigurationSpec QueueConfigurationSpec
             {
                 set
                 {
-                    _catalystQueueConfigurationSpec = value;
+                    _reactQueueConfigurationSpec = value;
                 }
             }
 
@@ -306,17 +306,17 @@ namespace ReactNative.Bridge
                 }
             }
 
-            public CatalystInstance Build()
+            public ReactInstance Build()
             {
-                AssertNotNull(_catalystQueueConfigurationSpec, nameof(QueueConfigurationSpec));
+                AssertNotNull(_reactQueueConfigurationSpec, nameof(QueueConfigurationSpec));
                 AssertNotNull(_jsExecutorFactory, nameof(JavaScriptExecutorFactory));
                 AssertNotNull(_registry, nameof(Registry));
                 AssertNotNull(_jsModulesConfig, nameof(JavaScriptModulesConfig));
                 AssertNotNull(_bundleLoader, nameof(BundleLoader));
                 AssertNotNull(_nativeModuleCallExceptionHandler, nameof(NativeModuleCallExceptionHandler));
                  
-                return new CatalystInstance(
-                    _catalystQueueConfigurationSpec,
+                return new ReactInstance(
+                    _reactQueueConfigurationSpec,
                     _jsExecutorFactory,
                     _registry,
                     _jsModulesConfig,
@@ -337,9 +337,9 @@ namespace ReactNative.Bridge
 
         class NativeModulesReactCallback : IReactCallback
         {
-            private readonly CatalystInstance _parent;
+            private readonly ReactInstance _parent;
 
-            public NativeModulesReactCallback(CatalystInstance parent)
+            public NativeModulesReactCallback(ReactInstance parent)
             {
                 _parent = parent;
             }

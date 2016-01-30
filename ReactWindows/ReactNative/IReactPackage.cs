@@ -7,7 +7,7 @@ using Windows.UI.Xaml;
 namespace ReactNative.Modules.Core
 {
     /// <summary>
-    /// Main interface for providing additional capabilities to the catalyst 
+    /// Main interface for providing additional capabilities to the react 
     /// framework through the following mechanisms:
     /// 
     /// 1) Registering new native modules.
@@ -25,7 +25,7 @@ namespace ReactNative.Modules.Core
     public interface IReactPackage
     {
         /// <summary>
-        /// Creates the list of native modules to register with the catalyst
+        /// Creates the list of native modules to register with the react
         /// instance. 
         /// </summary>
         /// <param name="reactContext">The react application context.</param>
@@ -34,7 +34,7 @@ namespace ReactNative.Modules.Core
 
         /// <summary>
         /// Creates the list of JavaScript modules to register with the 
-        /// catalyst instance. 
+        /// react instance. 
         /// </summary>
         /// <returns>The list of JavaScript modules.</returns>
         /// <remarks>

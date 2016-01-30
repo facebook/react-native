@@ -149,7 +149,6 @@ namespace ReactNative.Hosting.Bridge
             {
                 JavaScriptContext.StartDebugging();
             }
-
 #endif
 
             var consolePropertyId = default(JavaScriptPropertyId);

@@ -7,18 +7,18 @@ using System.Linq;
 namespace ReactNative.Tests.UIManager
 {
     [TestClass]
-    public class CatalystStylesDiffMapTests
+    public class ReactStylesDiffMapTests
     {
         [TestMethod]
-        public void CatalystStylesDiffMap_ArgumentChecks()
+        public void ReactStylesDiffMap_ArgumentChecks()
         {
             AssertEx.Throws<ArgumentNullException>(
-                () => new CatalystStylesDiffMap(null),
+                () => new ReactStylesDiffMap(null),
                 ex => Assert.AreEqual("properties", ex.ParamName));
         }
 
         [TestMethod]
-        public void CatalystStylesDiffMap_Behavior()
+        public void ReactStylesDiffMap_Behavior()
         {
             var json = new JObject
             {
@@ -26,7 +26,7 @@ namespace ReactNative.Tests.UIManager
                 { "bar", "qux" },
             };
 
-            var properties = new CatalystStylesDiffMap(json);
+            var properties = new ReactStylesDiffMap(json);
             Assert.AreEqual(2, properties.Keys.Count);
             Assert.IsTrue(new[] { "bar", "foo" }.SequenceEqual(properties.Keys.OrderBy(k => k)));
             Assert.IsInstanceOfType(properties.GetProperty("foo", typeof(short)), typeof(short));

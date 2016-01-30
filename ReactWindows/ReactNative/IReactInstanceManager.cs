@@ -12,8 +12,8 @@ using Windows.UI.Xaml;
 namespace ReactNative
 {
     /// <summary>
-    /// This interface manages instances of <see cref="ICatalystInstance" />. 
-    /// It exposes a way to configure catalyst instances using 
+    /// This interface manages instances of <see cref="IReactInstance" />. 
+    /// It exposes a way to configure react instances using 
     /// <see cref="IReactPackage"/> and keeps track of the lifecycle of that
     /// instance. It also sets up a connection between the instance and the
     /// developer support functionality of the framework.
@@ -97,20 +97,20 @@ namespace ReactNative
         void OnDestroy();
 
         /// <summary>
-        /// Attach given <paramref name="rootView"/> to a catalyst instance
+        /// Attach given <paramref name="rootView"/> to a react instance
         /// manager and start the JavaScript application using the JavaScript
         /// module provided by the <see cref="ReactRootView.JavaScriptModuleName"/>. If
         /// the react context is currently being (re-)created, or if the react
         /// context has not been created yet, the JavaScript application
         /// associated with the provided root view will be started
         /// asynchronously. This view will then be tracked by this manager and
-        /// in case of catalyst instance restart, it will be re-attached.
+        /// in case of react instance restart, it will be re-attached.
         /// </summary>
         /// <param name="rootView">The root view.</param>
         void AttachMeasuredRootView(ReactRootView rootView);
 
         /// <summary>
-        /// Detach given <paramref name="rootView"/> from the current catalyst
+        /// Detach given <paramref name="rootView"/> from the current react
         /// instance. This method is idempotent and can be called multiple
         /// times on the same <see cref="ReactRootView"/> instance.
         /// </summary>

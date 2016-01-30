@@ -7,7 +7,7 @@ namespace ReactNative.Bridge
 {
     /// <summary>
     /// Class responsible for holding all <see cref="IJavaScriptModule"/>s
-    /// registered to a <see cref="ICatalystInstance"/>. Requires that
+    /// registered to a <see cref="IReactInstance"/>. Requires that
     /// JavaScript modules use the <see cref="JavaScriptModuleBase"/> base
     /// class, and implement each of it's methods to dispatch through the
     /// <see cref="JavaScriptModuleBase.Invoke(string, object[])"/> method.
@@ -19,14 +19,14 @@ namespace ReactNative.Bridge
         /// <summary>
         /// Instantiates the <see cref="JavaScriptModuleRegistry"/>.
         /// </summary>
-        /// <param name="catalystInstance">The catalyst instance.</param>
+        /// <param name="reactInstance">The react instance.</param>
         /// <param name="config">The module configuration.</param>
         public JavaScriptModuleRegistry(
-            ICatalystInstance catalystInstance,
+            IReactInstance reactInstance,
             JavaScriptModulesConfig config)
         {
-            if (catalystInstance == null)
-                throw new ArgumentNullException(nameof(catalystInstance));
+            if (reactInstance == null)
+                throw new ArgumentNullException(nameof(reactInstance));
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
@@ -35,7 +35,7 @@ namespace ReactNative.Bridge
             {
                 var type = registration.ModuleInterface;
                 var moduleInstance = (IJavaScriptModule)Activator.CreateInstance(type);
-                var invokeHandler = new JavaScriptModuleInvocationHandler(catalystInstance, registration);
+                var invokeHandler = new JavaScriptModuleInvocationHandler(reactInstance, registration);
                 moduleInstance.InvocationHandler = invokeHandler;
                 _moduleInstances.Add(type, moduleInstance);
             }
@@ -63,21 +63,21 @@ namespace ReactNative.Bridge
 
         class JavaScriptModuleInvocationHandler : IInvocationHandler
         {
-            private readonly ICatalystInstance _catalystInstance;
+            private readonly IReactInstance _reactInstance;
             private readonly JavaScriptModuleRegistration _moduleRegistration;
 
             public JavaScriptModuleInvocationHandler(
-                ICatalystInstance catalystInstance,
+                IReactInstance reactInstance,
                 JavaScriptModuleRegistration moduleRegistration)
             {
-                _catalystInstance = catalystInstance;
+                _reactInstance = reactInstance;
                 _moduleRegistration = moduleRegistration;
             }
 
             public void Invoke(string name, object[] args)
             {
                 var tracingName = _moduleRegistration.GetTracingName(name);
-                _catalystInstance.InvokeFunction(
+                _reactInstance.InvokeFunction(
                     _moduleRegistration.ModuleId,
                     _moduleRegistration.GetMethodId(name),
                     JArray.FromObject(args),

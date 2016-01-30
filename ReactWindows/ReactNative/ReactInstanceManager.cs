@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 namespace ReactNative
 {
     /// <summary>
-    /// This interface manages instances of <see cref="ICatalystInstance" />. 
-    /// It exposes a way to configure catalyst instances using 
+    /// This interface manages instances of <see cref="IReactInstance" />. 
+    /// It exposes a way to configure react instances using 
     /// <see cref="IReactPackage"/> and keeps track of the lifecycle of that
     /// instance. It also sets up a connection between the instance and the
     /// developer support functionality of the framework.
@@ -30,15 +30,10 @@ namespace ReactNative
     /// application using this instance manager. It is required to pass
     /// lifecycle events to the instance manager (i.e., <see cref="OnSuspend"/>,
     /// <see cref="OnDestroy"/>, and <see cref="OnResume(IDefaultHardwareBackButtonHandler)"/>).
-    /// 
-    /// TODO:
-    /// 1.Implement background task functionality and ReactContextInitAsyncTask class hierarchy.
-    /// 2.Lifecycle managment functoinality. i.e. resume, pause, etc
-    /// 3.Implement Backbutton handler
-    /// 4.Implement js bundler load progress checks to ensure thread safety
-    /// 5.Implement the ViewGroupManager as well as the main ReactViewManager
-    /// 6.Create DevManager functionality to manage things like exceptions.
     /// </summary>
+    /// <remarks>
+    /// TODO: additional debugging support and memory pressure management.
+    /// </remarks>
     public class ReactInstanceManager : IReactInstanceManager
     {
         private readonly List<ReactRootView> _attachedRootViews = new List<ReactRootView>();
@@ -268,14 +263,14 @@ namespace ReactNative
         }
 
         /// <summary>
-        /// Attach given <paramref name="rootView"/> to a catalyst instance
+        /// Attach given <paramref name="rootView"/> to a react instance
         /// manager and start the JavaScript application using the JavaScript
         /// module provided by the <see cref="ReactRootView.JavaScriptModuleName"/>. If
         /// the react context is currently being (re-)created, or if the react
         /// context has not been created yet, the JavaScript application
         /// associated with the provided root view will be started
         /// asynchronously. This view will then be tracked by this manager and
-        /// in case of catalyst instance restart, it will be re-attached.
+        /// in case of react instance restart, it will be re-attached.
         /// </summary>
         /// <param name="rootView">The root view.</param>
         public void AttachMeasuredRootView(ReactRootView rootView)
@@ -294,12 +289,12 @@ namespace ReactNative
             var currentReactContext = _currentReactContext;
             if (_contextInitializationTask == null && currentReactContext != null)
             {
-                AttachMeasuredRootViewToInstance(rootView, currentReactContext.CatalystInstance);
+                AttachMeasuredRootViewToInstance(rootView, currentReactContext.ReactInstance);
             }
         }
 
         /// <summary>
-        /// Detach given <paramref name="rootView"/> from the current catalyst
+        /// Detach given <paramref name="rootView"/> from the current react
         /// instance. This method is idempotent and can be called multiple
         /// times on the same <see cref="ReactRootView"/> instance.
         /// </summary>
@@ -314,9 +309,9 @@ namespace ReactNative
             if (_attachedRootViews.Remove(rootView))
             {
                 var currentReactContext = _currentReactContext;
-                if (currentReactContext != null && currentReactContext.HasActiveCatalystInstance)
+                if (currentReactContext != null && currentReactContext.HasActiveReactInstance)
                 {
-                    DetachViewFromInstance(rootView, currentReactContext.CatalystInstance);
+                    DetachViewFromInstance(rootView, currentReactContext.ReactInstance);
                 }
             }
         }
@@ -417,9 +412,9 @@ namespace ReactNative
                 var reactContext = await CreateReactContextAsync(jsExecutorFactory, jsBundleLoader);
                 SetupReactContext(reactContext);
             }
-            catch
+            catch (Exception ex)
             {
-                // TODO: add exception handler through dev support manager.
+                _devSupportManager.HandleException(ex);
             }
             finally
             {
@@ -450,9 +445,9 @@ namespace ReactNative
             }
 
             _currentReactContext = reactContext;
-            var catalystInstance = reactContext.CatalystInstance;
+            var reactInstance = reactContext.ReactInstance;
 
-            catalystInstance.Initialize();
+            reactInstance.Initialize();
             
             // TODO: set up dev support and memory pressure hooks
 
@@ -460,7 +455,7 @@ namespace ReactNative
 
             foreach (var rootView in _attachedRootViews)
             {
-                AttachMeasuredRootViewToInstance(rootView, catalystInstance);
+                AttachMeasuredRootViewToInstance(rootView, reactInstance);
             }
 
             OnReactContextInitialized(reactContext);
@@ -468,7 +463,7 @@ namespace ReactNative
 
         private void AttachMeasuredRootViewToInstance(
             ReactRootView rootView,
-            ICatalystInstance catalystInstance)
+            IReactInstance reactInstance)
         {
             DispatcherHelpers.AssertOnDispatcher();
 
@@ -477,7 +472,7 @@ namespace ReactNative
             rootView.Children.Clear();
             // TODO: reset root view tag?
 
-            var uiManagerModule = catalystInstance.GetNativeModule<UIManagerModule>();
+            var uiManagerModule = reactInstance.GetNativeModule<UIManagerModule>();
             var rootTag = uiManagerModule.AddMeasuredRootView(rootView);
 
             var jsAppModuleName = rootView.JavaScriptModuleName;
@@ -487,13 +482,13 @@ namespace ReactNative
                 { "initalProps", null /* TODO: add launch options to root view */ }
             };
 
-            catalystInstance.GetJavaScriptModule<AppRegistry>().runApplication(jsAppModuleName, appParameters);
+            reactInstance.GetJavaScriptModule<AppRegistry>().runApplication(jsAppModuleName, appParameters);
         }
 
-        private void DetachViewFromInstance(ReactRootView rootView, ICatalystInstance catalystInstance)
+        private void DetachViewFromInstance(ReactRootView rootView, IReactInstance reactInstance)
         {
             DispatcherHelpers.AssertOnDispatcher();
-            catalystInstance.GetJavaScriptModule<AppRegistry>().unmountApplicationComponentAtRootTag(rootView.GetTag());
+            reactInstance.GetJavaScriptModule<AppRegistry>().unmountApplicationComponentAtRootTag(rootView.GetTag());
         }
 
         private void TearDownReactContext(ReactContext reactContext)
@@ -507,7 +502,7 @@ namespace ReactNative
 
             foreach (var rootView in _attachedRootViews)
             {
-                DetachViewFromInstance(rootView, reactContext.CatalystInstance);
+                DetachViewFromInstance(rootView, reactContext.ReactInstance);
             }
 
             reactContext.Dispose();
@@ -558,9 +553,9 @@ namespace ReactNative
             }
 
             var exceptionHandler = _nativeModuleCallExceptionHandler ?? _devSupportManager.HandleException;
-            var catalystInstanceBuilder = new CatalystInstance.Builder
+            var reactInstanceBuilder = new ReactInstance.Builder
             {
-                QueueConfigurationSpec = CatalystQueueConfigurationSpec.Default,
+                QueueConfigurationSpec = ReactQueueConfigurationSpec.Default,
                 JavaScriptExecutorFactory = jsExecutorFactory,
                 Registry = nativeModuleRegistry,
                 JavaScriptModulesConfig = javaScriptModulesConfig,
@@ -568,19 +563,19 @@ namespace ReactNative
                 NativeModuleCallExceptionHandler = exceptionHandler,
             };
 
-            var catalystInstance = default(CatalystInstance);
-            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createCatalystInstance"))
+            var reactInstance = default(ReactInstance);
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createReactInstance"))
             {
-                catalystInstance = catalystInstanceBuilder.Build();
+                reactInstance = reactInstanceBuilder.Build();
             }
 
             // TODO: add bridge idle debug listener
 
-            reactContext.InitializeWithInstance(catalystInstance);
+            reactContext.InitializeWithInstance(reactInstance);
 
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "RunJavaScriptBundle"))
             {
-                await catalystInstance.InitializeBridgeAsync();
+                await reactInstance.InitializeBridgeAsync();
             }
 
             return reactContext;
