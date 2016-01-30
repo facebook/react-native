@@ -24,11 +24,10 @@ function internalTransforms(sourceCode, filename, options) {
     };
   }
 
-  var result = babel.transform(sourceCode, {
+  var result = babel.transform(sourceCode, Object.assign({
     filename: filename,
     sourceFileName: filename,
-    ...internalBabelConfig
-  });
+  }, internalBabelConfig));
 
   return {
     code: result.code,
