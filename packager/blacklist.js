@@ -70,6 +70,9 @@ var sharedBlacklist = [
   'downstream/core/toArray.js',
 
   /website\/node_modules\/.*/,
+
+  // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
+  'downstream/relay/tools/relayUnstableBatchedUpdates.js',
 ];
 
 var platformBlacklists = {
