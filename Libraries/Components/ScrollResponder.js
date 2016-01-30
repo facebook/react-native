@@ -17,8 +17,9 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
-var { UIManager, ScrollViewManager } = require('NativeModules');
+var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('invariant');
 var warning = require('warning');
