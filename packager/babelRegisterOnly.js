@@ -25,5 +25,5 @@ module.exports = function(onlyList) {
   _only = _only.concat(onlyList);
   var config = readBabelRC();
   config.only = _only;
-  require('babel-core/register')(config);
+  require('babel-register')(config);
 };
