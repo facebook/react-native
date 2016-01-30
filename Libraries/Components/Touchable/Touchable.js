@@ -589,6 +589,9 @@ var TouchableMixin = {
    * @sideeffects
    */
   _receiveSignal: function(signal, e) {
+    if(!this.state.touchable.responderID && signal == Signals.RESPONDER_RELEASE) {
+      return;  // Touchable is no longer on the screen when a RESPONDER_RELEASE signal is sent. 
+    }
     var curState = this.state.touchable.touchState;
     var nextState = Transitions[curState] && Transitions[curState][signal];
     if (!nextState) {
