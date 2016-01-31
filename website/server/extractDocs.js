@@ -137,6 +137,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName),
+    'path:' + json.filepath,
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');

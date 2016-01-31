@@ -1118,18 +1118,6 @@ div[data-twttr-id] iframe {
   margin-left: 26px;
 }
 
-.edit-github {
-  font-size: 15px;
-  font-weight: normal;
-  float: right;
-}
-
-.run-example {
-  font-size: 15px;
-  float: right;
-  margin-right: 20px;
-}
-
 #content {
   display: none;
 }
