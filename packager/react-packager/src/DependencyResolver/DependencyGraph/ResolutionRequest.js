@@ -386,7 +386,7 @@ class ResolutionRequest {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-`Invalid directory ${potentialDirPath}
+`Unable to find this module in its module map or any of the node_modules directories under ${potentialDirPath} and its parent directories
 
 This might be related to https://github.com/facebook/react-native/issues/4968
 To resolve try the following:
