@@ -199,6 +199,7 @@ var components = [
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
+  '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
