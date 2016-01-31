@@ -52,7 +52,7 @@ There are known cases where the APIs could be made more consistent across iOS an
 
 ### Using 3rd-party native modules
 
-There are many awesome 3rd-party modules: https://react.parts/native
+There are many awesome 3rd-party modules: [JS.coach](https://js.coach/react-native)
 
 Adding these to your apps should be made simpler. Here's [an example](https://github.com/apptailor/react-native-google-signin) how this is done currently.
 
