@@ -238,6 +238,7 @@ var apis = [
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
+  '../Libraries/Linking/Linking.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/ReactIOS/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
