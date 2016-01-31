@@ -118,8 +118,7 @@ class CameraRoll {
   /**
    * Saves the image to the camera roll / gallery.
    *
-   * @param {string} tag On Android, this is a local URI, such
-   * as `"file:///sdcard/img.png"`.
+   * On Android, the tag is a local URI, such as `"file:///sdcard/img.png"`.
    *
    * On iOS, the tag can be one of the following:
    *
@@ -128,8 +127,7 @@ class CameraRoll {
    *   - a tag not matching any of the above, which means the image data will
    * be stored in memory (and consume memory as long as the process is alive)
    *
-   * Returns a Promise which when resolved will be passed the new uri
-   *
+   * Returns a Promise which when resolved will be passed the new URI.
    */
   static saveImageWithTag(tag) {
     invariant(
@@ -147,13 +145,12 @@ class CameraRoll {
   }
 
   /**
-   *  Returns a Promise with photo identifier objects from the local camera
-   *  roll of the device matching shape defined by `getPhotosReturnChecker`.
+   * Returns a Promise with photo identifier objects from the local camera
+   * roll of the device matching shape defined by `getPhotosReturnChecker`.
    *
-   *  @param {object} params See `getPhotosParamChecker`.
+   * @param {object} params See `getPhotosParamChecker`.
    *
-   *  Returns a Promise which when resolved will be of shape `getPhotosReturnChecker`
-   *
+   * Returns a Promise which when resolved will be of shape `getPhotosReturnChecker`.
    */
   static getPhotos(params) {
     if (__DEV__) {

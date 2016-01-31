@@ -122,12 +122,7 @@ var AppState = {
     _eventHandlers[type].delete(handler);
   },
 
-  // TODO: getCurrentAppState callback seems to be called at a really late stage
-  // after app launch. Trying to get currentState when mounting App component
-  // will likely to have the initial value here.
-  // Initialize to 'active' instead of null.
   currentState: ('active' : ?string),
-
 };
 
 RCTDeviceEventEmitter.addListener(
