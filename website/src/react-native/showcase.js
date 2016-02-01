@@ -478,6 +478,12 @@ var apps = [
     author: 'Alexey Ledak',
   },
   {
+    name: 'This AM',
+    icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
+    link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
+    author: 'Refinery29',
+  },
+  {
     name: 'Tong Xing Wang',
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
