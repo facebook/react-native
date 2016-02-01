@@ -212,6 +212,20 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
     platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;defaultSource&#x27;</span><span class="token punctuation">,</span>
+    description<span class="token punctuation">:</span> <span class="token string">&#x27;Show a placeholder image when a network image is loading&#x27;</span><span class="token punctuation">,</span>
+    render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        &lt;Image
+          defaultSource<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./bunny.png&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>uri<span class="token punctuation">:</span> <span class="token string">&#x27;http://facebook.github.io/origami/public/images/birds.jpg&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
+          style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>base<span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">&gt;</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    platform<span class="token punctuation">:</span> <span class="token string">&#x27;ios&#x27;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Border Color&#x27;</span><span class="token punctuation">,</span>
     render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
