@@ -75,13 +75,10 @@ public class ReactHorizontalScrollViewManager
   public void scrollTo(
       ReactHorizontalScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.smoothScrollTo(data.mDestX, data.mDestY);
-  }
-
-  @Override
-  public void scrollWithoutAnimationTo(
-      ReactHorizontalScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.scrollTo(data.mDestX, data.mDestY);
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+    } else {
+      scrollView.scrollTo(data.mDestX, data.mDestY);
+    }
   }
 }
