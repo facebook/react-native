@@ -25,6 +25,11 @@ describe('normalizeColor', function() {
     expect(normalizeColor('rgba(0, 0, 0, 1)')).not.toBe(null);
   });
 
+  it('should temporarly accept floating point values for rgb', function() {
+    expect(normalizeColor('rgb(1.1, 2.1, 3.1)')).toBe(0xff010203);
+    expect(normalizeColor('rgba(1.1, 2.1, 3.1, 1.0)')).toBe(0xff010203);
+  });
+
   it('should refuse non spec compliant colors', function() {
     expect(normalizeColor('#00gg00')).toBe(null);
     expect(normalizeColor('rgb(1, 2, 3,)')).toBe(null);
@@ -40,7 +45,6 @@ describe('normalizeColor', function() {
     expect(normalizeColor('hsv(0, 1, 2)')).toBe(null);
     expect(normalizeColor({r: 10, g: 10, b: 10})).toBe(null);
     expect(normalizeColor('hsl(1%, 2, 3)')).toBe(null);
-    expect(normalizeColor('rgb(1.0, 2.0, 3.0)')).toBe(null);
     expect(normalizeColor('rgb(1%, 2%, 3%)')).toBe(null);
   });
 
