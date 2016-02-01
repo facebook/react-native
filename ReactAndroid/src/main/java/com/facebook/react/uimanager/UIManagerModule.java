@@ -11,25 +11,20 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import android.util.DisplayMetrics;
 
-import com.facebook.csslayout.CSSLayoutContext;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.JSBatchListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -65,7 +60,7 @@ import com.facebook.systrace.SystraceMessage;
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener {
+    JSBatchListener, LifecycleEventListener {
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -408,6 +403,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       Callback success,
       Callback error) {
     mUIImplementation.configureNextLayoutAnimation(config, success, error);
+  }
+
+  @Override
+  public void onBatchStarted() {
+    // no-op
   }
 
   /**

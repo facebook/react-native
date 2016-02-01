@@ -24,7 +24,7 @@ namespace react {
 
 class Bridge : public Countable {
 public:
-  typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
+  typedef std::function<void(std::vector<MethodCall>, bool isStartOfBatch, bool isEndOfBatch)> Callback;
 
   Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback);
   virtual ~Bridge();
@@ -66,12 +66,14 @@ public:
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();
 private:
+  void callback(std::vector<MethodCall> calls, bool isEndOfBatch);
   Callback m_callback;
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
   std::unique_ptr<JSExecutor> m_jsExecutor;
+  bool m_hasNotifyBatchStart;
 };
 
 } }
