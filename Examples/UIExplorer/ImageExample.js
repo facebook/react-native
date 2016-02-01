@@ -188,6 +188,20 @@ exports.examples = [
     platform: 'ios',
   },
   {
+    title: 'defaultSource',
+    description: 'Show a placeholder image when a network image is loading',
+    render: function() {
+      return (
+        <Image
+          defaultSource={require('./bunny.png')}
+          source={{uri: 'http://facebook.github.io/origami/public/images/birds.jpg'}}
+          style={styles.base}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'Border Color',
     render: function() {
       return (
