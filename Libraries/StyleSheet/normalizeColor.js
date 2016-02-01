@@ -131,7 +131,7 @@ function hslToRgb(h: number, s: number, l: number): number {
   );
 }
 
-var INTEGER = '[-+]?\\d+';
+// var INTEGER = '[-+]?\\d+';
 var NUMBER = '[-+]?\\d*\\.?\\d+';
 var PERCENTAGE = NUMBER + '%';
 
@@ -140,8 +140,8 @@ function call(...args) {
 }
 
 var matchers = {
-  rgb: new RegExp('rgb' + call(INTEGER, INTEGER, INTEGER)),
-  rgba: new RegExp('rgba' + call(INTEGER, INTEGER, INTEGER, NUMBER)),
+  rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
+  rgba: new RegExp('rgba' + call(NUMBER, NUMBER, NUMBER, NUMBER)),
   hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
   hsla: new RegExp('hsla' + call(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER)),
   hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
