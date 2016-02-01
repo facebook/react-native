@@ -14,7 +14,10 @@ const {EventEmitter} = require('events');
 const fs = require('graceful-fs');
 const path = require('path');
 
-const open = Promise.denodeify(fs.open);
+// workaround for https://github.com/isaacs/node-graceful-fs/issues/56
+// fs.close is patched, whereas graceful-fs.close is not.
+const fsClose = require('fs').close;
+
 const readFile = Promise.denodeify(fs.readFile);
 const stat = Promise.denodeify(fs.stat);
 
@@ -251,41 +254,12 @@ class File {
   }
 
   readWhile(predicate) {
-    const CHUNK_SIZE = 512;
-    let result = '';
-
-    return open(this.path, 'r').then(fd => {
-      /* global Buffer: true */
-      const buffer = new Buffer(CHUNK_SIZE);
-      const p = new Promise((resolve, reject) => {
-        let counter = 0;
-        const callback = (error, bytesRead) => {
-          if (error) {
-            reject();
-            return;
-          }
-
-          const chunk = buffer.toString('utf8', 0, bytesRead);
-          result += chunk;
-          if (bytesRead > 0 && predicate(chunk, counter++, result)) {
-            readChunk(fd, buffer, callback);
-          } else {
-            if (bytesRead === 0 && !this._read) { // reached EOF
-              this._read = Promise.resolve(result);
-            }
-            resolve(result);
-          }
-        };
-        readChunk(fd, buffer, callback);
-      });
-
-      p.catch(() => fs.close(fd));
-      return p;
+    return readWhile(this.path, predicate).then(({result, completed}) => {
+      if (completed && !this._read) {
+        this._read = Promise.resolve(result);
+      }
+      return result;
     });
-
-    function readChunk(fd, buffer, callback) {
-      fs.read(fd, buffer, 0, CHUNK_SIZE, null, callback);
-    }
   }
 
   stat() {
@@ -363,6 +337,58 @@ class File {
 
     delete this.parent.children[path.basename(this.path)];
   }
+}
+
+function readWhile(filePath, predicate) {
+  return new Promise((resolve, reject) => {
+    fs.open(filePath, 'r', (openError, fd) => {
+      if (openError) {
+        reject(openError);
+        return;
+      }
+
+      read(
+        fd,
+        /*global Buffer: true*/
+        new Buffer(512),
+        makeReadCallback(fd, predicate, (readError, result, completed) => {
+          if (readError) {
+            reject(readError);
+          } else {
+            resolve({result, completed});
+          }
+        })
+      );
+    });
+  });
+}
+
+function read(fd, buffer, callback) {
+  fs.read(fd, buffer, 0, buffer.length, -1, callback);
+}
+
+function close(fd, error, result, complete, callback) {
+  fsClose(fd, closeError => callback(error || closeError, result, complete));
+}
+
+function makeReadCallback(fd, predicate, callback) {
+  let result = '';
+  let index = 0;
+  return function readCallback(error, bytesRead, buffer) {
+    if (error) {
+      close(fd, error, undefined, false, callback);
+      return;
+    }
+
+    const completed = bytesRead === 0;
+    const chunk = completed ? '' : buffer.toString('utf8', 0, bytesRead);
+    result += chunk;
+    if (completed || !predicate(chunk, index++, result)) {
+      close(fd, null, result, completed, callback);
+    } else {
+      read(fd, buffer, readCallback);
+    }
+  };
 }
 
 function isDescendant(root, child) {
