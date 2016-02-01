@@ -236,8 +236,8 @@ var ListView = React.createClass({
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
-  scrollTo: function(destY, destX) {
-    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
+  scrollTo: function(destY, destX, animated = true) {
+    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0, animated);
   },
 
   setNativeProps: function(props) {
@@ -472,7 +472,7 @@ var ListView = React.createClass({
       this.scrollProperties.visibleLength = visibleLength;
       this._updateVisibleRows();
       this._renderMoreRowsIfNeeded();
-    } 
+    }
     this.props.onLayout && this.props.onLayout(event);
   },
 
@@ -495,7 +495,7 @@ var ListView = React.createClass({
       this._maybeCallOnEndReached();
       return;
     }
- 
+
     var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
       this._pageInNewRows();
