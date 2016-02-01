@@ -353,19 +353,11 @@ var ScrollResponderMixin = {
    * can also be used to quickly scroll to any element we want to focus
    */
   scrollResponderScrollTo: function(offsetX: number, offsetY: number, animated: boolean = true) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands[animated ? 'scrollTo' : 'scrollWithoutAnimationTo'],
-        [Math.round(offsetX), Math.round(offsetY)],
-      );
-    } else {
-      ScrollViewManager.scrollTo(
-        React.findNodeHandle(this),
-        { x: offsetX, y: offsetY },
-        animated
-      );
-    }
+    UIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this),
+      UIManager.RCTScrollView.Commands.scrollTo,
+      [offsetX, offsetY, animated],
+    );
   },
 
   /**
