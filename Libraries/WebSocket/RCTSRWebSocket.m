@@ -280,7 +280,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, id> *)options
 {
-  NSURLRequest *request = URL ? [NSURLRequest requestWithURL:URL] : nil;
+  NSMutableURLRequest *request;
+  if (URL) {
+    // Build a mutable request so we can fill the cookie header.
+    request = [NSMutableURLRequest requestWithURL:URL];
+
+    // We load cookies from sharedHTTPCookieStorage (shared with XHR and
+    // fetch). To get HTTPS-only cookies for wss URLs, replace wss with https
+    // in the URL.
+    NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
+    if ([components.scheme isEqualToString:@"wss"]) {
+      components.scheme = @"https";
+    }
+
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
+  }
   return [self initWithURLRequest:request protocols:protocols options:options];
 }
 
