@@ -59,7 +59,7 @@ class DependencyGraph {
       mocksPattern,
       extractRequires,
       shouldThrowOnUnresolvedErrors,
-      transformCode
+      transformCode,
     };
     this._cache = cache;
     this._helpers = new DependencyGraphHelpers(this._opts);

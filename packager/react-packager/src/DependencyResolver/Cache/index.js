@@ -58,9 +58,13 @@ class Cache {
     return recordP.then(record => record);
   }
 
-  invalidate(filepath) {
-    if (this.has(filepath)) {
-      delete this._data[filepath];
+  invalidate(filepath, field) {
+    if (this.has(filepath, field)) {
+      if (field == null) {
+        delete this._data[filepath];
+      } else {
+        delete this._data[filepath].data[field];
+      }
     }
   }
 
@@ -70,7 +74,7 @@ class Cache {
 
   has(filepath, field) {
     return Object.prototype.hasOwnProperty.call(this._data, filepath) &&
-      (!field || Object.prototype.hasOwnProperty.call(this._data[filepath].data, field));
+      (field == null || Object.prototype.hasOwnProperty.call(this._data[filepath].data, field));
   }
 
   _set(filepath, field, loaderPromise) {
