@@ -53,6 +53,13 @@ var WebView = React.createClass({
     style: View.propTypes.style,
 
     /**
+     * Used on Android only, provides html or url with optional headers to the WebView.
+     * `{ html: string, url: string, headers: map<string, string> }`
+     * @platform android
+     */
+    source: PropTypes.object,
+
+    /**
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
@@ -127,13 +134,21 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
+    var source = this.props.source || {};
+    if (this.props.html) {
+      console.warn('WebView: html is deprecated. Use source prop instead.');
+      source.html = this.props.html;
+    } else if (this.props.url) {
+      console.warn('WebView: url is deprecated. Use source prop instead.');
+      source.url = this.props.url;
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        url={this.props.url}
-        html={this.props.html}
+        source={source}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={javaScriptEnabled}
