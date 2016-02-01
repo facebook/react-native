@@ -55,14 +55,13 @@ RCT_EXPORT_MODULE()
   [self showWithURL:bridge.bundleURL];
 }
 
-- (void)showWithURL:(NSURL *)URL
+RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
 {
   if (!isEnabled) {
     return;
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-
     _showDate = [NSDate date];
     if (!_window && !RCTRunningInTestEnvironment()) {
       CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
@@ -77,34 +76,23 @@ RCT_EXPORT_MODULE()
       [_window makeKeyAndVisible];
     }
 
-    NSString *source;
-    if (URL.fileURL) {
-      _window.backgroundColor = [UIColor blackColor];
-      _label.textColor = [UIColor grayColor];
-      source = @"pre-bundled file";
-    } else {
-      _window.backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
-      _label.textColor = [UIColor whiteColor];
-      source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
-    }
-
-    _label.text = [NSString stringWithFormat:@"Loading from %@...", source];
+    _label.text = message;
+    _label.textColor = color;
+    _window.backgroundColor = backgroundColor;
     _window.hidden = NO;
   });
 }
 
-- (void)hide
+RCT_EXPORT_METHOD(hide)
 {
   if (!isEnabled) {
     return;
   }
 
   dispatch_async(dispatch_get_main_queue(), ^{
-
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
-
     CGRect windowFrame = _window.frame;
     [UIView animateWithDuration:0.25
                           delay:delay
@@ -117,6 +105,26 @@ RCT_EXPORT_MODULE()
                        _window = nil;
                      }];
   });
+}
+
+- (void)showWithURL:(NSURL *)URL
+{
+  UIColor *color;
+  UIColor *backgroundColor;
+  NSString *source;
+  if (URL.fileURL) {
+    color = [UIColor grayColor];
+    backgroundColor = [UIColor blackColor];
+    source = @"pre-bundled file";
+  } else {
+    color = [UIColor whiteColor];
+    backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
+    source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
+  }
+
+  [self showMessage:[NSString stringWithFormat:@"Loading from %@...", source]
+              color:color
+    backgroundColor:backgroundColor];
 }
 
 @end
