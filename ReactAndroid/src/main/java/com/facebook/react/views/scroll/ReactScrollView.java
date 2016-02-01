@@ -34,11 +34,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
-  private boolean mRemoveClippedSubviews;
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
   private boolean mDragging;
   private boolean mFlinging;
+  private boolean mRemoveClippedSubviews;
   private boolean mScrollEnabled = true;
   private boolean mSendMomentumEvents;
 

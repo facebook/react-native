@@ -42,7 +42,7 @@ public class ReactScrollViewManager
     return new ReactScrollView(context);
   }
 
-  @ReactProp(name = "scrollEnabled")
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public void setScrollEnabled(ReactScrollView view, boolean value) {
     view.setScrollEnabled(value);
   }
