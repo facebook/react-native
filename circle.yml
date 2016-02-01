@@ -41,7 +41,7 @@ test:
     - source scripts/circle-ci-android-setup.sh && waitForAVD
   override:
     # buck tests
-    - buck/bin/buck test ReactAndroid/src/test/...
+    - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
     # temp, we can't run instrumentation tests yet
@@ -49,6 +49,7 @@ test:
 
     # unit tests
     - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
+
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     # run tests on the emulator
