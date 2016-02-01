@@ -8,7 +8,7 @@
 
 # Bundle React Native app's code and image assets.
 # This script is supposed to be invoked as part of Xcode build process
-# and relies on envoronment variables (including PWD) set by Xcode
+# and relies on environment variables (including PWD) set by Xcode
 
 # There is no point in creating an offline package for simulator builds
 # because the packager is supposed to be running during development anyways
