@@ -11,6 +11,7 @@
 'use strict';
 
 const invariant = require('invariant');
+const processColor = require('processColor');
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -49,39 +50,60 @@ Error: ${e.message}`
       );
     };
     activeWS.onmessage = ({data}) => {
+      const DevLoadingView = require('NativeModules').DevLoadingView;
       data = JSON.parse(data);
-      if (data.type === 'update') {
-        const modules = data.body.modules;
-        const sourceMappingURLs = data.body.sourceMappingURLs;
-        const sourceURLs = data.body.sourceURLs;
 
-        const RCTRedBox = require('NativeModules').RedBox;
-        RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+      switch(data.type) {
+        case 'update-start': {
+          DevLoadingView.showMessage(
+            'Hot Loading...',
+            processColor('#000000'),
+            processColor('#aaaaaa'),
+          );
+          break;
+        }
+        case 'update': {
+          const modules = data.body.modules;
+          const sourceMappingURLs = data.body.sourceMappingURLs;
+          const sourceURLs = data.body.sourceURLs;
 
-        modules.forEach((code, i) => {
-          code = code + '\n\n' + sourceMappingURLs[i];
+          const RCTRedBox = require('NativeModules').RedBox;
+          RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
 
-          require('SourceMapsCache').fetch({
-            text: code,
-            url: sourceURLs[i],
-            sourceMappingURL: sourceMappingURLs[i],
+          modules.forEach((code, i) => {
+            code = code + '\n\n' + sourceMappingURLs[i];
+
+            require('SourceMapsCache').fetch({
+              text: code,
+              url: sourceURLs[i],
+              sourceMappingURL: sourceMappingURLs[i],
+            });
+
+            // on JSC we need to inject from native for sourcemaps to work
+            // (Safari doesn't support `sourceMappingURL` nor any variant when
+            // evaluating code) but on Chrome we can simply use eval
+            const injectFunction = typeof __injectHMRUpdate === 'function'
+              ? __injectHMRUpdate
+              : eval;
+
+            injectFunction(code, sourceURLs[i]);
           });
 
-          // on JSC we need to inject from native for sourcemaps to work
-          // (Safari doesn't support `sourceMappingURL` nor any variant when
-          // evaluating code) but on Chrome we can simply use eval
-          const injectFunction = typeof __injectHMRUpdate === 'function'
-            ? __injectHMRUpdate
-            : eval;
-
-          injectFunction(code, sourceURLs[i]);
-        })
-        return;
+          DevLoadingView.hide();
+          break;
+        }
+        case 'update-done': {
+          DevLoadingView.hide();
+          break;
+        }
+        case 'error': {
+          DevLoadingView.hide();
+          throw new Error(data.body.type + ' ' + data.body.description);
+        }
+        default: {
+          throw new Error(`Unexpected message: ${data}`);
+        }
       }
-
-      // TODO: add support for opening filename by clicking on the stacktrace
-      const error = data.body;
-      throw new Error(error.type + ' ' + error.description);
     };
   },
 };
