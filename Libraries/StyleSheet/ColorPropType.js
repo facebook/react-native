@@ -11,12 +11,20 @@
 'use strict';
 
 var ReactPropTypes = require('ReactPropTypes');
+var ReactPropTypeLocationNames = require('ReactPropTypeLocationNames');
 
 var normalizeColor = require('normalizeColor');
 
-var ColorPropType = function(props, propName) {
+var colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
   var color = props[propName];
   if (color === undefined || color === null) {
+    if (isRequired) {
+      var locationName = ReactPropTypeLocationNames[location];
+      return new Error(
+        'Required ' + locationName + ' `' + (propFullName || propName) +
+        '` was not specified in `' + componentName + '`.'
+      );
+    }
     return;
   }
 
@@ -28,8 +36,11 @@ var ColorPropType = function(props, propName) {
   }
 
   if (normalizeColor(color) === null) {
+    var locationName = ReactPropTypeLocationNames[location];
     return new Error(
-`Invalid color supplied to ${propName}: ${color}. Valid color formats are
+      'Invalid ' + locationName + ' `' + (propFullName || propName) +
+      '` supplied to `' + componentName + '`: ' + color + '\n' +
+`Valid color formats are
   - #f0f (#rgb)
   - #f0fc (#rgba)
   - #ff00ff (#rrggbb)
@@ -39,8 +50,12 @@ var ColorPropType = function(props, propName) {
   - hsl(360, 100%, 100%)
   - hsla(360, 100%, 100%, 1.0)
   - transparent
-  - red`);
+  - red
+`);
   }
 };
+
+var ColorPropType = colorPropType.bind(null, false /* isRequired */);
+ColorPropType.isRequired = colorPropType.bind(null, true /* isRequired */);
 
 module.exports = ColorPropType;
