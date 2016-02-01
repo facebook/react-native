@@ -483,6 +483,8 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
     [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
   NSMutableArray<NSNumber *> *parentsAreNew =
     [NSMutableArray arrayWithCapacity:viewsWithNewFrames.count];
+  NSMutableDictionary<NSNumber *, RCTViewManagerUIBlock> *updateBlocks =
+    [NSMutableDictionary new];
 
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     [frameReactTags addObject:shadowView.reactTag];
@@ -500,10 +502,13 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   // reactSetFrame: has been called. Note that if reactSetFrame: is not called,
   // these won't be called either, so this is not a suitable place to update
   // properties that aren't related to layout.
-  NSMutableArray<RCTViewManagerUIBlock> *updateBlocks = [NSMutableArray new];
   for (RCTShadowView *shadowView in viewsWithNewFrames) {
     RCTViewManager *manager = [_componentDataByName[shadowView.viewName] manager];
     RCTViewManagerUIBlock block = [manager uiBlockToAmendWithShadowView:shadowView];
+    if (block) {
+      updateBlocks[shadowView.reactTag] = block;
+    }
+
     if (shadowView.onLayout) {
       CGRect frame = shadowView.frame;
       shadowView.onLayout(@{
@@ -525,13 +530,8 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
 
         RCTRootView *rootView = (RCTRootView *)[view superview];
-
         rootView.intrinsicSize = contentSize;
       });
-    }
-
-    if (block) {
-      [updateBlocks addObject:block];
     }
   }
 
@@ -561,24 +561,10 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         }
       };
 
-      // Animate view update
-      if (updateAnimation) {
-        [updateAnimation performAnimations:^{
-          [view reactSetFrame:frame];
-          for (RCTViewManagerUIBlock block in updateBlocks) {
-            block(self, _viewRegistry);
-          }
-        } withCompletionBlock:completion];
-      } else {
-        [view reactSetFrame:frame];
-        for (RCTViewManagerUIBlock block in updateBlocks) {
-          block(self, _viewRegistry);
-        }
-        completion(YES);
-      }
-
       // Animate view creation
       if (createAnimation) {
+        [view reactSetFrame:frame];
+
         CATransform3D finalTransform = view.layer.transform;
         CGFloat finalOpacity = view.layer.opacity;
         if ([createAnimation.property isEqualToString:@"scaleXY"]) {
@@ -586,6 +572,7 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
         } else if ([createAnimation.property isEqualToString:@"opacity"]) {
           view.layer.opacity = 0.0;
         }
+
         [createAnimation performAnimations:^{
           if ([createAnimation.property isEqual:@"scaleXY"]) {
             view.layer.transform = finalTransform;
@@ -595,10 +582,33 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
             RCTLogError(@"Unsupported layout animation createConfig property %@",
                         createAnimation.property);
           }
-          for (RCTViewManagerUIBlock block in updateBlocks) {
-            block(self, _viewRegistry);
+
+          RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
+          if (updateBlock) {
+            updateBlock(self, _viewRegistry);
           }
-        } withCompletionBlock:nil];
+        } withCompletionBlock:completion];
+
+      // Animate view update
+      } else if (updateAnimation) {
+        [updateAnimation performAnimations:^{
+          [view reactSetFrame:frame];
+
+          RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
+          if (updateBlock) {
+            updateBlock(self, _viewRegistry);
+          }
+        } withCompletionBlock:completion];
+
+      // Update without animation
+      } else {
+        [view reactSetFrame:frame];
+
+        RCTViewManagerUIBlock updateBlock = updateBlocks[reactTag];
+        if (updateBlock) {
+          updateBlock(self, _viewRegistry);
+        }
+        completion(YES);
       }
     }
   };
