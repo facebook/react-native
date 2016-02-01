@@ -118,6 +118,10 @@ const bundleOpts = declareOpts({
     type: 'boolean',
     default: false,
   },
+  entryModuleOnly: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const dependencyOpts = declareOpts({
@@ -132,6 +136,10 @@ const dependencyOpts = declareOpts({
   entryFile: {
     type: 'string',
     required: true,
+  },
+  recursive: {
+    type: 'boolean',
+    default: true,
   },
 });
 
@@ -184,23 +192,8 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
-      const onFileChange = () => {
-        this._rebuildBundles(filePath);
-        this._informChangeWatchers();
-      };
-
-      // if Hot Loading is enabled avoid rebuilding bundles and sending live
-      // updates. Instead, send the HMR updates right away and once that
-      // finishes, invoke any other file change listener.
-      if (this._hmrFileChangeListener) {
-        this._hmrFileChangeListener(
-          filePath,
-          this._bundler.stat(filePath),
-        ).then(onFileChange).done();
-        return;
-      }
-
-      onFileChange();
+      this._rebuildBundles(filePath);
+      this._informChangeWatchers();
     }, 50);
   }
 
@@ -265,6 +258,7 @@ class Server {
         opts.entryFile,
         opts.dev,
         opts.platform,
+        opts.recursive,
       );
     });
   }
@@ -279,9 +273,24 @@ class Server {
   _onFileChange(type, filepath, root) {
     const absPath = path.join(root, filepath);
     this._bundler.invalidateFile(absPath);
+
+    // If Hot Loading is enabled avoid rebuilding bundles and sending live
+    // updates. Instead, send the HMR updates right away and clear the bundles
+    // cache so that if the user reloads we send them a fresh bundle
+    if (this._hmrFileChangeListener) {
+      // Clear cached bundles in case user reloads
+      this._clearBundles();
+      this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
+      return;
+    }
+
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(absPath);
+  }
+
+  _clearBundles() {
+    this._bundles = Object.create(null);
   }
 
   _rebuildBundles() {
@@ -527,6 +536,11 @@ class Server {
         false
       ),
       platform: platform,
+      entryModuleOnly: this._getBoolOptionFromQuery(
+        urlObj.query,
+        'entryModuleOnly',
+        false,
+      ),
     };
   }
 

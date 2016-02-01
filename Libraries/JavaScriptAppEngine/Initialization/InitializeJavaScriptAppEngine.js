@@ -96,13 +96,6 @@ function setUpErrorHandler() {
   ErrorUtils.setGlobalHandler(handleError);
 }
 
-function setUpFlowChecker() {
-  if (__DEV__) {
-    var checkFlowAtRuntime = require('checkFlowAtRuntime');
-    checkFlowAtRuntime();
-  }
-}
-
 /**
  * Sets up a set of window environment wrappers that ensure that the
  * BatchedBridge is flushed after each tick. In both the case of the
@@ -219,7 +212,6 @@ setUpMapAndSet();
 setUpProduct();
 setUpWebSockets();
 setUpProfile();
-setUpFlowChecker();
 setUpNumber();
 setUpDevTools();
 

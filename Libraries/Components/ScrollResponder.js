@@ -17,8 +17,9 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
-var { UIManager, ScrollViewManager } = require('NativeModules');
+var { ScrollViewManager } = require('NativeModules');
 
 var invariant = require('invariant');
 var warning = require('warning');
@@ -352,19 +353,11 @@ var ScrollResponderMixin = {
    * can also be used to quickly scroll to any element we want to focus
    */
   scrollResponderScrollTo: function(offsetX: number, offsetY: number, animated: boolean = true) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands[animated ? 'scrollTo' : 'scrollWithoutAnimationTo'],
-        [Math.round(offsetX), Math.round(offsetY)],
-      );
-    } else {
-      ScrollViewManager.scrollTo(
-        React.findNodeHandle(this),
-        { x: offsetX, y: offsetY },
-        animated
-      );
-    }
+    UIManager.dispatchViewManagerCommand(
+      React.findNodeHandle(this),
+      UIManager.RCTScrollView.Commands.scrollTo,
+      [offsetX, offsetY, animated],
+    );
   },
 
   /**
@@ -372,7 +365,7 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
     console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
-    self.scrollResponderScrollTo(offsetX, offsetY, false);
+    this.scrollResponderScrollTo(offsetX, offsetY, false);
   },
 
   /**

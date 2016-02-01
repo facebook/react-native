@@ -275,4 +275,61 @@ describe('Cache', () => {
       expect(fs.writeFile).toBeCalled();
     });
   });
+
+  describe('check for cache presence', () => {
+    it('synchronously resolves cache presence', () => {
+      fs.stat.mockImpl((file, callback) =>
+        callback(null, {
+          mtime: {
+            getTime: () => {},
+          },
+        })
+      );
+
+      var cache = new Cache({
+        cacheKey: 'cache',
+      });
+      var loaderCb = jest.genMockFn().mockImpl(() =>
+        Promise.resolve('banana')
+      );
+      var file = '/rootDir/someFile';
+
+      return cache
+        .get(file, 'field', loaderCb)
+        .then(() => {
+          expect(cache.has(file)).toBe(true);
+          expect(cache.has(file, 'field')).toBe(true);
+          expect(cache.has(file, 'foo')).toBe(false);
+        });
+    });
+  });
+
+  describe('invalidate', () => {
+    it('invalidates the cache per file or per-field', () => {
+      fs.stat.mockImpl((file, callback) =>
+        callback(null, {
+          mtime: {
+            getTime: () => {},
+          },
+        })
+      );
+
+      var cache = new Cache({
+        cacheKey: 'cache',
+      });
+      var loaderCb = jest.genMockFn().mockImpl(() =>
+        Promise.resolve('banana')
+      );
+      var file = '/rootDir/someFile';
+
+      return cache.get(file, 'field', loaderCb).then(() => {
+        expect(cache.has(file)).toBe(true);
+        cache.invalidate(file, 'field');
+        expect(cache.has(file)).toBe(true);
+        expect(cache.has(file, 'field')).toBe(false);
+        cache.invalidate(file);
+        expect(cache.has(file)).toBe(false);
+      });
+    });
+  });
 });

@@ -455,7 +455,8 @@ var apps = [
   {
     name: 'ShareHows',
     icon: 'http://a4.mzstatic.com/us/r30/Purple5/v4/78/1c/83/781c8325-a1e1-4afc-f106-a629bcf3c6ef/icon175x175.png',
-    link: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
+    linkAppStore: 'https://itunes.apple.com/kr/app/sweeohauseu-sesang-ui-modeun/id1060914858?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=kr.dobbit.sharehows',
     author: 'Dobbit Co., Ltd.'
   },
   {
@@ -497,9 +498,9 @@ var apps = [
   },
   {
     name: 'WPV',
-    icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/f1/ae/51/f1ae516b-d8e9-1b6d-acfe-755623a88327/icon350x350.png',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
-    author: 'Yamill Vallecillo (@yamill3)',
+    author: 'Yamill Vallecillo',
   },
   {
     name: 'Yoloci',

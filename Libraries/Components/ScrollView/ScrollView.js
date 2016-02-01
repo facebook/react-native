@@ -25,6 +25,7 @@ var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var deepDiffer = require('deepDiffer');
+var deprecatedPropType = require('deprecatedPropType');
 var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
@@ -32,7 +33,7 @@ var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
 var processColor = require('processColor');
-
+var processDecelerationRate = require('processDecelerationRate');
 var PropTypes = React.PropTypes;
 
 var SCROLLVIEW = 'ScrollView';
@@ -130,17 +131,35 @@ var ScrollView = React.createClass({
     contentContainerStyle: StyleSheetPropType(ViewStylePropTypes),
     /**
      * A floating-point number that determines how quickly the scroll view
-     * decelerates after the user lifts their finger. Reasonable choices include
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
      *   - Normal: 0.998 (the default)
      *   - Fast: 0.9
      * @platform ios
      */
-    decelerationRate: PropTypes.number,
+    decelerationRate: PropTypes.oneOfType([
+      PropTypes.oneOf(['fast', 'normal']),
+      PropTypes.number,
+    ]),
     /**
      * When true, the scroll view's children are arranged horizontally in a row
      * instead of vertically in a column. The default value is false.
      */
     horizontal: PropTypes.bool,
+    /**
+     * The style of the scroll indicators.
+     *   - `default` (the default), same as `black`.
+     *   - `black`, scroll indicator is black. This style is good against a white content background.
+     *   - `white`, scroll indicator is white. This style is good against a black content background.
+     * @platform ios
+     */
+    indicatorStyle: PropTypes.oneOf([
+      'default', // default
+      'black',
+      'white',
+    ]),
     /**
      * When true, the ScrollView will try to lock to only vertical or horizontal
      * scrolling while dragging.  The default value is false.
@@ -303,10 +322,12 @@ var ScrollView = React.createClass({
     refreshControl: PropTypes.element,
 
     /**
-     * Deprecated - use `refreshControl` property instead.
      * @platform ios
      */
-    onRefreshStart: PropTypes.func,
+    onRefreshStart: deprecatedPropType(
+      PropTypes.func,
+      'Use the `refreshControl` prop instead.'
+    ),
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -446,11 +467,15 @@ var ScrollView = React.createClass({
 
     var onRefreshStart = this.props.onRefreshStart;
     if (onRefreshStart) {
-      console.warn('onRefreshStart is deprecated. Use the refreshControl prop instead.');
       // this is necessary because if we set it on props, even when empty,
       // it'll trigger the default pull-to-refresh behavior on native.
       props.onRefreshStart =
         function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
+    }
+
+    var { decelerationRate } = this.props;
+    if (decelerationRate) {
+      props.decelerationRate = processDecelerationRate(decelerationRate);
     }
 
     var ScrollViewClass;
@@ -524,6 +549,7 @@ var validAttributes = {
   contentOffset: {diff: pointsDiffer},
   decelerationRate: true,
   horizontal: true,
+  indicatorStyle: true,
   keyboardDismissMode: true,
   keyboardShouldPersistTaps: true,
   maximumZoomScale: true,

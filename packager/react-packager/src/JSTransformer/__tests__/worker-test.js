@@ -23,7 +23,7 @@ describe('Resolver', function() {
   });
 
   describe('when no external transform is provided', () => {
-    it('should invoke internal transform if available', () => {
+    xit('should invoke internal transform if available', () => {
       transform({
         sourceCode: 'code',
         filename: 'test',
@@ -43,7 +43,7 @@ describe('Resolver', function() {
   });
 
   describe('when external transform is provided', () => {
-    it('should invoke both transformers if internal is available', () => {
+    xit('should invoke both transformers if internal is available', () => {
       transform({
         sourceCode: code,
         filename: 'test',
@@ -75,7 +75,7 @@ describe('Resolver', function() {
       expect(babel.transform.mock.calls.length).toBe(1);
     });
 
-    it('should pipe errors through transform pipeline', () => {
+    xit('should pipe errors through transform pipeline', () => {
       const error = new Error('transform error');
       babel.transform.mockImpl((source, options) => {
         throw error;

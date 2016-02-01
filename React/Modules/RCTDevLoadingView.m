@@ -79,12 +79,12 @@ RCT_EXPORT_MODULE()
 
     NSString *source;
     if (URL.fileURL) {
-      _window.backgroundColor = [UIColor greenColor];
-      _label.textColor = [UIColor whiteColor];
-      source = @"pre-bundled file";
-    } else {
       _window.backgroundColor = [UIColor blackColor];
       _label.textColor = [UIColor grayColor];
+      source = @"pre-bundled file";
+    } else {
+      _window.backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
+      _label.textColor = [UIColor whiteColor];
       source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
     }
 

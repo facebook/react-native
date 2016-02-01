@@ -143,7 +143,9 @@ class Bundler {
     this._assetServer = opts.assetServer;
 
     if (opts.getTransformOptionsModulePath) {
-      this._getTransformOptionsModule = require(opts.getTransformOptionsModulePath);
+      this._transformOptionsModule = require(
+        opts.getTransformOptionsModulePath
+      );
     }
   }
 
@@ -164,9 +166,58 @@ class Bundler {
     });
   }
 
+  _sourceHMRURL(platform, path) {
+    return this._hmrURL(
+      'http://localhost:8081', // TODO: (martinb) avoid hardcoding
+      platform,
+      'bundle',
+      path,
+    );
+  }
+
+  _sourceMappingHMRURL(platform, path) {
+    // Chrome expects `sourceURL` when eval'ing code
+    return this._hmrURL(
+      '\/\/# sourceURL=',
+      platform,
+      'map',
+      path,
+    );
+  }
+
+  _hmrURL(prefix, platform, extensionOverride, path) {
+    const matchingRoot = this._projectRoots.find(root => path.startsWith(root));
+
+    if (!matchingRoot) {
+      throw new Error('No matching project root for ', path);
+    }
+
+    const extensionStart = path.lastIndexOf('.');
+    let resource = path.substring(
+      matchingRoot.length,
+      extensionStart !== -1 ? extensionStart : undefined,
+    );
+
+    const extension = extensionStart !== -1
+      ? path.substring(extensionStart + 1)
+      : null;
+
+    return (
+      prefix + resource +
+      '.' + extensionOverride + '?' +
+      'platform=' + platform + '&runModule=false&entryModuleOnly=true&hot=true'
+    );
+  }
+
   bundleForHMR(options) {
     return this._bundle({
-      bundle: new HMRBundle(),
+      bundle: new HMRBundle({
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
+        sourceMappingURLFn: this._sourceMappingHMRURL.bind(
+          this,
+          options.platform,
+        ),
+      }),
       hot: true,
       ...options,
     });
@@ -183,28 +234,66 @@ class Bundler {
     platform,
     unbundle: isUnbundle,
     hot: hot,
+    entryModuleOnly,
+    resolutionResponse,
   }) {
-    const findEventId = Activity.startEvent('find dependencies');
     let transformEventId;
+    const moduleSystemDeps = includeSystemDependencies
+      ? this._resolver.getModuleSystemDependencies(
+        { dev: isDev, platform, isUnbundle }
+      )
+      : [];
 
-    return this.getDependencies(entryFile, isDev, platform).then((response) => {
-      Activity.endEvent(findEventId);
-      bundle.setMainModuleId(response.mainModuleId);
-      bundle.setMainModuleName(response.mainModuleId);
+    const findModules = () => {
+      const findEventId = Activity.startEvent('find dependencies');
+      return this.getDependencies(entryFile, isDev, platform).then(response => {
+        Activity.endEvent(findEventId);
+        bundle.setMainModuleId(response.mainModuleId);
+        bundle.setMainModuleName(response.mainModuleId);
+        if (!entryModuleOnly && bundle.setNumPrependedModules) {
+          bundle.setNumPrependedModules(
+            response.numPrependedDependencies + moduleSystemDeps.length
+          );
+        }
+
+        return {
+          response,
+          modulesToProcess: response.dependencies,
+        };
+      });
+    };
+
+    const useProvidedModules = () => {
+      const moduleId = this._resolver.getModuleForPath(entryFile);
+      bundle.setMainModuleId(moduleId);
+      bundle.setMainModuleName(moduleId);
+      return Promise.resolve({
+        response: resolutionResponse,
+        modulesToProcess: modules
+      });
+    };
+
+    return (
+      modules ? useProvidedModules() : findModules()
+    ).then(({response, modulesToProcess}) => {
+
       transformEventId = Activity.startEvent('transform');
 
-      const moduleSystemDeps = includeSystemDependencies
-        ? this._resolver.getModuleSystemDependencies(
-          { dev: isDev, platform, isUnbundle }
-        )
-        : [];
+      let dependencies;
+      if (entryModuleOnly) {
+        dependencies = response.dependencies.filter(module =>
+          module.path.endsWith(entryFile)
+        );
+      } else {
+        const moduleSystemDeps = includeSystemDependencies
+          ? this._resolver.getModuleSystemDependencies(
+            { dev: isDev, platform, isUnbundle }
+          )
+          : [];
 
-      const modulesToProcess = modules || response.dependencies;
-      const dependencies = moduleSystemDeps.concat(modulesToProcess);
-
-      bundle.setNumPrependedModules && bundle.setNumPrependedModules(
-        response.numPrependedDependencies + moduleSystemDeps.length
-      );
+        const modulesToProcess = modules || response.dependencies;
+        dependencies = moduleSystemDeps.concat(modulesToProcess);
+      }
 
       let bar;
       if (process.stdout.isTTY) {
@@ -221,9 +310,9 @@ class Bundler {
           module => {
             return this._transformModule(
               bundle,
-              response,
               module,
               platform,
+              isDev,
               hot,
             ).then(transformed => {
               if (bar) {
@@ -287,9 +376,9 @@ class Bundler {
         response.dependencies.map(
           module => this._transformModule(
             bundle,
-            response,
             module,
-            platform
+            platform,
+            isDev,
           ).then(transformed => {
             if (bar) {
               bar.tick();
@@ -326,15 +415,22 @@ class Bundler {
         }
       );
     } else {
-      return this._transformer.loadFileAndTransform(
-        module.path,
-        // TODO(martinb): pass non null main (t9527509)
-        this._getTransformOptions({main: null}, {hot: true}),
-      );
+      // TODO(martinb): pass non null main (t9527509)
+      return this._getTransformOptions(
+        {main: null, dev: true, platform: 'ios'}, // TODO(martinb): avoid hard-coding platform
+        {hot: true},
+      ).then(options => {
+        return this._transformer.loadFileAndTransform(module.path, options);
+      });
     }
   }
 
   invalidateFile(filePath) {
+    if (this._transformOptionsModule) {
+      this._transformOptionsModule.onFileChange &&
+        this._transformOptionsModule.onFileChange();
+    }
+
     this._transformer.invalidateFile(filePath);
   }
 
@@ -350,8 +446,15 @@ class Bundler {
     return this._resolver.getModuleForPath(entryFile);
   }
 
-  getDependencies(main, isDev, platform) {
-    return this._resolver.getDependencies(main, { dev: isDev, platform });
+  getDependencies(main, isDev, platform, recursive = true) {
+    return this._resolver.getDependencies(
+      main,
+      {
+        dev: isDev,
+        platform,
+        recursive,
+      },
+    );
   }
 
   getOrderedDependencyPaths({ entryFile, dev, platform }) {
@@ -386,7 +489,7 @@ class Bundler {
     );
   }
 
-  _transformModule(bundle, response, module, platform = null, hot = false) {
+  _transformModule(bundle, module, platform = null, dev = true, hot = false) {
     if (module.isAsset_DEPRECATED()) {
       return this._generateAssetModule_DEPRECATED(bundle, module);
     } else if (module.isAsset()) {
@@ -394,13 +497,20 @@ class Bundler {
     } else if (module.isJSON()) {
       return generateJSONModule(module);
     } else {
-      return this._transformer.loadFileAndTransform(
-        path.resolve(module.path),
-        this._getTransformOptions(
-          {bundleEntry: bundle.getMainModuleName(), modulePath: module.path},
-          {hot: hot},
-        ),
-      );
+      return this._getTransformOptions(
+        {
+          bundleEntry: bundle.getMainModuleName(),
+          platform: platform,
+          dev: dev,
+          modulePath: module.path,
+        },
+        {hot: hot},
+      ).then(options => {
+        return this._transformer.loadFileAndTransform(
+          path.resolve(module.path),
+          options,
+        );
+      });
     }
   }
 
@@ -484,11 +594,20 @@ class Bundler {
   }
 
   _getTransformOptions(config, options) {
-    const transformerOptions = this._getTransformOptionsModule
-      ? this._getTransformOptionsModule(config)
-      : null;
+    const transformerOptions = this._transformOptionsModule
+      ? this._transformOptionsModule.get(Object.assign(
+          {
+            bundler: this,
+            platform: options.platform,
+            dev: options.dev,
+          },
+          config,
+        ))
+      : Promise.resolve(null);
 
-    return {...options, ...transformerOptions};
+    return transformerOptions.then(overrides => {
+      return {...options, ...overrides};
+    });
   }
 }
 

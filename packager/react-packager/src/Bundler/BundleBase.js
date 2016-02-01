@@ -19,6 +19,10 @@ class BundleBase {
     this._mainModuleId = this._mainModuleName = undefined;
   }
 
+  isEmpty() {
+    return this._modules.length === 0 && this._assets.length === 0;
+  }
+
   getMainModuleId() {
     return this._mainModuleId;
   }

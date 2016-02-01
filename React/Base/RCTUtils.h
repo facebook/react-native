@@ -23,7 +23,7 @@ RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSErr
 RCT_EXTERN id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error);
 RCT_EXTERN id __nullable RCTJSONParseMutable(NSString *__nullable jsonString, NSError **error);
 
-// Strip non JSON-safe values from an object graph
+// Santize a JSON string by stripping invalid objects and/or NaN values
 RCT_EXTERN id RCTJSONClean(id object);
 
 // Get MD5 hash of a string
@@ -74,6 +74,9 @@ RCT_EXTERN UIApplication *__nullable RCTSharedApplication(void);
 // Returns the current main window, useful if you need to access the root view
 // or view controller, e.g. to present a modal view controller or alert.
 RCT_EXTERN UIWindow *__nullable RCTKeyWindow(void);
+
+// Does this device support force touch (aka 3D Touch)?
+RCT_EXTERN BOOL RCTForceTouchAvailable(void);
 
 // Return a UIAlertView initialized with the given values
 // or nil if running in an app extension

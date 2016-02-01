@@ -137,6 +137,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName),
+    'path:' + json.filepath,
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
@@ -149,7 +150,10 @@ function renderComponent(filepath) {
   var json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedOrFirst,
-    docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
+    docgen.defaultHandlers.concat([
+      docgenHelpers.stylePropTypeHandler,
+      docgenHelpers.deprecatedPropTypeHandler,
+    ])
   );
 
   return componentsToMarkdown('component', json, filepath, n++, styleDocs);
@@ -196,6 +200,7 @@ var components = [
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
+  '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
   '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
@@ -233,6 +238,7 @@ var apis = [
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
+  '../Libraries/Linking/Linking.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/ReactIOS/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',

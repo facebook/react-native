@@ -214,7 +214,7 @@ describe('Bundle', () => {
 
         const sourceMap = otherBundle.getSourceMap({dev: true});
         expect(sourceMap).toEqual({
-          file: 'bundle.js',
+          file: 'test_url',
           version: 3,
           sections: [
             { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
@@ -340,7 +340,7 @@ describe('Bundle', () => {
 
 
 function genSourceMap(modules) {
-  var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});
+  var sourceMapGen = new SourceMapGenerator({file: 'test_url', version: 3});
   var bundleLineNo = 0;
   for (var i = 0; i < modules.length; i++) {
     var module = modules[i];

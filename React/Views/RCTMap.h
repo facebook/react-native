@@ -31,6 +31,8 @@ RCT_EXTERN const CGFloat RCTMapZoomBoundBuffer;
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onAnnotationDragStateChange;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnnotationFocus;
+@property (nonatomic, copy) RCTBubblingEventBlock onAnnotationBlur;
 
 - (void)setAnnotations:(NSArray<RCTMapAnnotation *> *)annotations;
 - (void)setOverlays:(NSArray<RCTMapOverlay *> *)overlays;

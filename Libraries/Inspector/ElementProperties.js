@@ -47,6 +47,7 @@ var ElementProperties = React.createClass({
               this.props.hierarchy,
               (item, i) => (
                 <TouchableHighlight
+                  key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
                   onPress={() => this.props.setSelection(i)}>
                   <Text style={styles.breadItemText}>
@@ -54,7 +55,11 @@ var ElementProperties = React.createClass({
                   </Text>
                 </TouchableHighlight>
               ),
-              () => <Text style={styles.breadSep}>&#9656;</Text>
+              (i) => (
+                <Text key={'sep-' + i} style={styles.breadSep}>
+                  &#9656;
+                </Text>
+              )
             )}
           </View>
           <View style={styles.row}>

@@ -91,6 +91,11 @@ RCT_EXPORT_MODULE()
   return @[];
 }
 
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return @{@"forceTouchAvailable": @(RCTForceTouchAvailable())};
+}
+
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
 {
   return nil;
@@ -234,10 +239,6 @@ RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 
 RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)
