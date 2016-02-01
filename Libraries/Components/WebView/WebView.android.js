@@ -17,6 +17,7 @@ var StyleSheet = require('StyleSheet');
 var UIManager = require('UIManager');
 var View = require('View');
 
+var deprecatedPropType = require('deprecatedPropType');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
@@ -44,13 +45,28 @@ var WebView = React.createClass({
     onLoadEnd: PropTypes.func,
     onLoadStart: PropTypes.func,
     onError: PropTypes.func,
-    url: PropTypes.string,
-    html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+
+    html: deprecatedPropType(
+      PropTypes.string,
+      'Use the `source` prop instead.'
+    ),
+
+    url: deprecatedPropType(
+      PropTypes.string,
+      'Use the `source` prop instead.'
+    ),
+
+    /**
+     * Used on Android only, provides html or url with optional headers to the WebView.
+     * `{ html: string, uri: string, headers: map<string, string> }`
+     * @platform android
+     */
+    source: PropTypes.object,
 
     /**
      * Used on Android only, JS is enabled by default for WebView on iOS
@@ -127,13 +143,19 @@ var WebView = React.createClass({
       domStorageEnabled = this.props.domStorageEnabledAndroid;
     }
 
+    var source = this.props.source || {};
+    if (this.props.html) {
+      source.html = this.props.html;
+    } else if (this.props.url) {
+      source.uri = this.props.url;
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        url={this.props.url}
-        html={this.props.html}
+        source={source}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={javaScriptEnabled}
