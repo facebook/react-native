@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const resolvePlugins = require('../lib/resolvePlugins');
+var resolvePlugins = require('../lib/resolvePlugins');
 
 module.exports = function(options) {
   // For future internal pipeline usage
