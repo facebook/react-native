@@ -293,6 +293,9 @@ NSInteger kNeverProgressed = -10000;
 
     [self addSubview:_navigationController.view];
     [_navigationController.view addSubview:_dummyView];
+    
+    // TODO: Remove once prop is exposed via prop
+    self.interactivePopGestureEnabled = YES;
   }
   return self;
 }
@@ -330,6 +333,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       _pauseCallback();
     }
   }
+}
+
+- (void)setInteractivePopGestureEnabled:(BOOL)interactivePopGestureEnabled {
+  _interactivePopGestureEnabled = interactivePopGestureEnabled;
+  
+  _navigationController.interactivePopGestureRecognizer.delegate = nil;
+  _navigationController.interactivePopGestureRecognizer.enabled = interactivePopGestureEnabled;
 }
 
 - (void)dealloc
