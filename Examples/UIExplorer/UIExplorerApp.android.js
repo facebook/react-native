@@ -100,7 +100,7 @@ var UIExplorerApp = React.createClass({
     return (
       <View style={styles.container}>
         <StatusBar
-          color="#589c90"
+          backgroundColor="#589c90"
         />
         <ToolbarAndroid
           logo={require('image!launcher_icon')}

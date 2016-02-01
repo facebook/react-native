@@ -36,7 +36,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "StatusBarAndroid";
+    return "StatusBarManager";
   }
 
   @ReactMethod

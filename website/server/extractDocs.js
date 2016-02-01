@@ -208,6 +208,7 @@ var components = [
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
+  '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/Components/Switch/Switch.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',

@@ -17,18 +17,54 @@ const Platform = require('Platform');
 
 const processColor = require('processColor');
 
-if (Platform.OS === 'ios') {
-  var RCTStatusBarManager = require('NativeModules').StatusBarManager;
-} else if (Platform.OS === 'android') {
-  var RCTStatusBarManager = require('NativeModules').StatusBarAndroid;
-}
-
-import type ReactElement from 'ReactElement';
+const StatusBarManager = require('NativeModules').StatusBarManager;
 
 type DefaultProps = {
   animated: boolean;
 };
 
+/**
+ * Merges the prop stack with the default values.
+ */
+function mergePropsStack(propsStack: Array<Object>): Object {
+  return propsStack.reduce((prev, cur) => {
+    return Object.assign(prev, cur);
+  }, {
+    backgroundColor: 'black',
+    barStyle: 'default',
+    translucent: false,
+    hidden: false,
+    networkActivityIndicatorVisible: false,
+  });
+}
+
+/**
+ * Component to control the app status bar.
+ *
+ * ### Usage with Navigator
+ *
+ * It is possible to have multiple `StatusBar` components mounted at the same
+ * time. The props will be merged in the order the `StatusBar` components were
+ * mounted. One use case is to specify status bar styles per route using `Navigator`.
+ *
+ * ```
+ *  <View>
+ *    <StatusBar
+ *      backgroundColor="blue"
+ *      barStyle="light-content"
+ *    />
+ *    <Navigator
+ *      initialRoute={{statusBarHidden: true}}
+ *      renderScene={(route, navigator) =>
+ *        <View>
+ *          <StatusBar hidden={route.statusBarHidden} />
+ *          ...
+ *        </View>
+ *      }
+ *    />
+ *  </View>
+ * ```
+ */
 const StatusBar = React.createClass({
   statics: {
     _propsStack: [],
@@ -41,14 +77,14 @@ const StatusBar = React.createClass({
     hidden: React.PropTypes.bool,
     /**
      * If the transition between status bar property changes should be animated.
-     * Supported for color, barStyle and hidden.
+     * Supported for backgroundColor, barStyle and hidden.
      */
     animated: React.PropTypes.bool,
     /**
-     * The color of the status bar.
+     * The background color of the status bar.
      * @platform android
      */
-    color: ColorPropType,
+    backgroundColor: ColorPropType,
     /**
      * If the status bar is translucent.
      * When translucent is set to true, the app will draw under the status bar.
@@ -72,11 +108,22 @@ const StatusBar = React.createClass({
      * @platform ios
      */
     networkActivityIndicatorVisible: React.PropTypes.bool,
+    /**
+     * The transition effect when showing and hiding the status bar using the `hidden`
+     * prop. Defaults to 'fade'.
+     *
+     * @platform ios
+     */
+    showHideTransition: React.PropTypes.oneOf([
+      'fade',
+      'slide',
+    ]),
   },
 
   getDefaultProps(): DefaultProps {
     return {
       animated: false,
+      showHideTransition: 'fade',
     };
   },
 
@@ -86,7 +133,7 @@ const StatusBar = React.createClass({
     // stack. This allows having multiple StatusBar components and the one that is
     // added last or is deeper in the view hierachy will have priority.
     StatusBar._propsStack.push(this.props);
-    this._updatePropsStack(this.props.animated);
+    this._updatePropsStack();
   },
 
   componentWillUnmount() {
@@ -95,58 +142,46 @@ const StatusBar = React.createClass({
     const index = StatusBar._propsStack.indexOf(this.props);
     StatusBar._propsStack.splice(index, 1);
 
-    this._updatePropsStack(this.props.animated);
+    this._updatePropsStack();
   },
 
   componentDidUpdate(oldProps: Object) {
     const index = StatusBar._propsStack.indexOf(oldProps);
     StatusBar._propsStack[index] = this.props;
 
-    this._updatePropsStack(this.props.animated);
-  },
-
-  /**
-   * Merges the prop stack with the default values.
-   */
-  _mergePropsStack(propsStack: Array<Object>): Object {
-    return propsStack.reduce((prev, cur) => {
-      return Object.assign(prev, cur);
-    }, {
-      color: 'black',
-      barStyle: 'default',
-      translucent: false,
-      hidden: false,
-      networkActivityIndicatorVisible: false,
-    });
+    this._updatePropsStack();
   },
 
   /**
    * Updates the native status bar with the props from the stack.
    */
-  _updatePropsStack(animated: boolean = false) {
-    const props = this._mergePropsStack(StatusBar._propsStack);
+  _updatePropsStack() {
+    const mergedProps = mergePropsStack(StatusBar._propsStack);
 
     if (Platform.OS === 'ios') {
-      if (props.barStyle !== undefined) {
-        RCTStatusBarManager.setStyle(props.barStyle, animated);
+      if (mergedProps.barStyle !== undefined) {
+        StatusBarManager.setStyle(mergedProps.barStyle, this.props.animated);
       }
-      if (props.hidden !== undefined) {
-        RCTStatusBarManager.setHidden(props.hidden, animated ? 'fade' : 'none');
+      if (mergedProps.hidden !== undefined) {
+        StatusBarManager.setHidden(
+          mergedProps.hidden,
+          this.props.animated ? this.props.showHideTransition : 'none'
+        );
       }
-      if (props.networkActivityIndicatorVisible !== undefined) {
-        RCTStatusBarManager.setNetworkActivityIndicatorVisible(
-          props.networkActivityIndicatorVisible
+      if (mergedProps.networkActivityIndicatorVisible !== undefined) {
+        StatusBarManager.setNetworkActivityIndicatorVisible(
+          mergedProps.networkActivityIndicatorVisible
         );
       }
     } else if (Platform.OS === 'android') {
-      if (props.color !== undefined) {
-        RCTStatusBarManager.setColor(processColor(props.color), animated);
+      if (mergedProps.backgroundColor !== undefined) {
+        StatusBarManager.setColor(processColor(mergedProps.backgroundColor), this.props.animated);
       }
-      if (props.hidden !== undefined) {
-        RCTStatusBarManager.setHidden(props.hidden);
+      if (mergedProps.hidden !== undefined) {
+        StatusBarManager.setHidden(mergedProps.hidden);
       }
-      if (props.translucent !== undefined) {
-        RCTStatusBarManager.setTranslucent(props.translucent);
+      if (mergedProps.translucent !== undefined) {
+        StatusBarManager.setTranslucent(mergedProps.translucent);
       }
     }
   },
