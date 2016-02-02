@@ -550,6 +550,7 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnSuspend()
         {
+            _operationsQueue.OnSuspend();
         }
 
         /// <summary>
@@ -557,6 +558,7 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnResume()
         {
+            _operationsQueue.OnResume();
         }
 
         /// <summary>
@@ -564,6 +566,7 @@ namespace ReactNative.UIManager
         /// </summary>
         public void OnShutdown()
         {
+            _operationsQueue.OnShutdown();
         }
 
         private void HandleCreateView(ReactShadowNode cssNode, int rootViewTag, ReactStylesDiffMap styles)
