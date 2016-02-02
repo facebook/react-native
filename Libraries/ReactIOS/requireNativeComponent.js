@@ -121,6 +121,7 @@ var TypeToProcessorMap = {
   RCTImageSource: resolveAssetSource,
   // Android Types
   Color: processColor,
+  ColorArray: processColorArray,
 };
 
 module.exports = requireNativeComponent;

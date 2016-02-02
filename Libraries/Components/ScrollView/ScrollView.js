@@ -32,7 +32,6 @@ var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
-var processColor = require('processColor');
 var processDecelerationRate = require('processDecelerationRate');
 var PropTypes = React.PropTypes;
 
@@ -507,16 +506,12 @@ var ScrollView = React.createClass({
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
         // Since the ScrollView is wrapped add the style props to the
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
-        var refreshProps = refreshControl.props;
-        return (
-          <AndroidSwipeRefreshLayout
-            {...refreshProps}
-            colors={refreshProps.colors && refreshProps.colors.map(processColor)}
-            style={props.style}>
-            <ScrollViewClass {...props} style={styles.base} ref={SCROLLVIEW}>
-              {contentContainer}
-            </ScrollViewClass>
-          </AndroidSwipeRefreshLayout>
+        return React.cloneElement(
+          refreshControl,
+          {style: this.props.style},
+          <ScrollViewClass {...props} style={styles.base} ref={SCROLLVIEW}>
+            {contentContainer}
+          </ScrollViewClass>
         );
       }
     }
@@ -574,7 +569,6 @@ if (Platform.OS === 'android') {
     'AndroidHorizontalScrollView',
     ScrollView
   );
-  var AndroidSwipeRefreshLayout = requireNativeComponent('AndroidSwipeRefreshLayout');
 } else if (Platform.OS === 'ios') {
   var RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);
 }

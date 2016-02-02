@@ -16,7 +16,6 @@ var RefreshLayoutConsts = require('UIManager').AndroidSwipeRefreshLayout.Constan
 var View = require('View');
 
 var onlyChild = require('onlyChild');
-var processColor = require('processColor');
 var requireNativeComponent = require('requireNativeComponent');
 
 var NATIVE_REF = 'native_swiperefreshlayout';
@@ -68,7 +67,7 @@ var PullToRefreshViewAndroid = React.createClass({
   render: function() {
     return (
       <NativePullToRefresh
-        colors={this.props.colors && this.props.colors.map(processColor)}
+        colors={this.props.colors}
         enabled={this.props.enabled}
         onRefresh={this._onRefresh}
         progressBackgroundColor={this.props.progressBackgroundColor}
