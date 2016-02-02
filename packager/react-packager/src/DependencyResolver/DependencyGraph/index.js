@@ -158,6 +158,10 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryFile);
   }
 
+  getAllModules() {
+    return this.load().then(() => this._moduleCache.getAllModules());
+  }
+
   getDependencies(entryPath, platform, recursive = true) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);

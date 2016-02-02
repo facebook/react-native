@@ -53,7 +53,7 @@ class Cache {
 
     var recordP = this.has(filepath, field)
       ? this._data[filepath].data[field]
-      : this._set(filepath, field, loaderCb(filepath));
+      : this.set(filepath, field, loaderCb(filepath));
 
     return recordP.then(record => record);
   }
@@ -77,7 +77,7 @@ class Cache {
       (field == null || Object.prototype.hasOwnProperty.call(this._data[filepath].data, field));
   }
 
-  _set(filepath, field, loaderPromise) {
+  set(filepath, field, loaderPromise) {
     let record = this._data[filepath];
     if (!record) {
       record = Object.create(null);

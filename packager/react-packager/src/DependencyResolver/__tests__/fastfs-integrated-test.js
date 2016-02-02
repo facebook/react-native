@@ -8,7 +8,8 @@
  */
 'use strict';
 
-jest.autoMockOff();
+jest.autoMockOff()
+  .dontMock('graceful-fs');
 
 const Fastfs = require('../fastfs');
 

@@ -41,6 +41,10 @@ class ModuleCache {
     return this._moduleCache[filePath];
   }
 
+  getAllModules() {
+    return this._moduleCache;
+  }
+
   getAssetModule(filePath) {
     filePath = path.resolve(filePath);
     if (!this._moduleCache[filePath]) {
