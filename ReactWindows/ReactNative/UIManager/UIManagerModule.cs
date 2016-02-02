@@ -97,17 +97,16 @@ namespace ReactNative.UIManager
             var tag = _nextRootTag;
             _nextRootTag += RootViewTagIncrement;
 
-            // TODO: round?
-            var width = (int)Math.Floor(rootView.ActualWidth);
-            var height = (int)Math.Floor(rootView.ActualHeight);
+            var width = (float)rootView.ActualWidth;
+            var height = (float)rootView.ActualHeight;
 
             var context = new ThemedReactContext(Context);
             _uiImplementation.RegisterRootView(rootView, tag, width, height, context);
 
             rootView.SetOnSizeChangedListener((sender, args) =>
             {
-                var newWidth = (int)Math.Floor(args.NewSize.Width); // TODO: round?
-                var newHeight = (int)Math.Floor(args.NewSize.Height); // TODO: round?
+                var newWidth = (float)args.NewSize.Width;
+                var newHeight = (float)args.NewSize.Height;
 
                 Context.RunOnDispatcherQueueThread(() =>
                 {
