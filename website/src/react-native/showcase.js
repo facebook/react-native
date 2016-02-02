@@ -149,8 +149,14 @@ var apps = [
     author: 'CANDDi LTD.',
   },
   {
-    name: 'CBS Sports Franchise Football',
+    name: 'CaratLane',
     icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/7b/0c/a0/7b0ca007-885a-7cfc-9fa2-2ec4394c2ecc/icon175x175.png',
+    link: 'https://play.google.com/store/apps/details?id=com.caratlane.android&hl=en',
+    author: 'CaratLane',
+  },
+  {
+    name: 'CBS Sports Franchise Football',
+    icon: 'https://lh3.googleusercontent.com/wEN-Vvpbnw_n89dbXPxWkNnXB7sALKBKvpX_hbzrWbuC4tFi5tVkWHq8k5TAvdbf5UQ=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.cbssports.fantasy.franchisefootball2015',
     author: 'CBS Sports',
   },
