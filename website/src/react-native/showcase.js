@@ -136,6 +136,12 @@ var apps = [
     author: 'Alex Duckmanton',
   },
   {
+    name: 'Bhagavad Gita Lite',
+    icon: 'https://s3-us-west-2.amazonaws.com/bhagavadgitaapp/gita-free.png',
+    link: 'https://itunes.apple.com/us/app/bhagavad-gita-lite/id1071711190?ls=1&mt=8',
+    author: 'Tom Goldenberg & Nick Brown'
+  },
+  {
     name: 'Bionic eStore',
     icon: 'http://a5.mzstatic.com/us/r30/Purple7/v4/c1/9a/3f/c19a3f82-ecc3-d60b-f983-04acc203705f/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/bionic-estore/id994537615?mt=8',
@@ -558,12 +564,6 @@ var apps = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.plasticaromantica.utayomin',
     author: 'Takayuki IMAI'
   },
-  {
-    name: 'Bhagavad Gita Lite',
-    icon: 'https://s3-us-west-2.amazonaws.com/bhagavadgitaapp/gita-free.png',
-    link: 'https://itunes.apple.com/us/app/bhagavad-gita-lite/id1071711190?ls=1&mt=8',
-    author: 'Tom Goldenberg & Nick Brown'
-  }
 ];
 
 var AppList = React.createClass({
