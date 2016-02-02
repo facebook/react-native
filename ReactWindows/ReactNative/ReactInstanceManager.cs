@@ -2,7 +2,7 @@
 using ReactNative.Bridge.Queue;
 using ReactNative.Common;
 using ReactNative.DevSupport;
-using ReactNative.Hosting.Bridge;
+using ReactNative.Chakra.Executor;
 using ReactNative.Modules.Core;
 using ReactNative.Tracing;
 using ReactNative.UIManager;
