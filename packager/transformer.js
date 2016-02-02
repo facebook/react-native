@@ -14,10 +14,10 @@ const babel = require('babel-core');
 const externalHelpersPlugin = require('babel-plugin-external-helpers');
 const fs = require('fs');
 const makeHMRConfig = require('babel-preset-react-native/configs/hmr');
+const resolvePlugins = require('babel-preset-react-native/lib/resolvePlugins');
 const inlineRequiresPlugin = require('fbjs-scripts/babel-6/inline-requires');
 const json5 = require('json5');
 const path = require('path');
-const ReactPackager = require('./react-packager');
 
 /**
  * Return a memoized function that checks for the existence of a
@@ -32,7 +32,7 @@ const getBabelRC = (function() {
       return babelRC;
     }
 
-    babelRC = { plugins: [] }; // empty babelrc for merging
+    babelRC = { plugins: [] }; // empty babelrc
 
     // Let's look for the .babelrc in the first project root.
     // In the future let's look into adding a command line option to specify
@@ -54,6 +54,10 @@ const getBabelRC = (function() {
         fs.readFileSync(
           path.resolve(__dirname, 'react-packager', 'rn-babelrc.json'))
         );
+
+      // Require the babel-preset's listed in the default babel config
+      babelRC.presets = babelRC.presets.map((preset) => require('babel-preset-' + preset));
+      babelRC.plugins = resolvePlugins(babelRC.plugins);
     }
 
     return babelRC;
