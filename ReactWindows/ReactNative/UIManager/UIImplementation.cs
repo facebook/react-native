@@ -72,8 +72,8 @@ namespace ReactNative.UIManager
         public void RegisterRootView(
             SizeMonitoringCanvas rootView,
             int tag,
-            int width,
-            int height,
+            float width,
+            float height,
             ThemedReactContext context)
         {
             var rootCssNode = CreateRootShadowNode();
@@ -107,8 +107,8 @@ namespace ReactNative.UIManager
         /// <param name="eventDispatcher">The event dispatcher.</param>
         public void UpdateRootNodeSize(
             int rootViewTag,
-            int newWidth,
-            int newHeight,
+            float newWidth,
+            float newHeight,
             EventDispatcher eventDispatcher)
         {
             var rootCssNode = _shadowNodeRegistry.GetNode(rootViewTag);
