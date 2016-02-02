@@ -313,12 +313,6 @@ namespace ReactNative.UIManager
             }
 
             var rootView = _tagsToViews[rootViewTag];
-            var sizeMonitoringPanel = rootView as SizeMonitoringCanvas;
-            if (sizeMonitoringPanel != null)
-            {
-                sizeMonitoringPanel.RemoveSizeChanged();
-            }
-
             DropView(rootView);
             _rootTags.Remove(rootViewTag);
         }

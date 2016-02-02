@@ -12,6 +12,9 @@ using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.Text
 {
+    /// <summary>
+    /// The shadow node implementation for text views.
+    /// </summary>
     public class ReactTextShadowNode : LayoutShadowNode
     {
         private const string INLINE_IMAGE_PLACEHOLDER = "I";
@@ -38,6 +41,12 @@ namespace ReactNative.Views.Text
 
         private readonly bool _isVirtual;
 
+        /// <summary>
+        /// Instantiates the <see cref="ReactTextShadowNode"/>.
+        /// </summary>
+        /// <param name="isVirtual">
+        /// A flag signaling whether or not the shadow node is virtual.
+        /// </param>
         public ReactTextShadowNode(bool isVirtual)
         {
             _isVirtual = isVirtual;
@@ -48,6 +57,12 @@ namespace ReactNative.Views.Text
             }
         }
 
+        /// <summary>
+        /// Flag signaling if the given node is virtual.
+        /// </summary>
+        /// <remarks>
+        /// All text nodes except the root text node are virtual.
+        /// </remarks>
         public override bool IsVirtual
         {
             get
@@ -56,6 +71,12 @@ namespace ReactNative.Views.Text
             }
         }
 
+        /// <summary>
+        /// Flag signaling if the given node is a root node for virtual nodes.
+        /// </summary>
+        /// <remarks>
+        /// The root text node is a virtual anchor.
+        /// </remarks>
         public override bool IsVirtualAnchor
         {
             get
@@ -64,6 +85,10 @@ namespace ReactNative.Views.Text
             }
         }
 
+        /// <summary>
+        /// Called once per batch of updates by the <see cref="UIManagerModule"/>
+        /// if the text node is dirty.
+        /// </summary>
         public override void OnBeforeLayout()
         {
             // We need to perform this operation on the dispatcher in UWP as 
@@ -79,16 +104,10 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
-        protected override void MarkUpdated()
-        {
-            base.MarkUpdated();
-
-            if (!_isVirtual)
-            {
-                dirty();
-            }
-        }
-
+        /// <summary>
+        /// Called to aggregate all the changes to the virtual text nodes.
+        /// </summary>
+        /// <param name="uiViewOperationQueue">The UI operation queue.</param>
         public override void OnCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue)
         {
             if (_isVirtual)
@@ -103,6 +122,10 @@ namespace ReactNative.Views.Text
             }
         }
 
+        /// <summary>
+        /// Sets the text for the node.
+        /// </summary>
+        /// <param name="text">The text.</param>
         [ReactProperty("text")]
         public void SetText(string text)
         {
@@ -110,6 +133,10 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
+        /// <summary>
+        /// Sets the number of lines for the node.
+        /// </summary>
+        /// <param name="numberOfLines">The number of lines.</param>
         [ReactProperty(ViewProperties.NumberOfLines, DefaultInteger = UNSET)]
         public void SetNumberOfLines(int numberOfLines)
         {
@@ -117,6 +144,10 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
+        /// <summary>
+        /// Sets the line height for the node.
+        /// </summary>
+        /// <param name="lineHeight">The line height.</param>
         [ReactProperty(ViewProperties.LineHeight, DefaultInteger = UNSET)]
         public void SetLineHeight(int lineHeight)
         {
@@ -124,6 +155,10 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
+        /// <summary>
+        /// Sets the font size for the node.
+        /// </summary>
+        /// <param name="fontSize">The font size.</param>
         [ReactProperty(ViewProperties.FontSize, DefaultDouble = UNSET)]
         public void SetFontSize(double fontSize)
         {
@@ -131,7 +166,11 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
-        [ReactProperty(ViewProperties.Color)]
+        /// <summary>
+        /// Sets the font color for the node.
+        /// </summary>
+        /// <param name="color">The masked color value.</param>
+        [ReactProperty(ViewProperties.Color, CustomType = "Color")]
         public void SetColor(uint? color)
         {
             _isColorSet = color.HasValue;
@@ -143,7 +182,11 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
-        [ReactProperty(ViewProperties.BackgroundColor)]
+        /// <summary>
+        /// Sets the background color for the node.
+        /// </summary>
+        /// <param name="color">The masked color value.</param>
+        [ReactProperty(ViewProperties.BackgroundColor, CustomType = "Color")]
         public void SetBackgroundColor(uint? color)
         {
             if (!IsVirtualAnchor)
@@ -158,6 +201,10 @@ namespace ReactNative.Views.Text
             }
         }
 
+        /// <summary>
+        /// Sets the font family for the node.
+        /// </summary>
+        /// <param name="fontFamily">The font family.</param>
         [ReactProperty(ViewProperties.FontFamily)]
         public void SetFontFamily(string fontFamily)
         {
@@ -165,6 +212,10 @@ namespace ReactNative.Views.Text
             MarkUpdated();
         }
 
+        /// <summary>
+        /// Sets the font weight for the node.
+        /// </summary>
+        /// <param name="fontWeightString">The font weight string.</param>
         [ReactProperty(ViewProperties.FontWeight)]
         public void SetFontWeight(string fontWeightString)
         {
@@ -178,6 +229,10 @@ namespace ReactNative.Views.Text
             }
         }
 
+        /// <summary>
+        /// Sets the font style for the node.
+        /// </summary>
+        /// <param name="fontStyleString">The font style string.</param>
         [ReactProperty(ViewProperties.FontStyle)]
         public void SetFontStyle(string fontStyleString)
         {
@@ -186,6 +241,19 @@ namespace ReactNative.Views.Text
             {
                 _fontStyle = fontStyle;
                 MarkUpdated();
+            }
+        }
+
+        /// <summary>
+        /// Marks a node as dirty.
+        /// </summary>
+        protected override void MarkUpdated()
+        {
+            base.MarkUpdated();
+
+            if (!_isVirtual)
+            {
+                dirty();
             }
         }
 

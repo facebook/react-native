@@ -9,6 +9,9 @@ using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.View
 {
+    /// <summary>
+    /// View manager for React view instances.
+    /// </summary>
     public class ReactViewManager : ViewParentManager
     {
         private const string ReactClass = ViewProperties.ViewClassName;
@@ -48,31 +51,51 @@ namespace ReactNative.Views.View
         /// <param name="index">The index.</param>
         public override void AddView(FrameworkElement parent, FrameworkElement child, int index)
         {
-            var panel = GetPanel(parent);
+            var panel = GetInstance(parent);
             panel.Children.Insert(index, child);
         }
 
+        /// <summary>
+        /// Gets the number of children in the view parent.
+        /// </summary>
+        /// <param name="parent">The view parent.</param>
+        /// <returns>The number of children.</returns>
         public override int GetChildCount(FrameworkElement parent)
         {
-            var panel = GetPanel(parent);
+            var panel = GetInstance(parent);
             return panel.Children.Count;
         }
 
+        /// <summary>
+        /// Gets the child at the given index.
+        /// </summary>
+        /// <param name="parent">The parent view.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>The child view.</returns>
         public override FrameworkElement GetChildAt(FrameworkElement parent, int index)
         {
-            var panel = GetPanel(parent);
+            var panel = GetInstance(parent);
             return (FrameworkElement)panel.Children[index];
         }
 
+        /// <summary>
+        /// Removes the child at the given index.
+        /// </summary>
+        /// <param name="parent">The view parent.</param>
+        /// <param name="index">The index.</param>
         public override void RemoveChildAt(FrameworkElement parent, int index)
         {
-            var panel = GetPanel(parent);
+            var panel = GetInstance(parent);
             panel.Children.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Removes all children from the view parent.
+        /// </summary>
+        /// <param name="parent">The view parent.</param>
         public override void RemoveAllChildren(FrameworkElement parent)
         {
-            var panel = GetPanel(parent);
+            var panel = GetInstance(parent);
             panel.Children.Clear();
         }
 
@@ -87,7 +110,7 @@ namespace ReactNative.Views.View
         /// <param name="args">Optional arguments for the command.</param>
         public override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
         {
-            var panel = GetPanel(view);
+            var panel = GetInstance(view);
             if (args.Count != 1)
             {
                 throw new ArgumentException("Receive commands for the ReactViewModel currently only supports the setPressed command", nameof(args));
@@ -188,7 +211,7 @@ namespace ReactNative.Views.View
             return new BorderedContentControl(new ReactCanvas());
         }
 
-        private ReactCanvas GetPanel(FrameworkElement element)
+        private ReactCanvas GetInstance(FrameworkElement element)
         {
             return GetPanel((BorderedContentControl)element);
         }

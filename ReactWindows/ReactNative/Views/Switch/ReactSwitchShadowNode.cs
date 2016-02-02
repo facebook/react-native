@@ -19,6 +19,9 @@ namespace ReactNative.Views.Switch
         private static MeasureOutput MeasureSwitch(CSSNode node, float width, float height)
         {
             // TODO: figure out how to properly measure the switch.
+            // We are currently blocked until we switch to a UWP-specific React
+            // JavaScript library as the iOS library we currently use specifies
+            // an exact width and height for switch nodes.
             return new MeasureOutput(56, 40);
         }
     }

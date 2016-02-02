@@ -17,8 +17,11 @@ namespace ReactNative.UIManager.Events
         private int _viewTag;
         private TimeSpan _timestamp;
 
-        protected Event() { }
-
+        /// <summary>
+        /// Base constructor for <see cref="Event"/>.
+        /// </summary>
+        /// <param name="viewTag">The view tag.</param>
+        /// <param name="timestamp">The event timestamp.</param>
         protected Event(int viewTag, TimeSpan timestamp)
         {
             Init(viewTag, timestamp);
