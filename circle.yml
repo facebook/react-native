@@ -44,7 +44,7 @@ test:
     - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
-    # temp, we can't run instrumentation tests yet
+    # temp, we can not run instrumentation tests yet
     - buck/bin/buck build ReactAndroid/src/androidTest/java/com/facebook/react/tests
 
     # unit tests
