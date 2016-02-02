@@ -70,7 +70,7 @@ public class ReactEditText extends EditText {
   private @Nullable SelectionWatcher mSelectionWatcher;
   private final InternalKeyListener mKeyListener;
 
-  private static KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
+  private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
 
   public ReactEditText(Context context) {
     super(context);
