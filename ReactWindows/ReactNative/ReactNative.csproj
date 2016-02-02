@@ -229,6 +229,7 @@
     <Compile Include="Touch\IOnInterceptTouchEventListener.cs" />
     <Compile Include="Animation\ReactAnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
+    <Compile Include="UIManager\MeasureAssertions.cs" />
     <Compile Include="UIManager\ReactStylesDiffMap.cs" />
     <Compile Include="UIManager\ReactStylesDiffMapExtensions.cs" />
     <Compile Include="UIManager\Events\Event.cs" />

@@ -40,7 +40,8 @@ namespace ReactNative.UIManager
                 }
                 else
                 {
-                    return ((Border)base.Content).Child;
+                    var customBorder = EnsureBorder();
+                    return customBorder.Child;
                 }
             }
         }
@@ -93,12 +94,13 @@ namespace ReactNative.UIManager
                 return (Border)base.Content;
             }
 
-            _hasCustomBorder = true;
             var inner = Content;
+            _hasCustomBorder = true;
             base.Content = null;
             var customBorder = new Border();
             customBorder.BorderThickness = BorderThickness;
             customBorder.BorderBrush = BorderBrush;
+            customBorder.Child = inner;
             base.Content = customBorder;
             return customBorder;
         }
