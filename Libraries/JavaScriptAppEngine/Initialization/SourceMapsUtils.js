@@ -34,11 +34,18 @@ var SourceMapsUtils = {
       .then(map => new SourceMapConsumer(map));
   },
 
-  extractSourceMapURL(data: ({url:string, text:string})): ?string {
+  extractSourceMapURL(data: ({url?:string, text?:string, fullSourceMappingURL?:string})): ?string {
     const url = data.url;
     const text = data.text;
+    const fullSourceMappingURL = data.fullSourceMappingURL;
+    if (fullSourceMappingURL) {
+      return fullSourceMappingURL;
+    }
     var mapURL = SourceMapURL.getFrom(text);
     if (!mapURL) {
+      return null;
+    }
+    if (!url) {
       return null;
     }
     var baseURLs = url.match(/(.+:\/\/.*?)\//);
