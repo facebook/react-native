@@ -25,5 +25,16 @@
         {
             return new SizeMonitoringCanvas();
         }
+
+        /// <summary>
+        /// Called when view is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="RootViewManager"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The view.</param>
+        protected override void OnDropViewInstance(ThemedReactContext reactContext, SizeMonitoringCanvas view)
+        {
+            view.RemoveSizeChanged();
+        }
     }
 }

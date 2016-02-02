@@ -4,6 +4,9 @@ using Map = System.Collections.Generic.Dictionary<string, object>;
 
 namespace ReactNative.UIManager
 {
+    /// <summary>
+    /// Native module to allow JavaScript to create and update native views.
+    /// </summary>
     public partial class UIManagerModule
     {
         private const string CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
@@ -12,8 +15,14 @@ namespace ReactNative.UIManager
         public const string ACTION_DISMISSED = "dismissed";
         public const string ACTION_ITEM_SELECTED = "itemSelected";
 
-        public static Dictionary<string, object> CreateConstants(
-            IReadOnlyList<ViewManager> viewManagers)
+        /// <summary>
+        /// Create the declared constants for the module.
+        /// </summary>
+        /// <param name="viewManagers">
+        /// The view managers exported by the module.
+        /// </param>
+        /// <returns>The constants map.</returns>
+        public static Dictionary<string, object> CreateConstants(IReadOnlyList<ViewManager> viewManagers)
         {
             var constants = GetConstants();
             var bubblingEventTypesConstants = GetBubblingEventTypeConstants();
@@ -63,7 +72,7 @@ namespace ReactNative.UIManager
             return constants;
         }
 
-        public static IDictionary<string, object> GetBubblingEventTypeConstants()
+        private static IDictionary<string, object> GetBubblingEventTypeConstants()
         {
             return new Map
             {
@@ -140,7 +149,7 @@ namespace ReactNative.UIManager
             };
         }
 
-        public static Dictionary<string, object> GetDirectEventTypeConstants()
+        private static Dictionary<string, object> GetDirectEventTypeConstants()
         {
             return new Map
             {
@@ -182,7 +191,7 @@ namespace ReactNative.UIManager
             };
         }
 
-        public static Dictionary<string, object> GetConstants()
+        private static Dictionary<string, object> GetConstants()
         {
             return new Map
             {

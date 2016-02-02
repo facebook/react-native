@@ -1,16 +1,21 @@
 ﻿using ReactNative.Bridge;
-using ReactNative.UIManager;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager
 {
     /// <summary>
-    /// Provides UIImplementation to use in <see cref="UIManagerModule" />
+    /// Provides <see cref="UIImplementation"/> to use in the 
+    /// <see cref="UIManagerModule"/>.
     /// </summary>
     public class UIImplementationProvider
     {
-        public UIImplementation CreateUIImplementation(
+        /// <summary>
+        /// Creates the <see cref="UIImplementation"/> instance.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="viewManagers">The view managers.</param>
+        /// <returns></returns>
+        public UIImplementation Create(
             ReactContext reactContext, 
             IReadOnlyList<ViewManager> viewManagers)
         {
