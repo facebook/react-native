@@ -111,6 +111,12 @@ var featured = [
     author: 'Townske PTY LTD',
   },
   {
+	name: 'Caratlane',
+	icon: 'https://lh3.googleusercontent.com/wEN-Vvpbnw_n89dbXPxWkNnXB7sALKBKvpX_hbzrWbuC4tFi5tVkWHq8k5TAvdbf5UQ=w300-rw',
+	linkPlayStore: 'https://play.google.com/store/apps/details?id=com.caratlane.android&hl=en',
+	author: 'Caratlane',
+  },
+  {
     name: 'Tucci',
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/c0/0c/95/c00c95ce-4cc5-e516-db77-5c5164b89189/icon175x175.jpeg',
     link: 'https://itunes.apple.com/app/apple-store/id1039661754?mt=8',
