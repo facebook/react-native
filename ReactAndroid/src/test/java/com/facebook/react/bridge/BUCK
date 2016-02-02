@@ -38,6 +38,7 @@ robolectric3_test(
     react_native_dep('third-party/java/jackson:jackson'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),
     react_native_dep('libraries/fbcore/src/test/java/com/facebook/powermock:powermock'),
+    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
   ],
   visibility = [
     'PUBLIC'
