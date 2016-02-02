@@ -102,8 +102,8 @@
     <Compile Include="Bridge\NativeModuleBaseTests.cs" />
     <Compile Include="Bridge\Queue\MessageQueueThreadTests.cs" />
     <Compile Include="Bridge\ReactContextNativeModuleBaseTests.cs" />
-    <Compile Include="Hosting\Bridge\ChakraJavaScriptExecutorTests.cs" />
-    <Compile Include="Hosting\Bridge\ReactBridgeTests.cs" />
+    <Compile Include="Chakra\Executor\ChakraJavaScriptExecutorTests.cs" />
+    <Compile Include="Bridge\ReactBridgeTests.cs" />
     <Compile Include="Internal\AssertEx.cs" />
     <Compile Include="Bridge\NativeModuleRegistryTests.cs" />
     <Compile Include="Internal\Constants\DictionaryHelpers.cs" />

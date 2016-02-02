@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using ReactNative.Bridge.Queue;
-using ReactNative.Hosting.Bridge;
+using ReactNative.Chakra.Executor;
 using System;
 using System.IO;
 using System.Threading.Tasks;
