@@ -557,6 +557,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/jp/app/minnano-duan-ge-tou-gaokomyuniti/id675671254?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.plasticaromantica.utayomin',
     author: 'Takayuki IMAI'
+  },
+  {
+    name: 'Bhagavad Gita Lite',
+    icon: 'https://s3-us-west-2.amazonaws.com/bhagavadgitaapp/gita-free.png',
+    link: 'https://itunes.apple.com/us/app/bhagavad-gita-lite/id1071711190?ls=1&mt=8',
+    author: 'Tom Goldenberg & Nick Brown'
   }
 ];
 
