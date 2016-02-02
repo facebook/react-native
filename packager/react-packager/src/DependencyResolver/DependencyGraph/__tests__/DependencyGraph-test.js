@@ -21,8 +21,8 @@ const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 describe('DependencyGraph', function() {
   let defaults;
 
-  function getOrderedDependenciesAsJSON(dgraph, entry, platform) {
-    return dgraph.getDependencies(entry, platform)
+  function getOrderedDependenciesAsJSON(dgraph, entry, platform, recursive = true) {
+    return dgraph.getDependencies(entry, platform, recursive)
       .then(response => response.finalize())
       .then(({ dependencies }) => Promise.all(dependencies.map(dep => Promise.all([
         dep.getName(),
@@ -89,6 +89,12 @@ describe('DependencyGraph', function() {
             '/**',
             ' * @providesModule a',
             ' */',
+            'require("b")',
+          ].join('\n'),
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
           ].join('\n'),
         },
       });
@@ -114,6 +120,17 @@ describe('DependencyGraph', function() {
             {
               id: 'a',
               path: '/root/a.js',
+              dependencies: ['b'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+              resolveDependency: undefined,
+            },
+            {
+              id: 'b',
+              path: '/root/b.js',
               dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,
@@ -121,6 +138,61 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               resolution: undefined,
               resolveDependency: undefined,
+            },
+          ]);
+      });
+    });
+
+    pit('should get shallow dependencies', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("a")',
+          ].join('\n'),
+          'a.js': [
+            '/**',
+            ' * @providesModule a',
+            ' */',
+            'require("b")',
+          ].join('\n'),
+          'b.js': [
+            '/**',
+            ' * @providesModule b',
+            ' */',
+          ].join('\n'),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js', null, false).then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: 'index',
+              path: '/root/index.js',
+              dependencies: ['a'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'a',
+              path: '/root/a.js',
+              dependencies: ['b'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
             },
           ]);
       });

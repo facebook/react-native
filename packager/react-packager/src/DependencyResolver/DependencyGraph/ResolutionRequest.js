@@ -110,8 +110,8 @@ class ResolutionRequest {
       const visited = Object.create(null);
       visited[entry.hash()] = true;
 
+      response.pushDependency(entry);
       const collect = (mod) => {
-        response.pushDependency(mod);
         return mod.getDependencies().then(
           depNames => Promise.all(
             depNames.map(name => this.resolveDependency(mod, name))
@@ -163,6 +163,7 @@ class ResolutionRequest {
             p = p.then(() => {
               if (!visited[modDep.hash()]) {
                 visited[modDep.hash()] = true;
+                response.pushDependency(modDep);
                 if (recursive) {
                   return collect(modDep);
                 }
