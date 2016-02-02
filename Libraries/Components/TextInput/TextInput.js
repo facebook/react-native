@@ -525,6 +525,10 @@ var TextInput = React.createClass({
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.focus();
+    }
   },
 
   _onPress: function(event: Event) {
@@ -564,6 +568,10 @@ var TextInput = React.createClass({
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.blur();
     }
   },
 
