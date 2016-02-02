@@ -69,6 +69,104 @@ describe('Module', () => {
     fastfs.build().then(done);
   });
 
+  describe('Module ID', () => {
+    const moduleId = 'arbitraryModule';
+    const source =
+    `/**
+       * @providesModule ${moduleId}
+       */
+    `;
+
+    let module;
+    beforeEach(() => {
+      module = createModule();
+    });
+
+    describe('@providesModule annotations', () => {
+      beforeEach(() => {
+        mockIndexFile(source);
+      });
+
+      pit('extracts the module name from the header', () =>
+        module.getName().then(name => expect(name).toEqual(moduleId))
+      );
+
+      pit('identifies the module as haste module', () =>
+        module.isHaste().then(isHaste => expect(isHaste).toBe(true))
+      );
+
+      pit('does not transform the file in order to access the name', () => {
+        const transformCode =
+          jest.genMockFn().mockReturnValue(Promise.resolve());
+        return createModule({transformCode}).getName()
+          .then(() => expect(transformCode).not.toBeCalled());
+      });
+
+      pit('does not transform the file in order to access the haste status', () => {
+        const transformCode =
+          jest.genMockFn().mockReturnValue(Promise.resolve());
+        return createModule({transformCode}).isHaste()
+          .then(() => expect(transformCode).not.toBeCalled());
+      });
+    });
+
+    describe('@provides annotations', () => {
+      beforeEach(() => {
+        mockIndexFile(source.replace(/@providesModule/, '@provides'));
+      });
+
+      pit('extracts the module name from the header if it has a @provides annotation', () =>
+        module.getName().then(name => expect(name).toEqual(moduleId))
+      );
+
+      pit('identifies the module as haste module', () =>
+        module.isHaste().then(isHaste => expect(isHaste).toBe(true))
+      );
+
+      pit('does not transform the file in order to access the name', () => {
+        const transformCode =
+          jest.genMockFn().mockReturnValue(Promise.resolve());
+        return createModule({transformCode}).getName()
+          .then(() => expect(transformCode).not.toBeCalled());
+      });
+
+      pit('does not transform the file in order to access the haste status', () => {
+        const transformCode =
+          jest.genMockFn().mockReturnValue(Promise.resolve());
+        return createModule({transformCode}).isHaste()
+          .then(() => expect(transformCode).not.toBeCalled());
+      });
+    });
+
+    describe('no annotation', () => {
+      beforeEach(() => {
+        mockIndexFile('arbitrary(code);');
+      });
+
+      pit('uses the file name as module name', () =>
+        module.getName().then(name => expect(name).toEqual(fileName))
+      );
+
+      pit('does not identify the module as haste module', () =>
+        module.isHaste().then(isHaste => expect(isHaste).toBe(false))
+      );
+
+      pit('does not transform the file in order to access the name', () => {
+        const transformCode =
+          jest.genMockFn().mockReturnValue(Promise.resolve());
+        return createModule({transformCode}).getName()
+          .then(() => expect(transformCode).not.toBeCalled());
+      });
+
+      pit('does not transform the file in order to access the haste status', () => {
+        const transformCode =
+          jest.genMockFn().mockReturnValue(Promise.resolve());
+        return createModule({transformCode}).isHaste()
+          .then(() => expect(transformCode).not.toBeCalled());
+      });
+    });
+  });
+
   describe('Async Dependencies', () => {
     function expectAsyncDependenciesToEqual(expected) {
       const module = createModule();
