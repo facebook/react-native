@@ -147,6 +147,14 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   }
 
   @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
+  }
+
+  @Override
   public void updateClippingRect() {
     if (!mRemoveClippedSubviews) {
       return;
