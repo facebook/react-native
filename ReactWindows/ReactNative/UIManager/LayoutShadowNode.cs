@@ -1,8 +1,5 @@
 ﻿using Facebook.CSSLayout;
 using ReactNative.Reflection;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace ReactNative.UIManager
 {
@@ -12,9 +9,6 @@ namespace ReactNative.UIManager
     /// </summary>
     public class LayoutShadowNode : ReactShadowNode
     {
-        private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, object>> s_enumCache =
-            new ConcurrentDictionary<Type, IReadOnlyDictionary<string, object>>();
-
         // TODO: replace with CSSConstants.Undefined
         private const float Undefined = float.NaN;
 
