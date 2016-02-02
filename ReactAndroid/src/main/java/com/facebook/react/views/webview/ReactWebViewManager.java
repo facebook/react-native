@@ -35,6 +35,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
+import java.io.UnsupportedEncodingException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +69,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   private static final String HTML_ENCODING = "UTF-8";
   private static final String HTML_MIME_TYPE = "text/html; charset=utf-8";
+
+  private static final String HTTP_METHOD_POST = "POST";
 
   public static final int COMMAND_GO_BACK = 1;
   public static final int COMMAND_GO_FORWARD = 2;
@@ -135,9 +139,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           webView,
           new TopLoadingStartEvent(
-            webView.getId(),
-            SystemClock.uptimeMillis(),
-            createWebViewEvent(webView, url)));
+              webView.getId(),
+              SystemClock.uptimeMillis(),
+              createWebViewEvent(webView, url)));
     }
 
     private void emitFinishEvent(WebView webView, String url) {
@@ -208,10 +212,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     public void callInjectedJavaScript() {
-      if (
-          getSettings().getJavaScriptEnabled() &&
-              injectedJS != null &&
-              !TextUtils.isEmpty(injectedJS)) {
+      if (getSettings().getJavaScriptEnabled() &&
+          injectedJS != null &&
+          !TextUtils.isEmpty(injectedJS)) {
         loadUrl("javascript:(function() {\n" + injectedJS + ";\n})();");
       }
     }
@@ -278,10 +281,36 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setSource(WebView view, @Nullable ReadableMap source) {
     if (source != null) {
       if (source.hasKey("html")) {
-        view.loadData(source.getString("html"), HTML_MIME_TYPE, HTML_ENCODING);
+        String html = source.getString("html");
+        if (source.hasKey("baseUrl")) {
+          view.loadDataWithBaseURL(
+              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
+        } else {
+          view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
+        }
         return;
       }
       if (source.hasKey("uri")) {
+        String url = source.getString("uri");
+        if (source.hasKey("method")) {
+          String method = source.getString("method");
+          if (method.equals(HTTP_METHOD_POST)) {
+            byte[] postData = null;
+            if (source.hasKey("body")) {
+              String body = source.getString("body");
+              try {
+                postData = body.getBytes("UTF-8");
+              } catch (UnsupportedEncodingException e) {
+                postData = body.getBytes();
+              }
+            }
+            if (postData == null) {
+              postData = new byte[0];
+            }
+            view.postUrl(url, postData);
+            return;
+          }
+        }
         HashMap<String, String> headerMap = new HashMap<>();
         if (source.hasKey("headers")) {
           ReadableMap headers = source.getMap("headers");
@@ -291,7 +320,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
             headerMap.put(key, headers.getString(key));
           }
         }
-        view.loadUrl(source.getString("uri"), headerMap);
+        view.loadUrl(url, headerMap);
         return;
       }
     }

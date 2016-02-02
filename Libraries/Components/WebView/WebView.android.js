@@ -62,11 +62,43 @@ var WebView = React.createClass({
     ),
 
     /**
-     * Used on Android only, provides html or url with optional headers to the WebView.
-     * `{ html: string, uri: string, headers: map<string, string> }`
-     * @platform android
+     * Loads static html or a uri (with optional headers) in the WebView.
      */
-    source: PropTypes.object,
+    source: PropTypes.oneOfType([
+      PropTypes.shape({
+        /*
+         * The URI to load in the WebView. Can be a local or remote file.
+         */
+        uri: PropTypes.string,
+        /*
+         * The HTTP Method to use. Defaults to GET if not specified.
+         * NOTE: On Android, only GET and POST are supported.
+         */
+        method: PropTypes.oneOf(['GET', 'POST']),
+        /*
+         * Additional HTTP headers to send with the request.
+         * NOTE: On Android, this can only be used with GET requests.
+         */
+        headers: PropTypes.object,
+        /*
+         * The HTTP body to send with the request. This must be a valid
+         * UTF-8 string, and will be sent exactly as specified, with no
+         * additional encoding (e.g. URL-escaping or base64) applied.
+         * NOTE: On Android, this can only be used with POST requests.
+         */
+        body: PropTypes.string,
+      }),
+      PropTypes.shape({
+        /*
+         * A static HTML page to display in the WebView.
+         */
+        html: PropTypes.string,
+        /*
+         * The base URL to be used for any relative links in the HTML.
+         */
+        baseUrl: PropTypes.string,
+      }),
+    ]),
 
     /**
      * Used on Android only, JS is enabled by default for WebView on iOS
@@ -148,6 +180,12 @@ var WebView = React.createClass({
       source.html = this.props.html;
     } else if (this.props.url) {
       source.uri = this.props.url;
+    }
+    
+    if (source.method === 'POST' && source.headers) {
+      console.warn('WebView: `source.headers` is not supported when using POST.');
+    } else if (source.method === 'GET' && source.body) {
+      console.warn('WebView: `source.body` is not supported when using GET.');
     }
 
     var webView =
