@@ -26,6 +26,7 @@ namespace ReactNative.UIManager
         private const string PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
         private const string PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
         private const string PROP_OPACITY = "opacity";
+        private const string PROP_ELEVATION = "elevation";
 
         /// <summary>
         /// Set's the  <typeparamref name="TFrameworkElement"/> styling layout 
@@ -55,6 +56,13 @@ namespace ReactNative.UIManager
         public void SetOpacity(TFrameworkElement view, double opacity)
         {
             view.Opacity = opacity;
+        }
+
+        [ReactProperty(PROP_ELEVATION)]
+        public void SetElevation(TFrameworkElement view, double elevation)
+        {
+            var transform = EnsureTransform(view);
+            transform.TranslateZ = elevation;
         }
 
         /// <summary>

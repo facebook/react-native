@@ -150,18 +150,6 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Sets the elevation transformation effect of the <see cref="ReactCanvas"/>. 
-        /// </summary>
-        /// <param name="view">The view panel.</param>
-        /// <param name="elevation">The 3D Z-Location index of the <see cref="ReactRootView"/>.</param>
-        [ReactProperty("elevation")]
-        public void SetElevation(BorderedContentControl view, float elevation)
-        {
-            var panel = GetPanel(view);
-            panel.SetElevationEffect(elevation);
-        }
-
-        /// <summary>
         /// Sets the border thickness of the <see cref="ReactCanvas"/>.
         /// </summary>
         /// <param name="view">The view panel.</param>
