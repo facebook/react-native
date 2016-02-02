@@ -110,7 +110,7 @@ class Resolver {
   }
 
   stat(filePath) {
-    return this._depGraph.stat(filePath);
+    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {
