@@ -258,8 +258,8 @@ public class ReactTextInputManager extends
             list.add(currentFilters[i]);
           }
         }
-        if (list.size() > 0) {
-          newFilters = (InputFilter[])list.toArray();
+        if (!list.isEmpty()) {
+          newFilters = (InputFilter[]) list.toArray();
         }
       }
     } else {
