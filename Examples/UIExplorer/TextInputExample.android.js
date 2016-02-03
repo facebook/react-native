@@ -322,6 +322,11 @@ exports.examples = [
               Darker backgroundColor
             </Text>
           </TextInput>
+          <TextInput
+            defaultValue="Highlight Color is red"
+            selectionColor={'red'}
+            style={styles.singleLine}>
+          </TextInput>
         </View>
       );
     }
