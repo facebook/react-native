@@ -349,14 +349,29 @@ var ScrollResponderMixin = {
 
   /**
    * A helper function to scroll to a specific point  in the scrollview.
-   * This is currently used to help focus on child textviews, but this
-   * can also be used to quickly scroll to any element we want to focus
+   * This is currently used to help focus on child textviews, but can also
+   * be used to quickly scroll to any element we want to focus. Syntax:
+   *
+   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
-  scrollResponderScrollTo: function(offsetX: number, offsetY: number, animated: boolean = true) {
+  scrollResponderScrollTo: function(
+    x?: number | { x?: number; y?: number; animated?: boolean },
+    y?: number,
+    animated?: boolean
+  ) {
+    if (typeof x === 'number') {
+      console.warn('`scrollResponderScrollTo(x, y, animated)` is deprecated. Use `scrollResponderScrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = x || {});
+    }
     UIManager.dispatchViewManagerCommand(
       React.findNodeHandle(this),
       UIManager.RCTScrollView.Commands.scrollTo,
-      [offsetX, offsetY, animated],
+      [x || 0, y || 0, animated !== false],
     );
   },
 
@@ -369,15 +384,24 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * A helper function to zoom to a specific rect in the scrollview.
-   * @param {object} rect Should have shape {x, y, width, height}
-   * @param {bool} animated Specify whether zoom is instant or animated
+   * A helper function to zoom to a specific rect in the scrollview. The argument has the shape
+   * {x: number; y: number; width: number; height: number; animated: boolean = true}
+   *
+   * @platform ios
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }, animated: boolean = true) {
+  scrollResponderZoomTo: function(
+    rect: { x: number; y: number; width: number; height: number; animated?: boolean },
+    animated?: boolean // deprecated, put this inside the rect argument instead
+  ) {
     if (Platform.OS === 'android') {
       invariant('zoomToRect is not implemented');
     } else {
-      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect, animated);
+      if ('animated' in rect) {
+        var { animated, ...rect } = rect;
+      } else if (typeof animated !== 'undefined') {
+        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
+      }
+      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect, animated !== false);
     }
   },
 
