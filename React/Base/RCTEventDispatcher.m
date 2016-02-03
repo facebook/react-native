@@ -138,6 +138,7 @@ RCT_EXPORT_MODULE()
 - (void)sendEvent:(id<RCTEvent>)event
 {
   if (!event.canCoalesce) {
+    [self flushEventsQueue];
     [self dispatchEvent:event];
     return;
   }
@@ -169,8 +170,13 @@ RCT_EXPORT_MODULE()
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
+  [self flushEventsQueue];
+}
+
+- (void)flushEventsQueue
+{
   [_eventQueueLock lock];
-   NSDictionary *eventQueue = _eventQueue;
+  NSDictionary *eventQueue = _eventQueue;
   _eventQueue = [NSMutableDictionary new];
   self.paused = YES;
   [_eventQueueLock unlock];
