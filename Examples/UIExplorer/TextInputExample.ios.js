@@ -537,6 +537,25 @@ exports.examples = [
     }
   },
   {
+    title: 'Colored highlight/cursor for text input',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            tintColor={"green"}
+            defaultValue="Highlight me"
+          />
+          <TextInput
+            style={styles.default}
+            tintColor={"rgba(86, 76, 205, 1)"}
+            defaultValue="Highlight me"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Clear button mode',
     render: function () {
       return (
