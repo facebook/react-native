@@ -21,9 +21,11 @@ function setStatus(status) {
   document.getElementById('status').innerHTML = status;
 }
 
+var INITIAL_MESSAGE = 'Waiting, press <span class="shortcut">⌘R</span> in simulator to reload and connect.';
+
 function connectToDebuggerProxy() {
   var worker;
-  var ws = new WebSocket('ws://' + window.location.host + '/debugger-proxy');
+  var ws = new WebSocket('ws://' + window.location.host + '/debugger-proxy?role=debugger&name=Chrome');
 
   function createJSRuntime() {
     // This worker will run the application javascript code,
@@ -48,11 +50,21 @@ function connectToDebuggerProxy() {
   }
 
   ws.onopen = function() {
-    setStatus('Waiting, press <span class="shortcut">⌘R</span> in simulator to reload and connect.');
+    setStatus(INITIAL_MESSAGE);
   };
 
   ws.onmessage = function(message) {
+    if (!message.data) {
+      return;
+    }
     var object = JSON.parse(message.data);
+
+    if (object.$event === 'client-disconnected') {
+      shutdownJSRuntime();
+      setStatus('Waiting, press <span class="shortcut">⌘R</span> in simulator to reload and connect.');
+      return;
+    }
+
     if (!object.method) {
       return;
     }
@@ -63,16 +75,23 @@ function connectToDebuggerProxy() {
       createJSRuntime();
       ws.send(JSON.stringify({replyID: object.id}));
       setStatus('Debugger session #' + object.id + ' active.');
+    } else if (object.method === '$disconnected') {
+      shutdownJSRuntime();
+      setStatus(INITIAL_MESSAGE);
     } else {
       // Otherwise, pass through to the worker.
       worker.postMessage(object);
     }
   };
 
-  ws.onclose = function() {
+  ws.onclose = function(e) {
     shutdownJSRuntime();
     setStatus('Disconnected from proxy. Attempting reconnection. Is node server running?');
-    setTimeout(connectToDebuggerProxy, 100);
+    if (e.reason) {
+      setStatus(e.reason);
+      console.warn(e.reason);
+    }
+    setTimeout(connectToDebuggerProxy, 500);
   };
 }
 
