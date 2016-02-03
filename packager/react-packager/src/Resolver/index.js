@@ -103,6 +103,11 @@ class Resolver {
     });
 
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
+
+    this._depGraph.load().catch(err => {
+      console.error(err.message + '\n' + err.stack);
+      process.exit(1);
+    });
   }
 
   getShallowDependencies(entryFile) {

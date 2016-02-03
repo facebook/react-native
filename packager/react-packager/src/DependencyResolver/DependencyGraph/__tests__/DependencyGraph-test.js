@@ -1189,22 +1189,14 @@ describe('DependencyGraph', function() {
         },
       });
 
-      const _exit = process.exit;
-      const _error = console.error;
-
-      process.exit = jest.genMockFn();
-      console.error = jest.genMockFn();
-
       var dgraph = new DependencyGraph({
         ...defaults,
         roots: [root],
       });
 
-      return dgraph.load().catch(() => {
-        expect(process.exit).toBeCalledWith(1);
-        expect(console.error).toBeCalled();
-        process.exit = _exit;
-        console.error = _error;
+      return dgraph.load().catch(err => {
+        expect(err.message).toEqual('Failed to build DependencyGraph: Naming collision detected: /root/b.js collides with /root/index.js');
+        expect(err.type).toEqual('DependencyGraphError');
       });
     });
 
