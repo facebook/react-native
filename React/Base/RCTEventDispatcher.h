@@ -58,13 +58,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @end
 
-@interface RCTBaseEvent : NSObject <RCTEvent>
-
-- (instancetype)initWithViewTag:(NSNumber *)viewTag
-                      eventName:(NSString *)eventName
-                           body:(NSDictionary *)body NS_DESIGNATED_INITIALIZER;
-
-@end
 
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and

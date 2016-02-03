@@ -35,52 +35,6 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
   );
 }
 
-@implementation RCTBaseEvent
-
-@synthesize viewTag = _viewTag;
-@synthesize eventName = _eventName;
-@synthesize body = _body;
-
-- (instancetype)initWithViewTag:(NSNumber *)viewTag
-                      eventName:(NSString *)eventName
-                           body:(NSDictionary *)body
-{
-  if (RCT_DEBUG) {
-    RCTAssertParam(eventName);
-  }
-
-  if ((self = [super init])) {
-    _viewTag = viewTag;
-    _eventName = eventName;
-    _body = body;
-  }
-  return self;
-}
-
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-
-- (uint16_t)coalescingKey
-{
-  return 0;
-}
-
-- (BOOL)canCoalesce
-{
-  return YES;
-}
-
-- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
-{
-  return newEvent;
-}
-
-+ (NSString *)moduleDotMethod
-{
-  return nil;
-}
-
-@end
-
 @interface RCTEventDispatcher() <RCTFrameUpdateObserver>
 
 @end
