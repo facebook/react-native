@@ -25,7 +25,6 @@ namespace ReactNative.Tests.Modules.Core
             Assert.AreEqual(2, args.Length);
             Assert.AreSame(eventName, args[0]);
             Assert.AreSame(data, args[1]);
-
         }
     }
 }

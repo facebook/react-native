@@ -115,8 +115,10 @@
     <Compile Include="Internal\MockJavaScriptExecutor.cs" />
     <Compile Include="Internal\MockEvent.cs" />
     <Compile Include="Modules\AppState\AppStateModuleTests.cs" />
+    <Compile Include="Modules\Core\JSTimersExecutionTests.cs" />
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitterTests.cs" />
+    <Compile Include="Modules\Core\TimingTests.cs" />
     <Compile Include="Modules\Toast\ToastNotificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactInstanceManagerTests.cs" />

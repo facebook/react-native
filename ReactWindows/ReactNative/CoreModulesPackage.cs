@@ -66,6 +66,7 @@ namespace ReactNative
             return new List<Type>
             {
                 typeof(RCTDeviceEventEmitter),
+                typeof(JSTimersExecution),
                 typeof(RCTEventEmitter),
                 typeof(RCTNativeAppEventEmitter),
                 typeof(AppRegistry),
