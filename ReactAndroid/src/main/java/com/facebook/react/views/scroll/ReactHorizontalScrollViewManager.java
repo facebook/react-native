@@ -40,7 +40,7 @@ public class ReactHorizontalScrollViewManager
   }
 
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
-  public void setScrollEnabled(ReactScrollView view, boolean value) {
+  public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
     view.setScrollEnabled(value);
   }
 
