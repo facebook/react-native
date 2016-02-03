@@ -62,7 +62,7 @@ namespace ReactNative.Tests
             throw new NotImplementedException();
         }
 
-        public T GetJavaScriptModule<T>() where T : IJavaScriptModule
+        public virtual T GetJavaScriptModule<T>() where T : IJavaScriptModule
         {
             throw new NotImplementedException();
         }
