@@ -10,6 +10,7 @@
  */
 'use strict';
 
+const Platform = require('Platform');
 const invariant = require('invariant');
 const processColor = require('processColor');
 
@@ -50,7 +51,13 @@ Error: ${e.message}`
       );
     };
     activeWS.onmessage = ({data}) => {
-      const DevLoadingView = require('NativeModules').DevLoadingView;
+      let DevLoadingView = require('NativeModules').DevLoadingView;
+      if (!DevLoadingView) {
+        DevLoadingView = {
+          showMessage() {},
+          hide() {},
+        };
+      }
       data = JSON.parse(data);
 
       switch(data.type) {
@@ -67,8 +74,13 @@ Error: ${e.message}`
           const sourceMappingURLs = data.body.sourceMappingURLs;
           const sourceURLs = data.body.sourceURLs;
 
-          const RCTRedBox = require('NativeModules').RedBox;
-          RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+          if (Platform.OS === 'ios') {
+            const RCTRedBox = require('NativeModules').RedBox;
+            RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+          } else {
+            const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+            RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
+          }
 
           modules.forEach((code, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];

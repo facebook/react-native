@@ -218,6 +218,14 @@ public class DevSupportManagerImpl implements DevSupportManager {
         });
   }
 
+  @Override
+  public void hideRedboxDialog() {
+    // dismiss redbox if exists
+    if (mRedBoxDialog != null) {
+      mRedBoxDialog.dismiss();
+    }
+  }
+
   private void showNewError(
       final String message,
       final StackFrame[] stack,
