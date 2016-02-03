@@ -227,6 +227,11 @@ var TextInput = React.createClass({
      */
     placeholderTextColor: PropTypes.string,
     /**
+    * The highlight and cursor color of the text input
+    * @platform ios
+    */
+    tintColor: PropTypes.string,
+    /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is false.
      */
