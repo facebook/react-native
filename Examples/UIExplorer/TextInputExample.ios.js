@@ -543,12 +543,12 @@ exports.examples = [
         <View>
           <TextInput
             style={styles.default}
-            tintColor={"green"}
+            selectionColor={"green"}
             defaultValue="Highlight me"
           />
           <TextInput
             style={styles.default}
-            tintColor={"rgba(86, 76, 205, 1)"}
+            selectionColor={"rgba(86, 76, 205, 1)"}
             defaultValue="Highlight me"
           />
         </View>
