@@ -114,12 +114,29 @@
 - (void)testCoalescedEventShouldBeDispatchedOnFrameUpdate
 {
   [_eventDispatcher sendEvent:_testEvent];
-
+  [_bridge verify];
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
                              args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 
+  [_bridge verify];
+}
+
+- (void)testNonCoalescingEventForcesColescedEventsToBeImmediatelyDispatched
+{
+  RCTTestEvent *nonCoalescingEvent = [[RCTTestEvent alloc] initWithViewTag:nil
+                                                                 eventName:_eventName
+                                                                      body:@{}];
+  nonCoalescingEvent.canCoalesce = NO;
+  [_eventDispatcher sendEvent:_testEvent];
+
+  [[_bridge expect] enqueueJSCall:[[_testEvent class] moduleDotMethod]
+                             args:[_testEvent arguments]];
+  [[_bridge expect] enqueueJSCall:[[nonCoalescingEvent class] moduleDotMethod]
+                             args:[nonCoalescingEvent arguments]];
+
+  [_eventDispatcher sendEvent:nonCoalescingEvent];
   [_bridge verify];
 }
 
