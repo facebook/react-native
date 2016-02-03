@@ -29,7 +29,6 @@
 
 @synthesize viewTag = _viewTag;
 @synthesize eventName = _eventName;
-@synthesize body = _body;
 
 - (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary<NSString *, id> *)body
 {
@@ -50,6 +49,11 @@
 + (NSString *)moduleDotMethod
 {
   return @"RCTDeviceEventEmitter.emit";
+}
+
+- (NSArray *)arguments
+{
+  return @[_eventName, _body];
 }
 
 @end
@@ -89,7 +93,7 @@
 - (void)testLegacyEventsAreImmediatelyDispatched
 {
   [[_bridge expect] enqueueJSCall:_JSMethod
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [_eventDispatcher sendDeviceEventWithName:_eventName body:_body];
 
@@ -100,7 +104,7 @@
 {
   _testEvent.canCoalesce = NO;
   [[_bridge expect] enqueueJSCall:_JSMethod
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [_eventDispatcher sendEvent:_testEvent];
 
@@ -112,7 +116,7 @@
   [_eventDispatcher sendEvent:_testEvent];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 
@@ -129,7 +133,7 @@
   [_eventDispatcher sendEvent:_testEvent];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 
@@ -147,10 +151,10 @@
   [_eventDispatcher sendEvent:_testEvent];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[firstEventName, _body]];
+                             args:[firstEvent arguments]];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 
