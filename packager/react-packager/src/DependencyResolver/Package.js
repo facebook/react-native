@@ -92,9 +92,27 @@ class Package {
 }
 
 function getReplacements(pkg) {
-  return pkg['react-native'] == null
-    ? pkg.browser
-    : pkg['react-native'];
+  let rn = pkg['react-native'];
+  let browser = pkg.browser;
+  if (rn == null) {
+    return browser;
+  }
+
+  if (browser == null) {
+    return rn;
+  }
+
+  if (typeof rn === 'string') {
+    rn = { [pkg.main]: rn };
+  }
+
+  if (typeof browser === 'string') {
+    browser = { [pkg.main]: browser };
+  }
+
+  // merge with "browser" as default,
+  // "react-native" as override
+  return { ...browser, ...rn };
 }
 
 module.exports = Package;
