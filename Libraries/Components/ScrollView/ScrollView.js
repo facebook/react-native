@@ -227,7 +227,6 @@ var ScrollView = React.createClass({
     /**
      * When false, the content does not scroll.
      * The default value is true.
-     * @platform ios
      */
     scrollEnabled: PropTypes.bool,
     /**
