@@ -359,17 +359,36 @@ var ScrollView = React.createClass({
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY: number = 0, destX: number = 0, animated: boolean = true) {
+  /**
+   * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   * Syntax:
+   *
+   * scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
+   */
+  scrollTo: function(
+    y?: number | { x?: number, y?: number, animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ) {
+    if (typeof y === 'number') {
+      console.warn('`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = y || {});
+    }
     // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollTo(destX, destY, animated);
+    this.getScrollResponder().scrollResponderScrollTo({x: x || 0, y: y || 0, animated: animated !== false});
   },
 
   /**
    * Deprecated, do not use.
    */
-  scrollWithoutAnimationTo: function(destY: number = 0, destX: number = 0) {
+  scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
     console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
-    this.scrollTo(destX, destY, false);
+    this.scrollTo({x, y, animated: false});
   },
 
   handleScroll: function(e: Object) {
