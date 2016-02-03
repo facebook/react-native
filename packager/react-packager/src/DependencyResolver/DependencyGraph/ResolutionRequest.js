@@ -110,22 +110,29 @@ class ResolutionRequest {
       const visited = Object.create(null);
       visited[entry.hash()] = true;
 
+      response.pushDependency(entry);
       const collect = (mod) => {
-        response.pushDependency(mod);
         return mod.getDependencies().then(
           depNames => Promise.all(
             depNames.map(name => this.resolveDependency(mod, name))
           ).then((dependencies) => [depNames, dependencies])
         ).then(([depNames, dependencies]) => {
           if (allMocks) {
-            return mod.getName().then(name => {
-              if (allMocks[name]) {
-                const mockModule =
-                  this._moduleCache.getModule(allMocks[name]);
-                depNames.push(name);
-                dependencies.push(mockModule);
-                mocks[name] = allMocks[name];
-              }
+            const list = [mod.getName()];
+            const pkg = mod.getPackage();
+            if (pkg) {
+              list.push(pkg.getName());
+            }
+            return Promise.all(list).then(names => {
+              names.forEach(name => {
+                if (allMocks[name] && !mocks[name]) {
+                  const mockModule =
+                    this._moduleCache.getModule(allMocks[name]);
+                  depNames.push(name);
+                  dependencies.push(mockModule);
+                  mocks[name] = allMocks[name];
+                }
+              });
               return [depNames, dependencies];
             });
           }
@@ -141,7 +148,7 @@ class ResolutionRequest {
               // module backing them. If a dependency cannot be found but there
               // exists a mock with the desired ID, resolve it and add it as
               // a dependency.
-              if (allMocks && allMocks[name]) {
+              if (allMocks && allMocks[name] && !mocks[name]) {
                 const mockModule = this._moduleCache.getModule(allMocks[name]);
                 mocks[name] = allMocks[name];
                 return filteredPairs.push([name, mockModule]);
@@ -163,6 +170,7 @@ class ResolutionRequest {
             p = p.then(() => {
               if (!visited[modDep.hash()]) {
                 visited[modDep.hash()] = true;
+                response.pushDependency(modDep);
                 if (recursive) {
                   return collect(modDep);
                 }

@@ -10,7 +10,6 @@
 
 jest.dontMock('../')
   .dontMock('underscore')
-  .dontMock('PixelRatio')
   .dontMock('../../DependencyResolver/lib/extractRequires')
   .dontMock('../../DependencyResolver/lib/replacePatterns');
 
@@ -33,6 +32,8 @@ describe('Resolver', function() {
     path.join.mockImpl(function(a, b) {
       return b;
     });
+
+    DependencyGraph.prototype.load.mockImpl(() => Promise.resolve());
   });
 
   class ResolutionResponseMock {

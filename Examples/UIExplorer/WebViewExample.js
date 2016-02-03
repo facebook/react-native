@@ -49,7 +49,11 @@ var WebViewExample = React.createClass({
   inputText: '',
 
   handleTextInputChange: function(event) {
-    this.inputText = event.nativeEvent.text;
+    var url = event.nativeEvent.text;
+    if (!/^[a-zA-Z-_]:/.test(url)) {
+      url = 'http://' + url;
+    }
+    this.inputText = url;
   },
 
   render: function() {
@@ -93,7 +97,7 @@ var WebViewExample = React.createClass({
           ref={WEBVIEW_REF}
           automaticallyAdjustContentInsets={false}
           style={styles.webView}
-          url={this.state.url}
+          source={{uri: this.state.url}}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           decelerationRate="normal"
@@ -232,7 +236,26 @@ exports.title = '<WebView>';
 exports.description = 'Base component to display web content';
 exports.examples = [
   {
-    title: 'WebView',
+    title: 'Simple Browser',
     render(): ReactElement { return <WebViewExample />; }
+  },
+  {
+    title: 'POST Test',
+    render(): ReactElement {
+      return (
+        <WebView
+          style={{
+            backgroundColor: BGWASH,
+            height: 100,
+          }}
+          source={{
+            uri: 'http://www.posttestserver.com/post.php',
+            method: 'POST',
+            body: 'foo=bar&bar=foo'
+          }}
+          scalesPageToFit={false}
+        />
+      );
+    }
   }
 ];

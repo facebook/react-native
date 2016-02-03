@@ -232,6 +232,10 @@ var TextInput = React.createClass({
      */
     secureTextEntry: PropTypes.bool,
     /**
+    * The highlight (and cursor on ios) color of the text input
+    */
+    selectionColor: PropTypes.string,
+    /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
      * @platform ios
@@ -506,6 +510,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
@@ -524,6 +529,10 @@ var TextInput = React.createClass({
   _onFocus: function(event: Event) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.focus();
     }
   },
 
@@ -564,6 +573,10 @@ var TextInput = React.createClass({
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.blur();
     }
   },
 
