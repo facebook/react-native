@@ -93,7 +93,6 @@ class Resolver {
         // should work after this release and we can
         // remove it from here.
         'parse',
-        'react-transform-hmr',
       ],
       platforms: ['ios', 'android'],
       preferNativePlatform: true,
