@@ -73,6 +73,13 @@ static JSValueRef nativePerformanceNow(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef *exception);
+static JSValueRef injectHMRUpdate(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[],
+    JSValueRef *exception);
 
 static std::string executeJSCallWithJSC(
     JSGlobalContextRef ctx,
@@ -108,6 +115,8 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
   installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
   installGlobalFunction(m_context, "nativeTerminateWorker", nativeTerminateWorker);
+
+  installGlobalFunction(m_context, "__injectHMRUpdate", injectHMRUpdate);
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -184,7 +193,7 @@ void JSCExecutor::executeApplicationScript(
   if (!jsSourceURL) {
     evaluateScript(m_context, jsScript, jsSourceURL);
   } else {
-    // If we're evaluating a script, get the device's cache dir 
+    // If we're evaluating a script, get the device's cache dir
     //  in which a cache file for that script will be stored.
     evaluateScript(m_context, jsScript, jsSourceURL, getDeviceCacheDir().c_str());
   }
@@ -538,6 +547,18 @@ static JSValueRef nativePerformanceNow(
   clock_gettime(CLOCK_MONOTONIC_RAW, &now);
   int64_t nano = now.tv_sec * NANOSECONDS_IN_SECOND + now.tv_nsec;
   return JSValueMakeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
+}
+
+static JSValueRef injectHMRUpdate(
+    JSContextRef ctx,
+    JSObjectRef function,
+    JSObjectRef thisObject,
+    size_t argumentCount,
+    const JSValueRef arguments[], JSValueRef *exception) {
+  JSStringRef execJSString = JSValueToStringCopy(ctx, arguments[0], NULL);
+  JSStringRef jsURL = JSValueToStringCopy(ctx, arguments[1], NULL);
+  evaluateScript(ctx, execJSString, jsURL);
+  return JSValueMakeUndefined(ctx);
 }
 
 } }
