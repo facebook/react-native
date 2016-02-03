@@ -30,9 +30,7 @@ static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
     event.viewTag.intValue |
-    (((uint64_t)event.eventName.hash & 0xFFFF) << 32)  |
-    (((uint64_t)event.coalescingKey) << 48)
-  );
+    (((uint64_t)event.eventName.hash & 0xFFFF) << 32));
 }
 
 @interface RCTEventDispatcher() <RCTFrameUpdateObserver>
