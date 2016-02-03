@@ -34,12 +34,13 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
-  private boolean mRemoveClippedSubviews;
   private @Nullable Rect mClippingRect;
-  private boolean mSendMomentumEvents;
+  private boolean mDoneFlinging;
   private boolean mDragging;
   private boolean mFlinging;
-  private boolean mDoneFlinging;
+  private boolean mRemoveClippedSubviews;
+  private boolean mScrollEnabled = true;
+  private boolean mSendMomentumEvents;
 
   public ReactScrollView(Context context) {
     super(context);
@@ -47,6 +48,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
     mSendMomentumEvents = sendMomentumEvents;
+  }
+
+  public void setScrollEnabled(boolean scrollEnabled) {
+    mScrollEnabled = scrollEnabled;
   }
 
   @Override
@@ -99,6 +104,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (!mScrollEnabled) {
+      return false;
+    }
+
     if (super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
@@ -111,6 +120,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
+    if (!mScrollEnabled) {
+      return false;
+    }
+
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
