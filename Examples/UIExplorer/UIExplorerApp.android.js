@@ -25,6 +25,7 @@ var {
   StyleSheet,
   ToolbarAndroid,
   View,
+  StatusBar,
 } = React;
 var UIExplorerList = require('./UIExplorerList.android');
 
@@ -98,6 +99,9 @@ var UIExplorerApp = React.createClass({
     var Component = this.state.example.component;
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#589c90"
+        />
         <ToolbarAndroid
           logo={require('image!launcher_icon')}
           navIcon={require('image!ic_menu_black_24dp')}
