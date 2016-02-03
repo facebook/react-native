@@ -261,12 +261,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return nil;
     }
 
+    RCT_PROFILE_BEGIN_EVENT(0, @"nativeRequireModuleConfig", nil);
     NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
-    if (config) {
-      return RCTJSONStringify(config, NULL);
-    }
-
-    return nil;
+    NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
+    RCT_PROFILE_END_EVENT(0, @"js_call,config", @{ @"moduleName": moduleName });
+    return result;
   }];
 
   [self addSynchronousHookWithName:@"nativeFlushQueueImmediate" usingBlock:^(NSArray<NSArray *> *calls){
@@ -275,7 +274,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
+    RCT_PROFILE_BEGIN_EVENT(0, @"nativeFlushQueueImmediate", nil);
     [strongSelf->_bridge handleBuffer:calls batchEnded:NO];
+    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
   }];
 
   [self addSynchronousHookWithName:@"nativePerformanceNow" usingBlock:^{
@@ -296,7 +297,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   [self addSynchronousHookWithName:@"nativeTraceEndAsyncSection" usingBlock:^(uint64_t tag, NSString *name, NSUInteger cookie) {
     NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
-    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, nil);
+    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
     CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
   }];
 
