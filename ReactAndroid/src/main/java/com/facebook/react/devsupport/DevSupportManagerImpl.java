@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -49,6 +50,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
+import com.facebook.react.modules.core.HMRClient;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**
@@ -520,6 +522,15 @@ public class DevSupportManagerImpl implements DevSupportManager {
     }
     if (reactContext != null) {
       mDebugOverlayController = new DebugOverlayController(reactContext);
+    }
+
+    if (mDevSettings.isHotModuleReplacementEnabled() && mCurrentContext != null) {
+      try {
+        URL sourceUrl = new URL(getSourceUrl());
+        mCurrentContext.getJSModule(HMRClient.class).enable("android", sourceUrl.getPath().substring(1));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     reloadSettings();
