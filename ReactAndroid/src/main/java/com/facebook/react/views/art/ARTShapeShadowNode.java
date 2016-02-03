@@ -12,9 +12,12 @@ package com.facebook.react.views.art;
 import javax.annotation.Nullable;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Shader;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -181,6 +184,25 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
               (int) (mFillColor[1] * 255),
               (int) (mFillColor[2] * 255),
               (int) (mFillColor[3] * 255));
+          break;
+        case 1:
+          paint.setShader(
+            new LinearGradient(
+              mFillColor[3] * 2,
+              mFillColor[4] * 2,
+              mFillColor[1] * 2,
+              mFillColor[2] * 2,
+              Color.argb(
+                (int) (mFillColor[12] * 255),
+                (int) (mFillColor[9] * 255),
+                (int) (mFillColor[10] * 255),
+                (int) (mFillColor[11] * 255)),
+              Color.argb(
+                (int) (mFillColor[8] * 255),
+                (int) (mFillColor[5] * 255),
+                (int) (mFillColor[6] * 255),
+                (int) (mFillColor[7] * 255)),
+              Shader.TileMode.CLAMP));
           break;
         default:
           // TODO(6352048): Support gradients etc.
