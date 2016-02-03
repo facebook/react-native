@@ -348,6 +348,17 @@ var ScrollResponderMixin = {
   },
 
   /**
+   * Returns the node that represents native view that can be scrolled.
+   * Components can pass what node to use by defining a `getScrollableNode`
+   * function otherwise `this` is used.
+   */
+  scrollResponderGetScrollableNode: function(): any {
+    return this.getScrollableNode ?
+      this.getScrollableNode() :
+      React.findNodeHandle(this);
+  },
+
+  /**
    * A helper function to scroll to a specific point  in the scrollview.
    * This is currently used to help focus on child textviews, but can also
    * be used to quickly scroll to any element we want to focus. Syntax:
@@ -369,7 +380,7 @@ var ScrollResponderMixin = {
       ({x, y, animated} = x || {});
     }
     UIManager.dispatchViewManagerCommand(
-      React.findNodeHandle(this),
+      this.scrollResponderGetScrollableNode(),
       UIManager.RCTScrollView.Commands.scrollTo,
       [x || 0, y || 0, animated !== false],
     );
@@ -401,7 +412,7 @@ var ScrollResponderMixin = {
       } else if (typeof animated !== 'undefined') {
         console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
       }
-      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect, animated !== false);
+      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
     }
   },
 
