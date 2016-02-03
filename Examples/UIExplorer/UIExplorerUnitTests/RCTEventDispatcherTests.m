@@ -18,20 +18,34 @@
 #import <OCMock/OCMock.h>
 #import "RCTEventDispatcher.h"
 
-@interface RCTTestEvent : RCTBaseEvent
-
-@property (nonatomic, assign) BOOL canCoalesce;
-
+@interface RCTTestEvent : NSObject  <RCTEvent>
+@property (atomic, assign, readwrite) BOOL canCoalesce;
 @end
 
 @implementation RCTTestEvent
+{
+  NSDictionary<NSString *, id> *_body;
+}
+
+@synthesize viewTag = _viewTag;
+@synthesize eventName = _eventName;
+@synthesize body = _body;
+@synthesize coalescingKey = _coalescingKey;
 
 - (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary<NSString *, id> *)body
 {
-  if (self = [super initWithViewTag:viewTag eventName:eventName body:body]) {
-    self.canCoalesce = YES;
+  if (self = [super init]) {
+    _viewTag = viewTag;
+    _eventName = eventName;
+    _body = body;
+    _canCoalesce = YES;
   }
   return self;
+}
+
+- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
+{
+  return newEvent;
 }
 
 + (NSString *)moduleDotMethod
