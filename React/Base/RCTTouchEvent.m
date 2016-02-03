@@ -8,6 +8,7 @@
  */
 
 #import "RCTTouchEvent.h"
+#import "RCTAssert.h"
 
 @implementation RCTTouchEvent
 {
@@ -36,12 +37,31 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (BOOL)canCoalesce
 {
-  return NO;
+  return [_eventName isEqual:@"touchMove"];
 }
 
+// We coalesce only move events, while holding some assumptions that seem reasonable but there are no explicit guarantees about them.
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
 {
-  return newEvent;
+  RCTAssert([newEvent isKindOfClass:[RCTTouchEvent class]], @"Touch event cannot be coalesced with any other type of event, such as provided %@", newEvent);
+  RCTTouchEvent *newTouchEvent = (RCTTouchEvent *)newEvent;
+  RCTAssert([_reactTouches count] == [newTouchEvent->_reactTouches count], @"Touch events have different number of touches. %@ %@", self, newEvent);
+
+  BOOL newEventIsMoreRecent = NO;
+  BOOL oldEventIsMoreRecent = NO;
+  NSInteger count = _reactTouches.count;
+  for (int i = 0; i<count; i++) {
+    NSDictionary *touch = _reactTouches[i];
+    NSDictionary *newTouch = newTouchEvent->_reactTouches[i];
+    RCTAssert([touch[@"identifier"] isEqual:newTouch[@"identifier"]], @"Touch events doesn't have touches in the same order. %@ %@", touch, newTouch);
+    if ([touch[@"timestamp"] doubleValue] > [newTouch[@"timestamp"] doubleValue]) {
+      oldEventIsMoreRecent = YES;
+    } else {
+      newEventIsMoreRecent = YES;
+    }
+  }
+  RCTAssert(!(oldEventIsMoreRecent && newEventIsMoreRecent), @"Neither touch event is exclusively more recent than the other one. %@ %@", _reactTouches, newTouchEvent->_reactTouches);
+  return newEventIsMoreRecent ? newEvent : self;
 }
 
 + (NSString *)moduleDotMethod
