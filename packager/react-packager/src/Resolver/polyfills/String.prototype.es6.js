@@ -85,16 +85,16 @@ if (!String.prototype.repeat) {
 }
 
 if (!String.prototype.includes) {
-  String.prototype.includes = function(search, position) {
+  String.prototype.includes = function(search, start) {
     'use strict';
-    if (typeof position === 'number') {
-      if (position + search.length > this.length) {
-        return false;
-      } else {
-        return this.substr(position, search.length) === search;
-      }
+    if (typeof start !== 'number') {
+      start = 0;
+    }
+    
+    if (start + search.length > this.length) {
+      return false;
     } else {
-      return this.indexOf(search, position) !== -1;
+      return this.indexOf(search, start) !== -1;
     }
   };
 }
