@@ -36,11 +36,17 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private boolean mDragging;
   private boolean mFlinging;
   private boolean mDoneFlinging;
+  private boolean mScrollEnabled;
 
   private @Nullable Rect mClippingRect;
 
   public ReactHorizontalScrollView(Context context) {
     super(context);
+    mScrollEnabled = true;
+  }
+
+  public void setScrollEnabled(boolean scrollEnabled) {
+    mScrollEnabled = scrollEnabled;
   }
 
   @Override
@@ -95,13 +101,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (super.onInterceptTouchEvent(ev)) {
+    if (mScrollEnabled && super.onInterceptTouchEvent(ev)) {
       NativeGestureUtil.notifyNativeGestureStarted(this, ev);
       ReactScrollViewHelper.emitScrollBeginDragEvent(this);
       mDragging = true;
       return true;
     }
-
     return false;
   }
 
@@ -112,7 +117,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       ReactScrollViewHelper.emitScrollEndDragEvent(this);
       mDragging = false;
     }
-    return super.onTouchEvent(ev);
+
+    return mScrollEnabled && super.onTouchEvent(ev);
   }
 
   @Override
