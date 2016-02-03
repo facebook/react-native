@@ -49,7 +49,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
 @property (nonatomic, copy, readonly) NSDictionary *body;
-@property (nonatomic, assign, readonly) uint16_t coalescingKey;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;

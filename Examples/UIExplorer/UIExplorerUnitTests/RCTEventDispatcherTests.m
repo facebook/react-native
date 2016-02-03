@@ -30,7 +30,6 @@
 @synthesize viewTag = _viewTag;
 @synthesize eventName = _eventName;
 @synthesize body = _body;
-@synthesize coalescingKey = _coalescingKey;
 
 - (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary<NSString *, id> *)body
 {
