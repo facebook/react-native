@@ -129,6 +129,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return @"RCTEventEmitter.receiveEvent";
 }
 
+- (NSArray *)arguments
+{
+  return @[self.viewTag, RCTNormalizeInputEventName(self.eventName), [self body]];
+}
+
 @end
 
 /**

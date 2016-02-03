@@ -48,12 +48,14 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
-@property (nonatomic, copy, readonly) NSDictionary *body;
 
 - (BOOL)canCoalesce;
 - (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent;
 
+// used directly for doing a JS call
 + (NSString *)moduleDotMethod;
+// must contain only JSON compatible values
+- (NSArray *)arguments;
 
 @end
 
