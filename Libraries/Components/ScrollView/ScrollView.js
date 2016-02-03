@@ -355,6 +355,10 @@ var ScrollView = React.createClass({
     return this;
   },
 
+  getScrollableNode: function(): any {
+    return React.findNodeHandle(this.refs[SCROLLVIEW]);
+  },
+
   getInnerViewNode: function(): any {
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
