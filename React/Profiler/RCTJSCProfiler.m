@@ -56,11 +56,9 @@ static void RCTJSCProfilerStateInit()
 
     if (RCTNativeProfilerStart && RCTNativeProfilerEnd && enableBytecode) {
       enableBytecode();
-      RCTLogInfo(@"JSC profiler is available.");
     } else {
       RCTNativeProfilerStart = NULL;
       RCTNativeProfilerEnd = NULL;
-      RCTLogInfo(@"JSC profiler is not supported.");
     }
   });
 }
