@@ -310,7 +310,8 @@ var apps = [
   {
     name: 'LoadDocs',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/b5/ca/78/b5ca78ca-392d-6874-48bf-762293482d42/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
+    linkAppStore: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.convoy.loaddoc&hl=en',
     author: 'LoadDocs',
   },
   {
