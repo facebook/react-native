@@ -11,17 +11,54 @@
 
 #import "RCTUtils.h"
 
-@implementation RCTRefreshControl
+@implementation RCTRefreshControl {
+  BOOL _initialRefreshingState;
+  BOOL _isInitialRender;
+}
 
 - (instancetype)init
 {
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
+    _isInitialRender = true;
   }
   return self;
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  
+  // If the control is refreshing when mounted we need to call
+  // beginRefreshing in layoutSubview or it doesn't work.
+  if (_isInitialRender && _initialRefreshingState) {
+    [self beginRefreshing];
+  }
+  _isInitialRender = false;
+}
+
+- (void)beginRefreshing
+{
+  // When using begin refreshing we need to adjust the ScrollView content offset manually.
+  UIScrollView *scrollView = (UIScrollView *)self.superview;
+  CGPoint offset = CGPointMake(scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height);
+  // Don't animate when the prop is set initialy.
+  if (_isInitialRender) {
+    [scrollView setContentOffset:offset animated:NO];
+    [super beginRefreshing];
+  } else {
+    [UIView animateWithDuration:0.25
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^(void) {
+                       [scrollView setContentOffset:offset];
+                     } completion:^(__unused BOOL finished) {
+                       [super beginRefreshing];
+                     }];
+  }
+}
 
 - (NSString *)title
 {
@@ -37,7 +74,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   if (super.refreshing != refreshing) {
     if (refreshing) {
-      [self beginRefreshing];
+      // If it is the initial render, beginRefreshing will get called
+      // in layoutSubviews.
+      if (_isInitialRender) {
+        _initialRefreshingState = refreshing;
+      } else {
+        [self beginRefreshing];
+      }
     } else {
       [self endRefreshing];
     }
