@@ -4,6 +4,7 @@ using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using ReactNative.Animation;
 
 namespace ReactNative.UIManager
 {
@@ -15,7 +16,8 @@ namespace ReactNative.UIManager
     /// <see cref="UIManagerModule"/> once a JavaScript batch of UI operations
     /// is finished.
     /// </summary>
-    public class UIViewOperationQueue
+    public class 
+        UIViewOperationQueue
     {
         private readonly int[] _measureBuffer = new int[4];
 
@@ -172,6 +174,26 @@ namespace ReactNative.UIManager
                 viewReactTag,
                 viewClassName,
                 initialProperties));
+        }
+
+        internal void enqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
+        {
+            EnqueueOperation(() => _nativeViewHierarchyManager.ConfigureLayoutAnimation(config, success, error));
+        }
+
+        internal void enqueueRegisterAnimation(AnimationManager animation)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void enqueueAddAnimation(int reactTag, int animationID, ICallback onSuccess)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void enqueueRemoveAnimation(int animationID)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

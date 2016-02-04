@@ -6,6 +6,7 @@ using ReactNative.Views;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
+using ReactNative.Animation;
 
 namespace ReactNative.UIManager
 {
@@ -351,10 +352,41 @@ namespace ReactNative.UIManager
         /// Callback used if there was an error processing the animation.
         /// </param>
         [ReactMethod]
-        public void configureNextLayoutAnimation(Dictionary<string, object> config, ICallback success, ICallback error)
+        public void configureNextLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
-            throw new NotImplementedException();
+            _uiImplementation.configureNextLayoutAnimation(config, success, error);
         }
+
+        /// <summary>
+        /// Registers a new Animation that can then be added to a View using <see cref="addAnimation"/>.
+        /// </summary>
+        /// <param name="animation"></param>
+        public void registerAnimation(AnimationManager animation)
+        {
+            _uiImplementation.registerAnimation(animation);
+        }
+
+        /// <summary>
+        /// Adds an Animation previously registered with <see cref="registerAnimation"/> to a View and starts it.
+        /// </summary>
+        /// <param name="reactTag"></param>
+        /// <param name="animationID"></param>
+        /// <param name="onSuccess"></param>
+        public void addAnimation(int reactTag, int animationID, ICallback success)
+        {
+            _uiImplementation.addAnimation(reactTag, animationID, success);
+        }
+
+        /// <summary>
+        /// Removes an existing Animation, canceling it if it was in progress.
+        /// </summary>
+        /// <param name="reactTag"></param>
+        /// <param name="animationID"></param>
+        public void removeAnimation(int reactTag, int animationID)
+        {
+            _uiImplementation.removeAnimation(reactTag, animationID);
+        }
+
 
         #endregion
 
