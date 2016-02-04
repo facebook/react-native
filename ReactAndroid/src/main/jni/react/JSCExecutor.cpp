@@ -554,8 +554,8 @@ static JSValueRef nativeInjectHMRUpdate(
     JSObjectRef thisObject,
     size_t argumentCount,
     const JSValueRef arguments[], JSValueRef *exception) {
-  JSStringRef execJSString = JSValueToStringCopy(ctx, arguments[0], NULL);
-  JSStringRef jsURL = JSValueToStringCopy(ctx, arguments[1], NULL);
+  String execJSString = Value(ctx, arguments[0]).toString();
+  String jsURL = Value(ctx, arguments[1]).toString();
   evaluateScript(ctx, execJSString, jsURL);
   return JSValueMakeUndefined(ctx);
 }
