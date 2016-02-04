@@ -31,7 +31,7 @@ namespace Playground
             this.Resuming += OnResuming;
 
             _reactPage = new ReactPage(
-                "ms-appx:///Resources/main.dev.jsbundle",
+                "ms-appx:///main.jsbundle",
                 "ReactRoot",
                 new[] { new MainReactPackage() }.ToList(),
                 () => { /* TODO: back button handling */ });

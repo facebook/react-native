@@ -74,3 +74,6 @@ packages/
 *.DotSettings
 .vs/
 *project.lock.json
+
+#JavaScript files
+*.jsbundle
