@@ -73,7 +73,7 @@ static JSValueRef nativePerformanceNow(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef *exception);
-static JSValueRef injectHMRUpdate(
+static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
@@ -115,8 +115,7 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
   installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
   installGlobalFunction(m_context, "nativeTerminateWorker", nativeTerminateWorker);
-
-  installGlobalFunction(m_context, "__injectHMRUpdate", injectHMRUpdate);
+  installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -549,7 +548,7 @@ static JSValueRef nativePerformanceNow(
   return JSValueMakeNumber(ctx, (nano / (double)NANOSECONDS_IN_MILLISECOND));
 }
 
-static JSValueRef injectHMRUpdate(
+static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,

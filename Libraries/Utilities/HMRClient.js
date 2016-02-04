@@ -94,8 +94,8 @@ Error: ${e.message}`
             // on JSC we need to inject from native for sourcemaps to work
             // (Safari doesn't support `sourceMappingURL` nor any variant when
             // evaluating code) but on Chrome we can simply use eval
-            const injectFunction = typeof __injectHMRUpdate === 'function'
-              ? __injectHMRUpdate
+            const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
+              ? global.nativeInjectHMRUpdate
               : eval;
 
             injectFunction(code, sourceURLs[i]);
