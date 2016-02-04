@@ -50,7 +50,7 @@ var WebViewExample = React.createClass({
 
   handleTextInputChange: function(event) {
     var url = event.nativeEvent.text;
-    if (!/^[a-zA-Z-_]:/.test(url)) {
+    if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = 'http://' + url;
     }
     this.inputText = url;
@@ -231,6 +231,34 @@ var styles = StyleSheet.create({
   },
 });
 
+const HTML = `
+<!DOCTYPE html>\n
+<html>
+  <head>
+    <title>Hello Static World</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=320, user-scalable=no">
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        font: 62.5% arial, sans-serif;
+        background: #ccc;
+      }
+      h1 {
+        padding: 45px;
+        margin: 0;
+        text-align: center;
+        color: #33f;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hello Static World</h1>
+  </body>
+</html>
+`;
+
 exports.displayName = (undefined: ?string);
 exports.title = '<WebView>';
 exports.description = 'Base component to display web content';
@@ -238,6 +266,36 @@ exports.examples = [
   {
     title: 'Simple Browser',
     render(): ReactElement { return <WebViewExample />; }
+  },
+  {
+    title: 'Bundled HTML',
+    render(): ReactElement {
+      return (
+        <WebView
+          style={{
+            backgroundColor: BGWASH,
+            height: 100,
+          }}
+          source={require('./helloworld.html')}
+          scalesPageToFit={true}
+        />
+      );
+    }
+  },
+  {
+    title: 'Static HTML',
+    render(): ReactElement {
+      return (
+        <WebView
+          style={{
+            backgroundColor: BGWASH,
+            height: 100,
+          }}
+          source={{html: HTML}}
+          scalesPageToFit={true}
+        />
+      );
+    }
   },
   {
     title: 'POST Test',

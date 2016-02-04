@@ -554,8 +554,14 @@ class Bundler {
       assetUrlPath = assetUrlPath.replace(/\\/g, '/');
     }
 
+    // Test extension against all types supported by image-size module.
+    // If it's not one of these, we won't treat it as an image.
+    let isImage = [
+      'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'
+    ].indexOf(path.extname(module.path).slice(1)) !== -1;
+
     return Promise.all([
-      sizeOf(module.path),
+      isImage ? sizeOf(module.path) : null,
       this._assetServer.getAssetData(relPath, platform),
     ]).then(function(res) {
       const dimensions = res[0];
@@ -564,8 +570,8 @@ class Bundler {
         __packager_asset: true,
         fileSystemLocation: path.dirname(module.path),
         httpServerLocation: assetUrlPath,
-        width: dimensions.width / module.resolution,
-        height: dimensions.height / module.resolution,
+        width: dimensions ? dimensions.width / module.resolution : undefined,
+        height: dimensions ? dimensions.height / module.resolution : undefined,
         scales: assetData.scales,
         files: assetData.files,
         hash: assetData.hash,
