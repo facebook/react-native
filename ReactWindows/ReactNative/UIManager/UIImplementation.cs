@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Animation;
 using ReactNative.Bridge;
 using ReactNative.Tracing;
 using ReactNative.UIManager.Events;
@@ -154,6 +155,49 @@ namespace ReactNative.UIManager
             }
 
             HandleCreateView(cssNode, rootViewTag, styles);
+        }
+
+        /// <summary>
+        /// Invoked by React to create a new node with a given tag, class name and properties.
+        /// </summary>
+        /// <param name="config">the animation configuration properties.</param>
+        /// <param name="success">Success callback JS function.</param>
+        /// <param name="error">Callback function called on exceptions.</param>
+        public void configureNextLayoutAnimation(JObject config, ICallback success, ICallback error)
+        {
+            _operationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
+        }
+
+        /// <summary>
+        /// Registers a new Animation that can then be added to a View using <see cref="addAnimation(int, int, ICallback)"/>.
+        /// </summary>
+        /// <param name="animation">the animation engine.</param>
+        public void registerAnimation(AnimationManager animation)
+        {
+            _operationsQueue.enqueueRegisterAnimation(animation);
+        }
+
+        /// <summary>
+        /// Adds an Animation previously registered with <see cref="registerAnimation(AnimationManager)"/> to a View and starts it.
+        /// </summary>
+        /// <param name="reactTag">The view to add.</param>
+        /// <param name="animationID">The animation ID.</param>
+        /// <param name="onSuccess">Callback JS function to invoke once the animation operation is added.</param>
+        public void addAnimation(int reactTag, int animationID, ICallback onSuccess)
+        {
+            AssertViewExists(reactTag, "addAnimation");
+            _operationsQueue.enqueueAddAnimation(reactTag, animationID, onSuccess);
+        }
+
+        /// <summary>
+        /// Removes an existing Animation, canceling it if it was in progress.
+        /// </summary>
+        /// <param name="reactTag">The view to remove.</param>
+        /// <param name="animationID">The animation ID to remove.</param>
+        public void removeAnimation(int reactTag, int animationID)
+        {
+            AssertViewExists(reactTag, "removeAnimation");
+            _operationsQueue.enqueueRemoveAnimation(animationID);
         }
 
         /// <summary>

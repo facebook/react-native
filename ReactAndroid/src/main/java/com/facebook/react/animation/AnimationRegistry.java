@@ -22,7 +22,7 @@ public class AnimationRegistry {
   private final SparseArray<Animation> mRegistry = new SparseArray<Animation>();
 
   public void registerAnimation(Animation animation) {
-    UiThreadUtil.assertOnUiThread();
+      UiThreadUtil.assertOnUiThread();
     mRegistry.put(animation.getAnimationID(), animation);
   }
 
