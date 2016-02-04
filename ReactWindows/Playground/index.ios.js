@@ -42,7 +42,7 @@ var {AppRegistry, View, Text, TextInput, Image } = React;
         return (
             <View>
               <View style={styles.views}>
-		         <Text>Hello!</Text>
+		         <Text>Hello World!</Text>
 				{(this.state && this.state.value) 
 			     ? <TextInput value={this.state.value} style={styles.textInput}></TextInput> 
 				 : undefined}
