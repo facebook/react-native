@@ -200,6 +200,7 @@ var TouchableNativeFeedback = React.createClass({
       ...onlyChild(this.props.children).props,
       nativeBackgroundAndroid: this.props.background,
       accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,

@@ -208,7 +208,13 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.singleLine} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.singleLine}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
