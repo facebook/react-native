@@ -19,23 +19,26 @@ const processColor = require('processColor');
  * runtime to reflects those changes.
  */
 const HMRClient = {
-  enable(platform, bundleEntry) {
+  enable(platform, bundleEntry, host, port) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
-
-    // TODO(martinb) receive host and port as parameters
-    const host = 'localhost';
-    const port = '8081';
+    invariant(host, 'Missing required paramenter `host`');
 
     // need to require WebSocket inside of `enable` function because
     // this module is defined as a `polyfillGlobal`.
     // See `InitializeJavascriptAppEngine.js`
     const WebSocket = require('WebSocket');
 
-    const activeWS = new WebSocket(
-      `ws://${host}:${port}/hot?platform=${platform}&` +
-      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`
-    );
+    const wsHostPort = port !== null && port !== ''
+      ? `${host}:${port}`
+      : host;
+
+    // Build the websocket url
+    const wsUrl = `ws://${wsHostPort}/hot?` +
+      `platform=${platform}&` +
+      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`;
+
+    const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
       throw new Error(
 `Hot loading isn't working because it cannot connect to the development server.
@@ -60,7 +63,7 @@ Error: ${e.message}`
       }
       data = JSON.parse(data);
 
-      switch(data.type) {
+      switch (data.type) {
         case 'update-start': {
           DevLoadingView.showMessage(
             'Hot Loading...',

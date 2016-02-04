@@ -537,7 +537,9 @@ public class DevSupportManagerImpl implements DevSupportManager {
       try {
         URL sourceUrl = new URL(getSourceUrl());
         String path = sourceUrl.getPath().substring(1); // strip initial slash in path
-        mCurrentContext.getJSModule(HMRClient.class).enable("android", path);
+        String host = sourceUrl.getHost();
+        int port = sourceUrl.getPort();
+        mCurrentContext.getJSModule(HMRClient.class).enable("android", path, host, port);
       } catch (MalformedURLException e) {
         showNewJavaError(e.getMessage(), e);
       }

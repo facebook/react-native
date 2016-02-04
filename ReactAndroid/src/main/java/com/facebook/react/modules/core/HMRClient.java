@@ -24,7 +24,9 @@ public interface HMRClient extends JavaScriptModule {
    * Enable the HMRClient so that the client will receive updates
    * from the packager server.
    * @param platform The platform in which HMR updates will be enabled. Should be "android".
-   * @param bundleEntry The path to the bundle entry file (e.g. index.ios.bundle)
+   * @param bundleEntry The path to the bundle entry file (e.g. index.ios.bundle).
+   * @param host The host that the HMRClient should communicate with.
+   * @param port The port that the HMRClient should communicate with on the host.
    */
-  void enable(String platform, String bundleEntry);
+  void enable(String platform, String bundleEntry, String host, int port);
 }
