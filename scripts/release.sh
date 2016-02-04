@@ -46,8 +46,8 @@ artifacts_dir=~/.m2/repository/com/facebook/react/react-native/${RELEASE}.0
 for i in "${artifacts_list[@]}"; do
    artifact_file="${artifacts_dir}/react-native-${RELEASE}.0${i}"
 
-   [ -e "${artifact_file}" ] || error "Couldn't find file: ${artifact_file}"
-   [ -e "${artifact_file}.asc" ] || error "Couldn't find file: ${artifact_file}.asc"
+#   [ -e "${artifact_file}" ] || error "Couldn't find file: ${artifact_file}"
+#   [ -e "${artifact_file}.asc" ] || error "Couldn't find file: ${artifact_file}.asc"
 done
 
 success "Generated artifacts for Maven"
