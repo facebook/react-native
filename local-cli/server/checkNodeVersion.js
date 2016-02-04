@@ -36,5 +36,6 @@ module.exports = function() {
       marginRight: 1,
       paddingBottom: 1,
     }));
+    process.exit(1);
   }
 };
