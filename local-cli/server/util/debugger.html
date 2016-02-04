@@ -27,12 +27,6 @@ window.onbeforeunload = function() {
   }
 };
 
-window.addEventListener('load', function () {
-  if (typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
-    document.getElementById('devtools-banner').style.display = 'block';
-  }
-});
-
 // Alias native implementations needed by the debugger before platform-specific
 // implementations are loaded into the global namespace
 var debuggerSetTimeout = window.setTimeout;
@@ -123,46 +117,12 @@ connectToDebuggerProxy();
     border-radius: 4px;
     letter-spacing: 3px;
   }
-  #devtools-banner {
-    display: none;
-    background-color: #FDFDD5;
-    padding: 10px;
-  }
-  #devtools-banner h3 {
-    margin: 0;
-    font-weight: normal;
-  }
-  #devtools-banner a {
-    display: none;
-    padding: 10px 20px 10px 20px;
-    margin-bottom: 10px;
-    color: white;
-    text-decoration: none;
-    font-size: 11px;
-    text-shadow: 0 1px 1px rgba(0,0,0,0.1);
-    text-transform: uppercase;
-    font-weight: bold;
-    background-color: #4d7bd6;
-    border-radius: 2px;
-    border: 1px solid #2d53af;
-    display: inline-block;
-  }
   .content {
     padding: 10px;
   }
 </style>
 </head>
 <body>
-  <div id="devtools-banner">
-    <h3>Install React DevTools</h3>
-    <p>
-       React Developer Tools is an extension that allows you to inspect the
-       React component hierarchies in the Chrome Developer Tools.
-    </p>
-    <a href="https://fb.me/react-devtools" target="_blank">
-      Install
-    </a>
-  </div>
   <div class="content">
     <p>
       React Native JS code runs inside this Chrome tab.
