@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -535,9 +536,10 @@ public class DevSupportManagerImpl implements DevSupportManager {
     if (mDevSettings.isHotModuleReplacementEnabled() && mCurrentContext != null) {
       try {
         URL sourceUrl = new URL(getSourceUrl());
-        mCurrentContext.getJSModule(HMRClient.class).enable("android", sourceUrl.getPath().substring(1));
-      } catch (Exception e) {
-        e.printStackTrace();
+        String path = sourceUrl.getPath().substring(1); // strip initial slash in path
+        mCurrentContext.getJSModule(HMRClient.class).enable("android", path);
+      } catch (MalformedURLException e) {
+        showNewJavaError(e.getMessage(), e);
       }
     }
 
