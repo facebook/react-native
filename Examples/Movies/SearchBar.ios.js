@@ -16,16 +16,16 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   ActivityIndicatorIOS,
+  Component,
   TextInput,
   StyleSheet,
   View,
-} = React;
+} from 'react-native';
 
-var SearchBar = React.createClass({
-  render: function() {
+export default class SearchBar extends Component {
+  render() {
     return (
       <View style={styles.searchBar}>
         <TextInput
@@ -43,7 +43,7 @@ var SearchBar = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {
@@ -62,5 +62,3 @@ var styles = StyleSheet.create({
     width: 30,
   },
 });
-
-module.exports = SearchBar;
