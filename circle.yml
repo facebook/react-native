@@ -26,12 +26,15 @@ dependencies:
     - npm install -g npm@3.2
     - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+    - cd website && npm install
   cache_directories:
     - "ReactAndroid/build/downloads"
     - "buck"
     - "buck-out/bin"
+    - "website/node_modules"
   override:
     - npm install
+
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
@@ -41,6 +44,7 @@ test:
     - ./gradlew :ReactAndroid:assembleDebug -PdisablePreDex -Pjobs=1:
             timeout: 360
     - source scripts/circle-ci-android-setup.sh && waitForAVD
+
   override:
     # buck tests
     - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
@@ -57,9 +61,21 @@ test:
     # run tests on the emulator
     - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
         timeout: 360
+
+    # testing docs generation is not broken
+    - cd website && node ./server/generate.js
   post:
     # copy test report for Circle CI to display
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 
+deployment:
+  website:
+    branch: [/.*-stable/, /master/]
+    commands:
+      # generate docs website
+      - git config --global user.email "bestnader@fb.com"
+      - git config --global user.name "Website Deployment Script"
+      - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+      - cd website && GIT_USER=bestander npm run gh-pages

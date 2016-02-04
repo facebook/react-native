@@ -98,7 +98,7 @@ React.AppRegistry.registerComponent('SimpleApp', () => SimpleApp);
 
 You should now add a container view for the React Native component. It can be any `UIView` in your app.
 
-![Container view example](/react-native/img/EmbeddedAppContainerViewExample.png)
+![Container view example](img/EmbeddedAppContainerViewExample.png)
 
 However, let's subclass `UIView` for the sake of clean code. Let's name it `ReactView`. Open up `Yourproject.xcworkspace` and create a new class `ReactView` (You can name it whatever you like :)).
 
@@ -186,7 +186,7 @@ If you don't do this, you will see the error - `Could not connect to development
 
 Now compile and run your app. You shall now see your React Native app running inside of the `ReactView`.
 
-![Example](/react-native/img/EmbeddedAppExample.png)
+![Example](img/EmbeddedAppExample.png)
 
 Live reload and all of the debugging tools will work from the simulator (make sure that DEBUG=1 is set under Build Settings -> Preprocessor Macros).  You've got a simple React component totally encapsulated behind an Objective-C `UIView` subclass.
 

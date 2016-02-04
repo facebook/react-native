@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "gh-pages": "node publish-gh-pages.js"
   },
   "dependencies": {
     "bluebird": "^2.9.21",
@@ -14,6 +15,7 @@
     "react": "~0.13.0",
     "react-docgen": "^2.0.1",
     "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
-    "request": "latest"
+    "request": "latest",
+    "shelljs": "^0.6.0"
   }
 }
