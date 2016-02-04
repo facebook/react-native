@@ -464,7 +464,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   private DisplayMetrics getDisplayMetrics() {
     Context context = getReactApplicationContext();
 
-    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    displayMetrics.setTo(context.getResources().getDisplayMetrics());
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
 
