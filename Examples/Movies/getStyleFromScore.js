@@ -15,17 +15,16 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   StyleSheet,
-} = React;
+} from 'react-native';
 
-var MAX_VALUE = 200;
+const MAX_VALUE = 200;
 
 import type { StyleObj } from 'StyleSheetTypes';
 
-function getStyleFromScore(score: number): StyleObj {
-  if (score < 0) {
+export default function getStyleFromScore(score: number): StyleObj {
+  if (!score || score < 0) {
     return styles.noScore;
   }
 
@@ -44,5 +43,3 @@ var styles = StyleSheet.create({
     color: '#999999',
   },
 });
-
-module.exports = getStyleFromScore;
