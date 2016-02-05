@@ -329,7 +329,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
     RCTJSCExecutor *strongSelf = weakSelf;
     if (!strongSelf.valid) {
-      return nil;
+      return;
     }
 
     JSStringRef execJSString = JSStringCreateWithUTF8CString(sourceCode.UTF8String);
