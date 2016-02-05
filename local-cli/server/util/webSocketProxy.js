@@ -15,55 +15,59 @@ function attachToServer(server, path) {
     server: server,
     path: path
   });
-  var clients = [];
+  var debuggerSocket, clientSocket;
 
-  function sendSpecial(message) {
-    clients.forEach(function (cn) {
-      try {
-        cn.send(JSON.stringify(message));
-      } catch(e) {
-        // Sometimes this call throws 'not opened'
-      }
-    });
+  function send(dest, message) {
+    if (!dest) {
+      return;
+    }
+
+    try {
+      dest.send(message);
+    } catch(e) {
+      console.warn(e);
+      // Sometimes this call throws 'not opened'
+    }
   }
 
   wss.on('connection', function(ws) {
-    var id = Math.random().toString(15).slice(10, 20);
-    sendSpecial({$open: id});
-    clients.push(ws);
+    const {url} = ws.upgradeReq;
 
-    var allClientsExcept = function(ws) {
-      return clients.filter(function(cn) { return cn !== ws; });
-    };
-
-    ws.onerror = function() {
-      clients = allClientsExcept(ws);
-      sendSpecial({$error: id});
-    };
-
-    ws.onclose = function() {
-      clients = allClientsExcept(ws);
-      sendSpecial({$close: id});
-    };
-
-    ws.on('message', function(message) {
-      allClientsExcept(ws).forEach(function(cn) {
-        try {
-          cn.send(message);
-        } catch(e) {
-          // Sometimes this call throws 'not opened'
+    if (url.indexOf('role=debugger') > -1) {
+      if (debuggerSocket) {
+        ws.close(1011, 'Another debugger is already connected');
+        return;
+      }
+      debuggerSocket = ws;
+      debuggerSocket.onerror =
+      debuggerSocket.onclose = () => {
+        debuggerSocket = null;
+        if (clientSocket) {
+          clientSocket.close(1011, 'Debugger was disconnected');
         }
-      });
-    });
+      };
+      debuggerSocket.onmessage = ({data}) => send(clientSocket, data);
+    } else if (url.indexOf('role=client') > -1) {
+      if (clientSocket) {
+        clientSocket.onerror = clientSocket.onclose = clientSocket.onmessage = null;
+        clientSocket.close(1011, 'Another client connected');
+      }
+      clientSocket = ws;
+      clientSocket.onerror =
+      clientSocket.onclose = () => {
+        clientSocket = null;
+        send(debuggerSocket, JSON.stringify({method: '$disconnected'}));
+      };
+      clientSocket.onmessage = ({data}) => send(debuggerSocket, data);
+    } else {
+      ws.close(1011, 'Missing role param');
+    }
   });
 
   return {
     server: wss,
     isChromeConnected: function() {
-      return clients
-        .map(function(ws) { return ws.upgradeReq.headers['user-agent']; })
-        .filter(Boolean)
-        .some(function(userAgent) { return userAgent.includes('Chrome'); });
+      return !!debuggerSocket;
     }
   };
 }
