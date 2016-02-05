@@ -74,6 +74,7 @@ var APIS = [
   require('./GeolocationExample'),
   require('./ImageEditingExample'),
   require('./LayoutExample'),
+  require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
