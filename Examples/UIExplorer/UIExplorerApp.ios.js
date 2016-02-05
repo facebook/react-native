@@ -24,7 +24,8 @@ var {
   StyleSheet,
   Text,
   TouchableHighlight,
-  View
+  View,
+  StatusBar,
 } = React;
 
 var UIExplorerApp = React.createClass({
@@ -48,20 +49,23 @@ var UIExplorerApp = React.createClass({
     }
 
     return (
-      <NavigatorIOS
-        style={styles.container}
-        initialRoute={{
-          title: 'UIExplorer',
-          component: UIExplorerList,
-          passProps: {
-            onExternalExampleRequested: (example) => {
-              this.setState({ openExternalExample: example, });
-            },
-          }
-        }}
-        itemWrapperStyle={styles.itemWrapper}
-        tintColor="#008888"
-      />
+      <View style={{flex: 1}}>
+        <StatusBar barStyle="default" />
+        <NavigatorIOS
+          style={styles.container}
+          initialRoute={{
+            title: 'UIExplorer',
+            component: UIExplorerList,
+            passProps: {
+              onExternalExampleRequested: (example) => {
+                this.setState({ openExternalExample: example, });
+              },
+            }
+          }}
+          itemWrapperStyle={styles.itemWrapper}
+          tintColor="#008888"
+        />
+      </View>
     );
   }
 });

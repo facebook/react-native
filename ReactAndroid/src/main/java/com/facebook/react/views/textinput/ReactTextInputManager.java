@@ -196,6 +196,15 @@ public class ReactTextInputManager extends
     }
   }
 
+  @ReactProp(name = "selectionColor", customType = "Color")
+  public void setSelectionColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setHighlightColor(DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
+    } else {
+      view.setHighlightColor(color);
+    }
+  }
+
   @ReactProp(name = "underlineColorAndroid", customType = "Color")
   public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
     if (underlineColor == null) {

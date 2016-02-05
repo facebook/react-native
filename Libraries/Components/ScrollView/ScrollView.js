@@ -227,7 +227,6 @@ var ScrollView = React.createClass({
     /**
      * When false, the content does not scroll.
      * The default value is true.
-     * @platform ios
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -353,6 +352,10 @@ var ScrollView = React.createClass({
    */
   getScrollResponder: function(): ReactComponent {
     return this;
+  },
+
+  getScrollableNode: function(): any {
+    return React.findNodeHandle(this.refs[SCROLLVIEW]);
   },
 
   getInnerViewNode: function(): any {

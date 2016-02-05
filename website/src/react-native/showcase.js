@@ -198,10 +198,11 @@ var apps = [
     author: 'Genki Takiuchi (s21g Inc.)',
   },
   {
-    name: 'DropBot',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple69/v4/fb/df/73/fbdf73e0-22d2-c936-3115-1defa195acba/icon175x175.png',
-    link:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
-    author: 'Peach Labs',
+    name: 'Fixt',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
+    author: 'Fixt',
   },
   {
     name: 'Due',
@@ -310,7 +311,8 @@ var apps = [
   {
     name: 'LoadDocs',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/b5/ca/78/b5ca78ca-392d-6874-48bf-762293482d42/icon350x350.jpeg',
-    link: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
+    linkAppStore: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.convoy.loaddoc&hl=en',
     author: 'LoadDocs',
   },
   {
@@ -627,7 +629,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="blank">iOS</a> -
+        <a href={app.linkAppStore} target="blank">iOS</a>
+        {" - "}
         <a href={app.linkPlayStore} target="blank">Android</a>
       </p>
     );

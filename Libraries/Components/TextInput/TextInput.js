@@ -227,15 +227,14 @@ var TextInput = React.createClass({
      */
     placeholderTextColor: PropTypes.string,
     /**
-    * The highlight and cursor color of the text input
-    * @platform ios
-    */
-    tintColor: PropTypes.string,
-    /**
      * If true, the text input obscures the text entered so that sensitive text
      * like passwords stay secure. The default value is false.
      */
     secureTextEntry: PropTypes.bool,
+    /**
+    * The highlight (and cursor on ios) color of the text input
+    */
+    selectionColor: PropTypes.string,
     /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
@@ -291,10 +290,6 @@ var TextInput = React.createClass({
      * Styles
      */
     style: Text.propTypes.style,
-    /**
-     * Used to locate this view in end-to-end tests
-     */
-    testID: PropTypes.string,
     /**
      * The color of the textInput underline.
      * @platform android
@@ -458,6 +453,9 @@ var TextInput = React.createClass({
       <TouchableWithoutFeedback
         onPress={this._onPress}
         rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityTraits={props.accessibilityTraits}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -511,6 +509,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
@@ -520,6 +519,9 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
+        accessible={this.props.accessible}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityComponentType={this.props.accessibilityComponentType}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>

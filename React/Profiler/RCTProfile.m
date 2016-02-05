@@ -472,7 +472,6 @@ void _RCTProfileBeginEvent(
   NSMutableArray *events = RCTProfileGetThreadEvents(calleeThread);
   [events addObject:@[
     RCTProfileTimestamp(time),
-    @(tag),
     name,
     RCTNullIfNil(args),
   ]];
@@ -507,12 +506,12 @@ void _RCTProfileEndEvent(
 
   RCTProfileAddEvent(RCTProfileTraceEvents,
     @"tid": threadName,
-    @"name": event[2],
+    @"name": event[1],
     @"cat": category,
     @"ph": @"X",
     @"ts": start,
     @"dur": @(RCTProfileTimestamp(time).doubleValue - start.doubleValue),
-    @"args": RCTProfileMergeArgs(event[3], args),
+    @"args": RCTProfileMergeArgs(event[2], args),
   );
 }
 
@@ -548,6 +547,7 @@ void RCTProfileEndAsyncEvent(
   NSString *category,
   NSUInteger cookie,
   NSString *name,
+  NSString *threadName,
   NSDictionary *args
 ) {
   CHECK();
@@ -558,7 +558,6 @@ void RCTProfileEndAsyncEvent(
   }
 
   NSTimeInterval time = CACurrentMediaTime();
-  NSString *threadName = RCTCurrentThreadName();
 
   dispatch_async(RCTProfileGetQueue(), ^{
     NSArray *event = RCTProfileOngoingEvents[@(cookie)];

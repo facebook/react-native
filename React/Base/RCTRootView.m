@@ -25,6 +25,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTProfile.h"
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
@@ -60,6 +61,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTRootView init]", nil);
+
   if ((self = [super initWithFrame:CGRectZero])) {
 
     self.backgroundColor = [UIColor whiteColor];
@@ -86,6 +89,9 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
     [self showLoadingView];
   }
+
+  RCT_PROFILE_END_EVENT(0, @"", nil);
+
   return self;
 }
 
@@ -174,10 +180,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   [_contentView removeFromSuperview];
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
+  [self runApplication:bridge];
+
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
-
-  [self runApplication:bridge];
 }
 
 - (void)runApplication:(RCTBridge *)bridge
