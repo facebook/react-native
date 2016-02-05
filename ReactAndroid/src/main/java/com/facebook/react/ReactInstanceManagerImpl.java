@@ -86,8 +86,8 @@ import com.facebook.systrace.Systrace;
   /* should only be accessed from main thread (UI thread) */
   private final List<ReactRootView> mAttachedRootViews = new ArrayList<>();
   private LifecycleState mLifecycleState;
-  private boolean mIsContextInitAsyncTaskRunning;
   private @Nullable ReactContextInitParams mPendingReactContextInitParams;
+  private @Nullable ReactContextInitAsyncTask mReactContextInitAsyncTask;
 
   /* accessed from any thread */
   private @Nullable String mJSBundleFile; /* path to JS bundle on file system */
@@ -188,7 +188,7 @@ import com.facebook.systrace.Systrace;
       } catch (Exception e) {
         mDevSupportManager.handleException(e);
       } finally {
-        mIsContextInitAsyncTaskRunning = false;
+        mReactContextInitAsyncTask = null;
       }
 
       // Handle enqueued request to re-initialize react context.
@@ -197,6 +197,17 @@ import com.facebook.systrace.Systrace;
             mPendingReactContextInitParams.getJsExecutorFactory(),
             mPendingReactContextInitParams.getJsBundleLoader());
         mPendingReactContextInitParams = null;
+      }
+    }
+
+    @Override
+    protected void onCancelled(Result<ReactApplicationContext> reactApplicationContextResult) {
+      try {
+        mMemoryPressureRouter.destroy(reactApplicationContextResult.get());
+      } catch (Exception e) {
+        FLog.w(ReactConstants.TAG, "Caught exception after cancelling react context init", e);
+      } finally {
+        mReactContextInitAsyncTask = null;
       }
     }
   }
@@ -453,6 +464,10 @@ import com.facebook.systrace.Systrace;
   public void onDestroy() {
     UiThreadUtil.assertOnUiThread();
 
+    if (mReactContextInitAsyncTask != null) {
+      mReactContextInitAsyncTask.cancel(true);
+    }
+
     mMemoryPressureRouter.destroy(mApplicationContext);
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
@@ -502,7 +517,7 @@ import com.facebook.systrace.Systrace;
 
     // If react context is being created in the background, JS application will be started
     // automatically when creation completes, as root view is part of the attached root view list.
-    if (!mIsContextInitAsyncTaskRunning && mCurrentReactContext != null) {
+    if (mReactContextInitAsyncTask == null && mCurrentReactContext != null) {
       attachMeasuredRootViewToInstance(rootView, mCurrentReactContext.getCatalystInstance());
     }
   }
@@ -574,11 +589,10 @@ import com.facebook.systrace.Systrace;
 
     ReactContextInitParams initParams =
         new ReactContextInitParams(jsExecutorFactory, jsBundleLoader);
-    if (!mIsContextInitAsyncTaskRunning) {
+    if (mReactContextInitAsyncTask == null) {
       // No background task to create react context is currently running, create and execute one.
-      ReactContextInitAsyncTask initTask = new ReactContextInitAsyncTask();
-      initTask.execute(initParams);
-      mIsContextInitAsyncTaskRunning = true;
+      mReactContextInitAsyncTask = new ReactContextInitAsyncTask();
+      mReactContextInitAsyncTask.execute(initParams);
     } else {
       // Background task is currently running, queue up most recent init params to recreate context
       // once task completes.
