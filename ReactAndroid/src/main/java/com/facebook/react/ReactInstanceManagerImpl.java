@@ -64,6 +64,8 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
+import static com.facebook.react.bridge.ReactMarkerConstants.*;
+
 /**
  * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
  * catalyst instance using {@link ReactPackage} and keeps track of the lifecycle of that
@@ -672,7 +674,7 @@ import com.facebook.systrace.Systrace;
       JavaScriptExecutor jsExecutor,
       JSBundleLoader jsBundleLoader) {
     FLog.i(ReactConstants.TAG, "Creating react context.");
-    ReactMarker.logMarker("CREATE_REACT_CONTEXT_START");
+    ReactMarker.logMarker(CREATE_REACT_CONTEXT_START);
     mSourceUrl = jsBundleLoader.getSourceUrl();
     NativeModuleRegistry.Builder nativeRegistryBuilder = new NativeModuleRegistry.Builder();
     JavaScriptModulesConfig.Builder jsModulesBuilder = new JavaScriptModulesConfig.Builder();
@@ -682,6 +684,7 @@ import com.facebook.systrace.Systrace;
       reactContext.setNativeModuleCallExceptionHandler(mDevSupportManager);
     }
 
+    ReactMarker.logMarker(PROCESS_PACKAGES_START);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "createAndProcessCoreModulesPackage");
@@ -704,21 +707,26 @@ import com.facebook.systrace.Systrace;
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
+    ReactMarker.logMarker(PROCESS_PACKAGES_END);
 
+    ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
     NativeModuleRegistry nativeModuleRegistry;
     try {
        nativeModuleRegistry = nativeRegistryBuilder.build();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
     }
 
+    ReactMarker.logMarker(BUILD_JS_MODULE_CONFIG_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "buildJSModuleConfig");
     JavaScriptModulesConfig javaScriptModulesConfig;
     try {
       javaScriptModulesConfig = jsModulesBuilder.build();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(BUILD_JS_MODULE_CONFIG_END);
     }
 
     NativeModuleCallExceptionHandler exceptionHandler = mNativeModuleCallExceptionHandler != null
@@ -732,12 +740,14 @@ import com.facebook.systrace.Systrace;
         .setJSBundleLoader(jsBundleLoader)
         .setNativeModuleCallExceptionHandler(exceptionHandler);
 
+    ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
     CatalystInstance catalystInstance;
     try {
       catalystInstance = catalystInstanceBuilder.build();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_END);
     }
 
     if (mBridgeIdleDebugListener != null) {
@@ -746,14 +756,16 @@ import com.facebook.systrace.Systrace;
 
     reactContext.initializeWithInstance(catalystInstance);
 
+    ReactMarker.logMarker(RUN_JS_BUNDLE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     try {
       catalystInstance.runJSBundle();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      ReactMarker.logMarker(RUN_JS_BUNDLE_END);
     }
 
-    ReactMarker.logMarker("CREATE_REACT_CONTEXT_END");
+    ReactMarker.logMarker(CREATE_REACT_CONTEXT_END);
     return reactContext;
   }
 
