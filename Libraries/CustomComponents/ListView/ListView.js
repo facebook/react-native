@@ -35,7 +35,6 @@ var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
 var isEmpty = require('isEmpty');
-var logError = require('logError');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
@@ -292,26 +291,20 @@ var ListView = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    if (this.props.dataSource !== nextProps.dataSource) {
+    if (this.props.dataSource !== nextProps.dataSource ||
+        this.props.initialListSize !== nextProps.initialListSize) {
       this.setState((state, props) => {
         this._prevRenderedRowsCount = 0;
         return {
           curRenderedRowsCount: Math.min(
-            state.curRenderedRowsCount + props.pageSize,
+            Math.max(
+              state.curRenderedRowsCount,
+              props.initialListSize
+            ),
             props.dataSource.getRowCount()
           ),
         };
-      });
-    }
-    if (this.props.initialListSize !== nextProps.initialListSize) {
-      this.setState((state, props) => {
-        return {
-          curRenderedRowsCount: Math.max(
-            state.curRenderedRowsCount,
-            props.initialListSize
-          ),
-        };
-      });
+      }, () => this._renderMoreRowsIfNeeded());
     }
   },
 
