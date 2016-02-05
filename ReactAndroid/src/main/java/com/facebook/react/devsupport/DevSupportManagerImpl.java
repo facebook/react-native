@@ -42,7 +42,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -51,7 +50,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.ShakeDetector;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.StackTraceHelper.StackFrame;
-import com.facebook.react.modules.core.HMRClient;
 import com.facebook.react.modules.debug.DeveloperSettings;
 
 /**

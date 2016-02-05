@@ -19,7 +19,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
-import com.facebook.react.modules.core.HMRClient;
+import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.modules.core.JSTimersExecution;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.core.Timing;

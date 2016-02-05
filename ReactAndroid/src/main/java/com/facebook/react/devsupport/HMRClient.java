@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.modules.core;
+package com.facebook.react.devsupport;
 
 import com.facebook.react.bridge.JavaScriptModule;
 
