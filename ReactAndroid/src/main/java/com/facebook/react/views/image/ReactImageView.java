@@ -15,7 +15,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -208,7 +207,9 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setSource(@Nullable String source) {
+  public void setSource(
+      @Nullable String source,
+      ResourceDrawableIdHelper resourceDrawableIdHelper) {
     mUri = null;
     if (source != null) {
       try {
@@ -221,7 +222,7 @@ public class ReactImageView extends GenericDraweeView {
         // ignore malformed uri, then attempt to extract resource ID.
       }
       if (mUri == null) {
-        mUri = getResourceDrawableUri(getContext(), source);
+        mUri = resourceDrawableIdHelper.getResourceDrawableUri(getContext(), source);
         mIsLocalImage = true;
       } else {
         mIsLocalImage = false;
@@ -230,8 +231,10 @@ public class ReactImageView extends GenericDraweeView {
     mIsDirty = true;
   }
 
-  public void setLoadingIndicatorSource(@Nullable String name) {
-    Drawable drawable = getResourceDrawable(getContext(), name);
+  public void setLoadingIndicatorSource(
+      @Nullable String name,
+      ResourceDrawableIdHelper resourceDrawableIdHelper) {
+    Drawable drawable = resourceDrawableIdHelper.getResourceDrawable(getContext(), name);
     mLoadingImageDrawable =
         drawable != null ? (Drawable) new AutoRotateDrawable(drawable, 1000) : null;
     mIsDirty = true;
@@ -348,28 +351,5 @@ public class ReactImageView extends GenericDraweeView {
     // We resize here only for images likely to be from the device's camera, where the app developer
     // has no control over the original size
     return uri != null && (UriUtil.isLocalContentUri(uri) || UriUtil.isLocalFileUri(uri));
-  }
-
-  private static int getResourceDrawableId(Context context, @Nullable String name) {
-    if (name == null || name.isEmpty()) {
-      return 0;
-    }
-    return context.getResources().getIdentifier(
-        name.toLowerCase().replace("-", "_"),
-        "drawable",
-        context.getPackageName());
-  }
-
-  private static @Nullable Drawable getResourceDrawable(Context context, @Nullable String name) {
-    int resId = getResourceDrawableId(context, name);
-    return resId > 0 ? context.getResources().getDrawable(resId) : null;
-  }
-
-  private static Uri getResourceDrawableUri(Context context, @Nullable String name) {
-    int resId = getResourceDrawableId(context, name);
-    return resId > 0 ? new Uri.Builder()
-        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-        .path(String.valueOf(resId))
-        .build() : Uri.EMPTY;
   }
 }

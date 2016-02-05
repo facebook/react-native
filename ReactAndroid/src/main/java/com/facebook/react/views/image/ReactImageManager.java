@@ -32,6 +32,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
+  private ResourceDrawableIdHelper mResourceDrawableIdHelper;
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
@@ -40,12 +41,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public ReactImageManager() {
     // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
@@ -70,13 +73,13 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   // In JS this is Image.props.source.uri
   @ReactProp(name = "src")
   public void setSource(ReactImageView view, @Nullable String source) {
-    view.setSource(source);
+    view.setSource(source, mResourceDrawableIdHelper);
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
-    view.setLoadingIndicatorSource(source);
+    view.setLoadingIndicatorSource(source, mResourceDrawableIdHelper);
   }
 
   @ReactProp(name = "borderColor", customType = "Color")
