@@ -411,7 +411,7 @@ RCT_EXPORT_MODULE()
   task.uploadProgressBlock = uploadProgressBlock;
 
   if (task.requestID) {
-    if (_tasksByRequestID) {
+    if (!_tasksByRequestID) {
       _tasksByRequestID = [NSMutableDictionary new];
     }
     _tasksByRequestID[task.requestID] = task;
