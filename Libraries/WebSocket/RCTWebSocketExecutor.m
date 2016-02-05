@@ -49,10 +49,21 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
-    _url = [RCTConvert NSURL:URLString];
+#define AUTO_IP
+// Uncomment the following line to disable the AUTO_IP configuration of the debugger
+// websocket.  See also the AUTO_IP logic in AppDelegate.m
+//#undef AUTO_IP
+#if TARGET_OS_SIMULATOR || !defined(AUTO_IP)
+      NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+      NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
+      NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy", port];
+      _url = [RCTConvert NSURL:URLString];
+#else
+      NSString *serverIP = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SERVER_IP"];
+      NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
+      NSString *debugUrlString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy", serverIP, port];
+      _url = [RCTConvert NSURL:debugUrlString];
+#endif
   }
 
   _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);

@@ -17,6 +17,32 @@
 {
   NSURL *jsCodeLocation;
 
+  #define AUTO_IP
+  // uncomment the following line to disable auto IP detection and use the old 0.16
+  // manual IP setting method:
+  //#undef AUTO_IP
+
+  // BE SURE TO SEE THE AUTO_IP #define in Libraries/RTCWebSocket.xcodeproj/RCTWebSocketExecutor.m
+
+  #ifdef AUTO_IP
+  #if DEBUG
+  #if TARGET_OS_SIMULATOR
+  #warning "DEBUG SIMULATOR"
+    jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
+  #else
+  #warning "DEBUG DEVICE"
+    NSString *serverIP = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SERVER_IP"];
+    NSString *jsCodeUrlString = [NSString stringWithFormat:@"http://%@:8081/index.ios.bundle?platform=ios&dev=true", serverIP];
+    NSString *jsBundleUrlString = [jsCodeUrlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    jsCodeLocation = [NSURL URLWithString:jsBundleUrlString];
+  #endif
+  #else
+  #warning "PRODUCTION DEVICE"
+    jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  #endif
+  #else
+  #warning "ORIGINAL 0.16 MANUAL STYLE"
+
   /**
    * Loading JavaScript code - uncomment the one you want.
    *
@@ -40,6 +66,7 @@
    */
 
 //   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"<%= name %>"
