@@ -104,8 +104,17 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-  // Image from PhotoLibrary
-  NSString *imageUri = [info[UIImagePickerControllerReferenceURL] absoluteString];
+  NSString *mediaType = info[UIImagePickerControllerMediaType];
+  NSString *imageUri;
+
+  if (mediaType == (NSString *)kUTTypeMovie) {
+    // Filesystem URL for the movie
+    imageUri = [info[UIImagePickerControllerMediaURL] absoluteString];
+  } else {
+    // Image from PhotoLibrary
+    imageUri = [info[UIImagePickerControllerReferenceURL] absoluteString];
+  }
+
   if (imageUri) {
     [self _dismissPicker:picker args:@[imageUri]];
 
