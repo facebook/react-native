@@ -15,11 +15,14 @@
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
 #include <react/JSModulesUnbundle.h>
+#include <react/Platform.h>
 #include "JNativeRunnable.h"
 #include "JSLoader.h"
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
+#include "JSLogging.h"
+#include "JSCPerfLogging.h"
 #include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
@@ -561,6 +564,15 @@ static jmethodID gCallbackMethod;
 static jmethodID gOnBatchCompleteMethod;
 static jmethodID gLogMarkerMethod;
 
+static void logMarker(const std::string& marker) {
+  JNIEnv* env = Environment::current();
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+  jstring jmarker = env->NewStringUTF(marker.c_str());
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, jmarker);
+  env->DeleteLocalRef(markerClass);
+  env->DeleteLocalRef(jmarker);
+}
+
 static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
     return;
@@ -801,6 +813,15 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    // Inject some behavior into react/
+    ReactMarker::logMarker = bridge::logMarker;
+    WebWorkerUtil::loadScriptFromAssets =
+      [] (const std::string& assetName) {
+        return loadScriptFromAssets(assetName);
+      };
+    PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
+    JSLogging::nativeHook = nativeLoggingHook;
+
     // get the current env
     JNIEnv* env = Environment::current();
 
