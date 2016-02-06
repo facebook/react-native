@@ -107,7 +107,7 @@
     "curly": 1,                      // specify curly brace conventions for all control statements
     "default-case": 0,               // require default case in switch statements (off by default)
     "dot-notation": 1,               // encourages use of dot notation whenever possible
-    "eqeqeq": 1,                     // require the use of === and !==
+    "eqeqeq": [1, "allow-null"],     // require the use of === and !==
     "guard-for-in": 0,               // make sure for-in loops have an if statement (off by default)
     "no-alert": 1,                   // disallow the use of alert, confirm, and prompt
     "no-caller": 1,                  // disallow use of arguments.caller or arguments.callee
