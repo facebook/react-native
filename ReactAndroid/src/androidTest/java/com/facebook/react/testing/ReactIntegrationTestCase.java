@@ -147,7 +147,6 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
     mInstance.addBridgeIdleDebugListener(mBridgeIdleSignaler);
     getContext().initializeWithInstance(mInstance);
-    ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
   }
 
   public boolean waitForBridgeIdle(long millis) {
@@ -163,6 +162,12 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         Assertions.assertNotNull(mBridgeIdleSignaler),
         getContext(),
         IDLE_TIMEOUT_MS);
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
   }
 
   @Override
