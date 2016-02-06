@@ -17,7 +17,10 @@ class JMessageQueueThread;
 
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
+  JSCExecutorFactory(const std::string& cacheDir) : cacheDir_(cacheDir) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override;
+private:
+  std::string cacheDir_;
 };
 
 class JSCExecutor : public JSExecutor, public JSCWebWorkerOwner {
@@ -25,7 +28,7 @@ public:
   /**
    * Should be invoked from the JS thread.
    */
-  explicit JSCExecutor(FlushImmediateCallback flushImmediateCallback);
+  explicit JSCExecutor(FlushImmediateCallback flushImmediateCallback, const std::string& cacheDir);
   ~JSCExecutor() override;
 
   virtual void executeApplicationScript(
@@ -66,12 +69,12 @@ private:
   std::shared_ptr<JMessageQueueThread> m_messageQueueThread;
   JSModulesUnbundle m_unbundle;
   bool m_isUnbundleInitialized = false;
+  std::string m_deviceCacheDir;
 
   int addWebWorker(const std::string& script, JSValueRef workerRef);
   void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);
   void terminateWebWorker(int worker);
   void loadModule(uint32_t moduleId);
-  std::string getDeviceCacheDir();
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,

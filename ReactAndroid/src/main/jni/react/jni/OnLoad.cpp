@@ -786,9 +786,32 @@ static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
 
 namespace executors {
 
+std::string getDeviceCacheDir() {
+  // Get the Application Context object
+  auto getApplicationClass = findClassLocal(
+                              "com/facebook/react/common/ApplicationHolder");
+  auto getApplicationMethod = getApplicationClass->getStaticMethod<jobject()>(
+                              "getApplication",
+                              "()Landroid/app/Application;"
+                              );
+  auto application = getApplicationMethod(getApplicationClass);
+
+  // Get getCacheDir() from the context
+  auto getCacheDirMethod = findClassLocal("android/app/Application")
+                            ->getMethod<jobject()>("getCacheDir",
+                                                   "()Ljava/io/File;"
+                                                  );
+  auto cacheDirObj = getCacheDirMethod(application);
+
+  // Call getAbsolutePath() on the returned File object
+  auto getAbsolutePathMethod = findClassLocal("java/io/File")
+                                ->getMethod<jstring()>("getAbsolutePath");
+  return getAbsolutePathMethod(cacheDirObj)->toStdString();
+}
+
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
   virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override {
-    return JSCExecutorFactory().createJSExecutor(cb);
+    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(cb);
   }
 };
 
