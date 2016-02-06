@@ -14,7 +14,7 @@
 namespace facebook {
 namespace react {
 
-class JMessageQueueThread;
+class MessageQueueThread;
 
 /**
  * A class that can own the lifecycle, receive messages from, and dispatch messages
@@ -32,7 +32,7 @@ public:
    * Should return the owner's MessageQueueThread. Calls to onMessageReceived will be enqueued
    * on this thread.
    */
-  virtual std::shared_ptr<JMessageQueueThread> getMessageQueueThread() = 0;
+  virtual std::shared_ptr<MessageQueueThread> getMessageQueueThread() = 0;
 };
 
 /**
@@ -77,8 +77,8 @@ private:
   std::atomic_bool isTerminated_ = ATOMIC_VAR_INIT(false);
   std::string scriptName_;
   JSCWebWorkerOwner *owner_ = nullptr;
-  std::shared_ptr<JMessageQueueThread> ownerMessageQueueThread_;
-  std::unique_ptr<JMessageQueueThread> workerMessageQueueThread_;
+  std::shared_ptr<MessageQueueThread> ownerMessageQueueThread_;
+  std::unique_ptr<MessageQueueThread> workerMessageQueueThread_;
   JSGlobalContextRef context_ = nullptr;
 
   static JSValueRef nativePostMessage(

@@ -13,9 +13,9 @@
 #include <jni/LocalReference.h>
 
 #include "JSCHelpers.h"
-#include "jni/JMessageQueueThread.h"
 #include "jni/JSLoader.h"
 #include "jni/WebWorkers.h"
+#include "MessageQueueThread.h"
 #include "Platform.h"
 #include "Value.h"
 

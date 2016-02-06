@@ -21,6 +21,7 @@
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
+#include "JMessageQueueThread.h"
 #include "JSLogging.h"
 #include "JSCPerfLogging.h"
 #include <algorithm>
@@ -841,6 +842,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     WebWorkerUtil::loadScriptFromAssets =
       [] (const std::string& assetName) {
         return loadScriptFromAssets(assetName);
+      };
+    MessageQueues::getCurrentMessageQueueThread =
+      [] {
+        return std::unique_ptr<MessageQueueThread>(
+            JMessageQueueThread::currentMessageQueueThread().release());
       };
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSLogging::nativeHook = nativeLoggingHook;

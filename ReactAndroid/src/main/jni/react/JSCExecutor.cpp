@@ -12,7 +12,6 @@
 #include <jni/fbjni/Exceptions.h>
 #include <sys/time.h>
 #include "Value.h"
-#include "jni/JMessageQueueThread.h"
 #include "jni/OnLoad.h"
 #include <react/JSCHelpers.h>
 #include "Platform.h"
@@ -91,7 +90,7 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateC
 JSCExecutor::JSCExecutor(FlushImmediateCallback cb, const std::string& cacheDir) :
     m_flushImmediateCallback(cb), m_deviceCacheDir(cacheDir) {
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  m_messageQueueThread = JMessageQueueThread::currentMessageQueueThread();
+  m_messageQueueThread = MessageQueues::getCurrentMessageQueueThread();
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativePerformanceNow", nativePerformanceNow);
@@ -255,7 +254,7 @@ JSGlobalContextRef JSCExecutor::getContext() {
   return m_context;
 }
 
-std::shared_ptr<JMessageQueueThread> JSCExecutor::getMessageQueueThread() {
+std::shared_ptr<MessageQueueThread> JSCExecutor::getMessageQueueThread() {
   return m_messageQueueThread;
 }
 
