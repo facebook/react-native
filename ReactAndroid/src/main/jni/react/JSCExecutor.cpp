@@ -85,11 +85,11 @@ static std::string executeJSCallWithJSC(
 }
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateCallback cb) {
-  return std::unique_ptr<JSExecutor>(new JSCExecutor(cb));
+  return std::unique_ptr<JSExecutor>(new JSCExecutor(cb, cacheDir_));
 }
 
-JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
-    m_flushImmediateCallback(cb) {
+JSCExecutor::JSCExecutor(FlushImmediateCallback cb, const std::string& cacheDir) :
+    m_flushImmediateCallback(cb), m_deviceCacheDir(cacheDir) {
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
   m_messageQueueThread = JMessageQueueThread::currentMessageQueueThread();
   s_globalContextRefToJSCExecutor[m_context] = this;
@@ -130,29 +130,6 @@ JSCExecutor::~JSCExecutor() {
   JSGlobalContextRelease(m_context);
 }
 
-std::string JSCExecutor::getDeviceCacheDir(){
-  // Get the Application Context object
-  auto getApplicationClass = findClassLocal(
-                              "com/facebook/react/common/ApplicationHolder");
-  auto getApplicationMethod = getApplicationClass->getStaticMethod<jobject()>(
-                              "getApplication",
-                              "()Landroid/app/Application;"
-                              );
-  auto application = getApplicationMethod(getApplicationClass);
-
-  // Get getCacheDir() from the context
-  auto getCacheDirMethod = findClassLocal("android/app/Application")
-                            ->getMethod<jobject()>("getCacheDir",
-                                                   "()Ljava/io/File;"
-                                                  );
-  auto cacheDirObj = getCacheDirMethod(application);
-
-  // Call getAbsolutePath() on the returned File object
-  auto getAbsolutePathMethod = findClassLocal("java/io/File")
-                                ->getMethod<jstring()>("getAbsolutePath");
-  return getAbsolutePathMethod(cacheDirObj)->toStdString();
-}
-
 void JSCExecutor::executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
@@ -170,7 +147,7 @@ void JSCExecutor::executeApplicationScript(
   } else {
     // If we're evaluating a script, get the device's cache dir 
     //  in which a cache file for that script will be stored.
-    evaluateScript(m_context, jsScript, jsSourceURL, getDeviceCacheDir().c_str());
+    evaluateScript(m_context, jsScript, jsSourceURL, m_deviceCacheDir.c_str());
   }
 }
 
