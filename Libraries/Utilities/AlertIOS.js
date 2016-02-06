@@ -94,7 +94,8 @@ class AlertIOS {
       onPress?: ?Function;
       style?: AlertButtonStyle;
     }>,
-    callback?: ?Function
+    callback?: ?Function,
+    type?: string
   ): void {
     if (arguments.length === 2) {
       if (typeof value === 'object') {
@@ -117,7 +118,12 @@ class AlertIOS {
     if (!buttons) {
       buttons = [{ onPress: callback }];
     }
-    this.alert(title, value, buttons, 'plain-text');
+
+    if (!type) {
+    	type = 'plain-text';
+    }
+
+    this.alert(title, value, buttons, type);
   }
 }
 
