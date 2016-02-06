@@ -35,7 +35,7 @@ JSCWebWorker::JSCWebWorker(int id, JSCWebWorkerOwner *owner, std::string scriptS
     owner_(owner) {
   ownerMessageQueueThread_ = owner->getMessageQueueThread();
   CHECK(ownerMessageQueueThread_) << "Owner MessageQueue must not be null";
-  workerMessageQueueThread_ = WebWorkers::createWebWorkerThread(id, ownerMessageQueueThread_.get());
+  workerMessageQueueThread_ = WebWorkerUtil::createWebWorkerThread(id, ownerMessageQueueThread_.get());
   CHECK(workerMessageQueueThread_) << "Failed to create worker thread";
 
   workerMessageQueueThread_->runOnQueue([this] () {
