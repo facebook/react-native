@@ -15,6 +15,7 @@
 #include "jni/JMessageQueueThread.h"
 #include "jni/OnLoad.h"
 #include <react/JSCHelpers.h>
+#include "Platform.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include <react/JSCTracing.h>
@@ -30,9 +31,6 @@
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
 #endif
-
-// Add native performance markers support
-#include <react/JSCPerfLogging.h>
 
 #ifdef WITH_FB_MEMORY_PROFILING
 #include <react/JSCMemory.h>
@@ -53,13 +51,6 @@ namespace react {
 static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
 
 static JSValueRef nativeFlushQueueImmediate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception);
-static JSValueRef nativeLoggingHook(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
@@ -103,11 +94,12 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   m_messageQueueThread = JMessageQueueThread::currentMessageQueueThread();
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
-  installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", nativePerformanceNow);
   installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
   installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
   installGlobalFunction(m_context, "nativeTerminateWorker", nativeTerminateWorker);
+
+  installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -116,7 +108,7 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
   addNativeProfilingHooks(m_context);
-  addNativePerfLoggingHooks(m_context);
+  PerfLogging::installNativeHooks(m_context);
   #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
@@ -164,17 +156,9 @@ std::string JSCExecutor::getDeviceCacheDir(){
 void JSCExecutor::executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  JNIEnv* env = Environment::current();
-  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
-  jmethodID logMarkerMethod = facebook::react::getLogMarkerMethod();
-  jstring startStringMarker = env->NewStringUTF("executeApplicationScript_startStringConvert");
-  jstring endStringMarker = env->NewStringUTF("executeApplicationScript_endStringConvert");
-
-  env->CallStaticVoidMethod(markerClass, logMarkerMethod, startStringMarker);
+  ReactMarker::logMarker("executeApplicationScript_startStringConvert");
   String jsScript = String::createExpectingAscii(script);
-  env->CallStaticVoidMethod(markerClass, logMarkerMethod, endStringMarker);
-  env->DeleteLocalRef(startStringMarker);
-  env->DeleteLocalRef(endStringMarker);
+  ReactMarker::logMarker("executeApplicationScript_endStringConvert");
 
   String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
@@ -501,29 +485,6 @@ JSValueRef JSCExecutor::nativeTerminateWorker(
 
   executor->terminateWebWorker((int) workerDouble);
 
-  return JSValueMakeUndefined(ctx);
-}
-
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  android_LogPriority logLevel = ANDROID_LOG_DEBUG;
-  if (argumentCount > 1) {
-    int level = (int) JSValueToNumber(ctx, arguments[1], NULL);
-    // The lowest log level we get from JS is 0. We shift and cap it to be
-    // in the range the Android logging method expects.
-    logLevel = std::min(
-        static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
-        ANDROID_LOG_FATAL);
-  }
-  if (argumentCount > 0) {
-    JSStringRef jsString = JSValueToStringCopy(ctx, arguments[0], NULL);
-    String message = String::adopt(jsString);
-    FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.str().c_str());
-  }
   return JSValueMakeUndefined(ctx);
 }
 

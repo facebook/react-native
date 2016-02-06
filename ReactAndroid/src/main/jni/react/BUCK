@@ -46,15 +46,14 @@ react_library(
     'JSCExecutor.cpp',
     'JSCTracing.cpp',
     'JSCMemory.cpp',
-    'JSCPerfLogging.cpp',
     'JSCLegacyProfiler.cpp',
     'JSCWebWorker.cpp',
+    'Platform.cpp',
   ],
   headers = [
     'JSCTracing.h',
-    'JSCPerfLogging.h',
     'JSCLegacyProfiler.h',
-    'JSCMemory.h'
+    'JSCMemory.h',
   ],
   exported_headers = [
     'Bridge.h',
@@ -65,6 +64,7 @@ react_library(
     'MethodCall.h',
     'JSModulesUnbundle.h',
     'Value.h',
+    'Platform.h',
   ],
   compiler_flags = [
     '-Wall',
