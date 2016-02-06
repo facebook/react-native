@@ -26,6 +26,8 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
+NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
+
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
