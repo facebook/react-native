@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <react/Bridge.h>
 #include <react/Executor.h>
 #include <jni/fbjni.h>
 #include <jni.h>
@@ -14,7 +15,7 @@ namespace react {
  * This executor factory can only create a single executor instance because it moves
  * executorInstance global reference to the executor instance it creates.
  */
-class ProxyExecutorOneTimeFactory : public JSExecutorFactory {
+class ProxyExecutorOneTimeFactory : public CountableJSExecutorFactory {
 public:
   ProxyExecutorOneTimeFactory(jni::global_ref<jobject>&& executorInstance) :
     m_executor(std::move(executorInstance)) {}

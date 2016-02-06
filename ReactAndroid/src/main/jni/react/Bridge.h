@@ -22,11 +22,14 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
+class CountableJSExecutorFactory : public JSExecutorFactory, public Countable {
+};
+
 class Bridge : public Countable {
 public:
   typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
 
-  Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback);
+  Bridge(const RefPtr<CountableJSExecutorFactory>& jsExecutorFactory, Callback callback);
   virtual ~Bridge();
 
   /**

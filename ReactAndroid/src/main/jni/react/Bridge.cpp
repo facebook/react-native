@@ -13,7 +13,7 @@ using fbsystrace::FbSystraceSection;
 namespace facebook {
 namespace react {
 
-Bridge::Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback) :
+Bridge::Bridge(const RefPtr<CountableJSExecutorFactory>& jsExecutorFactory, Callback callback) :
   m_callback(std::move(callback)),
   m_destroyed(std::shared_ptr<bool>(new bool(false)))
 {
