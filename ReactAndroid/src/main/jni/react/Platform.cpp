@@ -9,6 +9,10 @@ namespace ReactMarker {
 LogMarker logMarker;
 };
 
+namespace MessageQueues {
+GetCurrentMessageQueueThread getCurrentMessageQueueThread;
+};
+
 namespace WebWorkerUtil {
 LoadScriptFromAssets loadScriptFromAssets;
 };

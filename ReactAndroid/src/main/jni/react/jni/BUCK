@@ -39,12 +39,12 @@ jni_library(
   headers = [
     'JSLoader.h',
     'ProxyExecutor.h',
+    'JMessageQueueThread.h',
+    'JNativeRunnable.h',
     'JSCPerfLogging.h',
     'JSLogging.h',
   ],
   exported_headers = [
-    'JMessageQueueThread.h',
-    'JNativeRunnable.h',
     'NativeArray.h',
     'ReadableNativeArray.h',
     'WebWorkers.h',

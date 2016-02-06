@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include "MessageQueueThread.h"
+
 #include <JavaScriptCore/JSContextRef.h>
 
 namespace facebook {
@@ -14,6 +16,11 @@ namespace react {
 namespace ReactMarker {
 using LogMarker = std::function<void(const std::string&)>;
 extern LogMarker logMarker;
+};
+
+namespace MessageQueues {
+using GetCurrentMessageQueueThread = std::function<std::unique_ptr<MessageQueueThread>()>;
+extern GetCurrentMessageQueueThread getCurrentMessageQueueThread;
 };
 
 namespace WebWorkerUtil {

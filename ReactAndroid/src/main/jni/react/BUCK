@@ -61,6 +61,7 @@ react_library(
     'JSCExecutor.h',
     'JSCHelpers.h',
     'JSCWebWorker.h',
+    'MessageQueueThread.h',
     'MethodCall.h',
     'JSModulesUnbundle.h',
     'Value.h',
