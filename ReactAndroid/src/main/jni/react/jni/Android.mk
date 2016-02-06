@@ -6,7 +6,10 @@ LOCAL_MODULE := reactnativejni
 
 LOCAL_SRC_FILES := \
   JMessageQueueThread.cpp \
+  JSCPerfLogging.cpp \
   JSLoader.cpp \
+  JSLogging.cpp \
+  JniJSModulesUnbundle.cpp \
   NativeArray.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
