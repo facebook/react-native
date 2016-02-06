@@ -59,7 +59,7 @@ public:
    * and injects each module as individual file.
    */
   void loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL);
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue);

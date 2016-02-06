@@ -22,6 +22,7 @@
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
 #include "JMessageQueueThread.h"
+#include "JniJSModulesUnbundle.h"
 #include "JSLogging.h"
 #include "JSCPerfLogging.h"
 #include "WebWorkers.h"
@@ -668,7 +669,8 @@ static void loadApplicationUnbundle(
   try {
     // Load the application unbundle and collect/dispatch any native calls that might have occured
     bridge->loadApplicationUnbundle(
-      JSModulesUnbundle(assetManager, startupFileName),
+      std::unique_ptr<JSModulesUnbundle>(
+        new JniJSModulesUnbundle(assetManager, startupFileName)),
       startupCode,
       startupFileName);
     bridge->flush();
@@ -693,7 +695,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   #endif
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
-  if (JSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
+  if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
     loadApplicationUnbundle(bridge, manager, script, assetNameStr);
   } else {
     executeApplicationScript(bridge, script, assetNameStr);

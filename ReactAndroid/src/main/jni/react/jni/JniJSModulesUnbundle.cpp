@@ -1,6 +1,6 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include "JSModulesUnbundle.h"
+#include "JniJSModulesUnbundle.h"
 
 #include <cstdint>
 #include <fb/assert.h>
@@ -36,22 +36,11 @@ static asset_ptr openAsset(
     AAsset_close);
 }
 
-JSModulesUnbundle::JSModulesUnbundle(AAssetManager *assetManager, const std::string& entryFile) :
+JniJSModulesUnbundle::JniJSModulesUnbundle(AAssetManager *assetManager, const std::string& entryFile) :
   m_assetManager(assetManager),
   m_moduleDirectory(jsModulesDir(entryFile)) {}
 
-JSModulesUnbundle::JSModulesUnbundle(JSModulesUnbundle&& other) noexcept {
-  *this = std::move(other);
-}
-
-JSModulesUnbundle& JSModulesUnbundle::operator= (JSModulesUnbundle&& other) noexcept {
-  std::swap(m_assetManager, other.m_assetManager);
-  std::swap(m_moduleDirectory, other.m_moduleDirectory);
-
-  return *this;
-}
-
-bool JSModulesUnbundle::isUnbundle(
+bool JniJSModulesUnbundle::isUnbundle(
     AAssetManager *assetManager,
     const std::string& assetName) {
   if (!assetManager) {
@@ -69,7 +58,7 @@ bool JSModulesUnbundle::isUnbundle(
   return fileHeader == htole32(MAGIC_FILE_HEADER);
 }
 
-JSModulesUnbundle::Module JSModulesUnbundle::getModule(uint32_t moduleId) const {
+JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(uint32_t moduleId) const {
   // can be nullptr for default constructor.
   FBASSERTMSGF(m_assetManager != nullptr, "Unbundle has not been initialized with an asset manager");
 

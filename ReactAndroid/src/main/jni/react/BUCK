@@ -39,7 +39,6 @@ react_library(
   force_static = True,
   srcs = [
     'Bridge.cpp',
-    'JSModulesUnbundle.cpp',
     'Value.cpp',
     'MethodCall.cpp',
     'JSCHelpers.cpp',
