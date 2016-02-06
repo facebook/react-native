@@ -24,6 +24,7 @@
 #include "JMessageQueueThread.h"
 #include "JSLogging.h"
 #include "JSCPerfLogging.h"
+#include "WebWorkers.h"
 #include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
@@ -839,6 +840,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
     // Inject some behavior into react/
     ReactMarker::logMarker = bridge::logMarker;
+    WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
     WebWorkerUtil::loadScriptFromAssets =
       [] (const std::string& assetName) {
         return loadScriptFromAssets(assetName);

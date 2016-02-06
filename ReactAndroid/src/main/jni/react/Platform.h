@@ -24,6 +24,9 @@ extern GetCurrentMessageQueueThread getCurrentMessageQueueThread;
 };
 
 namespace WebWorkerUtil {
+using WebWorkerQueueFactory = std::function<std::unique_ptr<MessageQueueThread>(int id, MessageQueueThread* ownerMessageQueue)>;
+extern WebWorkerQueueFactory createWebWorkerThread;
+
 using LoadScriptFromAssets = std::function<std::string(const std::string& assetName)>;
 extern LoadScriptFromAssets loadScriptFromAssets;
 };

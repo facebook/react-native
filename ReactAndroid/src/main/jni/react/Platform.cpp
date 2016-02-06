@@ -14,6 +14,7 @@ GetCurrentMessageQueueThread getCurrentMessageQueueThread;
 };
 
 namespace WebWorkerUtil {
+WebWorkerQueueFactory createWebWorkerThread;
 LoadScriptFromAssets loadScriptFromAssets;
 };
 
