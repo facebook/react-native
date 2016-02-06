@@ -27,8 +27,12 @@ class StyleInspector extends React.Component {
         <View>
           {names.map(name => <Text style={styles.attr}>{name}:</Text>)}
         </View>
+
         <View>
-          {names.map(name => <Text style={styles.value}>{this.props.style[name]}</Text>)}
+          {names.map(name => {
+            var value = typeof this.props.style[name] === 'object' ? JSON.stringify(this.props.style[name]) : this.props.style[name];
+            return <Text style={styles.value}>{value}</Text>;
+          } ) }
         </View>
       </View>
     );
