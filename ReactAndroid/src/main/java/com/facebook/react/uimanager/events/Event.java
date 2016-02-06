@@ -63,6 +63,10 @@ public abstract class Event<T extends Event> {
     return true;
   }
 
+  public boolean isSync() {
+    return false;
+  }
+
   /**
    * Given two events, coalesce them into a single event that will be sent to JS instead of two
    * separate events. By default, just chooses the one the is more recent.
