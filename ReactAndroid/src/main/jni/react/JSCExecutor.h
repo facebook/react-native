@@ -35,7 +35,7 @@ public:
     const std::string& script,
     const std::string& sourceURL) override;
   virtual void loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) override;
   virtual std::string flush() override;
@@ -66,10 +66,9 @@ private:
   FlushImmediateCallback m_flushImmediateCallback;
   std::unordered_map<int, JSCWebWorker> m_webWorkers;
   std::unordered_map<int, Object> m_webWorkerJSObjs;
-  JSModulesUnbundle m_unbundle;
-  bool m_isUnbundleInitialized = false;
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::string m_deviceCacheDir;
+  std::unique_ptr<JSModulesUnbundle> m_unbundle;
 
   int addWebWorker(const std::string& script, JSValueRef workerRef);
   void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);

@@ -34,7 +34,7 @@ public:
     const std::string& script,
     const std::string& sourceURL) override;
   virtual void loadApplicationUnbundle(
-    JSModulesUnbundle&& bundle,
+    std::unique_ptr<JSModulesUnbundle> bundle,
     const std::string& startupCode,
     const std::string& sourceURL) override;
   virtual std::string flush() override;

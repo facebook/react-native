@@ -151,15 +151,13 @@ void JSCExecutor::executeApplicationScript(
 }
 
 void JSCExecutor::loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
-
-  m_unbundle = std::move(unbundle);
-  if (!m_isUnbundleInitialized) {
-    m_isUnbundleInitialized = true;
+  if (!m_unbundle) {
     installGlobalFunction(m_context, "nativeRequire", nativeRequire);
   }
+  m_unbundle = std::move(unbundle);
   executeApplicationScript(startupCode, sourceURL);
 }
 
@@ -242,7 +240,7 @@ void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
 }
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
-  auto module = m_unbundle.getModule(moduleId);
+  auto module = m_unbundle->getModule(moduleId);
   auto sourceUrl = String::createExpectingAscii(module.name);
   auto source = String::createExpectingAscii(module.code);
   evaluateScript(m_context, source, sourceUrl);

@@ -37,7 +37,7 @@ void Bridge::executeApplicationScript(const std::string& script, const std::stri
 }
 
 void Bridge::loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
   m_jsExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
