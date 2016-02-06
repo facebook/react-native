@@ -1,8 +1,10 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-#include "JSCHelpers.h"
+#include "JSCPerfLogging.h"
+
 #include <fb/log.h>
 #include <jni/fbjni.h>
+#include <react/JSCHelpers.h>
 
 using namespace facebook::jni;
 

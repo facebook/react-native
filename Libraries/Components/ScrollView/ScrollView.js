@@ -530,7 +530,7 @@ var ScrollView = React.createClass({
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
         return React.cloneElement(
           refreshControl,
-          {style: this.props.style},
+          {style: props.style},
           <ScrollViewClass {...props} style={styles.base} ref={SCROLLVIEW}>
             {contentContainer}
           </ScrollViewClass>

@@ -59,8 +59,11 @@ var BackAndroid = {
   addEventListener: function (
     eventName: BackPressEventName,
     handler: Function
-  ): void {
+  ): {remove: () => void} {
     _backPressSubscriptions.add(handler);
+    return {
+      remove: () => BackAndroid.removeEventListener(eventName, handler),
+    };
   },
 
   removeEventListener: function(
