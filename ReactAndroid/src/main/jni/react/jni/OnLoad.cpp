@@ -627,7 +627,7 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   auto bridgeCallback = [weakCallback, weakCallbackQueueThread] (std::vector<MethodCall> calls, bool isEndOfBatch) {
     dispatchCallbacksToJava(weakCallback, weakCallbackQueueThread, std::move(calls), isEndOfBatch);
   };
-  auto nativeExecutorFactory = extractRefPtr<JSExecutorFactory>(env, executor);
+  auto nativeExecutorFactory = extractRefPtr<CountableJSExecutorFactory>(env, executor);
   auto bridge = createNew<Bridge>(nativeExecutorFactory, bridgeCallback);
   setCountableForJava(env, obj, std::move(bridge));
 }
@@ -774,8 +774,14 @@ static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
 
 namespace executors {
 
+struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override {
+    return JSCExecutorFactory().createJSExecutor(cb);
+  }
+};
+
 static void createJSCExecutor(JNIEnv *env, jobject obj) {
-  auto executor = createNew<JSCExecutorFactory>();
+  auto executor = createNew<CountableJSCExecutorFactory>();
   setCountableForJava(env, obj, std::move(executor));
 }
 
