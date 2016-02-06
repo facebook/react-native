@@ -538,6 +538,11 @@ public class UIImplementation {
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
+  public void dispatchViewManagerCommandSync(int reactTag, int commandId, ReadableArray commandArgs) {
+    assertViewExists(reactTag, "dispatchViewManagerCommandSync");
+    mOperationsQueue.executeDispatchCommand(reactTag, commandId, commandArgs);
+  }
+
   /**
    * Show a PopupMenu.
    *

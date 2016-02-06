@@ -112,6 +112,32 @@ public class EventDispatcher implements LifecycleEventListener {
   public void dispatchEvent(Event event) {
     Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
     synchronized (mEventsStagingLock) {
+
+      if (event.isSync()) {
+          synchronized (mEventsToDispatchLock) {
+              addEventToEventsToDispatch(event);
+              mReactContext.runOnJSQueueThread(new Runnable() {
+                      @Override
+                      public void run() {
+                          synchronized (mEventsToDispatchLock) {
+                              for (int eventIdx = 0; eventIdx < mEventsToDispatchSize; eventIdx++) {
+                                  Event event = mEventsToDispatch[eventIdx];
+                                  if (event == null) {
+                                      continue;
+                                  }
+                                  
+                                  event.dispatch(mRCTEventEmitter);
+                                  event.dispose();
+
+                              }
+                              clearEventsToDispatch();
+                          }
+                      }
+                  });
+          }
+          return;
+      }
+
       mEventStaging.add(event);
       Systrace.startAsyncFlow(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

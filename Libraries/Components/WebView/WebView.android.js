@@ -33,6 +33,8 @@ var WebViewState = keyMirror({
   ERROR: null,
 });
 
+type Event = Object;
+
 /**
  * Renders a native WebView.
  */
@@ -51,6 +53,7 @@ var WebView = React.createClass({
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+    onShouldStartLoadWithRequest: PropTypes.func,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -195,6 +198,15 @@ var WebView = React.createClass({
       console.warn('WebView: `source.body` is not supported when using GET.');
     }
 
+    var onShouldOverrideUrlLoading = this.props.onShouldStartLoadWithRequest
+        && ((event: Event) => {
+            var shouldOverride = !this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+            UIManager.dispatchViewManagerCommandSync(
+              this.getWebViewHandle(),
+              UIManager.RCTWebView.Commands.shouldOverrideWithResult,
+              [shouldOverride]);
+        });
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -212,6 +224,7 @@ var WebView = React.createClass({
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        onShouldOverrideUrlLoading={onShouldOverrideUrlLoading}
       />;
 
     return (
