@@ -180,14 +180,16 @@ var AsyncStorage = {
       // Even though the runtime complexity of this is theoretically worse vs if we used a map,
       // it's much, much faster in practice for the data sets we deal with (we avoid
       // allocating result pair arrays). This was heavily benchmarked.
+      //
+      // Is there a way to avoid using the map but fix the bug in this breaking test?
+      // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
+      let map = {};
+      result.forEach(([key, value]) => map[key] = value);
       const reqLength = getRequests.length;
       for (let i = 0; i < reqLength; i++) {
         const request = getRequests[i];
         const requestKeys = request.keys;
-        var requestResult = result.filter(function(resultPair) {
-          return requestKeys.indexOf(resultPair[0]) !== -1;
-        });
-
+        let requestResult = requestKeys.map(key => [key, map[key]]);
         request.callback && request.callback(null, requestResult);
         request.resolve && request.resolve(requestResult);
       }
@@ -214,6 +216,7 @@ var AsyncStorage = {
     var getRequest = {
       keys: keys,
       callback: callback,
+      // do we need this?
       keyIndex: this._getKeys.length,
       resolve: null,
       reject: null,
@@ -225,7 +228,12 @@ var AsyncStorage = {
     });
 
     this._getRequests.push(getRequest);
-    this._getKeys.push.apply(this._getKeys, keys);
+    // avoid fetching duplicates
+    keys.forEach(key => {
+      if (this._getKeys.indexOf(key) === -1) {
+        this._getKeys.push(key);
+      }
+    });
 
     return promiseResult;
   },
