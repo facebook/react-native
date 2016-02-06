@@ -11,8 +11,6 @@
 
 #include "Value.h"
 
-using namespace facebook::jni;
-
 namespace facebook {
 namespace react {
 
