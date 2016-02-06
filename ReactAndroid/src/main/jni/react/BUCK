@@ -9,6 +9,7 @@ DEPS = [
   '//native/third-party/android-ndk:android',
   '//xplat/fbsystrace:fbsystrace',
   '//xplat/folly:molly',
+  '//xplat/third-party/glog:glog',
 ]
 
 PREPROCESSOR_FLAGS = [
