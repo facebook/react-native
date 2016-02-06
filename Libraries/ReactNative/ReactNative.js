@@ -84,6 +84,7 @@ var ReactNative = {
     map: ReactChildren.map,
     forEach: ReactChildren.forEach,
     count: ReactChildren.count,
+    toArray: ReactChildren.toArray,
     only: onlyChild
   },
   Component: ReactComponent,
