@@ -23,6 +23,9 @@ describe('normalizeColor', function() {
     expect(normalizeColor('rgb(   1   , 2   , 3   )')).not.toBe(null);
     expect(normalizeColor('rgb(-1, -2, -3)')).not.toBe(null);
     expect(normalizeColor('rgba(0, 0, 0, 1)')).not.toBe(null);
+    expect(normalizeColor(0x01234567 + 0.5)).toBe(null);
+    expect(normalizeColor(-1)).toBe(null);
+    expect(normalizeColor(0xffffffff + 1)).toBe(null);
   });
 
   it('should temporarly accept floating point values for rgb', function() {
@@ -112,5 +115,12 @@ describe('normalizeColor', function() {
     expect(normalizeColor('red')).toBe(0xff0000ff);
     expect(normalizeColor('transparent')).toBe(0x00000000);
     expect(normalizeColor('peachpuff')).toBe(0xffdab9ff);
+  });
+
+  it('should handle number colors properly', function() {
+    expect(normalizeColor(0x00000000)).toBe(0x00000000);
+    expect(normalizeColor(0xff0000ff)).toBe(0xff0000ff);
+    expect(normalizeColor(0xffffffff)).toBe(0xffffffff);
+    expect(normalizeColor(0x01234567)).toBe(0x01234567);
   });
 });
