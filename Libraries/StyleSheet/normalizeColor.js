@@ -17,7 +17,7 @@ function normalizeColor(color: string): ?number {
 
   // Ordered based on occurrences on Facebook codebase
   if ((match = matchers.hex6.exec(color))) {
-    return 0xff000000 + parseInt(match[1], 16);
+    return (parseInt(match[1], 16) << 8 | 0x000000ff) >>> 0;
   }
 
   if (names.hasOwnProperty(color)) {
@@ -26,73 +26,67 @@ function normalizeColor(color: string): ?number {
 
   if ((match = matchers.rgb.exec(color))) {
     return (
-      0xff000000 + // a
-      parse255(match[1]) * (1 << 16) + // r
-      parse255(match[2]) * (1 << 8) + // g
-      parse255(match[3]) // b
-    );
+      parse255(match[1]) << 24 | // r
+      parse255(match[2]) << 16 | // g
+      parse255(match[3]) << 8 | // b
+      0x000000ff // a
+    ) >>> 0;
   }
 
   if ((match = matchers.rgba.exec(color))) {
     return (
-      parse1(match[4]) * (1 << 24) + // a
-      parse255(match[1]) * (1 << 16) + // r
-      parse255(match[2]) * (1 << 8) + // g
-      parse255(match[3]) // b
-    );
+      parse255(match[1]) << 24 | // r
+      parse255(match[2]) << 16 | // g
+      parse255(match[3]) << 8 | // b
+      parse1(match[4]) // a
+    ) >>> 0;
   }
 
   if ((match = matchers.hex3.exec(color))) {
-    return (
-      parseInt(
-        'ff' + // a
-        match[1] + match[1] + // r
-        match[2] + match[2] + // g
-        match[3] + match[3], // b
-        16
-      )
-    );
+    return parseInt(
+      match[1] + match[1] + // r
+      match[2] + match[2] + // g
+      match[3] + match[3] + // b
+      'ff', // a
+      16
+    ) >>> 0;
   }
 
   // https://drafts.csswg.org/css-color-4/#hex-notation
   if ((match = matchers.hex8.exec(color))) {
-    var number = parseInt(match[1], 16);
-    // Convert 0xrrggbbaa into 0xaarrggbb
-    return (number << 24 | number >>> 8) >>> 0;
+    return parseInt(match[1], 16) >>> 0;
   }
 
   if ((match = matchers.hex4.exec(color))) {
-    return (
-      parseInt(
-        match[4] + match[4] + // a
-        match[1] + match[1] + // r
-        match[2] + match[2] + // g
-        match[3] + match[3], // b
-        16
-      )
-    );
+    return parseInt(
+      match[1] + match[1] + // r
+      match[2] + match[2] + // g
+      match[3] + match[3] + // b
+      match[4] + match[4], // a
+      16
+    ) >>> 0;
   }
 
   if ((match = matchers.hsl.exec(color))) {
     return (
-      0xff000000 + // a
       hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
         parsePercentage(match[3]) // l
-      )
-    );
+      ) |
+      0x000000ff // a
+    ) >>> 0;
   }
 
   if ((match = matchers.hsla.exec(color))) {
     return (
-      parse1(match[4]) * (1 << 24) + // a
       hslToRgb(
         parse360(match[1]), // h
         parsePercentage(match[2]), // s
         parsePercentage(match[3]) // l
-      )
-    );
+      ) |
+      parse1(match[4]) // a
+    ) >>> 0;
   }
 
   return null;
@@ -125,9 +119,9 @@ function hslToRgb(h: number, s: number, l: number): number {
   var b = hue2rgb(p, q, h - 1 / 3);
 
   return (
-    Math.round(r * 255) * (1 << 16) +
-    Math.round(g * 255) * (1 << 8) +
-    Math.round(b * 255)
+    Math.round(r * 255) << 24 |
+    Math.round(g * 255) << 16 |
+    Math.round(b * 255) << 8
   );
 }
 
@@ -193,155 +187,155 @@ var names = {
   transparent: 0x00000000,
 
   // http://www.w3.org/TR/css3-color/#svg-color
-  aliceblue: 0xfff0f8ff,
-  antiquewhite: 0xfffaebd7,
-  aqua: 0xff00ffff,
-  aquamarine: 0xff7fffd4,
-  azure: 0xfff0ffff,
-  beige: 0xfff5f5dc,
-  bisque: 0xffffe4c4,
-  black: 0xff000000,
-  blanchedalmond: 0xffffebcd,
-  blue: 0xff0000ff,
-  blueviolet: 0xff8a2be2,
-  brown: 0xffa52a2a,
-  burlywood: 0xffdeb887,
-  burntsienna: 0xffea7e5d,
-  cadetblue: 0xff5f9ea0,
-  chartreuse: 0xff7fff00,
-  chocolate: 0xffd2691e,
-  coral: 0xffff7f50,
-  cornflowerblue: 0xff6495ed,
-  cornsilk: 0xfffff8dc,
-  crimson: 0xffdc143c,
-  cyan: 0xff00ffff,
-  darkblue: 0xff00008b,
-  darkcyan: 0xff008b8b,
-  darkgoldenrod: 0xffb8860b,
-  darkgray: 0xffa9a9a9,
-  darkgreen: 0xff006400,
-  darkgrey: 0xffa9a9a9,
-  darkkhaki: 0xffbdb76b,
-  darkmagenta: 0xff8b008b,
-  darkolivegreen: 0xff556b2f,
-  darkorange: 0xffff8c00,
-  darkorchid: 0xff9932cc,
-  darkred: 0xff8b0000,
-  darksalmon: 0xffe9967a,
-  darkseagreen: 0xff8fbc8f,
-  darkslateblue: 0xff483d8b,
-  darkslategray: 0xff2f4f4f,
-  darkslategrey: 0xff2f4f4f,
-  darkturquoise: 0xff00ced1,
-  darkviolet: 0xff9400d3,
-  deeppink: 0xffff1493,
-  deepskyblue: 0xff00bfff,
-  dimgray: 0xff696969,
-  dimgrey: 0xff696969,
-  dodgerblue: 0xff1e90ff,
-  firebrick: 0xffb22222,
-  floralwhite: 0xfffffaf0,
-  forestgreen: 0xff228b22,
-  fuchsia: 0xffff00ff,
-  gainsboro: 0xffdcdcdc,
-  ghostwhite: 0xfff8f8ff,
-  gold: 0xffffd700,
-  goldenrod: 0xffdaa520,
-  gray: 0xff808080,
-  green: 0xff008000,
-  greenyellow: 0xffadff2f,
-  grey: 0xff808080,
-  honeydew: 0xfff0fff0,
-  hotpink: 0xffff69b4,
-  indianred: 0xffcd5c5c,
-  indigo: 0xff4b0082,
-  ivory: 0xfffffff0,
-  khaki: 0xfff0e68c,
-  lavender: 0xffe6e6fa,
-  lavenderblush: 0xfffff0f5,
-  lawngreen: 0xff7cfc00,
-  lemonchiffon: 0xfffffacd,
-  lightblue: 0xffadd8e6,
-  lightcoral: 0xfff08080,
-  lightcyan: 0xffe0ffff,
-  lightgoldenrodyellow: 0xfffafad2,
-  lightgray: 0xffd3d3d3,
-  lightgreen: 0xff90ee90,
-  lightgrey: 0xffd3d3d3,
-  lightpink: 0xffffb6c1,
-  lightsalmon: 0xffffa07a,
-  lightseagreen: 0xff20b2aa,
-  lightskyblue: 0xff87cefa,
-  lightslategray: 0xff778899,
-  lightslategrey: 0xff778899,
-  lightsteelblue: 0xffb0c4de,
-  lightyellow: 0xffffffe0,
-  lime: 0xff00ff00,
-  limegreen: 0xff32cd32,
-  linen: 0xfffaf0e6,
-  magenta: 0xffff00ff,
-  maroon: 0xff800000,
-  mediumaquamarine: 0xff66cdaa,
-  mediumblue: 0xff0000cd,
-  mediumorchid: 0xffba55d3,
-  mediumpurple: 0xff9370db,
-  mediumseagreen: 0xff3cb371,
-  mediumslateblue: 0xff7b68ee,
-  mediumspringgreen: 0xff00fa9a,
-  mediumturquoise: 0xff48d1cc,
-  mediumvioletred: 0xffc71585,
-  midnightblue: 0xff191970,
-  mintcream: 0xfff5fffa,
-  mistyrose: 0xffffe4e1,
-  moccasin: 0xffffe4b5,
-  navajowhite: 0xffffdead,
-  navy: 0xff000080,
-  oldlace: 0xfffdf5e6,
-  olive: 0xff808000,
-  olivedrab: 0xff6b8e23,
-  orange: 0xffffa500,
-  orangered: 0xffff4500,
-  orchid: 0xffda70d6,
-  palegoldenrod: 0xffeee8aa,
-  palegreen: 0xff98fb98,
-  paleturquoise: 0xffafeeee,
-  palevioletred: 0xffdb7093,
-  papayawhip: 0xffffefd5,
-  peachpuff: 0xffffdab9,
-  peru: 0xffcd853f,
-  pink: 0xffffc0cb,
-  plum: 0xffdda0dd,
-  powderblue: 0xffb0e0e6,
-  purple: 0xff800080,
-  rebeccapurple: 0xff663399,
-  red: 0xffff0000,
-  rosybrown: 0xffbc8f8f,
-  royalblue: 0xff4169e1,
-  saddlebrown: 0xff8b4513,
-  salmon: 0xfffa8072,
-  sandybrown: 0xfff4a460,
-  seagreen: 0xff2e8b57,
-  seashell: 0xfffff5ee,
-  sienna: 0xffa0522d,
-  silver: 0xffc0c0c0,
-  skyblue: 0xff87ceeb,
-  slateblue: 0xff6a5acd,
-  slategray: 0xff708090,
-  slategrey: 0xff708090,
-  snow: 0xfffffafa,
-  springgreen: 0xff00ff7f,
-  steelblue: 0xff4682b4,
-  tan: 0xffd2b48c,
-  teal: 0xff008080,
-  thistle: 0xffd8bfd8,
-  tomato: 0xffff6347,
-  turquoise: 0xff40e0d0,
-  violet: 0xffee82ee,
-  wheat: 0xfff5deb3,
+  aliceblue: 0xf0f8ffff,
+  antiquewhite: 0xfaebd7ff,
+  aqua: 0x00ffffff,
+  aquamarine: 0x7fffd4ff,
+  azure: 0xf0ffffff,
+  beige: 0xf5f5dcff,
+  bisque: 0xffe4c4ff,
+  black: 0x000000ff,
+  blanchedalmond: 0xffebcdff,
+  blue: 0x0000ffff,
+  blueviolet: 0x8a2be2ff,
+  brown: 0xa52a2aff,
+  burlywood: 0xdeb887ff,
+  burntsienna: 0xea7e5dff,
+  cadetblue: 0x5f9ea0ff,
+  chartreuse: 0x7fff00ff,
+  chocolate: 0xd2691eff,
+  coral: 0xff7f50ff,
+  cornflowerblue: 0x6495edff,
+  cornsilk: 0xfff8dcff,
+  crimson: 0xdc143cff,
+  cyan: 0x00ffffff,
+  darkblue: 0x00008bff,
+  darkcyan: 0x008b8bff,
+  darkgoldenrod: 0xb8860bff,
+  darkgray: 0xa9a9a9ff,
+  darkgreen: 0x006400ff,
+  darkgrey: 0xa9a9a9ff,
+  darkkhaki: 0xbdb76bff,
+  darkmagenta: 0x8b008bff,
+  darkolivegreen: 0x556b2fff,
+  darkorange: 0xff8c00ff,
+  darkorchid: 0x9932ccff,
+  darkred: 0x8b0000ff,
+  darksalmon: 0xe9967aff,
+  darkseagreen: 0x8fbc8fff,
+  darkslateblue: 0x483d8bff,
+  darkslategray: 0x2f4f4fff,
+  darkslategrey: 0x2f4f4fff,
+  darkturquoise: 0x00ced1ff,
+  darkviolet: 0x9400d3ff,
+  deeppink: 0xff1493ff,
+  deepskyblue: 0x00bfffff,
+  dimgray: 0x696969ff,
+  dimgrey: 0x696969ff,
+  dodgerblue: 0x1e90ffff,
+  firebrick: 0xb22222ff,
+  floralwhite: 0xfffaf0ff,
+  forestgreen: 0x228b22ff,
+  fuchsia: 0xff00ffff,
+  gainsboro: 0xdcdcdcff,
+  ghostwhite: 0xf8f8ffff,
+  gold: 0xffd700ff,
+  goldenrod: 0xdaa520ff,
+  gray: 0x808080ff,
+  green: 0x008000ff,
+  greenyellow: 0xadff2fff,
+  grey: 0x808080ff,
+  honeydew: 0xf0fff0ff,
+  hotpink: 0xff69b4ff,
+  indianred: 0xcd5c5cff,
+  indigo: 0x4b0082ff,
+  ivory: 0xfffff0ff,
+  khaki: 0xf0e68cff,
+  lavender: 0xe6e6faff,
+  lavenderblush: 0xfff0f5ff,
+  lawngreen: 0x7cfc00ff,
+  lemonchiffon: 0xfffacdff,
+  lightblue: 0xadd8e6ff,
+  lightcoral: 0xf08080ff,
+  lightcyan: 0xe0ffffff,
+  lightgoldenrodyellow: 0xfafad2ff,
+  lightgray: 0xd3d3d3ff,
+  lightgreen: 0x90ee90ff,
+  lightgrey: 0xd3d3d3ff,
+  lightpink: 0xffb6c1ff,
+  lightsalmon: 0xffa07aff,
+  lightseagreen: 0x20b2aaff,
+  lightskyblue: 0x87cefaff,
+  lightslategray: 0x778899ff,
+  lightslategrey: 0x778899ff,
+  lightsteelblue: 0xb0c4deff,
+  lightyellow: 0xffffe0ff,
+  lime: 0x00ff00ff,
+  limegreen: 0x32cd32ff,
+  linen: 0xfaf0e6ff,
+  magenta: 0xff00ffff,
+  maroon: 0x800000ff,
+  mediumaquamarine: 0x66cdaaff,
+  mediumblue: 0x0000cdff,
+  mediumorchid: 0xba55d3ff,
+  mediumpurple: 0x9370dbff,
+  mediumseagreen: 0x3cb371ff,
+  mediumslateblue: 0x7b68eeff,
+  mediumspringgreen: 0x00fa9aff,
+  mediumturquoise: 0x48d1ccff,
+  mediumvioletred: 0xc71585ff,
+  midnightblue: 0x191970ff,
+  mintcream: 0xf5fffaff,
+  mistyrose: 0xffe4e1ff,
+  moccasin: 0xffe4b5ff,
+  navajowhite: 0xffdeadff,
+  navy: 0x000080ff,
+  oldlace: 0xfdf5e6ff,
+  olive: 0x808000ff,
+  olivedrab: 0x6b8e23ff,
+  orange: 0xffa500ff,
+  orangered: 0xff4500ff,
+  orchid: 0xda70d6ff,
+  palegoldenrod: 0xeee8aaff,
+  palegreen: 0x98fb98ff,
+  paleturquoise: 0xafeeeeff,
+  palevioletred: 0xdb7093ff,
+  papayawhip: 0xffefd5ff,
+  peachpuff: 0xffdab9ff,
+  peru: 0xcd853fff,
+  pink: 0xffc0cbff,
+  plum: 0xdda0ddff,
+  powderblue: 0xb0e0e6ff,
+  purple: 0x800080ff,
+  rebeccapurple: 0x663399ff,
+  red: 0xff0000ff,
+  rosybrown: 0xbc8f8fff,
+  royalblue: 0x4169e1ff,
+  saddlebrown: 0x8b4513ff,
+  salmon: 0xfa8072ff,
+  sandybrown: 0xf4a460ff,
+  seagreen: 0x2e8b57ff,
+  seashell: 0xfff5eeff,
+  sienna: 0xa0522dff,
+  silver: 0xc0c0c0ff,
+  skyblue: 0x87ceebff,
+  slateblue: 0x6a5acdff,
+  slategray: 0x708090ff,
+  slategrey: 0x708090ff,
+  snow: 0xfffafaff,
+  springgreen: 0x00ff7fff,
+  steelblue: 0x4682b4ff,
+  tan: 0xd2b48cff,
+  teal: 0x008080ff,
+  thistle: 0xd8bfd8ff,
+  tomato: 0xff6347ff,
+  turquoise: 0x40e0d0ff,
+  violet: 0xee82eeff,
+  wheat: 0xf5deb3ff,
   white: 0xffffffff,
-  whitesmoke: 0xfff5f5f5,
-  yellow: 0xffffff00,
-  yellowgreen: 0xff9acd32,
+  whitesmoke: 0xf5f5f5ff,
+  yellow: 0xffff00ff,
+  yellowgreen: 0x9acd32ff,
 };
 
 module.exports = normalizeColor;

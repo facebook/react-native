@@ -71,7 +71,7 @@ describe('processColor', () => {
 
   });
 
-  describe('HSL strings', () => {
+  describe('HSLA strings', () => {
 
     it('should convert hsla(x, y%, z%, a)', () => {
       var colorFromString = processColor('hsla(318, 69%, 55%, 0.25)');
