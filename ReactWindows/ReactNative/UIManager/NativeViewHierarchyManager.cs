@@ -104,8 +104,7 @@ namespace ReactNative.UIManager
             DispatcherHelpers.AssertOnDispatcher();
             var viewToAnimate = ResolveView(reactTag);
             int animationId = animation.AnimationId;
-
-
+            
         }
 
         /// <summary>
@@ -213,7 +212,7 @@ namespace ReactNative.UIManager
             _LayoutAnimator.InitializeFromConfig(config);
         }
 
-        void ClearLayoutAnimation()
+        public void ClearLayoutAnimation()
         {
             _LayoutAnimator.Reset();
         }
