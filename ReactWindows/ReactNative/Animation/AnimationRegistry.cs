@@ -21,14 +21,29 @@ namespace ReactNative.Animation
             };
         }
 
-        public AnimationManager getAnimation(int animationID)
+        public AnimationManager GetAnimation(int animationID)
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+            var animation = default(AnimationManager);
+            
+            if (_AnimationRegistry.TryGetValue(animationID, out animation))
+            {
+                return animation;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void RegisterAnimation(AnimationManager animation)
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            return _AnimationRegistry[animationID];
+            _AnimationRegistry[animation.AnimationId] = animation;
         }
 
-        public AnimationManager removeAnimation(int animationID)
+        public AnimationManager RemoveAnimation(int animationID)
         {
             DispatcherHelpers.AssertOnDispatcher();
 

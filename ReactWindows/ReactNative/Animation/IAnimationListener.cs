@@ -8,7 +8,7 @@ namespace ReactNative.Animation
 {
     /// <summary>
     /// Interface for getting animation lifecycle updates. It is guaranteed that for a given animation,
-    /// only one of <see cref="onFinished"/> and <see cref="onCancel"/> will be called, and it will be called exactly once.
+    /// only one of <see cref="onFinished"/> and <see cref="OnCancel"/> will be called, and it will be called exactly once.
     /// </summary>
     public interface IAnimationListener
     {
@@ -20,6 +20,6 @@ namespace ReactNative.Animation
         /// <summary>
         /// Called in case when animation was cancelled.
         /// </summary>
-        void onCancel();
+        void OnCancel();
     }
 }

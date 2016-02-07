@@ -15,9 +15,9 @@ namespace ReactNative.UIManager.LayoutAnimation
     public class LayoutAnimationManager
     {
         private const string CONFIG_PROP_DURATION = "duration";
-        private const string CONFIG_PROP_ACTION_CREATE = "create";
+        public const string CONFIG_PROP_ACTION_CREATE = "create";
         private const string CONFIG_PROP_ACTION_UPDATE = "update";
-        private Dictionary<string, StoryboardAnimation> _AnimationLayoutDictionary;
+        private Dictionary<AnimationState, StoryboardAnimation> _AnimationLayoutDictionary;
         private bool _ShouldAnimateLayout;
 
         /// <summary>
@@ -31,10 +31,10 @@ namespace ReactNative.UIManager.LayoutAnimation
             var actionTypeUpdateToken = default(JToken);
             var globalDuration = default(int);
 
-            _AnimationLayoutDictionary = new Dictionary<string, StoryboardAnimation>()
+            _AnimationLayoutDictionary = new Dictionary<AnimationState, StoryboardAnimation>()
             {
-                { CONFIG_PROP_ACTION_CREATE, new LayoutCreateAnimation() },
-                { CONFIG_PROP_ACTION_UPDATE, new LayoutUpdateAnimation() },
+                { AnimationState.create, new LayoutCreateAnimation() },
+                { AnimationState.update, new LayoutUpdateAnimation() },
             };
 
             if (config == null)
@@ -48,14 +48,34 @@ namespace ReactNative.UIManager.LayoutAnimation
 
             if (config.TryGetValue(CONFIG_PROP_ACTION_CREATE, out actionTypeCreateToken))
             {
-                _AnimationLayoutDictionary[CONFIG_PROP_ACTION_CREATE].InitializeFromConfig(actionTypeCreateToken.ToObject<JObject>(), globalDuration);
+                this.Storyboard(AnimationState.create).InitializeFromConfig(actionTypeCreateToken.ToObject<JObject>(), globalDuration);
                 _ShouldAnimateLayout = true;
             }
 
             if (config.TryGetValue(CONFIG_PROP_ACTION_UPDATE, out actionTypeUpdateToken))
             {
-                _AnimationLayoutDictionary[CONFIG_PROP_ACTION_UPDATE].InitializeFromConfig(actionTypeUpdateToken.ToObject<JObject>(), globalDuration);
+                this.Storyboard(AnimationState.update).InitializeFromConfig(actionTypeUpdateToken.ToObject<JObject>(), globalDuration);
                 _ShouldAnimateLayout = true;
+            }
+        }
+
+        /// <summary>
+        /// Returns the <see cref="StoryboardAnimation"/> to animate based on the <see cref="AnimationState"/>. Currently there is one for animating the initial state
+        /// of a <see cref="FrameworkElement"/> and another for updating the layout change(i.e. update). 
+        /// </summary>
+        /// <param name="type">The desired <see cref="AnimationState"/>.</param>
+        /// <returns>Thre <see cref="StoryboardAnimation"/> reference.</returns>
+        public StoryboardAnimation Storyboard(AnimationState type)
+        {
+            var animation = default(StoryboardAnimation);
+
+            if (_AnimationLayoutDictionary.TryGetValue(type, out animation))
+            {
+                return animation;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -68,8 +88,8 @@ namespace ReactNative.UIManager.LayoutAnimation
 
         public void Reset()
         {
-            _AnimationLayoutDictionary[CONFIG_PROP_ACTION_CREATE].Reset();
-            _AnimationLayoutDictionary[CONFIG_PROP_ACTION_UPDATE].Reset();
+            this.Storyboard(AnimationState.create).Reset();
+            this.Storyboard(AnimationState.update).Reset();
             _ShouldAnimateLayout = false;
         }
 
@@ -85,10 +105,8 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            var animation = view.Width == 0 || view.Height == 0 ? _AnimationLayoutDictionary[CONFIG_PROP_ACTION_CREATE] 
-                : _AnimationLayoutDictionary[CONFIG_PROP_ACTION_UPDATE];
-
-            var storyboard = animation.CreateAnimation(view, x, y, width, height);
+            var animationState = view.ActualWidth == 0 || view.ActualHeight == 0 ? AnimationState.create : AnimationState.update;
+            var storyboard = this.Storyboard(animationState).CreateAnimation(view, x, y, width, height);
 
             if(storyboard != null)
             {

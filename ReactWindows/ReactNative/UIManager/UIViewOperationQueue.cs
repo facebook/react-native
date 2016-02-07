@@ -22,7 +22,7 @@ namespace ReactNative.UIManager
         private readonly int[] _measureBuffer = new int[4];
 
         private readonly object _operationsLock = new object();
-
+        private readonly AnimationRegistry _animationRegistry;
         private IList<Action> _operations = new List<Action>();
         private readonly NativeViewHierarchyManager _nativeViewHierarchyManager;
         private readonly ReactContext _reactContext;
@@ -38,6 +38,7 @@ namespace ReactNative.UIManager
         {
             _nativeViewHierarchyManager = nativeViewHierarchyManager;
             _reactContext = reactContext;
+            _animationRegistry = nativeViewHierarchyManager.AnimationRegistry;
         }
 
         /// <summary>
@@ -176,22 +177,29 @@ namespace ReactNative.UIManager
                 initialProperties));
         }
 
-        internal void enqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
+        internal void EnqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.ConfigureLayoutAnimation(config, success, error));
         }
 
-        internal void enqueueRegisterAnimation(AnimationManager animation)
+        internal void EnqueueRegisterAnimation(AnimationManager animation)
         {
-            throw new NotImplementedException();
+            EnqueueOperation(() => _animationRegistry.RegisterAnimation(animation));
         }
 
-        internal void enqueueAddAnimation(int reactTag, int animationID, ICallback onSuccess)
+        internal void EnqueueAddAnimation(int reactTag, int animationID, ICallback onSuccess)
         {
-            throw new NotImplementedException();
+            EnqueueOperation(() => {
+                var animation = _animationRegistry.GetAnimation(animationID);
+
+                if (animation != null)
+                {
+                    
+                }
+            });
         }
 
-        internal void enqueueRemoveAnimation(int animationID)
+        internal void EnqueueRemoveAnimation(int animationID)
         {
             throw new NotImplementedException();
         }

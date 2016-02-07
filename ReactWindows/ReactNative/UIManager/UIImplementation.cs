@@ -165,7 +165,7 @@ namespace ReactNative.UIManager
         /// <param name="error">Callback function called on exceptions.</param>
         public void configureNextLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
-            _operationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
+            _operationsQueue.EnqueueConfigureLayoutAnimation(config, success, error);
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace ReactNative.UIManager
         /// <param name="animation">the animation engine.</param>
         public void registerAnimation(AnimationManager animation)
         {
-            _operationsQueue.enqueueRegisterAnimation(animation);
+            _operationsQueue.EnqueueRegisterAnimation(animation);
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace ReactNative.UIManager
         public void addAnimation(int reactTag, int animationID, ICallback onSuccess)
         {
             AssertViewExists(reactTag, "addAnimation");
-            _operationsQueue.enqueueAddAnimation(reactTag, animationID, onSuccess);
+            _operationsQueue.EnqueueAddAnimation(reactTag, animationID, onSuccess);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace ReactNative.UIManager
         public void removeAnimation(int reactTag, int animationID)
         {
             AssertViewExists(reactTag, "removeAnimation");
-            _operationsQueue.enqueueRemoveAnimation(animationID);
+            _operationsQueue.EnqueueRemoveAnimation(animationID);
         }
 
         /// <summary>

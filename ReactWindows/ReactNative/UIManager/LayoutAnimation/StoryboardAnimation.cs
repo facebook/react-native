@@ -24,12 +24,15 @@ namespace ReactNative.UIManager.LayoutAnimation
         private const string CONFIG_DURATION = "duration";
         private const string CONFIG_DELAY = "delay";
         private const string CONFIG_TYPE = "type";
+        private const string CONFIG_SPRING_INTENSITY = "springDamping";
 
         public abstract bool IsValid();
         
         public abstract Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height);
 
-        protected AnimatedPropertyType PropertyType { private set; get; }
+        public AnimatedPropertyType PropertyType { private set; get; }
+
+        public int SpringIntensity { private set; get; }
 
         protected int DurationMS { private set; get; }
 
@@ -62,7 +65,7 @@ namespace ReactNative.UIManager.LayoutAnimation
                     { InterpolationType.easeOut, new BackEase() { EasingMode = EasingMode.EaseOut, Amplitude = .5} },
                     { InterpolationType.easeInEaseOut, new BackEase() { EasingMode = EasingMode.EaseInOut, Amplitude = .5} },
                     { InterpolationType.linear, null },
-                    { InterpolationType.spring, new ElasticEase() { Oscillations = 3, Springiness = 1 } }
+                    { InterpolationType.spring, new ElasticEase() { Oscillations = 3 } }
                 };
             }
         }
@@ -79,6 +82,7 @@ namespace ReactNative.UIManager.LayoutAnimation
             var token = default(JToken);
             var delay = default(JToken);
             var type = default(JToken);
+            var springDamping = default(JToken);
 
             if (config.TryGetValue(CONFIG_PROPERTY, out token) && 
                 Enum.TryParse(token.ToObject<string>(), out propertyType))
@@ -89,6 +93,19 @@ namespace ReactNative.UIManager.LayoutAnimation
             {
                 PropertyType = AnimatedPropertyType.None;
             }
+
+            if (config.TryGetValue(CONFIG_SPRING_INTENSITY, out springDamping))
+            {
+                //The Springiness property of the Elastic easing function works with only absolute int values
+                //iOS and Android use floating point numbers. 
+                SpringIntensity = (int)springDamping.ToObject<float>() * 10;
+            }
+            else
+            {
+                SpringIntensity = 4;
+            }
+
+            ((ElasticEase)EasingFunctions[InterpolationType.spring]).Springiness = SpringIntensity;
 
             if (config.TryGetValue(CONFIG_TYPE, out type) &&
                 Enum.TryParse(type.ToObject<string>(), out interpolationType))
@@ -126,10 +143,21 @@ namespace ReactNative.UIManager.LayoutAnimation
             }
 
             var storyboard = CreateAnimationImpl(view, x, y, width, height);
-            storyboard.Duration = TimeSpan.FromMilliseconds(DurationMS);
-            storyboard.BeginTime = TimeSpan.FromMilliseconds(DelayMS);
 
-            return storyboard;
+            if (storyboard != null)
+            {
+                storyboard.Duration = TimeSpan.FromMilliseconds(DurationMS);
+                storyboard.BeginTime = TimeSpan.FromMilliseconds(DelayMS);
+
+                return storyboard;
+            }
+            else
+            {
+                return null;
+            }
+            
+
+            
         }
 
         /// <summary>
