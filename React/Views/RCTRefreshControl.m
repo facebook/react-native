@@ -43,12 +43,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   // When using begin refreshing we need to adjust the ScrollView content offset manually.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
-  CGPoint offset = CGPointMake(scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height);
+  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
   // Don't animate when the prop is set initialy.
   if (_isInitialRender) {
+    // Must use `[scrollView setContentOffset:offset animated:NO]` instead of just setting
+    // `scrollview.contentOffset` or it doesn't work, don't ask me why!
     [scrollView setContentOffset:offset animated:NO];
     [super beginRefreshing];
   } else {
+    // `beginRefreshing` must be called after the animation is done. This is why it is impossible
+    // to use `setContentOffset` with `animated:YES`.
     [UIView animateWithDuration:0.25
                           delay:0
                         options:UIViewAnimationOptionBeginFromCurrentState
@@ -72,7 +76,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setRefreshing:(BOOL)refreshing
 {
-  if (super.refreshing != refreshing) {
+  if (self.refreshing != refreshing) {
     if (refreshing) {
       // If it is the initial render, beginRefreshing will get called
       // in layoutSubviews.
