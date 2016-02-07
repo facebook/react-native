@@ -22,7 +22,7 @@ Syntax transformers make writing code more enjoyable by allowing you to use new 
 
 As of version 0.5.0, React Native ships with the [Babel JavaScript compiler](https://babeljs.io). Check [Babel documentation](http://babeljs.io/docs/advanced/transformers/) on its supported transformations for more details.
 
-Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/packager/transformer.js#L21).
+Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/babel-preset/configs/main.js#L16).
 
 ES5
 
@@ -36,6 +36,7 @@ ES6
 * [Classes](http://babeljs.io/docs/learn-es2015/#classes): `class C extends React.Component { render() { return <View />; } }`
 * [Constants](https://babeljs.io/docs/learn-es2015/#let-const): `const answer = 42;`
 * [Destructuring](http://babeljs.io/docs/learn-es2015/#destructuring): `var {isActive, style} = this.props;`
+* [for...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of): `for (var num of [1, 2, 3]) {}`
 * [Modules](http://babeljs.io/docs/learn-es2015/#modules): `import React, { Component } from 'react-native';`
 * [Computed Properties](http://babeljs.io/docs/learn-es2015/#enhanced-object-literals): `var key = 'abc'; var obj = {[key]: 10};`
 * Object Consise Method: `var obj = { method() { return 10; } };`
@@ -48,3 +49,34 @@ ES7
 * [Object Spread](https://github.com/sebmarkbage/ecmascript-rest-spread): `var extended = { ...obj, a: 10 };`
 * [Function Trailing Comma](https://github.com/jeffmo/es-trailing-function-commas): `function f(a, b, c,) { }`
 * [Async Functions](https://github.com/tc39/ecmascript-asyncawait): `async function doStuffAsync() { const foo = await doOtherStuffAsync(); }`;
+
+Specific
+
+- [JSX](https://facebook.github.io/react/docs/jsx-in-depth.html): `<View style={{color: 'red'}} />`
+- [Flow](http://flowtype.org/): `function foo(x: ?number): string {}`
+
+
+## Polyfills
+
+Many standards functions are also available on all the supported JavaScript runtimes.
+
+Browser
+
+* [console.{log, warn, error, info, trace, table}](https://developer.chrome.com/devtools/docs/console-api)
+* [CommonJS require](https://nodejs.org/docs/latest/api/modules.html)
+* [XMLHttpRequest, fetch](/react-native/docs/network.html#content)
+* [{set, clear}{Timeout, Interval, Immediate}, {request, cancel}AnimationFrame](/react-native/docs/timers.html#content)
+* [navigator.geolocation](/react-native/docs/geolocation.html#content)
+ 
+ES6
+* [Object.assign](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+* String.prototype.{[startsWith](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith), [endsWith](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith), [repeat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeats), [includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)}
+* [Array.from](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)
+* Array.prototype.{[find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find), [findIndex](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)}
+* 
+
+ES7
+* Object.{[entries](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries), [values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)}
+
+Specific
+* `__DEV__`

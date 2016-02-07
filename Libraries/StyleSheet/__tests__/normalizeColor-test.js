@@ -26,8 +26,8 @@ describe('normalizeColor', function() {
   });
 
   it('should temporarly accept floating point values for rgb', function() {
-    expect(normalizeColor('rgb(1.1, 2.1, 3.1)')).toBe(0xff010203);
-    expect(normalizeColor('rgba(1.1, 2.1, 3.1, 1.0)')).toBe(0xff010203);
+    expect(normalizeColor('rgb(1.1, 2.1, 3.1)')).toBe(0x010203ff);
+    expect(normalizeColor('rgba(1.1, 2.1, 3.1, 1.0)')).toBe(0x010203ff);
   });
 
   it('should refuse non spec compliant colors', function() {
@@ -49,32 +49,32 @@ describe('normalizeColor', function() {
   });
 
   it('should handle hex6 properly', function() {
-    expect(normalizeColor('#000000')).toBe(0xff000000);
+    expect(normalizeColor('#000000')).toBe(0x000000ff);
     expect(normalizeColor('#ffffff')).toBe(0xffffffff);
-    expect(normalizeColor('#ff00ff')).toBe(0xffff00ff);
-    expect(normalizeColor('#abcdef')).toBe(0xffabcdef);
-    expect(normalizeColor('#012345')).toBe(0xff012345);
+    expect(normalizeColor('#ff00ff')).toBe(0xff00ffff);
+    expect(normalizeColor('#abcdef')).toBe(0xabcdefff);
+    expect(normalizeColor('#012345')).toBe(0x012345ff);
   });
 
   it('should handle hex3 properly', function() {
-    expect(normalizeColor('#000')).toBe(0xff000000);
+    expect(normalizeColor('#000')).toBe(0x000000ff);
     expect(normalizeColor('#fff')).toBe(0xffffffff);
-    expect(normalizeColor('#f0f')).toBe(0xffff00ff);
+    expect(normalizeColor('#f0f')).toBe(0xff00ffff);
   });
 
   it('should handle hex8 properly', function() {
     expect(normalizeColor('#00000000')).toBe(0x00000000);
     expect(normalizeColor('#ffffffff')).toBe(0xffffffff);
-    expect(normalizeColor('#ffff00ff')).toBe(0xffffff00);
-    expect(normalizeColor('#abcdef01')).toBe(0x01abcdef);
-    expect(normalizeColor('#01234567')).toBe(0x67012345);
+    expect(normalizeColor('#ffff00ff')).toBe(0xffff00ff);
+    expect(normalizeColor('#abcdef01')).toBe(0xabcdef01);
+    expect(normalizeColor('#01234567')).toBe(0x01234567);
   });
 
   it('should handle rgb properly', function() {
-    expect(normalizeColor('rgb(0, 0, 0)')).toBe(0xff000000);
-    expect(normalizeColor('rgb(-1, -2, -3)')).toBe(0xff000000);
-    expect(normalizeColor('rgb(0, 0, 255)')).toBe(0xff0000ff);
-    expect(normalizeColor('rgb(100, 15, 69)')).toBe(0xff640f45);
+    expect(normalizeColor('rgb(0, 0, 0)')).toBe(0x000000ff);
+    expect(normalizeColor('rgb(-1, -2, -3)')).toBe(0x000000ff);
+    expect(normalizeColor('rgb(0, 0, 255)')).toBe(0x0000ffff);
+    expect(normalizeColor('rgb(100, 15, 69)')).toBe(0x640f45ff);
     expect(normalizeColor('rgb(255, 255, 255)')).toBe(0xffffffff);
     expect(normalizeColor('rgb(256, 256, 256)')).toBe(0xffffffff);
   });
@@ -83,34 +83,34 @@ describe('normalizeColor', function() {
     expect(normalizeColor('rgba(0, 0, 0, 0.0)')).toBe(0x00000000);
     expect(normalizeColor('rgba(0, 0, 0, 0)')).toBe(0x00000000);
     expect(normalizeColor('rgba(0, 0, 0, -0.5)')).toBe(0x00000000);
-    expect(normalizeColor('rgba(0, 0, 0, 1.0)')).toBe(0xff000000);
-    expect(normalizeColor('rgba(0, 0, 0, 1)')).toBe(0xff000000);
-    expect(normalizeColor('rgba(0, 0, 0, 1.5)')).toBe(0xff000000);
-    expect(normalizeColor('rgba(100, 15, 69, 0.5)')).toBe(0x80640f45);
+    expect(normalizeColor('rgba(0, 0, 0, 1.0)')).toBe(0x000000ff);
+    expect(normalizeColor('rgba(0, 0, 0, 1)')).toBe(0x000000ff);
+    expect(normalizeColor('rgba(0, 0, 0, 1.5)')).toBe(0x000000ff);
+    expect(normalizeColor('rgba(100, 15, 69, 0.5)')).toBe(0x640f4580);
   });
 
   it('should handle hsl properly', function() {
-    expect(normalizeColor('hsl(0, 0%, 0%)')).toBe(0xff000000);
+    expect(normalizeColor('hsl(0, 0%, 0%)')).toBe(0x000000ff);
     expect(normalizeColor('hsl(360, 100%, 100%)')).toBe(0xffffffff);
-    expect(normalizeColor('hsl(180, 50%, 50%)')).toBe(0xff40bfbf);
-    expect(normalizeColor('hsl(540, 50%, 50%)')).toBe(0xff40bfbf);
-    expect(normalizeColor('hsl(70, 25%, 75%)')).toBe(0xffcacfaf);
-    expect(normalizeColor('hsl(70, 100%, 75%)')).toBe(0xffeaff80);
-    expect(normalizeColor('hsl(70, 110%, 75%)')).toBe(0xffeaff80);
-    expect(normalizeColor('hsl(70, 0%, 75%)')).toBe(0xffbfbfbf);
-    expect(normalizeColor('hsl(70, -10%, 75%)')).toBe(0xffbfbfbf);
+    expect(normalizeColor('hsl(180, 50%, 50%)')).toBe(0x40bfbfff);
+    expect(normalizeColor('hsl(540, 50%, 50%)')).toBe(0x40bfbfff);
+    expect(normalizeColor('hsl(70, 25%, 75%)')).toBe(0xcacfafff);
+    expect(normalizeColor('hsl(70, 100%, 75%)')).toBe(0xeaff80ff);
+    expect(normalizeColor('hsl(70, 110%, 75%)')).toBe(0xeaff80ff);
+    expect(normalizeColor('hsl(70, 0%, 75%)')).toBe(0xbfbfbfff);
+    expect(normalizeColor('hsl(70, -10%, 75%)')).toBe(0xbfbfbfff);
   });
 
   it('should handle hsla properly', function() {
     expect(normalizeColor('hsla(0, 0%, 0%, 0)')).toBe(0x00000000);
     expect(normalizeColor('hsla(360, 100%, 100%, 1)')).toBe(0xffffffff);
-    expect(normalizeColor('hsla(360, 100%, 100%, 0)')).toBe(0x00ffffff);
-    expect(normalizeColor('hsla(180, 50%, 50%, 0.2)')).toBe(0x3340bfbf);
+    expect(normalizeColor('hsla(360, 100%, 100%, 0)')).toBe(0xffffff00);
+    expect(normalizeColor('hsla(180, 50%, 50%, 0.2)')).toBe(0x40bfbf33);
   });
 
   it('should handle named colors properly', function() {
-    expect(normalizeColor('red')).toBe(0xffff0000);
+    expect(normalizeColor('red')).toBe(0xff0000ff);
     expect(normalizeColor('transparent')).toBe(0x00000000);
-    expect(normalizeColor('peachpuff')).toBe(0xffffdab9);
+    expect(normalizeColor('peachpuff')).toBe(0xffdab9ff);
   });
 });
