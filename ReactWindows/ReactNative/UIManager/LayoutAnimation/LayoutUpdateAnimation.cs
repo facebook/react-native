@@ -17,12 +17,12 @@ namespace ReactNative.UIManager.LayoutAnimation
 
         private double GetXDistance(TranslateTransform transform)
         {
-            return transform.X;
+            return transform != null ? transform.X : 0;
         }
 
         private double GetYDistance(TranslateTransform transform)
         {
-            return transform.Y;
+            return transform!=null  ? transform.Y : 0;
         }
 
         public override Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height)

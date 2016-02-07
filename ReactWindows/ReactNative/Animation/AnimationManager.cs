@@ -27,13 +27,13 @@ namespace ReactNative.Animation
 
         public int AnimationId { get; set; }
 
-        public abstract void run();
+        public abstract void Run();
 
-        public void start(FrameworkElement view)
+        public void Start(FrameworkElement view)
         {
             View = view;
-            _PropertyUpdater.prepare(view);
-            run();
+            _PropertyUpdater.Prepare(view);
+            Run();
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace ReactNative.Animation
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        protected bool onUpdate(float value)
+        protected bool OnUpdate(float value)
         {
             if (!Cancelled && View != null)
             {
-                _PropertyUpdater.onUpdate(View, value);
+                _PropertyUpdater.OnUpdate(View, value);
             }
 
             return !Cancelled;
@@ -59,7 +59,7 @@ namespace ReactNative.Animation
         /// <summary>
         /// Animation engine should call this method when the animation is finished. Should be called only once.
         /// </summary>
-        protected void finish()
+        protected void Finish()
         {
             if (Finished)
             {
@@ -83,7 +83,7 @@ namespace ReactNative.Animation
         /// <summary>
         /// Cancels the animation.
         /// </summary>
-        public void cancel()
+        public void Cancel()
         {
             if (Finished || Cancelled)
             {
@@ -94,7 +94,7 @@ namespace ReactNative.Animation
             Cancelled = true;
             if (AnimationListener != null)
             {
-                AnimationListener.onCancel();
+                AnimationListener.OnCancel();
             }
         }
     }

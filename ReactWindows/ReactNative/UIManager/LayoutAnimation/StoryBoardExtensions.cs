@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
@@ -36,6 +37,8 @@ namespace ReactNative.UIManager.LayoutAnimation
 
             Storyboard.SetTarget(timeline, view);
             Storyboard.SetTargetProperty(timeline, "Opacity");
+
+            storyboard.Children.Add(timeline);
         }
 
         /// <summary>
@@ -83,29 +86,31 @@ namespace ReactNative.UIManager.LayoutAnimation
                                                  float newX, float newY, float newWidth, float newHeight, int duration)
         {
             var transform = view.RenderTransform as TranslateTransform;
+            var currentX = Canvas.GetLeft(view);
+            var currentY = Canvas.GetTop(view);
 
-            if (HasChanged(transform.X, newX))
+            if (HasChanged(currentX, newX))
             {
-                storyboard.Children.Add(CreateTranslateTransformTimeline(view, transform.X, newX, easingFunc,
+                storyboard.Children.Add(CreateTranslateTransformTimeline(view, currentX, newX, easingFunc,
                                                                          string.Format(RespositionTargetPropertyTypeNameFormat, "X"), duration));
             }
 
-            if (HasChanged(transform.Y, newY))
+            if (HasChanged(currentY, newY))
             {
-                storyboard.Children.Add(CreateTranslateTransformTimeline(view, transform.Y, newY, easingFunc,
+                storyboard.Children.Add(CreateTranslateTransformTimeline(view, currentY, newY, easingFunc,
                                                                          string.Format(RespositionTargetPropertyTypeNameFormat, "Y"), duration));
             }
 
             if (HasChanged(view.Width, newWidth))
             {
-                var timelineWidth = CreateTranslateTransformTimeline(view, view.Width, newWidth, easingFunc, "Width", duration);
+                var timelineWidth = CreateTranslateTransformTimeline(view, (int)Math.Round(view.ActualWidth), newWidth, easingFunc, "Width", duration);
                     timelineWidth.EnableDependentAnimation = true;
                 storyboard.Children.Add(timelineWidth);
             }
 
             if (HasChanged(view.Height, newHeight))
             {
-                var timelineHeight = CreateTranslateTransformTimeline(view, view.Height, newHeight, easingFunc, "Height", duration);
+                var timelineHeight = CreateTranslateTransformTimeline(view, (int)Math.Round(view.ActualHeight), newHeight, easingFunc, "Height", duration);
                 timelineHeight.EnableDependentAnimation = true;
                 storyboard.Children.Add(timelineHeight);
             }

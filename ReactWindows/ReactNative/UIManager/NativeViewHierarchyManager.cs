@@ -76,7 +76,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// The animation registry.
         /// </summary>
-        public AnimationRegistry Animations
+        public AnimationRegistry AnimationRegistry
         {
             get
             {
@@ -91,6 +91,21 @@ namespace ReactNative.UIManager
         {
             private get;
             set;
+        }
+
+        /// <summary>
+        /// Begins the animation timeline(s) binded to the <see cref="AnimationManager"/>.
+        /// </summary>
+        /// <param name="reactTag">The ID of the native view to animate</param>
+        /// <param name="animation">The <see cref="AnimationManager"/> to use for animating a <see cref="FrameworkElement"/>.</param>
+        /// <param name="callback">The final callback function that's invoked once the animation is complete.</param>
+        public void BeginAnimation(int reactTag, AnimationManager animation, ICallback callback)
+        {
+            DispatcherHelpers.AssertOnDispatcher();
+            var viewToAnimate = ResolveView(reactTag);
+            int animationId = animation.AnimationId;
+
+
         }
 
         /// <summary>
@@ -560,11 +575,14 @@ namespace ReactNative.UIManager
             {
                 _LayoutAnimator.ApplyLayoutUpdate(viewToUpdate, x, y, width, height);
             }
+            else
+            {
+                viewToUpdate.Width = width;
+                viewToUpdate.Height = height;
+                Canvas.SetLeft(viewToUpdate, x);
+                Canvas.SetTop(viewToUpdate, y);
+            }
 
-            viewToUpdate.Width = width;
-            viewToUpdate.Height = height;
-            Canvas.SetLeft(viewToUpdate, x);
-            Canvas.SetTop(viewToUpdate, y);
         }
     }
 }

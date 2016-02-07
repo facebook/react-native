@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
 namespace ReactNative.UIManager.LayoutAnimation
@@ -32,9 +33,15 @@ namespace ReactNative.UIManager.LayoutAnimation
                 }
                 else if (base.PropertyType == AnimatedPropertyType.scaleXY)
                 {
-                    float speedRatio = .5f;
-                    animation.SetScalingTimeline(base.EasingFunction, view, fromValue, toValue, speedRatio, base.DurationMS);
+                    float speedRatio = 1;
+                    view.RenderTransform = new TranslateTransform();
+                    animation.SetRepositionTimelines(base.EasingFunction, view, x, y, width, height, base.DurationMS);
+                    //animation.SetScalingTimeline(base.EasingFunction, view, fromValue, toValue, speedRatio, base.DurationMS);
                 }
+            }
+            else
+            {
+                return null;
             }
 
             return animation;
