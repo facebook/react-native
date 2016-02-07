@@ -25,7 +25,9 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.AnimatedNodesManager;
 import com.facebook.react.uimanager.ReactChoreographer;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -102,7 +104,8 @@ public class EventDispatcher implements LifecycleEventListener {
   private volatile boolean mHasDispatchScheduled = false;
   private volatile int mHasDispatchScheduledCount = 0;
 
-  public EventDispatcher(ReactApplicationContext reactContext) {
+  public EventDispatcher(
+      ReactApplicationContext reactContext) {
     mReactContext = reactContext;
     mReactContext.addLifecycleEventListener(this);
   }
@@ -112,6 +115,7 @@ public class EventDispatcher implements LifecycleEventListener {
    */
   public void dispatchEvent(Event event) {
     Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
+    mReactContext.getNativeModule(UIManagerModule.class).dispatchEvent(event);
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
       Systrace.startAsyncFlow(

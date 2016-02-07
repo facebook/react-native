@@ -38,9 +38,15 @@ public class ReactChoreographer {
     DISPATCH_UI(1),
 
     /**
+     * For use by Animated implementation. It's important for the callback to run *after* dispatch
+     * UI.
+     */
+    ANIMATIONS(2),
+
+    /**
      * Events that make JS do things.
      */
-    TIMERS_EVENTS(2),
+    TIMERS_EVENTS(3),
     ;
 
     private final int mOrder;

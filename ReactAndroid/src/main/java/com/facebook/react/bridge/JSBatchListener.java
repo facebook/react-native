@@ -12,7 +12,8 @@ package com.facebook.react.bridge;
 /**
  * Interface for a module that will be notified when a batch of JS->Java calls has finished.
  */
-public interface OnBatchCompleteListener {
+public interface JSBatchListener {
 
   void onBatchComplete();
+  void onBatchStarted();
 }

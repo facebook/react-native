@@ -11,26 +11,22 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import android.util.DisplayMetrics;
 
-import com.facebook.csslayout.CSSLayoutContext;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.JSBatchListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
+import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -65,7 +61,7 @@ import com.facebook.systrace.SystraceMessage;
  * TODO(5483063): Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 public class UIManagerModule extends ReactContextBaseJavaModule implements
-    OnBatchCompleteListener, LifecycleEventListener {
+        JSBatchListener, LifecycleEventListener {
 
   // Keep in sync with ReactIOSTagHandles JS module - see that file for an explanation on why the
   // increment here is 10
@@ -77,6 +73,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   private int mNextRootViewTag = 1;
   private int mBatchId = 0;
+  private boolean mIsProcessingJSBatch = false;
 
   public UIManagerModule(
       ReactApplicationContext reactContext,
@@ -410,6 +407,65 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.configureNextLayoutAnimation(config, success, error);
   }
 
+  @ReactMethod
+  public void createAnimatedNode(int animatedNodeTag, ReadableMap nodeConfig) {
+    mUIImplementation.createAnimatedNode(animatedNodeTag, nodeConfig);
+  }
+
+  @ReactMethod
+  public void dropAnimatedNode(int animatedNodeTag) {
+    mUIImplementation.dropAnimatedNode(animatedNodeTag);
+  }
+
+  @ReactMethod
+  public void setAnimatedNodeValue(int animatedNodeTag, double value) {
+    mUIImplementation.setAnimatedNodeValue(animatedNodeTag, value);
+  }
+
+  @ReactMethod
+  public void startAnimatingNode(
+      int animatedNodeTag,
+      ReadableMap animationConfig,
+      Callback endCallback) {
+    mUIImplementation.startAnimatingNode(animatedNodeTag, animationConfig, endCallback);
+  }
+
+  @ReactMethod
+  public void connectAnimatedNodes(int parentNodeTag, int childNodeTag) {
+    mUIImplementation.connectAnimatedNodes(parentNodeTag, childNodeTag);
+  }
+
+  @ReactMethod
+  public void disconnectAnimatedNodes(int parentNodeTag, int childNodeTag) {
+    mUIImplementation.disconnectAnimatedNodes(parentNodeTag, childNodeTag);
+  }
+
+  @ReactMethod
+  public void connectAnimatedNodeToView(int animatedNodeTag, int viewTag) {
+    mUIImplementation.connectAnimatedNodeToView(animatedNodeTag, viewTag);
+  }
+
+  @ReactMethod
+  public void disconnectAnimatedNodeFromView(int animatedNodeTag, int viewTag) {
+    mUIImplementation.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+  }
+
+  @ReactMethod
+  public void connectEventToAnimatedNode(String eventName,
+                                         int eventTargetViewTag,
+                                         int animatedNodeTag,
+                                         ReadableArray propsPath) {
+    mUIImplementation.connectEventToAnimatedNode(
+      eventName,
+      eventTargetViewTag,
+      animatedNodeTag,
+      propsPath);
+  }
+
+  public void dispatchEvent(Event event) {
+    mUIImplementation.dispatchEvent(event);
+  }
+
   /**
    * To implement the transactional requirement mentioned in the class javadoc, we only commit
    * UI changes to the actual view hierarchy once a batch of JS->Java calls have been completed.
@@ -426,16 +482,31 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
    */
   @Override
   public void onBatchComplete() {
+    dispatchViewUpdates();
+    mIsProcessingJSBatch = false;
+  }
+
+  private void dispatchViewUpdates() {
     int batchId = mBatchId;
     mBatchId++;
 
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchCompleteUI")
-          .arg("BatchId", batchId)
-          .flush();
+            .arg("BatchId", batchId)
+            .flush();
     try {
       mUIImplementation.dispatchViewUpdates(mEventDispatcher, batchId);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
+  public void onBatchStarted() {
+    mIsProcessingJSBatch = true;
+  }
+
+  /*package*/void dispatchViewUpdatesIfNotInJSBatch() {
+    if (!mIsProcessingJSBatch) {
+      dispatchViewUpdates();
     }
   }
 

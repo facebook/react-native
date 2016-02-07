@@ -19,10 +19,12 @@ import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
+import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -39,6 +41,7 @@ public class UIImplementation {
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
   private final int[] mMeasureBuffer = new int[4];
+  private final AnimatedNodesManager mAnimatedNodesManager;
 
   public UIImplementation(ReactApplicationContext reactContext, List<ViewManager> viewManagers) {
     this(reactContext, new ViewManagerRegistry(viewManagers));
@@ -46,11 +49,13 @@ public class UIImplementation {
 
   private UIImplementation(ReactApplicationContext reactContext, ViewManagerRegistry viewManagers) {
     this(
+        reactContext,
         viewManagers,
         new UIViewOperationQueue(reactContext, new NativeViewHierarchyManager(viewManagers)));
   }
 
   protected UIImplementation(
+      ReactContext reactContext,
       ViewManagerRegistry viewManagers,
       UIViewOperationQueue operationsQueue) {
     mViewManagers = viewManagers;
@@ -58,6 +63,7 @@ public class UIImplementation {
     mNativeViewHierarchyOptimizer = new NativeViewHierarchyOptimizer(
         mOperationsQueue,
         mShadowNodeRegistry);
+    mAnimatedNodesManager = new AnimatedNodesManager(reactContext);
   }
 
   protected ReactShadowNode createRootShadowNode() {
@@ -163,10 +169,10 @@ public class UIImplementation {
    * Invoked by React to create a new node with a given tag has its properties changed.
    */
   public void updateView(int tag, String className, ReadableMap props) {
-    ViewManager viewManager = mViewManagers.get(className);
-    if (viewManager == null) {
-      throw new IllegalViewOperationException("Got unknown view type: " + className);
-    }
+//    ViewManager viewManager = mViewManagers.get(className);
+//    if (viewManager == null) {
+//      throw new IllegalViewOperationException("Got unknown view type: " + className);
+//    }
     ReactShadowNode cssNode = mShadowNodeRegistry.getNode(tag);
     if (cssNode == null) {
       throw new IllegalViewOperationException("Trying to update non-existent view with tag " + tag);
@@ -437,6 +443,8 @@ public class UIImplementation {
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
   public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
+    mAnimatedNodesManager.runUpdates(this);
+
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
@@ -507,6 +515,55 @@ public class UIImplementation {
     mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
   }
 
+  public void createAnimatedNode(int animatedNodeTag, ReadableMap nodeConfig) {
+    mAnimatedNodesManager.createAnimatedNode(animatedNodeTag, nodeConfig);
+  }
+
+  public void dropAnimatedNode(int animatedNodeTag) {
+    mAnimatedNodesManager.dropAnimatedNode(animatedNodeTag);
+  }
+
+  public void setAnimatedNodeValue(int animatedNodeTag, double value) {
+    mAnimatedNodesManager.setAnimatedNodeValue(animatedNodeTag, value);
+  }
+
+  public void startAnimatingNode(
+      int animatedNodeTag,
+      ReadableMap animationConfig,
+      Callback endCallback) {
+    mAnimatedNodesManager.startAnimatingNode(animatedNodeTag, animationConfig, endCallback);
+  }
+
+  public void connectAnimatedNodes(int parentNodeTag, int childNodeTag) {
+    mAnimatedNodesManager.connectAnimatedNodes(parentNodeTag, childNodeTag);
+  }
+
+  public void disconnectAnimatedNodes(int parentNodeTag, int childNodeTag) {
+    mAnimatedNodesManager.disconnectAnimatedNodes(parentNodeTag, childNodeTag);
+  }
+
+  public void connectAnimatedNodeToView(int animatedNodeTag, int viewTag) {
+    mAnimatedNodesManager.connectAnimatedNodeToView(animatedNodeTag, viewTag);
+  }
+
+  public void disconnectAnimatedNodeFromView(int animatedNodeTag, int viewTag) {
+    mAnimatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+  }
+
+  public void connectEventToAnimatedNode(String eventName,
+                                         int eventTargetViewTag,
+                                         int animatedNodeTag,
+                                         ReadableArray propsPath) {
+    mAnimatedNodesManager.connectEventToAnimatedNode(
+      eventName,
+      eventTargetViewTag,
+      animatedNodeTag,
+      propsPath);
+  }
+
+  public void dispatchEvent(Event event) {
+    mAnimatedNodesManager.dispatchEvent(event);
+  }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     assertViewExists(reactTag, "setJSResponder");
@@ -547,9 +604,11 @@ public class UIImplementation {
 
   public void onHostResume() {
     mOperationsQueue.resumeFrameCallback();
+    mAnimatedNodesManager.resumeFrameCallback();
   }
 
   public void onHostPause() {
+    mAnimatedNodesManager.pauseFrameCallback();
     mOperationsQueue.pauseFrameCallback();
   }
 

@@ -261,7 +261,7 @@ public class UIViewOperationQueue {
   /**
    * A spec for animation operations (add/remove)
    */
-  private static abstract class AnimationOperation implements UIViewOperationQueue.UIOperation {
+  private static abstract class AnimationOperation implements UIOperation {
 
     protected final int mAnimationID;
 
@@ -690,7 +690,6 @@ public class UIViewOperationQueue {
   }
 
   /* package */ void pauseFrameCallback() {
-
     ReactChoreographer.getInstance()
         .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
   }

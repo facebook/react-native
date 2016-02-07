@@ -24,7 +24,7 @@ namespace react {
 class JSThreadState;
 class Bridge : public Countable {
 public:
-  typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
+  typedef std::function<void(std::vector<MethodCall>, bool isStartOfBatch, bool isEndOfBatch)> Callback;
 
   Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback);
   virtual ~Bridge();

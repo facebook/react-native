@@ -19,7 +19,8 @@ public:
     m_callback(callback)
   {
     m_jsExecutor = jsExecutorFactory->createJSExecutor([this, callback] (std::string queueJSON, bool isEndOfBatch) {
-      m_callback(parseMethodCalls(queueJSON), false /* = isEndOfBatch */);
+      m_callback(parseMethodCalls(queueJSON), !this->m_hasNotifyBatchStart, false /* = isEndOfBatch */);
+      this->m_hasNotifyBatchStart = true;
     });
   }
 
@@ -28,18 +29,21 @@ public:
   }
 
   void flush() {
+    m_hasNotifyBatchStart = false;
     auto returnedJSON = m_jsExecutor->flush();
-    m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+    m_callback(parseMethodCalls(returnedJSON), !m_hasNotifyBatchStart, true /* = isEndOfBatch */);
   }
 
   void callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+    m_hasNotifyBatchStart = false;
     auto returnedJSON = m_jsExecutor->callFunction(moduleId, methodId, arguments);
-    m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+    m_callback(parseMethodCalls(returnedJSON), !m_hasNotifyBatchStart, true /* = isEndOfBatch */);
   }
 
   void invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+    m_hasNotifyBatchStart = false;
     auto returnedJSON = m_jsExecutor->invokeCallback(callbackId, arguments);
-    m_callback(parseMethodCalls(returnedJSON), true /* = isEndOfBatch */);
+    m_callback(parseMethodCalls(returnedJSON), !m_hasNotifyBatchStart, true /* = isEndOfBatch */);
   }
 
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
@@ -67,6 +71,7 @@ public:
   }
 
 private:
+  volatile bool m_hasNotifyBatchStart;
   std::unique_ptr<JSExecutor> m_jsExecutor;
   Bridge::Callback m_callback;
 };
@@ -76,11 +81,11 @@ Bridge::Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback call
   m_destroyed(std::shared_ptr<bool>(new bool(false)))
 {
   auto destroyed = m_destroyed;
-  auto proxyCallback = [this, destroyed] (std::vector<MethodCall> calls, bool isEndOfBatch) {
+  auto proxyCallback = [this, destroyed] (std::vector<MethodCall> calls, bool isStartOfBatch, bool isEndOfBatch) {
     if (*destroyed) {
       return;
     }
-    m_callback(std::move(calls), isEndOfBatch);
+    m_callback(std::move(calls), isStartOfBatch, isEndOfBatch);
   };
   m_threadState.reset(new JSThreadState(jsExecutorFactory, std::move(proxyCallback)));
 }
