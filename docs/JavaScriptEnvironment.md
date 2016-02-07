@@ -11,7 +11,7 @@ next: navigator-comparison
 
 When using React Native, you're going to be running your JavaScript code in two environments:
 
-* On iOS simulators and devices, Android emulators and devices React Native uses [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore) which is the JavaScript engine that powers Safari. On iOS JSC doesn't use JIT due to the absence of writable executable memory in iOS apps.
+* On iOS simulators and devices, Android emulators and devices React Native uses [JavaScriptCore](http://trac.webkit.org/wiki/JavaScriptCore) which is the JavaScript engine that powers Safari. On iOS, JSC doesn't use JIT due to the absence of writable executable memory in iOS apps.
 * When using Chrome debugging, it runs all the JavaScript code within Chrome itself and communicates with native code via WebSocket. So you are using [V8](https://code.google.com/p/v8/).
 
 While both environments are very similar, you may end up hitting some inconsistencies. We're likely going to experiment with other JS engines in the future, so it's best to avoid relying on specifics of any runtime.
@@ -22,7 +22,7 @@ Syntax transformers make writing code more enjoyable by allowing you to use new 
 
 As of version 0.5.0, React Native ships with the [Babel JavaScript compiler](https://babeljs.io). Check [Babel documentation](http://babeljs.io/docs/advanced/transformers/) on its supported transformations for more details.
 
-Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/packager/transformer.js#L21).
+Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/packager/react-packager/.babelrc).
 
 ES5
 
