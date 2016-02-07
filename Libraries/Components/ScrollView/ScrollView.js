@@ -287,7 +287,7 @@ var ScrollView = React.createClass({
     snapToInterval: PropTypes.number,
     /**
      * When `snapToInterval` is set, `snapToAlignment` will define the relationship
-     * of the the snapping to the scroll view.
+     * of the snapping to the scroll view.
      *   - `start` (the default) will align the snap at the left (horizontal) or top (vertical)
      *   - `center` will align the snap in the center
      *   - `end` will align the snap at the right (horizontal) or bottom (vertical)
