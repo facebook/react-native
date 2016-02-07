@@ -16,8 +16,7 @@ namespace ReactNative.UIManager
     /// <see cref="UIManagerModule"/> once a JavaScript batch of UI operations
     /// is finished.
     /// </summary>
-    public class 
-        UIViewOperationQueue
+    public class UIViewOperationQueue
     {
         private readonly int[] _measureBuffer = new int[4];
 
@@ -175,6 +174,14 @@ namespace ReactNative.UIManager
                 viewReactTag,
                 viewClassName,
                 initialProperties));
+        }
+
+        /// <summary>
+        /// Clears the animation layout updates.
+        /// </summary>
+        public void ClearAnimationLayout()
+        {
+            _nativeViewHierarchyManager.ClearLayoutAnimation();
         }
 
         internal void EnqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
@@ -365,8 +372,15 @@ namespace ReactNative.UIManager
                     {
                         operation();
                     }
+
+                    OnOperationGroupExecuted();
                 }
             }
+        }
+
+        internal void OnOperationGroupExecuted()
+        {
+            _nativeViewHierarchyManager.ClearLayoutAnimation();
         }
 
         private void EnqueueOperation(Action action)
