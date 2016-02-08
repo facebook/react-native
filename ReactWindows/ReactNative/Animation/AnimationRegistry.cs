@@ -8,7 +8,7 @@ namespace ReactNative.Animation
     /// </summary>
     public class AnimationRegistry
     {
-        private readonly IDictionary<int, AnimationManager> _AnimationRegistry;
+        private readonly IDictionary<int, AnimationManager> _animationRegistry;
 
         public AnimationRegistry() { }
 
@@ -16,7 +16,7 @@ namespace ReactNative.Animation
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            _AnimationRegistry = new Dictionary<int, AnimationManager>() {
+            _animationRegistry = new Dictionary<int, AnimationManager>() {
                 { animation.AnimationId, animation}
             };
         }
@@ -26,7 +26,7 @@ namespace ReactNative.Animation
             DispatcherHelpers.AssertOnDispatcher();
             var animation = default(AnimationManager);
             
-            if (_AnimationRegistry.TryGetValue(animationID, out animation))
+            if (_animationRegistry.TryGetValue(animationID, out animation))
             {
                 return animation;
             }
@@ -40,7 +40,7 @@ namespace ReactNative.Animation
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            _AnimationRegistry[animation.AnimationId] = animation;
+            _animationRegistry[animation.AnimationId] = animation;
         }
 
         public AnimationManager RemoveAnimation(int animationID)
@@ -49,9 +49,9 @@ namespace ReactNative.Animation
 
             var animation = default(AnimationManager);
 
-            if (_AnimationRegistry.TryGetValue(animationID, out animation))
+            if (_animationRegistry.TryGetValue(animationID, out animation))
             {
-                _AnimationRegistry.Remove(animationID);
+                _animationRegistry.Remove(animationID);
             }
 
             return animation;

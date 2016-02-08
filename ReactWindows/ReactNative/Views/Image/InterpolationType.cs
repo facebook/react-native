@@ -8,11 +8,11 @@ namespace ReactNative.Views.Image
 {
     public enum InterpolationType
     {
-       linear,
        None,
-       easeIn,
-       easeOut,
-       easeInEaseOut,
-       spring
+       Linear,
+       EaseIn,
+       EaseOut,
+       EaseInEaseOut,
+       Spring
     }
 }

@@ -1,11 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json.Linq;
 using ReactNative.UIManager.LayoutAnimation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReactNative.Tests.UIManager.LayoutAnimation
 {
@@ -24,7 +19,7 @@ namespace ReactNative.Tests.UIManager.LayoutAnimation
 
             layoutAnimator.InitializeFromConfig(config);
 
-            Assert.AreEqual(layoutAnimator.Storyboard(AnimationState.create).PropertyType, AnimatedPropertyType.scaleXY);
+            Assert.AreEqual(layoutAnimator.Storyboard(AnimationState.Create).PropertyType, AnimatedPropertyType.ScaleXY);
         }
     }
 }

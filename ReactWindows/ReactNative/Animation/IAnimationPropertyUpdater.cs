@@ -17,14 +17,14 @@ namespace ReactNative.Animation
         /// <summary>
         /// This method will be called before animation starts.
         /// </summary>
-        /// <param name="view">view that will be animated</param>
+        /// <param name="view">View that will be animated.</param>
         void Prepare(FrameworkElement view);
 
         /// <summary>
         /// This method will be called for each animation frame.
         /// </summary>
-        /// <param name="view">view to update property</param>
-        /// <param name="progress">animation progress from 0..1 range retrieved from <see cref="AnimationManager"/> engine.</param>
+        /// <param name="view">View to update property.</param>
+        /// <param name="progress">Animation progress from 0..1 range retrieved from <see cref="AnimationManager"/> engine.</param>
         void OnUpdate(FrameworkElement view, float progress);
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ReactNative.Animation
         /// or animated properties in order to avoid floating point inacurracy calculated in <see cref="OnUpdate(FrameworkElement, float)"/>
         /// by passing value close to 1.0 or in a case some frames got dropped.
         /// </summary>
-        /// <param name="view">view to update property</param>
+        /// <param name="view">View to update property.</param>
         void onFinish(FrameworkElement view);
     }
 }

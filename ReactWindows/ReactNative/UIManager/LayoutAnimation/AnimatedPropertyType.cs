@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace ReactNative.UIManager.LayoutAnimation
 {
+    /// <summary>
+    /// The enum types to indicate the type of animation that needs to be invoked for the LayoutAnimation API. 
+    /// </summary>
     public enum AnimatedPropertyType
     {
-        opacity,
-        scaleXY,
-        None
+        None,
+        Opacity,
+        ScaleXY,
     }
 }

@@ -19,12 +19,6 @@ namespace ReactNative.Animation
 
         public IAnimationListener AnimationListener{ get; set; }
 
-        protected FrameworkElement View { get; private set; }
-
-        private bool Cancelled { get; set; }
-
-        private bool Finished { get; set; }
-
         public int AnimationId { get; set; }
 
         public abstract void Run();
@@ -37,6 +31,24 @@ namespace ReactNative.Animation
         }
 
         /// <summary>
+        /// Cancels the animation.
+        /// </summary>
+        public void Cancel()
+        {
+            if (Finished || Cancelled)
+            {
+                // If we were already finished, ignore
+                return;
+            }
+
+            Cancelled = true;
+            if (AnimationListener != null)
+            {
+                AnimationListener.OnCancel();
+            }
+        }
+
+        /// <summary>
         /// Animation engine should call this method for every animation frame passing animation progress
         /// value as a parameter. Animation progress should be within the range 0..1 (the exception here
         /// would be a spring animation engine which may slightly exceed start and end progress values).
@@ -46,6 +58,10 @@ namespace ReactNative.Animation
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
+
+
+        protected FrameworkElement View { get; private set; }
+
         protected bool OnUpdate(float value)
         {
             if (!Cancelled && View != null)
@@ -75,27 +91,13 @@ namespace ReactNative.Animation
                 }
                 if (AnimationListener != null)
                 {
-                    AnimationListener.onFinished();
+                    AnimationListener.OnFinished();
                 }
             }
         }
 
-        /// <summary>
-        /// Cancels the animation.
-        /// </summary>
-        public void Cancel()
-        {
-            if (Finished || Cancelled)
-            {
-                // If we were already finished, ignore
-                return;
-            }
+        private bool Cancelled { get; set; }
 
-            Cancelled = true;
-            if (AnimationListener != null)
-            {
-                AnimationListener.OnCancel();
-            }
-        }
+        private bool Finished { get; set; }
     }
 }

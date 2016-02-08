@@ -55,7 +55,7 @@ namespace ReactNative.UIManager
         private readonly JavaScriptResponderHandler _jsResponderHandler;
         private readonly RootViewManager _rootViewManager;
         private readonly AnimationRegistry _animationRegistry;
-        private readonly LayoutAnimationManager _LayoutAnimator;
+        private readonly LayoutAnimationManager _layoutAnimator;
 
         /// <summary>
         /// Instantiates the <see cref="NativeViewHierarchyManager"/>.
@@ -64,24 +64,12 @@ namespace ReactNative.UIManager
         public NativeViewHierarchyManager(ViewManagerRegistry viewManagers)
         {
             _viewManagers = viewManagers;
-            _LayoutAnimator = new LayoutAnimationManager();
+            _layoutAnimator = new LayoutAnimationManager();
             _tagsToViews = new Dictionary<int, FrameworkElement>();
             _tagsToViewManagers = new Dictionary<int, ViewManager>();
             _rootTags = new Dictionary<int, bool>();
             _jsResponderHandler = new JavaScriptResponderHandler();
             _rootViewManager = new RootViewManager();
-            _animationRegistry = new AnimationRegistry();
-        }
-
-        /// <summary>
-        /// The animation registry.
-        /// </summary>
-        public AnimationRegistry AnimationRegistry
-        {
-            get
-            {
-                return _animationRegistry;
-            }
         }
 
         /// <summary>
@@ -92,21 +80,7 @@ namespace ReactNative.UIManager
             private get;
             set;
         }
-
-        /// <summary>
-        /// Begins the animation timeline(s) binded to the <see cref="AnimationManager"/>.
-        /// </summary>
-        /// <param name="reactTag">The ID of the native view to animate</param>
-        /// <param name="animation">The <see cref="AnimationManager"/> to use for animating a <see cref="FrameworkElement"/>.</param>
-        /// <param name="callback">The final callback function that's invoked once the animation is complete.</param>
-        public void BeginAnimation(int reactTag, AnimationManager animation, ICallback callback)
-        {
-            DispatcherHelpers.AssertOnDispatcher();
-            var viewToAnimate = ResolveView(reactTag);
-            int animationId = animation.AnimationId;
-            
-        }
-
+        
         /// <summary>
         /// Updates the properties of the view with the given tag.
         /// </summary>
@@ -207,14 +181,17 @@ namespace ReactNative.UIManager
         /// <param name="config"></param>
         /// <param name="success"></param>
         /// <param name="error"></param>
-        internal void ConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
+        public void ConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
-            _LayoutAnimator.InitializeFromConfig(config);
+            _layoutAnimator.InitializeFromConfig(config);
         }
 
+        /// <summary>
+        /// Clears out the <see cref="LayoutAnimationManager"/>.
+        /// </summary>
         public void ClearLayoutAnimation()
         {
-            _LayoutAnimator.Reset();
+            _layoutAnimator.Reset();
         }
 
         /// <summary>
@@ -570,9 +547,9 @@ namespace ReactNative.UIManager
 
         private void UpdateLayout(FrameworkElement viewToUpdate, int x, int y, int width, int height)
         {
-            if (_LayoutAnimator.ShouldAnimateLayout(viewToUpdate))
+            if (_layoutAnimator.ShouldAnimateLayout(viewToUpdate))
             {
-                _LayoutAnimator.ApplyLayoutUpdate(viewToUpdate, x, y, width, height);
+                _layoutAnimator.ApplyLayoutUpdate(viewToUpdate, x, y, width, height);
             }
             else
             {
@@ -581,7 +558,6 @@ namespace ReactNative.UIManager
                 Canvas.SetLeft(viewToUpdate, x);
                 Canvas.SetTop(viewToUpdate, y);
             }
-
         }
     }
 }

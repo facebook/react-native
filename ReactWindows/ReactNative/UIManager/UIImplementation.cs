@@ -163,41 +163,9 @@ namespace ReactNative.UIManager
         /// <param name="config">the animation configuration properties.</param>
         /// <param name="success">Success callback JS function.</param>
         /// <param name="error">Callback function called on exceptions.</param>
-        public void configureNextLayoutAnimation(JObject config, ICallback success, ICallback error)
+        public void ConfigureNextLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
             _operationsQueue.EnqueueConfigureLayoutAnimation(config, success, error);
-        }
-
-        /// <summary>
-        /// Registers a new Animation that can then be added to a View using <see cref="addAnimation(int, int, ICallback)"/>.
-        /// </summary>
-        /// <param name="animation">the animation engine.</param>
-        public void registerAnimation(AnimationManager animation)
-        {
-            _operationsQueue.EnqueueRegisterAnimation(animation);
-        }
-
-        /// <summary>
-        /// Adds an Animation previously registered with <see cref="registerAnimation(AnimationManager)"/> to a View and starts it.
-        /// </summary>
-        /// <param name="reactTag">The view to add.</param>
-        /// <param name="animationID">The animation ID.</param>
-        /// <param name="onSuccess">Callback JS function to invoke once the animation operation is added.</param>
-        public void addAnimation(int reactTag, int animationID, ICallback onSuccess)
-        {
-            AssertViewExists(reactTag, "addAnimation");
-            _operationsQueue.EnqueueAddAnimation(reactTag, animationID, onSuccess);
-        }
-
-        /// <summary>
-        /// Removes an existing Animation, canceling it if it was in progress.
-        /// </summary>
-        /// <param name="reactTag">The view to remove.</param>
-        /// <param name="animationID">The animation ID to remove.</param>
-        public void removeAnimation(int reactTag, int animationID)
-        {
-            AssertViewExists(reactTag, "removeAnimation");
-            _operationsQueue.EnqueueRemoveAnimation(animationID);
         }
 
         /// <summary>

@@ -246,6 +246,7 @@
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\AnimationState.cs" />
+    <Compile Include="UIManager\LayoutAnimation\InterpolationTypesExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\StoryboardAnimation.cs" />
     <Compile Include="UIManager\LayoutAnimation\AnimatedPropertyType.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutCreateAnimation.cs" />
