@@ -68,6 +68,8 @@ function getPackagerServer(args, config) {
   }
 
   return ReactPackager.createServer({
+    packagerHost: args.host || 'localhost',
+    packagerPort: args.port,
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),

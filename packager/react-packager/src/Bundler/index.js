@@ -31,6 +31,14 @@ const readFile = Promise.denodeify(fs.readFile);
 const noop = () => {};
 
 const validateOpts = declareOpts({
+  packagerHost: {
+    type: 'string',
+    required: true,
+  },
+  packagerPort: {
+    type: 'number',
+    required: true,
+  },
   projectRoots: {
     type: 'array',
     required: true,
@@ -160,8 +168,9 @@ class Bundler {
   }
 
   _sourceHMRURL(platform, path) {
+    const {packagerHost, packagerPort} = this._opts;
     return this._hmrURL(
-      'http://localhost:8081', // TODO: (martinb) avoid hardcoding
+      `http://${packagerHost}:${packagerPort}`,
       platform,
       'bundle',
       path,

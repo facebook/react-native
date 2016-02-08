@@ -21,6 +21,14 @@ const path = require('path');
 const url = require('url');
 
 const validateOpts = declareOpts({
+  packagerHost: {
+    type: 'string',
+    required: true,
+  },
+  packagerPort: {
+    type: 'number',
+    required: true,
+  },
   projectRoots: {
     type: 'array',
     required: true,
