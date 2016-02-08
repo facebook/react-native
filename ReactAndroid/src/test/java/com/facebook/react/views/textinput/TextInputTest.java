@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.util.DisplayMetrics;
 import android.view.Choreographer;
 import android.widget.EditText;
 
@@ -22,6 +23,7 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.SimpleArray;
 import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -181,6 +183,8 @@ public class TextInputTest {
         new ViewManager[] {
             new ReactTextInputManager(),
         });
+    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
+    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,
