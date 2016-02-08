@@ -193,7 +193,7 @@ namespace ReactNative.Tests.Modules.Core
             return timing;
         }
 
-        class TestCatalystInstance : MockCatalystInstance
+        class TestCatalystInstance : MockReactInstance
         {
             private readonly object _jsTimers;
 
