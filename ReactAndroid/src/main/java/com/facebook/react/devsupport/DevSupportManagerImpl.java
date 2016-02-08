@@ -633,7 +633,7 @@ public class DevSupportManagerImpl implements DevSupportManager {
                   public void run() {
                     if (cause instanceof DebugServerException) {
                       DebugServerException debugServerException = (DebugServerException) cause;
-                      showNewJavaError(debugServerException.description, cause);
+                      showNewJavaError(debugServerException.getMessage(), cause);
                     } else {
                       showNewJavaError(
                           mApplicationContext.getString(R.string.catalyst_jsload_error),

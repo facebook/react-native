@@ -22,24 +22,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * Tracks errors connecting to or received from the debug derver.
  * The debug server returns errors as json objects. This exception represents that error.
  */
 public class DebugServerException extends IOException {
-
-  public final String description;
-  public final String fileName;
-  public final int lineNumber;
-  public final int column;
-
   private DebugServerException(String description, String fileName, int lineNumber, int column) {
-    this.description = description;
-    this.fileName = fileName;
-    this.lineNumber = lineNumber;
-    this.column = column;
+    super(description + "\n  at " + fileName + ":" + lineNumber + ":" + column);
   }
 
-  public String toReadableMessage() {
-    return description + "\n  at " + fileName + ":" + lineNumber + ":" + column;
+  public DebugServerException(String description) {
+    super(description);
   }
 
   /**
