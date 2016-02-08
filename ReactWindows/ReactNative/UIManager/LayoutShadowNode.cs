@@ -1,9 +1,8 @@
 ﻿using Facebook.CSSLayout;
+using ReactNative.Reflection;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 namespace ReactNative.UIManager
 {
@@ -97,7 +96,7 @@ namespace ReactNative.UIManager
         public void SetFlexDirection(string flexDirection)
         {
             FlexDirection = flexDirection != null
-                ? Parse<CSSFlexDirection>(flexDirection, nameof(flexDirection))
+                ? EnumHelpers.Parse<CSSFlexDirection>(flexDirection)
                 : CSSFlexDirection.Column;
         }
 
@@ -109,7 +108,7 @@ namespace ReactNative.UIManager
         public void SetFlexWrap(string flexWrap)
         {
             Wrap = flexWrap != null
-                ? Parse<CSSWrap>(flexWrap, nameof(flexWrap))
+                ? EnumHelpers.Parse<CSSWrap>(flexWrap)
                 : CSSWrap.NoWrap;
         }
 
@@ -121,7 +120,7 @@ namespace ReactNative.UIManager
         public void SetAlignSelf(string alignSelf)
         {
             AlignSelf = alignSelf != null
-                ? Parse<CSSAlign>(alignSelf, nameof(alignSelf))
+                ? EnumHelpers.Parse<CSSAlign>(alignSelf)
                 : CSSAlign.Auto;
         }
 
@@ -133,7 +132,7 @@ namespace ReactNative.UIManager
         public void SetAlignItems(string alignItems)
         {
             AlignItems = alignItems != null
-                ? Parse<CSSAlign>(alignItems, nameof(alignItems))
+                ? EnumHelpers.Parse<CSSAlign>(alignItems)
                 : CSSAlign.Stretch;
         }
 
@@ -145,7 +144,7 @@ namespace ReactNative.UIManager
         public void SetJustifyContent(string justifyContent)
         {
             JustifyContent = justifyContent != null
-                ? Parse<CSSJustify>(justifyContent, nameof(justifyContent))
+                ? EnumHelpers.Parse<CSSJustify>(justifyContent)
                 : CSSJustify.FlexStart;
         }
 
@@ -212,33 +211,8 @@ namespace ReactNative.UIManager
         public void SetPosition(string position)
         {
             PositionType = position != null
-                ? Parse<CSSPositionType>(position, nameof(position))
+                ? EnumHelpers.Parse<CSSPositionType>(position)
                 : CSSPositionType.Relative;
-        }
-
-        private static T Parse<T>(string value, string paramName)
-        {
-            var lookup = s_enumCache.GetOrAdd(
-                typeof(T), 
-                type => Enum.GetValues(type)
-                    .Cast<object>()
-                    .ToDictionary(
-                        e => e.ToString().ToLowerInvariant(),
-                        e => e));
-
-            var result = default(object);
-            if (!lookup.TryGetValue(value.ToLowerInvariant().Replace("-", ""), out result))
-            {
-                throw new ArgumentOutOfRangeException(
-                    paramName,
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                       "Invalid value '{0}' for type '{1}'.",
-                       value,
-                       typeof(T)));
-            }
-
-            return (T)result;
         }
     }
 }
