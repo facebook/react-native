@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -177,7 +178,7 @@ public class DevServerHelper {
       final String jsModulePath,
       final File outputFile) {
     final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR());
-    Request request = new Request.Builder()
+    final Request request = new Request.Builder()
         .url(bundleURL)
         .build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
@@ -191,7 +192,15 @@ public class DevServerHelper {
         }
         mDownloadBundleFromURLCall = null;
 
-        callback.onFailure(e);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Could not connect to development server.\n\n")
+          .append("URL: ").append(request.urlString()).append("\n\n")
+          .append("Try the following to fix the issue:\n")
+          .append("\u2022 Ensure that the packager server is running\n")
+          .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
+          .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
+          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
+        callback.onFailure(new DebugServerException(sb.toString()));
       }
 
       @Override
@@ -210,7 +219,12 @@ public class DevServerHelper {
           if (debugServerException != null) {
             callback.onFailure(debugServerException);
           } else {
-            callback.onFailure(new IOException("Unexpected response code: " + response.code()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("The development server returned response error code: ").append(response.code()).append("\n\n")
+              .append("URL: ").append(request.urlString()).append("\n\n")
+              .append("Body:\n")
+              .append(body);
+            callback.onFailure(new DebugServerException(sb.toString()));
           }
           return;
         }
