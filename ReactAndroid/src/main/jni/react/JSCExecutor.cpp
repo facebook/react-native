@@ -12,9 +12,9 @@
 #include <jni/fbjni/Exceptions.h>
 #include <sys/time.h>
 #include "Value.h"
-#include "jni/JMessageQueueThread.h"
 #include "jni/OnLoad.h"
 #include <react/JSCHelpers.h>
+#include "Platform.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include <react/JSCTracing.h>
@@ -30,9 +30,6 @@
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
 #endif
-
-// Add native performance markers support
-#include <react/JSCPerfLogging.h>
 
 #ifdef WITH_FB_MEMORY_PROFILING
 #include <react/JSCMemory.h>
@@ -53,13 +50,6 @@ namespace react {
 static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
 
 static JSValueRef nativeFlushQueueImmediate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception);
-static JSValueRef nativeLoggingHook(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,
@@ -94,20 +84,21 @@ static std::string executeJSCallWithJSC(
 }
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateCallback cb) {
-  return std::unique_ptr<JSExecutor>(new JSCExecutor(cb));
+  return std::unique_ptr<JSExecutor>(new JSCExecutor(cb, cacheDir_));
 }
 
-JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
-    m_flushImmediateCallback(cb) {
+JSCExecutor::JSCExecutor(FlushImmediateCallback cb, const std::string& cacheDir) :
+    m_flushImmediateCallback(cb), m_deviceCacheDir(cacheDir) {
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  m_messageQueueThread = JMessageQueueThread::currentMessageQueueThread();
+  m_messageQueueThread = MessageQueues::getCurrentMessageQueueThread();
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
-  installGlobalFunction(m_context, "nativeLoggingHook", nativeLoggingHook);
   installGlobalFunction(m_context, "nativePerformanceNow", nativePerformanceNow);
   installGlobalFunction(m_context, "nativeStartWorker", nativeStartWorker);
   installGlobalFunction(m_context, "nativePostMessageToWorker", nativePostMessageToWorker);
   installGlobalFunction(m_context, "nativeTerminateWorker", nativeTerminateWorker);
+
+  installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -116,7 +107,7 @@ JSCExecutor::JSCExecutor(FlushImmediateCallback cb) :
   #ifdef WITH_JSC_EXTRA_TRACING
   addNativeTracingHooks(m_context);
   addNativeProfilingHooks(m_context);
-  addNativePerfLoggingHooks(m_context);
+  PerfLogging::installNativeHooks(m_context);
   #endif
 
   #ifdef WITH_FB_MEMORY_PROFILING
@@ -138,43 +129,12 @@ JSCExecutor::~JSCExecutor() {
   JSGlobalContextRelease(m_context);
 }
 
-std::string JSCExecutor::getDeviceCacheDir(){
-  // Get the Application Context object
-  auto getApplicationClass = findClassLocal(
-                              "com/facebook/react/common/ApplicationHolder");
-  auto getApplicationMethod = getApplicationClass->getStaticMethod<jobject()>(
-                              "getApplication",
-                              "()Landroid/app/Application;"
-                              );
-  auto application = getApplicationMethod(getApplicationClass);
-
-  // Get getCacheDir() from the context
-  auto getCacheDirMethod = findClassLocal("android/app/Application")
-                            ->getMethod<jobject()>("getCacheDir",
-                                                   "()Ljava/io/File;"
-                                                  );
-  auto cacheDirObj = getCacheDirMethod(application);
-
-  // Call getAbsolutePath() on the returned File object
-  auto getAbsolutePathMethod = findClassLocal("java/io/File")
-                                ->getMethod<jstring()>("getAbsolutePath");
-  return getAbsolutePathMethod(cacheDirObj)->toStdString();
-}
-
 void JSCExecutor::executeApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  JNIEnv* env = Environment::current();
-  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
-  jmethodID logMarkerMethod = facebook::react::getLogMarkerMethod();
-  jstring startStringMarker = env->NewStringUTF("executeApplicationScript_startStringConvert");
-  jstring endStringMarker = env->NewStringUTF("executeApplicationScript_endStringConvert");
-
-  env->CallStaticVoidMethod(markerClass, logMarkerMethod, startStringMarker);
+  ReactMarker::logMarker("executeApplicationScript_startStringConvert");
   String jsScript = String::createExpectingAscii(script);
-  env->CallStaticVoidMethod(markerClass, logMarkerMethod, endStringMarker);
-  env->DeleteLocalRef(startStringMarker);
-  env->DeleteLocalRef(endStringMarker);
+  ReactMarker::logMarker("executeApplicationScript_endStringConvert");
 
   String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
@@ -186,20 +146,18 @@ void JSCExecutor::executeApplicationScript(
   } else {
     // If we're evaluating a script, get the device's cache dir 
     //  in which a cache file for that script will be stored.
-    evaluateScript(m_context, jsScript, jsSourceURL, getDeviceCacheDir().c_str());
+    evaluateScript(m_context, jsScript, jsSourceURL, m_deviceCacheDir.c_str());
   }
 }
 
 void JSCExecutor::loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
-
-  m_unbundle = std::move(unbundle);
-  if (!m_isUnbundleInitialized) {
-    m_isUnbundleInitialized = true;
+  if (!m_unbundle) {
     installGlobalFunction(m_context, "nativeRequire", nativeRequire);
   }
+  m_unbundle = std::move(unbundle);
   executeApplicationScript(startupCode, sourceURL);
 }
 
@@ -282,7 +240,7 @@ void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
 }
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
-  auto module = m_unbundle.getModule(moduleId);
+  auto module = m_unbundle->getModule(moduleId);
   auto sourceUrl = String::createExpectingAscii(module.name);
   auto source = String::createExpectingAscii(module.code);
   evaluateScript(m_context, source, sourceUrl);
@@ -294,7 +252,7 @@ JSGlobalContextRef JSCExecutor::getContext() {
   return m_context;
 }
 
-std::shared_ptr<JMessageQueueThread> JSCExecutor::getMessageQueueThread() {
+std::shared_ptr<MessageQueueThread> JSCExecutor::getMessageQueueThread() {
   return m_messageQueueThread;
 }
 
@@ -501,29 +459,6 @@ JSValueRef JSCExecutor::nativeTerminateWorker(
 
   executor->terminateWebWorker((int) workerDouble);
 
-  return JSValueMakeUndefined(ctx);
-}
-
-static JSValueRef nativeLoggingHook(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[], JSValueRef *exception) {
-  android_LogPriority logLevel = ANDROID_LOG_DEBUG;
-  if (argumentCount > 1) {
-    int level = (int) JSValueToNumber(ctx, arguments[1], NULL);
-    // The lowest log level we get from JS is 0. We shift and cap it to be
-    // in the range the Android logging method expects.
-    logLevel = std::min(
-        static_cast<android_LogPriority>(level + ANDROID_LOG_DEBUG),
-        ANDROID_LOG_FATAL);
-  }
-  if (argumentCount > 0) {
-    JSStringRef jsString = JSValueToStringCopy(ctx, arguments[0], NULL);
-    String message = String::adopt(jsString);
-    FBLOG_PRI(logLevel, "ReactNativeJS", "%s", message.str().c_str());
-  }
   return JSValueMakeUndefined(ctx);
 }
 

@@ -112,6 +112,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             return;
           }
 
+          client.ws.send(JSON.stringify({type: 'update-start'}));
           stat.then(() => {
             return packagerServer.getShallowDependencies(filename)
               .then(deps => {
@@ -240,7 +241,9 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             () => {
               // do nothing, file was removed
             },
-          );
+          ).finally(() => {
+            client.ws.send(JSON.stringify({type: 'update-done'}));
+          });
         });
 
         client.ws.on('error', e => {

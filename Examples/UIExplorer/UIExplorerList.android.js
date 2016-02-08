@@ -30,6 +30,7 @@ var COMPONENTS = [
   require('./PullToRefreshViewAndroidExample.android'),
   require('./RefreshControlExample'),
   require('./ScrollViewSimpleExample'),
+  require('./StatusBarExample'),
   require('./SwitchExample'),
   require('./TextExample.android'),
   require('./TextInputExample.android'),

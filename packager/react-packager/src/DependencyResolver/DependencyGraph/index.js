@@ -22,6 +22,8 @@ const ResolutionResponse = require('./ResolutionResponse');
 const HasteMap = require('./HasteMap');
 const DeprecatedAssetMap = require('./DeprecatedAssetMap');
 
+const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
+
 const defaultActivity = {
   startEvent: () => {},
   endEvent: () => {},
@@ -63,11 +65,7 @@ class DependencyGraph {
     };
     this._cache = cache;
     this._helpers = new DependencyGraphHelpers(this._opts);
-    this.load().catch((err) => {
-      // This only happens at initialization. Live errors are easier to recover from.
-      console.error('Error building DependencyGraph:\n', err.stack);
-      process.exit(1);
-    });
+    this.load();
   }
 
   load() {
@@ -134,7 +132,14 @@ class DependencyGraph {
       this._deprecatedAssetMap.build(),
     ]).then(() =>
       activity.endEvent(depGraphActivity)
-    );
+    ).catch(err => {
+      const error = new Error(
+        `Failed to build DependencyGraph: ${err.message}`
+      );
+      error.type = ERROR_BUILDING_DEP_GRAPH;
+      error.stack = err.stack;
+      throw error;
+    });
 
     return this._loading;
   }
@@ -147,8 +152,8 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryPath).getDependencies();
   }
 
-  stat(filePath) {
-    return this._fastfs.stat(filePath);
+  getFS() {
+    return this._fastfs;
   }
 
   /**
@@ -156,6 +161,10 @@ class DependencyGraph {
    */
   getModuleForPath(entryFile) {
     return this._moduleCache.getModule(entryFile);
+  }
+
+  getAllModules() {
+    return this.load().then(() => this._moduleCache.getAllModules());
   }
 
   getDependencies(entryPath, platform, recursive = true) {

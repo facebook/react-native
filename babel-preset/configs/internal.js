@@ -8,7 +8,9 @@
  */
 'use strict';
 
-exports.getAll = function(options) {
-  return [];
-};
+var resolvePlugins = require('../lib/resolvePlugins');
 
+module.exports = function(options) {
+  // For future internal pipeline usage
+  return null;
+}

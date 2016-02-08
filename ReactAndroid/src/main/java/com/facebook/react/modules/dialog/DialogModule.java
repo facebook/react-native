@@ -26,6 +26,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 
@@ -43,6 +44,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   /* package */ static final String KEY_BUTTON_POSITIVE = "buttonPositive";
   /* package */ static final String KEY_BUTTON_NEGATIVE = "buttonNegative";
   /* package */ static final String KEY_BUTTON_NEUTRAL = "buttonNeutral";
+  /* package */ static final String KEY_ITEMS = "items";
 
   /* package */ static final Map<String, Object> CONSTANTS = MapBuilder.<String, Object>of(
       ACTION_BUTTON_CLICKED, ACTION_BUTTON_CLICKED,
@@ -229,6 +231,14 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     }
     if (options.hasKey(KEY_BUTTON_NEUTRAL)) {
       args.putString(AlertFragment.ARG_BUTTON_NEUTRAL, options.getString(KEY_BUTTON_NEUTRAL));
+    }
+    if (options.hasKey(KEY_ITEMS)) {
+      ReadableArray items = options.getArray(KEY_ITEMS);
+      CharSequence[] itemsArray = new CharSequence[items.size()];
+      for (int i = 0; i < items.size(); i ++) {
+        itemsArray[i] = items.getString(i);
+      }
+      args.putCharSequenceArray(AlertFragment.ARG_ITEMS, itemsArray);
     }
 
     fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);
