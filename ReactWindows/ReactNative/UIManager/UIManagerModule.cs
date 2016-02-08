@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Animation;
 using ReactNative.Bridge;
 using ReactNative.Tracing;
 using ReactNative.UIManager.Events;
-using ReactNative.Views;
 using System;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
-using ReactNative.Animation;
 
 namespace ReactNative.UIManager
 {
@@ -354,39 +352,8 @@ namespace ReactNative.UIManager
         [ReactMethod]
         public void configureNextLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
-            _uiImplementation.configureNextLayoutAnimation(config, success, error);
+            _uiImplementation.ConfigureNextLayoutAnimation(config, success, error);
         }
-
-        /// <summary>
-        /// Registers a new Animation that can then be added to a View using <see cref="addAnimation"/>.
-        /// </summary>
-        /// <param name="animation"></param>
-        public void registerAnimation(AnimationManager animation)
-        {
-            _uiImplementation.registerAnimation(animation);
-        }
-
-        /// <summary>
-        /// Adds an Animation previously registered with <see cref="registerAnimation"/> to a View and starts it.
-        /// </summary>
-        /// <param name="reactTag"></param>
-        /// <param name="animationID"></param>
-        /// <param name="onSuccess"></param>
-        public void addAnimation(int reactTag, int animationID, ICallback success)
-        {
-            _uiImplementation.addAnimation(reactTag, animationID, success);
-        }
-
-        /// <summary>
-        /// Removes an existing Animation, canceling it if it was in progress.
-        /// </summary>
-        /// <param name="reactTag"></param>
-        /// <param name="animationID"></param>
-        public void removeAnimation(int reactTag, int animationID)
-        {
-            _uiImplementation.removeAnimation(reactTag, animationID);
-        }
-
 
         #endregion
 

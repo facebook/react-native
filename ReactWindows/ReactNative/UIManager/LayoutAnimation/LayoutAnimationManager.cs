@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager.LayoutAnimation
@@ -17,8 +13,9 @@ namespace ReactNative.UIManager.LayoutAnimation
         private const string CONFIG_PROP_DURATION = "duration";
         public const string CONFIG_PROP_ACTION_CREATE = "create";
         private const string CONFIG_PROP_ACTION_UPDATE = "update";
-        private Dictionary<AnimationState, StoryboardAnimation> _AnimationLayoutDictionary;
-        private bool _ShouldAnimateLayout;
+
+        private Dictionary<AnimationState, StoryboardAnimation> _animationLayoutDictionary;
+        private bool _shouldAnimateLayout;
 
         /// <summary>
         /// Setup the initial settings of the initial and follow-on <see cref="Storyboard"/>(s).
@@ -31,10 +28,10 @@ namespace ReactNative.UIManager.LayoutAnimation
             var actionTypeUpdateToken = default(JToken);
             var globalDuration = default(int);
 
-            _AnimationLayoutDictionary = new Dictionary<AnimationState, StoryboardAnimation>()
+            _animationLayoutDictionary = new Dictionary<AnimationState, StoryboardAnimation>()
             {
-                { AnimationState.create, new LayoutCreateAnimation() },
-                { AnimationState.update, new LayoutUpdateAnimation() },
+                { AnimationState.Create, new LayoutCreateAnimation() },
+                { AnimationState.Update, new LayoutUpdateAnimation() },
             };
 
             if (config == null)
@@ -43,19 +40,19 @@ namespace ReactNative.UIManager.LayoutAnimation
                 return;
             }
 
-            _ShouldAnimateLayout = false;
+            _shouldAnimateLayout = false;
             globalDuration = config.TryGetValue(CONFIG_PROP_DURATION, out durationToken) ? durationToken.ToObject<int>() : 0;
 
             if (config.TryGetValue(CONFIG_PROP_ACTION_CREATE, out actionTypeCreateToken))
             {
-                this.Storyboard(AnimationState.create).InitializeFromConfig(actionTypeCreateToken.ToObject<JObject>(), globalDuration);
-                _ShouldAnimateLayout = true;
+                this.Storyboard(AnimationState.Create).InitializeFromConfig(actionTypeCreateToken.ToObject<JObject>(), globalDuration);
+                _shouldAnimateLayout = true;
             }
 
             if (config.TryGetValue(CONFIG_PROP_ACTION_UPDATE, out actionTypeUpdateToken))
             {
-                this.Storyboard(AnimationState.update).InitializeFromConfig(actionTypeUpdateToken.ToObject<JObject>(), globalDuration);
-                _ShouldAnimateLayout = true;
+                this.Storyboard(AnimationState.Update).InitializeFromConfig(actionTypeUpdateToken.ToObject<JObject>(), globalDuration);
+                _shouldAnimateLayout = true;
             }
         }
 
@@ -69,7 +66,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             var animation = default(StoryboardAnimation);
 
-            if (_AnimationLayoutDictionary.TryGetValue(type, out animation))
+            if (_animationLayoutDictionary.TryGetValue(type, out animation))
             {
                 return animation;
             }
@@ -84,13 +81,13 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// </summary>
         /// <param name="view">The view to animate.</param>
         /// <returns></returns>
-        public bool ShouldAnimateLayout(FrameworkElement view) { return _ShouldAnimateLayout && view.Parent != null; }
+        public bool ShouldAnimateLayout(FrameworkElement view) { return _shouldAnimateLayout && view.Parent != null; }
 
         public void Reset()
         {
-            this.Storyboard(AnimationState.create).Reset();
-            this.Storyboard(AnimationState.update).Reset();
-            _ShouldAnimateLayout = false;
+            this.Storyboard(AnimationState.Create).Reset();
+            this.Storyboard(AnimationState.Update).Reset();
+            _shouldAnimateLayout = false;
         }
 
         /// <summary>
@@ -105,10 +102,10 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            var animationState = view.ActualWidth == 0 || view.ActualHeight == 0 ? AnimationState.create : AnimationState.update;
+            var animationState = view.ActualWidth == 0 || view.ActualHeight == 0 ? AnimationState.Create : AnimationState.Update;
             var storyboard = this.Storyboard(animationState).CreateAnimation(view, x, y, width, height);
 
-            if(storyboard != null)
+            if (storyboard != null)
             {
                 storyboard.Begin();
             }

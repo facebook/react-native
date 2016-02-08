@@ -1,25 +1,18 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Reflection;
 using ReactNative.Views.Image;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Animation;
 
 namespace ReactNative.UIManager.LayoutAnimation
 {
     /// <summary>
-    /// Base class responsible for parsing the animation JSON config and creating an <see cref="Storyboard"/> animation. 
+    /// Base class responsible for parsing the animation JSON config and creating a <see cref="Storyboard"/> animation. 
     /// </summary>
     public abstract class StoryboardAnimation
     {
-        protected StoryboardAnimation()
-        {
-            this.Reset();
-        }
-
         private const string CONFIG_PROPERTY = "property";
         private const string CONFIG_DURATION = "duration";
         private const string CONFIG_DELAY = "delay";
@@ -32,43 +25,25 @@ namespace ReactNative.UIManager.LayoutAnimation
 
         public AnimatedPropertyType PropertyType { private set; get; }
 
+        /// <summary>
+        /// Sets/Gets the <see cref="SpringIntensity"/> of the <see cref="EasingFunction"/>. 
+        /// </summary>
         public int SpringIntensity { private set; get; }
 
+        /// <summary>
+        /// Sets the duration of the animation.
+        /// </summary>
         protected int DurationMS { private set; get; }
 
+        /// <summary>
+        /// Sets the delay of the start of the animation.
+        /// </summary>
         protected int DelayMS { private set; get; }
 
+        /// <summary>
+        /// The <see cref="InterpolationType"/> of the animation.
+        /// </summary>
         protected InterpolationType Type { private set; get; }
-
-        protected EasingFunctionBase EasingFunction
-        {
-            get {
-                var transitionFunction = default(EasingFunctionBase);
-
-                if(EasingFunctions.TryGetValue(Type, out transitionFunction))
-                {
-                    return transitionFunction;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        protected IReadOnlyDictionary<InterpolationType, EasingFunctionBase> EasingFunctions
-        {
-            get
-            {
-                return new Dictionary<InterpolationType, EasingFunctionBase>() {
-                    { InterpolationType.easeIn, new BackEase() { EasingMode = EasingMode.EaseIn, Amplitude = .5 } },
-                    { InterpolationType.easeOut, new BackEase() { EasingMode = EasingMode.EaseOut, Amplitude = .5} },
-                    { InterpolationType.easeInEaseOut, new BackEase() { EasingMode = EasingMode.EaseInOut, Amplitude = .5} },
-                    { InterpolationType.linear, null },
-                    { InterpolationType.spring, new ElasticEase() { Oscillations = 3 } }
-                };
-            }
-        }
         
         /// <summary>
         /// Initliazes all the member properties based on the style config of the animation.
@@ -76,18 +51,15 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <param name="config">The style config.</param>
         public void InitializeFromConfig(JObject config, int globalDuration)
         {
-            var propertyType = default(AnimatedPropertyType);
-            var interpolationType = default(InterpolationType);
             var duration = default(JToken);
             var token = default(JToken);
             var delay = default(JToken);
             var type = default(JToken);
             var springDamping = default(JToken);
 
-            if (config.TryGetValue(CONFIG_PROPERTY, out token) && 
-                Enum.TryParse(token.ToObject<string>(), out propertyType))
+            if (config.TryGetValue(CONFIG_PROPERTY, out token))
             {
-                PropertyType = propertyType;
+                PropertyType = EnumHelpers.Parse<AnimatedPropertyType>(token.ToObject<string>());
             }
             else
             {
@@ -105,12 +77,11 @@ namespace ReactNative.UIManager.LayoutAnimation
                 SpringIntensity = 4;
             }
 
-            ((ElasticEase)EasingFunctions[InterpolationType.spring]).Springiness = SpringIntensity;
+            ((ElasticEase)InterpolationType.Spring.EasingFunction()).Springiness = SpringIntensity;
 
-            if (config.TryGetValue(CONFIG_TYPE, out type) &&
-                Enum.TryParse(type.ToObject<string>(), out interpolationType))
+            if (config.TryGetValue(CONFIG_TYPE, out type))
             {
-                Type = interpolationType;
+                Type = EnumHelpers.Parse<InterpolationType>(type.ToObject<string>());
             }
             else
             {
@@ -122,18 +93,18 @@ namespace ReactNative.UIManager.LayoutAnimation
 
             if (!IsValid())
             {
-                throw new InvalidOperationException("Invalid layout animation : ");
+                throw new InvalidOperationException(string.Format("Invalid layout animation exception. Likely due to duration of {0} not being set", DurationMS));
             }
         }
 
         /// <summary>
         /// Creates the <see cref="Storyboard"/> animation.
         /// </summary>
-        /// <param name="view"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="view">The <see cref="FrameworkElement"/> view.</param>
+        /// <param name="x">The X coordinate.</param>
+        /// <param name="y">The new Y coordinate.</param>
+        /// <param name="width">The new width for <see cref="FrameworkElement"/>.</param>
+        /// <param name="height">The new height for the <see cref="FrameworkElement"/>.</param>
         /// <returns></returns>
         public Storyboard CreateAnimation(FrameworkElement view, int x, int y, int width, int height)
         {
@@ -148,16 +119,9 @@ namespace ReactNative.UIManager.LayoutAnimation
             {
                 storyboard.Duration = TimeSpan.FromMilliseconds(DurationMS);
                 storyboard.BeginTime = TimeSpan.FromMilliseconds(DelayMS);
-
-                return storyboard;
             }
-            else
-            {
-                return null;
-            }
-            
 
-            
+            return storyboard;
         }
 
         /// <summary>
@@ -170,6 +134,5 @@ namespace ReactNative.UIManager.LayoutAnimation
             DurationMS = 0;
             DelayMS = 0;
         }
-        
     }
 }

@@ -2,10 +2,6 @@
 using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -26,7 +22,7 @@ namespace ReactNative.Views.Image
             {
                 var backgroundImage = new ImageBrush()
                 {
-                    ImageSource = new BitmapImage(image)
+                    ImageSource = new BitmapImage(image),
                 };
                 
                 border.Background = backgroundImage;
@@ -62,7 +58,6 @@ namespace ReactNative.Views.Image
                         };
                     }
                 }
-
                 image.Dispose();
             }
         }

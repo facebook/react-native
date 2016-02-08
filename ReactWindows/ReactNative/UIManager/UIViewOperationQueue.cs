@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
+using ReactNative.Animation;
 using ReactNative.Bridge;
 using ReactNative.Tracing;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using ReactNative.Animation;
 
 namespace ReactNative.UIManager
 {
@@ -21,7 +21,6 @@ namespace ReactNative.UIManager
         private readonly int[] _measureBuffer = new int[4];
 
         private readonly object _operationsLock = new object();
-        private readonly AnimationRegistry _animationRegistry;
         private IList<Action> _operations = new List<Action>();
         private readonly NativeViewHierarchyManager _nativeViewHierarchyManager;
         private readonly ReactContext _reactContext;
@@ -37,7 +36,6 @@ namespace ReactNative.UIManager
         {
             _nativeViewHierarchyManager = nativeViewHierarchyManager;
             _reactContext = reactContext;
-            _animationRegistry = nativeViewHierarchyManager.AnimationRegistry;
         }
 
         /// <summary>
@@ -184,33 +182,11 @@ namespace ReactNative.UIManager
             _nativeViewHierarchyManager.ClearLayoutAnimation();
         }
 
-        internal void EnqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
+        public void EnqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.ConfigureLayoutAnimation(config, success, error));
         }
-
-        internal void EnqueueRegisterAnimation(AnimationManager animation)
-        {
-            EnqueueOperation(() => _animationRegistry.RegisterAnimation(animation));
-        }
-
-        internal void EnqueueAddAnimation(int reactTag, int animationID, ICallback onSuccess)
-        {
-            EnqueueOperation(() => {
-                var animation = _animationRegistry.GetAnimation(animationID);
-
-                if (animation != null)
-                {
-                    
-                }
-            });
-        }
-
-        internal void EnqueueRemoveAnimation(int animationID)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         /// <summary>
         /// Enqueues an operation to update the properties of a view.
         /// </summary>

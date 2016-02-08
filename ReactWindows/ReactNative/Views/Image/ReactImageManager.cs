@@ -24,10 +24,11 @@ namespace ReactNative.Views.Image
         private const string ReactClass = "RCTImageView";
         private const string PROP_SOURCE = "source";
         private const string PROP_URI = "uri";
-        //Defaulting to 1000 MS for testing purpose until Image.windows.js is modified.
-        private int _FadeDurationMS = 3000;
-        private Uri _ImageSource;
-        private uint? _TintColor;
+
+        //Defaulting to 3000 MS for testing purpose until Image.windows.js is modified.
+        private int _fadeDurationMS = 3000;
+        private Uri _imageSource;
+        private uint? _tintColor;
 
         /// <summary>
         /// The view manager name.
@@ -67,9 +68,9 @@ namespace ReactNative.Views.Image
 
             if (sourceMap != null && sourceMap.TryGetValue(PROP_URI, out source))
             {
-                if (!Uri.TryCreate(source, UriKind.Absolute, out _ImageSource))
+                if (!Uri.TryCreate(source, UriKind.Absolute, out _imageSource))
                 {
-                    _ImageSource = new Uri("ms-appx://" + source);
+                    _imageSource = new Uri("ms-appx://" + source);
                 }
             }
         }
@@ -112,7 +113,7 @@ namespace ReactNative.Views.Image
 
             if (color.HasValue)
             {
-                _TintColor = color.Value;
+                _tintColor = color.Value;
             }
         }
 
@@ -123,13 +124,13 @@ namespace ReactNative.Views.Image
         protected override void OnAfterUpdateTransaction(Border view)
         {
             var element = view.Background as ImageBrush;
-            if (_TintColor.HasValue && _ImageSource != null)
+            if (_tintColor.HasValue && _imageSource != null)
             {
-                view.CreateColorBlendedImageSource(_ImageSource, ColorHelpers.Parse(_TintColor.Value));
+                view.CreateColorBlendedImageSource(_imageSource, ColorHelpers.Parse(_tintColor.Value));
             }
-            else if(_ImageSource != null)
+            else if(_imageSource != null)
             {
-                view.CreateBackgroundBitmapImage(_ImageSource);
+                view.CreateBackgroundBitmapImage(_imageSource);
             }
         }
         
@@ -145,7 +146,7 @@ namespace ReactNative.Views.Image
         {
             if (fadeDurationMS.HasValue)
             {
-                _FadeDurationMS = fadeDurationMS.Value;
+                _fadeDurationMS = fadeDurationMS.Value;
             }
         }
 
@@ -210,7 +211,7 @@ namespace ReactNative.Views.Image
         {
             var border = (Border)sender;
             var imageBrush = GetImageBrush(border);
-            if (imageBrush != null)
+            if (imageBrush != null && imageBrush.ImageSource.GetType() == typeof(BitmapImage))
             {
                 var bitmapImage = imageBrush.ImageSource as BitmapImage;
                 bitmapImage.DecodePixelHeight = (int)sender.Height;
@@ -229,11 +230,11 @@ namespace ReactNative.Views.Image
         protected void OnInterceptImageLoadedEvent(object sender, RoutedEventArgs e)
         {
             var senderImage = (Border)sender;
-            if (_FadeDurationMS > 0)
+            if (_fadeDurationMS > 0)
             {
                 var fadeStoryBoard = new Storyboard() { };
                 var easingFunction = new BackEase() { EasingMode = EasingMode.EaseIn, Amplitude = .5 };
-                fadeStoryBoard.SetOpacityTimeline(easingFunction, senderImage, 0, 1, _FadeDurationMS);
+                fadeStoryBoard.SetOpacityTimeline(easingFunction, senderImage, 0, 1, _fadeDurationMS);
                 fadeStoryBoard.Begin();
             }
 
