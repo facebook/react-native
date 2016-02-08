@@ -15,11 +15,17 @@
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
 #include <react/JSModulesUnbundle.h>
+#include <react/Platform.h>
 #include "JNativeRunnable.h"
 #include "JSLoader.h"
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
+#include "JMessageQueueThread.h"
+#include "JniJSModulesUnbundle.h"
+#include "JSLogging.h"
+#include "JSCPerfLogging.h"
+#include "WebWorkers.h"
 #include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
@@ -561,6 +567,15 @@ static jmethodID gCallbackMethod;
 static jmethodID gOnBatchCompleteMethod;
 static jmethodID gLogMarkerMethod;
 
+static void logMarker(const std::string& marker) {
+  JNIEnv* env = Environment::current();
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+  jstring jmarker = env->NewStringUTF(marker.c_str());
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, jmarker);
+  env->DeleteLocalRef(markerClass);
+  env->DeleteLocalRef(jmarker);
+}
+
 static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
     return;
@@ -627,7 +642,7 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   auto bridgeCallback = [weakCallback, weakCallbackQueueThread] (std::vector<MethodCall> calls, bool isEndOfBatch) {
     dispatchCallbacksToJava(weakCallback, weakCallbackQueueThread, std::move(calls), isEndOfBatch);
   };
-  auto nativeExecutorFactory = extractRefPtr<JSExecutorFactory>(env, executor);
+  auto nativeExecutorFactory = extractRefPtr<CountableJSExecutorFactory>(env, executor);
   auto bridge = createNew<Bridge>(nativeExecutorFactory, bridgeCallback);
   setCountableForJava(env, obj, std::move(bridge));
 }
@@ -654,7 +669,8 @@ static void loadApplicationUnbundle(
   try {
     // Load the application unbundle and collect/dispatch any native calls that might have occured
     bridge->loadApplicationUnbundle(
-      JSModulesUnbundle(assetManager, startupFileName),
+      std::unique_ptr<JSModulesUnbundle>(
+        new JniJSModulesUnbundle(assetManager, startupFileName)),
       startupCode,
       startupFileName);
     bridge->flush();
@@ -679,7 +695,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   #endif
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
-  if (JSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
+  if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
     loadApplicationUnbundle(bridge, manager, script, assetNameStr);
   } else {
     executeApplicationScript(bridge, script, assetNameStr);
@@ -774,8 +790,37 @@ static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
 
 namespace executors {
 
+std::string getDeviceCacheDir() {
+  // Get the Application Context object
+  auto getApplicationClass = findClassLocal(
+                              "com/facebook/react/common/ApplicationHolder");
+  auto getApplicationMethod = getApplicationClass->getStaticMethod<jobject()>(
+                              "getApplication",
+                              "()Landroid/app/Application;"
+                              );
+  auto application = getApplicationMethod(getApplicationClass);
+
+  // Get getCacheDir() from the context
+  auto getCacheDirMethod = findClassLocal("android/app/Application")
+                            ->getMethod<jobject()>("getCacheDir",
+                                                   "()Ljava/io/File;"
+                                                  );
+  auto cacheDirObj = getCacheDirMethod(application);
+
+  // Call getAbsolutePath() on the returned File object
+  auto getAbsolutePathMethod = findClassLocal("java/io/File")
+                                ->getMethod<jstring()>("getAbsolutePath");
+  return getAbsolutePathMethod(cacheDirObj)->toStdString();
+}
+
+struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override {
+    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(cb);
+  }
+};
+
 static void createJSCExecutor(JNIEnv *env, jobject obj) {
-  auto executor = createNew<JSCExecutorFactory>();
+  auto executor = createNew<CountableJSCExecutorFactory>();
   setCountableForJava(env, obj, std::move(executor));
 }
 
@@ -795,6 +840,21 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    // Inject some behavior into react/
+    ReactMarker::logMarker = bridge::logMarker;
+    WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
+    WebWorkerUtil::loadScriptFromAssets =
+      [] (const std::string& assetName) {
+        return loadScriptFromAssets(assetName);
+      };
+    MessageQueues::getCurrentMessageQueueThread =
+      [] {
+        return std::unique_ptr<MessageQueueThread>(
+            JMessageQueueThread::currentMessageQueueThread().release());
+      };
+    PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
+    JSLogging::nativeHook = nativeLoggingHook;
+
     // get the current env
     JNIEnv* env = Environment::current();
 

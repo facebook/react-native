@@ -22,11 +22,14 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
+class CountableJSExecutorFactory : public JSExecutorFactory, public Countable {
+};
+
 class Bridge : public Countable {
 public:
   typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
 
-  Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback);
+  Bridge(const RefPtr<CountableJSExecutorFactory>& jsExecutorFactory, Callback callback);
   virtual ~Bridge();
 
   /**
@@ -56,7 +59,7 @@ public:
    * and injects each module as individual file.
    */
   void loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL);
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue);

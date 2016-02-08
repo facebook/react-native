@@ -135,6 +135,7 @@ var TouchableWithoutFeedback = React.createClass({
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     return (React: any).cloneElement(onlyChild(this.props.children), {
       accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,

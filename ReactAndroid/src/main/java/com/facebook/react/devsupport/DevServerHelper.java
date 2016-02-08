@@ -62,7 +62,7 @@ public class DevServerHelper {
       "http://%s/launch-chrome-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
-  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy";
+  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
