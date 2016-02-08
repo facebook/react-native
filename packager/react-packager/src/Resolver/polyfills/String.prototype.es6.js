@@ -44,19 +44,6 @@ if (!String.prototype.endsWith) {
   };
 }
 
-if (!String.prototype.contains) {
-  String.prototype.contains = function(search) {
-    'use strict';
-    if (this == null) {
-      throw TypeError();
-    }
-    var string = String(this);
-    var pos = arguments.length > 1 ?
-      (Number(arguments[1]) || 0) : 0;
-    return string.indexOf(String(search), pos) !== -1;
-  };
-}
-
 if (!String.prototype.repeat) {
   String.prototype.repeat = function(count) {
     'use strict';
