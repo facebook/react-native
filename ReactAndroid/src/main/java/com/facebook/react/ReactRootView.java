@@ -55,11 +55,10 @@ import com.facebook.react.uimanager.events.TouchEventType;
  */
 public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
-  private final KeyboardListener mKeyboardListener = new KeyboardListener();
-
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
+  private @Nullable KeyboardListener mKeyboardListener;
   private int mTargetTag = -1;
   private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
@@ -107,7 +106,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
           Assertions.assertNotNull(mReactInstanceManager)
               .attachMeasuredRootView(ReactRootView.this);
           mIsAttachedToInstance = true;
-          getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+          getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
         }
       });
     }
@@ -298,7 +297,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mReactInstanceManager != null && !mAttachScheduled) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
-      getViewTreeObserver().removeOnGlobalLayoutListener(mKeyboardListener);
+      getViewTreeObserver().removeOnGlobalLayoutListener(getKeyboardListener());
     }
   }
 
@@ -356,7 +355,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mWasMeasured && mIsAttachedToWindow) {
       mReactInstanceManager.attachMeasuredRootView(this);
       mIsAttachedToInstance = true;
-      getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+      getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
     } else {
       mAttachScheduled = true;
     }
@@ -381,9 +380,21 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     mWasMeasured = true;
   }
 
+  private KeyboardListener getKeyboardListener() {
+    if (mKeyboardListener == null) {
+      mKeyboardListener = new KeyboardListener();
+    }
+    return mKeyboardListener;
+  }
+
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {
+    private final Rect mVisibleViewArea;
+
     private int mKeyboardHeight = 0;
-    private final Rect mVisibleViewArea = new Rect();
+
+    /* package */ KeyboardListener() {
+      mVisibleViewArea = new Rect();
+    }
 
     @Override
     public void onGlobalLayout() {
