@@ -20,7 +20,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
@@ -64,7 +64,7 @@ public class ReactTextInputPropertyTest {
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test
