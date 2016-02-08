@@ -8,16 +8,18 @@ permalink: docs/colors.html
 
 The following formats are supported:
 
- - `#f0f` (#rgb)
- - `#f0fc` (#rgba)
- - `#ff00ff` (#rrggbb)
- - `#ff00ff00` (#rrggbbaa)
- - `rgb(255, 255, 255)`
- - `rgba(255, 255, 255, 1.0)`
- - `hsl(360, 100%, 100%)`
- - `hsla(360, 100%, 100%, 1.0)`
- - `transparent`
- - `red`
+ - `'#f0f'` (#rgb)
+ - `'#f0fc'` (#rgba)
+ - `'#ff00ff'` (#rrggbb)
+ - `'#ff00ff00'` (#rrggbbaa)
+ - `'rgb(255, 255, 255)'`
+ - `'rgba(255, 255, 255, 1.0)'`
+ - `'hsl(360, 100%, 100%)'`
+ - `'hsla(360, 100%, 100%, 1.0)'`
+ - `'transparent'`
+ - `'red'`
+ - `0xff00ff00` (0xrrggbbaa)
+
 
 For the named colors, React Native follows the [CSS3 specification](http://www.w3.org/TR/css3-color/#svg-color):
 

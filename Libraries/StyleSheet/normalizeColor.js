@@ -12,12 +12,19 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-function normalizeColor(color: string): ?number {
+function normalizeColor(color: string | number): ?number {
   var match;
+
+  if (typeof color === 'number') {
+    if (color >>> 0 === color && color >= 0 && color <= 0xffffffff) {
+      return color;
+    }
+    return null;
+  }
 
   // Ordered based on occurrences on Facebook codebase
   if ((match = matchers.hex6.exec(color))) {
-    return (parseInt(match[1], 16) << 8 | 0x000000ff) >>> 0;
+    return parseInt(match[1] + 'ff', 16) >>> 0;
   }
 
   if (names.hasOwnProperty(color)) {
