@@ -13,7 +13,7 @@ using fbsystrace::FbSystraceSection;
 namespace facebook {
 namespace react {
 
-Bridge::Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback) :
+Bridge::Bridge(const RefPtr<CountableJSExecutorFactory>& jsExecutorFactory, Callback callback) :
   m_callback(std::move(callback)),
   m_destroyed(std::shared_ptr<bool>(new bool(false)))
 {
@@ -37,7 +37,7 @@ void Bridge::executeApplicationScript(const std::string& script, const std::stri
 }
 
 void Bridge::loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) {
   m_jsExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);

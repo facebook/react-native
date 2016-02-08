@@ -51,7 +51,7 @@ void ProxyExecutor::executeApplicationScript(
     jni::make_jstring(sourceURL).get());
 }
 
-void ProxyExecutor::loadApplicationUnbundle(JSModulesUnbundle&&, const std::string&, const std::string&) {
+void ProxyExecutor::loadApplicationUnbundle(std::unique_ptr<JSModulesUnbundle>, const std::string&, const std::string&) {
   jni::throwNewJavaException(
     "java/lang/UnsupportedOperationException",
     "Loading application unbundles is not supported for proxy executors");
