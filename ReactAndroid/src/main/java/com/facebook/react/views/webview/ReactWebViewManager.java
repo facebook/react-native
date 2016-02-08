@@ -330,7 +330,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           ReadableMapKeySetIterator iter = headers.keySetIterator();
           while (iter.hasNextKey()) {
             String key = iter.nextKey();
-            headerMap.put(key, headers.getString(key));
+            if ("User-Agent".equals(key)) {
+              view.getSettings().setUserAgentString(headers.getString(key));
+            } else {
+              headerMap.put(key, headers.getString(key));
+            }
           }
         }
         view.loadUrl(url, headerMap);
