@@ -11,22 +11,10 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
-import android.os.Build;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.WindowManager;
-
-import com.facebook.csslayout.CSSLayoutContext;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
@@ -35,7 +23,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -90,11 +77,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       UIImplementation uiImplementation) {
     super(reactContext);
     mEventDispatcher = new EventDispatcher(reactContext);
-
-    DisplayMetrics displayMetrics = getDisplayMetrics();
-
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
-    mModuleConstants = createConstants(displayMetrics, viewManagerList);
+    mModuleConstants = createConstants(viewManagerList);
     mUIImplementation = uiImplementation;
 
     reactContext.addLifecycleEventListener(this);
@@ -131,14 +114,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mEventDispatcher.onCatalystInstanceDestroyed();
   }
 
-  private static Map<String, Object> createConstants(
-      DisplayMetrics displayMetrics,
-      List<ViewManager> viewManagerList) {
+  private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateUIManagerConstants");
     try {
-      return UIManagerModuleConstantsHelper.createConstants(
-          displayMetrics,
-          viewManagerList);
+      return UIManagerModuleConstantsHelper.createConstants(viewManagerList);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -460,40 +439,4 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
   }
-
-  private DisplayMetrics getDisplayMetrics() {
-    Context context = getReactApplicationContext();
-
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    displayMetrics.setTo(context.getResources().getDisplayMetrics());
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    Display display = wm.getDefaultDisplay();
-
-    // Get the real display metrics if we are using API level 17 or higher.
-    // The real metrics include system decor elements (e.g. soft menu bar).
-    //
-    // See: http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= 17){
-      display.getRealMetrics(displayMetrics);
-
-    } else {
-      // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real dimensions.
-      // Since react-native only supports API level 16+ we don't have to worry about other cases.
-      //
-      // Reflection exceptions are rethrown at runtime.
-      //
-      // See: http://stackoverflow.com/questions/14341041/how-to-get-real-screen-height-and-width/23861333#23861333
-      try {
-        Method mGetRawH = Display.class.getMethod("getRawHeight");
-        Method mGetRawW = Display.class.getMethod("getRawWidth");
-        displayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
-        displayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
-      } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-        throw new RuntimeException("Error getting real dimensions for API level < 17", e);
-      }
-    }
-
-    return displayMetrics;
-  }
-
 }

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -145,6 +146,8 @@ public class ReactPropConstantsTest {
   public void testNativePropsIncludeCorrectTypes() {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ViewManagerUnderTest());
     ReactApplicationContext reactContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
+    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,

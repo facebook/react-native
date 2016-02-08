@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import android.util.DisplayMetrics;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.MapBuilder;
 
@@ -56,6 +58,9 @@ public class UIManagerModuleConstantsTest {
   public void setUp() {
     mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
     mUIImplementation = mock(UIImplementation.class);
+
+    DisplayMetrics displayMetrics = mReactContext.getResources().getDisplayMetrics();
+    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
   }
 
   @Test
