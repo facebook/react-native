@@ -19,6 +19,21 @@ class ResolutionResponse {
     this._finalized = false;
   }
 
+  copy(properties) {
+    const {
+      dependencies = this.dependencies,
+      asyncDependencies = this.asyncDependencies,
+      mainModuleId = this.mainModuleId,
+      mocks = this.mocks,
+    } = properties;
+    return Object.assign(new this.constructor(), this, {
+      dependencies,
+      asyncDependencies,
+      mainModuleId,
+      mocks,
+    });
+  }
+
   _assertNotFinalized() {
     if (this._finalized) {
       throw new Error('Attempted to mutate finalized response.');

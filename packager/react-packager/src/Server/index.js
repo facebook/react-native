@@ -241,7 +241,7 @@ class Server {
   }
 
   buildBundleForHMR(modules) {
-    return this._bundler.bundleForHMR(modules);
+    return this._bundler.hmrBundle(modules);
   }
 
   getShallowDependencies(entryFile) {
