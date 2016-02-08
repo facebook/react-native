@@ -36,6 +36,7 @@ module.exports = {
     'transform-react-jsx',
     'transform-regenerator',
     ['transform-es2015-for-of', { loose: true }],
+    require('../transforms/transform-symbol-member'),
   ]),
   retainLines: true,
   sourceMaps: false,
