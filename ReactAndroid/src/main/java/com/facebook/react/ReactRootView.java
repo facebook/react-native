@@ -389,11 +389,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
-
+    private final int mMinKeyboardHeightDetected;
+    
     private int mKeyboardHeight = 0;
 
     /* package */ KeyboardListener() {
       mVisibleViewArea = new Rect();
+      mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
     }
 
     @Override
@@ -409,7 +411,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       final int heightDiff =
           DisplayMetricsHolder.getDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
-      if (mKeyboardHeight != heightDiff && heightDiff > 0) {
+      if (mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected) {
         // keyboard is now showing, or the keyboard height has changed
         mKeyboardHeight = heightDiff;
         WritableMap params = Arguments.createMap();
@@ -420,9 +422,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         coordinates.putDouble("height", PixelUtil.toDIPFromPixel(mKeyboardHeight));
         params.putMap("endCoordinates", coordinates);
         sendEvent("keyboardDidShow", params);
-      } else if (mKeyboardHeight != 0 && heightDiff == 0) {
+      } else if (mKeyboardHeight != 0 && heightDiff <= mMinKeyboardHeightDetected) {
         // keyboard is now hidden
-        mKeyboardHeight = heightDiff;
+        mKeyboardHeight = 0;
         sendEvent("keyboardDidHide", null);
       }
     }
