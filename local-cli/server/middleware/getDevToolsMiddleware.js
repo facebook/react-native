@@ -25,8 +25,8 @@ function getChromeAppName() {
   }
 }
 
-function launchChromeDevTools(options) {
-    var debuggerURL = 'http://localhost:' + options.port + '/debugger-ui';
+function launchChromeDevTools(port) {
+    var debuggerURL = 'http://localhost:' + port + '/debugger-ui';
     console.log('Launching Dev Tools...');
     opn(debuggerURL, {app: [getChromeAppName()]}, function(err) {
         if (err) {
@@ -36,9 +36,7 @@ function launchChromeDevTools(options) {
 }
 
 function escapePath(path) {
-  return path.indexOf(' ') > -1
-    ? '"' + path + '"' // " Can escape paths with spaces in OS X, Windows, and *nix
-    : path;
+  return '"' + path + '"'; // " Can escape paths with spaces in OS X, Windows, and *nix
 }
 
 function launchDevTools(options, isChromeConnected) {
@@ -55,8 +53,7 @@ function launchDevTools(options, isChromeConnected) {
         });
     } else if (!isChromeConnected()) {
         // Dev tools are not yet open; we need to open a session
-        // launchChromeDevTools(options.port);
-        launchChromeDevTools(options);
+        launchChromeDevTools(options.port);
     }
 }
 

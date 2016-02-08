@@ -43,6 +43,9 @@ To debug on a real device:
 1. On iOS - open the file `RCTWebSocketExecutor.m` and change `localhost` to the IP address of your computer. Shake the device to open the development menu with the option to start debugging.
 2. On Android, if you're running Android 5.0+ device connected via USB you can use `adb` command line tool to setup port forwarding from the device to your computer. For that run: `adb reverse tcp:8081 tcp:8081` (see [this link](http://developer.android.com/tools/help/adb.html) for help on `adb` command). Alternatively, you can [open dev menu](#debugging-react-native-apps) on the device and select `Dev Settings`, then update `Debug server host for device` setting to the IP address of your computer.
 
+### Custom JavaScript debugger
+To use a custom JavaScript debugger define the `REACT_DEBUGGER` environment variable to a command that will start your custom debugger. That variable will be read from the Packager process. If that environment variable is set, selecting `Debug JavaScript` from the developer menu will execute that command instead of opening Chrome. The exact command to be executed is the contents of the REACT_DEBUGGER environment variable followed by the space separated paths of all project roots.
+
 ### Live Reload
 This option allows for your JS changes to trigger automatic reload on the connected device/emulator. To enable this option:
 
