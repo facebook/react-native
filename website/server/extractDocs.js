@@ -250,6 +250,8 @@ var apis = [
   '../Libraries/StyleSheet/StyleSheet.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
+  '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
+  '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
 ];
 
 var stylesWithPermalink = [
