@@ -30,21 +30,20 @@ gradle.projectsEvaluated {
 
     productFlavors.each { productFlavorName ->
         buildTypes.each { buildTypeName ->
-            // Create variant and source names
-            def sourceName = "${buildTypeName}"
-            def targetName = "${sourceName.capitalize()}"
-            if (productFlavorName) {
-                sourceName = "${productFlavorName}${targetName}"
-            }
+            // Create variant and target names
+            def targetName = "${productFlavorName.capitalize()}${buildTypeName.capitalize()}"
+            def targetPath = productFlavorName ?
+                    "${productFlavorName}/${buildTypeName}" :
+                    "${buildTypeName}"
 
             // React js bundle directories
             def jsBundleDirConfigName = "jsBundleDir${targetName}"
             def jsBundleDir = elvisFile(config."$jsBundleDirConfigName") ?:
-                    file("$buildDir/intermediates/assets/${sourceName}")
+                    file("$buildDir/intermediates/assets/${targetPath}")
 
             def resourcesDirConfigName = "jsBundleDir${targetName}"
             def resourcesDir = elvisFile(config."${resourcesDirConfigName}") ?:
-                    file("$buildDir/intermediates/res/merged/${sourceName}")
+                    file("$buildDir/intermediates/res/merged/${targetPath}")
             def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
 
             // Bundle task name for variant
@@ -80,7 +79,9 @@ gradle.projectsEvaluated {
                             "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir
                 }
 
-                enabled config."bundleIn${targetName}" ?: targetName.toLowerCase().contains("release")
+                enabled config."bundleIn${targetName}" ||
+                    config."bundleIn${buildTypeName.capitalize()}" ?:
+                            targetName.toLowerCase().contains("release")
             }
 
             // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
