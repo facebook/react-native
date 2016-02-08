@@ -14,7 +14,7 @@ import android.view.Choreographer;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.SimpleArray;
+import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.modules.core.JSTimersExecution;
@@ -65,7 +65,7 @@ public class TimingModuleTest {
         new Answer<Object>() {
           @Override
           public Object answer(InvocationOnMock invocation) throws Throwable {
-            return new SimpleArray();
+            return new JavaOnlyArray();
           }
         });
 
@@ -109,7 +109,7 @@ public class TimingModuleTest {
     mTiming.onHostResume();
     mTiming.createTimer(1, 0, 0, false);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(1));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1));
     reset(mJSTimersMock);
     stepChoreographerFrame();
     verifyNoMoreInteractions(mJSTimersMock);
@@ -120,11 +120,11 @@ public class TimingModuleTest {
     mTiming.createTimer(100, 0, 0, true);
     mTiming.onHostResume();
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
 
     reset(mJSTimersMock);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
   }
 
   @Test
@@ -133,7 +133,7 @@ public class TimingModuleTest {
     mTiming.createTimer(105, 0, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(105));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105));
 
     reset(mJSTimersMock);
     mTiming.deleteTimer(105);
@@ -147,7 +147,7 @@ public class TimingModuleTest {
     mTiming.createTimer(41, 0, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
 
     reset(mJSTimersMock);
     mTiming.onHostPause();
@@ -157,7 +157,7 @@ public class TimingModuleTest {
     reset(mJSTimersMock);
     mTiming.onHostResume();
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(SimpleArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
   }
 
   private static class PostFrameCallbackHandler implements Answer<Void> {
