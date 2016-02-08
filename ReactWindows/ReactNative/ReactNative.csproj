@@ -170,6 +170,7 @@
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
+    <Compile Include="Reflection\EnumHelpers.cs" />
     <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\BorderExtensions.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
