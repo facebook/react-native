@@ -191,7 +191,7 @@ RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 #define _RCTProfileBeginFlowEvent() @0
 
 #define RCTProfileEndFlowEvent()
-#define _RCTProfileEndFlowEvent()
+#define _RCTProfileEndFlowEvent(...)
 
 #define RCTProfileIsProfiling(...) NO
 #define RCTProfileInit(...)
