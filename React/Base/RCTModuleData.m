@@ -17,6 +17,7 @@
 
 @implementation RCTModuleData
 {
+  NSDictionary<NSString *, id> *_constantsToExport;
   NSString *_queueName;
   __weak RCTBridge *_bridge;
   NSLock *_instanceLock;
@@ -79,6 +80,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
                                                         object:_bridge
                                                       userInfo:@{@"module": _instance}];
+
+    if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
+      RCTAssertMainThread();
+      _constantsToExport = [_instance constantsToExport];
+    }
   }
 }
 
@@ -181,13 +187,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (NSArray *)config
 {
-  __block NSDictionary<NSString *, id> *constants;
-  if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
-    [self instance];
-    RCTExecuteOnMainThread(^{
-      constants = [_instance constantsToExport];
-    }, YES);
-  }
+  __block NSDictionary<NSString *, id> *constants = _constantsToExport;
+  _constantsToExport = nil; // Not needed any more
 
   if (constants.count == 0 && self.methods.count == 0) {
     return (id)kCFNull; // Nothing to export
