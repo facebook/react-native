@@ -45,16 +45,13 @@ artifacts_dir=~/.m2/repository/com/facebook/react/react-native/${RELEASE}.0
 
 for i in "${artifacts_list[@]}"; do
    artifact_file="${artifacts_dir}/react-native-${RELEASE}.0${i}"
-
    [ -e "${artifact_file}" ] || error "Couldn't find file: ${artifact_file}"
-   [ -e "${artifact_file}.asc" ] || error "Couldn't find file: ${artifact_file}.asc"
 done
 
 success "Generated artifacts for Maven"
 
 sed -i.bak -E "s/(\"version\":[[:space:]]*\").+(\")/\"version\": \"${RELEASE}.0-rc\"/g" "package.json" || error "Couldn't update version for npm"
 sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version             = \"${RELEASE}.0-rc\"/g" "React.podspec" || error "Couldn't update version for CocoaPods"
-sed -i.bak -E "s/\"com\.facebook\.react:react-native:.+\"/\"com.facebook.react:react-native:${RELEASE}.+\"/g" "local-cli/generator-android/templates/src/app/build.gradle" || error "Couldn't update version in Android template's build.gradle"
 
 success "Updated version numbers"
 
@@ -82,7 +79,7 @@ react-native init "$project_name"
 
 info "Double checking the versions in package.json and build.gradle are correct:"
 grep "\"react-native\": \"\^${RELEASE}.0-rc\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
-grep "com.facebook.react:react-native:${RELEASE}.+" "${project_name}/android/app/build.gradle" || error "Incorrect version number in /tmp/${project_name}/android/app/build.gradle"
+grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build.gradle" || error "Dependency in /tmp/${project_name}/android/app/build.gradle must be com.facebook.react:react-native:+"
 
 success "New sample project generated at /tmp/${project_name}"
 
@@ -110,11 +107,9 @@ git commit -am "[${RELEASE}.0-rc] Bump version numbers"
 find . -path "*.bak" | xargs rm
 
 info "Next steps:"
-info "   - Release to Maven Central: https://github.com/facebook/react-native/blob/master/Releases.md#do-a-release"
 info "   - git push origin ${RELEASE}-stable"
 info "   - git tag v${RELEASE}.0-rc ${RELEASE}-stable"
 info "   - git push --tags"
-info "   - Once the change propagates to JCenter:"
-info "     - npm set registry https://registry.npmjs.org/"
-info "     - When doing a RC release: npm publish --tag next"
-info "     - When doing a non-RC release: npm publish  # Sets the latest tag automatically"
+info "   - npm set registry https://registry.npmjs.org/"
+info "   - When doing a RC release: npm publish --tag next"
+info "   - When doing a non-RC release: npm publish  # Sets the latest tag automatically"
