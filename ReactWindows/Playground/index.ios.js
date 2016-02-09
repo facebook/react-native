@@ -24,7 +24,7 @@ const styles={
    }
 };
 
-var {AppRegistry, View, Text, TextInput, Image } = React;
+var {AppRegistry, View, Text, TextInput, Image, Switch } = React;
 
     var ReactRoot = React.createClass({
 		
@@ -32,8 +32,23 @@ var {AppRegistry, View, Text, TextInput, Image } = React;
 		var text = "You can see me!";
         var longText = "This is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new line";
         
-		return {value: text,
-                longText: longText};
+        return {
+            value: text,
+            longText: longText,
+            isToggled: false,
+            w: 100,
+            h: 150
+        };
+	},
+
+	onToggle: function(value) {
+	    this.setState({isToggled: value});
+	    if (value) {
+	        this.setState({w: 150, h: 100});
+	    }
+	    else {
+	        this.setState({w: 100, h: 150});
+	    }
 	},
 
     render: function() {
@@ -54,6 +69,8 @@ var {AppRegistry, View, Text, TextInput, Image } = React;
               <View style={styles.views}>
                  <Image source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}} style={styles.images}/>
               </View>
+              <View style={{width: this.state.w, height: this.state.h, backgroundColor: 'red'}} />
+              <Switch onValueChange={this.onToggle} value={this.state.isToggled} />
             </View>
         );
     }

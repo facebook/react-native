@@ -514,13 +514,12 @@ namespace ReactNative.UIManager
             var viewManager = default(ViewManager);
             if (_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
-                var viewGroup = view as Panel;
                 var viewGroupManager = viewManager as ViewGroupManager;
-                if (viewGroup != null && viewGroupManager != null)
+                if (viewGroupManager != null)
                 {
-                    for (var i = viewGroupManager.GetChildCount(viewGroup) - 1; i >= 0; --i)
+                    for (var i = viewGroupManager.GetChildCount(view) - 1; i >= 0; --i)
                     {
-                        var child = viewGroupManager.GetChildAt(viewGroup, i);
+                        var child = viewGroupManager.GetChildAt(view, i);
                         var managedChild = default(FrameworkElement);
                         if (_tagsToViews.TryGetValue(child.GetTag(), out managedChild))
                         {
@@ -529,7 +528,7 @@ namespace ReactNative.UIManager
                     }
                 }
 
-                viewGroupManager.RemoveAllChildren(viewGroup);
+                viewGroupManager.RemoveAllChildren(view);
             }
 
             _tagsToViews.Remove(tag);
