@@ -49,7 +49,7 @@ namespace ReactNative
         /// </summary>
         public void OnCreate()
         {
-            RootView.Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"]
+            RootView.Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"];
             RootView.StartReactApplication(_reactInstanceManager, _mainComponentName);
         }
 
