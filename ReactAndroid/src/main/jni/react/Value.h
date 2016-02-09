@@ -8,7 +8,9 @@
 #include <JavaScriptCore/JSRetainPtr.h>
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
-#include <fb/noncopyable.h>
+
+#include "noncopyable.h"
+
 #if WITH_FBJSCEXTENSIONS
 #include <jsc_stringref.h>
 #endif
