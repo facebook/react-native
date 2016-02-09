@@ -37,6 +37,17 @@ namespace ReactNative.DevSupport
         void HandleException(Exception exception);
 
         /// <summary>
+        /// Handles reloading the JavaScript bundle.
+        /// </summary>
+        void HandleReloadJavaScript();
+
+
+        /// <summary>
+        /// Show the developer options dialog.
+        /// </summary>
+        void ShowDevOptionsDialog();
+
+        /// <summary>
         /// Display a JavaScript error.
         /// </summary>
         /// <param name="title">The error message.</param>
