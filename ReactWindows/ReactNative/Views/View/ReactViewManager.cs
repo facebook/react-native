@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.View
 {
@@ -101,7 +102,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// The border radius of the <see cref="ReactRootView"/>.
+        /// Sets the border radius of the <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="radius">The border radius value.</param>
@@ -109,6 +110,21 @@ namespace ReactNative.Views.View
         public void SetBorderRadius(BorderedContentControl view, double radius)
         {
             view.SetBorderRadius(radius);
+        }
+
+        /// <summary>
+        /// Sets the background color of the <see cref="ReactPanel"/>.
+        /// </summary>
+        /// <param name="view">The view panel.</param>
+        /// <param name="color">The masked color value.</param>
+        [ReactProperty(ViewProperties.BackgroundColor)]
+        public void SetBackgroundColor(BorderedContentControl view, uint? color)
+        {
+            if (color.HasValue)
+            {
+                var panel = GetPanel(view);
+                panel.Background = new SolidColorBrush(ColorHelpers.Parse(color.Value));
+            }
         }
 
         /// <summary>

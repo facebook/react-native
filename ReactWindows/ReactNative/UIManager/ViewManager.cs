@@ -151,7 +151,9 @@ namespace ReactNative.UIManager
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public virtual void ReceiveCommand(TFrameworkElement root, int commandId, JArray args) { }
+        public virtual void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        {
+        }
 
         /// <summary>
         /// Creates a new view instance of type <typeparamref name="TFrameworkElement"/>.

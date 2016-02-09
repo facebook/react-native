@@ -1,6 +1,5 @@
 ﻿using System;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager
 {
@@ -9,6 +8,15 @@ namespace ReactNative.UIManager
     /// </summary>
     public abstract class ViewGroupManager : ViewManager
     {
+        /// <summary>
+        /// The <see cref="Type"/> instance that represents the type of shadow
+        /// node that this manager will return from
+        /// <see cref="CreateShadowNodeInstance"/>.
+        /// 
+        /// This method will be used in the bridge initialization phase to
+        /// collect properties exposed using the <see cref="ReactPropertyAttribute"/>
+        /// annotation from the <see cref="ReactShadowNode"/> subclass.
+        /// </summary>
         public sealed override Type ShadowNodeType
         {
             get
