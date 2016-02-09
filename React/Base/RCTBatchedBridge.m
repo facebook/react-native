@@ -282,10 +282,11 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     id module = preregisteredModules[moduleName];
     if (!module) {
       // Check if the module class, or any of its superclasses override init
-      // or setBridge:. If they do, we assume that they are expecting to be
-      // initialized when the bridge first loads.
+      // or setBridge:, or has exported constants. If they do, we assume that
+      // they are expecting to be initialized when the bridge first loads.
       if ([moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod ||
-          [moduleClass instancesRespondToSelector:setBridgeSelector]) {
+          [moduleClass instancesRespondToSelector:setBridgeSelector] ||
+          RCTClassOverridesInstanceMethod(moduleClass, @selector(constantsToExport))) {
         module = [moduleClass new];
         if (!module) {
           module = (id)kCFNull;
