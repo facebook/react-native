@@ -235,6 +235,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
@@ -248,10 +249,9 @@ var apis = [
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
+  '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
-  '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
-  '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
 ];
 
 var stylesWithPermalink = [
