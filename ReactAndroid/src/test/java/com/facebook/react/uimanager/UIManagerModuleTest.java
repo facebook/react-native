@@ -27,8 +27,8 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextShadowNode;
 import com.facebook.react.views.text.ReactTextViewManager;
@@ -81,13 +81,13 @@ public class UIManagerModuleTest {
     PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new SimpleArray();
+        return new JavaOnlyArray();
       }
     });
     PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new SimpleMap();
+        return new JavaOnlyMap();
       }
     });
     PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
@@ -141,7 +141,7 @@ public class UIManagerModuleTest {
     uiManager.updateView(
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "New text"));
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "New text"));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -163,27 +163,27 @@ public class UIManagerModuleTest {
         viewTag,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         subViewTag,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
 
     uiManager.manageChildren(
         viewTag,
         null,
         null,
-        SimpleArray.of(subViewTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(subViewTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(viewTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(viewTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.onBatchComplete();
@@ -211,8 +211,8 @@ public class UIManagerModuleTest {
 
     uiManager.manageChildren(
         hierarchy.rootView,
-        SimpleArray.of(1, 0, 2),
-        SimpleArray.of(0, 2, 1),
+        JavaOnlyArray.of(1, 0, 2),
+        JavaOnlyArray.of(0, 2, 1),
         null,
         null,
         null);
@@ -242,7 +242,7 @@ public class UIManagerModuleTest {
         null,
         null,
         null,
-        SimpleArray.of(0, 3));
+        JavaOnlyArray.of(0, 3));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -264,11 +264,11 @@ public class UIManagerModuleTest {
 
     uiManager.manageChildren(
         hierarchy.rootView,
-        SimpleArray.of(3),
-        SimpleArray.of(1),
+        JavaOnlyArray.of(3),
+        JavaOnlyArray.of(1),
         null,
         null,
-        SimpleArray.of(1));
+        JavaOnlyArray.of(1));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -287,11 +287,11 @@ public class UIManagerModuleTest {
 
     uiManager.manageChildren(
         hierarchy.rootView,
-        SimpleArray.of(3),
-        SimpleArray.of(1),
+        JavaOnlyArray.of(3),
+        JavaOnlyArray.of(1),
         null,
         null,
-        SimpleArray.of(3));
+        JavaOnlyArray.of(3));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -308,7 +308,7 @@ public class UIManagerModuleTest {
         null,
         null,
         null,
-        SimpleArray.of(3, 3));
+        JavaOnlyArray.of(3, 3));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -324,7 +324,7 @@ public class UIManagerModuleTest {
         textViewTag,
         ReactTextViewManager.REACT_CLASS,
         hierarchy.rootView,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
 
     View expectedViewAt0 = hierarchy.nativeRootView.getChildAt(0);
     View expectedViewAt1 = hierarchy.nativeRootView.getChildAt(3);
@@ -333,10 +333,10 @@ public class UIManagerModuleTest {
 
     uiManager.manageChildren(
         hierarchy.rootView,
-        SimpleArray.of(1, 2, 3),
-        SimpleArray.of(3, 4, 1),
-        SimpleArray.of(textViewTag),
-        SimpleArray.of(2),
+        JavaOnlyArray.of(1, 2, 3),
+        JavaOnlyArray.of(3, 4, 1),
+        JavaOnlyArray.of(textViewTag),
+        JavaOnlyArray.of(2),
         null);
 
     uiManager.onBatchComplete();
@@ -361,8 +361,8 @@ public class UIManagerModuleTest {
 
     uiManager.manageChildren(
         hierarchy.rootView,
-        SimpleArray.of(1, 2),
-        SimpleArray.of(2, 1),
+        JavaOnlyArray.of(1, 2),
+        JavaOnlyArray.of(2, 1),
         null,
         null,
         null);
@@ -394,7 +394,7 @@ public class UIManagerModuleTest {
         null,
         null,
         null,
-        SimpleArray.of(1));
+        JavaOnlyArray.of(1));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -417,15 +417,15 @@ public class UIManagerModuleTest {
         newViewTag,
         ReactViewManager.REACT_CLASS,
         hierarchy.rootView,
-        SimpleMap
+        JavaOnlyMap
             .of("left", 10.0, "top", 20.0, "width", 30.0, "height", 40.0, "collapsable", false));
 
     uiManager.manageChildren(
         hierarchy.rootView,
         null,
         null,
-        SimpleArray.of(newViewTag),
-        SimpleArray.of(4),
+        JavaOnlyArray.of(newViewTag),
+        JavaOnlyArray.of(4),
         null);
 
     uiManager.onBatchComplete();
@@ -453,20 +453,20 @@ public class UIManagerModuleTest {
         newViewTag,
         ReactViewManager.REACT_CLASS,
         hierarchy.rootView,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
 
     uiManager.manageChildren(
         hierarchy.rootView,
         null,
         null,
-        SimpleArray.of(newViewTag),
-        SimpleArray.of(4),
+        JavaOnlyArray.of(newViewTag),
+        JavaOnlyArray.of(4),
         null);
 
     uiManager.updateView(
         newViewTag,
         ReactViewManager.REACT_CLASS,
-        SimpleMap.of("backgroundColor", Color.RED));
+        JavaOnlyMap.of("backgroundColor", Color.RED));
 
     uiManager.manageChildren(
         hierarchy.rootView,
@@ -474,7 +474,7 @@ public class UIManagerModuleTest {
         null,
         null,
         null,
-        SimpleArray.of(4));
+        JavaOnlyArray.of(4));
 
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -521,7 +521,7 @@ public class UIManagerModuleTest {
     uiManager.updateView(
         hierarchy.view0,
         ReactViewManager.REACT_CLASS,
-        SimpleMap.of("left", 10.0, "top", 20.0, "width", 30.0, "height", 40.0));
+        JavaOnlyMap.of("left", 10.0, "top", 20.0, "width", 30.0, "height", 40.0));
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
     assertThat(view0.getLeft()).isGreaterThan(2);
@@ -532,7 +532,7 @@ public class UIManagerModuleTest {
     uiManager.updateView(
         hierarchy.view0,
         ReactViewManager.REACT_CLASS,
-        SimpleMap.of("backgroundColor", Color.RED));
+        JavaOnlyMap.of("backgroundColor", Color.RED));
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
     assertThat(view0.getLeft()).isEqualTo(1);
@@ -563,7 +563,7 @@ public class UIManagerModuleTest {
         hierarchy.rootView,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
 
     uiManagerModule.registerAnimation(mockAnimation);
     uiManagerModule.addAnimation(hierarchy.rootView, 1000, callbackMock);
@@ -591,7 +591,7 @@ public class UIManagerModuleTest {
         newViewTag,
         ReactViewManager.REACT_CLASS,
         hierarchy.rootView,
-        SimpleMap.of("backgroundColor", Color.RED));
+        JavaOnlyMap.of("backgroundColor", Color.RED));
 
     uiManager.replaceExistingNonRootView(hierarchy.view2, newViewTag);
 
@@ -622,12 +622,12 @@ public class UIManagerModuleTest {
         containerTag,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         containerSiblingTag,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     addChild(uiManager, rootTag, containerTag, 0);
     addChild(uiManager, rootTag, containerSiblingTag, 1);
 
@@ -635,12 +635,12 @@ public class UIManagerModuleTest {
         containerTag + 2,
         ReactTextViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         containerTag + 3,
         ReactTextViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     addChild(uiManager, containerTag, containerTag + 2, 0);
     addChild(uiManager, containerTag, containerTag + 3, 1);
 
@@ -674,27 +674,27 @@ public class UIManagerModuleTest {
         textTag,
         ReactTextViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, text, "collapsable", false));
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, text, "collapsable", false));
 
     uiManager.manageChildren(
         textTag,
         null,
         null,
-        SimpleArray.of(rawTextTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(rawTextTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.onBatchComplete();
@@ -713,32 +713,32 @@ public class UIManagerModuleTest {
         hierarchy.view0,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         hierarchy.viewWithChildren1,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         hierarchy.view2,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         hierarchy.view3,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         hierarchy.childView0,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         hierarchy.childView1,
         ReactViewManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of("collapsable", false));
+        JavaOnlyMap.of("collapsable", false));
 
     addChild(uiManager, rootTag, hierarchy.view0, 0);
     addChild(uiManager, rootTag, hierarchy.viewWithChildren1, 1);
@@ -759,8 +759,8 @@ public class UIManagerModuleTest {
         parentTag,
         null,
         null,
-        SimpleArray.of(childTag),
-        SimpleArray.of(index),
+        JavaOnlyArray.of(childTag),
+        JavaOnlyArray.of(index),
         null);
   }
 

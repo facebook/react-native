@@ -21,17 +21,17 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.text.style.AbsoluteSizeSpan;
+import android.util.DisplayMetrics;
 import android.view.Choreographer;
 import android.widget.TextView;
 
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
@@ -40,8 +40,8 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,7 +49,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
@@ -79,7 +78,7 @@ public class ReactTextTest {
     PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new SimpleMap();
+        return new JavaOnlyMap();
       }
     });
     PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
@@ -103,8 +102,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_SIZE, 21.0),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_SIZE, 21.0),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     AbsoluteSizeSpan sizeSpan = getSingleSpan(
         (TextView) rootView.getChildAt(0), AbsoluteSizeSpan.class);
@@ -117,8 +116,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "bold"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "bold"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView)rootView.getChildAt(0), CustomStyleSpan.class);
@@ -132,8 +131,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "500"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "500"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -147,8 +146,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_STYLE, "italic"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -162,8 +161,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "bold", ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "bold", ViewProps.FONT_STYLE, "italic"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -177,8 +176,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "normal"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "normal"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -191,8 +190,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "200"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "200"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -205,8 +204,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_STYLE, "normal"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_STYLE, "normal"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -219,8 +218,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_FAMILY, "sans-serif"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -235,8 +234,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_WEIGHT, "bold"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_WEIGHT, "bold"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -251,8 +250,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_STYLE, "italic"),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -267,11 +266,11 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_FAMILY, "sans-serif",
             ViewProps.FONT_WEIGHT, "500",
             ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -286,8 +285,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.BACKGROUND_COLOR, Color.BLUE),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.BACKGROUND_COLOR, Color.BLUE),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     Drawable backgroundDrawable = ((TextView) rootView.getChildAt(0)).getBackground();
     assertThat(((ColorDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
@@ -302,8 +301,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.NUMBER_OF_LINES, 2),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.NUMBER_OF_LINES, 2),
+        JavaOnlyMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
 
     TextView textView = (TextView) rootView.getChildAt(0);
     assertThat(textView.getText().toString()).isEqualTo("test text");
@@ -323,8 +322,8 @@ public class ReactTextTest {
 
   private ReactRootView createText(
       UIManagerModule uiManager,
-      SimpleMap textProps,
-      SimpleMap rawTextProps) {
+      JavaOnlyMap textProps,
+      JavaOnlyMap rawTextProps) {
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
     int rootTag = uiManager.addMeasuredRootView(rootView);
     int textTag = rootTag + 1;
@@ -345,16 +344,16 @@ public class ReactTextTest {
         textTag,
         null,
         null,
-        SimpleArray.of(rawTextTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(rawTextTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.onBatchComplete();
