@@ -45,11 +45,11 @@ jni_library(
     'JniJSModulesUnbundle.h',
     'JSCPerfLogging.h',
     'JSLogging.h',
+    'WebWorkers.h',
   ],
   exported_headers = [
     'NativeArray.h',
     'ReadableNativeArray.h',
-    'WebWorkers.h',
   ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNativeJNI"',

@@ -2,8 +2,6 @@
 
 #include "Value.h"
 
-#include <jni/fbjni.h>
-
 #include "JSCHelpers.h"
 
 namespace facebook {
