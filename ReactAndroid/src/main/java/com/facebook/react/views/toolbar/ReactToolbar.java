@@ -74,10 +74,10 @@ public class ReactToolbar extends Toolbar {
       super.onFinalImageSet(id, imageInfo, animatable);
 
       final ImageInfo info = mIconImageInfo != null ? mIconImageInfo : imageInfo;
-      onDrawableReady(new DrawableWithIntrinsicSize(mHolder.getTopLevelDrawable(), info));
+      setDrawable(new DrawableWithIntrinsicSize(mHolder.getTopLevelDrawable(), info));
     }
 
-    protected abstract void onDrawableReady(Drawable d);
+    protected abstract void setDrawable(Drawable d);
 
   }
 
@@ -90,7 +90,7 @@ public class ReactToolbar extends Toolbar {
     }
 
     @Override
-    protected void onDrawableReady(Drawable d) {
+    protected void setDrawable(Drawable d) {
       mItem.setIcon(d);
     }
   }
@@ -125,10 +125,6 @@ public class ReactToolbar extends Toolbar {
 
   }
 
-  private interface SetIconSourceCallback {
-    void setDrawable(Drawable d);
-  }
-
   public ReactToolbar(Context context) {
     super(context);
 
@@ -138,21 +134,21 @@ public class ReactToolbar extends Toolbar {
 
     mLogoControllerListener = new IconControllerListener(mLogoHolder) {
       @Override
-      protected void onDrawableReady(Drawable d) {
+      protected void setDrawable(Drawable d) {
         setLogo(d);
       }
     };
 
     mNavIconControllerListener = new IconControllerListener(mNavIconHolder) {
       @Override
-      protected void onDrawableReady(Drawable d) {
+      protected void setDrawable(Drawable d) {
         setNavigationIcon(d);
       }
     };
 
     mOverflowIconControllerListener = new IconControllerListener(mOverflowIconHolder) {
       @Override
-      protected void onDrawableReady(Drawable d) {
+      protected void setDrawable(Drawable d) {
         setOverflowIcon(d);
       }
     };
@@ -217,30 +213,15 @@ public class ReactToolbar extends Toolbar {
   }
 
   /* package */ void setLogoSource(@Nullable ReadableMap source) {
-    setIconSource(source, mLogoControllerListener, mLogoHolder, new SetIconSourceCallback() {
-      @Override
-      public void setDrawable(Drawable d) {
-        setLogo(d);
-      }
-    });
+    setIconSource(source, mLogoControllerListener, mLogoHolder);
   }
 
   /* package */ void setNavIconSource(@Nullable ReadableMap source) {
-    setIconSource(source, mNavIconControllerListener, mNavIconHolder, new SetIconSourceCallback() {
-      @Override
-      public void setDrawable(Drawable d) {
-        setNavigationIcon(d);
-      }
-    });
+    setIconSource(source, mNavIconControllerListener, mNavIconHolder);
   }
 
   /* package */ void setOverflowIconSource(@Nullable ReadableMap source) {
-    setIconSource(source, mOverflowIconControllerListener, mOverflowIconHolder, new SetIconSourceCallback() {
-      @Override
-      public void setDrawable(Drawable d) {
-        setOverflowIcon(d);
-      }
-    });
+    setIconSource(source, mOverflowIconControllerListener, mOverflowIconHolder);
   }
 
   /* package */ void setActions(@Nullable ReadableArray actions) {
@@ -276,12 +257,7 @@ public class ReactToolbar extends Toolbar {
     ActionIconControllerListener controllerListener = new ActionIconControllerListener(item, holder);
     controllerListener.setIconImageInfo(getIconImageInfo(iconSource));
 
-    setIconSource(iconSource, controllerListener, holder, new SetIconSourceCallback() {
-      @Override
-      public void setDrawable(Drawable d) {
-        item.setIcon(d);
-      }
-    });
+    setIconSource(iconSource, controllerListener, holder);
 
     mActionsHolder.add(holder);
 
@@ -292,14 +268,13 @@ public class ReactToolbar extends Toolbar {
    * to be somewhere remote (http/https) or on the local filesystem, it uses fresco to load it.
    * Otherwise it loads the Drawable from the Resources and directly returns it via a callback
    */
-  private void setIconSource(ReadableMap source, IconControllerListener controllerListener,
-                             DraweeHolder holder, SetIconSourceCallback callback) {
+  private void setIconSource(ReadableMap source, IconControllerListener controllerListener, DraweeHolder holder) {
 
     String uri = source != null ? source.getString(PROP_ICON_URI) : null;
 
     if (uri == null) {
       controllerListener.setIconImageInfo(null);
-      callback.setDrawable(null);
+      controllerListener.setDrawable(null);
     } else if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
       controllerListener.setIconImageInfo(getIconImageInfo(source));
       DraweeController controller = Fresco.newDraweeControllerBuilder()
@@ -309,7 +284,7 @@ public class ReactToolbar extends Toolbar {
               .build();
       holder.setController(controller);
     } else {
-      callback.setDrawable(getDrawableByName(uri));
+      controllerListener.setDrawable(getDrawableByName(uri));
     }
 
   }
