@@ -2,9 +2,6 @@
 
 #include "Bridge.h"
 
-#include "Executor.h"
-#include "MethodCall.h"
-
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
@@ -13,7 +10,7 @@ using fbsystrace::FbSystraceSection;
 namespace facebook {
 namespace react {
 
-Bridge::Bridge(const RefPtr<CountableJSExecutorFactory>& jsExecutorFactory, Callback callback) :
+Bridge::Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback) :
   m_callback(std::move(callback)),
   m_destroyed(std::shared_ptr<bool>(new bool(false)))
 {

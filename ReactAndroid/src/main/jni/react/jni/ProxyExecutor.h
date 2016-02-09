@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include <react/Bridge.h>
 #include <react/Executor.h>
 #include <jni/fbjni.h>
 #include <jni.h>
 #include <jni/GlobalReference.h>
+#include "OnLoad.h"
 
 namespace facebook {
 namespace react {
