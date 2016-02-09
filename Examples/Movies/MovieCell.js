@@ -15,8 +15,8 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
+  Component,
   Image,
   Platform,
   StyleSheet,
@@ -24,14 +24,14 @@ var {
   TouchableHighlight,
   TouchableNativeFeedback,
   View
-} = React;
+} from 'react-native';
 
-var getStyleFromScore = require('./getStyleFromScore');
-var getImageSource = require('./getImageSource');
-var getTextFromScore = require('./getTextFromScore');
+import getStyleFromScore from './getStyleFromScore';
+import getImageSource from './getImageSource';
+import getTextFromScore from './getTextFromScore';
 
-var MovieCell = React.createClass({
-  render: function() {
+export default class MovieCell extends Component {
+  render() {
     var criticsScore = this.props.movie.ratings.critics_score;
     var TouchableElement = TouchableHighlight;
     if (Platform.OS === 'android') {
@@ -68,7 +68,7 @@ var MovieCell = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   textContainer: {
@@ -102,5 +102,3 @@ var styles = StyleSheet.create({
     marginLeft: 4,
   },
 });
-
-module.exports = MovieCell;
