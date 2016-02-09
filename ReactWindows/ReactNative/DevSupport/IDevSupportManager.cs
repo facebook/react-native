@@ -16,9 +16,19 @@ namespace ReactNative.DevSupport
         bool IsEnabled { get; set; }
 
         /// <summary>
+        /// The source URL.
+        /// </summary>
+        string SourceUrl { get; }
+
+        /// <summary>
         /// The source map URL.
         /// </summary>
         string SourceMapUrl { get; }
+
+        /// <summary>
+        /// The cached JavaScript bundle.
+        /// </summary>
+        string CachedJavaScriptBundle { get; }
 
         /// <summary>
         /// Handle a native exception.

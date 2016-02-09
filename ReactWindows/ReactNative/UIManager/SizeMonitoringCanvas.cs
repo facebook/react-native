@@ -21,7 +21,7 @@ namespace ReactNative.UIManager
             var current = _sizeChangedEventHandler;
             if (current != null)
             {
-                throw new InvalidOperationException("Size changed listener has already been set.");
+                SizeChanged -= current;
             }
 
             if (sizeChangedEventHandler != null)
@@ -41,6 +41,8 @@ namespace ReactNative.UIManager
             {
                 SizeChanged -= sizeChangedEventHandler;
             }
+
+            _sizeChangedEventHandler = null;
         }
     }
 }

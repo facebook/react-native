@@ -40,6 +40,18 @@ namespace ReactNative.Bridge
             return new FileJavaScriptBundleLoader(fileName);
         }
 
+        /// <summary>
+        /// This loader will use the cached bundle from the
+        /// <see cref="DevSupport.IDevSupportManager"/>.
+        /// </summary>
+        /// <param name="sourceUrl">The source URL.</param>
+        /// <param name="cachedBundle">The cached bundle.</param>
+        /// <returns>The JavaScript bundle loader.</returns>
+        public static JavaScriptBundleLoader CreateCachedBundleFromNetworkLoader(string sourceUrl, string cachedBundle)
+        {
+            return new CachedJavaScriptBundleLoader(sourceUrl, cachedBundle);
+        }
+
         class FileJavaScriptBundleLoader : JavaScriptBundleLoader
         {
             private string _script;
@@ -83,6 +95,29 @@ namespace ReactNative.Bridge
                 }
 
                 bridge.RunScript(_script);
+            }
+        }
+
+        class CachedJavaScriptBundleLoader : JavaScriptBundleLoader
+        {
+            private readonly string _cachedBundle;
+
+            public CachedJavaScriptBundleLoader(string sourceUrl, string cachedBundle)
+            {
+                SourceUrl = sourceUrl;
+                _cachedBundle = cachedBundle;
+            }
+
+            public override string SourceUrl { get; }
+
+            public override Task InitializeAsync()
+            {
+                return Task.FromResult(true);
+            }
+
+            public override void LoadScript(IReactBridge executor)
+            {
+                executor.RunScript(_cachedBundle);
             }
         }
     }

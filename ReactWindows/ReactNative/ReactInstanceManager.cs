@@ -85,7 +85,10 @@ namespace ReactNative
 
             _useDeveloperSupport = useDeveloperSupport;
             _devSupportManager = _useDeveloperSupport
-                ? (IDevSupportManager)new DevSupportManager(_jsMainModuleName)
+                ? (IDevSupportManager)new DevSupportManager(
+                    new ReactInstanceDevCommandsHandler(this),
+                    _jsBundleFile, 
+                    _jsMainModuleName)
                 : new DisabledDevSupportManager();
 
             _lifecycleState = initialLifecycleState;
@@ -375,6 +378,15 @@ namespace ReactNative
             }
         }
 
+        private void OnJavaScriptBundleLoadedFromServer()
+        {
+            RecreateReactContextInBackground(
+                () => new ChakraJavaScriptExecutor(),
+                JavaScriptBundleLoader.CreateCachedBundleFromNetworkLoader(
+                    _devSupportManager.SourceUrl,
+                    _devSupportManager.CachedJavaScriptBundle));
+        }
+
         private void RecreateReactContextInBackground(
             Func<IJavaScriptExecutor> jsExecutorFactory,
             JavaScriptBundleLoader jsBundleLoader)
@@ -405,9 +417,9 @@ namespace ReactNative
                 var reactContext = await CreateReactContextAsync(jsExecutorFactory, jsBundleLoader);
                 SetupReactContext(reactContext);
             }
-            catch
+            catch (Exception ex)
             {
-                // TODO: add exception handler through dev support manager.
+                _devSupportManager.HandleException(ex);
             }
             finally
             {
@@ -749,6 +761,26 @@ namespace ReactNative
                             CultureInfo.InvariantCulture,
                             "{0} has not been set.",
                             name));
+            }
+        }
+
+        class ReactInstanceDevCommandsHandler : IReactInstanceDevCommandsHandler
+        {
+            private readonly ReactInstanceManager _parent;
+
+            public ReactInstanceDevCommandsHandler(ReactInstanceManager parent)
+            {
+                _parent = parent;
+            }
+
+            public void OnBundleFileReloadRequest()
+            {
+                _parent.RecreateReactContextInBackground();
+            }
+
+            public void OnJavaScriptBundleLoadedFromServer()
+            {
+                _parent.OnJavaScriptBundleLoadedFromServer();
             }
         }
     }
