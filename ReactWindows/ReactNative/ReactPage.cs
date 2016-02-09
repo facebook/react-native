@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative
 {
@@ -32,9 +33,6 @@ namespace ReactNative
             _reactInstanceManager = CreateReactInstanceManager(jsBundleFile, packages);
 
             RootView = CreateRootView();
-            RootView.HorizontalAlignment = HorizontalAlignment.Stretch;
-            RootView.VerticalAlignment = VerticalAlignment.Stretch;
-
             Content = RootView;
         }
 
@@ -51,6 +49,7 @@ namespace ReactNative
         /// </summary>
         public void OnCreate()
         {
+            RootView.Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"]
             RootView.StartReactApplication(_reactInstanceManager, _mainComponentName);
         }
 
