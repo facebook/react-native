@@ -23,7 +23,7 @@ RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSErr
 RCT_EXTERN id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error);
 RCT_EXTERN id __nullable RCTJSONParseMutable(NSString *__nullable jsonString, NSError **error);
 
-// Santize a JSON string by stripping invalid objects and/or NaN values
+// Sanitize a JSON object by stripping invalid types and/or NaN values
 RCT_EXTERN id RCTJSONClean(id object);
 
 // Get MD5 hash of a string
