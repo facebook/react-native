@@ -71,5 +71,6 @@ react_library(
     '-std=c++11',
     '-fexceptions',
     '-fvisibility=hidden',
+    '-frtti',
   ],
 )
