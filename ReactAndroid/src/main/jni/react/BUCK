@@ -65,6 +65,7 @@ react_library(
     'JSModulesUnbundle.h',
     'Value.h',
     'Platform.h',
+    'noncopyable.h',
   ],
   compiler_flags = [
     '-Wall',
