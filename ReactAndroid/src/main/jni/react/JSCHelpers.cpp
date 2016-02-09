@@ -4,7 +4,6 @@
 
 #include <JavaScriptCore/JSStringRef.h>
 #include <glog/logging.h>
-#include <jni/fbjni/Exceptions.h>
 
 #include "Value.h"
 

@@ -9,8 +9,6 @@
 
 #include <glog/logging.h>
 #include <folly/Memory.h>
-#include <jni/fbjni/Exceptions.h>
-#include <jni/LocalReference.h>
 
 #include "JSCHelpers.h"
 #include "jni/JSLoader.h"
@@ -42,6 +40,7 @@ JSCWebWorker::JSCWebWorker(int id, JSCWebWorkerOwner *owner, std::string scriptS
     initJSVMAndLoadScript();
   });
 }
+
 
 JSCWebWorker::~JSCWebWorker() {
   CHECK(isTerminated()) << "Didn't terminate the web worker before releasing it!";;

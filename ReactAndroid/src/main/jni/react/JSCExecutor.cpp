@@ -9,7 +9,6 @@
 #include <fb/log.h>
 #include <folly/json.h>
 #include <folly/String.h>
-#include <jni/fbjni/Exceptions.h>
 #include <sys/time.h>
 #include "Value.h"
 #include "jni/OnLoad.h"
@@ -41,8 +40,6 @@ using fbsystrace::FbSystraceSection;
 
 static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
 static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
-
-using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
