@@ -64,12 +64,13 @@ const ExampleTabsReducer = NavigationReducer.TabsReducer({
   ],
 });
 
-const NavigationTabsExample = React.createClass({
-  render: function() {
+class NavigationTabsExample extends React.Component {
+  render() {
     return (
       <NavigationRootContainer
         reducer={ExampleTabsReducer}
         persistenceKey="NAV_EXAMPLE_STATE_TABS"
+        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
         renderNavigation={(navigationState) => {
           if (!navigationState) { return null; }
           return (
@@ -88,8 +89,14 @@ const NavigationTabsExample = React.createClass({
         }}
       />
     );
-  },
-});
+  }
+  handleBackAction() {
+    return (
+      this.navRootContainer &&
+      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   topView: {

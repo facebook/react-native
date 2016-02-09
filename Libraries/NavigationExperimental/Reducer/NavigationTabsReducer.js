@@ -17,7 +17,8 @@ const NavigationStateUtils = require('NavigationState');
 import type {
   NavigationReducer,
   NavigationReducerWithDefault,
-  NavigationState
+  NavigationState,
+  NavigationParentState
 } from 'NavigationState';
 
 const ActionTypes = {
@@ -106,17 +107,15 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       }
     }
     const subReducers = tabReducers.map((tabReducer, tabIndex) => {
-      return function reduceTab(lastTabState: ?NavigationState, tabAction: ?any): ?NavigationState {
-        if (!lastTabState) {
-          return tabReducer(lastTabState, tabAction);
+      return function reduceTab(lastNavState: ?NavigationState, tabAction: ?any): ?NavigationState {
+        if (!tabReducer || !lastNavState) {
+          return lastNavState;
         }
-        if (!lastParentNavState) {
-          return lastTabState;
-        }
-        const lastSubTabState = lastParentNavState.children[tabIndex];
+        const lastParentNavState = NavigationStateUtils.getParent(lastNavState);
+        const lastSubTabState = lastParentNavState && lastParentNavState.children[tabIndex];
         const nextSubTabState = tabReducer(lastSubTabState, tabAction);
         if (nextSubTabState && lastSubTabState !== nextSubTabState) {
-          const tabs = lastParentNavState.children;
+          const tabs = lastParentNavState && lastParentNavState.children || [];
           tabs[tabIndex] = nextSubTabState;
           return {
             ...lastParentNavState,
@@ -129,11 +128,17 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
     });
     let selectedTabReducer = subReducers.splice(lastParentNavState.index, 1)[0];
     subReducers.unshift(selectedTabReducer);
+    subReducers.push((lastParentNavState: ?NavigationState, action: ?any) => {
+      if (lastParentNavState && action && action.type === 'BackAction') {
+        return NavigationStateUtils.jumpToIndex(
+          lastParentNavState,
+          0
+        );
+      }
+      return lastParentNavState;
+    });
     const findReducer = NavigationFindReducer(subReducers);
-    if (findReducer) {
-      return findReducer(lastParentNavState, action);
-    }
-    return lastParentNavState;
+    return findReducer(lastParentNavState, action);
   };
 }
 
