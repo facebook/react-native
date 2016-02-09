@@ -14,11 +14,11 @@ namespace ReactNative.DevSupport
     {
         private const int NativeErrorCookie = -1;
 
+        private readonly ShakeAccelerometer _accelerometer = ShakeAccelerometer.GetDefault();
+
         private readonly IReactInstanceDevCommandsHandler _reactInstanceCommandsHandler;
         private readonly string _jsBundleFile;
         private readonly string _jsAppBundleName;
-
-        private readonly ShakeAccelerometer _accelerometer;
         
         private RedBoxDialog _redBoxDialog;
         private Action _dismissRedBoxDialog;
@@ -34,14 +34,7 @@ namespace ReactNative.DevSupport
             _jsBundleFile = jsBundleFile;
             _jsAppBundleName = jsAppBundleName;
 
-            _accelerometer = ShakeAccelerometer.GetDefault();
-            if (_accelerometer != null)
-            {
-                _accelerometer.Shaken += (sender, args) =>
-                {
-                    ShowDevOptionsDialog();
-                };
-            }
+            RegisterDevOptionsMenuTriggers();
         }
 
         public bool IsEnabled { get; set; } = true;
@@ -216,6 +209,18 @@ namespace ReactNative.DevSupport
             _reactInstanceCommandsHandler.OnBundleFileReloadRequest();
             return Task.FromResult(true);
         }
+
+        private void RegisterDevOptionsMenuTriggers()
+        {
+            if (_accelerometer != null)
+            {
+                _accelerometer.Shaken += (sender, args) =>
+                {
+                    ShowDevOptionsDialog();
+                };
+            }
+        }
+
 
         class DevOptionHandler
         {

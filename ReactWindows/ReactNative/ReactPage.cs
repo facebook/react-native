@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Input;
+using Windows.System;
 
 namespace ReactNative
 {
@@ -15,6 +17,8 @@ namespace ReactNative
         private readonly IReactInstanceManager _reactInstanceManager;
         private readonly string _mainComponentName;
         private readonly Action _onBackPressed;
+
+        private bool _isShiftKeyDown;
 
         /// <summary>
         /// Instantiates the <see cref="ReactPage"/>.
@@ -88,6 +92,51 @@ namespace ReactNative
         protected virtual ReactRootView CreateRootView()
         {
             return new ReactRootView();
+        }
+
+        /// <summary>
+        /// Captures the key down events to 
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnKeyDown(KeyRoutedEventArgs e)
+        {
+            if (_reactInstanceManager.DevSupportManager.IsEnabled)
+            {
+                if (e.Key == VirtualKey.Shift)
+                {
+                    _isShiftKeyDown = true;
+                }
+                else if (_isShiftKeyDown && e.Key == VirtualKey.F11)
+                {
+                    _reactInstanceManager.DevSupportManager.ShowDevOptionsDialog();
+                    e.Handled = true;
+                }
+                else if (_isShiftKeyDown && e.Key == VirtualKey.F12)
+                {
+                    _reactInstanceManager.DevSupportManager.HandleReloadJavaScript();
+                    e.Handled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Captures the key up event to potentially launch the dev options menu.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnKeyUp(KeyRoutedEventArgs e)
+        {
+            if (_reactInstanceManager.DevSupportManager.IsEnabled)
+            {
+                if (e.Key == VirtualKey.Menu)
+                {
+                    _reactInstanceManager.DevSupportManager.ShowDevOptionsDialog();
+                    e.Handled = true;
+                }
+                else if (e.Key == VirtualKey.Shift)
+                {
+                    _isShiftKeyDown = false;
+                }
+            }
         }
 
         private IReactInstanceManager CreateReactInstanceManager(string jsBundleFile, IReadOnlyList<IReactPackage> packages)

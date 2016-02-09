@@ -39,6 +39,14 @@ namespace ReactNative.DevSupport
         {
         }
 
+        public void HandleReloadJavaScript()
+        {
+        }
+
+        public void ShowDevOptionsDialog()
+        {
+        }
+
         public void ShowNewJavaScriptError(string title, JArray details, int exceptionId)
         {
         }
