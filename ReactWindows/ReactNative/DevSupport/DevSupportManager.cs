@@ -4,6 +4,8 @@ using ReactNative.Common;
 using ReactNative.Tracing;
 using System;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace ReactNative.DevSupport
 {
@@ -12,13 +14,24 @@ namespace ReactNative.DevSupport
         private const int NativeErrorCookie = -1;
 
         private readonly string _jsAppBundleName;
+        private readonly ShakeAccelerometer _accelerometer;
 
         private RedBoxDialog _redBoxDialog;
         private bool _redBoxDialogOpen;
+        private DevOptionDialog _devOptionDialog;
 
         public DevSupportManager(string jsAppBundleName)
         {
             _jsAppBundleName = jsAppBundleName;
+
+            _accelerometer = ShakeAccelerometer.GetDefault();
+            if (_accelerometer != null)
+            {
+                _accelerometer.Shaken += (sender, args) =>
+                {
+                    ShowDevOptionsDialog();
+                };
+            }
         }
 
         public bool IsEnabled { get; set; } = true;
@@ -48,6 +61,44 @@ namespace ReactNative.DevSupport
             {
                 ExceptionDispatchInfo.Capture(exception).Throw();
             }
+        }
+
+        public void HandleReloadJavaScript()
+        {
+        }
+
+        public void ShowDevOptionsDialog()
+        {
+            DispatcherHelpers.RunOnDispatcher(() =>
+            {
+                if (_devOptionDialog != null || !IsEnabled)
+                {
+                    return;
+                }
+
+                _devOptionDialog = new DevOptionDialog();
+                _devOptionDialog.Closed += (_, __) =>
+                {
+                    _devOptionDialog = null;
+                };
+
+                var options = new[]
+                {
+                    new DevOptionHandler("Reload JavaScript", HandleReloadJavaScript),
+                };
+
+                foreach (var option in options)
+                {
+                    _devOptionDialog.Add(option.Name, option.OnSelect);
+                }
+
+                var asyncInfo = _devOptionDialog.ShowAsync();
+
+                foreach (var option in options)
+                {
+                    option.AsyncInfo = asyncInfo;
+                }
+            });
         }
 
         public void ShowNewJavaScriptError(string title, JArray details, int exceptionId)
@@ -90,13 +141,43 @@ namespace ReactNative.DevSupport
                     return;
                 }
 
+                _redBoxDialogOpen = true;
                 _redBoxDialog.ErrorCookie = errorCookie;
                 _redBoxDialog.Title = title;
                 _redBoxDialog.StackTrace = stack;
-                _redBoxDialog.Opened += (_, __) => _redBoxDialogOpen = true;
-                _redBoxDialog.Closed += (_, __) => _redBoxDialogOpen = false;
+                _redBoxDialog.Closed += (_, __) =>
+                {
+                    _redBoxDialogOpen = false;
+                    _redBoxDialog = null;
+                };
+
                 await _redBoxDialog.ShowAsync();
             });
+        }
+
+        class DevOptionHandler
+        {
+            private readonly Action _onSelect;
+
+            public DevOptionHandler(string name, Action onSelect)
+            {
+                Name = name;
+                _onSelect = onSelect;
+            }
+
+            public string Name { get; }
+
+            public IAsyncInfo AsyncInfo { get; set; }
+
+            public void OnSelect()
+            {
+                _onSelect();
+                var asyncInfo = AsyncInfo;
+                if (asyncInfo != null)
+                {
+                    asyncInfo.Cancel();
+                }
+            }
         }
     }
 }
