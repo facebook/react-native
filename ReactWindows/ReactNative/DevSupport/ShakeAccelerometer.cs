@@ -16,7 +16,6 @@ namespace ReactNative.DevSupport
         private readonly Accelerometer _instance;
 
         private DateTime _lastDetected = DateTime.Now;
-        private bool _enabled;
 
         private ShakeAccelerometer(Accelerometer instance)
         {

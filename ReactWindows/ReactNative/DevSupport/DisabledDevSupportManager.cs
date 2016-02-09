@@ -11,7 +11,23 @@ namespace ReactNative.DevSupport
             set;
         }
 
+        public string SourceUrl
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public string SourceMapUrl
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string CachedJavaScriptBundle
         {
             get
             {

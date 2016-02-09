@@ -4,6 +4,8 @@ using ReactNative.Common;
 using ReactNative.Tracing;
 using System;
 using System.Runtime.ExceptionServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace ReactNative.DevSupport
@@ -12,15 +14,24 @@ namespace ReactNative.DevSupport
     {
         private const int NativeErrorCookie = -1;
 
+        private readonly IReactInstanceDevCommandsHandler _reactInstanceCommandsHandler;
+        private readonly string _jsBundleFile;
         private readonly string _jsAppBundleName;
-        private readonly ShakeAccelerometer _accelerometer;
 
+        private readonly ShakeAccelerometer _accelerometer;
+        
         private RedBoxDialog _redBoxDialog;
+        private Action _dismissRedBoxDialog;
         private bool _redBoxDialogOpen;
         private DevOptionDialog _devOptionDialog;
 
-        public DevSupportManager(string jsAppBundleName)
+        public DevSupportManager(
+            IReactInstanceDevCommandsHandler reactInstanceCommandsHandler,
+            string jsBundleFile,
+            string jsAppBundleName)
         {
+            _reactInstanceCommandsHandler = reactInstanceCommandsHandler;
+            _jsBundleFile = jsBundleFile;
             _jsAppBundleName = jsAppBundleName;
 
             _accelerometer = ShakeAccelerometer.GetDefault();
@@ -35,6 +46,12 @@ namespace ReactNative.DevSupport
 
         public bool IsEnabled { get; set; } = true;
 
+        public string SourceUrl
+        {
+            get;
+            set;
+        }
+
         public string SourceMapUrl
         {
             get
@@ -47,6 +64,12 @@ namespace ReactNative.DevSupport
                 // TODO: use dev server helpers
                 throw new NotImplementedException();
             }
+        }
+
+        public string CachedJavaScriptBundle
+        {
+            get;
+            private set;
         }
 
         public void HandleException(Exception exception)
@@ -66,8 +89,29 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public void HandleReloadJavaScript()
+        public async void HandleReloadJavaScript()
         {
+            DispatcherHelpers.AssertOnDispatcher();
+
+            var dismissRedBoxDialog = _dismissRedBoxDialog;
+            if (_redBoxDialogOpen && dismissRedBoxDialog != null)
+            {
+                dismissRedBoxDialog();
+            }
+
+            var progressDialog = new ProgressDialog("Please wait...", "Fetching JavaScript bundle.");
+            var dialogOperation = progressDialog.ShowAsync();
+
+            if (_jsBundleFile == null)
+            {
+                await ReloadJavaScriptFromServerAsync(progressDialog.Token);
+            }
+            else
+            {
+                await ReloadJavaScriptFromFileAsync(progressDialog.Token);
+            }
+
+            dialogOperation.Cancel();
         }
 
         public void ShowDevOptionsDialog()
@@ -132,7 +176,7 @@ namespace ReactNative.DevSupport
 
         private void ShowNewError(string title, IStackFrame[] stack, int errorCookie)
         {
-            DispatcherHelpers.RunOnDispatcher(async () =>
+            DispatcherHelpers.RunOnDispatcher(() =>
             {
                 if (_redBoxDialog == null)
                 {
@@ -151,11 +195,26 @@ namespace ReactNative.DevSupport
                 _redBoxDialog.Closed += (_, __) =>
                 {
                     _redBoxDialogOpen = false;
+                    _dismissRedBoxDialog = null;
                     _redBoxDialog = null;
                 };
 
-                await _redBoxDialog.ShowAsync();
+                var asyncInfo = _redBoxDialog.ShowAsync();
+
+                _dismissRedBoxDialog = asyncInfo.Cancel;
             });
+        }
+
+        private Task ReloadJavaScriptFromServerAsync(CancellationToken token)
+        {
+            // TODO: implement loading from bundle server
+            throw new NotImplementedException();
+        }
+
+        private Task ReloadJavaScriptFromFileAsync(CancellationToken token)
+        {
+            _reactInstanceCommandsHandler.OnBundleFileReloadRequest();
+            return Task.FromResult(true);
         }
 
         class DevOptionHandler
@@ -174,12 +233,13 @@ namespace ReactNative.DevSupport
 
             public void OnSelect()
             {
-                _onSelect();
                 var asyncInfo = AsyncInfo;
                 if (asyncInfo != null)
                 {
                     asyncInfo.Cancel();
                 }
+
+                _onSelect();
             }
         }
     }

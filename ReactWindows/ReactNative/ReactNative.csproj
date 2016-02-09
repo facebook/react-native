@@ -153,7 +153,11 @@
     </Compile>
     <Compile Include="DevSupport\DevSupportManager.cs" />
     <Compile Include="DevSupport\DisabledDevSupportManager.cs" />
+    <Compile Include="DevSupport\IReactInstanceDevCommandsHandler.cs" />
     <Compile Include="DevSupport\IStackFrame.cs" />
+    <Compile Include="DevSupport\ProgressDialog.xaml.cs">
+      <DependentUpon>ProgressDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DevSupport\RedBoxDialog.cs" />
     <Compile Include="DevSupport\ShakeAccelerometer.cs" />
     <Compile Include="DevSupport\StackFrameExtensions.cs" />
@@ -315,6 +319,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="DevSupport\DevOptionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DevSupport\ProgressDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
