@@ -82,7 +82,7 @@
   "files": [
     "React",
     "React.podspec",
-    "ReactAndroid",
+    "android",
     "Libraries",
     "packager",
     "cli.js",
