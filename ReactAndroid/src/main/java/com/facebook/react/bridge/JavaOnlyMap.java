@@ -14,20 +14,27 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * A simple read/write map that can be used in tests in place of {@link WritableNativeMap}.
+ * Java {@link HashMap} backed impementation of {@link ReadableMap} and {@link WritableMap}
+ * Instances of this class SHOULD NOT be used for communication between java and JS, use instances
+ * of {@link WritableNativeMap} created via {@link Arguments#createMap} or just {@link ReadableMap}
+ * interface if you want your "native" module method to take a map from JS as an argument.
+ *
+ * Main purpose for this class is to be used in java-only unit tests, but could also be used outside
+ * of tests in the code that operates only in java and needs to communicate with RN modules via
+ * their JS-exposed API.
  */
-public class SimpleMap implements ReadableMap, WritableMap {
+public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   private final Map mBackingMap;
 
-  public static SimpleMap of(Object... keysAndValues) {
-    return new SimpleMap(keysAndValues);
+  public static JavaOnlyMap of(Object... keysAndValues) {
+    return new JavaOnlyMap(keysAndValues);
   }
 
   /**
    * @param keysAndValues keys and values, interleaved
    */
-  private SimpleMap(Object... keysAndValues) {
+  private JavaOnlyMap(Object... keysAndValues) {
     if (keysAndValues.length % 2 != 0) {
       throw new IllegalArgumentException("You must provide the same number of keys and values");
     }
@@ -37,7 +44,7 @@ public class SimpleMap implements ReadableMap, WritableMap {
     }
   }
 
-  public SimpleMap() {
+  public JavaOnlyMap() {
     mBackingMap = new HashMap();
   }
 
@@ -72,13 +79,13 @@ public class SimpleMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public SimpleMap getMap(String name) {
-    return (SimpleMap) mBackingMap.get(name);
+  public JavaOnlyMap getMap(String name) {
+    return (JavaOnlyMap) mBackingMap.get(name);
   }
 
   @Override
-  public SimpleArray getArray(String name) {
-    return (SimpleArray) mBackingMap.get(name);
+  public JavaOnlyArray getArray(String name) {
+    return (JavaOnlyArray) mBackingMap.get(name);
   }
 
   @Override
@@ -135,7 +142,7 @@ public class SimpleMap implements ReadableMap, WritableMap {
 
   @Override
   public void merge(ReadableMap source) {
-    mBackingMap.putAll(((SimpleMap) source).mBackingMap);
+    mBackingMap.putAll(((JavaOnlyMap) source).mBackingMap);
   }
 
   @Override
@@ -153,7 +160,7 @@ public class SimpleMap implements ReadableMap, WritableMap {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SimpleMap that = (SimpleMap) o;
+    JavaOnlyMap that = (JavaOnlyMap) o;
 
     if (mBackingMap != null ? !mBackingMap.equals(that.mBackingMap) : that.mBackingMap != null)
       return false;

@@ -19,10 +19,10 @@ import android.widget.EditText;
 
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactChoreographer;
 import com.facebook.react.uimanager.UIImplementation;
@@ -31,8 +31,8 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -40,7 +40,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
@@ -70,7 +69,7 @@ public class TextInputTest {
     PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new SimpleMap();
+        return new JavaOnlyMap();
       }
     });
     PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
@@ -101,15 +100,15 @@ public class TextInputTest {
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr));
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textInputTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textInputTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.onBatchComplete();
@@ -134,15 +133,15 @@ public class TextInputTest {
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr));
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textInputTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textInputTag),
+        JavaOnlyArray.of(0),
         null);
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -156,7 +155,7 @@ public class TextInputTest {
     uiManager.updateView(
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_SIZE, 26.74, ViewProps.HEIGHT, 40.0, "placeholder", hintStr2));
 
     uiManager.onBatchComplete();
