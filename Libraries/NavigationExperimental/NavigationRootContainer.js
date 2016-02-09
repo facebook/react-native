@@ -11,18 +11,28 @@
  */
 'use strict';
 
-var AsyncStorage = require('AsyncStorage');
-var React = require('React');
+const AsyncStorage = require('AsyncStorage');
+const React = require('React');
+const BackAndroid = require('BackAndroid');
+const Platform = require('Platform');
 
 import type {
   NavigationState,
   NavigationReducer
 } from 'NavigationState';
 
-type NavigationRenderer = (
+export type NavigationRenderer = (
   navigationState: NavigationState,
   onNavigate: Function
 ) => ReactElement;
+
+export type BackAction = {
+  type: 'BackAction';
+};
+
+function getBackAction(): BackAction {
+  return { type: 'BackAction' };
+}
 
 type Props = {
   renderNavigation: NavigationRenderer;
@@ -61,17 +71,21 @@ class NavigationRootContainer extends React.Component {
       onNavigate: this.handleNavigation,
     };
   }
-  handleNavigation(action: Object) {
+  handleNavigation(action: Object): boolean {
     const navState = this.props.reducer(this.state.navState, action);
+    if (navState === this.state.navState) {
+      return false;
+    }
     this.setState({
       navState,
     });
     if (this.props.persistenceKey) {
       AsyncStorage.setItem(this.props.persistenceKey, JSON.stringify(navState));
     }
+    return true;
   }
   render(): ReactElement {
-    var navigation = this.props.renderNavigation(
+    const navigation = this.props.renderNavigation(
       this.state.navState,
       this.handleNavigation
     );
@@ -82,5 +96,7 @@ class NavigationRootContainer extends React.Component {
 NavigationRootContainer.childContextTypes = {
   onNavigate: React.PropTypes.func,
 };
+
+NavigationRootContainer.getBackAction = getBackAction;
 
 module.exports = NavigationRootContainer;

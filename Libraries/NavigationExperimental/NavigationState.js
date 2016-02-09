@@ -23,9 +23,13 @@ export type NavigationParentState = {
   children: Array<NavigationState>;
 };
 
+export type NavigationAction = {
+  type: string;
+};
+
 export type NavigationReducer = (
   state: ?NavigationState,
-  action: ?any
+  action: ?NavigationAction
 ) => ?NavigationState;
 
 export type NavigationReducerWithDefault = (
@@ -142,6 +146,9 @@ export function set(state: ?NavigationState, key: string, nextChildren: Array<Na
 
 export function jumpToIndex(state: NavigationState, index: number): NavigationState {
   const parentState = getParent(state);
+  if (parentState && parentState.index === index) {
+    return parentState;
+  }
   return {
     ...parentState,
     index,

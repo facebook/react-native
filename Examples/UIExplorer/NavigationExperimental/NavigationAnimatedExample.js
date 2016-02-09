@@ -44,9 +44,16 @@ class NavigationAnimatedExample extends React.Component {
     return (
       <NavigationRootContainer
         reducer={NavigationBasicReducer}
+        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
         persistenceKey="NavigationAnimatedExampleState"
         renderNavigation={this._renderNavigated}
       />
+    );
+  }
+  handleBackAction() {
+    return (
+      this.navRootContainer &&
+      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
     );
   }
   _renderNavigated(navigationState, onNavigate) {

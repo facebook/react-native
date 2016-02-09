@@ -31,9 +31,12 @@ const Animated = require('Animated');
 const NavigationReducer = require('NavigationReducer');
 const NavigationContainer = require('NavigationContainer');
 const PanResponder = require('PanResponder');
+const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+
+const ENABLE_GESTURES = Platform.OS !== 'android';
 
 import type {
   NavigationParentState
@@ -62,7 +65,12 @@ class NavigationCard extends React.Component {
   _widthListener: string;
   _heightListener: string;
   props: Props;
-  componentWillMount(props) {
+  componentWillMount() {
+    if (ENABLE_GESTURES) {
+      this._enableGestures();
+    }
+  }
+  _enableGestures() {
     this._responder = PanResponder.create({
       onMoveShouldSetPanResponder: (e, {dx, dy, moveX, moveY, x0, y0}) => {
         if (this.props.navigationState.index === 0) {
@@ -119,9 +127,10 @@ class NavigationCard extends React.Component {
   render() {
     const cardPosition = Animated.add(this.props.position, new Animated.Value(-this.props.index));
     const gestureValue = Animated.multiply(cardPosition, this.props.layout.width);
+    const touchResponderHandlers = this._responder ? this._responder.panHandlers : null;
     return (
       <Animated.View
-        {...this._responder.panHandlers}
+        {...touchResponderHandlers}
         style={[
           styles.card,
           {

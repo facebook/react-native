@@ -109,12 +109,21 @@ var UIExplorerApp = React.createClass({
           style={styles.toolbar}
           title={this.state.example.title}
         />
-        <Component />
+        <Component
+          ref={(example) => { this._exampleRef = example; }}
+        />
       </View>
     );
   },
 
   _handleBackButtonPress: function() {
+    if (
+      this._exampleRef &&
+      this._exampleRef.handleBackAction &&
+      this._exampleRef.handleBackAction()
+    ) {
+      return true;
+    }
     if (this.state.example.title !== this._getUIExplorerHome().title) {
       this.onSelectExample(this._getUIExplorerHome());
       return true;

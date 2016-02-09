@@ -135,18 +135,18 @@ function stateTypeTitleMap(pageState) {
   }
 }
 
-let ExampleTabScreen = React.createClass({
-  render: function() {
+class ExampleTabScreen extends React.Component {
+  render() {
     return (
       <NavigationAnimatedView
         style={styles.tabContent}
         navigationState={this.props.navigationState}
-        renderOverlay={this._renderHeader}
-        renderScene={this._renderScene}
+        renderOverlay={this._renderHeader.bind(this)}
+        renderScene={this._renderScene.bind(this)}
       />
     );
-  },
-  _renderHeader: function(position, layout) {
+  }
+  _renderHeader(position, layout) {
     return (
       <NavigationHeader
         navigationState={this.props.navigationState}
@@ -155,8 +155,8 @@ let ExampleTabScreen = React.createClass({
         getTitle={state => stateTypeTitleMap(state)}
       />
     );
-  },
-  _renderScene: function(child, index, position, layout) {
+  }
+  _renderScene(child, index, position, layout) {
     return (
       <NavigationCard
         key={child.key}
@@ -187,21 +187,28 @@ let ExampleTabScreen = React.createClass({
         </ScrollView>
       </NavigationCard>
     );
-  },
-});
+  }
+}
 ExampleTabScreen = NavigationContainer.create(ExampleTabScreen);
 
-const NavigationCompositionExample = React.createClass({
-  render: function() {
+class NavigationCompositionExample extends React.Component {
+  render() {
     return (
       <NavigationRootContainer
         reducer={ExampleAppReducer}
         persistenceKey="NavigationCompositionExampleState"
-        renderNavigation={this.renderApp}
+        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
+        renderNavigation={this.renderApp.bind(this)}
       />
     );
-  },
-  renderApp: function(navigationState, onNavigate) {
+  }
+  handleBackAction() {
+    return (
+      this.navRootContainer &&
+      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
+    );
+  }
+  renderApp(navigationState, onNavigate) {
     if (!navigationState) {
       return null;
     }
@@ -217,11 +224,11 @@ const NavigationCompositionExample = React.createClass({
         />
       </View>
     );
-  },
-});
+  }
+}
 
-let ExampleMainView = React.createClass({
-  render: function() {
+class ExampleMainView extends React.Component {
+  render() {
     return (
       <NavigationView
         navigationState={this.props.navigationState}
@@ -230,20 +237,20 @@ let ExampleMainView = React.createClass({
           <ExampleTabScreen
             key={tabState.key}
             navigationState={tabState}
-            onNavigate={this._handleNavigation.bind(null, tabState.key)}
+            onNavigate={this._handleNavigation.bind(this, tabState.key)}
           />
         )}
       />
     );
-  },
-  _handleNavigation: function(tabKey, action) {
+  }
+  _handleNavigation(tabKey, action) {
     if (ExampleExitAction.match(action)) {
       this.props.onExampleExit();
       return;
     }
     this.props.onNavigate(action);
-  },
-});
+  }
+}
 ExampleMainView = NavigationContainer.create(ExampleMainView);
 
 const styles = StyleSheet.create({

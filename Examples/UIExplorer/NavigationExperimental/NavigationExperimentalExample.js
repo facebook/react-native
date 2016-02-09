@@ -25,7 +25,7 @@ var NavigationExampleRow = require('./NavigationExampleRow');
 /*
  * Heads up! This file is not the real navigation example- only a utility to switch between them.
  *
- * To learn how to use the Navigation API, take a look at the following exmample files:
+ * To learn how to use the Navigation API, take a look at the following example files:
  */
 var EXAMPLES = {
   'Tabs': require('./NavigationTabsExample'),
@@ -106,13 +106,34 @@ var NavigationExperimentalExample = React.createClass({
     this.setExample('menu');
   },
 
+  handleBackAction: function() {
+    const wasHandledByExample = (
+      this.exampleRef &&
+      this.exampleRef.handleBackAction &&
+      this.exampleRef.handleBackAction()
+    );
+    if (wasHandledByExample) {
+      return true;
+    }
+    if (this.state.example && this.state.example !== 'menu') {
+      this._exitInnerExample();
+      return true;
+    }
+    return false;
+  },
+
   render: function() {
     if (this.state.example === 'menu') {
       return this._renderMenu();
     }
     if (EXAMPLES[this.state.example]) {
       var Component = EXAMPLES[this.state.example];
-      return <Component onExampleExit={this._exitInnerExample} />;
+      return (
+        <Component
+          onExampleExit={this._exitInnerExample}
+          ref={exampleRef => { this.exampleRef = exampleRef; }}
+        />
+      );
     }
     return null;
   },

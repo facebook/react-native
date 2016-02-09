@@ -22,7 +22,7 @@ import type {
   NavigationReducer
 } from 'NavigationState';
 
-function NavigationFindReducer(reducers: Array<NavigationReducer>): ?NavigationReducer {
+function NavigationFindReducer(reducers: Array<NavigationReducer>): NavigationReducer {
   return function(lastState: ?NavigationState, action: ?any): ?NavigationState {
     for (let i = 0; i < reducers.length; i++) {
       let reducer = reducers[i];
