@@ -16,18 +16,18 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   AppRegistry,
   BackAndroid,
+  Component,
   Navigator,
   StyleSheet,
   ToolbarAndroid,
   View,
-} = React;
+} from 'react-native';
 
-var MovieScreen = require('./MovieScreen');
-var SearchScreen = require('./SearchScreen');
+import MovieScreen from './MovieScreen';
+import SearchScreen from './SearchScreen';
 
 var _navigator;
 BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -38,7 +38,7 @@ BackAndroid.addEventListener('hardwareBackPress', () => {
   return false;
 });
 
-var RouteMapper = function(route, navigationOperations, onComponentRef) {
+var RouteMapper = (route, navigationOperations, onComponentRef) => {
   _navigator = navigationOperations;
   if (route.name === 'search') {
     return (
@@ -64,8 +64,8 @@ var RouteMapper = function(route, navigationOperations, onComponentRef) {
   }
 };
 
-var MoviesApp = React.createClass({
-  render: function() {
+export default class MoviesApp extends Component {
+  render() {
     var initialRoute = {name: 'search'};
     return (
       <Navigator
@@ -76,7 +76,7 @@ var MoviesApp = React.createClass({
       />
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -90,5 +90,3 @@ var styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('MoviesApp', () => MoviesApp);
-
-module.exports = MoviesApp;

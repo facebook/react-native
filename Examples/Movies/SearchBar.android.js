@@ -16,8 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
+  Component,
   Image,
   Platform,
   ProgressBarAndroid,
@@ -25,14 +25,15 @@ var {
   StyleSheet,
   TouchableNativeFeedback,
   View,
-} = React;
+} from 'react-native';
 
 var IS_RIPPLE_EFFECT_SUPPORTED = Platform.Version >= 21;
 
-var SearchBar = React.createClass({
-  render: function() {
+export default class SearchBar extends Component {
+  render() {
+    const { isLoading, onSearchChange, onFocus } = this.props;
     var loadingView;
-    if (this.props.isLoading) {
+    if (isLoading) {
       loadingView = (
         <ProgressBarAndroid
           styleAttr="Large"
@@ -62,17 +63,17 @@ var SearchBar = React.createClass({
           autoCapitalize="none"
           autoCorrect={false}
           autoFocus={true}
-          onChange={this.props.onSearchChange}
+          onChange={onSearchChange}
           placeholder="Search a movie..."
           placeholderTextColor="rgba(255, 255, 255, 0.5)"
-          onFocus={this.props.onFocus}
+          onFocus={onFocus}
           style={styles.searchBarInput}
         />
         {loadingView}
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   searchBar: {
@@ -100,5 +101,3 @@ var styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
-
-module.exports = SearchBar;

@@ -16,17 +16,17 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   AppRegistry,
+  Component,
   NavigatorIOS,
   StyleSheet,
-} = React;
+} from 'react-native';
 
-var SearchScreen = require('./SearchScreen');
+import SearchScreen from './SearchScreen';
 
-var MoviesApp = React.createClass({
-  render: function() {
+export default class MoviesApp extends Component {
+  render() {
     return (
       <NavigatorIOS
         style={styles.container}
@@ -37,7 +37,7 @@ var MoviesApp = React.createClass({
       />
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -47,5 +47,3 @@ var styles = StyleSheet.create({
 });
 
 AppRegistry.registerComponent('MoviesApp', () => MoviesApp);
-
-module.exports = MoviesApp;
