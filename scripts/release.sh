@@ -41,7 +41,8 @@ sed -i.bak s:\/\/\ archives\ androidJavadocJar:archives\ androidJavadocJar:g "Re
 sed -i.bak s:archives\ androidJavadocJar:\/\/\ archives\ androidJavadocJar:g "ReactAndroid/release.gradle" || error "Couldn't enable Javadoc generation"
 
 artifacts_list=( -javadoc.jar -sources.jar .aar .pom )
-artifacts_dir=~/.m2/repository/com/facebook/react/react-native/${RELEASE}.0
+# ./gradlew :ReactAndroid:installArchives put the artifacts in react-native/android, ready to be published to npm
+artifacts_dir="${repo_root}/android/com/facebook/react/react-native/${RELEASE}.0"
 
 for i in "${artifacts_list[@]}"; do
    artifact_file="${artifacts_dir}/react-native-${RELEASE}.0${i}"
