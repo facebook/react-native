@@ -54,6 +54,7 @@ var APIS = [
   require('./IntentAndroidExample.android'),
   require('./LayoutEventsExample'),
   require('./LayoutExample'),
+  require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),

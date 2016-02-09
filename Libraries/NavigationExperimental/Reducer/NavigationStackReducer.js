@@ -18,7 +18,11 @@ import type {
   NavigationReducer,
 } from 'NavigationState';
 
-export type NavigationStackReducerAction = {
+import type {
+  BackAction,
+} from 'NavigationRootContainer';
+
+export type NavigationStackReducerAction = BackAction | {
   type: string,
 };
 
@@ -101,6 +105,7 @@ function NavigationStackReducer({initialStates, initialIndex, key, matchAction, 
           action.state
         );
       case ActionTypes.POP:
+      case 'BackAction':
         if (lastParentState.index === 0 || lastParentState.children.length === 1) {
           return lastParentState;
         }
