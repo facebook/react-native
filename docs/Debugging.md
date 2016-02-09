@@ -20,8 +20,18 @@ To access the in-app developer menu:
 > 1. For iOS open your project in Xcode and select `Product` → `Scheme` → `Edit Scheme...` (or press `⌘ + <`). Next, select `Run` from the menu on the left and change the Build Configuration to `Release`.
 > 2. For Android, by default, developer menu will be disabled in release builds done by gradle (e.g with gradle `assembleRelease` task). Although this behavior can be customized by passing proper value to `ReactInstanceManager#setUseDeveloperSupport`.
 
+### Android logging
+Run `adb logcat *:S ReactNative:V ReactNativeJS:V` in a terminal to see your Android app's logs.
+
 ### Reload
 Selecting `Reload` (or pressing `⌘ + r` in the iOS simulator) will reload the JavaScript that powers your application. If you have added new resources (such as an image to `Images.xcassets` on iOS or to `res/drawable` folder on Android) or modified any native code (Objective-C/Swift code on iOS or Java/C++ code on Android), you will need to re-build the app for the changes to take effect.
+
+### YellowBox/RedBox
+Using `console.warn` will display an on-screen log on a yellow background. Click on this warning to show more information about it full screen and/or dismiss the warning.
+
+You can use `console.error` to display a full screen error on a red background.
+
+These boxes only appear when you're running your app in dev mode.
 
 ### Chrome Developer Tools
 To debug the JavaScript code in Chrome, select `Debug in Chrome` from the developer menu. This will open a new tab at [http://localhost:8081/debugger-ui](http://localhost:8081/debugger-ui).
