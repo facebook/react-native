@@ -291,10 +291,6 @@ var TextInput = React.createClass({
      */
     style: Text.propTypes.style,
     /**
-     * Used to locate this view in end-to-end tests
-     */
-    testID: PropTypes.string,
-    /**
      * The color of the textInput underline.
      * @platform android
      */
@@ -457,6 +453,9 @@ var TextInput = React.createClass({
       <TouchableWithoutFeedback
         onPress={this._onPress}
         rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityTraits={props.accessibilityTraits}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -520,6 +519,9 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
+        accessible={this.props.accessible}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityComponentType={this.props.accessibilityComponentType}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>

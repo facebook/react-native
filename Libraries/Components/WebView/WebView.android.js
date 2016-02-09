@@ -21,6 +21,7 @@ var deprecatedPropType = require('deprecatedPropType');
 var keyMirror = require('keyMirror');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 var PropTypes = React.PropTypes;
 
@@ -98,6 +99,10 @@ var WebView = React.createClass({
          */
         baseUrl: PropTypes.string,
       }),
+      /*
+       * Used internally by packager.
+       */
+      PropTypes.number,
     ]),
 
     /**
@@ -193,7 +198,7 @@ var WebView = React.createClass({
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        source={source}
+        source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={javaScriptEnabled}

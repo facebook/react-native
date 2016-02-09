@@ -173,10 +173,10 @@ function colorToRgba(input: string): string {
 
   int32Color = int32Color || 0; // $FlowIssue
 
-  var a = ((int32Color & 0xff000000) >>> 24) / 255;
-  var r = (int32Color & 0x00ff0000) >>> 16;
-  var g = (int32Color & 0x0000ff00) >>> 8;
-  var b = int32Color & 0x000000ff;
+  var r = (int32Color & 0xff000000) >>> 24;
+  var g = (int32Color & 0x00ff0000) >>> 16;
+  var b = (int32Color & 0x0000ff00) >>> 8;
+  var a = (int32Color & 0x000000ff) / 255;
 
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }

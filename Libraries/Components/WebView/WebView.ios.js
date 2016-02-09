@@ -25,6 +25,7 @@ var invariant = require('invariant');
 var keyMirror = require('keyMirror');
 var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
@@ -138,6 +139,10 @@ var WebView = React.createClass({
          */
         baseUrl: PropTypes.string,
       }),
+      /*
+       * Used internally by packager.
+       */
+      PropTypes.number,
     ]),
 
     /**
@@ -304,7 +309,7 @@ var WebView = React.createClass({
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        source={source}
+        source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
@@ -432,6 +437,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    height: 100,
   },
   webView: {
     backgroundColor: '#ffffff',

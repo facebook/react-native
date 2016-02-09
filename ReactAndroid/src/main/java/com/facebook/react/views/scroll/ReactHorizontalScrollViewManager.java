@@ -39,15 +39,19 @@ public class ReactHorizontalScrollViewManager
     return new ReactHorizontalScrollView(context);
   }
 
-  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
-  public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
-    view.setRemoveClippedSubviews(removeClippedSubviews);
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
+    view.setScrollEnabled(value);
   }
-
 
   @ReactProp(name = "showsHorizontalScrollIndicator")
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
+  }
+
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   /**

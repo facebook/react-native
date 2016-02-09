@@ -250,11 +250,17 @@ var apis = [
   '../Libraries/StyleSheet/StyleSheet.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
+  '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
+  '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
 ];
 
-var styles = [
+var stylesWithPermalink = [
   '../Libraries/StyleSheet/LayoutPropTypes.js',
   '../Libraries/StyleSheet/TransformPropTypes.js',
+  '../Libraries/Components/View/ShadowPropTypesIOS.js',
+];
+
+var stylesForEmbed = [
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
@@ -266,10 +272,10 @@ var polyfills = [
 
 var all = components
   .concat(apis)
-  .concat(styles.slice(0, 2))
+  .concat(stylesWithPermalink)
   .concat(polyfills);
 
-var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
+var styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
       fs.readFileSync(filepath),
@@ -289,7 +295,7 @@ module.exports = function() {
   return [].concat(
     components.map(renderComponent),
     apis.map(renderAPI('api')),
-    styles.slice(0, 2).map(renderStyle),
+    stylesWithPermalink.map(renderStyle),
     polyfills.map(renderAPI('Polyfill'))
   );
 };
