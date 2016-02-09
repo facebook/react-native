@@ -102,6 +102,9 @@
   "bin": {
     "react-native": "local-cli/wrong-react-native.js"
   },
+  "peerDependencies": {
+    "react": "^0.14.5"
+  },
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
@@ -133,7 +136,6 @@
     "optimist": "^0.6.1",
     "progress": "^1.1.8",
     "promise": "^7.1.1",
-    "react": "^0.14.5",
     "react-timer-mixin": "^0.13.2",
     "react-transform-hmr": "^1.0.2",
     "rebound": "^0.0.13",
