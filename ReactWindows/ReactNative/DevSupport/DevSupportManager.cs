@@ -4,7 +4,6 @@ using ReactNative.Common;
 using ReactNative.Tracing;
 using System;
 using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace ReactNative.DevSupport
@@ -52,6 +51,10 @@ namespace ReactNative.DevSupport
 
         public void HandleException(Exception exception)
         {
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached) System.Diagnostics.Debugger.Break();
+#endif
+
             if (IsEnabled)
             {
                 Tracer.Write(ReactConstants.Tag, "Exception in native call from JavaScript. Error: " + exception);
