@@ -33,7 +33,7 @@ RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
-  resolve(@[RCTNullIfNil(clipboard.string)]);
+  resolve(RCTNullIfNil(clipboard.string));
 }
 
 @end
