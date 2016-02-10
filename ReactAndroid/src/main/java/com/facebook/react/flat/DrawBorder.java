@@ -204,7 +204,6 @@ import com.facebook.csslayout.Spacing;
     if (mBackgroundColor != 0) {
       PAINT.setColor(mBackgroundColor);
       canvas.drawPath(getPathForBorderRadius(), PAINT);
-      return;
     }
 
     drawBorders(canvas);
