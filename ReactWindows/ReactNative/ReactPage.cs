@@ -1,11 +1,11 @@
 ﻿using ReactNative.Modules.Core;
 using System;
 using System.Collections.Generic;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Input;
-using Windows.System;
+using Windows.UI.Xaml.Media;
 
 namespace ReactNative
 {
@@ -143,7 +143,9 @@ namespace ReactNative
         {
             var builder = new ReactInstanceManager.Builder
             {
+#if DEBUG
                 UseDeveloperSupport = true,
+#endif
                 InitialLifecycleState = LifecycleState.Resumed,
                 JavaScriptBundleFile = jsBundleFile,
             };

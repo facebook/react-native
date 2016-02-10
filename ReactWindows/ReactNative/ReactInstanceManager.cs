@@ -384,7 +384,7 @@ namespace ReactNative
                 () => new ChakraJavaScriptExecutor(),
                 JavaScriptBundleLoader.CreateCachedBundleFromNetworkLoader(
                     _devSupportManager.SourceUrl,
-                    _devSupportManager.CachedJavaScriptBundle));
+                    _devSupportManager.CachedJavaScriptBundleFile));
         }
 
         private void RecreateReactContextInBackground(
@@ -417,9 +417,9 @@ namespace ReactNative
                 var reactContext = await CreateReactContextAsync(jsExecutorFactory, jsBundleLoader);
                 SetupReactContext(reactContext);
             }
-            catch (Exception ex)
+            catch
             {
-                _devSupportManager.HandleException(ex);
+                // TODO: add exception handler through dev support manager.
             }
             finally
             {

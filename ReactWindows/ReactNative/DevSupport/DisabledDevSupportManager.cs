@@ -27,7 +27,7 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public string CachedJavaScriptBundle
+        public string CachedJavaScriptBundleFile
         {
             get
             {
