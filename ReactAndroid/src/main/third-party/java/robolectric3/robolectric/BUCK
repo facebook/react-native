@@ -17,9 +17,6 @@ android_library(
         react_native_dep('third-party/java/asm:asm'),
         react_native_dep('third-party/java/sqlite:sqlite'),
     ],
-    deps = [
-#         ':locate_android-all',
-    ],
     visibility = ['//ReactAndroid/...',],
 )
 

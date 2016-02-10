@@ -2,8 +2,6 @@
 
 package com.facebook.react.views.toolbar;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -14,7 +12,6 @@ import android.view.MenuItem;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
-import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -22,88 +19,110 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.drawee.view.MultiDraweeHolder;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.image.QualityInfo;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.PixelUtil;
+
+import javax.annotation.Nullable;
 
 /**
  * Custom implementation of the {@link Toolbar} widget that adds support for remote images in logo
  * and navigationIcon using fresco.
  */
 public class ReactToolbar extends Toolbar {
+
   private static final String PROP_ACTION_ICON = "icon";
   private static final String PROP_ACTION_SHOW = "show";
   private static final String PROP_ACTION_SHOW_WITH_TEXT = "showWithText";
   private static final String PROP_ACTION_TITLE = "title";
 
+  private static final String PROP_ICON_URI = "uri";
+  private static final String PROP_ICON_WIDTH = "width";
+  private static final String PROP_ICON_HEIGHT = "height";
+
   private final DraweeHolder mLogoHolder;
   private final DraweeHolder mNavIconHolder;
   private final DraweeHolder mOverflowIconHolder;
   private final MultiDraweeHolder<GenericDraweeHierarchy> mActionsHolder =
-      new MultiDraweeHolder<>();
+          new MultiDraweeHolder<>();
 
-  private final ControllerListener<ImageInfo> mLogoControllerListener =
-      new BaseControllerListener<ImageInfo>() {
-        @Override
-        public void onFinalImageSet(
-            String id,
-            @Nullable final ImageInfo imageInfo,
-            @Nullable Animatable animatable) {
-          if (imageInfo != null) {
-            final DrawableWithIntrinsicSize logoDrawable =
-                new DrawableWithIntrinsicSize(mLogoHolder.getTopLevelDrawable(), imageInfo);
-            setLogo(logoDrawable);
-          }
-        }
-      };
+  private IconControllerListener mLogoControllerListener;
+  private IconControllerListener mNavIconControllerListener;
+  private IconControllerListener mOverflowIconControllerListener;
 
-  private final ControllerListener<ImageInfo> mNavIconControllerListener =
-      new BaseControllerListener<ImageInfo>() {
-        @Override
-        public void onFinalImageSet(
-            String id,
-            @Nullable final ImageInfo imageInfo,
-            @Nullable Animatable animatable) {
-          if (imageInfo != null) {
-            final DrawableWithIntrinsicSize navIconDrawable =
-                new DrawableWithIntrinsicSize(mNavIconHolder.getTopLevelDrawable(), imageInfo);
-            setNavigationIcon(navIconDrawable);
-          }
-        }
-      };
+  /**
+   * Attaches specific icon width & height to a BaseControllerListener which will be used to
+   * create the Drawable
+   */
+  private abstract class IconControllerListener extends BaseControllerListener<ImageInfo> {
 
-  private final ControllerListener<ImageInfo> mOverflowIconControllerListener =
-      new BaseControllerListener<ImageInfo>() {
-        @Override
-        public void onFinalImageSet(
-            String id,
-            @Nullable final ImageInfo imageInfo,
-            @Nullable Animatable animatable) {
-          if (imageInfo != null) {
-            final DrawableWithIntrinsicSize overflowIconDrawable =
-                new DrawableWithIntrinsicSize(mOverflowIconHolder.getTopLevelDrawable(), imageInfo);
-            setOverflowIcon(overflowIconDrawable);
-          }
-        }
-      };
-
-  private static class ActionIconControllerListener extends BaseControllerListener<ImageInfo> {
-    private final MenuItem mItem;
     private final DraweeHolder mHolder;
 
-    ActionIconControllerListener(MenuItem item, DraweeHolder holder) {
-      mItem = item;
+    private IconImageInfo mIconImageInfo;
+
+    public IconControllerListener(DraweeHolder holder) {
       mHolder = holder;
     }
 
-    @Override
-    public void onFinalImageSet(
-        String id,
-        @Nullable ImageInfo imageInfo,
-        @Nullable Animatable animatable) {
-      if (imageInfo != null) {
-        mItem.setIcon(new DrawableWithIntrinsicSize(mHolder.getTopLevelDrawable(), imageInfo));
-      }
+    public void setIconImageInfo(IconImageInfo iconImageInfo) {
+      mIconImageInfo = iconImageInfo;
     }
+
+    @Override
+    public void onFinalImageSet(String id, @Nullable ImageInfo imageInfo, @Nullable Animatable animatable) {
+      super.onFinalImageSet(id, imageInfo, animatable);
+
+      final ImageInfo info = mIconImageInfo != null ? mIconImageInfo : imageInfo;
+      setDrawable(new DrawableWithIntrinsicSize(mHolder.getTopLevelDrawable(), info));
+    }
+
+    protected abstract void setDrawable(Drawable d);
+
+  }
+
+  private class ActionIconControllerListener extends IconControllerListener {
+    private final MenuItem mItem;
+
+    ActionIconControllerListener(MenuItem item, DraweeHolder holder) {
+      super(holder);
+      mItem = item;
+    }
+
+    @Override
+    protected void setDrawable(Drawable d) {
+      mItem.setIcon(d);
+    }
+  }
+
+  /**
+   * Simple implementation of ImageInfo, only providing width & height
+   */
+  private static class IconImageInfo implements ImageInfo {
+
+    private int mWidth;
+    private int mHeight;
+
+    public IconImageInfo(int width, int height) {
+      mWidth = width;
+      mHeight = height;
+    }
+
+    @Override
+    public int getWidth() {
+      return mWidth;
+    }
+
+    @Override
+    public int getHeight() {
+      return mHeight;
+    }
+
+    @Override
+    public QualityInfo getQualityInfo() {
+      return null;
+    }
+
   }
 
   public ReactToolbar(Context context) {
@@ -112,6 +131,28 @@ public class ReactToolbar extends Toolbar {
     mLogoHolder = DraweeHolder.create(createDraweeHierarchy(), context);
     mNavIconHolder = DraweeHolder.create(createDraweeHierarchy(), context);
     mOverflowIconHolder = DraweeHolder.create(createDraweeHierarchy(), context);
+
+    mLogoControllerListener = new IconControllerListener(mLogoHolder) {
+      @Override
+      protected void setDrawable(Drawable d) {
+        setLogo(d);
+      }
+    };
+
+    mNavIconControllerListener = new IconControllerListener(mNavIconHolder) {
+      @Override
+      protected void setDrawable(Drawable d) {
+        setNavigationIcon(d);
+      }
+    };
+
+    mOverflowIconControllerListener = new IconControllerListener(mOverflowIconHolder) {
+      @Override
+      protected void setDrawable(Drawable d) {
+        setOverflowIcon(d);
+      }
+    };
+
   }
 
   private final Runnable mLayoutRunnable = new Runnable() {
@@ -172,51 +213,15 @@ public class ReactToolbar extends Toolbar {
   }
 
   /* package */ void setLogoSource(@Nullable ReadableMap source) {
-    String uri = source != null ? source.getString("uri") : null;
-    if (uri == null) {
-      setLogo(null);
-    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
-      DraweeController controller = Fresco.newDraweeControllerBuilder()
-          .setUri(Uri.parse(uri))
-          .setControllerListener(mLogoControllerListener)
-          .setOldController(mLogoHolder.getController())
-          .build();
-      mLogoHolder.setController(controller);
-    } else {
-      setLogo(getDrawableResourceByName(uri));
-    }
+    setIconSource(source, mLogoControllerListener, mLogoHolder);
   }
 
   /* package */ void setNavIconSource(@Nullable ReadableMap source) {
-    String uri = source != null ? source.getString("uri") : null;
-    if (uri == null) {
-      setNavigationIcon(null);
-    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
-      DraweeController controller = Fresco.newDraweeControllerBuilder()
-          .setUri(Uri.parse(uri))
-          .setControllerListener(mNavIconControllerListener)
-          .setOldController(mNavIconHolder.getController())
-          .build();
-      mNavIconHolder.setController(controller);
-    } else {
-      setNavigationIcon(getDrawableResourceByName(uri));
-    }
+    setIconSource(source, mNavIconControllerListener, mNavIconHolder);
   }
 
   /* package */ void setOverflowIconSource(@Nullable ReadableMap source) {
-    String uri = source != null ? source.getString("uri") : null;
-    if (uri == null) {
-      setOverflowIcon(null);
-    } else if (uri.startsWith("http://") || uri.startsWith("https://")) {
-      DraweeController controller = Fresco.newDraweeControllerBuilder()
-          .setUri(Uri.parse(uri))
-          .setControllerListener(mOverflowIconControllerListener)
-          .setOldController(mOverflowIconHolder.getController())
-          .build();
-      mOverflowIconHolder.setController(controller);
-    } else {
-      setOverflowIcon(getDrawableByName(uri));
-    }
+    setIconSource(source, mOverflowIconControllerListener, mOverflowIconHolder);
   }
 
   /* package */ void setActions(@Nullable ReadableArray actions) {
@@ -226,16 +231,13 @@ public class ReactToolbar extends Toolbar {
     if (actions != null) {
       for (int i = 0; i < actions.size(); i++) {
         ReadableMap action = actions.getMap(i);
+
         MenuItem item = menu.add(Menu.NONE, Menu.NONE, i, action.getString(PROP_ACTION_TITLE));
-        ReadableMap icon = action.hasKey(PROP_ACTION_ICON) ? action.getMap(PROP_ACTION_ICON) : null;
-        if (icon != null) {
-          String iconSource = icon.getString("uri");
-          if (iconSource.startsWith("http://") || iconSource.startsWith("https://")) {
-            setMenuItemIcon(item, icon);
-          } else {
-            item.setIcon(getDrawableResourceByName(iconSource));
-          }
+
+        if (action.hasKey(PROP_ACTION_ICON)) {
+          setMenuItemIcon(item, action.getMap(PROP_ACTION_ICON));
         }
+
         int showAsAction = action.hasKey(PROP_ACTION_SHOW)
             ? action.getInt(PROP_ACTION_SHOW)
             : MenuItem.SHOW_AS_ACTION_NEVER;
@@ -248,24 +250,43 @@ public class ReactToolbar extends Toolbar {
     }
   }
 
-  /**
-   * This is only used when the icon is remote (http/s). Creates & adds a new {@link DraweeHolder}
-   * to {@link #mActionsHolder} and attaches a {@link ActionIconControllerListener} that just sets
-   * the top level drawable when it's loaded.
-   */
-  private void setMenuItemIcon(MenuItem item, ReadableMap icon) {
-    String iconSource = icon.getString("uri");
+  private void setMenuItemIcon(final MenuItem item, ReadableMap iconSource) {
 
     DraweeHolder<GenericDraweeHierarchy> holder =
-        DraweeHolder.create(createDraweeHierarchy(), getContext());
-    DraweeController controller = Fresco.newDraweeControllerBuilder()
-        .setUri(Uri.parse(iconSource))
-        .setControllerListener(new ActionIconControllerListener(item, holder))
-        .setOldController(holder.getController())
-        .build();
-    holder.setController(controller);
+            DraweeHolder.create(createDraweeHierarchy(), getContext());
+    ActionIconControllerListener controllerListener = new ActionIconControllerListener(item, holder);
+    controllerListener.setIconImageInfo(getIconImageInfo(iconSource));
+
+    setIconSource(iconSource, controllerListener, holder);
 
     mActionsHolder.add(holder);
+
+  }
+
+  /**
+   * Sets an icon for a specific icon source. If the uri indicates an icon
+   * to be somewhere remote (http/https) or on the local filesystem, it uses fresco to load it.
+   * Otherwise it loads the Drawable from the Resources and directly returns it via a callback
+   */
+  private void setIconSource(ReadableMap source, IconControllerListener controllerListener, DraweeHolder holder) {
+
+    String uri = source != null ? source.getString(PROP_ICON_URI) : null;
+
+    if (uri == null) {
+      controllerListener.setIconImageInfo(null);
+      controllerListener.setDrawable(null);
+    } else if (uri.startsWith("http://") || uri.startsWith("https://") || uri.startsWith("file://")) {
+      controllerListener.setIconImageInfo(getIconImageInfo(source));
+      DraweeController controller = Fresco.newDraweeControllerBuilder()
+              .setUri(Uri.parse(uri))
+              .setControllerListener(controllerListener)
+              .setOldController(holder.getController())
+              .build();
+      holder.setController(controller);
+    } else {
+      controllerListener.setDrawable(getDrawableByName(uri));
+    }
+
   }
 
   private GenericDraweeHierarchy createDraweeHierarchy() {
@@ -283,7 +304,22 @@ public class ReactToolbar extends Toolbar {
   }
 
   private Drawable getDrawableByName(String name) {
-    return getResources().getDrawable(getDrawableResourceByName(name));
+    int drawableResId = getDrawableResourceByName(name);
+    if (drawableResId != 0) {
+      return getResources().getDrawable(getDrawableResourceByName(name));
+    } else {
+      return null;
+    }
+  }
+
+  private IconImageInfo getIconImageInfo(ReadableMap source) {
+    if (source.hasKey(PROP_ICON_WIDTH) && source.hasKey(PROP_ICON_HEIGHT)) {
+      final int width = Math.round(PixelUtil.toPixelFromDIP(source.getInt(PROP_ICON_WIDTH)));
+      final int height = Math.round(PixelUtil.toPixelFromDIP(source.getInt(PROP_ICON_HEIGHT)));
+      return new IconImageInfo(width, height);
+    } else {
+      return null;
+    }
   }
 
 }

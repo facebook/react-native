@@ -19,6 +19,8 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.camera.CameraRollManager;
+import com.facebook.react.modules.camera.ImageEditingManager;
+import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
@@ -27,6 +29,7 @@ import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
+import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
@@ -69,13 +72,17 @@ public class MainReactPackage implements ReactPackage {
       new DatePickerDialogModule(reactContext),
       new DialogModule(reactContext),
       new FrescoModule(reactContext),
+      new ImageEditingManager(reactContext),
+      new ImageStoreManager(reactContext),
       new IntentModule(reactContext),
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),
       new NetInfoModule(reactContext),
+      new StatusBarModule(reactContext),
       new TimePickerDialogModule(reactContext),
       new ToastModule(reactContext),
-      new WebSocketModule(reactContext));
+      new WebSocketModule(reactContext)
+    );
   }
 
   @Override

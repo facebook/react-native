@@ -6,6 +6,7 @@
 #include <jni/fbjni.h>
 #include <jni.h>
 #include <jni/GlobalReference.h>
+#include "OnLoad.h"
 
 namespace facebook {
 namespace react {
@@ -14,7 +15,7 @@ namespace react {
  * This executor factory can only create a single executor instance because it moves
  * executorInstance global reference to the executor instance it creates.
  */
-class ProxyExecutorOneTimeFactory : public JSExecutorFactory {
+class ProxyExecutorOneTimeFactory : public CountableJSExecutorFactory {
 public:
   ProxyExecutorOneTimeFactory(jni::global_ref<jobject>&& executorInstance) :
     m_executor(std::move(executorInstance)) {}
@@ -33,7 +34,7 @@ public:
     const std::string& script,
     const std::string& sourceURL) override;
   virtual void loadApplicationUnbundle(
-    JSModulesUnbundle&& bundle,
+    std::unique_ptr<JSModulesUnbundle> bundle,
     const std::string& startupCode,
     const std::string& sourceURL) override;
   virtual std::string flush() override;

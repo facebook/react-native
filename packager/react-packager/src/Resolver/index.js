@@ -64,6 +64,10 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'boolean',
     default: false
   },
+  recursive: {
+    type: 'boolean',
+    default: true,
+  },
 });
 
 class Resolver {
@@ -89,7 +93,6 @@ class Resolver {
         // should work after this release and we can
         // remove it from here.
         'parse',
-        'react-transform-hmr',
       ],
       platforms: ['ios', 'android'],
       preferNativePlatform: true,
@@ -99,6 +102,11 @@ class Resolver {
     });
 
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
+
+    this._depGraph.load().catch(err => {
+      console.error(err.message + '\n' + err.stack);
+      process.exit(1);
+    });
   }
 
   getShallowDependencies(entryFile) {
@@ -106,7 +114,7 @@ class Resolver {
   }
 
   stat(filePath) {
-    return this._depGraph.stat(filePath);
+    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {
@@ -116,15 +124,17 @@ class Resolver {
   getDependencies(main, options) {
     const opts = getDependenciesValidateOpts(options);
 
-    return this._depGraph.getDependencies(main, opts.platform).then(
-      resolutionResponse => {
-        this._getPolyfillDependencies().reverse().forEach(
-          polyfill => resolutionResponse.prependDependency(polyfill)
-        );
+    return this._depGraph.getDependencies(
+      main,
+      opts.platform,
+      opts.recursive,
+    ).then(resolutionResponse => {
+      this._getPolyfillDependencies().reverse().forEach(
+        polyfill => resolutionResponse.prependDependency(polyfill)
+      );
 
-        return resolutionResponse.finalize();
-      }
-    );
+      return resolutionResponse.finalize();
+    });
   }
 
   getModuleSystemDependencies(options) {
@@ -157,6 +167,7 @@ class Resolver {
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),
+      path.join(__dirname, 'polyfills/Object.es7.js'),
       path.join(__dirname, 'polyfills/babelHelpers.js'),
     ].concat(this._polyfillModuleNames);
 

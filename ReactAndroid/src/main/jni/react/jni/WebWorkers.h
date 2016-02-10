@@ -18,10 +18,10 @@ class WebWorkers : public JavaClass<WebWorkers> {
 public:
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/webworkers/WebWorkers;";
 
-  static std::unique_ptr<JMessageQueueThread> createWebWorkerThread(int id, JMessageQueueThread *ownerMessageQueueThread) {
+  static std::unique_ptr<JMessageQueueThread> createWebWorkerThread(int id, MessageQueueThread *ownerMessageQueueThread) {
     static auto method = WebWorkers::javaClassStatic()->
-        getStaticMethod<MessageQueueThread::javaobject(jint, MessageQueueThread::javaobject)>("createWebWorkerThread");
-    auto res = method(WebWorkers::javaClassStatic(), id, ownerMessageQueueThread->jobj());
+        getStaticMethod<JavaMessageQueueThread::javaobject(jint, JavaMessageQueueThread::javaobject)>("createWebWorkerThread");
+    auto res = method(WebWorkers::javaClassStatic(), id, static_cast<JMessageQueueThread*>(ownerMessageQueueThread)->jobj());
     return folly::make_unique<JMessageQueueThread>(res);
   }
 };

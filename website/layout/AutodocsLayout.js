@@ -12,6 +12,7 @@
 var DocsSidebar = require('DocsSidebar');
 var H = require('Header');
 var Header = require('Header');
+var HeaderWithGithub = require('HeaderWithGithub');
 var Marked = require('Marked');
 var Prism = require('Prism');
 var React = require('React');
@@ -20,12 +21,20 @@ var slugify = require('slugify');
 
 var styleReferencePattern = /^[^.]+\.propTypes\.style$/;
 
+function renderEnumValue(value) {
+  // Use single quote strings even when we are given double quotes
+  if (value.match(/^"(.+)"$/)) {
+    return "'" + value.slice(1, -1) + "'";
+  }
+  return value;
+}
+
 function renderType(type) {
   if (type.name === 'enum') {
     if (typeof type.value === 'string') {
       return type.value;
     }
-    return 'enum(' + type.value.map((v) => v.value).join(', ') + ')';
+    return 'enum(' + type.value.map((v) => renderEnumValue(v.value)).join(', ') + ')';
   }
 
   if (type.name === 'shape') {
@@ -48,6 +57,9 @@ function renderType(type) {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
       return <a href={slugify(name) + '.html#style'}>{name}#style</a>
+    }
+    if (type.raw === 'ColorPropType') {
+      return <a href={'colors.html'}>color</a>
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
@@ -108,6 +120,15 @@ var ComponentDoc = React.createClass({
             {renderType(prop.type)}
           </span>}
         </Header>
+        {prop.deprecationMessage && <div className="deprecated">
+          <div className="deprecatedTitle">
+            <img className="deprecatedIcon" src="/react-native/img/Warning.png" />
+            <span>Deprecated</span>
+          </div>
+          <div className="deprecatedMessage">
+            <Marked>{prop.deprecationMessage}</Marked>
+          </div>
+        </div>}
         {prop.type && prop.type.name === 'stylesheet' &&
           this.renderStylesheetProps(prop.type.value)}
         {prop.description && <Marked>{prop.description}</Marked>}
@@ -213,10 +234,7 @@ var ComponentDoc = React.createClass({
         <Marked>
           {content.description}
         </Marked>
-        <HeaderWithGithub
-          title="Props"
-          path={content.filepath}
-        />
+        <H level={3}>Props</H>
         {this.renderProps(content.props, content.composes)}
       </div>
     );
@@ -386,32 +404,45 @@ var APIDoc = React.createClass({
   }
 });
 
-var HeaderWithGithub = React.createClass({
-
-  renderRunnableLink: function() {
-    if (this.props.metadata && this.props.metadata.runnable) {
-      return (
-        <a
-          className="run-example"
-          target="_blank"
-          href={'https://rnplay.org/apps/l3Zi2g?route='+this.props.metadata.title+'&file=' + this.props.metadata.title+ "Example.js"}>
-          Run this example
-        </a>
-      );
-    }
-  },
-
+var EmbeddedSimulator = React.createClass({
   render: function() {
+    if (!this.props.shouldRender) {
+      return null;
+    }
+
+    var metadata = this.props.metadata;
+
     return (
-      <H level={3} toSlug={this.props.title}>
-        <a
-          className="edit-github"
-          href={'https://github.com/facebook/react-native/blob/master/' + this.props.path}>
-          Edit on GitHub
-        </a>
-        {this.renderRunnableLink()}
-        {this.props.title}
-      </H>
+      <div className="column-left">
+        <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
+        <div className="modal-button-open modal-button-open-img">
+          <img alt="Run example in simulator" width="170" height="358" src="/react-native/img/alertIOS.png" />
+        </div>
+        <Modal />
+      </div>
+    );
+  }
+});
+
+var Modal = React.createClass({
+  render: function() {
+    var appParams = {route: 'AlertIOS'};
+    var encodedParams = encodeURIComponent(JSON.stringify(appParams));
+    var url = `https://appetize.io/embed/bypdk4jnjra5uwyj2kzd2aenv4?device=iphone5s&scale=70&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
+
+    return (
+      <div>
+        <div className="modal">
+          <div className="modal-content">
+            <button className="modal-button-close">&times;</button>
+            <div className="center">
+              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no"></iframe>
+              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
+            </div>
+          </div>
+        </div>
+        <div className="modal-backdrop" />
+      </div>
     );
   }
 });
@@ -466,7 +497,11 @@ var Autodocs = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <h1>{metadata.title}</h1>
+            <HeaderWithGithub
+              title={metadata.title}
+              level={1}
+              path={metadata.path}
+            />
             {content}
             {this.renderFullDescription(docs)}
             {this.renderExample(docs, metadata)}
@@ -480,49 +515,6 @@ var Autodocs = React.createClass({
 
         </section>
       </Site>
-    );
-  }
-});
-
-var EmbeddedSimulator = React.createClass({
-  render: function() {
-    if (!this.props.shouldRender) {
-      return null;
-    }
-
-    var metadata = this.props.metadata;
-
-    return (
-      <div className="column-left">
-        <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
-        <div className="modal-button-open modal-button-open-img">
-          <img alt="Run example in simulator" width="170" height="358" src="/react-native/img/alertIOS.png" />
-        </div>
-        <Modal />
-      </div>
-    );
-  }
-});
-
-var Modal = React.createClass({
-  render: function() {
-    var appParams = {route: 'AlertIOS'};
-    var encodedParams = encodeURIComponent(JSON.stringify(appParams));
-    var url = `https://appetize.io/embed/bypdk4jnjra5uwyj2kzd2aenv4?device=iphone5s&scale=70&autoplay=false&orientation=portrait&deviceColor=white&params=${encodedParams}`;
-
-    return (
-      <div>
-        <div className="modal">
-          <div className="modal-content">
-            <button className="modal-button-close">&times;</button>
-            <div className="center">
-              <iframe className="simulator" src={url} width="256" height="550" frameborder="0" scrolling="no"></iframe>
-              <p>Powered by <a target="_blank" href="https://appetize.io">appetize.io</a></p>
-            </div>
-          </div>
-        </div>
-        <div className="modal-backdrop" />
-      </div>
     );
   }
 });

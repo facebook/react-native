@@ -4,11 +4,9 @@ include_defs('//ReactAndroid/DEFS')
 SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
-  '//native/fb:fb',
-  '//native/jni:jni',
-  '//native/third-party/android-ndk:android',
   '//xplat/fbsystrace:fbsystrace',
   '//xplat/folly:molly',
+  '//xplat/third-party/glog:glog',
 ]
 
 PREPROCESSOR_FLAGS = [
@@ -38,22 +36,20 @@ react_library(
   force_static = True,
   srcs = [
     'Bridge.cpp',
-    'JSModulesUnbundle.cpp',
     'Value.cpp',
     'MethodCall.cpp',
     'JSCHelpers.cpp',
     'JSCExecutor.cpp',
     'JSCTracing.cpp',
     'JSCMemory.cpp',
-    'JSCPerfLogging.cpp',
     'JSCLegacyProfiler.cpp',
     'JSCWebWorker.cpp',
+    'Platform.cpp',
   ],
   headers = [
     'JSCTracing.h',
-    'JSCPerfLogging.h',
     'JSCLegacyProfiler.h',
-    'JSCMemory.h'
+    'JSCMemory.h',
   ],
   exported_headers = [
     'Bridge.h',
@@ -61,14 +57,18 @@ react_library(
     'JSCExecutor.h',
     'JSCHelpers.h',
     'JSCWebWorker.h',
+    'MessageQueueThread.h',
     'MethodCall.h',
     'JSModulesUnbundle.h',
     'Value.h',
+    'Platform.h',
+    'noncopyable.h',
   ],
   compiler_flags = [
     '-Wall',
     '-std=c++11',
     '-fexceptions',
     '-fvisibility=hidden',
+    '-frtti',
   ],
 )

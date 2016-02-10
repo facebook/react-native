@@ -214,7 +214,7 @@ describe('Bundle', () => {
 
         const sourceMap = otherBundle.getSourceMap({dev: true});
         expect(sourceMap).toEqual({
-          file: 'bundle.js',
+          file: 'test_url',
           version: 3,
           sections: [
             { offset: { line: 0, column: 0 }, map: { name: 'sourcemap foo' } },
@@ -312,35 +312,28 @@ describe('Bundle', () => {
     });
   });
 
-  describe('main module name and id:', function() {
-    it('keeps distinct module names and IDs', function() {
+  describe('main module id:', function() {
+    it('can save a main module ID', function() {
       const id = 'arbitrary module ID';
-      const name = 'arbitrary module name';
       bundle.setMainModuleId(id);
-      bundle.setMainModuleName(name);
-
       expect(bundle.getMainModuleId()).toEqual(id);
-      expect(bundle.getMainModuleName()).toEqual(name);
     });
 
-    it('can serialize and deserialize module ID and name', function() {
+    it('can serialize and deserialize the module ID', function() {
       const id = 'arbitrary module ID';
-      const name = 'arbitrary module name';
       bundle.setMainModuleId(id);
-      bundle.setMainModuleName(name);
       bundle.finalize({});
 
       const deserialized = Bundle.fromJSON(bundle.toJSON());
 
       expect(deserialized.getMainModuleId()).toEqual(id);
-      expect(deserialized.getMainModuleName()).toEqual(name);
     });
   });
 });
 
 
 function genSourceMap(modules) {
-  var sourceMapGen = new SourceMapGenerator({file: 'bundle.js', version: 3});
+  var sourceMapGen = new SourceMapGenerator({file: 'test_url', version: 3});
   var bundleLineNo = 0;
   for (var i = 0; i < modules.length; i++) {
     var module = modules[i];

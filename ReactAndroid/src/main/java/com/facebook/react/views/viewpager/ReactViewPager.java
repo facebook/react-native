@@ -104,7 +104,22 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
     @Override
     public void onPageScrollStateChanged(int state) {
-      // don't send events
+      String pageScrollState;
+      switch (state) {
+        case SCROLL_STATE_IDLE:
+          pageScrollState = "idle";
+          break;
+        case SCROLL_STATE_DRAGGING:
+          pageScrollState = "dragging";
+          break;
+        case SCROLL_STATE_SETTLING:
+          pageScrollState = "settling";
+          break;
+        default:
+          throw new IllegalStateException("Unsupported pageScrollState");
+      }
+      mEventDispatcher.dispatchEvent(
+        new PageScrollStateChangedEvent(getId(), SystemClock.uptimeMillis(), pageScrollState));
     }
   }
 

@@ -36,6 +36,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 public class LocationModule extends ReactContextBaseJavaModule {
 
   private @Nullable String mWatchedProvider;
+  private static final float RCT_DEFAULT_LOCATION_ACCURACY = 100;
 
   private final LocationListener mLocationListener = new LocationListener() {
     @Override
@@ -73,11 +74,13 @@ public class LocationModule extends ReactContextBaseJavaModule {
     private final long timeout;
     private final double maximumAge;
     private final boolean highAccuracy;
+    private final float distanceFilter;
 
-    private LocationOptions(long timeout, double maximumAge, boolean highAccuracy) {
+    private LocationOptions(long timeout, double maximumAge, boolean highAccuracy, float distanceFilter) {
       this.timeout = timeout;
       this.maximumAge = maximumAge;
       this.highAccuracy = highAccuracy;
+      this.distanceFilter = distanceFilter;
     }
 
     private static LocationOptions fromReactMap(ReadableMap map) {
@@ -88,8 +91,10 @@ public class LocationModule extends ReactContextBaseJavaModule {
           map.hasKey("maximumAge") ? map.getDouble("maximumAge") : Double.POSITIVE_INFINITY;
       boolean highAccuracy =
           map.hasKey("enableHighAccuracy") && map.getBoolean("enableHighAccuracy");
+      float distanceFilter =
+          map.hasKey("distanceFilter") ? (float) map.getDouble("distanceFilter") : RCT_DEFAULT_LOCATION_ACCURACY;
 
-      return new LocationOptions(timeout, maximumAge, highAccuracy);
+      return new LocationOptions(timeout, maximumAge, highAccuracy, distanceFilter);
     }
   }
 
@@ -151,7 +156,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
       }
       if (!provider.equals(mWatchedProvider)) {
         locationManager.removeUpdates(mLocationListener);
-        locationManager.requestLocationUpdates(provider, 1000, 0, mLocationListener);
+        locationManager.requestLocationUpdates(provider, 1000, locationOptions.distanceFilter, mLocationListener);
       }
       mWatchedProvider = provider;
     } catch (SecurityException e) {

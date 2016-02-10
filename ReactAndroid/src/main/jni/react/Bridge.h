@@ -5,9 +5,6 @@
 #include <functional>
 #include <map>
 #include <vector>
-#include <jni.h>
-#include <fb/Countable.h>
-#include <fb/RefPtr.h>
 #include "Value.h"
 #include "Executor.h"
 #include "MethodCall.h"
@@ -22,11 +19,11 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
-class Bridge : public Countable {
+class Bridge {
 public:
   typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
 
-  Bridge(const RefPtr<JSExecutorFactory>& jsExecutorFactory, Callback callback);
+  Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback);
   virtual ~Bridge();
 
   /**
@@ -56,7 +53,7 @@ public:
    * and injects each module as individual file.
    */
   void loadApplicationUnbundle(
-    JSModulesUnbundle&& unbundle,
+    std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL);
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue);

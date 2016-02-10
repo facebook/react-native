@@ -15,11 +15,17 @@
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
 #include <react/JSModulesUnbundle.h>
+#include <react/Platform.h>
 #include "JNativeRunnable.h"
 #include "JSLoader.h"
 #include "ReadableNativeArray.h"
 #include "ProxyExecutor.h"
 #include "OnLoad.h"
+#include "JMessageQueueThread.h"
+#include "JniJSModulesUnbundle.h"
+#include "JSLogging.h"
+#include "JSCPerfLogging.h"
+#include "WebWorkers.h"
 #include <algorithm>
 
 #ifdef WITH_FBSYSTRACE
@@ -561,6 +567,19 @@ static jmethodID gCallbackMethod;
 static jmethodID gOnBatchCompleteMethod;
 static jmethodID gLogMarkerMethod;
 
+struct CountableBridge : Bridge, Countable {
+  using Bridge::Bridge;
+};
+
+static void logMarker(const std::string& marker) {
+  JNIEnv* env = Environment::current();
+  jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
+  jstring jmarker = env->NewStringUTF(marker.c_str());
+  env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, jmarker);
+  env->DeleteLocalRef(markerClass);
+  env->DeleteLocalRef(jmarker);
+}
+
 static void makeJavaCall(JNIEnv* env, jobject callback, MethodCall&& call) {
   if (call.arguments.isNull()) {
     return;
@@ -627,13 +646,13 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   auto bridgeCallback = [weakCallback, weakCallbackQueueThread] (std::vector<MethodCall> calls, bool isEndOfBatch) {
     dispatchCallbacksToJava(weakCallback, weakCallbackQueueThread, std::move(calls), isEndOfBatch);
   };
-  auto nativeExecutorFactory = extractRefPtr<JSExecutorFactory>(env, executor);
-  auto bridge = createNew<Bridge>(nativeExecutorFactory, bridgeCallback);
+  auto nativeExecutorFactory = extractRefPtr<CountableJSExecutorFactory>(env, executor);
+  auto bridge = createNew<CountableBridge>(nativeExecutorFactory.get(), bridgeCallback);
   setCountableForJava(env, obj, std::move(bridge));
 }
 
 static void executeApplicationScript(
-    const RefPtr<Bridge>& bridge,
+    const RefPtr<CountableBridge>& bridge,
     const std::string& script,
     const std::string& sourceUri) {
   try {
@@ -646,7 +665,7 @@ static void executeApplicationScript(
 }
 
 static void loadApplicationUnbundle(
-    const RefPtr<Bridge>& bridge,
+    const RefPtr<CountableBridge>& bridge,
     AAssetManager *assetManager,
     const std::string& startupCode,
     const std::string& startupFileName) {
@@ -654,7 +673,8 @@ static void loadApplicationUnbundle(
   try {
     // Load the application unbundle and collect/dispatch any native calls that might have occured
     bridge->loadApplicationUnbundle(
-      JSModulesUnbundle(assetManager, startupFileName),
+      std::unique_ptr<JSModulesUnbundle>(
+        new JniJSModulesUnbundle(assetManager, startupFileName)),
       startupCode,
       startupFileName);
     bridge->flush();
@@ -667,7 +687,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
                                  jstring assetName) {
   jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
   auto manager = AAssetManager_fromJava(env, assetManager);
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto assetNameStr = fromJString(env, assetName);
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_start"));
@@ -679,10 +699,10 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   #endif
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
-  if (JSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
-    loadApplicationUnbundle(bridge, manager, script, assetNameStr);
+  if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
+    loadApplicationUnbundle(bridge, manager, script, "file://" + assetNameStr);
   } else {
-    executeApplicationScript(bridge, script, assetNameStr);
+    executeApplicationScript(bridge, script, "file://" + assetNameStr);
   }
   if (env->ExceptionCheck()) {
     return;
@@ -693,7 +713,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
 static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstring sourceURL) {
   jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
 
-  auto bridge = jni::extractRefPtr<Bridge>(env, obj);
+  auto bridge = jni::extractRefPtr<CountableBridge>(env, obj);
   auto fileNameStr = fileName == NULL ? "" : fromJString(env, fileName);
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_start"));
   auto script = fileName == NULL ? "" : react::loadScriptFromFile(fileNameStr);
@@ -713,7 +733,7 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
 
 static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
                          NativeArray::jhybridobject args) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
     bridge->callFunction(
@@ -728,7 +748,7 @@ static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
 
 static void invokeCallback(JNIEnv* env, jobject obj, jint callbackId,
                            NativeArray::jhybridobject args) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
     bridge->invokeCallback(
@@ -741,32 +761,32 @@ static void invokeCallback(JNIEnv* env, jobject obj, jint callbackId,
 }
 
 static void setGlobalVariable(JNIEnv* env, jobject obj, jstring propName, jstring jsonValue) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->setGlobalVariable(fromJString(env, propName), fromJString(env, jsonValue));
 }
 
 static jboolean supportsProfiling(JNIEnv* env, jobject obj) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   return bridge->supportsProfiling() ? JNI_TRUE : JNI_FALSE;
 }
 
 static void startProfiler(JNIEnv* env, jobject obj, jstring title) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->startProfiler(fromJString(env, title));
 }
 
 static void stopProfiler(JNIEnv* env, jobject obj, jstring title, jstring filename) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->stopProfiler(fromJString(env, title), fromJString(env, filename));
 }
 
 static void handleMemoryPressureModerate(JNIEnv* env, jobject obj) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->handleMemoryPressureModerate();
 }
 
 static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
-  auto bridge = extractRefPtr<Bridge>(env, obj);
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->handleMemoryPressureCritical();
 }
 
@@ -774,8 +794,37 @@ static void handleMemoryPressureCritical(JNIEnv* env, jobject obj) {
 
 namespace executors {
 
+std::string getDeviceCacheDir() {
+  // Get the Application Context object
+  auto getApplicationClass = findClassLocal(
+                              "com/facebook/react/common/ApplicationHolder");
+  auto getApplicationMethod = getApplicationClass->getStaticMethod<jobject()>(
+                              "getApplication",
+                              "()Landroid/app/Application;"
+                              );
+  auto application = getApplicationMethod(getApplicationClass);
+
+  // Get getCacheDir() from the context
+  auto getCacheDirMethod = findClassLocal("android/app/Application")
+                            ->getMethod<jobject()>("getCacheDir",
+                                                   "()Ljava/io/File;"
+                                                  );
+  auto cacheDirObj = getCacheDirMethod(application);
+
+  // Call getAbsolutePath() on the returned File object
+  auto getAbsolutePathMethod = findClassLocal("java/io/File")
+                                ->getMethod<jstring()>("getAbsolutePath");
+  return getAbsolutePathMethod(cacheDirObj)->toStdString();
+}
+
+struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override {
+    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(cb);
+  }
+};
+
 static void createJSCExecutor(JNIEnv *env, jobject obj) {
-  auto executor = createNew<JSCExecutorFactory>();
+  auto executor = createNew<CountableJSCExecutorFactory>();
   setCountableForJava(env, obj, std::move(executor));
 }
 
@@ -795,6 +844,21 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    // Inject some behavior into react/
+    ReactMarker::logMarker = bridge::logMarker;
+    WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
+    WebWorkerUtil::loadScriptFromAssets =
+      [] (const std::string& assetName) {
+        return loadScriptFromAssets(assetName);
+      };
+    MessageQueues::getCurrentMessageQueueThread =
+      [] {
+        return std::unique_ptr<MessageQueueThread>(
+            JMessageQueueThread::currentMessageQueueThread().release());
+      };
+    PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
+    JSLogging::nativeHook = nativeLoggingHook;
+
     // get the current env
     JNIEnv* env = Environment::current();
 
