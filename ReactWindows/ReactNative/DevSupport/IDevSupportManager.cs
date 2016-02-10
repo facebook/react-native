@@ -28,7 +28,7 @@ namespace ReactNative.DevSupport
         /// <summary>
         /// The cached JavaScript bundle.
         /// </summary>
-        string CachedJavaScriptBundle { get; }
+        string CachedJavaScriptBundleFile { get; }
 
         /// <summary>
         /// Handle a native exception.
@@ -40,7 +40,6 @@ namespace ReactNative.DevSupport
         /// Handles reloading the JavaScript bundle.
         /// </summary>
         void HandleReloadJavaScript();
-
 
         /// <summary>
         /// Show the developer options dialog.

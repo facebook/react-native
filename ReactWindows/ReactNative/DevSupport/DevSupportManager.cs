@@ -41,8 +41,16 @@ namespace ReactNative.DevSupport
 
         public string SourceUrl
         {
-            get;
-            set;
+            get
+            {
+                if (_jsAppBundleName == null)
+                {
+                    return "";
+                }
+
+                // TODO: use dev server helpers
+                throw new NotImplementedException();
+            }
         }
 
         public string SourceMapUrl
@@ -59,10 +67,13 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public string CachedJavaScriptBundle
+        public string CachedJavaScriptBundleFile
         {
-            get;
-            private set;
+            get
+            {
+                // TODO: choose local file for caching
+                throw new NotImplementedException();
+            }
         }
 
         public void HandleException(Exception exception)
@@ -220,7 +231,6 @@ namespace ReactNative.DevSupport
                 };
             }
         }
-
 
         class DevOptionHandler
         {

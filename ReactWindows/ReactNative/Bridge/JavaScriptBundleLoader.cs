@@ -45,11 +45,11 @@ namespace ReactNative.Bridge
         /// <see cref="DevSupport.IDevSupportManager"/>.
         /// </summary>
         /// <param name="sourceUrl">The source URL.</param>
-        /// <param name="cachedBundle">The cached bundle.</param>
+        /// <param name="cachedFileLocation">The cached bundle.</param>
         /// <returns>The JavaScript bundle loader.</returns>
-        public static JavaScriptBundleLoader CreateCachedBundleFromNetworkLoader(string sourceUrl, string cachedBundle)
+        public static JavaScriptBundleLoader CreateCachedBundleFromNetworkLoader(string sourceUrl, string cachedFileLocation)
         {
-            return new CachedJavaScriptBundleLoader(sourceUrl, cachedBundle);
+            return new CachedJavaScriptBundleLoader(sourceUrl, cachedFileLocation);
         }
 
         class FileJavaScriptBundleLoader : JavaScriptBundleLoader
@@ -100,24 +100,38 @@ namespace ReactNative.Bridge
 
         class CachedJavaScriptBundleLoader : JavaScriptBundleLoader
         {
-            private readonly string _cachedBundle;
+            private readonly string _cachedFileLocation;
+            private string _script;
 
-            public CachedJavaScriptBundleLoader(string sourceUrl, string cachedBundle)
+            public CachedJavaScriptBundleLoader(string sourceUrl, string cachedFileLocation)
             {
                 SourceUrl = sourceUrl;
-                _cachedBundle = cachedBundle;
+                _cachedFileLocation = cachedFileLocation;
             }
 
             public override string SourceUrl { get; }
 
-            public override Task InitializeAsync()
+            public override async Task InitializeAsync()
             {
-                return Task.FromResult(true);
+                try
+                {
+                    var storageFile = await StorageFile.GetFileFromPathAsync(_cachedFileLocation);
+                    using (var stream = await storageFile.OpenStreamForReadAsync())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        _script = await reader.ReadToEndAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var exceptionMessage = String.Format("File read exception for asset {0}", SourceUrl);
+                    throw new InvalidOperationException(exceptionMessage, ex);
+                }
             }
 
             public override void LoadScript(IReactBridge executor)
             {
-                executor.RunScript(_cachedBundle);
+                executor.RunScript(_script);
             }
         }
     }
