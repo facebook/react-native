@@ -187,23 +187,6 @@ class ResolutionRequest {
     });
   }
 
-  getAsyncDependencies(response) {
-    return Promise.resolve().then(() => {
-      const mod = this._moduleCache.getModule(this._entryPath);
-      return mod.getAsyncDependencies().then(bundles =>
-        Promise
-          .all(bundles.map(bundle =>
-            Promise.all(bundle.map(
-              dep => this.resolveDependency(mod, dep)
-            ))
-          ))
-          .then(bs => bs.map(bundle => bundle.map(dep => dep.path)))
-      );
-    }).then(asyncDependencies => asyncDependencies.forEach(
-      (dependency) => response.pushAsyncDependency(dependency)
-    ));
-  }
-
   _getAllMocks(pattern) {
     // Take all mocks in all the roots into account. This is necessary
     // because currently mocks are global: any module can be mocked by

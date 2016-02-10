@@ -167,45 +167,6 @@ describe('Module', () => {
     });
   });
 
-  describe('Async Dependencies', () => {
-    function expectAsyncDependenciesToEqual(expected) {
-      const module = createModule();
-      return module.getAsyncDependencies().then(actual =>
-        expect(actual).toEqual(expected)
-      );
-    }
-
-    pit('should recognize single dependency', () => {
-      mockIndexFile('System.' + 'import("dep1")');
-
-      return expectAsyncDependenciesToEqual([['dep1']]);
-    });
-
-    pit('should parse single quoted dependencies', () => {
-      mockIndexFile('System.' + 'import(\'dep1\')');
-
-      return expectAsyncDependenciesToEqual([['dep1']]);
-    });
-
-    pit('should parse multiple async dependencies on the same module', () => {
-      mockIndexFile([
-        'System.' + 'import("dep1")',
-        'System.' + 'import("dep2")',
-      ].join('\n'));
-
-      return expectAsyncDependenciesToEqual([
-        ['dep1'],
-        ['dep2'],
-      ]);
-    });
-
-    pit('parse fine new lines', () => {
-      mockIndexFile('System.' + 'import(\n"dep1"\n)');
-
-      return expectAsyncDependenciesToEqual([['dep1']]);
-    });
-  });
-
   describe('Code', () => {
     const fileContents = 'arbitrary(code)';
     beforeEach(function() {
@@ -247,7 +208,7 @@ describe('Module', () => {
     const fileContents = 'arbitrary(code);';
     const exampleCode = `
       require('a');
-      System.import('b');
+      arbitrary.code('b');
       require('c');`;
 
     beforeEach(function() {
@@ -268,12 +229,8 @@ describe('Module', () => {
       transformCode.mockReturnValue(Promise.resolve({code: exampleCode}));
       const module = createModule({transformCode});
 
-      return Promise.all([
-        module.getDependencies(),
-        module.getAsyncDependencies(),
-      ]).then(([dependencies, asyncDependencies]) => {
+      return module.getDependencies().then(dependencies => {
         expect(dependencies).toEqual(['a', 'c']);
-        expect(asyncDependencies).toEqual([['b']]);
       });
     });
 
@@ -285,29 +242,8 @@ describe('Module', () => {
       }));
       const module = createModule({transformCode});
 
-      return Promise.all([
-        module.getDependencies(),
-        module.getAsyncDependencies(),
-      ]).then(([dependencies, asyncDependencies]) => {
+      return module.getDependencies().then(dependencies => {
         expect(dependencies).toEqual(mockedDependencies);
-        expect(asyncDependencies).toEqual([['b']]);
-      });
-    });
-
-    pit('uses async dependencies that `transformCode` resolves to, instead of extracting them', () => {
-      const mockedAsyncDependencies = [['foo', 'bar'], ['baz']];
-      transformCode.mockReturnValue(Promise.resolve({
-        code: exampleCode,
-        asyncDependencies: mockedAsyncDependencies,
-      }));
-      const module = createModule({transformCode});
-
-      return Promise.all([
-        module.getDependencies(),
-        module.getAsyncDependencies(),
-      ]).then(([dependencies, asyncDependencies]) => {
-        expect(dependencies).toEqual(['a', 'c']);
-        expect(asyncDependencies).toEqual(mockedAsyncDependencies);
       });
     });
 
