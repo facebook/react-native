@@ -38,6 +38,7 @@
 {
   NSArray<id<RCTImageURLLoader>> *_loaders;
   NSArray<id<RCTImageDataDecoder>> *_decoders;
+  NSOperationQueue *_imageDecodeQueue;
   dispatch_queue_t _URLCacheQueue;
   NSURLCache *_URLCache;
 }
@@ -474,7 +475,13 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                        completionHandler:completionHandler];
   } else {
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // Serialize decoding to prevent excessive memory usage
+    if (!_imageDecodeQueue) {
+      _imageDecodeQueue = [NSOperationQueue new];
+      _imageDecodeQueue.name = @"com.facebook.react.ImageDecoderQueue";
+      _imageDecodeQueue.maxConcurrentOperationCount = 2;
+    }
+    [_imageDecodeQueue addOperationWithBlock:^{
       if (cancelled) {
         return;
       }
@@ -501,7 +508,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         NSError *finalError = RCTErrorWithMessage(errorMessage);
         completionHandler(finalError, nil);
       }
-    });
+    }];
 
     return ^{
       OSAtomicOr32Barrier(1, &cancelled);
