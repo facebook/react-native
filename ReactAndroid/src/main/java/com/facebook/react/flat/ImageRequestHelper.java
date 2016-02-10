@@ -28,7 +28,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
     }
 
     final ImageRequestBuilder imageRequestBuilder;
-    if (isNetworkResource(source)) {
+    if (isUriResource(source)) {
       imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(source));
     } else {
       Resources resources = context.getResources();
@@ -42,7 +42,10 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
     return imageRequestBuilder.build();
   }
 
-  private static boolean isNetworkResource(String source) {
-    return source.startsWith("http://") || source.startsWith("https://");
+  private static boolean isUriResource(String source) {
+    return
+      source.startsWith("http://") ||
+      source.startsWith("https://") ||
+      source.startsWith("data:");
   }
 }
