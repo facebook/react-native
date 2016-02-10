@@ -147,11 +147,15 @@ var ListView = React.createClass({
      */
     onEndReached: PropTypes.func,
     /**
-     * Threshold in pixels for onEndReached.
+     * Threshold in pixels (virtual, not physical) for calling onEndReached.
      */
     onEndReachedThreshold: PropTypes.number,
     /**
-     * Number of rows to render per event loop.
+     * Number of rows to render per event loop. Note: if your 'rows' are actually
+     * cells, i.e. they don't span the full width of your view (as in the
+     * ListViewGridLayoutExample), you should set the pageSize to be a multiple
+     * of the number of cells per row, otherwise you're likely to see gaps at
+     * the edge of the ListView as new pages are loaded.
      */
     pageSize: PropTypes.number,
     /**
@@ -512,11 +516,7 @@ var ListView = React.createClass({
   },
 
   _getDistanceFromEnd: function(scrollProperties) {
-    var maxLength = Math.max(
-      scrollProperties.contentLength,
-      scrollProperties.visibleLength
-    );
-    return maxLength - scrollProperties.visibleLength - scrollProperties.offset;
+    return scrollProperties.contentLength - scrollProperties.visibleLength - scrollProperties.offset;
   },
 
   _updateVisibleRows: function(updatedFrames) {
