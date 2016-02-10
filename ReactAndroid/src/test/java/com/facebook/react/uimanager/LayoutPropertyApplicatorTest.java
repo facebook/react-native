@@ -17,7 +17,7 @@ import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -63,7 +63,7 @@ public class LayoutPropertyApplicatorTest {
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test

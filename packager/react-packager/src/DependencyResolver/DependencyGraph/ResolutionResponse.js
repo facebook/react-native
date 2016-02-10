@@ -11,12 +11,24 @@
 class ResolutionResponse {
   constructor() {
     this.dependencies = [];
-    this.asyncDependencies = [];
     this.mainModuleId = null;
     this.mocks = null;
     this.numPrependedDependencies = 0;
     this._mappings = Object.create(null);
     this._finalized = false;
+  }
+
+  copy(properties) {
+    const {
+      dependencies = this.dependencies,
+      mainModuleId = this.mainModuleId,
+      mocks = this.mocks,
+    } = properties;
+    return Object.assign(new this.constructor(), this, {
+      dependencies,
+      mainModuleId,
+      mocks,
+    });
   }
 
   _assertNotFinalized() {
@@ -52,11 +64,6 @@ class ResolutionResponse {
     this._assertNotFinalized();
     this.dependencies.unshift(module);
     this.numPrependedDependencies += 1;
-  }
-
-  pushAsyncDependency(dependency) {
-    this._assertNotFinalized();
-    this.asyncDependencies.push(dependency);
   }
 
   setResolvedDependencyPairs(module, pairs) {

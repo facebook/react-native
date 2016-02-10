@@ -4,9 +4,6 @@ include_defs('//ReactAndroid/DEFS')
 SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
-  '//native/fb:fb',
-  '//native/jni:jni',
-  '//native/third-party/android-ndk:android',
   '//xplat/fbsystrace:fbsystrace',
   '//xplat/folly:molly',
   '//xplat/third-party/glog:glog',
@@ -65,11 +62,13 @@ react_library(
     'JSModulesUnbundle.h',
     'Value.h',
     'Platform.h',
+    'noncopyable.h',
   ],
   compiler_flags = [
     '-Wall',
     '-std=c++11',
     '-fexceptions',
     '-fvisibility=hidden',
+    '-frtti',
   ],
 )

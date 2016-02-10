@@ -9,19 +9,13 @@
 
 #include <glog/logging.h>
 #include <folly/Memory.h>
-#include <jni/fbjni/Exceptions.h>
-#include <jni/LocalReference.h>
 
 #include "JSCHelpers.h"
-#include "jni/JSLoader.h"
-#include "jni/WebWorkers.h"
 #include "MessageQueueThread.h"
 #include "Platform.h"
 #include "Value.h"
 
 #include <JavaScriptCore/JSValueRef.h>
-
-using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
@@ -42,6 +36,7 @@ JSCWebWorker::JSCWebWorker(int id, JSCWebWorkerOwner *owner, std::string scriptS
     initJSVMAndLoadScript();
   });
 }
+
 
 JSCWebWorker::~JSCWebWorker() {
   CHECK(isTerminated()) << "Didn't terminate the web worker before releasing it!";;

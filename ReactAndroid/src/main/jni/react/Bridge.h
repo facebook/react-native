@@ -5,9 +5,6 @@
 #include <functional>
 #include <map>
 #include <vector>
-#include <jni.h>
-#include <fb/Countable.h>
-#include <fb/RefPtr.h>
 #include "Value.h"
 #include "Executor.h"
 #include "MethodCall.h"
@@ -22,14 +19,11 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
-class CountableJSExecutorFactory : public JSExecutorFactory, public Countable {
-};
-
-class Bridge : public Countable {
+class Bridge {
 public:
   typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
 
-  Bridge(const RefPtr<CountableJSExecutorFactory>& jsExecutorFactory, Callback callback);
+  Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback);
   virtual ~Bridge();
 
   /**

@@ -85,3 +85,4 @@ branches:
   only:
     - master
     - /^.*-stable$/
+    

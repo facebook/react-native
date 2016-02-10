@@ -14,29 +14,37 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A simple read/write array that can be used in tests in place of {@link WritableNativeArray}.
+ * Java {@link ArrayList} backed impementation of {@link ReadableArray} and {@link WritableArray}
+ * Instances of this class SHOULD NOT be used for communication between java and JS, use instances
+ * of {@link WritableNativeArray} created via {@link Arguments#createArray} or just
+ * {@link ReadableArray} interface if you want your "native" module method to take an array from JS
+ * as an argument.
+ *
+ * Main purpose for this class is to be used in java-only unit tests, but could also be used outside
+ * of tests in the code that operates only in java and needs to communicate with RN modules via
+ * their JS-exposed API.
  */
-public class SimpleArray implements ReadableArray, WritableArray {
+public class JavaOnlyArray implements ReadableArray, WritableArray {
 
   private final List mBackingList;
 
-  public static SimpleArray from(List list) {
-    return new SimpleArray(list);
+  public static JavaOnlyArray from(List list) {
+    return new JavaOnlyArray(list);
   }
 
-  public static SimpleArray of(Object... values) {
-    return new SimpleArray(values);
+  public static JavaOnlyArray of(Object... values) {
+    return new JavaOnlyArray(values);
   }
 
-  private SimpleArray(Object... values) {
+  private JavaOnlyArray(Object... values) {
     mBackingList = Arrays.asList(values);
   }
 
-  private SimpleArray(List list) {
+  private JavaOnlyArray(List list) {
     mBackingList = new ArrayList(list);
   }
 
-  public SimpleArray() {
+  public JavaOnlyArray() {
     mBackingList = new ArrayList();
   }
 
@@ -66,8 +74,8 @@ public class SimpleArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public SimpleArray getArray(int index) {
-    return (SimpleArray) mBackingList.get(index);
+  public JavaOnlyArray getArray(int index) {
+    return (JavaOnlyArray) mBackingList.get(index);
   }
 
   @Override
@@ -76,8 +84,8 @@ public class SimpleArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public SimpleMap getMap(int index) {
-    return (SimpleMap) mBackingList.get(index);
+  public JavaOnlyMap getMap(int index) {
+    return (JavaOnlyMap) mBackingList.get(index);
   }
 
   @Override
@@ -130,7 +138,7 @@ public class SimpleArray implements ReadableArray, WritableArray {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    SimpleArray that = (SimpleArray) o;
+    JavaOnlyArray that = (JavaOnlyArray) o;
 
     if (mBackingList != null ? !mBackingList.equals(that.mBackingList) : that.mBackingList != null)
       return false;

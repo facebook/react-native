@@ -123,4 +123,9 @@ describe('normalizeColor', function() {
     expect(normalizeColor(0xffffffff)).toBe(0xffffffff);
     expect(normalizeColor(0x01234567)).toBe(0x01234567);
   });
+
+  it('should return the same color when it\'s already normalized', function() {
+    const normalizedColor = normalizeColor('red') || 0;
+    expect(normalizeColor(normalizedColor)).toBe(normalizedColor);
+  });
 });

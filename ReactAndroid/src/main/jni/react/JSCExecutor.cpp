@@ -6,19 +6,17 @@
 #include <atomic>
 #include <sstream>
 #include <string>
-#include <fb/log.h>
 #include <folly/json.h>
 #include <folly/String.h>
-#include <jni/fbjni/Exceptions.h>
 #include <sys/time.h>
+
+#include "JSCHelpers.h"
 #include "Value.h"
-#include "jni/OnLoad.h"
-#include <react/JSCHelpers.h>
 #include "Platform.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
-#include <react/JSCTracing.h>
-#include <react/JSCLegacyProfiler.h>
+#include "JSCTracing.h"
+#include "JSCLegacyProfiler.h"
 #include <JavaScriptCore/API/JSProfilerPrivate.h>
 #endif
 
@@ -32,7 +30,7 @@ using fbsystrace::FbSystraceSection;
 #endif
 
 #ifdef WITH_FB_MEMORY_PROFILING
-#include <react/JSCMemory.h>
+#include "JSCMemory.h"
 #endif
 
 #ifdef WITH_FB_JSC_TUNING
@@ -41,8 +39,6 @@ using fbsystrace::FbSystraceSection;
 
 static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
 static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
-
-using namespace facebook::jni;
 
 namespace facebook {
 namespace react {

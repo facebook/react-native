@@ -40,6 +40,7 @@ const NavigationBasicExample = React.createClass({
       <NavigationRootContainer
         reducer={NavigationBasicReducer}
         persistenceKey="NavigationBasicExampleState"
+        ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
         renderNavigation={(navState, onNavigate) => {
           if (!navState) { return null; }
           return (
@@ -69,6 +70,14 @@ const NavigationBasicExample = React.createClass({
       />
     );
   },
+
+  handleBackAction: function() {
+    return (
+      this.navRootContainer &&
+      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
+    );
+  },
+
 });
 
 const styles = StyleSheet.create({
