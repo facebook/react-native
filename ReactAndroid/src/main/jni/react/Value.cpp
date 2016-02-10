@@ -79,6 +79,16 @@ Value Object::getProperty(const String& propName) const {
   return Value(m_context, property);
 }
 
+Value Object::getPropertyAtIndex(unsigned index) const {
+  JSValueRef exn;
+  JSValueRef property = JSObjectGetPropertyAtIndex(m_context, m_obj, index, &exn);
+  if (!property) {
+    std::string exceptionText = Value(m_context, exn).toString().str();
+    throwJSExecutionException("Failed to get property at index %u: %s", index, exceptionText.c_str());
+  }
+  return Value(m_context, property);
+}
+
 Value Object::getProperty(const char *propName) const {
   return getProperty(String(propName));
 }
@@ -94,6 +104,30 @@ void Object::setProperty(const String& propName, const Value& value) const {
 
 void Object::setProperty(const char *propName, const Value& value) const {
   setProperty(String(propName), value);
+}
+
+std::vector<std::string> Object::getPropertyNames() const {
+  std::vector<std::string> names;
+  auto namesRef = JSObjectCopyPropertyNames(m_context, m_obj);
+  size_t count = JSPropertyNameArrayGetCount(namesRef);
+  for (size_t i = 0; i < count; i++) {
+    auto string = String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i));
+    names.emplace_back(string.str());
+  }
+  JSPropertyNameArrayRelease(namesRef);
+  return names;
+}
+
+std::unordered_map<std::string, std::string> Object::toJSONMap() const {
+  std::unordered_map<std::string, std::string> map;
+  auto namesRef = JSObjectCopyPropertyNames(m_context, m_obj);
+  size_t count = JSPropertyNameArrayGetCount(namesRef);
+  for (size_t i = 0; i < count; i++) {
+    auto key = String::ref(JSPropertyNameArrayGetNameAtIndex(namesRef, i));
+    map.emplace(key.str(), getProperty(key).toJSONString());
+  }
+  JSPropertyNameArrayRelease(namesRef);
+  return map;
 }
 
 /* static */
