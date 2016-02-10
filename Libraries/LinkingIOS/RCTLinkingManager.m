@@ -77,10 +77,8 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  // TODO: we should really report success/failure via the promise here
-  // Doesn't really matter what thread we call this on since it exits the app
-  [RCTSharedApplication() openURL:URL];
-  resolve(@YES);
+  BOOL opened = [RCTSharedApplication() openURL:URL];
+  resolve(@(opened));
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
