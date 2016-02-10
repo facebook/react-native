@@ -9,6 +9,8 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
 /**
  * Interface that represents a JavaScript Promise which can be passed to the native module as a
  * method parameter.
@@ -21,7 +23,7 @@ public interface Promise {
   /**
    * Successfully resolve the Promise.
    */
-  void resolve(Object value);
+  void resolve(@Nullable Object value);
 
   /**
    * Report an error which wasn't caused by an exception.

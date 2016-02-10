@@ -348,7 +348,13 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.default} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.default}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
@@ -531,6 +537,25 @@ exports.examples = [
           <TextInput
             style={[styles.default, {color: 'green'}]}
             defaultValue="Green"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Colored highlight/cursor for text input',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            selectionColor={"green"}
+            defaultValue="Highlight me"
+          />
+          <TextInput
+            style={styles.default}
+            selectionColor={"rgba(86, 76, 205, 1)"}
+            defaultValue="Highlight me"
           />
         </View>
       );

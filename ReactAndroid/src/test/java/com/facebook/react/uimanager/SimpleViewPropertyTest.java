@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -79,7 +79,7 @@ public class SimpleViewPropertyTest {
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test

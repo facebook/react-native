@@ -7,7 +7,7 @@ permalink: docs/android-setup.html
 next: linux-windows-support
 ---
 
-This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator. We don't discuss developer tool configuration such as IDEs here.
+This guide describes basic steps of the Android development environment setup that are required to run React Native android apps on an android emulator.
 
 ### Install Git
 
@@ -19,7 +19,7 @@ This guide describes basic steps of the Android development environment setup th
 
   - **On Windows**, download and install [Git for Windows](https://git-for-windows.github.io/). During the setup process, choose "Run Git from Windows Command Prompt", which will add Git to your `PATH` environment variable.
 
-### Install the Android SDK (unless you have it)
+### Install the Android SDK (unless you already have it)
 
 1. [Install the latest JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 2. Install the Android SDK:
@@ -95,3 +95,7 @@ To use it with react-native you just have to add a key and value to your registr
 You will also need to run the command `adb reverse tcp:8081 tcp:8081` with this emulator.
 
 Then restart the emulator and when it runs you can just do `react-native run-android` as usual.
+
+### Editing your app's Java code in Android Studio
+
+You can use any editor to edit JavaScript. If you want to use Android Studio to work on native code, from the Welcome screen of Android Studio choose "Import project" and select the `android` folder of your app.

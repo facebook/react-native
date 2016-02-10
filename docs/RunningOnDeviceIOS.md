@@ -27,7 +27,7 @@ When you run your app on device, we pack all the JavaScript code and the images 
 
 1. Open `AwesomeApp/ios/AwesomeApp/AppDelegate.m`
 2. Uncomment `jsCodeLocation = [[NSBundle mainBundle] ...`
-3. The JS bundle will be built for dev or prod depending on your app's scheme (Debug = development build with warnings, Release = minified prod build with perf optimizations).
+3. The JS bundle will be built for dev or prod depending on your app's scheme (Debug = development build with warnings, Release = minified prod build with perf optimizations). To change the scheme navigate to `Product > Scheme > Edit Scheme...` in xcode and change `Build Configuration` between `Debug` and `Release`.
 
 ## Disabling in-app developer menu
 

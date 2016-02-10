@@ -103,29 +103,36 @@ class ResolutionRequest {
       );
   }
 
-  getOrderedDependencies(response, mocksPattern) {
+  getOrderedDependencies(response, mocksPattern, recursive = true) {
     return this._getAllMocks(mocksPattern).then(allMocks => {
       const entry = this._moduleCache.getModule(this._entryPath);
       const mocks = Object.create(null);
       const visited = Object.create(null);
       visited[entry.hash()] = true;
 
+      response.pushDependency(entry);
       const collect = (mod) => {
-        response.pushDependency(mod);
         return mod.getDependencies().then(
           depNames => Promise.all(
             depNames.map(name => this.resolveDependency(mod, name))
           ).then((dependencies) => [depNames, dependencies])
         ).then(([depNames, dependencies]) => {
           if (allMocks) {
-            return mod.getName().then(name => {
-              if (allMocks[name]) {
-                const mockModule =
-                  this._moduleCache.getModule(allMocks[name]);
-                depNames.push(name);
-                dependencies.push(mockModule);
-                mocks[name] = allMocks[name];
-              }
+            const list = [mod.getName()];
+            const pkg = mod.getPackage();
+            if (pkg) {
+              list.push(pkg.getName());
+            }
+            return Promise.all(list).then(names => {
+              names.forEach(name => {
+                if (allMocks[name] && !mocks[name]) {
+                  const mockModule =
+                    this._moduleCache.getModule(allMocks[name]);
+                  depNames.push(name);
+                  dependencies.push(mockModule);
+                  mocks[name] = allMocks[name];
+                }
+              });
               return [depNames, dependencies];
             });
           }
@@ -141,7 +148,7 @@ class ResolutionRequest {
               // module backing them. If a dependency cannot be found but there
               // exists a mock with the desired ID, resolve it and add it as
               // a dependency.
-              if (allMocks && allMocks[name]) {
+              if (allMocks && allMocks[name] && !mocks[name]) {
                 const mockModule = this._moduleCache.getModule(allMocks[name]);
                 mocks[name] = allMocks[name];
                 return filteredPairs.push([name, mockModule]);
@@ -163,7 +170,10 @@ class ResolutionRequest {
             p = p.then(() => {
               if (!visited[modDep.hash()]) {
                 visited[modDep.hash()] = true;
-                return collect(modDep);
+                response.pushDependency(modDep);
+                if (recursive) {
+                  return collect(modDep);
+                }
               }
               return null;
             });
@@ -175,23 +185,6 @@ class ResolutionRequest {
 
       return collect(entry).then(() => response.setMocks(mocks));
     });
-  }
-
-  getAsyncDependencies(response) {
-    return Promise.resolve().then(() => {
-      const mod = this._moduleCache.getModule(this._entryPath);
-      return mod.getAsyncDependencies().then(bundles =>
-        Promise
-          .all(bundles.map(bundle =>
-            Promise.all(bundle.map(
-              dep => this.resolveDependency(mod, dep)
-            ))
-          ))
-          .then(bs => bs.map(bundle => bundle.map(dep => dep.path)))
-      );
-    }).then(asyncDependencies => asyncDependencies.forEach(
-      (dependency) => response.pushAsyncDependency(dependency)
-    ));
   }
 
   _getAllMocks(pattern) {
@@ -384,7 +377,7 @@ class ResolutionRequest {
         throw new UnableToResolveError(
           fromModule,
           toModule,
-`Invalid directory ${potentialDirPath}
+`Unable to find this module in its module map or any of the node_modules directories under ${potentialDirPath} and its parent directories
 
 This might be related to https://github.com/facebook/react-native/issues/4968
 To resolve try the following:

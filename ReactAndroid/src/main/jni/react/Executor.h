@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <jni/Countable.h>
 #include "JSModulesUnbundle.h"
 
 namespace folly {
@@ -21,7 +20,7 @@ class JSExecutor;
 
 typedef std::function<void(std::string, bool)> FlushImmediateCallback;
 
-class JSExecutorFactory : public Countable {
+class JSExecutorFactory {
 public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) = 0;
   virtual ~JSExecutorFactory() {};
@@ -40,7 +39,7 @@ public:
    * Add an application "unbundle" file
    */
   virtual void loadApplicationUnbundle(
-    JSModulesUnbundle&& bundle,
+    std::unique_ptr<JSModulesUnbundle> bundle,
     const std::string& startupCode,
     const std::string& sourceURL) = 0;
 

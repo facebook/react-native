@@ -35,7 +35,6 @@ var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
 var isEmpty = require('isEmpty');
-var logError = require('logError');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
@@ -227,21 +226,21 @@ var ListView = React.createClass({
   },
 
   /**
-   * Provides a handle to the underlying scroll responder to support operations
-   * such as scrollTo.
+   * Provides a handle to the underlying scroll responder.
    */
   getScrollResponder: function() {
-    return this.refs[SCROLLVIEW_REF] &&
-      this.refs[SCROLLVIEW_REF].getScrollResponder &&
+    return this.refs[SCROLLVIEW_REF] && 
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
-  scrollTo: function(destY, destX) {
-    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
+  scrollTo: function(...args) {
+    this.refs[SCROLLVIEW_REF] && 
+      this.refs[SCROLLVIEW_REF].scrollTo(...args);
   },
 
   setNativeProps: function(props) {
-    this.refs[SCROLLVIEW_REF].setNativeProps(props);
+    this.refs[SCROLLVIEW_REF] && 
+      this.refs[SCROLLVIEW_REF].setNativeProps(props);
   },
 
   /**
@@ -292,26 +291,20 @@ var ListView = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    if (this.props.dataSource !== nextProps.dataSource) {
+    if (this.props.dataSource !== nextProps.dataSource ||
+        this.props.initialListSize !== nextProps.initialListSize) {
       this.setState((state, props) => {
         this._prevRenderedRowsCount = 0;
         return {
           curRenderedRowsCount: Math.min(
-            state.curRenderedRowsCount + props.pageSize,
+            Math.max(
+              state.curRenderedRowsCount,
+              props.initialListSize
+            ),
             props.dataSource.getRowCount()
           ),
         };
-      });
-    }
-    if (this.props.initialListSize !== nextProps.initialListSize) {
-      this.setState((state, props) => {
-        return {
-          curRenderedRowsCount: Math.max(
-            state.curRenderedRowsCount,
-            props.initialListSize
-          ),
-        };
-      });
+      }, () => this._renderMoreRowsIfNeeded());
     }
   },
 
@@ -472,7 +465,7 @@ var ListView = React.createClass({
       this.scrollProperties.visibleLength = visibleLength;
       this._updateVisibleRows();
       this._renderMoreRowsIfNeeded();
-    } 
+    }
     this.props.onLayout && this.props.onLayout(event);
   },
 
@@ -495,7 +488,7 @@ var ListView = React.createClass({
       this._maybeCallOnEndReached();
       return;
     }
- 
+
     var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
       this._pageInNewRows();

@@ -1,6 +1,5 @@
 /**
  * @providesModule ScrollViewTestModule
- * @jsx React.DOM
  */
 
 'use strict';

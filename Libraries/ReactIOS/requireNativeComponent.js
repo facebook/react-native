@@ -106,17 +106,22 @@ var TypeToDifferMap = {
   // (not yet implemented)
 };
 
+function processColorArray(colors: []): [] {
+  return colors && colors.map(processColor);
+}
+
 var TypeToProcessorMap = {
   // iOS Types
   CGColor: processColor,
-  CGColorArray: processColor,
+  CGColorArray: processColorArray,
   UIColor: processColor,
-  UIColorArray: processColor,
+  UIColorArray: processColorArray,
   CGImage: resolveAssetSource,
   UIImage: resolveAssetSource,
   RCTImageSource: resolveAssetSource,
   // Android Types
   Color: processColor,
+  ColorArray: processColorArray,
 };
 
 module.exports = requireNativeComponent;
