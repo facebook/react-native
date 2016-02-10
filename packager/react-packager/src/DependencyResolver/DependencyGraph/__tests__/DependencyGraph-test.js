@@ -4068,40 +4068,6 @@ describe('DependencyGraph', function() {
     });
   });
 
-  describe('getAsyncDependencies', () => {
-    pit('should get dependencies', function() {
-      var root = '/root';
-      fs.__setMockFilesystem({
-        'root': {
-          'index.js': [
-            '/**',
-            ' * @providesModule index',
-            ' */',
-            'System.' + 'import("a")',
-          ].join('\n'),
-          'a.js': [
-            '/**',
-            ' * @providesModule a',
-            ' */',
-          ].join('\n'),
-        },
-      });
-
-      var dgraph = new DependencyGraph({
-        ...defaults,
-        roots: [root],
-      });
-
-      return dgraph.getDependencies('/root/index.js')
-        .then(response => response.finalize())
-        .then(({ asyncDependencies }) => {
-          expect(asyncDependencies).toEqual([
-            ['/root/a.js'],
-          ]);
-        });
-    });
-  });
-
   describe('Extensions', () => {
     pit('supports custom file extensions', () => {
       var root = '/root';

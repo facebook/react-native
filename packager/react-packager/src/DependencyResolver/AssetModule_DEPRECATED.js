@@ -24,10 +24,6 @@ class AssetModule_DEPRECATED extends Module {
     return Promise.resolve([]);
   }
 
-  getAsyncDependencies() {
-    return Promise.resolve([]);
-  }
-
   hash() {
     return `AssetModule_DEPRECATED : ${this.path}`;
   }

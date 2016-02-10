@@ -91,14 +91,6 @@ class Module {
     );
   }
 
-  getAsyncDependencies() {
-    return this._cache.get(
-      this.path,
-      'asyncDependencies',
-      () => this.read().then(data => data.asyncDependencies)
-    );
-  }
-
   invalidate() {
     this._cache.invalidate(this.path);
   }
@@ -146,7 +138,6 @@ class Module {
         return {
           id,
           dependencies: [],
-          asyncDependencies: [],
           code: content,
         };
       } else {
@@ -155,13 +146,12 @@ class Module {
             ? transformCode(this, content)
             : Promise.resolve({code: content});
 
-        return codePromise.then(({code, dependencies, asyncDependencies}) => {
+        return codePromise.then(({code, dependencies}) => {
           const {deps} = this._extractor(code);
           return {
             id,
             code,
             dependencies: dependencies || deps.sync,
-            asyncDependencies: asyncDependencies || deps.async,
           };
         });
       }

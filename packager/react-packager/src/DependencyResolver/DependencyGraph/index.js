@@ -185,14 +185,11 @@ class DependencyGraph {
 
       const response = new ResolutionResponse();
 
-      return Promise.all([
-        req.getOrderedDependencies(
-          response,
-          this._opts.mocksPattern,
-          recursive,
-        ),
-        req.getAsyncDependencies(response),
-      ]).then(() => response);
+      return req.getOrderedDependencies(
+        response,
+        this._opts.mocksPattern,
+        recursive,
+      ).then(() => response);
     });
   }
 

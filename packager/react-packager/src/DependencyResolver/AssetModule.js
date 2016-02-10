@@ -21,10 +21,6 @@ class AssetModule extends Module {
     return Promise.resolve([]);
   }
 
-  getAsyncDependencies() {
-    return Promise.resolve([]);
-  }
-
   read() {
     return Promise.resolve({});
   }

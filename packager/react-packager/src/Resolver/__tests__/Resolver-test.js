@@ -37,10 +37,9 @@ describe('Resolver', function() {
   });
 
   class ResolutionResponseMock {
-    constructor({dependencies, mainModuleId, asyncDependencies}) {
+    constructor({dependencies, mainModuleId}) {
       this.dependencies = dependencies;
       this.mainModuleId = mainModuleId;
-      this.asyncDependencies = asyncDependencies;
     }
 
     prependDependency(dependency) {
@@ -80,7 +79,6 @@ describe('Resolver', function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
-          asyncDependencies: [],
         }));
       });
 
@@ -180,7 +178,6 @@ describe('Resolver', function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
-          asyncDependencies: [],
         }));
       });
 
@@ -208,7 +205,6 @@ describe('Resolver', function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
-          asyncDependencies: [],
         }));
       });
 
@@ -637,7 +633,6 @@ describe('Resolver', function() {
       const resolutionResponse = new ResolutionResponseMock({
         dependencies: [module],
         mainModuleId: 'test module',
-        asyncDependencies: [],
       });
 
       resolutionResponse.getResolvedDependencyPairs = (module) => {

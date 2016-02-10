@@ -13,7 +13,6 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
-const BundlesLayout = require('../BundlesLayout');
 const Cache = require('../DependencyResolver/Cache');
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
@@ -126,13 +125,6 @@ class Bundler {
       cache: this._cache,
     });
 
-    this._bundlesLayout = new BundlesLayout({
-      dependencyResolver: this._resolver,
-      resetCache: opts.resetCache,
-      cacheVersion: opts.cacheVersion,
-      projectRoots: opts.projectRoots,
-    });
-
     this._transformer = new Transformer({
       projectRoots: opts.projectRoots,
       blacklistRE: opts.blacklistRE,
@@ -154,10 +146,6 @@ class Bundler {
   kill() {
     this._transformer.kill();
     return this._cache.end();
-  }
-
-  getLayout(main, isDev) {
-    return this._bundlesLayout.generateLayout(main, isDev);
   }
 
   bundle(options) {
