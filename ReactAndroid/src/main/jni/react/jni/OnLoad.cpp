@@ -885,12 +885,12 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("callFunction", bridge::callFunction),
         makeNativeMethod("invokeCallback", bridge::invokeCallback),
         makeNativeMethod("setGlobalVariable", bridge::setGlobalVariable),
-        makeNativeMethod("getJavaScriptContext", bridge::getJavaScriptContext),
         makeNativeMethod("supportsProfiling", bridge::supportsProfiling),
         makeNativeMethod("startProfiler", bridge::startProfiler),
         makeNativeMethod("stopProfiler", bridge::stopProfiler),
         makeNativeMethod("handleMemoryPressureModerate", bridge::handleMemoryPressureModerate),
         makeNativeMethod("handleMemoryPressureCritical", bridge::handleMemoryPressureCritical),
+        makeNativeMethod("getJavaScriptContextNativePtrExperimental", bridge::getJavaScriptContext),
     });
 
     jclass nativeRunnableClass = env->FindClass("com/facebook/react/bridge/queue/NativeRunnableDeprecated");
