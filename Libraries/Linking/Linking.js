@@ -53,10 +53,12 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
  *
  * ```
+ *#import "RCTLinkingManager.h" 
+ *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
  * {
- *   return [LinkingManager application:application openURL:url
+ *   return [RCTLinkingManager application:application openURL:url
  *                       sourceApplication:sourceApplication annotation:annotation];
  * }
  *
@@ -64,7 +66,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  *  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
  * {
- *  return [LinkingManager application:application
+ *  return [RCTLinkingManager application:application
  *                   continueUserActivity:userActivity
  *                     restorationHandler:restorationHandler];
  * }
