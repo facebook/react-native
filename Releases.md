@@ -34,7 +34,19 @@ Make absolutely sure a basic iOS and Android workflow works on the release branc
 
   - Check git history, the last commit should be "[0.19-rc] Bump version numbers" (with the correct version)
   - `git push origin 0.version_you_are_releasing-stable`
-  
+
+#### Update https://facebook.github.io/react-native
+
+Move `latest` tag when doing a release and pushing to `0.x-stable` branch, CI will build and deploy the
+latest docs to the website.
+
+```
+git tag -d latest
+git push origin :latest
+git tag latest
+git push origin version_you_are_releasing-stable --tags
+```
+
 ## Make sure we have release notes
 
 Post that we're ready to release so voluteers can write release notes:
