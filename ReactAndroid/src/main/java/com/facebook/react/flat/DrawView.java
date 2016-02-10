@@ -10,10 +10,12 @@
 package com.facebook.react.flat;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 
 /* package */ final class DrawView implements DrawCommand {
 
-  /* package */ static DrawView INSTANCE = new DrawView(0, 0, 0, 0);
+  /* package */ static final DrawView INSTANCE = new DrawView(0, 0, 0, 0);
+  private static final Rect TMP_CLIP_RECT = new Rect();
 
   private final float mClipLeft;
   private final float mClipTop;
@@ -34,8 +36,18 @@ import android.graphics.Canvas;
 
   @Override
   public void draw(FlatViewGroup parent, Canvas canvas) {
+    // This should not be required, except that there is a bug in Canvas that only shows up in
+    // screenshot tests where Canvas incorrectly applies clip rect caused by integer overflows
+    // because software Canvas is actually using ints for bounds, not floats.
+    canvas.getClipBounds(TMP_CLIP_RECT);
+    TMP_CLIP_RECT.intersect(
+        Math.round(mClipLeft),
+        Math.round(mClipTop),
+        Math.round(mClipRight),
+        Math.round(mClipBottom));
+
     canvas.save();
-    canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
+    canvas.clipRect(TMP_CLIP_RECT);
     parent.drawNextChild(canvas);
     canvas.restore();
   }
