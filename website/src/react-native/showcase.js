@@ -167,6 +167,12 @@ var apps = [
     author: 'CBS Sports',
   },
   {
+    name: 'Choke - Rap Battle With Friends',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/3e/83/85/3e8385d8-140f-da38-a100-1393cef3e816/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/choke-rap-battle-with-friends/id1077937445?ls=1&mt=8',
+    author: 'Henry Kirkness',
+  },
+  {
     name: 'Codementor - Live 1:1 Expert Developer Help',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/db/cf/35/dbcf3523-bac7-0f54-c6a8-a80bf4f43c38/icon175x175.jpeg',
     link: 'https://www.codementor.io/downloads',
