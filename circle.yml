@@ -13,23 +13,25 @@ machine:
 
 dependencies:
   pre:
-  # BUCK
-  - if [[ ! -e buck ]]; then git clone https://github.com/facebook/buck.git; fi
-  - cd buck && ant
-  - buck/bin/buck --version
-  - buck/bin/buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
-  - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react		 
-  - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-  - buck/bin/buck fetch ReactAndroid/src/test/...
-  - buck/bin/buck fetch ReactAndroid/src/androidTest/...
-  # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
-  - npm install -g npm@3.2
-  - source scripts/circle-ci-android-setup.sh && getAndroidSDK
-  - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+    # BUCK
+    - if [[ ! -e buck ]]; then git clone https://github.com/facebook/buck.git; fi
+    - cd buck && ant
+    - buck/bin/buck --version
+    - buck/bin/buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+    - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react
+    - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+    - buck/bin/buck fetch ReactAndroid/src/test/...
+    - buck/bin/buck fetch ReactAndroid/src/androidTest/...
+    # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
+    - npm install -g npm@3.2
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
   cache_directories:
-  - "ReactAndroid/build/downloads"
-  - "buck"
-  - "buck-out/bin"
+    - "ReactAndroid/build/downloads"
+    - "buck"
+    - "buck-out/bin"
+  override:
+    - npm install
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
