@@ -66,7 +66,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             var animation = default(StoryboardAnimation);
 
-            if (_animationLayoutDictionary.TryGetValue(type, out animation))
+            if (_animationLayoutDictionary != null && _animationLayoutDictionary.TryGetValue(type, out animation))
             {
                 return animation;
             }
@@ -85,8 +85,8 @@ namespace ReactNative.UIManager.LayoutAnimation
 
         public void Reset()
         {
-            this.Storyboard(AnimationState.Create).Reset();
-            this.Storyboard(AnimationState.Update).Reset();
+            this.Storyboard(AnimationState.Create)?.Reset();
+            this.Storyboard(AnimationState.Update)?.Reset();
             _shouldAnimateLayout = false;
         }
 
