@@ -29,7 +29,7 @@ public abstract class JSBundleLoader {
       @Override
       public void loadScript(ReactBridge bridge) {
         if (fileName.startsWith("assets://")) {
-          bridge.loadScriptFromAssets(context.getAssets(), fileName.replaceFirst("assets://", "file://"));
+          bridge.loadScriptFromAssets(context.getAssets(), fileName.replaceFirst("assets://", ""));
         } else {
           bridge.loadScriptFromFile(fileName, "file://" + fileName);
         }
