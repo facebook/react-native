@@ -108,7 +108,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\AnimationManager.cs" />
+    <Compile Include="Animation\ReactAnimation.cs" />
+    <Compile Include="Animation\Events\AnimationCancelledEventArgs.cs" />
+    <Compile Include="Animation\Events\AnimationFinishedEventHandler.cs" />
     <Compile Include="Animation\IAnimationListener.cs" />
     <Compile Include="Animation\IAnimationPropertyUpdater.cs" />
     <Compile Include="Bridge\BridgeBusyEventArgs.cs" />
@@ -227,7 +229,7 @@
     <Compile Include="Shell\MainReactPackage.cs" />
     <Compile Include="Touch\JavaScriptResponderHandler.cs" />
     <Compile Include="Touch\IOnInterceptTouchEventListener.cs" />
-    <Compile Include="Animation\AnimationRegistry.cs" />
+    <Compile Include="Animation\ReactAnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
     <Compile Include="UIManager\CatalystStylesDiffMap.cs" />
     <Compile Include="UIManager\CatalystStylesDiffMapExtensions.cs" />
@@ -245,8 +247,8 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
-    <Compile Include="UIManager\LayoutAnimation\AnimationState.cs" />
-    <Compile Include="UIManager\LayoutAnimation\InterpolationTypesExtensions.cs" />
+    <Compile Include="UIManager\LayoutAnimation\LayoutAnimationType.cs" />
+    <Compile Include="UIManager\LayoutAnimation\InterpolationTypeExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\StoryboardAnimation.cs" />
     <Compile Include="UIManager\LayoutAnimation\AnimatedPropertyType.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutCreateAnimation.cs" />
@@ -254,7 +256,7 @@
     <Compile Include="UIManager\LayoutAnimation\LayoutUpdateAnimation.cs" />
     <Compile Include="UIManager\LayoutAnimation\StoryboardExtensions.cs" />
     <Compile Include="Views\Image\ImageExtensions.cs" />
-    <Compile Include="Views\Image\InterpolationType.cs" />
+    <Compile Include="UIManager\LayoutAnimation\InterpolationType.cs" />
     <Compile Include="Views\Image\ReactImageLoadEvent.cs" />
     <Compile Include="Views\Image\ReactImageManager.cs" />
     <Compile Include="Views\Image\ReactVirtualImageManager.cs" />
@@ -340,6 +342,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

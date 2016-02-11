@@ -5,10 +5,23 @@ using Windows.UI.Xaml.Media.Animation;
 namespace ReactNative.UIManager.LayoutAnimation
 {
     /// <summary>
-    /// Base Layout animation manager responsible for establishing the basic animation <see cref="Storyboard"/>.
+    /// Base Layout animation manager responsible for establishing the basic
+    /// animation <see cref="Storyboard"/>.
     /// </summary>
     class LayoutCreateAnimation : StoryboardAnimation
     {
+        /// <summary>
+        /// Indicates if the animation frame is valid for rendering.
+        /// </summary>
+        protected override bool IsValid
+        {
+            get
+            {
+                return DurationMS > 0;
+            }
+        }
+
+
         /// <summary>
         /// The animation creation implementation for the next animation layout configuration cycle.
         /// </summary>
@@ -17,21 +30,21 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <param name="y">The new Y coordinate.</param>
         /// <param name="width">The new width for <see cref="FrameworkElement"/>.</param>
         /// <param name="height">The new height for the <see cref="FrameworkElement"/>.</param>
-        /// <returns></returns>
+        /// <returns>The animation storyboard.</returns>
         public override Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height)
         {
             var animation = default(Storyboard);
 
-            if (base.PropertyType != AnimatedPropertyType.None)
+            if (PropertyType != AnimatedPropertyType.None)
             {
                 animation = new Storyboard();
                 float fromValue = 0, toValue = 1;
 
-                if (base.PropertyType == AnimatedPropertyType.Opacity)
+                if (PropertyType == AnimatedPropertyType.Opacity)
                 {
                     animation.SetOpacityTimeline(base.Type.EasingFunction(), view, fromValue, toValue, base.DurationMS);
                 }
-                else if (base.PropertyType == AnimatedPropertyType.ScaleXY)
+                else if (PropertyType == AnimatedPropertyType.ScaleXY)
                 {
                     view.RenderTransform = new TranslateTransform();
                     animation.SetRepositionTimelines(base.Type.EasingFunction(), view, x, y, width, height, base.DurationMS);
@@ -44,15 +57,6 @@ namespace ReactNative.UIManager.LayoutAnimation
             }
 
             return animation;
-        }
-
-        /// <summary>
-        /// Indicates if the animation frame is valid for rendering.
-        /// </summary>
-        /// <returns></returns>
-        public override bool IsValid()
-        {
-            return base.DurationMS > 0;
         }
     }
 }

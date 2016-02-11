@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ReactNative.Animation
+﻿namespace ReactNative.Animation
 {
     /// <summary>
     /// Interface for getting animation lifecycle updates. It is guaranteed that for a given animation,

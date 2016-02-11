@@ -55,11 +55,7 @@ var animations = {
 };
 
 var ReactRoot = React.createClass({
-    componentDidMount() {
-        // Animate creation
-        
-    },
-    getInitialState: function(){
+    getInitialState: function() {
         var text = "You can see me!";
         var longText = "This is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new line";
         
@@ -82,27 +78,26 @@ var ReactRoot = React.createClass({
         return (
             <View>
               <View style={styles.views}>
-		         <Text>Hello Eric!</Text>
-{(this.state && this.state.value) 
-			                     ? <TextInput value={this.state.value} style={styles.textInput}></TextInput> 
-				                 : undefined}
-                
-{(this.state && this.state.longText) 
- ? <TextInput value={this.state.longText} multiline={true} style={styles.longTextInput}></TextInput> 
- : undefined}
-</View>
-<View style={styles.views}>
-   <Image source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}} style={styles.images}/>
-</View>
-<View style={[styles.box, {width: this.state.w, height: this.state.h, backgroundColor: 'red'}]} >
-    <Switch
-onValueChange={(value) => this.toggleChangeEventHandler()}
-style={{marginBottom: 10}}
-value={this.state.switchState} />
-</View>
-</View>
+		        <Text>Hello Eric!</Text>
+                {(this.state && this.state.value) 
+			      ? <TextInput value={this.state.value} style={styles.textInput}></TextInput> 
+				  : undefined}
+                {(this.state && this.state.longText) 
+                  ? <TextInput value={this.state.longText} multiline={true} style={styles.longTextInput}></TextInput> 
+                  : undefined}
+              </View>
+              <View style={styles.views}>
+                <Image source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}} style={styles.images}/>
+              </View>
+              <View style={[styles.box, {width: this.state.w, height: this.state.h, backgroundColor: 'red'}]} >
+              <Switch
+                onValueChange={(value) => this.toggleChangeEventHandler()}
+                style={{marginBottom: 10}}
+                value={this.state.switchState} />
+            </View>
+          </View>
         );
-}
+    }
 });
 
 AppRegistry.registerComponent('ReactRoot', () => ReactRoot);

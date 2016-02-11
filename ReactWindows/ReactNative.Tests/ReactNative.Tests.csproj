@@ -128,7 +128,6 @@
     <Compile Include="UIManager\Events\EventTests.cs" />
     <Compile Include="UIManager\Events\RCTEventEmitterTests.cs" />
     <Compile Include="UIManager\FrameworkElementExtensionsTests.cs" />
-    <Compile Include="UIManager\LayoutAnimation\LayoutAnimationManagerTests.cs" />
     <Compile Include="UIManager\PropertySetterTests.cs" />
     <Compile Include="UIManager\RootViewHelperTests.cs" />
     <Compile Include="UIManager\ShadowNodeRegistryTests.cs" />
