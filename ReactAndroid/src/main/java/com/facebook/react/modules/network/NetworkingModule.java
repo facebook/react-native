@@ -38,7 +38,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
-import okio.ByteString;
 
 import static java.lang.Math.min;
 
@@ -199,7 +198,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
       // Creating empty requestBody to solve issue #3371
-      requestBuilder.method(method, RequestBody.create(null, ByteString.EMPTY));
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
     client.newCall(requestBuilder.build()).enqueue(
