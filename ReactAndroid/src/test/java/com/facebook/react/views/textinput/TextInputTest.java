@@ -183,7 +183,8 @@ public class TextInputTest {
             new ReactTextInputManager(),
         });
     DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,

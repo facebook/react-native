@@ -16,6 +16,7 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.common.ReactConstants;
 
@@ -32,16 +33,17 @@ public class ExceptionsManagerModule extends BaseJavaModule {
     return "RKExceptionsManager";
   }
 
-  private String stackTraceToString(ReadableArray stack) {
-    StringBuilder stringBuilder = new StringBuilder();
+  private String stackTraceToString(String message, ReadableArray stack) {
+    StringBuilder stringBuilder = new StringBuilder(message).append(", stack:\n");
     for (int i = 0; i < stack.size(); i++) {
       ReadableMap frame = stack.getMap(i);
-      stringBuilder.append(frame.getString("methodName"));
-      stringBuilder.append("\n    ");
-      stringBuilder.append(new File(frame.getString("file")).getName());
-      stringBuilder.append(":");
-      stringBuilder.append(frame.getInt("lineNumber"));
-      if (frame.hasKey("column") && !frame.isNull("column")) {
+      stringBuilder
+          .append(frame.getString("methodName"))
+          .append("@")
+          .append(frame.getInt("lineNumber"));
+      if (frame.hasKey("column") &&
+          !frame.isNull("column") &&
+          frame.getType("column") == ReadableType.Number) {
         stringBuilder
             .append(":")
             .append(frame.getInt("column"));
@@ -58,14 +60,14 @@ public class ExceptionsManagerModule extends BaseJavaModule {
 
   @ReactMethod
   public void reportSoftException(String title, ReadableArray details, int exceptionId) {
-    FLog.e(ReactConstants.TAG, title + "\n" + stackTraceToString(details));
+    FLog.e(ReactConstants.TAG, stackTraceToString(title, details));
   }
 
   private void showOrThrowError(String title, ReadableArray details, int exceptionId) {
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.showNewJSError(title, details, exceptionId);
     } else {
-      throw new JavascriptException(stackTraceToString(details));
+      throw new JavascriptException(stackTraceToString(title, details));
     }
   }
 
