@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Reflection;
-using ReactNative.Views.Image;
 using System;
-using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Animation;
 
@@ -11,7 +9,7 @@ namespace ReactNative.UIManager.LayoutAnimation
     /// <summary>
     /// Base class responsible for parsing the animation JSON config and creating a <see cref="Storyboard"/> animation. 
     /// </summary>
-    public abstract class StoryboardAnimation
+    abstract class StoryboardAnimation
     {
         private const string CONFIG_PROPERTY = "property";
         private const string CONFIG_DURATION = "duration";
@@ -19,11 +17,9 @@ namespace ReactNative.UIManager.LayoutAnimation
         private const string CONFIG_TYPE = "type";
         private const string CONFIG_SPRING_INTENSITY = "springDamping";
 
-        public abstract bool IsValid();
-        
-        public abstract Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height);
-
         public AnimatedPropertyType PropertyType { private set; get; }
+
+        protected abstract bool IsValid { get; }
 
         /// <summary>
         /// Sets/Gets the <see cref="SpringIntensity"/> of the <see cref="EasingFunction"/>. 
@@ -45,6 +41,8 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// </summary>
         protected InterpolationType Type { private set; get; }
         
+        public abstract Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height);
+        
         /// <summary>
         /// Initliazes all the member properties based on the style config of the animation.
         /// </summary>
@@ -59,7 +57,7 @@ namespace ReactNative.UIManager.LayoutAnimation
 
             if (config.TryGetValue(CONFIG_PROPERTY, out token))
             {
-                PropertyType = EnumHelpers.Parse<AnimatedPropertyType>(token.ToObject<string>());
+                PropertyType = EnumHelpers.Parse<AnimatedPropertyType>(token.Value<string>());
             }
             else
             {
@@ -70,7 +68,7 @@ namespace ReactNative.UIManager.LayoutAnimation
             {
                 //The Springiness property of the Elastic easing function works with only absolute int values
                 //iOS and Android use floating point numbers. 
-                SpringIntensity = (int)springDamping.ToObject<float>() * 10;
+                SpringIntensity = (int)springDamping.Value<float>() * 10;
             }
             else
             {
@@ -79,19 +77,14 @@ namespace ReactNative.UIManager.LayoutAnimation
 
             ((ElasticEase)InterpolationType.Spring.EasingFunction()).Springiness = SpringIntensity;
 
-            if (config.TryGetValue(CONFIG_TYPE, out type))
-            {
-                Type = EnumHelpers.Parse<InterpolationType>(type.ToObject<string>());
-            }
-            else
-            {
-                Type = InterpolationType.None;
-            }
+            Type = config.TryGetValue(CONFIG_TYPE, out type)
+                ? EnumHelpers.Parse<InterpolationType>(type.Value<string>())
+                : InterpolationType.None;
 
-            DurationMS = config.TryGetValue(CONFIG_DURATION, out duration) ? duration.ToObject<int>() : globalDuration;
-            DelayMS = config.TryGetValue(CONFIG_DELAY, out delay) ? delay.ToObject<int>() : 0;
+            DurationMS = config.TryGetValue(CONFIG_DURATION, out duration) ? duration.Value<int>() : globalDuration;
+            DelayMS = config.TryGetValue(CONFIG_DELAY, out delay) ? delay.Value<int>() : 0;
 
-            if (!IsValid())
+            if (!IsValid)
             {
                 throw new InvalidOperationException(string.Format("Invalid layout animation exception. Likely due to duration of {0} not being set", DurationMS));
             }
@@ -108,7 +101,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <returns></returns>
         public Storyboard CreateAnimation(FrameworkElement view, int x, int y, int width, int height)
         {
-            if (!IsValid())
+            if (!IsValid)
             {
                 return null;
             }

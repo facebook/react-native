@@ -54,7 +54,6 @@ namespace ReactNative.UIManager
         private readonly ViewManagerRegistry _viewManagers;
         private readonly JavaScriptResponderHandler _jsResponderHandler;
         private readonly RootViewManager _rootViewManager;
-        private readonly AnimationRegistry _animationRegistry;
         private readonly LayoutAnimationManager _layoutAnimator;
 
         /// <summary>

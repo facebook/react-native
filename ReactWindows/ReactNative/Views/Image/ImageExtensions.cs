@@ -38,27 +38,26 @@ namespace ReactNative.Views.Image
         public static async void CreateColorBlendedImageSource(this Border border, Uri imagePath, Color blendColor)
         {
             using (var device = CanvasDevice.GetSharedDevice())
-            {                
-                var image = await CanvasBitmap.LoadAsync(device, imagePath);
+            using (var image = await CanvasBitmap.LoadAsync(device, imagePath))
+            {
                 var imageSource = new CanvasImageSource(device, image.SizeInPixels.Width, image.SizeInPixels.Height, image.Dpi);
 
-                using (var effect = new BlendEffect()
+                var effect = new BlendEffect()
                 {
                     Background = image,
-                    Foreground = new ColorSourceEffect() { Color = blendColor },
-                    Mode = BlendEffectMode.Multiply
-                })
+                    Foreground = new ColorSourceEffect { Color = blendColor },
+                    Mode = BlendEffectMode.Multiply,
+                };
+
+                using (effect)
+                using (var ds = imageSource.CreateDrawingSession(Colors.Transparent))
                 {
-                    using (var ds = imageSource.CreateDrawingSession(Colors.Transparent))
+                    ds.DrawImage(effect);
+                    border.Background = new ImageBrush
                     {
-                        ds.DrawImage(effect);
-                        border.Background = new ImageBrush()
-                        {
-                            ImageSource = imageSource
-                        };
-                    }
+                        ImageSource = imageSource
+                    };
                 }
-                image.Dispose();
             }
         }
     }

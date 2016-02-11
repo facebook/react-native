@@ -1,38 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 
 namespace ReactNative.Animation
 {
     /// <summary>
-    /// Interface used to update particular property types during animation. While animation is in progress <see cref="AnimationManager"/> instance will 
-    /// call <see cref="OnUpdate(FrameworkElement, float)"/> several times with a value representing animation progress. Normally value will be from 0..1 range, 
-    /// but for spring animation it can slightly exceed that limit due to bounce effect at the start/end of animation.
+    /// Interface used to update particular property types during animation.
+    /// While animation is in progress, the <see cref="ReactAnimation"/>
+    /// instance will call <see cref="OnUpdate(FrameworkElement, double)"/>
+    /// several times with a value representing animation progress.
     /// </summary>
     public interface IAnimationPropertyUpdater
     {
         /// <summary>
-        /// This method will be called before animation starts.
+        /// Called before the animation starts to prepare the view.
         /// </summary>
-        /// <param name="view">View that will be animated.</param>
+        /// <param name="view">The view to update.</param>
         void Prepare(FrameworkElement view);
 
         /// <summary>
-        /// This method will be called for each animation frame.
+        /// Called for each animation frame.
         /// </summary>
-        /// <param name="view">View to update property.</param>
-        /// <param name="progress">Animation progress from 0..1 range retrieved from <see cref="AnimationManager"/> engine.</param>
-        void OnUpdate(FrameworkElement view, float progress);
+        /// <param name="view">The view to update.</param>
+        /// <param name="value">The progress.</param>
+        void OnUpdate(FrameworkElement view, double value);
 
         /// <summary>
-        /// This method will be called at the end of animation. It should be used to set the final values
-        /// or animated properties in order to avoid floating point inacurracy calculated in <see cref="OnUpdate(FrameworkElement, float)"/>
-        /// by passing value close to 1.0 or in a case some frames got dropped.
+        /// Called at the end of the animation frame.
         /// </summary>
-        /// <param name="view">View to update property.</param>
-        void onFinish(FrameworkElement view);
+        /// <remarks>
+        /// This method should be used to set the final values for animated
+        /// properties in order to avoid floating point inaccuracies.
+        /// </remarks>
+        /// <param name="view">The view to update.</param>
+        void OnFinish(FrameworkElement view);
     }
 }

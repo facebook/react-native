@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
-using System.Collections.Generic;
+using System;
 using Windows.UI.Xaml;
 
 namespace ReactNative.UIManager.LayoutAnimation
@@ -10,15 +10,13 @@ namespace ReactNative.UIManager.LayoutAnimation
     /// </summary>
     public class LayoutAnimationManager
     {
-        private const string CONFIG_PROP_DURATION = "duration";
-        public const string CONFIG_PROP_ACTION_CREATE = "create";
-        private const string CONFIG_PROP_ACTION_UPDATE = "update";
+        private readonly StoryboardAnimation _layoutCreateAnimation = new LayoutCreateAnimation();
+        private readonly StoryboardAnimation _layoutUpdateAnimation = new LayoutUpdateAnimation();
 
-        private Dictionary<AnimationState, StoryboardAnimation> _animationLayoutDictionary;
         private bool _shouldAnimateLayout;
 
         /// <summary>
-        /// Setup the initial settings of the initial and follow-on <see cref="Storyboard"/>(s).
+        /// Setup the initial settings of the initial and follow-on <see cref="GetAnimator"/>(s).
         /// </summary>
         /// <param name="config">The JSON config of the animation.</param>
         public void InitializeFromConfig(JObject config)
@@ -28,12 +26,6 @@ namespace ReactNative.UIManager.LayoutAnimation
             var actionTypeUpdateToken = default(JToken);
             var globalDuration = default(int);
 
-            _animationLayoutDictionary = new Dictionary<AnimationState, StoryboardAnimation>()
-            {
-                { AnimationState.Create, new LayoutCreateAnimation() },
-                { AnimationState.Update, new LayoutUpdateAnimation() },
-            };
-
             if (config == null)
             {
                 Reset();
@@ -41,57 +33,41 @@ namespace ReactNative.UIManager.LayoutAnimation
             }
 
             _shouldAnimateLayout = false;
-            globalDuration = config.TryGetValue(CONFIG_PROP_DURATION, out durationToken) ? durationToken.ToObject<int>() : 0;
+            globalDuration = config.TryGetValue("duration", out durationToken) ? durationToken.Value<int>() : 0;
 
-            if (config.TryGetValue(CONFIG_PROP_ACTION_CREATE, out actionTypeCreateToken))
+            if (config.TryGetValue("create", out actionTypeCreateToken))
             {
-                this.Storyboard(AnimationState.Create).InitializeFromConfig(actionTypeCreateToken.ToObject<JObject>(), globalDuration);
+                GetAnimator(LayoutAnimationType.Create)
+                    .InitializeFromConfig(
+                        actionTypeCreateToken.Value<JObject>(), 
+                        globalDuration);
                 _shouldAnimateLayout = true;
             }
 
-            if (config.TryGetValue(CONFIG_PROP_ACTION_UPDATE, out actionTypeUpdateToken))
+            if (config.TryGetValue("update", out actionTypeUpdateToken))
             {
-                this.Storyboard(AnimationState.Update).InitializeFromConfig(actionTypeUpdateToken.ToObject<JObject>(), globalDuration);
+                GetAnimator(LayoutAnimationType.Update)
+                    .InitializeFromConfig(
+                        actionTypeUpdateToken.ToObject<JObject>(), globalDuration);
                 _shouldAnimateLayout = true;
             }
         }
 
         /// <summary>
-        /// Returns the <see cref="StoryboardAnimation"/> to animate based on the <see cref="AnimationState"/>. Currently there is one for animating the initial state
-        /// of a <see cref="FrameworkElement"/> and another for updating the layout change(i.e. update). 
-        /// </summary>
-        /// <param name="type">The desired <see cref="AnimationState"/>.</param>
-        /// <returns>Thre <see cref="StoryboardAnimation"/> reference.</returns>
-        public StoryboardAnimation Storyboard(AnimationState type)
-        {
-            var animation = default(StoryboardAnimation);
-
-            if (_animationLayoutDictionary != null && _animationLayoutDictionary.TryGetValue(type, out animation))
-            {
-                return animation;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Determines if <see cref="FrameworkElement"/> should apply the animation <see cref="StoryBoard"/>.
+        /// Determines if <see cref="FrameworkElement"/> should apply layout animation.
         /// </summary>
         /// <param name="view">The view to animate.</param>
-        /// <returns></returns>
-        public bool ShouldAnimateLayout(FrameworkElement view) { return _shouldAnimateLayout && view.Parent != null; }
-
-        public void Reset()
+        /// <returns>
+        /// <code>true</code> if the layout operation should be animated, 
+        /// otherwise <code>false</code>.
+        /// </returns>
+        public bool ShouldAnimateLayout(FrameworkElement view)
         {
-            this.Storyboard(AnimationState.Create)?.Reset();
-            this.Storyboard(AnimationState.Update)?.Reset();
-            _shouldAnimateLayout = false;
+            return _shouldAnimateLayout && view.Parent != null;
         }
 
         /// <summary>
-        /// Create the animation <see cref="Storyboard"/> and kick off the binded <see cref="Timeline"/>(s). 
+        /// Create the animation <see cref="GetAnimator"/> and kick off the binded <see cref="Timeline"/>(s). 
         /// </summary>
         /// <param name="view">The native view to animate.</param>
         /// <param name="x">The new X position to animate to.</param>
@@ -102,12 +78,41 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            var animationState = view.ActualWidth == 0 || view.ActualHeight == 0 ? AnimationState.Create : AnimationState.Update;
-            var storyboard = this.Storyboard(animationState).CreateAnimation(view, x, y, width, height);
+            var animationState = view.ActualWidth == 0 || view.ActualHeight == 0 
+                ? LayoutAnimationType.Create 
+                : LayoutAnimationType.Update;
 
-            if (storyboard != null)
+            GetAnimator(animationState)
+                .CreateAnimation(view, x, y, width, height)?
+                .Begin();
+        }
+
+        /// <summary>
+        /// Reset the animation manager.
+        /// </summary>
+        public void Reset()
+        {
+            _layoutCreateAnimation.Reset();
+            _layoutUpdateAnimation.Reset();
+            _shouldAnimateLayout = false;
+        }
+
+        /// <summary>
+        /// Returns the <see cref="StoryboardAnimation"/> to animate based on the <see cref="LayoutAnimationType"/>. Currently there is one for animating the initial state
+        /// of a <see cref="FrameworkElement"/> and another for updating the layout change(i.e. update). 
+        /// </summary>
+        /// <param name="animationState">The desired <see cref="LayoutAnimationType"/>.</param>
+        /// <returns>Thre <see cref="StoryboardAnimation"/> reference.</returns>
+        private StoryboardAnimation GetAnimator(LayoutAnimationType animationState)
+        {
+            switch (animationState)
             {
-                storyboard.Begin();
+                case LayoutAnimationType.Create:
+                    return _layoutCreateAnimation;
+                case LayoutAnimationType.Update:
+                    return _layoutUpdateAnimation;
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

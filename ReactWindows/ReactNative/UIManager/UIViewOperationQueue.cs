@@ -182,6 +182,12 @@ namespace ReactNative.UIManager
             _nativeViewHierarchyManager.ClearLayoutAnimation();
         }
 
+        /// <summary>
+        /// Enqueue a configure layout animation operation.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <param name="success">The success callback.</param>
+        /// <param name="error">The error callback.</param>
         public void EnqueueConfigureLayoutAnimation(JObject config, ICallback success, ICallback error)
         {
             EnqueueOperation(() => _nativeViewHierarchyManager.ConfigureLayoutAnimation(config, success, error));
@@ -348,14 +354,9 @@ namespace ReactNative.UIManager
                     {
                         operation();
                     }
-
-                    OnOperationGroupExecuted();
                 }
             }
-        }
 
-        internal void OnOperationGroupExecuted()
-        {
             _nativeViewHierarchyManager.ClearLayoutAnimation();
         }
 
