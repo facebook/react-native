@@ -75,8 +75,7 @@
     ],
     "unmockedModulePathPatterns": [
       "promise",
-      "source-map",
-      "fbjs"
+      "source-map"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
@@ -122,7 +121,7 @@
     "connect": "^2.8.3",
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
-    "fbjs": "^0.7.2",
+    "fbjs": "^0.6.0",
     "fbjs-scripts": "^0.4.0",
     "graceful-fs": "^4.1.2",
     "image-size": "^0.3.5",
