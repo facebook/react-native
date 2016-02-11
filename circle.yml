@@ -13,12 +13,16 @@ machine:
 
 dependencies:
   pre:
-  # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
-  - npm install -g npm@3.2
-  - source scripts/circle-ci-android-setup.sh && getAndroidSDK
-  - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+    # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
+    - npm install -g npm@3.2
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
   cache_directories:
   - "ReactAndroid/build/downloads"
+  override:
+    - npm install
+    - cd website && npm install
+
 test:
   pre:
     # starting emulator in advance because it takes very long to boot
@@ -28,6 +32,7 @@ test:
     - ./gradlew :ReactAndroid:assembleDebug -PdisablePreDex -Pjobs=1:
             timeout: 360
     - source scripts/circle-ci-android-setup.sh && waitForAVD
+
   override:
     # unit tests
     - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
@@ -36,9 +41,21 @@ test:
     # run tests on the emulator
     - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
         timeout: 360
+
+    # testing docs generation is not broken
+    - cd website && node ./server/generate.js
   post:
     # copy test report for Circle CI to display
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 
+deployment:
+  website:
+    branch: [/.*-stable/, /master/]
+    commands:
+      # generate docs website
+      - git config --global user.email "bestnader@fb.com"
+      - git config --global user.name "Website Deployment Script"
+      - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+      - cd website && GIT_USER=reactjs-bot npm run gh-pages

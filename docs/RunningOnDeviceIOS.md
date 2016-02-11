@@ -44,7 +44,7 @@ Note that on 0.14 we'll change the API of `react-native bundle`. The major chang
 
 ## Disabling in-app developer menu
 
-When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](/react-native/docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
+When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
 
 ## Troubleshooting
 
