@@ -44,6 +44,19 @@ module.exports = function upgrade(args, config) {
               'https://github.com/facebook/react-native/releases/tag/v' + semver.major(v) + '.' + semver.minor(v) + '.0'
             )
           );
+
+          // >= v0.21.0, we require react to be a peer depdendency
+          if (semver.gte(v, '0.21.0') && !pak.dependencies['react']) {
+            console.log(
+              chalk.yellow(
+                '\nYour \'package.json\' file doesn\'t seem to have \'react\' as a dependency.\n' +
+                '\'react\' was changed from a dependency to a peer dependency in react-native v0.21.0.\n' +
+                'Therefore, it\'s necessary to include \'react\' in your project\'s dependencies.\n' +
+                'Just run \'npm install --save react\', then re-run \'react-native upgrade\'.\n'
+              )
+            );
+            return Promise.resolve();
+          }
         } else {
           console.log(
             chalk.yellow(

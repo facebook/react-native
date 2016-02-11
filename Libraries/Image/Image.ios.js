@@ -213,7 +213,7 @@ var Image = React.createClass({
     if (this.context.isInAParentText) {
       RawImage = RCTVirtualImage;
       if (!width || !height) {
-        console.warn('You must specify a width and height for the image %s', uri); 
+        console.warn('You must specify a width and height for the image %s', uri);
       }
     }
 

@@ -11,7 +11,6 @@
 class ResolutionResponse {
   constructor() {
     this.dependencies = [];
-    this.asyncDependencies = [];
     this.mainModuleId = null;
     this.mocks = null;
     this.numPrependedDependencies = 0;
@@ -22,13 +21,11 @@ class ResolutionResponse {
   copy(properties) {
     const {
       dependencies = this.dependencies,
-      asyncDependencies = this.asyncDependencies,
       mainModuleId = this.mainModuleId,
       mocks = this.mocks,
     } = properties;
     return Object.assign(new this.constructor(), this, {
       dependencies,
-      asyncDependencies,
       mainModuleId,
       mocks,
     });
@@ -67,11 +64,6 @@ class ResolutionResponse {
     this._assertNotFinalized();
     this.dependencies.unshift(module);
     this.numPrependedDependencies += 1;
-  }
-
-  pushAsyncDependency(dependency) {
-    this._assertNotFinalized();
-    this.asyncDependencies.push(dependency);
   }
 
   setResolvedDependencyPairs(module, pairs) {

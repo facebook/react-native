@@ -3,9 +3,10 @@
 #pragma once
 
 #include <cstdint>
-#include <fb/noncopyable.h>
 #include <string>
 #include <stdexcept>
+
+#include "noncopyable.h"
 
 namespace facebook {
 namespace react {
