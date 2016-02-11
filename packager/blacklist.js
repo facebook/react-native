@@ -17,36 +17,6 @@ var sharedBlacklist = [
   'node_modules/react/lib/React.js',
   'node_modules/react/lib/ReactDOM.js',
 
-  // For each of these fbjs files (especially the non-forks/stubs), we should
-  // consider deleting the conflicting copy and just using the fbjs version.
-  //
-  // fbjs forks:
-  'node_modules/fbjs/lib/Map.js',
-  'node_modules/fbjs/lib/Promise.js',
-  'node_modules/fbjs/lib/fetch.js',
-  // fbjs stubs:
-  'node_modules/fbjs/lib/ErrorUtils.js',
-  'node_modules/fbjs/lib/URI.js',
-  // fbjs modules:
-  'node_modules/fbjs/lib/Deferred.js',
-  'node_modules/fbjs/lib/PromiseMap.js',
-  'node_modules/fbjs/lib/UserAgent.js',
-  'node_modules/fbjs/lib/areEqual.js',
-  'node_modules/fbjs/lib/base62.js',
-  'node_modules/fbjs/lib/crc32.js',
-  'node_modules/fbjs/lib/everyObject.js',
-  'node_modules/fbjs/lib/fetchWithRetries.js',
-  'node_modules/fbjs/lib/filterObject.js',
-  'node_modules/fbjs/lib/flattenArray.js',
-  'node_modules/fbjs/lib/forEachObject.js',
-  'node_modules/fbjs/lib/isEmpty.js',
-  'node_modules/fbjs/lib/nullthrows.js',
-  'node_modules/fbjs/lib/removeFromArray.js',
-  'node_modules/fbjs/lib/resolveImmediate.js',
-  'node_modules/fbjs/lib/someObject.js',
-  'node_modules/fbjs/lib/sprintf.js',
-  'node_modules/fbjs/lib/xhrSimpleDataSerializer.js',
-
   // Those conflicts with the ones in fbjs/. We need to blacklist the
   // internal version otherwise they won't work in open source.
   'downstream/core/CSSCore.js',
