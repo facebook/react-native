@@ -197,7 +197,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, multipartBuilder.build());
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      // Creating empty requestBody to solve issue similar to #3371
       requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
