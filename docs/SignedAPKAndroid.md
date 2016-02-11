@@ -78,7 +78,7 @@ If you need to change the way the JavaScript bundle and/or drawable resources ar
 
 #### If you *don't* have a `react.gradle` file:
 
-You can [upgrade](/react-native/docs/upgrading.html) to the latest version of React Native to get this file. Alternatively, you can bundle the JavaScript package and drawable resources manually by doing the following in a terminal:
+You can [upgrade](docs/upgrading.html) to the latest version of React Native to get this file. Alternatively, you can bundle the JavaScript package and drawable resources manually by doing the following in a terminal:
 
 ```sh
 $ mkdir -p android/app/src/main/assets

@@ -90,7 +90,7 @@ Many of the images you will display in your app will not be available at compile
 
 ## Local Filesystem Images
 
-See [CameraRoll](/react-native/docs/cameraroll.html) for an example of
+See [CameraRoll](docs/cameraroll.html) for an example of
 using local resources that are outside of `Images.xcassets`.
 
 ### Best Camera Roll Image

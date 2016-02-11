@@ -65,7 +65,7 @@ folder.
 Drag this file to your project on Xcode (usually under the `Libraries` group
 on Xcode);
 
-![](/react-native/img/AddToLibraries.png)
+![](img/AddToLibraries.png)
 
 #### Step 2
 
@@ -73,7 +73,7 @@ Click on your main project file (the one that represents the `.xcodeproj`)
 select `Build Phases` and drag the static library from the `Products` folder
 inside the Library you are importing to `Link Binary With Libraries`
 
-![](/react-native/img/AddToBuildPhases.png)
+![](img/AddToBuildPhases.png)
 
 #### Step 3
 
@@ -97,4 +97,4 @@ Paths`. There you should include the path to your library (if it has relevant
 files on subdirectories remember to make it `recursive`, like `React` on the
 example).
 
-![](/react-native/img/AddToSearchPaths.png)
+![](img/AddToSearchPaths.png)

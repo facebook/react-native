@@ -42,24 +42,11 @@ script:
 
     npm test -- '\/(local|private|react-native)-cli\/'
 
-  elif [ "$TEST_TYPE" = build_website ]
-  then
-
-    cd website
-    $(which npm) install
-    ./setup.sh
-    if [ "$TRAVIS_PULL_REQUEST" = false ] && [ "$TRAVIS_BRANCH" = master ]; then
-      # Automatically publish the website
-      echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" >~/.netrc
-      ./publish.sh
-    else
-      # Make sure the website builds without error
-      node server/generate.js
-    fi
-
   elif [ "$TEST_TYPE" = e2e ]
   then
+
     ./scripts/e2e-test.sh
+
   else
     echo "Unknown test type: $TEST_TYPE"
     exit 1
@@ -71,11 +58,8 @@ env:
     - TEST_TYPE=js
     - TEST_TYPE=packager
     - TEST_TYPE=cli
-    - TEST_TYPE=build_website
     - TEST_TYPE=e2e
   global:
-    # $GITHUB_TOKEN
-    - secure: "HlmG8M2DmBUSBh6KH1yVIe/8gR4iibg4WfcHq1x/xYQxGbvleq7NOo04V6eFHnl9cvZCu+PKH0841WLnGR7c4BBf47GVu/o16nXzggPumHKy++lDzxFPlJ1faMDfjg/5vjbAxRUe7D3y98hQSeGHH4tedc8LvTaFLVu7iiGqvjU="
     # $APPETIZE_TOKEN
     - secure: "egsvVSpszTzrNd6bN62DsVAzMiSZI/OHgdizfPryqvqWBf655ztE6XFQSEFNpuIAzSKDDF25ioT8iPfVsbC1iK6HDWHfmqYxML0L+OoU0gi+hV2oKUBFZDZ1fwSnFoWuBdNdMDpLlUxvJp6N1WyfNOB2dxuZUt8eTt48Hi3+Hpc="
     # $S3_TOKEN

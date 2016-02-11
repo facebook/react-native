@@ -1276,7 +1276,7 @@ input#algolia-doc-search {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  background: transparent url('/react-native/img/search.png') no-repeat left center;
+  background: transparent url('../img/search.png') no-repeat left center;
   background-size: 16px 16px;
 
   padding-left: 30px;

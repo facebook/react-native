@@ -125,6 +125,17 @@ function execute() {
     }
   });
 
+  // we need to pass globals for the components to be configurable
+  // metadata is generated in this process which has access to process.env
+  // but the web pages are generated in a sandbox context and have only access to CommonJS module files
+  metadatas.config = Object.create(null);
+  Object
+    .keys(process.env)
+    .filter(key => key.startsWith('RN_'))
+    .forEach((key) => {
+      metadatas.config[key] = process.env[key];
+    });
+
   fs.writeFileSync(
     'core/metadata.js',
     '/**\n' +

@@ -38,7 +38,7 @@ PushNotificationIOS
 
 ### Some props are only supported on one platform
 
-There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a small badge next to them on the website. See e.g. [Image](https://facebook.github.io/react-native/docs/image.html).
+There are properties that work on one platform only, either because they can inherently only be supported on that platform or because they haven't been implemented on the other platforms yet. All of these are annotated with `@platform` in JS docs and have a small badge next to them on the website. See e.g. [Image](docs/image.html).
 
 ### Platform parity
 
@@ -62,7 +62,7 @@ Another issue with `overflow: 'hidden'` on Android: a view is not clipped by the
 
 ### View shadows
 
-The `shadow*` [view styles](/react-native/docs/view.html#style) apply on iOS, and the `elevation` view prop is available on Android. Setting `elevation` on Android is equivalent to using the [native elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation), and has the same limitations (most significantly, it only works on Android 5.0+). Setting `elevation` on Android also affects the z-order for overlapping views.
+The `shadow*` [view styles](docs/view.html#style) apply on iOS, and the `elevation` view prop is available on Android. Setting `elevation` on Android is equivalent to using the [native elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation), and has the same limitations (most significantly, it only works on Android 5.0+). Setting `elevation` on Android also affects the z-order for overlapping views.
 
 ### Android M permissions
 
