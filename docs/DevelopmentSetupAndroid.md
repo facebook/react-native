@@ -55,7 +55,7 @@ React Native Android use [gradle](https://docs.gradle.org) as a build system. We
   * Android Support Repository
 2. Click "Install Packages"
 
-![SDK Manager window](/react-native/img/AndroidSDK1.png) ![SDK Manager window](/react-native/img/AndroidSDK2.png)
+![SDK Manager window](img/AndroidSDK1.png) ![SDK Manager window](img/AndroidSDK2.png)
 
 ### Install Genymotion
 
@@ -75,7 +75,7 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
 3. [Configure hardware acceleration (HAXM)](http://developer.android.com/tools/devices/emulator.html#vm-mac), otherwise the emulator is going to be slow.
 4. Create an Android Virtual Device (AVD):
   1. Run `android avd` and click on **Create...**
-  ![Create AVD dialog](/react-native/img/CreateAVD.png)
+  ![Create AVD dialog](img/CreateAVD.png)
   2. With the new AVD selected, click `Start...`
 5. To bring up the developer menu press F2 (or install [Frappé](http://getfrappe.com))
 
