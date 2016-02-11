@@ -78,4 +78,4 @@ deployment:
       - git config --global user.email "bestnader@fb.com"
       - git config --global user.name "Website Deployment Script"
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
-      - cd website && GIT_USER=bestander npm run gh-pages
+      - cd website && GIT_USER=reactjs-bot npm run gh-pages
