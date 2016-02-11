@@ -455,7 +455,18 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function() {
-      return <ImageSizeExample source={fullImage} />; 
+      return <ImageSizeExample source={fullImage} />;
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Resources Bundle',
+    render: function() {
+        return (
+          <Image
+            style={{width: 60, height: 60}}
+            source={{ uri: 'logo_small_2x', bundle: 'UIExplorerBundle' }} />
+        );
     },
     platform: 'ios',
   },

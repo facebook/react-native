@@ -41,8 +41,17 @@ RCT_EXPORT_MODULE()
     
     if (bundlePath) {
       NSString *targetBundleName = RCTBundlePathForURL([NSURL URLWithString:bundlePath]);
+      NSMutableArray *bundles = [[NSBundle allBundles] mutableCopy];
       
-      NSArray *bundles = [NSBundle allBundles];
+      // Get any bundle files included in the mainBundle and add them to the array
+      for (NSString *path in [[NSBundle mainBundle] pathsForResourcesOfType:@"bundle" inDirectory:nil]) {
+        NSBundle *bundle = [NSBundle bundleWithPath:path];
+        
+        if (bundle && ![bundles containsObject:bundle]) {
+          [bundles addObject:bundle];
+        }
+      }
+      
       for (NSBundle *bundle in bundles) {
         NSString *bundleName = bundle.infoDictionary[@"CFBundleName"];
         

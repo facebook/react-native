@@ -28,6 +28,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                        bundlePath:(NSString *)bundlePath
                                               size:(CGSize)size
                                              scale:(CGFloat)scale
                                         resizeMode:(RCTResizeMode)resizeMode
