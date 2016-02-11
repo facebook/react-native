@@ -4,6 +4,9 @@
 
 #include <memory>
 #include <sstream>
+#include <unordered_map>
+#include <vector>
+
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSRetainPtr.h>
 #include <JavaScriptCore/JSStringRef.h>
@@ -123,8 +126,11 @@ public:
 
   Value getProperty(const String& propName) const;
   Value getProperty(const char *propName) const;
+  Value getPropertyAtIndex(unsigned index) const;
   void setProperty(const String& propName, const Value& value) const;
   void setProperty(const char *propName, const Value& value) const;
+  std::vector<std::string> getPropertyNames() const;
+  std::unordered_map<std::string, std::string> toJSONMap() const;
 
   void makeProtected() {
     if (!m_isProtected && m_obj) {
