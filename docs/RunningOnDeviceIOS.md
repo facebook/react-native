@@ -31,7 +31,7 @@ When you run your app on device, we pack all the JavaScript code and the images 
 
 ## Disabling in-app developer menu
 
-When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](/react-native/docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
+When building your app for production, your app's scheme should be set to `Release` as detailed in [the debugging documentation](docs/debugging.html#debugging-react-native-apps) in order to disable the in-app developer menu.
 
 ## Troubleshooting
 
