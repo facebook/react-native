@@ -48,6 +48,7 @@ RCT_EXPORT_METHOD(getSize:(NSURL *)imageURL
                   errorBlock:(RCTResponseErrorBlock)errorBlock)
 {
   [self.bridge.imageLoader getImageSize:imageURL.absoluteString
+                             bundlePath:nil
                                   block:^(NSError *error, CGSize size) {
                                     if (error) {
                                       errorBlock(error);

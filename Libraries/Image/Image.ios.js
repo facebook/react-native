@@ -68,6 +68,7 @@ var Image = React.createClass({
     source: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
+        bundle: PropTypes.string,
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
@@ -79,6 +80,7 @@ var Image = React.createClass({
     defaultSource: PropTypes.oneOfType([
       PropTypes.shape({
         uri: PropTypes.string,
+        bundle: PropTypes.string,
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,

@@ -45,7 +45,7 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  [_bridge.imageLoader loadImageWithTag:imageTag callback:^(NSError *error, UIImage *image) {
+  [_bridge.imageLoader loadImageWithTag:imageTag bundlePath:nil callback:^(NSError *error, UIImage *image) {
     if (error) {
       errorCallback(error);
       return;

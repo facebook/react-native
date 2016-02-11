@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE()
 }
 
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                         bundlePath:(NSString *)bundlePath
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
                                          resizeMode:(RCTResizeMode)resizeMode
@@ -36,7 +37,23 @@ RCT_EXPORT_MODULE()
       return;
     }
     NSString *imageName = RCTBundlePathForURL(imageURL);
-    UIImage *image = [UIImage imageNamed:imageName];
+    NSBundle *targetBundle = [NSBundle mainBundle];
+    
+    if (bundlePath) {
+      NSString *targetBundleName = RCTBundlePathForURL([NSURL URLWithString:bundlePath]);
+      
+      NSArray *bundles = [NSBundle allBundles];
+      for (NSBundle *bundle in bundles) {
+        NSString *bundleName = bundle.infoDictionary[@"CFBundleName"];
+        
+        if ([bundleName isEqualToString:targetBundleName]) {
+          targetBundle = bundle;
+          break;
+        }
+      }
+    }
+    
+    UIImage *image = [UIImage imageNamed:imageName inBundle:targetBundle compatibleWithTraitCollection:nil];
     if (image) {
       if (progressHandler) {
         progressHandler(1, 1);

@@ -18,10 +18,11 @@
 
 @implementation RCTImageSource
 
-- (instancetype)initWithURL:(NSURL *)url size:(CGSize)size scale:(CGFloat)scale
+- (instancetype)initWithURL:(NSURL *)url bundleURL:(NSURL *)bundleURL size:(CGSize)size scale:(CGFloat)scale
 {
   if ((self = [super init])) {
     _imageURL  = url;
+    _bundleURL = bundleURL;
     _size = size;
     _scale = scale;
   }
@@ -31,6 +32,7 @@
 - (instancetype)imageSourceWithSize:(CGSize)size scale:(CGFloat)scale
 {
   RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURL:_imageURL
+                                                          bundleURL:_bundleURL
                                                                size:size
                                                               scale:scale];
   imageSource.packagerAsset = _packagerAsset;
@@ -42,7 +44,7 @@
   if (![object isKindOfClass:[RCTImageSource class]]) {
     return NO;
   }
-  return [_imageURL isEqual:object.imageURL] && _scale == object.scale &&
+  return [_imageURL isEqual:object.imageURL] && [_bundleURL isEqual:object.bundleURL] && _scale == object.scale &&
   (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
 }
 
@@ -57,11 +59,15 @@
   }
 
   NSURL *imageURL;
+  NSURL *bundleURL;
   CGSize size = CGSizeZero;
   CGFloat scale = 1.0;
   BOOL packagerAsset = NO;
   if ([json isKindOfClass:[NSDictionary class]]) {
     if (!(imageURL = [self NSURL:RCTNilIfNull(json[@"uri"])])) {
+      return nil;
+    }
+    if (!(bundleURL = [self NSURL:RCTNilIfNull(json[@"bundle"])])) {
       return nil;
     }
     size = [self CGSize:json];
@@ -75,6 +81,7 @@
   }
 
   RCTImageSource *imageSource = [[RCTImageSource alloc] initWithURL:imageURL
+                                                          bundleURL:bundleURL
                                                                size:size
                                                               scale:scale];
   imageSource.packagerAsset = packagerAsset;

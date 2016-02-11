@@ -58,6 +58,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   __weak RCTShadowVirtualImage *weakSelf = self;
   _cancellationBlock = [_bridge.imageLoader loadImageWithTag:_source.imageURL.absoluteString
+                                                  bundlePath:_source.bundleURL.absoluteString
                                                         size:imageSize
                                                        scale:RCTScreenScale()
                                                   resizeMode:_resizeMode

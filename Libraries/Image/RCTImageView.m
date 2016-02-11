@@ -193,6 +193,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     RCTImageSource *source = _source;
     __weak RCTImageView *weakSelf = self;
     _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithoutClipping:_source.imageURL.absoluteString
+                                                                       bundlePath:_source.bundleURL.absoluteString
                                                                              size:imageSize
                                                                             scale:imageScale
                                                                        resizeMode:(RCTResizeMode)self.contentMode
