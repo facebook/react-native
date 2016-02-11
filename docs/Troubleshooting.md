@@ -78,7 +78,7 @@ pod 'React', :path => '../node_modules/react-native', :subspecs => [
 ```
 Next, make sure you have run `pod install` and that a `Pods/` directory has been created in your project with React installed. CocoaPods will instruct you to use the generated `.xcworkspace` file henceforth to be able to use these installed dependencies.
 
-If you are adding React manually, make sure you have included all the relevant dependencies, like `RCTText.xcodeproj`, `RCTImage.xcodeproj` depending on the ones you are using. Next, the binaries built by these dependencies have to be linked to your app binary. Use the `Linked Frameworks and Binaries` section in the Xcode project settings. More detailed steps are here: [Linking Libraries](https://facebook.github.io/react-native/docs/linking-libraries-ios.html#content).
+If you are adding React manually, make sure you have included all the relevant dependencies, like `RCTText.xcodeproj`, `RCTImage.xcodeproj` depending on the ones you are using. Next, the binaries built by these dependencies have to be linked to your app binary. Use the `Linked Frameworks and Binaries` section in the Xcode project settings. More detailed steps are here: [Linking Libraries](docs/linking-libraries-ios.html#content).
 
 ##### Argument list too long: recursive header expansion failed
 
