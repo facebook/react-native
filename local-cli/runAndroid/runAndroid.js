@@ -33,7 +33,7 @@ function _runAndroid(argv, config, resolve, reject) {
   }, {
     command: 'root',
     type: 'string',
-    description: 'Override the root directory to be used to start the packager',
+    description: 'Override the root directory for the android build (which contains the android directory)',
   }], argv);
 
   args.root = args.root || '';
