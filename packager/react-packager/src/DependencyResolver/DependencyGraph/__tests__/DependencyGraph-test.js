@@ -10,13 +10,13 @@
 
 jest.autoMockOff();
 
+jest.mock('fs');
+
 const Promise = require('promise');
+const DependencyGraph = require('../index');
+const fs = require('graceful-fs');
 
-jest
-  .mock('fs');
-
-var DependencyGraph = require('../index');
-var fs = require('fs');
+const mocksPattern = /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/;
 
 describe('DependencyGraph', function() {
   let defaults;
@@ -70,6 +70,7 @@ describe('DependencyGraph', function() {
         'parse',
       ],
       platforms: ['ios', 'android'],
+      shouldThrowOnUnresolvedErrors: () => false,
     };
   });
 
@@ -2362,6 +2363,7 @@ describe('DependencyGraph', function() {
 
     pit('should selectively ignore providesModule in node_modules', function() {
       var root = '/root';
+      var otherRoot = '/anotherRoot';
       fs.__setMockFilesystem({
         'root': {
           'index.js': [
@@ -2371,6 +2373,9 @@ describe('DependencyGraph', function() {
             'require("shouldWork");',
             'require("dontWork");',
             'require("wontWork");',
+            'require("ember");',
+            'require("internalVendoredPackage");',
+            'require("anotherIndex");',
           ].join('\n'),
           'node_modules': {
             'react-haste': {
@@ -2378,6 +2383,7 @@ describe('DependencyGraph', function() {
                 name: 'react-haste',
                 main: 'main.js',
               }),
+              // @providesModule should not be ignored here, because react-haste is whitelisted
               'main.js': [
                 '/**',
                 ' * @providesModule shouldWork',
@@ -2390,6 +2396,7 @@ describe('DependencyGraph', function() {
                     name: 'bar',
                     main: 'main.js',
                   }),
+                  // @providesModule should be ignored here, because it's not whitelisted
                   'main.js':[
                     '/**',
                     ' * @providesModule dontWork',
@@ -2411,6 +2418,8 @@ describe('DependencyGraph', function() {
                 name: 'ember',
                 main: 'main.js',
               }),
+              // @providesModule should be ignored here, because it's not whitelisted,
+              // and also, the modules "id" should be ember/main.js, not it's haste name
               'main.js':[
                 '/**',
                 ' * @providesModule wontWork',
@@ -2419,12 +2428,38 @@ describe('DependencyGraph', function() {
               ].join('\n'),
             },
           },
+          // This part of the dep graph is meant to emulate internal facebook infra.
+          // By whitelisting `vendored_modules`, haste should still work.
+          'vendored_modules': {
+            'a-vendored-package': {
+              'package.json': JSON.stringify({
+                name: 'a-vendored-package',
+                main: 'main.js',
+              }),
+              // @providesModule should _not_ be ignored here, because it's whitelisted.
+              'main.js':[
+                '/**',
+                ' * @providesModule internalVendoredPackage',
+                ' */',
+                'hiFromInternalPackage();',
+              ].join('\n'),
+            },
+          },
+        },
+        // we need to support multiple roots and using haste between them
+        'anotherRoot': {
+          'index.js': [
+            '/**',
+            ' * @providesModule anotherIndex',
+            ' */',
+            'wazup()',
+          ].join('\n'),
         },
       });
 
       var dgraph = new DependencyGraph({
         ...defaults,
-        roots: [root],
+        roots: [root, otherRoot],
       });
       return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
         expect(deps)
@@ -2432,7 +2467,14 @@ describe('DependencyGraph', function() {
             {
               id: 'index',
               path: '/root/index.js',
-              dependencies: ['shouldWork', 'dontWork', 'wontWork'],
+              dependencies: [
+                'shouldWork',
+                'dontWork',
+                'wontWork',
+                'ember',
+                'internalVendoredPackage',
+                'anotherIndex',
+              ],
               isAsset: false,
               isAsset_DEPRECATED: false,
               isJSON: false,
@@ -2452,6 +2494,36 @@ describe('DependencyGraph', function() {
             {
               id: 'submodule/main.js',
               path: '/root/node_modules/react-haste/node_modules/submodule/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'ember/main.js',
+              path: '/root/node_modules/ember/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'internalVendoredPackage',
+              path: '/root/vendored_modules/a-vendored-package/main.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'anotherIndex',
+              path: '/anotherRoot/index.js',
               dependencies: [],
               isAsset: false,
               isAsset_DEPRECATED: false,
@@ -3862,7 +3934,7 @@ describe('DependencyGraph', function() {
             '/**',
             ' * @providesModule index',
             ' */',
-            'System.import("a")',
+            'System.' + 'import("a")',
           ].join('\n'),
           'a.js': [
             '/**',
@@ -3952,7 +4024,7 @@ describe('DependencyGraph', function() {
       var root = '/root';
       fs.__setMockFilesystem({
         'root': {
-          '__mocks': {
+          '__mocks__': {
             'A.js': '',
           },
           'index.js': '',
@@ -3989,7 +4061,7 @@ describe('DependencyGraph', function() {
       var dgraph = new DependencyGraph({
         ...defaults,
         roots: [root],
-        mocksPattern: /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/,
+        mocksPattern,
       });
 
       return dgraph.getDependencies('/root/b.js')
@@ -4029,7 +4101,7 @@ describe('DependencyGraph', function() {
       var dgraph = new DependencyGraph({
         ...defaults,
         roots: [root],
-        mocksPattern: /(?:[\\/]|^)__mocks__[\\/]([^\/]+)\.js$/,
+        mocksPattern,
       });
 
       return getOrderedDependenciesAsJSON(dgraph, '/root/A.js')
@@ -4061,6 +4133,74 @@ describe('DependencyGraph', function() {
               isPolyfill: false,
               id: '/root/__mocks__/A.js',
               dependencies: ['b'],
+            },
+            {
+              path: '/root/__mocks__/b.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: '/root/__mocks__/b.js',
+              dependencies: [],
+            },
+          ]);
+        });
+    });
+
+    pit('resolves mocks that do not have a real module associated with them', () => {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          '__mocks__': {
+            'foo.js': [
+              'require("b");',
+            ].join('\n'),
+            'b.js': '',
+          },
+          'A.js': [
+            '/**',
+            ' * @providesModule A',
+            ' */',
+            'require("foo");',
+          ].join('\n'),
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+        mocksPattern,
+      });
+
+      return getOrderedDependenciesAsJSON(dgraph, '/root/A.js')
+        .then(deps => {
+          expect(deps).toEqual([
+            {
+              path: '/root/A.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: 'A',
+              dependencies: ['foo'],
+            },
+            {
+              path: '/root/__mocks__/foo.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: '/root/__mocks__/foo.js',
+              dependencies: ['b'],
+            },
+            {
+              path: '/root/__mocks__/b.js',
+              isJSON: false,
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isPolyfill: false,
+              id: '/root/__mocks__/b.js',
+              dependencies: [],
             },
           ]);
         });

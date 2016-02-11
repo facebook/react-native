@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const attachHMRServer = require('./util/attachHMRServer');
 const connect = require('connect');
 const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
 const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
@@ -23,6 +24,7 @@ const webSocketProxy = require('./util/webSocketProxy.js');
 
 function runServer(args, config, readyCallback) {
   var wsProxy = null;
+  const packagerServer = getPackagerServer(args, config);
   const app = connect()
     .use(loadRawBodyMiddleware)
     .use(connect.compress())
@@ -33,7 +35,7 @@ function runServer(args, config, readyCallback) {
     .use(cpuProfilerMiddleware)
     // Temporarily disable flow check until it's more stable
     //.use(getFlowTypeCheckMiddleware(args))
-    .use(getAppMiddleware(args, config));
+    .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
 
@@ -42,26 +44,37 @@ function runServer(args, config, readyCallback) {
 
   const serverInstance = http.createServer(app).listen(
     args.port,
-    '::',
+    args.host,
     function() {
+      attachHMRServer({
+        httpServer: serverInstance,
+        path: '/hot',
+        packagerServer,
+      });
+
       wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
       webSocketProxy.attachToServer(serverInstance, '/devtools');
       readyCallback();
     }
   );
+  // Disable any kind of automatic timeout behavior for incoming
+  // requests in case it takes the packager more than the default
+  // timeout of 120 seconds to respond to a request.
+  serverInstance.timeout = 0;
 }
 
-function getAppMiddleware(args, config) {
+function getPackagerServer(args, config) {
   let transformerPath = args.transformer;
   if (!isAbsolutePath(transformerPath)) {
     transformerPath = path.resolve(process.cwd(), transformerPath);
   }
 
-  return ReactPackager.middleware({
+  return ReactPackager.createServer({
     nonPersistent: args.nonPersistent,
     projectRoots: args.projectRoots,
     blacklistRE: config.getBlacklistRE(),
     cacheVersion: '3',
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
     assetRoots: args.assetRoots,
     assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],

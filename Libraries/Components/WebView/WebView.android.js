@@ -38,8 +38,12 @@ var WebView = React.createClass({
 
   propTypes: {
     ...View.propTypes,
-    renderError: PropTypes.func, 
+    renderError: PropTypes.func,
     renderLoading: PropTypes.func,
+    onLoad: PropTypes.func,
+    onLoadEnd: PropTypes.func,
+    onLoadStart: PropTypes.func,
+    onError: PropTypes.func,
     url: PropTypes.string,
     html: PropTypes.string,
     automaticallyAdjustContentInsets: PropTypes.bool,
@@ -52,7 +56,13 @@ var WebView = React.createClass({
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
-    javaScriptEnabledAndroid: PropTypes.bool,
+    javaScriptEnabled: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether DOM Storage is enabled or not
+     * @platform android
+     */
+    domStorageEnabled: PropTypes.bool,
 
     /**
      * Sets the JS to be injected when the webpage loads.
@@ -107,6 +117,16 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
+    var {javaScriptEnabled, domStorageEnabled} = this.props;
+    if (this.props.javaScriptEnabledAndroid) {
+      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
+      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
+    }
+    if (this.props.domStorageEnabledAndroid) {
+      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
+      domStorageEnabled = this.props.domStorageEnabledAndroid;
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
@@ -116,7 +136,8 @@ var WebView = React.createClass({
         html={this.props.html}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
-        javaScriptEnabledAndroid={this.props.javaScriptEnabledAndroid}
+        javaScriptEnabled={javaScriptEnabled}
+        domStorageEnabled={domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
@@ -172,11 +193,16 @@ var WebView = React.createClass({
   },
 
   onLoadingStart: function(event) {
+    var onLoadStart = this.props.onLoadStart;
+    onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
   },
 
   onLoadingError: function(event) {
     event.persist(); // persist this event because we need to store it
+    var {onError, onLoadEnd} = this.props;
+    onError && onError(event);
+    onLoadEnd && onLoadEnd(event);
     console.error('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
@@ -186,6 +212,9 @@ var WebView = React.createClass({
   },
 
   onLoadingFinish: function(event) {
+    var {onLoad, onLoadEnd} = this.props;
+    onLoad && onLoad(event);
+    onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });

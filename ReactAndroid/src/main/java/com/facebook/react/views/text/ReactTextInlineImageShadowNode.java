@@ -19,7 +19,7 @@ import android.net.Uri;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ReactShadowNode;
 
 /**

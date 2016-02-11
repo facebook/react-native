@@ -21,6 +21,8 @@
 
 #import "RCTLog.h"
 
+NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
+
 NSString *RCTJSONStringify(id jsonObject, NSError **error)
 {
   static SEL JSONKitSelector = NULL;
@@ -313,26 +315,33 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message, id toStringi
   return error;
 }
 
-// TODO: Can we just replace RCTMakeError with this function instead?
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
+{
+  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified, nil, error);
+}
+
+// TODO: Can we just replace RCTMakeError with this function instead?
+NSDictionary<NSString *, id> *RCTJSErrorFromCodeMessageAndNSError(NSString *code, NSString *message, NSError *error)
 {
   NSString *errorMessage;
   NSArray<NSString *> *stackTrace = [NSThread callStackSymbols];
   NSMutableDictionary<NSString *, id> *errorInfo =
-    [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
+  [NSMutableDictionary dictionaryWithObject:stackTrace forKey:@"nativeStackIOS"];
 
   if (error) {
     errorMessage = error.localizedDescription ?: @"Unknown error from a native module";
     errorInfo[@"domain"] = error.domain ?: RCTErrorDomain;
-    errorInfo[@"code"] = @(error.code);
   } else {
     errorMessage = @"Unknown error from a native module";
     errorInfo[@"domain"] = RCTErrorDomain;
-    errorInfo[@"code"] = @-1;
   }
+  errorInfo[@"code"] = code ?: RCTErrorUnspecified;
+  // Allow for explicit overriding of the error message
+  errorMessage = message ?: errorMessage;
 
   return RCTMakeError(errorMessage, nil, errorInfo);
 }
+
 
 BOOL RCTRunningInTestEnvironment(void)
 {
@@ -494,7 +503,11 @@ NSString *RCTBundlePathForURL(NSURL *URL)
     // Not a bundle-relative file
     return nil;
   }
-  return [path substringFromIndex:bundlePath.length + 1];
+  path = [path substringFromIndex:bundlePath.length];
+  if ([path hasPrefix:@"/"]) {
+    path = [path substringFromIndex:1];
+  }
+  return path;
 }
 
 BOOL RCTIsXCAssetURL(NSURL *imageURL)
@@ -576,10 +589,83 @@ NSString *RCTColorToHexString(CGColorRef color)
   }
 }
 
-
 // (https://github.com/0xced/XCDFormInputAccessoryView/blob/master/XCDFormInputAccessoryView/XCDFormInputAccessoryView.m#L10-L14)
-RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string)
+NSString *RCTUIKitLocalizedString(NSString *string)
 {
   NSBundle *UIKitBundle = [NSBundle bundleForClass:[UIApplication class]];
   return UIKitBundle ? [UIKitBundle localizedStringForKey:string value:string table:nil] : string;
+}
+
+NSString *RCTGetURLQueryParam(NSURL *URL, NSString *param)
+{
+  RCTAssertParam(param);
+  if (!URL) {
+    return nil;
+  }
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL
+                                           resolvingAgainstBaseURL:YES];
+
+  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
+  for (NSString *item in [components.percentEncodedQuery componentsSeparatedByString:@"&"].reverseObjectEnumerator) {
+    NSArray *keyValue = [item componentsSeparatedByString:@"="];
+    NSString *key = [keyValue.firstObject stringByRemovingPercentEncoding];
+    if ([key isEqualToString:param]) {
+      return [keyValue.lastObject stringByRemovingPercentEncoding];
+    }
+  }
+  return nil;
+}
+
+NSURL *RCTURLByReplacingQueryParam(NSURL *URL, NSString *param, NSString *value)
+{
+  RCTAssertParam(param);
+  if (!URL) {
+    return nil;
+  }
+  NSURLComponents *components = [NSURLComponents componentsWithURL:URL
+                                           resolvingAgainstBaseURL:YES];
+
+  // TODO: use NSURLComponents.queryItems once we drop support for iOS 7
+
+  // Unhelpfully, iOS doesn't provide this set as a constant
+  static NSCharacterSet *URLParamCharacterSet;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSMutableCharacterSet *characterSet = [NSMutableCharacterSet new];
+    [characterSet formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    [characterSet removeCharactersInString:@"&=?"];
+    URLParamCharacterSet = [characterSet copy];
+  });
+
+  NSString *encodedParam =
+  [param stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
+  __block NSInteger paramIndex = NSNotFound;
+  NSMutableArray *queryItems = [[components.percentEncodedQuery componentsSeparatedByString:@"&"] mutableCopy];
+  [queryItems enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:
+   ^(NSString *item, NSUInteger i, BOOL *stop) {
+     NSArray *keyValue = [item componentsSeparatedByString:@"="];
+     if ([keyValue.firstObject isEqualToString:encodedParam]) {
+       paramIndex = i;
+       *stop = YES;
+     }
+   }];
+
+  if (!value) {
+    if (paramIndex != NSNotFound) {
+      [queryItems removeObjectAtIndex:paramIndex];
+    }
+  } else {
+    NSString *encodedValue =
+    [value stringByAddingPercentEncodingWithAllowedCharacters:URLParamCharacterSet];
+
+    NSString *newItem = [encodedParam stringByAppendingFormat:@"=%@", encodedValue];
+    if (paramIndex == NSNotFound) {
+      [queryItems addObject:newItem];
+    } else {
+      [queryItems replaceObjectAtIndex:paramIndex withObject:newItem];
+    }
+  }
+  components.percentEncodedQuery = [queryItems componentsJoinedByString:@"&"];
+  return components.URL;
 }

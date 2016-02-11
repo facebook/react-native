@@ -93,20 +93,6 @@ import com.facebook.react.uimanager.events.TouchEventType;
                 ImageView.ScaleType.CENTER_CROP.ordinal())));
 
     constants.put(
-        "UIText",
-        MapBuilder.of(
-            "AutocapitalizationType",
-            MapBuilder.of(
-                "none",
-                InputType.TYPE_CLASS_TEXT,
-                "characters",
-                InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
-                "words",
-                InputType.TYPE_TEXT_FLAG_CAP_WORDS,
-                "sentences",
-                InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)));
-
-    constants.put(
         "Dimensions",
         MapBuilder.of(
             "windowPhysicalPixels",

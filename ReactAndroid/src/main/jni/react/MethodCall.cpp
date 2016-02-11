@@ -12,6 +12,7 @@ namespace react {
 #define REQUEST_MODULE_IDS 0
 #define REQUEST_METHOD_IDS 1
 #define REQUEST_PARAMSS 2
+#define REQUEST_CALLID 3
 
 std::vector<MethodCall> parseMethodCalls(const std::string& json) {
   folly::dynamic jsonData = folly::parseJson(json);
@@ -33,11 +34,22 @@ std::vector<MethodCall> parseMethodCalls(const std::string& json) {
   auto moduleIds = jsonData[REQUEST_MODULE_IDS];
   auto methodIds = jsonData[REQUEST_METHOD_IDS];
   auto params = jsonData[REQUEST_PARAMSS];
+  int  callId = -1;
 
   if (!moduleIds.isArray() || !methodIds.isArray() || !params.isArray()) {
     jni::throwNewJavaException(jni::gJavaLangIllegalArgumentException,
                                "Did not get valid calls back from JS: %s",
                                json.c_str());
+  }
+
+  if (jsonData.size() > REQUEST_CALLID) {
+    if (!jsonData[REQUEST_CALLID].isInt()) {
+      jni::throwNewJavaException(jni::gJavaLangIllegalArgumentException,
+                               "Did not get valid calls back from JS: %s",
+                               json.c_str());
+    } else {
+      callId = jsonData[REQUEST_CALLID].getInt();
+    }
   }
 
   std::vector<MethodCall> methodCalls;
@@ -51,7 +63,11 @@ std::vector<MethodCall> parseMethodCalls(const std::string& json) {
     methodCalls.emplace_back(
       moduleIds[i].getInt(),
       methodIds[i].getInt(),
-      std::move(params[i]));
+      std::move(params[i]),
+      callId);
+
+    // only incremement callid if contains valid callid as callid is optional
+    callId += (callId != -1) ? 1 : 0;
   }
 
   return methodCalls;

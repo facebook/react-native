@@ -22,8 +22,9 @@ jest
 const Fastfs = require('../fastfs');
 const Module = require('../Module');
 const ModuleCache = require('../ModuleCache');
+const DependencyGraphHelpers = require('../DependencyGraph/DependencyGraphHelpers');
 const Promise = require('promise');
-const fs = require('fs');
+const fs = require('graceful-fs');
 
 describe('Module', () => {
   const fileWatcher = {
@@ -50,12 +51,13 @@ describe('Module', () => {
       const cache = new Cache();
 
       return fastfs.build().then(() => {
-        const module = new Module(
-          '/root/index.js',
+        const module = new Module({
+          file: '/root/index.js',
           fastfs,
-          new ModuleCache(fastfs, cache),
-          cache
-        );
+          moduleCache: new ModuleCache(fastfs, cache),
+          cache: cache,
+          depGraphHelpers: new DependencyGraphHelpers(),
+        });
 
         return module.getAsyncDependencies().then(actual =>
           expect(actual).toEqual(expected)
@@ -66,7 +68,7 @@ describe('Module', () => {
     pit('should recognize single dependency', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import("dep1")',
+          'index.js': 'System.' + 'import("dep1")',
         },
       });
 
@@ -76,7 +78,7 @@ describe('Module', () => {
     pit('should parse single quoted dependencies', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import(\'dep1\')',
+          'index.js': 'System.' + 'import(\'dep1\')',
         },
       });
 
@@ -87,8 +89,8 @@ describe('Module', () => {
       fs.__setMockFilesystem({
         'root': {
           'index.js': [
-            'System.import("dep1")',
-            'System.import("dep2")',
+            'System.' + 'import("dep1")',
+            'System.' + 'import("dep2")',
           ].join('\n'),
         },
       });
@@ -102,7 +104,7 @@ describe('Module', () => {
     pit('parse fine new lines', () => {
       fs.__setMockFilesystem({
         'root': {
-          'index.js': 'System.import(\n"dep1"\n)',
+          'index.js': 'System.' + 'import(\n"dep1"\n)',
         },
       });
 
@@ -122,13 +124,14 @@ describe('Module', () => {
       const cache = new Cache();
 
       return fastfs.build().then(() => {
-        return new Module(
-          '/root/index.js',
+        return new Module({
+          file: '/root/index.js',
           fastfs,
-          new ModuleCache(fastfs, cache),
+          moduleCache: new ModuleCache(fastfs, cache),
           cache,
-          extractor
-        );
+          extractor,
+          depGraphHelpers: new DependencyGraphHelpers(),
+        });
       });
     }
 

@@ -11,7 +11,7 @@
     "jstransform": "latest",
     "mkdirp": "latest",
     "optimist": "0.6.0",
-    "react": "~0.12.0",
+    "react": "~0.13.0",
     "react-docgen": "^2.0.1",
     "react-page-middleware": "git://github.com/facebook/react-page-middleware.git",
     "request": "latest"

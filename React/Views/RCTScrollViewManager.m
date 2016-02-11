@@ -80,7 +80,8 @@ RCT_EXPORT_VIEW_PROPERTY(onRefreshStart, RCTDirectEventBlock)
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
 
     RCTScrollView *view = viewRegistry[reactTag];
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
@@ -97,9 +98,10 @@ RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
-                    callback:(RCTResponseSenderBlock)callback)
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
 
     RCTScrollView *view = viewRegistry[reactTag];
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
@@ -116,7 +118,8 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
 
 RCT_EXPORT_METHOD(endRefreshing:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
 
     RCTScrollView *view = viewRegistry[reactTag];
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
@@ -128,38 +131,34 @@ RCT_EXPORT_METHOD(endRefreshing:(nonnull NSNumber *)reactTag)
   }];
 }
 
-RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag withOffset:(CGPoint)offset)
+RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
+                  withOffset:(CGPoint)offset
+                  animated:(BOOL)animated)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
-      [(id<RCTScrollableProtocol>)view scrollToOffset:offset animated:YES];
+      [(id<RCTScrollableProtocol>)view scrollToOffset:offset animated:animated];
     } else {
-      RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+      RCTLogError(@"tried to scrollTo: on non-RCTScrollableProtocol view %@ "
+                  "with tag #%@", view, reactTag);
     }
   }];
 }
 
-RCT_EXPORT_METHOD(scrollWithoutAnimationTo:(nonnull NSNumber *)reactTag withOffset:(CGPoint)offset)
+RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
+                  withRect:(CGRect)rect
+                  animated:(BOOL)animated)
 {
-    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-        UIView *view = viewRegistry[reactTag];
-        if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
-          [(id<RCTScrollableProtocol>)view scrollToOffset:offset animated:NO];
-        } else {
-          RCTLogError(@"tried to scrollToOffset: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag withRect:(CGRect)rect)
-{
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+  [self.bridge.uiManager addUIBlock:
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
     UIView *view = viewRegistry[reactTag];
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
-      [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:YES];
+      [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:animated];
     } else {
-      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ with tag #%@", view, reactTag);
+      RCTLogError(@"tried to zoomToRect: on non-RCTScrollableProtocol view %@ "
+                  "with tag #%@", view, reactTag);
     }
   }];
 }

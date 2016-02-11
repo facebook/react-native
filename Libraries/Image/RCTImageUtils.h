@@ -12,6 +12,8 @@
 
 #import "RCTDefines.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * This function takes an input content size (typically from an image), a target
  * size and scale that it will be drawn at (typically in a CGContext) and then
@@ -53,10 +55,16 @@ RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);
  * width/height of the returned image is guaranteed to be >= destSize.
  * Pass a destSize of CGSizeZero to decode the image at its original size.
  */
-RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
-                                           CGSize destSize,
-                                           CGFloat destScale,
-                                           UIViewContentMode resizeMode);
+RCT_EXTERN UIImage *__nullable RCTDecodeImageWithData(NSData *data,
+                                                      CGSize destSize,
+                                                      CGFloat destScale,
+                                                      UIViewContentMode resizeMode);
+
+/**
+ * This function takes the source data for an image and decodes just the
+ * metadata, without decompressing the image itself.
+ */
+RCT_EXTERN NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data);
 
 /**
  * Convert an image back into data. Images with an alpha channel will be
@@ -65,4 +73,6 @@ RCT_EXTERN UIImage *RCTDecodeImageWithData(NSData *data,
  * conversion, with 1.0 being maximum quality. It has no effect for images
  * using PNG compression.
  */
-RCT_EXTERN NSData *RCTGetImageData(CGImageRef image, float quality);
+RCT_EXTERN NSData *__nullable RCTGetImageData(CGImageRef image, float quality);
+
+NS_ASSUME_NONNULL_END

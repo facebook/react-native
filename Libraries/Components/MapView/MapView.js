@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const ColorPropType = require('ColorPropType');
 const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Image = require('Image');
 const NativeMethodsMixin = require('NativeMethodsMixin');
@@ -27,7 +28,16 @@ const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
 
+export type AnnotationDragState = $Enum<{
+  idle: string;
+  starting: string;
+  dragging: string;
+  canceling: string;
+  ending: string;
+}>;
+
 const MapView = React.createClass({
+
   mixins: [NativeMethodsMixin],
 
   propTypes: {
@@ -39,15 +49,22 @@ const MapView = React.createClass({
     style: View.propTypes.style,
 
     /**
-     * If `true` the app will ask for the user's location and focus on it.
-     * Default value is `false`.
+     * If `true` the app will ask for the user's location and display it on
+     * the map. Default value is `false`.
      *
-     * **NOTE**: You need to add NSLocationWhenInUseUsageDescription key in
-     * Info.plist to enable geolocation, otherwise it is going
-     * to *fail silently*!
+     * **NOTE**: on iOS, you need to add the `NSLocationWhenInUseUsageDescription`
+     * key in Info.plist to enable geolocation, otherwise it will fail silently.
      */
     showsUserLocation: React.PropTypes.bool,
 
+    /**
+     * If `true` the map will follow the user's location whenever it changes.
+     * Note that this has no effect unless `showsUserLocation` is enabled.
+     * Default value is `true`.
+     * @platform ios
+     */
+    followUserLocation: React.PropTypes.bool,
+    
     /**
      * If `false` points of interest won't be displayed on the map.
      * Default value is `true`.
@@ -143,6 +160,16 @@ const MapView = React.createClass({
        * Whether the pin drop should be animated or not
        */
       animateDrop: React.PropTypes.bool,
+      
+      /**
+       * Whether the pin should be draggable or not
+       */
+      draggable: React.PropTypes.bool,
+
+      /**
+       * Event that fires when the annotation drag state changes.
+       */  
+      onDragStateChange: React.PropTypes.func,
 
       /**
        * Annotation title/subtile.
@@ -166,10 +193,7 @@ const MapView = React.createClass({
        * are supported for regular pins. For custom pin images, any tintColor
        * value is supported on all iOS versions.
        */
-      tintColor: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.number
-      ]),
+      tintColor: ColorPropType,
 
       /**
        * Custom pin image. This must be a static image resource inside the app.
@@ -213,14 +237,8 @@ const MapView = React.createClass({
        * Line attributes
        */
       lineWidth: React.PropTypes.number,
-      strokeColor: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.number
-      ]),
-      fillColor: React.PropTypes.oneOfType([
-        React.PropTypes.string,
-        React.PropTypes.number
-      ]),
+      strokeColor: ColorPropType,
+      fillColor: ColorPropType,
 
       /**
        * Overlay id
@@ -269,7 +287,7 @@ const MapView = React.createClass({
   },
 
   render: function() {
-    let children = [], {annotations, overlays} = this.props;
+    let children = [], {annotations, overlays, followUserLocation} = this.props;
     annotations = annotations && annotations.map((annotation: Object) => {
       let {
         id,
@@ -384,6 +402,24 @@ const MapView = React.createClass({
           }
         }
       };
+      var onAnnotationDragStateChange = (event: Event) => {
+        if (!annotations) {
+          return;
+        }
+        // Find the annotation with the id that was pressed
+        for (let i = 0, l = annotations.length; i < l; i++) {
+          let annotation = annotations[i];
+          if (annotation.id === event.nativeEvent.annotationId) {
+            // Update location
+            annotation.latitude = event.nativeEvent.latitude;
+            annotation.longitude = event.nativeEvent.longitude;
+            // Call callback
+            annotation.onDragStateChange &&
+              annotation.onDragStateChange(event.nativeEvent);
+            break;
+          }
+        }
+      }
     }
 
     // TODO: these should be separate events, to reduce bridge traffic
@@ -399,14 +435,21 @@ const MapView = React.createClass({
       };
     }
 
+    // followUserLocation defaults to true if showUserLocation is set
+    if (followUserLocation === undefined) {
+      followUserLocation = this.props.showUserLocation;
+    }
+
     return (
       <RCTMap
         {...this.props}
         annotations={annotations}
         children={children}
+        followUserLocation={followUserLocation}
         overlays={overlays}
         onPress={onPress}
         onChange={onChange}
+        onAnnotationDragStateChange={onAnnotationDragStateChange}
       />
     );
   },
@@ -438,7 +481,11 @@ MapView.PinColors = PinColors && {
 };
 
 const RCTMap = requireNativeComponent('RCTMap', MapView, {
-  nativeOnly: {onChange: true, onPress: true}
+  nativeOnly: {
+    onAnnotationDragStateChange: true,
+    onChange: true,
+    onPress: true
+  }
 });
 
 module.exports = MapView;

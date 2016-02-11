@@ -18,7 +18,7 @@ Since React makes no assumptions about the rest of your technology stack, it's e
 
 In your app's `build.gradle` file add the React Native dependency:
 
-    compile 'com.facebook.react:react-native:0.13.0'
+    compile 'com.facebook.react:react-native:0.17.+'
 
 You can find the latest version of the react-native library on [Maven Central](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.facebook.react%22%20AND%20a%3A%22react-native%22). Next, make sure you have the Internet permission in your `AndroidManifest.xml`:
 
@@ -77,7 +77,7 @@ protected void onResume() {
     super.onResume();
 
     if (mReactInstanceManager != null) {
-        mReactInstanceManager.onResume(this);
+        mReactInstanceManager.onResume(this, this);
     }
 }
 ```

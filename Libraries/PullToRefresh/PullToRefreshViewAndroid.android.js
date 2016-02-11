@@ -10,8 +10,9 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var React = require('React');
-var RefreshLayoutConsts = require('NativeModules').UIManager.AndroidSwipeRefreshLayout.Constants;
+var RefreshLayoutConsts = require('UIManager').AndroidSwipeRefreshLayout.Constants;
 var View = require('View');
 
 var onlyChild = require('onlyChild');
@@ -41,11 +42,11 @@ var PullToRefreshViewAndroid = React.createClass({
     /**
      * The colors (at least one) that will be used to draw the refresh indicator
      */
-    colors: React.PropTypes.arrayOf(React.PropTypes.string),
+    colors: React.PropTypes.arrayOf(ColorPropType),
     /**
      * The background color of the refresh indicator
      */
-    progressBackgroundColor: React.PropTypes.string,
+    progressBackgroundColor: ColorPropType,
     /**
      * Whether the view should be indicating an active refresh
      */

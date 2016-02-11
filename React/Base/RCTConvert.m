@@ -475,8 +475,34 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
 
 static RCTFontWeight RCTWeightOfFont(UIFont *font)
 {
+  static NSDictionary *nameToWeight;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    nameToWeight = @{
+      @"normal": @(UIFontWeightRegular),
+      @"bold": @(UIFontWeightBold),
+      @"ultralight": @(UIFontWeightUltraLight),
+      @"thin": @(UIFontWeightThin),
+      @"light": @(UIFontWeightLight),
+      @"regular": @(UIFontWeightRegular),
+      @"medium": @(UIFontWeightMedium),
+      @"semibold": @(UIFontWeightSemibold),
+      @"bold": @(UIFontWeightBold),
+      @"heavy": @(UIFontWeightHeavy),
+      @"black": @(UIFontWeightBlack),
+    };
+  });
+
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return [traits[UIFontWeightTrait] doubleValue];
+  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
+  if (weight == 0.0) {
+    for (NSString *name in nameToWeight) {
+      if ([font.fontName.lowercaseString hasSuffix:name]) {
+        return [nameToWeight[name] doubleValue];
+      }
+    }
+  }
+  return weight;
 }
 
 static BOOL RCTFontIsItalic(UIFont *font)

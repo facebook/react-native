@@ -279,6 +279,7 @@ public class ReactImageView extends GenericDraweeView {
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
         .setPostprocessor(postprocessor)
         .setResizeOptions(resizeOptions)
+        .setAutoRotateEnabled(true)
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 
@@ -351,11 +352,11 @@ public class ReactImageView extends GenericDraweeView {
     return resId > 0 ? context.getResources().getDrawable(resId) : null;
   }
 
-  private static @Nullable Uri getResourceDrawableUri(Context context, @Nullable String name) {
+  private static Uri getResourceDrawableUri(Context context, @Nullable String name) {
     int resId = getResourceDrawableId(context, name);
     return resId > 0 ? new Uri.Builder()
         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
         .path(String.valueOf(resId))
-        .build() : null;
+        .build() : Uri.EMPTY;
   }
 }

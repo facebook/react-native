@@ -14,22 +14,25 @@
 var ImageResizeMode = require('ImageResizeMode');
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var ColorPropType = require('ColorPropType');
+var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 var TransformPropTypes = require('TransformPropTypes');
 
 var ImageStylePropTypes = {
   ...LayoutPropTypes,
+  ...ShadowPropTypesIOS,
   ...TransformPropTypes,
   resizeMode: ReactPropTypes.oneOf(Object.keys(ImageResizeMode)),
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ReactPropTypes.string,
-  borderColor: ReactPropTypes.string,
+  backgroundColor: ColorPropType,
+  borderColor: ColorPropType,
   borderWidth: ReactPropTypes.number,
   borderRadius: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
 
   // iOS-Specific style to "tint" an image.
   // It changes the color of all the non-transparent pixels to the tintColor
-  tintColor: ReactPropTypes.string,
+  tintColor: ColorPropType,
   opacity: ReactPropTypes.number,
 };
 

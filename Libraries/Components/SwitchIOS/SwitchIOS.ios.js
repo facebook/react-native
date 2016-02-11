@@ -13,6 +13,7 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
@@ -62,17 +63,17 @@ var SwitchIOS = React.createClass({
     /**
      * Background color when the switch is turned on.
      */
-    onTintColor: PropTypes.string,
+    onTintColor: ColorPropType,
 
     /**
      * Background color for the switch round button.
      */
-    thumbTintColor: PropTypes.string,
+    thumbTintColor: ColorPropType,
 
     /**
      * Background color when the switch is turned off.
      */
-    tintColor: PropTypes.string,
+    tintColor: ColorPropType,
   },
 
   getDefaultProps: function(): DefaultProps {

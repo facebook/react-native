@@ -10,7 +10,7 @@
  * and Flow doesn't have a good way to enable getters and setters for
  * react-native without forcing all react-native users to also enable getters
  * and setters. Until we solve that issue, we can use this .flow file to
- * pretend like react-native doesn't use getters and setters 
+ * pretend like react-native doesn't use getters and setters
  *
  * @flow
  */
@@ -30,11 +30,14 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   DatePickerIOS: require('DatePickerIOS'),
   DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
   Image: require('Image'),
+  ImageEditor: require('ImageEditor'),
+  ImageStore: require('ImageStore'),
   ListView: require('ListView'),
   MapView: require('MapView'),
   Modal: require('Modal'),
   Navigator: require('Navigator'),
   NavigatorIOS: require('NavigatorIOS'),
+  Picker: require('Picker'),
   PickerIOS: require('PickerIOS'),
   ProgressBarAndroid: require('ProgressBarAndroid'),
   ProgressViewIOS: require('ProgressViewIOS'),
@@ -44,6 +47,8 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   SnapshotViewIOS: require('SnapshotViewIOS'),
   Switch: require('Switch'),
   PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
+  RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
+  RefreshControl: require('RefreshControl'),
   SwitchAndroid: require('SwitchAndroid'),
   SwitchIOS: require('SwitchIOS'),
   TabBarIOS: require('TabBarIOS'),
@@ -63,9 +68,11 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   // APIs
   ActionSheetIOS: require('ActionSheetIOS'),
   AdSupportIOS: require('AdSupportIOS'),
+  Alert: require('Alert'),
   AlertIOS: require('AlertIOS'),
   Animated: require('Animated'),
   AppRegistry: require('AppRegistry'),
+  AppState: require('AppState'),
   AppStateIOS: require('AppStateIOS'),
   AsyncStorage: require('AsyncStorage'),
   BackAndroid: require('BackAndroid'),
@@ -97,6 +104,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   requireNativeComponent: require('requireNativeComponent'),
 
   // Prop Types
+  ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
 

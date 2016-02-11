@@ -15,7 +15,7 @@ const extractRequires = require('./lib/extractRequires');
 
 class Module {
 
-  constructor(file, fastfs, moduleCache, cache, extractor) {
+  constructor({ file, fastfs, moduleCache, cache, extractor, depGraphHelpers }) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -27,17 +27,22 @@ class Module {
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._extractor = extractor;
+    this._depGraphHelpers = depGraphHelpers;
   }
 
   isHaste() {
-    return this._read().then(data => !!data.id);
+    return this._cache.get(
+      this.path,
+      'isHaste',
+      () => this.read().then(data => !!data.id)
+    );
   }
 
   getName() {
     return this._cache.get(
       this.path,
       'name',
-      () => this._read().then(data => {
+      () => this.read().then(data => {
         if (data.id) {
           return data.id;
         }
@@ -66,32 +71,49 @@ class Module {
   }
 
   getDependencies() {
-    return this._read().then(data => data.dependencies);
+    return this._cache.get(
+      this.path,
+      'dependencies',
+      () => this.read().then(data => data.dependencies)
+    );
   }
 
   getAsyncDependencies() {
-    return this._read().then(data => data.asyncDependencies);
+    return this._cache.get(
+      this.path,
+      'asyncDependencies',
+      () => this.read().then(data => data.asyncDependencies)
+    );
   }
 
   invalidate() {
     this._cache.invalidate(this.path);
   }
 
-  _read() {
+  read() {
     if (!this._reading) {
       this._reading = this._fastfs.readFile(this.path).then(content => {
         const data = {};
+
+        // Set an id on the module if it's using @providesModule syntax
+        // and if it's NOT in node_modules (and not a whitelisted node_module).
+        // This handles the case where a project may have a dep that has @providesModule
+        // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+        // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+        // project-specific code that is using @providesModule.
         const moduleDocBlock = docblock.parseAsObject(content);
-        if (moduleDocBlock.providesModule || moduleDocBlock.provides) {
+        if (!this._depGraphHelpers.isNodeModulesDir(this.path) &&
+            (moduleDocBlock.providesModule || moduleDocBlock.provides)) {
           data.id = /^(\S*)/.exec(
             moduleDocBlock.providesModule || moduleDocBlock.provides
           )[1];
         }
 
-        // Ignore requires in generated code. An example of this is prebuilt
-        // files like the SourceMap library.
-        if ('extern' in moduleDocBlock) {
+        // Ignore requires in JSON files or generated code. An example of this
+        // is prebuilt files like the SourceMap library.
+        if (this.isJSON() || 'extern' in moduleDocBlock) {
           data.dependencies = [];
+          data.asyncDependencies = [];
         } else {
           var dependencies = (this._extractor || extractRequires)(content).deps;
           data.dependencies = dependencies.sync;

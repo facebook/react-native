@@ -10,6 +10,17 @@
       isInitialized: false,
       hasError: false,
     };
+
+    if (__DEV__) { // HMR
+      Object.assign(modules[id].module, {
+        hot: {
+          acceptCallback: null,
+          accept: function(callback) {
+            modules[id].module.hot.acceptCallback = callback;
+          }
+        }
+      });
+    }
   }
 
   function require(id) {
@@ -82,4 +93,38 @@
 
   global.__d = define;
   global.require = require;
+
+  if (__DEV__) { // HMR
+    function accept(id, factory) {
+      var mod = modules[id];
+
+      if (!mod) {
+        define(id, factory);
+        return; // new modules don't need to be accepted
+      }
+
+      if (!mod.module.hot) {
+        console.warn(
+          'Cannot accept module because Hot Module Replacement ' +
+          'API was not installed.'
+        );
+        return;
+      }
+
+      if (mod.module.hot.acceptCallback) {
+        mod.factory = factory;
+        mod.isInitialized = false;
+        require(id);
+
+        mod.module.hot.acceptCallback();
+      } else {
+        console.warn(
+          '[HMR] Module `' + id + '` can\'t be hot reloaded because it ' +
+          'doesn\'t provide accept callback hook. Reload the app to get the updates.'
+        );
+      }
+    }
+
+    global.__accept = accept;
+  }
 })(this);

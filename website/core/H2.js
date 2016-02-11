@@ -14,9 +14,7 @@ var Header = require('Header');
 
 var H2 = React.createClass({
   render: function() {
-    return this.transferPropsTo(
-      <Header level={2}>{this.props.children}</Header>
-    );
+    return <Header {...this.props} level={2}>{this.props.children}</Header>;
   }
 });
 
