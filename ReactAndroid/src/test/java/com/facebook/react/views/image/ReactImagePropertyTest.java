@@ -59,12 +59,12 @@ public class ReactImagePropertyTest {
     mContext.initializeWithInstance(mCatalystInstanceMock);
     mThemeContext = new ThemedReactContext(mContext, mContext);
     Fresco.initialize(mContext);
-    DisplayMetricsHolder.setDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setWindowDisplayMetrics(new DisplayMetrics());
   }
 
   @After
   public void teardown() {
-    DisplayMetricsHolder.setDisplayMetrics(null);
+    DisplayMetricsHolder.setWindowDisplayMetrics(null);
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {

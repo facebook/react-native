@@ -54,12 +54,14 @@ public class LayoutPropertyApplicatorTest {
 
   @Before
   public void setup() {
-    DisplayMetricsHolder.setDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setWindowDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setScreenDisplayMetrics(new DisplayMetrics());
   }
 
   @After
   public void teardown() {
-    DisplayMetricsHolder.setDisplayMetrics(null);
+    DisplayMetricsHolder.setWindowDisplayMetrics(null);
+    DisplayMetricsHolder.setScreenDisplayMetrics(null);
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
@@ -309,7 +311,7 @@ public class LayoutPropertyApplicatorTest {
   public void testPropertiesResetToDefault() {
     DisplayMetrics displayMetrics = new DisplayMetrics();
     displayMetrics.density = 1.0f;
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
     ReactStylesDiffMap map = buildStyles(

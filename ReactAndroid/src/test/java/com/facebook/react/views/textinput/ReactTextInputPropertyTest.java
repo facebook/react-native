@@ -60,7 +60,7 @@ public class ReactTextInputPropertyTest {
     mContext.initializeWithInstance(mCatalystInstanceMock);
     mThemedContext = new ThemedReactContext(mContext, mContext);
     mManager = new ReactTextInputManager();
-    DisplayMetricsHolder.setDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setWindowDisplayMetrics(new DisplayMetrics());
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {

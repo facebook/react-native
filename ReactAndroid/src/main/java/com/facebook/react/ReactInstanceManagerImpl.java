@@ -295,8 +295,11 @@ import com.facebook.systrace.Systrace;
   }
 
   private static void setDisplayMetrics(Context context) {
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    displayMetrics.setTo(context.getResources().getDisplayMetrics());
+    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+
+    DisplayMetrics screenDisplayMetrics = new DisplayMetrics();
+    screenDisplayMetrics.setTo(displayMetrics);
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
 
@@ -304,9 +307,8 @@ import com.facebook.systrace.Systrace;
     // The real metrics include system decor elements (e.g. soft menu bar).
     //
     // See: http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= 17){
-      display.getRealMetrics(displayMetrics);
-
+    if (Build.VERSION.SDK_INT >= 17) {
+      display.getRealMetrics(screenDisplayMetrics);
     } else {
       // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real dimensions.
       // Since react-native only supports API level 16+ we don't have to worry about other cases.
@@ -317,13 +319,13 @@ import com.facebook.systrace.Systrace;
       try {
         Method mGetRawH = Display.class.getMethod("getRawHeight");
         Method mGetRawW = Display.class.getMethod("getRawWidth");
-        displayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
-        displayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
+        screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
+        screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
       } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
         throw new RuntimeException("Error getting real dimensions for API level < 17", e);
       }
     }
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);
   }
 
   /**
