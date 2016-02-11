@@ -7,8 +7,8 @@ permalink: docs/navigator-comparison.html
 next: known-issues
 ---
 
-The differences between [Navigator](/react-native/docs/navigator.html)
-and [NavigatorIOS](/react-native/docs/navigatorios.html) are a common
+The differences between [Navigator](docs/navigator.html)
+and [NavigatorIOS](docs/navigatorios.html) are a common
 source of confusion for newcomers.
 
 Both `Navigator` and `NavigatorIOS` are components that allow you to
