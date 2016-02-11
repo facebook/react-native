@@ -14,8 +14,12 @@
 
 # Ignore react and fbjs where there are overlaps, but don't ignore
 # anything that react-native relies on
+.*/node_modules/fbjs/lib/Map.js
+.*/node_modules/fbjs/lib/Promise.js
 .*/node_modules/fbjs/lib/fetch.js
 .*/node_modules/fbjs/lib/ExecutionEnvironment.js
+.*/node_modules/fbjs/lib/isEmpty.js
+.*/node_modules/fbjs/lib/crc32.js
 .*/node_modules/fbjs/lib/ErrorUtils.js
 
 # Flow has a built-in definition for the 'react' module which we prefer to use
