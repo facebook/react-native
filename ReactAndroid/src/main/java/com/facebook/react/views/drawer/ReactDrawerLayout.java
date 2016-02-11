@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
   public static final int DEFAULT_DRAWER_WIDTH = LayoutParams.MATCH_PARENT;
   private int mDrawerPosition = Gravity.START;
   private int mDrawerWidth = DEFAULT_DRAWER_WIDTH;
+  private int mDrawerGestureLock = DrawerLayout.LOCK_MODE_UNLOCKED;
 
   public ReactDrawerLayout(ReactContext reactContext) {
     super(reactContext);
@@ -59,6 +60,10 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     setDrawerProperties();
   }
 
+    /* package */ void setDrawerGestureLock(int drawerGestureLock) {
+    mDrawerGestureLock = drawerGestureLock;
+  }
+
   // Sets the properties of the drawer, after the navigationView has been set.
   /* package */ void setDrawerProperties() {
     if (this.getChildCount() == 2) {
@@ -68,6 +73,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
       layoutParams.width = mDrawerWidth;
       drawerView.setLayoutParams(layoutParams);
       drawerView.setClickable(true);
+      this.setDrawerLockMode(mDrawerGestureLock);
     }
   }
 }
