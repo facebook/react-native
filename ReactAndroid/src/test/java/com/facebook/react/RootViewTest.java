@@ -82,7 +82,7 @@ public class RootViewTest {
     mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
     mReactContext.initializeWithInstance(mCatalystInstanceMock);
     DisplayMetrics displayMetrics = mReactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 
     UIManagerModule uiManagerModuleMock = mock(UIManagerModule.class);
     when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class))
