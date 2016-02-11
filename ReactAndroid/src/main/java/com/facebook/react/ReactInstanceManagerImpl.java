@@ -58,8 +58,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.react.devsupport.DevSupportManager;
-import com.facebook.react.devsupport.DevSupportManagerImpl;
-import com.facebook.react.devsupport.DisabledDevSupportManager;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -275,15 +274,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
-    if (mUseDeveloperSupport) {
-      mDevSupportManager = new DevSupportManagerImpl(
-          applicationContext,
-          mDevInterface,
-          mJSMainModuleName,
-          useDeveloperSupport);
-    } else {
-      mDevSupportManager = new DisabledDevSupportManager();
-    }
+    mDevSupportManager = DevSupportManagerFactory.create(
+        applicationContext,
+        mDevInterface,
+        mJSMainModuleName,
+        useDeveloperSupport);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
