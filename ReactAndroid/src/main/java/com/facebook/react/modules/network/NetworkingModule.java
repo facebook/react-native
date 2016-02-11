@@ -38,6 +38,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+import okio.ByteString;
 
 import static java.lang.Math.min;
 
