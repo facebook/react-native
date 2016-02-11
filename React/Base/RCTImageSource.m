@@ -44,8 +44,9 @@
   if (![object isKindOfClass:[RCTImageSource class]]) {
     return NO;
   }
-  return [_imageURL isEqual:object.imageURL] && [_bundleURL isEqual:object.bundleURL] && _scale == object.scale &&
-  (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
+  BOOL bundleURLEqual = ((_bundleURL == nil && object.bundleURL == nil) || [_bundleURL isEqual:object.bundleURL]);
+  return [_imageURL isEqual:object.imageURL] && bundleURLEqual && _scale == object.scale &&
+    (CGSizeEqualToSize(_size, object.size) || CGSizeEqualToSize(object.size, CGSizeZero));
 }
 
 @end
@@ -67,9 +68,7 @@
     if (!(imageURL = [self NSURL:RCTNilIfNull(json[@"uri"])])) {
       return nil;
     }
-    if (!(bundleURL = [self NSURL:RCTNilIfNull(json[@"bundle"])])) {
-      return nil;
-    }
+    bundleURL = [self NSURL:RCTNilIfNull(json[@"bundle"])];
     size = [self CGSize:json];
     scale = [self CGFloat:json[@"scale"]] ?: [self BOOL:json[@"deprecated"]] ? 0.0 : 1.0;
     packagerAsset = [self BOOL:json[@"__packager_asset"]];
