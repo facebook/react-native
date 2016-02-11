@@ -60,7 +60,8 @@ public class UIManagerModuleConstantsTest {
     mUIImplementation = mock(UIImplementation.class);
 
     DisplayMetrics displayMetrics = mReactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
   }
 
   @Test
