@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Runtime.ExceptionServices;
 
 namespace ReactNative.DevSupport
 {
@@ -37,6 +38,7 @@ namespace ReactNative.DevSupport
 
         public void HandleException(Exception exception)
         {
+            ExceptionDispatchInfo.Capture(exception).Throw();
         }
 
         public void HandleReloadJavaScript()

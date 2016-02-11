@@ -90,12 +90,12 @@ var ReactRoot = React.createClass({
                 <Image source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}} style={styles.images}/>
               </View>
               <View style={[styles.box, {width: this.state.w, height: this.state.h, backgroundColor: 'red'}]} >
-              <Switch
-                onValueChange={(value) => this.toggleChangeEventHandler()}
-                style={{marginBottom: 10}}
-                value={this.state.switchState} />
+                <Switch
+                  onValueChange={(value) => this.toggleChangeEventHandler()}
+                  style={{marginBottom: 10}}
+                  value={this.state.switchState} />
+              </View>
             </View>
-          </View>
         );
     }
 });

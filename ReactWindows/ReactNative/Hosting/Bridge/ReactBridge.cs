@@ -59,7 +59,7 @@ namespace ReactNative.Hosting.Bridge
                 arguments,
             };
 
-            var response = _jsExecutor.Call("BatchedBridge", "callFunctionReturnFlushedQueue", allArgs);
+            var response = _jsExecutor.Call("__fbBatchedBridge", "callFunctionReturnFlushedQueue", allArgs);
 
             ProcessResponse(response);
         }
@@ -77,7 +77,7 @@ namespace ReactNative.Hosting.Bridge
                 arguments,
             };
             
-            var response = _jsExecutor.Call("BatchedBridge", "invokeCallbackAndReturnFlushedQueue", allArgs);
+            var response = _jsExecutor.Call("__fbBatchedBridge", "invokeCallbackAndReturnFlushedQueue", allArgs);
 
             ProcessResponse(response);
         }
@@ -105,7 +105,7 @@ namespace ReactNative.Hosting.Bridge
                 throw new ArgumentNullException(nameof(script));
 
             _jsExecutor.RunScript(script);
-            var response = _jsExecutor.Call("BatchedBridge", "flushedQueue", s_empty);
+            var response = _jsExecutor.Call("__fbBatchedBridge", "flushedQueue", s_empty);
 
             ProcessResponse(response);
         }

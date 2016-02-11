@@ -184,6 +184,7 @@
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
     <Compile Include="Reflection\EnumHelpers.cs" />
+    <Compile Include="Touch\TouchHandler.cs" />
     <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\BorderExtensions.cs" />
     <Compile Include="UIManager\ColorHelpers.cs" />
@@ -263,7 +264,6 @@
     <Compile Include="Views\TextInput\ReactMultilineTextInputManager.cs" />
     <Compile Include="Views\TextInput\TextBoxExtensions.cs" />
     <Compile Include="Views\Text\FontStyleHelpers.cs" />
-    <Compile Include="UIManager\ReactPointerEventsView.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
     <Compile Include="UIManager\SimpleViewManager.cs" />
@@ -307,7 +307,6 @@
     <Compile Include="Views\Text\ReactTextShadowNode.cs" />
     <Compile Include="Views\Text\ReactTextViewManager.cs" />
     <Compile Include="Views\Text\ReactVirtualTextViewManager.cs" />
-    <Compile Include="Touch\ICatalystInterceptingViewGroup.cs" />
     <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
     <Compile Include="Views\TextInput\ReactTextInputBlurEvent.cs" />
     <Compile Include="Views\TextInput\ReactTextInputFocusEvent.cs" />

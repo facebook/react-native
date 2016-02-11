@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
 
 namespace ReactNative.Touch
 {
@@ -16,22 +17,22 @@ namespace ReactNative.Touch
     {
         private const int JavaScriptResponderUnset = -1;
 
-        public void SetJavaScriptResponder(int tag, Panel viewParentBlockingNativeResponder)
+        private int _currentJSResponder = JavaScriptResponderUnset;
+        private FrameworkElement _viewParentBlockingNativeResponder;
+
+        public void SetJavaScriptResponder(int tag, FrameworkElement viewParentBlockingNativeResponder)
         {
-            throw new NotImplementedException(); 
+            _currentJSResponder = tag;
+            _viewParentBlockingNativeResponder = viewParentBlockingNativeResponder;
         }
 
         public void ClearJavaScriptResponder()
         {
-            throw new NotImplementedException();
+            _currentJSResponder = JavaScriptResponderUnset;
+            _viewParentBlockingNativeResponder = null;
         }
 
         public bool OnInterceptTouchEvent(object sender, PointerRoutedEventArgs ev)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void MaybeUnblockNativeResponder()
         {
             throw new NotImplementedException();
         }

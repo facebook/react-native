@@ -140,22 +140,6 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Sets the <see cref="ReactPanel"/> pointer events based on a event string key.
-        /// </summary>
-        /// <param name="view">The view panel.</param>
-        /// <param name="pointerEventsStr">The event to propogate down to the view.</param>
-        [ReactProperty("pointerEvents")]
-        public void SetPointerEvents(BorderedContentControl view, string pointerEventsStr)
-        {
-            var panel = GetPanel(view);
-            var pointerEvent = default(PointerEvents);
-            if (Enum.TryParse(pointerEventsStr, out pointerEvent))
-            {
-                panel.PointerEvents = pointerEvent;
-            }
-        }
-
-        /// <summary>
         /// Sets the border thickness of the <see cref="ReactPanel"/>.
         /// </summary>
         /// <param name="view">The view panel.</param>

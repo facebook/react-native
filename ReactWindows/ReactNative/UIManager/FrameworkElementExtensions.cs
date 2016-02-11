@@ -43,6 +43,15 @@ namespace ReactNative.UIManager
             return elementData.Tag.Value;
         }
 
+        public static bool HasTag(this FrameworkElement view)
+        {
+            if (view == null)
+                throw new ArgumentNullException(nameof(view));
+
+            var elementData = view.Tag as FrameworkElementData;
+            return elementData != null && elementData.Tag != null;
+        }
+
         public static void SetReactContext(this FrameworkElement view, ThemedReactContext context)
         {
             if (view == null)

@@ -98,11 +98,8 @@ namespace ReactNative.UIManager
         {
             var view = CreateViewInstance(reactContext);
             AddEventEmitters(reactContext, view);
-            var interceptor = view as ICatalystInterceptingViewGroup;
-            if (interceptor != null)
-            {
-                interceptor.SetOnInterceptTouchEventListener(jsResponderHandler);
-            }
+
+            // TODO: enable touch intercepting view groups
 
             return view;
         }
