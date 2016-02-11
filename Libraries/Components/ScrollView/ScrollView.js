@@ -297,6 +297,8 @@ var ScrollView = React.createClass({
     /**
      * A RefreshControl component, used to provide pull-to-refresh
      * functionality for the ScrollView.
+     *
+     * See [RefreshControl](docs/refreshcontrol.html).
      */
     refreshControl: PropTypes.element,
 

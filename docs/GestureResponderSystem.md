@@ -68,4 +68,4 @@ However, sometimes a parent will want to make sure that it becomes responder. Th
 
 ### PanResponder
 
-For higher-level gesture interpretation, check out [PanResponder](/react-native/docs/panresponder.html).
+For higher-level gesture interpretation, check out [PanResponder](docs/panresponder.html).
