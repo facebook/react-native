@@ -45,18 +45,25 @@ namespace ReactNative.Hosting.Bridge
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            // Get the require function
-            var requireId = JavaScriptPropertyId.FromString("require");
-            var requireFunction = _globalObject.GetProperty(requireId);
+            // Try get global property
+            var modulePropertyId = JavaScriptPropertyId.FromString(moduleName);
+            var module = _globalObject.GetProperty(modulePropertyId);
 
-            // Get the module
-            var moduleString = JavaScriptValue.FromString(moduleName);
-            var requireArguments = new[] { _globalObject, moduleString };
-            var module = requireFunction.CallFunction(requireArguments);
+            if (module.ValueType != JavaScriptValueType.Object)
+            {
+                // Get the require function
+                var requireId = JavaScriptPropertyId.FromString("require");
+                var requireFunction = _globalObject.GetProperty(requireId);
+
+                // Get the module
+                var moduleString = JavaScriptValue.FromString(moduleName);
+                var requireArguments = new[] { _globalObject, moduleString };
+                module = requireFunction.CallFunction(requireArguments);
+            }
 
             // Get the method
-            var propertyId = JavaScriptPropertyId.FromString(methodName);
-            var method = module.GetProperty(propertyId);
+            var methodPropertyId = JavaScriptPropertyId.FromString(methodName);
+            var method = module.GetProperty(methodPropertyId);
 
             // Set up the arguments to pass in
             var callArguments = new JavaScriptValue[arguments.Count + 1];

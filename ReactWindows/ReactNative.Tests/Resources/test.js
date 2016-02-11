@@ -22,3 +22,5 @@ var BatchedBridge =
         return [[],[],[]];
     }
 }
+
+var __fbBatchedBridge = BatchedBridge;

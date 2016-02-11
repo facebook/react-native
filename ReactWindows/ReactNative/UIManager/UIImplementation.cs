@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using ReactNative.Animation;
 using ReactNative.Bridge;
 using ReactNative.Tracing;
 using ReactNative.UIManager.Events;
@@ -274,8 +273,8 @@ namespace ReactNative.UIManager
                 {
                     var indexToRemove = removeFrom[i];
                     var tagToRemove = cssNodeToManage.GetChildAt(i).ReactTag;
-                    indicesToRemove[numToRemove + i] = indexToRemove;
-                    tagsToRemove[numToRemove + i] = tagToRemove;
+                    indicesToRemove[numToMove + i] = indexToRemove;
+                    tagsToRemove[numToMove + i] = tagToRemove;
                     tagsToDelete[i] = tagToRemove;
                 }
             }

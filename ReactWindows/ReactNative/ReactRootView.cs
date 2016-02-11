@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.Foundation;
+using ReactNative.Touch;
 
 namespace ReactNative
 {
@@ -18,13 +19,15 @@ namespace ReactNative
     /// child views and sending those events to JavaScript via the
     /// <see cref="UIManager.Events.RCTEventEmitter"/> module.
     /// </summary>
-    public class ReactRootView : SizeMonitoringCanvas, IRootView
+    public class ReactRootView : SizeMonitoringCanvas
     {
         private IReactInstanceManager _reactInstanceManager;
         private string _jsModuleName;
 
         private bool _wasMeasured;
         private bool _attachScheduled;
+
+        private TouchHandler _touchHandler;
 
         /// <summary>
         /// Gets the JavaScript module name.
@@ -73,20 +76,12 @@ namespace ReactNative
             if (_wasMeasured)
             {
                 _reactInstanceManager.AttachMeasuredRootView(this);
+                _touchHandler = new TouchHandler(this);
             }
             else
             {
                 _attachScheduled = true;
             }
-        }
-
-        /// <summary>
-        /// Called when a child starts a native gesture.
-        /// </summary>
-        /// <param name="e">The event.</param>
-        public void OnChildStartedNativeGesture(RoutedEventArgs ev)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -108,6 +103,7 @@ namespace ReactNative
             {
                 _attachScheduled = false;
                 reactInstanceManager.AttachMeasuredRootView(this);
+                _touchHandler = new TouchHandler(this);
             }
 
             return result;

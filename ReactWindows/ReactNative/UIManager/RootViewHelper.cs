@@ -12,7 +12,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="view">The view instance.</param>
         /// <returns>The root view instance.</returns>
-        public static IRootView GetRootView(FrameworkElement view)
+        public static ReactRootView GetRootView(FrameworkElement view)
         {
             var current = view;
             while (true)
@@ -22,7 +22,7 @@ namespace ReactNative.UIManager
                     return null;
                 }
 
-                var rootView = current as IRootView;
+                var rootView = current as ReactRootView;
                 if (rootView != null)
                 {
                     return rootView;

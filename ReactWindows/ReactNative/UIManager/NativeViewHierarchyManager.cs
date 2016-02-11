@@ -7,6 +7,7 @@ using ReactNative.UIManager.LayoutAnimation;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Windows.Foundation;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -337,7 +338,7 @@ namespace ReactNative.UIManager
                 throw new ArgumentOutOfRangeException(nameof(tag));
             }
 
-            var rootView = (FrameworkElement)RootViewHelper.GetRootView(v);
+            var rootView = RootViewHelper.GetRootView(v);
             if (rootView == null)
             {
                 throw new InvalidOperationException(
@@ -347,8 +348,14 @@ namespace ReactNative.UIManager
                         tag));
             }
 
-            //TODO: implement get position, etc.
-            throw new NotImplementedException();
+            // TODO: better way to get relative position?
+            var rootTransform = v.TransformToVisual(rootView);
+            var positionInRoot = rootTransform.TransformPoint(new Point(0, 0));
+
+            outputBuffer[0] = (int)Math.Round(positionInRoot.X);
+            outputBuffer[1] = (int)Math.Round(positionInRoot.Y);
+            outputBuffer[2] = (int)Math.Round(v.Width);
+            outputBuffer[3] = (int)Math.Round(v.Height);
         }
 
         /// <summary>
@@ -398,6 +405,16 @@ namespace ReactNative.UIManager
             {
                 _jsResponderHandler.SetJavaScriptResponder(initialReactTag, null);
                 return;
+            }
+
+            var view = default(FrameworkElement);
+            if (!_tagsToViews.TryGetValue(reactTag, out view))
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        "Could not find view with tag '{0}'.",
+                        reactTag));
             }
 
             throw new NotImplementedException();
@@ -535,9 +552,9 @@ namespace ReactNative.UIManager
                             DropView(managedChild);
                         }
                     }
-                }
 
-                viewGroupManager.RemoveAllChildren(view);
+                    viewGroupManager.RemoveAllChildren(view);
+                }
             }
 
             _tagsToViews.Remove(tag);

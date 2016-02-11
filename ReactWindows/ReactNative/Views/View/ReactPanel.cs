@@ -14,9 +14,8 @@ namespace ReactNative.Views.View
     /// aren't common, lazy initializes most of the storage needed for them. Also supports
     /// 3D transformations such as elevation depth.  
     /// </summary>
-    public class ReactPanel : Canvas, ICatalystInterceptingViewGroup, ReactPointerEventsView
+    public class ReactPanel : Canvas
     {
-        private IOnInterceptTouchEventListener _onInterceptTouchEventListener;
         private PointerEvents _PointerEvents = PointerEvents.Auto;
         private Border _Border;
         private CompositeTransform3D _Transform = new CompositeTransform3D();
@@ -24,14 +23,6 @@ namespace ReactNative.Views.View
         public ReactPanel() : base()
         {
             this.SizeChanged += OnBoundsChanged;
-        }
-
-        public PointerEvents PointerEvents
-        {
-            set
-            {
-                _PointerEvents = value;
-            }
         }
 
         /// <summary>
@@ -44,31 +35,6 @@ namespace ReactNative.Views.View
         /// <param name="e"></param>
         protected virtual void OnBoundsChanged(object sender, SizeChangedEventArgs e)
         {
-        }
-
-        public PointerEvents GetPointerEvents()
-        {
-            return _PointerEvents;
-        }
-
-        /// <summary>
-        /// Sets the touch event listener for the react view.
-        /// </summary>
-        /// <param name="listener">The custom touch event listener.</param>
-        public void SetOnInterceptTouchEventListener(IOnInterceptTouchEventListener listener)
-        {
-            _onInterceptTouchEventListener = listener;
-            this.PointerPressed += OnInterceptTouchEvent;
-        }
-
-        private void OnInterceptTouchEvent(object sender, PointerRoutedEventArgs ev)
-        {
-            if (_PointerEvents == PointerEvents.None || _PointerEvents == PointerEvents.BoxNone)
-            {
-                return;
-            }
-
-            _onInterceptTouchEventListener.OnInterceptTouchEvent(sender, ev);
         }
 
         public void SetBackgroundColor(string color)
