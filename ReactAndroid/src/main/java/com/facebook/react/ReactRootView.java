@@ -16,10 +16,12 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -408,9 +410,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         return;
       }
 
+      DisplayMetrics dm =  new DisplayMetrics();
+      WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+      wm.getDefaultDisplay().getMetrics(dm);
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
-      final int heightDiff =
-          DisplayMetricsHolder.getDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
+      final int heightDiff = dm.heightPixels - mVisibleViewArea.bottom;
       if (mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected) {
         // keyboard is now showing, or the keyboard height has changed
         mKeyboardHeight = heightDiff;
