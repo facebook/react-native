@@ -390,7 +390,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private final Rect mVisibleViewArea;
     private final int mMinKeyboardHeightDetected;
-    
+
     private int mKeyboardHeight = 0;
 
     /* package */ KeyboardListener() {
@@ -410,7 +410,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       final int heightDiff =
-          DisplayMetricsHolder.getDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
+          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
       if (mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected) {
         // keyboard is now showing, or the keyboard height has changed
         mKeyboardHeight = heightDiff;

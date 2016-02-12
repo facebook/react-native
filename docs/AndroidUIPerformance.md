@@ -43,7 +43,7 @@ Once the trace starts collecting, perform the animation or interaction you care 
 
 After opening the trace in your browser (preferably Chrome), you should see something like this:
 
-![Example](/react-native/img/SystraceExample.png)
+![Example](img/SystraceExample.png)
 
 **HINT**: Use the WASD keys to strafe and zoom
 
@@ -51,7 +51,7 @@ After opening the trace in your browser (preferably Chrome), you should see some
 
 The first thing you should do is highlight the 16ms frame boundaries if you haven't already done that. Check this checkbox at the top right of the screen:
 
-![Enable VSync Highlighting](/react-native/img/SystraceHighlightVSync.png)
+![Enable VSync Highlighting](img/SystraceHighlightVSync.png)
 
 You should see zebra stripes as in the screenshot above. If you don't, try profiling on a different device: Samsung has been known to have issues displaying vsyncs while the Nexus series is generally pretty reliable.
 
@@ -65,43 +65,43 @@ On the left side, you'll see a set of threads which correspond to the timeline r
 
 This is where standard android measure/layout/draw happens. The thread name on the right will be your package name (in my case book.adsmanager) or UI Thread. The events that you see on this thread should look something like this and have to do with `Choreographer`, `traversals`, and `DispatchUI`:
 
-![UI Thread Example](/react-native/img/SystraceUIThreadExample.png)
+![UI Thread Example](img/SystraceUIThreadExample.png)
 
 ### JS Thread
 
 This is where JS is executed. The thread name will be either `mqt_js` or `<...>` depending on how cooperative the kernel on your device is being. To identify it if it doesn't have a name, look for things like `JSCall`, `Bridge.executeJSCall`, etc:
 
-![JS Thread Example](/react-native/img/SystraceJSThreadExample.png)
+![JS Thread Example](img/SystraceJSThreadExample.png)
 
 ### Native Modules Thread
 
 This is where native module calls (e.g. the `UIManager`) are executed. The thread name will be either `mqt_native_modules` or `<...>`. To identify it in the latter case, look for things like `NativeCall`, `callJavaModuleMethod`, and `onBatchComplete`:
 
-![Native Modules Thread Example](/react-native/img/SystraceNativeModulesThreadExample.png)
+![Native Modules Thread Example](img/SystraceNativeModulesThreadExample.png)
 
 ### Bonus: Render Thread
 
 If you're using Android L (5.0) and up, you will also have a render thread in your application. This thread generates the actual OpenGL commands used to draw your UI. The thread name will be either `RenderThread` or `<...>`. To identify it in the latter case, look for things like `DrawFrame` and `queueBuffer`:
 
-![Render Thread Example](/react-native/img/SystraceRenderThreadExample.png)
+![Render Thread Example](img/SystraceRenderThreadExample.png)
 
 ## Identifying a culprit
 
 A smooth animation should look something like the following:
 
-![Smooth Animation](/react-native/img/SystraceWellBehaved.png)
+![Smooth Animation](img/SystraceWellBehaved.png)
 
 Each change in color is a frame -- remember that in order to display a frame, all our UI work needs to be done by the end of that 16ms period. Notice that no thread is working close to the frame boundary. An application rendering like this is rendering at 60FPS.
 
 If you noticed chop, however, you might see something like this:
 
-![Choppy Animation from JS](/react-native/img/SystraceBadJS.png)
+![Choppy Animation from JS](img/SystraceBadJS.png)
 
 Notice that the JS thread is executing basically all the time, and across frame boundaries! This app is not rendering at 60FPS. In this case, **the problem lies in JS**.
 
 You might also see something like this:
 
-![Choppy Animation from UI](/react-native/img/SystraceBadUI.png)
+![Choppy Animation from UI](img/SystraceBadUI.png)
 
 In this case, the UI and render threads are the ones that have work crossing frame boundaries. The UI that we're trying to render on each frame is requiring too much work to be done. In this case, **the problem lies in the native views being rendered**.
 
@@ -111,7 +111,7 @@ At this point, you'll have some very helpful information to inform your next ste
 
 If you identified a JS problem, look for clues in the specific JS that you're executing. In the scenario above, we see `RCTEventEmitter` being called multiple times per frame. Here's a zoom-in of the JS thread from the trace above:
 
-![Too much JS](/react-native/img/SystraceBadJS2.png)
+![Too much JS](img/SystraceBadJS2.png)
 
 This doesn't seem right. Why is it being called so often? Are they actually different events? The answers to these questions will probably depend on your product code. And many times, you'll want to look into [shouldComponentUpdate](https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate).
 
@@ -128,7 +128,7 @@ If you identified a native UI problem, there are usually two scenarios:
 
 In the first scenario, you'll see a trace that has the UI thread and/or Render Thread looking like this:
 
-![Overloaded GPU](/react-native/img/SystraceBadUI.png)
+![Overloaded GPU](img/SystraceBadUI.png)
 
 Notice the long amount of time spent in `DrawFrame` that crosses frame boundaries. This is time spent waiting for the GPU to drain its command buffer from the previous frame.
 
@@ -143,7 +143,7 @@ If these don't help and you want to dig deeper into what the GPU is actually doi
 
 In the second scenario, you'll see something more like this:
 
-![Creating Views](/react-native/img/SystraceBadCreateUI.png)
+![Creating Views](img/SystraceBadCreateUI.png)
 
 Notice that first the JS thread thinks for a bit, then you see some work done on the native modules thread, followed by an expensive traversal on the UI thread.
 
