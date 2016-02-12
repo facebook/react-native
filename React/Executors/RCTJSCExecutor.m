@@ -26,6 +26,8 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
+NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
+
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -330,7 +332,16 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   }];
 
   [self executeBlockOnJavaScriptQueue:^{
-    RCTInstallJSCProfiler(_bridge, self.context.ctx);
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid) {
+      return;
+    }
+
+    JSContext *context = strongSelf.context.context;
+    RCTInstallJSCProfiler(_bridge, context.JSGlobalContextRef);
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
+                                                        object:context];
   }];
 
   for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {

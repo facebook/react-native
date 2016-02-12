@@ -74,6 +74,10 @@ void Bridge::setGlobalVariable(const std::string& propName, const std::string& j
   m_jsExecutor->setGlobalVariable(propName, jsonValue);
 }
 
+void* Bridge::getJavaScriptContext() {
+  return m_jsExecutor->getJavaScriptContext();
+}
+
 bool Bridge::supportsProfiling() {
   return m_jsExecutor->supportsProfiling();
 }

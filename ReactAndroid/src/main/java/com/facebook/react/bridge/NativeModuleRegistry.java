@@ -114,6 +114,19 @@ public class NativeModuleRegistry {
     }
   }
 
+  /* package */ void notifyReactBridgeInitialized(ReactBridge bridge) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "NativeModuleRegistry_notifyReactBridgeInitialized");
+    try {
+      for (NativeModule nativeModule : mModuleInstances.values()) {
+        nativeModule.onReactBridgeInitialized(bridge);
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+    }
+  }
+
   public void onBatchComplete() {
     for (int i = 0; i < mBatchCompleteListenerModules.size(); i++) {
       mBatchCompleteListenerModules.get(i).onBatchComplete();
