@@ -79,7 +79,9 @@ import com.facebook.react.uimanager.ViewManager;
   @Override
   public void addChildAt(CSSNode child, int i) {
     super.addChildAt(child, i);
-    ((FlatShadowNode) child).forceMountToView();
+    if (child instanceof FlatShadowNode) {
+      ((FlatShadowNode) child).forceMountToView();
+    }
   }
 
   @Override

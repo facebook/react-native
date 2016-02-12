@@ -110,7 +110,7 @@ public class FlatUIImplementation extends UIImplementation {
   @Override
   protected ReactShadowNode createShadowNode(String className) {
     ReactShadowNode cssNode = super.createShadowNode(className);
-    if (cssNode instanceof FlatShadowNode) {
+    if (cssNode instanceof FlatShadowNode || cssNode.isVirtual()) {
       return cssNode;
     }
 
@@ -122,15 +122,19 @@ public class FlatUIImplementation extends UIImplementation {
       ReactShadowNode cssNode,
       int rootViewTag,
       @Nullable ReactStylesDiffMap styles) {
-    FlatShadowNode node = (FlatShadowNode) cssNode;
+    if (cssNode instanceof FlatShadowNode) {
+      FlatShadowNode node = (FlatShadowNode) cssNode;
 
-    if (styles != null) {
-      node.handleUpdateProperties(styles);
-    }
+      if (styles != null) {
+        node.handleUpdateProperties(styles);
+      }
 
-    if (node.mountsToView()) {
-      int tag = cssNode.getReactTag();
-      mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
+      if (node.mountsToView()) {
+        int tag = cssNode.getReactTag();
+        mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
+      }
+    } else {
+      super.handleCreateView(cssNode, rootViewTag, styles);
     }
   }
 
@@ -139,13 +143,17 @@ public class FlatUIImplementation extends UIImplementation {
       ReactShadowNode cssNode,
       String className,
       ReactStylesDiffMap styles) {
-    FlatShadowNode node = (FlatShadowNode) cssNode;
+    if (cssNode instanceof FlatShadowNode) {
+      FlatShadowNode node = (FlatShadowNode) cssNode;
 
-    node.handleUpdateProperties(styles);
+      node.handleUpdateProperties(styles);
 
-    if (node.mountsToView()) {
-      int tag = cssNode.getReactTag();
-      mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
+      if (node.mountsToView()) {
+        int tag = cssNode.getReactTag();
+        mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
+      }
+    } else {
+      super.handleUpdateView(cssNode, className, styles);
     }
   }
 
