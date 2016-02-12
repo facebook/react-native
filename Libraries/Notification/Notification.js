@@ -33,6 +33,7 @@ class Notification {
    * - `body` : The body of the message in the notification (optional).
    * - `count` : The count to be displayed for the notification (optional).
    * - `sticky` : Whether the notification is sorted above the regular notifications and is unclosable (optional).
+   * - `link` : The link to open on tap on the notification (optional).
    *
    * @platform android
    */

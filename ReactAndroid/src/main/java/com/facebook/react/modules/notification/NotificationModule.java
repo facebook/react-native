@@ -10,7 +10,10 @@
 package com.facebook.react.modules.notification;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -31,14 +34,14 @@ public class NotificationModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void presentLocalNotification(final ReadableMap details, final int handle) {
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(getReactApplicationContext());
+    ReactApplicationContext context = getReactApplicationContext();
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
     builder.setSmallIcon(android.R.drawable.stat_sys_warning);
     builder.setAutoCancel(true);
 
     if (details.hasKey("title")) {
       String title = details.getString("title");
-
       builder.setContentTitle(title);
       builder.setTicker(title);
     }
@@ -53,6 +56,12 @@ public class NotificationModule extends ReactContextBaseJavaModule {
 
     if (details.hasKey("sticky")) {
       builder.setOngoing(details.getBoolean("sticky"));
+    }
+
+    if (details.hasKey("link")) {
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(details.getString("link")));
+      PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+      builder.setContentIntent(contentIntent);
     }
 
     getNotificationManager().notify(handle, builder.build());

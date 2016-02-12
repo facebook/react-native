@@ -30,41 +30,51 @@ var UIExplorerBlock = require('./UIExplorerBlock');
  * Simple Notification examples.
  */
 var SimpleNotificationExampleBlock = React.createClass({
-  _last: null,
+  _last: [],
 
   render: function() {
     return (
       <View>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last = Notification.presentLocalNotification({
+          onPress={() => this._last.push(Notification.presentLocalNotification({
             title: 'Notification with title',
-          })}>
+          }))}>
           <View style={styles.button}>
             <Text>Notification with title</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last = Notification.presentLocalNotification({
+          onPress={() => this._last.push(Notification.presentLocalNotification({
             title: 'Notification with title, body and count',
             body: 'Notification body with some text',
             count: 3
-          })}>
+          }))}>
           <View style={styles.button}>
             <Text>Notification with title, body and count</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last = Notification.presentLocalNotification({
+          onPress={() => this._last.push(Notification.presentLocalNotification({
+            title: 'Notification with link',
+            body: 'This will open a link on tapping',
+            link: 'http://facebook.github.io/react-native/'
+          }))}>
+          <View style={styles.button}>
+            <Text>Notification with link</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => this._last.push(Notification.presentLocalNotification({
             title: 'Sticky Notification',
             body: 'You cannot dismiss this',
             sticky: true
-          })}>
+          }))}>
           <View style={styles.button}>
             <Text>Sticky Notification</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => Notification.cancelLocalNotification(this._last)}>
+          onPress={() => Notification.cancelLocalNotification(this._last.pop())}>
           <View style={styles.button}>
             <Text>Close the last notification</Text>
           </View>
