@@ -149,9 +149,9 @@ class Bundler {
   }
 
   bundle(options) {
-    const {dev, isUnbundle, platform} = options;
+    const {dev, unbundle, platform} = options;
     const moduleSystemDeps =
-      this._resolver.getModuleSystemDependencies({dev, isUnbundle, platform});
+      this._resolver.getModuleSystemDependencies({dev, unbundle, platform});
     return this._bundle({
       bundle: new Bundle(options.sourceMapUrl),
       moduleSystemDeps,
