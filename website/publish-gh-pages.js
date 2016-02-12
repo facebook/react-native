@@ -60,7 +60,7 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
   var releasesFolders = ls(`-d`, `*`)
   cd(`..`);
   var versions = releasesFolders.filter(name => name !== `next`);
-  if (versions.indexOf(version) === -1) {
+  if (version !== `next` && versions.indexOf(version) === -1) {
     versions.push(version);
   }
   versions.sort(semverCmp).reverse();
