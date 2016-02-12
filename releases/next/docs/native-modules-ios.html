@@ -49,7 +49,8 @@ CalendarManager<span class="token punctuation">.</span><span class="token functi
   <span class="token keyword">if</span> <span class="token punctuation">(</span>events<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">resolve<span class="token punctuation">(</span></span>events<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-    <span class="token function">reject<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    NSError <span class="token operator">*</span>error <span class="token operator">=</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token function">reject<span class="token punctuation">(</span></span>@<span class="token string">&quot;no_events&quot;</span><span class="token punctuation">,</span> @<span class="token string">&quot;There were no events&quot;</span><span class="token punctuation">,</span> error<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></div><p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p><div class="prism language-javascript">async <span class="token keyword">function</span> <span class="token function">updateEvents<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
