@@ -22,8 +22,8 @@ Bridge::~Bridge() {
   m_jsExecutor.reset();
 }
 
-void Bridge::executeApplicationScript(const std::string& script, const std::string& sourceURL) {
-  m_jsExecutor->executeApplicationScript(script, sourceURL);
+void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
+  m_jsExecutor->loadApplicationScript(script, sourceURL);
 }
 
 void Bridge::loadApplicationUnbundle(

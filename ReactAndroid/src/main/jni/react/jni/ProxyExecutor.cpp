@@ -40,13 +40,13 @@ ProxyExecutor::~ProxyExecutor() {
   m_executor.reset();
 }
 
-void ProxyExecutor::executeApplicationScript(
+void ProxyExecutor::loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  static auto executeApplicationScript =
-    jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<void(jstring, jstring)>("executeApplicationScript");
+  static auto loadApplicationScript =
+    jni::findClassStatic(EXECUTOR_BASECLASS)->getMethod<void(jstring, jstring)>("loadApplicationScript");
 
-  executeApplicationScript(
+  loadApplicationScript(
     m_executor.get(),
     jni::make_jstring(script).get(),
     jni::make_jstring(sourceURL).get());

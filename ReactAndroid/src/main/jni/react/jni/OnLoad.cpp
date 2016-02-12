@@ -651,12 +651,12 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   setCountableForJava(env, obj, std::move(bridge));
 }
 
-static void executeApplicationScript(
+static void loadApplicationScript(
     const RefPtr<CountableBridge>& bridge,
     const std::string& script,
     const std::string& sourceUri) {
   try {
-    bridge->executeApplicationScript(script, sourceUri);
+    bridge->loadApplicationScript(script, sourceUri);
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -689,7 +689,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   auto script = react::loadScriptFromAssets(manager, assetNameStr);
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
-    "executeApplicationScript",
+    "loadApplicationScript",
     "assetName", assetNameStr);
   #endif
 
@@ -697,7 +697,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
     loadApplicationUnbundle(bridge, manager, script, "file://" + assetNameStr);
   } else {
-    executeApplicationScript(bridge, script, "file://" + assetNameStr);
+    loadApplicationScript(bridge, script, "file://" + assetNameStr);
   }
   if (env->ExceptionCheck()) {
     return;
@@ -715,11 +715,11 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
   #ifdef WITH_FBSYSTRACE
   auto sourceURLStr = sourceURL == NULL ? fileNameStr : fromJString(env, sourceURL);
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
-    "executeApplicationScript",
+    "loadApplicationScript",
     "sourceURL", sourceURLStr);
   #endif
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_read"));
-  executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
+  loadApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
   if (env->ExceptionCheck()) {
     return;
   }

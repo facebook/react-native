@@ -31,7 +31,7 @@ public:
     m_executor(std::move(executorInstance)),
     m_bridge(bridge) {}
   virtual ~ProxyExecutor() override;
-  virtual void executeApplicationScript(
+  virtual void loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) override;
   virtual void loadApplicationUnbundle(

@@ -30,7 +30,7 @@ public:
   /**
    * Execute an application script bundle in the JS context.
    */
-  virtual void executeApplicationScript(
+  virtual void loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) = 0;
 
