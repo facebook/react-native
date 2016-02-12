@@ -312,6 +312,14 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   display: inline;
 }
 
+.nav-main a.nav-version {
+  font-size: 16px;
+  font-weight: 800;
+  color: #05A5D1;
+  margin-left: 5px;
+  text-decoration: underline;
+}
+
 .hero {
   background: #05A5D1;
   padding: 50px 0;
@@ -476,6 +484,15 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 .tutorial-mock img {
   border: 1px solid #ccc;
   box-shadow: 5px 5px 5px #888888;
+}
+
+.versions ul {
+  list-style: none;
+}
+
+.versions li {
+  font-size: 16px;
+  padding-top: 10px;
 }
 
 #examples h3, .home-presentation h3 {
