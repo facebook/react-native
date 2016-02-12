@@ -25,7 +25,7 @@ type NotificationDetails = {
 
 class Notification {
   /**
-   * Presents a local notification.
+   * Presents a local notification (currently Android only).
    *
    * details is an object containing:
    *
@@ -33,6 +33,8 @@ class Notification {
    * - `body` : The body of the message in the notification (optional).
    * - `count` : The count to be displayed for the notification (optional).
    * - `sticky` : Whether the notification is sorted above the regular notifications and is unclosable (optional).
+   *
+   * @platform android
    */
   static presentLocalNotification(details: NotificationDetails): number {
       lastNotificationId++;
@@ -44,6 +46,8 @@ class Notification {
    * Cancels a specific local notifications.
    *
    * Takes the notification id as the argument, which was returned from `presentLocalNotification`.
+   *
+   * @platform android
    */
   static cancelLocalNotification(id: number) {
     NotificationModule.cancelLocalNotification(id);
@@ -51,6 +55,8 @@ class Notification {
 
   /**
    * Cancels all local notifications.
+   *
+   * @platform android
    */
   static cancelAllLocalNotifications() {
     NotificationModule.cancelAllLocalNotifications();
