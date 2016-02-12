@@ -10,6 +10,7 @@
  */
 'use strict';
 
+const Platform = require('Platform');
 const invariant = require('invariant');
 const processColor = require('processColor');
 
@@ -18,23 +19,26 @@ const processColor = require('processColor');
  * runtime to reflects those changes.
  */
 const HMRClient = {
-  enable(platform, bundleEntry) {
+  enable(platform, bundleEntry, host, port) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
-
-    // TODO(martinb) receive host and port as parameters
-    const host = 'localhost';
-    const port = '8081';
+    invariant(host, 'Missing required paramenter `host`');
 
     // need to require WebSocket inside of `enable` function because
     // this module is defined as a `polyfillGlobal`.
     // See `InitializeJavascriptAppEngine.js`
     const WebSocket = require('WebSocket');
 
-    const activeWS = new WebSocket(
-      `ws://${host}:${port}/hot?platform=${platform}&` +
-      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`
-    );
+    const wsHostPort = port !== null && port !== ''
+      ? `${host}:${port}`
+      : host;
+
+    // Build the websocket url
+    const wsUrl = `ws://${wsHostPort}/hot?` +
+      `platform=${platform}&` +
+      `bundleEntry=${bundleEntry.replace('.bundle', '.js')}`;
+
+    const activeWS = new WebSocket(wsUrl);
     activeWS.onerror = (e) => {
       throw new Error(
 `Hot loading isn't working because it cannot connect to the development server.
@@ -50,10 +54,16 @@ Error: ${e.message}`
       );
     };
     activeWS.onmessage = ({data}) => {
-      const DevLoadingView = require('NativeModules').DevLoadingView;
+      let DevLoadingView = require('NativeModules').DevLoadingView;
+      if (!DevLoadingView) {
+        DevLoadingView = {
+          showMessage() {},
+          hide() {},
+        };
+      }
       data = JSON.parse(data);
 
-      switch(data.type) {
+      switch (data.type) {
         case 'update-start': {
           DevLoadingView.showMessage(
             'Hot Loading...',
@@ -67,8 +77,13 @@ Error: ${e.message}`
           const sourceMappingURLs = data.body.sourceMappingURLs;
           const sourceURLs = data.body.sourceURLs;
 
-          const RCTRedBox = require('NativeModules').RedBox;
-          RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+          if (Platform.OS === 'ios') {
+            const RCTRedBox = require('NativeModules').RedBox;
+            RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+          } else {
+            const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+            RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
+          }
 
           modules.forEach((code, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
@@ -82,8 +97,8 @@ Error: ${e.message}`
             // on JSC we need to inject from native for sourcemaps to work
             // (Safari doesn't support `sourceMappingURL` nor any variant when
             // evaluating code) but on Chrome we can simply use eval
-            const injectFunction = typeof __injectHMRUpdate === 'function'
-              ? __injectHMRUpdate
+            const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
+              ? global.nativeInjectHMRUpdate
               : eval;
 
             injectFunction(code, sourceURLs[i]);

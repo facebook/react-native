@@ -341,6 +341,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                  name:event
                                                object:nil];
   }
+
+  // Inject handler used by HMR
+  [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid) {
+      return;
+    }
+
+    JSStringRef execJSString = JSStringCreateWithUTF8CString(sourceCode.UTF8String);
+    JSStringRef jsURL = JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
+    JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
+    JSStringRelease(jsURL);
+    JSStringRelease(execJSString);
+  }];
 #endif
 }
 
@@ -513,21 +527,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   RCTAssertParam(sourceURL);
 
   __weak RCTJSCExecutor *weakSelf = self;
-#if RCT_DEV
-  _context.context[@"__injectHMRUpdate"] = ^(NSString *sourceCode, NSString *sourceCodeURL) {
-    RCTJSCExecutor *strongSelf = weakSelf;
-
-    if (!strongSelf) {
-      return;
-    }
-
-    JSStringRef execJSString = JSStringCreateWithUTF8CString(sourceCode.UTF8String);
-    JSStringRef jsURL = JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
-    JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
-    JSStringRelease(jsURL);
-    JSStringRelease(execJSString);
-  };
-#endif
 
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     RCTJSCExecutor *strongSelf = weakSelf;

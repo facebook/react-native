@@ -77,4 +77,11 @@ public class ExceptionsManagerModule extends BaseJavaModule {
       mDevSupportManager.updateJSError(title, details, exceptionId);
     }
   }
+
+  @ReactMethod
+  public void dismissRedbox() {
+    if (mDevSupportManager.getDevSupportEnabled()) {
+      mDevSupportManager.hideRedboxDialog();
+    }
+  }
 }
