@@ -18,7 +18,7 @@ class MessageQueueThread;
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
   JSCExecutorFactory(const std::string& cacheDir) : cacheDir_(cacheDir) {}
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override;
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override;
 private:
   std::string cacheDir_;
 };
@@ -28,7 +28,7 @@ public:
   /**
    * Should be invoked from the JS thread.
    */
-  explicit JSCExecutor(FlushImmediateCallback flushImmediateCallback, const std::string& cacheDir);
+  explicit JSCExecutor(Bridge *bridge, const std::string& cacheDir);
   ~JSCExecutor() override;
 
   virtual void executeApplicationScript(
@@ -38,12 +38,11 @@ public:
     std::unique_ptr<JSModulesUnbundle> unbundle,
     const std::string& startupCode,
     const std::string& sourceURL) override;
-  virtual std::string flush() override;
-  virtual std::string callFunction(
+  virtual void callFunction(
     const double moduleId,
     const double methodId,
     const folly::dynamic& arguments) override;
-  virtual std::string invokeCallback(
+  virtual void invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
@@ -55,7 +54,6 @@ public:
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
 
-  void flushQueueImmediate(std::string queueJSON);
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
   virtual void onMessageReceived(int workerId, const std::string& message) override;
   virtual JSGlobalContextRef getContext() override;
@@ -63,17 +61,19 @@ public:
 
 private:
   JSGlobalContextRef m_context;
-  FlushImmediateCallback m_flushImmediateCallback;
   std::unordered_map<int, JSCWebWorker> m_webWorkers;
   std::unordered_map<int, Object> m_webWorkerJSObjs;
-  std::shared_ptr<MessageQueueThread> m_messageQueueThread;
+  Bridge *m_bridge;
   std::string m_deviceCacheDir;
+  std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
 
   int addWebWorker(const std::string& script, JSValueRef workerRef);
   void postMessageToWebWorker(int worker, JSValueRef message, JSValueRef *exn);
+  void flush();
   void terminateWebWorker(int worker);
   void loadModule(uint32_t moduleId);
+  void flushQueueImmediate(std::string queueJSON);
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,
@@ -97,12 +97,19 @@ private:
       const JSValueRef arguments[],
       JSValueRef *exception);
   static JSValueRef nativeRequire(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception);
+      JSContextRef ctx,
+      JSObjectRef function,
+      JSObjectRef thisObject,
+      size_t argumentCount,
+      const JSValueRef arguments[],
+      JSValueRef *exception);
+  static JSValueRef nativeFlushQueueImmediate(
+      JSContextRef ctx,
+      JSObjectRef function,
+      JSObjectRef thisObject,
+      size_t argumentCount,
+      const JSValueRef arguments[],
+      JSValueRef *exception);
 };
 
 } }
