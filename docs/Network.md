@@ -54,14 +54,19 @@ fetch('https://mywebsite.com/endpoint/', {
 2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
   
   ```js
-  async getUsersFromApi() {
-    try {
-      let response = await fetch('https://mywebsite.com/endpoint/');
-      return response.users;
-    } catch(error) {
-      throw error;
+  var MyComponent = React.createClass({
+    ...
+    async getUsersFromApi() {
+      try {
+        let response = await fetch('https://mywebsite.com/endpoint/');
+        let responseJson = await response.json();
+        return responseJson.users;
+      } catch(error) {
+        throw error;
+      }
     }
-  }
+    ...
+  })
   ```
 
 - Note: Errors thrown by rejected Promises need to be caught, or they will be swallowed silently
