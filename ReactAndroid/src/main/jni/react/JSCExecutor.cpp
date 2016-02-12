@@ -128,16 +128,16 @@ JSCExecutor::~JSCExecutor() {
   JSGlobalContextRelease(m_context);
 }
 
-void JSCExecutor::executeApplicationScript(
+void JSCExecutor::loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) {
-  ReactMarker::logMarker("executeApplicationScript_startStringConvert");
+  ReactMarker::logMarker("loadApplicationScript_startStringConvert");
   String jsScript = String::createExpectingAscii(script);
-  ReactMarker::logMarker("executeApplicationScript_endStringConvert");
+  ReactMarker::logMarker("loadApplicationScript_endStringConvert");
 
   String jsSourceURL(sourceURL.c_str());
   #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::executeApplicationScript",
+  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "JSCExecutor::loadApplicationScript",
     "sourceURL", sourceURL);
   #endif
   if (!jsSourceURL) {
@@ -158,7 +158,7 @@ void JSCExecutor::loadApplicationUnbundle(
     installGlobalFunction(m_context, "nativeRequire", nativeRequire);
   }
   m_unbundle = std::move(unbundle);
-  executeApplicationScript(startupCode, sourceURL);
+  loadApplicationScript(startupCode, sourceURL);
 }
 
 void JSCExecutor::flush() {

@@ -43,7 +43,8 @@ public:
    * contains code for all modules and a runtime that resolves and
    * executes modules.
    */
-  void executeApplicationScript(const std::string& script, const std::string& sourceURL);
+  void loadApplicationScript(const std::string& script, const std::string& sourceURL);
+
   /**
    * Starts the JS application from an "unbundle", i.e. a backend that stores
    * and injects each module as individual file.

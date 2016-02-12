@@ -31,7 +31,7 @@ public:
   explicit JSCExecutor(Bridge *bridge, const std::string& cacheDir);
   ~JSCExecutor() override;
 
-  virtual void executeApplicationScript(
+  virtual void loadApplicationScript(
     const std::string& script,
     const std::string& sourceURL) override;
   virtual void loadApplicationUnbundle(
