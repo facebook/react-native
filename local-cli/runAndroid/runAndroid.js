@@ -15,6 +15,7 @@ const path = require('path');
 const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
+const adb = require('./adb');
 
 /**
  * Starts the app on a connected Android emulator or device.
@@ -107,15 +108,19 @@ function buildAndRun(args, reject) {
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
       : 'adb';
 
-    const adbArgs = [
-      'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-    ];
+    const devices = adb.getDevices();
 
-    console.log(chalk.bold(
-      'Starting the app (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
-    ));
+    devices.forEach((device) => {
 
-    child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+      const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+
+      console.log(chalk.bold(
+        'Starting the app on ' + device + ' (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
+      ));
+
+      child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});  
+    });
+
   } catch (e) {
     console.log(chalk.red(
       'adb invocation failed. Do you have adb in your PATH?'
