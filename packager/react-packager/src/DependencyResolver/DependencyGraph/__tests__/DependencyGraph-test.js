@@ -2111,6 +2111,143 @@ describe('DependencyGraph', function() {
           ]);
       });
     });
+
+    pit('should merge browser mapping with react-native mapping', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            '/**',
+            ' * @providesModule index',
+            ' */',
+            'require("aPackage")',
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+              'react-native': {
+                // should see this:
+                'node-package-a': 'rn-package-a',
+                // should see this:
+                'node-package-c': 'rn-package-d',
+              },
+              'browser': {
+                // should see this:
+                'node-package-b': 'rn-package-b',
+                // should NOT see this:
+                'node-package-c': 'rn-package-c',
+              },
+            }),
+            'index.js': 'require("node-package-a"); require("node-package-b"); require("node-package-c");',
+            'node_modules': {
+              'node-package-a': {
+                'package.json': JSON.stringify({
+                  'name': 'node-package-a',
+                }),
+                'index.js': 'some node code',
+              },
+              'node-package-b': {
+                'package.json': JSON.stringify({
+                  'name': 'node-package-b',
+                }),
+                'index.js': 'some node code',
+              },
+              'node-package-c': {
+                'package.json': JSON.stringify({
+                  'name': 'node-package-c',
+                }),
+                'index.js': 'some node code',
+              },
+              'node-package-d': {
+                'package.json': JSON.stringify({
+                  'name': 'node-package-d',
+                }),
+                'index.js': 'some node code',
+              },
+              'rn-package-a': {
+                'package.json': JSON.stringify({
+                  'name': 'rn-package-a',
+                }),
+                'index.js': 'some rn code',
+              },
+              'rn-package-b': {
+                'package.json': JSON.stringify({
+                  'name': 'rn-package-b',
+                }),
+                'index.js': 'some rn code',
+              },
+              'rn-package-c': {
+                'package.json': JSON.stringify({
+                  'name': 'rn-package-c',
+                }),
+                'index.js': 'some rn code',
+              },
+              'rn-package-d': {
+                'package.json': JSON.stringify({
+                  'name': 'rn-package-d',
+                }),
+                'index.js': 'some rn code',
+              },
+            },
+          },
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            { id: 'index',
+              path: '/root/index.js',
+              dependencies: ['aPackage'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            { id: 'aPackage/index.js',
+              path: '/root/aPackage/index.js',
+              dependencies: ['node-package-a', 'node-package-b', 'node-package-c'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            { id: 'rn-package-a/index.js',
+              path: '/root/aPackage/node_modules/rn-package-a/index.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            { id: 'rn-package-b/index.js',
+              path: '/root/aPackage/node_modules/rn-package-b/index.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            { id: 'rn-package-d/index.js',
+              path: '/root/aPackage/node_modules/rn-package-d/index.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
   });
 
   describe('node_modules', function() {
