@@ -67,11 +67,11 @@ class XMLHttpRequestBase {
     this._aborted = false;
   }
   
-  static get UNSENT() { return 0 }
-  static get OPENED() { return 1 }
-  static get HEADERS_RECEIVED() { return 2 }
-  static get LOADING() { return 3 }
-  static get DONE() { return 4 }
+  static get UNSENT() { return 0; }
+  static get OPENED() { return 1; }
+  static get HEADERS_RECEIVED() { return 2; }
+  static get LOADING() { return 3; }
+  static get DONE() { return 4; }
 
   _reset() {
     this.readyState = this.UNSENT;
