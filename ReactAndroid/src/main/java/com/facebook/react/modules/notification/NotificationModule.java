@@ -13,6 +13,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
@@ -37,7 +39,14 @@ public class NotificationModule extends ReactContextBaseJavaModule {
     ReactApplicationContext context = getReactApplicationContext();
     NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
-    builder.setSmallIcon(android.R.drawable.stat_sys_warning);
+    try {
+      PackageManager pm = context.getPackageManager();
+      ApplicationInfo info = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      builder.setSmallIcon(info.icon);
+    } catch (PackageManager.NameNotFoundException e) {
+      builder.setSmallIcon(android.R.drawable.sym_def_app_icon);
+    }
+
     builder.setAutoCancel(true);
 
     if (details.hasKey("title")) {
