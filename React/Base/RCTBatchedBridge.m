@@ -461,7 +461,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
-    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path]];
+    NSString *host = self.bundleURL.host;
+    NSNumber *port = self.bundleURL.port;
+    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path, host, RCTNullIfNil(port)]];
   }
 
 #endif

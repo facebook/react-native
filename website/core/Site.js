@@ -16,6 +16,7 @@ var Metadata = require('Metadata');
 var Site = React.createClass({
   render: function() {
     const path = Metadata.config.RN_DEPLOYMENT_PATH;
+    const version = Metadata.config.RN_VERSION;
     var basePath = '/react-native/' + (path ? path + '/' : '');
     var title = this.props.title ? this.props.title + ' – ' : '';
     var currentYear = (new Date()).getFullYear();
@@ -51,6 +52,9 @@ var Site = React.createClass({
                 <a className="nav-home" href="">
                   <img src="img/header_logo.png" />
                   React Native
+                </a>
+                <a className="nav-version" href="/react-native/versions.html">
+                  {version}
                 </a>
                 <HeaderLinks section={this.props.section} />
               </div>

@@ -188,7 +188,8 @@ RCT_REMAP_METHOD(findEvents,
   if (events) {
     resolve(events);
   } else {
-    reject(error);
+    NSError *error = ...
+    reject(@"no_events", @"There were no events", error);
   }
 }
 ```
