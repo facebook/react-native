@@ -53,6 +53,7 @@ var APIS = [
   require('./ImageEditingExample'),
   require('./IntentAndroidExample.android'),
   require('./LayoutEventsExample'),
+  require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./LayoutExample'),
   require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./NetInfoExample'),
