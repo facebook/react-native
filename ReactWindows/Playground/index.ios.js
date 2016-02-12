@@ -1,103 +1,138 @@
 'use strict';
+import React, {
+    AppRegistry,
+    Component,
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    LayoutAnimation,
+} from 'react-native';
 
-const React = require('react-native');
-const styles={
-    views:{
-        flexDirection: 'column'
+var CustomLayoutAnimation = {
+    duration: 200,
+    create: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
     },
-    images: {
-        height:200,
-        width:250,
-        borderWidth: 5, 
-        borderColor: '#f099f0',
-        borderRadius: 10,
-        tintColor: '#bf2d32'
+    update: {
+        type: LayoutAnimation.Types.curveEaseInEaseOut,
     },
-    textInput: {
-        height: 40,
-        borderWidth: 5, 
-        borderColor: '#015d87'
-    },
-    longTextInput: {
-        height: 80,
-        borderWidth: 3,
-        borderColor: '#ccc'
+};
+
+class AnimationExample extends Component {
+
+    constructor() {
+        super();
+
+        this.state = {
+            index: 0,
+        }
     }
-};
 
-var {AppRegistry, View, Text, TextInput, Image, LayoutAnimation, Switch } = React;
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 500,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity,
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.4,
-            },
-        },
-        easeInEaseOut: {
-            duration: 750,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY,
-            },
-            update: {
-                delay: 400,
-                type: LayoutAnimation.Types.easeInEaseOut,
-            },
-        },
-    },
-};
+    onPress(index) {
 
-var ReactRoot = React.createClass({
-    getInitialState: function() {
-        var text = "You can see me!";
-        var longText = "This is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new lineThis is such a long text that it needs to go into a new line";
-        
-        return {value: text, 
-            longText: longText,
-            w: 100, h: 100,
-            switchState: true};
-    },
+        // Uncomment to animate the next state change.
+        //LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
-    toggleChangeEventHandler: function(){
-        LayoutAnimation.configureNext(animations.layout.spring);
-        this.setState({switchState: !this.state.switchState,
-            w: this.state.w + 10,
-            y: this.state.y + 10});
-    },
+        // Or use a Custom Layout Animation
+        // LayoutAnimation.configureNext(CustomLayoutAnimation);
 
-    render: function() {
-        let imageURL = "http://facebook.github.io/react-native/img/opengraph.png?2";
-        
+        this.setState({index: index});
+    }
+
+    renderButton(index) {
         return (
-            <View>
-              <View style={styles.views}>
-		        <Text>Hello Eric!</Text>
-                {(this.state && this.state.value) 
-			      ? <TextInput value={this.state.value} style={styles.textInput}></TextInput> 
-				  : undefined}
-                {(this.state && this.state.longText) 
-                  ? <TextInput value={this.state.longText} multiline={true} style={styles.longTextInput}></TextInput> 
-                  : undefined}
-              </View>
-              <View style={styles.views}>
-                <Image source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}} style={styles.images}/>
-              </View>
-              <View style={[styles.box, {width: this.state.w, height: this.state.h, backgroundColor: 'red'}]} >
-                <Switch
-                  onValueChange={(value) => this.toggleChangeEventHandler()}
-                  style={{marginBottom: 10}}
-                  value={this.state.switchState} />
-              </View>
-            </View>
-        );
+          <TouchableOpacity key={'button' + index} style={styles.button} onPress={() => this.onPress(index)}>
+        <Text>{index}</Text>
+      </TouchableOpacity>
+    );
+        }
+
+    renderCircle(key) {
+        var size = 50;
+        return (
+          <View key={key} style={{width: size, height: size, borderRadius: size / 2.0, backgroundColor: 'sandybrown', margin: 20}}/>
+    );
+}
+
+render() {
+
+    var leftStyle = this.state.index === 0 ? {flex: 1} : {width: 20};
+    var middleStyle = this.state.index === 2 ? {width: 20} : {flex: 1};
+    var rightStyle = {flex: 1};
+
+    var whiteHeight = this.state.index * 80;
+
+    var circles = [];
+    for (var i = 0; i < (5 + this.state.index); i++) {
+        circles.push(this.renderCircle(i));
     }
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.topButtons}>
+          {this.renderButton(0)}
+{this.renderButton(1)}
+{this.renderButton(2)}
+</View>
+<View style={styles.content}>
+  <View style={{flexDirection: 'row', height: 100}}>
+            <View style={[leftStyle, {backgroundColor: 'firebrick'}]}/>
+            <View style={[middleStyle, {backgroundColor: 'seagreen'}]}/>
+            <View style={[rightStyle, {backgroundColor: 'steelblue'}]}/>
+          </View>
+          <View style={{height: whiteHeight, justifyContent: 'center', alignItems: 'center', overflow: 'hidden'}} removeClippedSubviews={true}>
+            <View>
+              <Text>Stuff Goes Here</Text>
+            </View>
+          </View>
+          <View style={styles.circleContainer}>
+            {circles}
+          </View>
+        </View>
+      </View>
+    );
+}
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+    },
+    topButtons: {
+        marginTop: 22,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        backgroundColor: 'lightblue',
+    },
+    button: {
+        flex: 1,
+        height: 60,
+        alignSelf: 'stretch',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 8,
+    },
+    content: {
+        flex: 1,
+        alignSelf: 'stretch',
+    },
+    circleContainer: {
+        flexDirection: 'row',
+        flex: 1,
+        flexWrap: 'wrap',
+        padding: 30,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
 });
 
-AppRegistry.registerComponent('ReactRoot', () => ReactRoot);
+AppRegistry.registerComponent('ReactRoot', () => AnimationExample);
+

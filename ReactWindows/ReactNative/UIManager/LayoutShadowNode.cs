@@ -23,9 +23,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="height">The width.</param>
         [ReactProperty(ViewProperties.Width, DefaultFloat = Undefined)]
-        public void SetWidth(float width)
+        public void SetWidth(float? width)
         {
-            Width = width;
+            Width = width ?? CSSConstants.Undefined;
         }
 
         /// <summary>
@@ -33,9 +33,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="height">The height.</param>
         [ReactProperty(ViewProperties.Height, DefaultFloat = Undefined)]
-        public void SetHeight(float height)
+        public void SetHeight(float? height)
         {
-            Height = height;
+            Height = height ?? CSSConstants.Undefined;
         }
 
         /// <summary>
@@ -43,9 +43,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="left">The left position.</param>
         [ReactProperty(ViewProperties.Left, DefaultFloat = Undefined)]
-        public void SetLeft(float left)
+        public void SetLeft(float? left)
         {
-            PositionLeft = left;
+            PositionLeft = left ?? CSSConstants.Undefined;
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="top">The top position.</param>
         [ReactProperty(ViewProperties.Top, DefaultFloat = Undefined)]
-        public void SetTop(float top)
+        public void SetTop(float? top)
         {
-            PositionTop = top;
+            PositionTop = top ?? CSSConstants.Undefined;
         }
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="bottom">The bottom position.</param>
         [ReactProperty(ViewProperties.Bottom, DefaultFloat = Undefined)]
-        public void SetBottom(float bottom)
+        public void SetBottom(float? bottom)
         {
-            PositionBottom = bottom;
+            PositionBottom = bottom ?? CSSConstants.Undefined;
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="right">The right position.</param>
         [ReactProperty(ViewProperties.Right, DefaultFloat = Undefined)]
-        public void SetRight(float right)
+        public void SetRight(float? right)
         {
-            PositionRight = right;
+            PositionRight = right ?? CSSConstants.Undefined;
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="flex">The flex value.</param>
         [ReactProperty(ViewProperties.Flex, DefaultFloat = 0f)]
-        public void SetFlex(float flex)
+        public void SetFlex(float? flex)
         {
-            Flex = flex;
+            Flex = flex ?? CSSConstants.Undefined;
         }
 
         /// <summary>

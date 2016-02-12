@@ -4,6 +4,7 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using System;
 
 namespace ReactNative.UIManager
 {
@@ -31,7 +32,10 @@ namespace ReactNative.UIManager
             base.Content = content;
         }
 
-        private bool HasCustomBorder
+        /// <summary>
+        /// Signals if the view has a custom border.
+        /// </summary>
+        public bool HasCustomBorder
         {
             get
             {
@@ -47,21 +51,21 @@ namespace ReactNative.UIManager
         /// An intentional override of the <see cref="ContentControl.Content"/>
         /// property that returns the child without any borders.
         /// </summary>
-        public new UIElement Content
+        public new FrameworkElement Content
         {
             get
             {
                 if (!HasCustomBorder)
                 {
-                    return (UIElement)base.Content;
+                    return (FrameworkElement)base.Content;
                 }
                 else if (_customBorder != null)
                 {
-                    return _customBorder.Child;
+                    return (FrameworkElement)_customBorder.Child;
                 }
                 else
                 {
-                    return _customBottomBorder.Child;
+                    return (FrameworkElement)_customBottomBorder.Child;
                 }
             }
         }
@@ -150,6 +154,18 @@ namespace ReactNative.UIManager
                 _customTopBorder.BorderBrush = brush;
                 _customRightBorder.BorderBrush = brush;
                 _customBottomBorder.BorderBrush = brush;
+            }
+        }
+
+        /// <summary>
+        /// Sets the background color.
+        /// </summary>
+        /// <param name="value">The masked color value.</param>
+        public void SetBackgroundColor(uint value)
+        {
+            if (_customBorder != null)
+            {
+                _customBorder.Background = new SolidColorBrush(ColorHelpers.Parse(value));
             }
         }
 
