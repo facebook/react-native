@@ -183,4 +183,13 @@ RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
   ];
 }
 
+RCT_EXPORT_METHOD(getScrollViewPosition: (NSNumber *)reactTag
+                  callback: (RCTResponseSenderBlock)callback) {
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
+    RCTScrollView *scrollView = ( RCTScrollView* )viewRegistry[reactTag];
+    CGPoint origin = [scrollView getScrollViewPosition];
+    callback(@[@(origin.x), @(origin.y)]);
+  }];
+}
+
 @end
