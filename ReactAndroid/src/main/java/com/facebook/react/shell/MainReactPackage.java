@@ -9,10 +9,6 @@
 
 package com.facebook.react.shell;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -22,13 +18,14 @@ import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
-import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
+import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
+import com.facebook.react.modules.notification.NotificationModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
@@ -45,17 +42,21 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
+import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
-import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactTextInlineImageViewManager;
+import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
-import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.webview.ReactWebViewManager;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Package defining basic modules and view managers.
@@ -78,6 +79,7 @@ public class MainReactPackage implements ReactPackage {
       new LocationModule(reactContext),
       new NetworkingModule(reactContext),
       new NetInfoModule(reactContext),
+      new NotificationModule(reactContext),
       new StatusBarModule(reactContext),
       new TimePickerDialogModule(reactContext),
       new ToastModule(reactContext),
