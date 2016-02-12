@@ -7,13 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule IntentAndroid
+ * @flow
  */
 'use strict';
 
-var IntentAndroidModule = require('NativeModules').IntentAndroid;
+var Linking = require('Linking');
 var invariant = require('invariant');
 
 /**
+ * NOTE: `IntentAndroid` is being deprecated. Use `Linking` instead.
+ *
  * `IntentAndroid` gives you a general interface to handle external links.
  *
  * ### Basic Usage
@@ -89,10 +92,12 @@ class IntentAndroid {
    * If you're passing in a non-http(s) URL, it's best to check {@code canOpenURL} first.
    *
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
+   *
+   * @deprecated
    */
   static openURL(url: string) {
-    this._validateURL(url);
-    IntentAndroidModule.openURL(url);
+    console.warn('"IntentAndroid.openURL" is deprecated. Use the promise based "Linking.openURL" instead.');
+    Linking.openURL(url);
   }
 
   /**
@@ -104,14 +109,16 @@ class IntentAndroid {
    * NOTE: For web URLs, the protocol ("http://", "https://") must be set accordingly!
    *
    * @param URL the URL to open
+   *
+   * @deprecated
    */
   static canOpenURL(url: string, callback: Function) {
-    this._validateURL(url);
+    console.warn('"IntentAndroid.canOpenURL" is deprecated. Use the promise based "Linking.canOpenURL" instead.');
     invariant(
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.canOpenURL(url, callback);
+    Linking.canOpenURL(url).then(callback);
   }
 
   /**
@@ -119,24 +126,16 @@ class IntentAndroid {
    * it will give the link url, otherwise it will give `null`
    *
    * Refer http://developer.android.com/training/app-indexing/deep-linking.html#handling-intents
+   *
+   * @deprecated
    */
   static getInitialURL(callback: Function) {
+    console.warn('"IntentAndroid.getInitialURL" is deprecated. Use the promise based "Linking.getInitialURL" instead.');
     invariant(
       typeof callback === 'function',
       'A valid callback function is required'
     );
-    IntentAndroidModule.getInitialURL(callback);
-  }
-
-  static _validateURL(url: string) {
-    invariant(
-      typeof url === 'string',
-      'Invalid URL: should be a string. Was: ' + url
-    );
-    invariant(
-      url,
-      'Invalid URL: cannot be empty'
-    );
+    Linking.getInitialURL().then(callback);
   }
 }
 

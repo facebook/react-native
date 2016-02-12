@@ -132,7 +132,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.tag(requestId);
     }
 
-    mClient.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
+    OkHttpClient client = mClient;
+    // If the current timeout does not equal the passed in timeout, we need to clone the existing
+    // client and set the timeout explicitly on the clone.  This is cheap as everything else is
+    // shared under the hood.
+    // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
+    if (timeout != mClient.getConnectTimeout()) {
+      client = mClient.clone();
+      client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
+    }
 
     Headers requestHeaders = extractHeaders(headers, data);
     if (requestHeaders == null) {
@@ -189,11 +197,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, multipartBuilder.build());
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      // Ignore and treat it as if it were null.
-      requestBuilder.method(method, null);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
-    mClient.newCall(requestBuilder.build()).enqueue(
+    client.newCall(requestBuilder.build()).enqueue(
         new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {

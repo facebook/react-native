@@ -11,6 +11,7 @@ package com.facebook.react.views.textinput;
 
 import javax.annotation.Nullable;
 
+import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
@@ -28,18 +29,17 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -195,6 +195,15 @@ public class ReactTextInputManager extends
     }
   }
 
+  @ReactProp(name = "selectionColor", customType = "Color")
+  public void setSelectionColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setHighlightColor(DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.getContext()));
+    } else {
+      view.setHighlightColor(color);
+    }
+  }
+
   @ReactProp(name = "underlineColorAndroid", customType = "Color")
   public void setUnderlineColor(ReactEditText view, @Nullable Integer underlineColor) {
     if (underlineColor == null) {
@@ -246,13 +255,43 @@ public class ReactTextInputManager extends
 
   @ReactProp(name = "maxLength")
   public void setMaxLength(ReactEditText view, @Nullable Integer maxLength) {
+    InputFilter [] currentFilters = view.getFilters();
+    InputFilter[] newFilters = EMPTY_FILTERS;
+
     if (maxLength == null) {
-      view.setFilters(EMPTY_FILTERS);
+      if (currentFilters.length > 0) {
+        LinkedList<InputFilter> list = new LinkedList<>();
+        for (int i = 0; i < currentFilters.length; i++) {
+          if (!(currentFilters[i] instanceof InputFilter.LengthFilter)) {
+            list.add(currentFilters[i]);
+          }
+        }
+        if (!list.isEmpty()) {
+          newFilters = (InputFilter[]) list.toArray();
+        }
+      }
     } else {
-      InputFilter[] filterArray = new InputFilter[1];
-      filterArray[0] = new InputFilter.LengthFilter(maxLength);
-      view.setFilters(filterArray);
+      if (currentFilters.length > 0) {
+        newFilters = currentFilters;
+        boolean replaced = false;
+        for (int i = 0; i < currentFilters.length; i++) {
+          if (currentFilters[i] instanceof InputFilter.LengthFilter) {
+            currentFilters[i] = new InputFilter.LengthFilter(maxLength);
+            replaced = true;
+          }
+        }
+        if (!replaced) {
+          newFilters = new InputFilter[currentFilters.length + 1];
+          System.arraycopy(currentFilters, 0, newFilters, 0, currentFilters.length);
+          currentFilters[currentFilters.length] = new InputFilter.LengthFilter(maxLength);
+        }
+      } else {
+        newFilters = new InputFilter[1];
+        newFilters[0] = new InputFilter.LengthFilter(maxLength);
+      }
     }
+
+    view.setFilters(newFilters);
   }
 
   @ReactProp(name = "autoCorrect")

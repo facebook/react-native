@@ -5,6 +5,7 @@ SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
   '//native/jni:jni',
+  '//native/third-party/android-ndk:android',
   '//xplat/folly:molly',
 ]
 
@@ -28,21 +29,27 @@ jni_library(
   supported_platforms_regex = SUPPORTED_PLATFORMS,
   srcs = [
     'JMessageQueueThread.cpp',
+    'JSCPerfLogging.cpp',
     'JSLoader.cpp',
+    'JniJSModulesUnbundle.cpp',
     'NativeArray.cpp',
     'OnLoad.cpp',
     'ProxyExecutor.cpp',
+    'JSLogging.cpp',
   ],
   headers = [
     'JSLoader.h',
     'ProxyExecutor.h',
-  ],
-  exported_headers = [
     'JMessageQueueThread.h',
     'JNativeRunnable.h',
+    'JniJSModulesUnbundle.h',
+    'JSCPerfLogging.h',
+    'JSLogging.h',
+    'WebWorkers.h',
+  ],
+  exported_headers = [
     'NativeArray.h',
     'ReadableNativeArray.h',
-    'WebWorkers.h',
   ],
   preprocessor_flags = [
     '-DLOG_TAG="ReactNativeJNI"',

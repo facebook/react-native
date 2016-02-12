@@ -401,7 +401,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule implements Act
 
 ### Listening to LifeCycle events
 
-Listening to the activity's LifeCycle events such as `onResume`, `onPause` etc. is very similar to how we implemented `ActivityEventListener`. The module must implement `ActivityEventListener`. Then, you need to register a listener in the module's constructor,
+Listening to the activity's LifeCycle events such as `onResume`, `onPause` etc. is very similar to how we implemented `ActivityEventListener`. The module must implement `LifecycleEventListener`. Then, you need to register a listener in the module's constructor,
 
 ```java
 reactContext.addLifecycleEventListener(this);

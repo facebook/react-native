@@ -132,7 +132,8 @@ public class ReactAppTestActivity extends FragmentActivity implements
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
-    ReactInstanceManager.Builder builder = ReactInstanceManager.builder()
+    ReactInstanceManager.Builder builder =
+      ReactTestHelper.getReactTestFactory().getReactInstanceManagerBuilder()
         .setApplication(getApplication())
         .setBundleAssetName(bundleName)
         // By not setting a JS module name, we force the bundle to be always loaded from
