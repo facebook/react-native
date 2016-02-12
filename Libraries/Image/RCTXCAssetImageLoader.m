@@ -52,6 +52,17 @@ RCT_EXPORT_MODULE()
         }
       }
       
+      // Get any bundle files included and of the frameworks and add them to the array
+      for (NSBundle *framework in [NSBundle allFrameworks]) {
+        for (NSString *path in [framework pathsForResourcesOfType:@"bundle" inDirectory:nil]) {
+          NSBundle *bundle = [NSBundle bundleWithPath:path];
+          
+          if (bundle && ![bundles containsObject:bundle]) {
+            [bundles addObject:bundle];
+          }
+        }
+      }
+      
       for (NSBundle *bundle in bundles) {
         NSString *bundleName = bundle.infoDictionary[@"CFBundleName"];
         
