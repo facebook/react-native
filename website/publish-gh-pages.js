@@ -8,14 +8,15 @@
  */
 'use strict';
 
-const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '';
+var semverCmp = require('semver-compare');
+require(`shelljs/global`);
+
+const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH;
 const CIRCLE_PROJECT_USERNAME = process.env.CIRCLE_PROJECT_USERNAME;
-const CIRCLE_PROJECT_REPONAME = process.env.CIRCLE_PROJECT_REPONAME;
 const CI_PULL_REQUESTS = process.env.CI_PULL_REQUESTS;
 const CI_PULL_REQUEST = process.env.CI_PULL_REQUEST;
 const GIT_USER = process.env.GIT_USER;
 const remoteBranch = `https://${GIT_USER}@github.com/facebook/react-native.git`;
-require(`shelljs/global`);
 
 if (!which(`git`)) {
   echo(`Sorry, this script requires git`);
@@ -55,25 +56,37 @@ if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
     echo(`Error: Git checkout gh-pages failed`);
     exit(1);
   }
+  cd(`releases`);
+  var releasesFolders = ls(`-d`, `*`)
+  cd(`..`);
+  var versions = releasesFolders.filter(name => name !== `next`);
+  if (versions.indexOf(version) === -1) {
+    versions.push(version);
+  }
+  versions.sort(semverCmp).reverse();
+
   // generate to releases/XX when branch name indicates that it is some sort of release
   if (!!version) {
     echo(`------------ DEPLOYING /releases/${version}`);
     rm(`-rf`, `releases/${version}`);
     mkdir(`-p`, `releases/${version}`);
     cd(`../..`);
-    if (exec(`RN_DEPLOYMENT_PATH=releases/${version} node server/generate.js`).code !== 0) {
+    if (exec(`RN_DEPLOYMENT_PATH=releases/${version} RN_VERSION=${version} \
+    RN_AVAILABLE_DOCS_VERSIONS=${versions.join(',')} node server/generate.js`).code !== 0) {
       echo(`Error: Generating HTML failed`);
       exit(1);
     }
     cd(`build/react-native-gh-pages`);
     exec(`cp -R ../react-native/* releases/${version}`);
+    // versions.html is located in root of website and updated with every release
+    exec(`cp ../react-native/versions.html .`);
   }
   if (currentCommit === latestTagCommit) {
     echo(`------------ DEPLOYING latest`);
     // leave only releases folder
     rm(`-rf`, ls(`*`).filter(name => name !== 'releases'));
     cd(`../..`);
-    if (exec(`node server/generate.js`).code !== 0) {
+    if (exec(`RN_VERSION=${version} RN_AVAILABLE_DOCS_VERSIONS=${versions} node server/generate.js`).code !== 0) {
       echo(`Error: Generating HTML failed`);
       exit(1);
     }
