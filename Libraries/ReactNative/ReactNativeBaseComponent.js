@@ -115,7 +115,11 @@ ReactNativeBaseComponent.Mixin = {
     this._currentElement = nextElement;
 
     if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+      for (var key in this.viewConfig.validAttributes) {
+        if (nextElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(nextElement.props[key]);
+        }
+      }
     }
 
     var updatePayload = ReactNativeAttributePayload.diff(
