@@ -377,6 +377,12 @@ var apps = [
     author: 'wei ping woon',
   },
   {
+    name: 'MyPED',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/88/1f/fb/881ffb3b-7986-d427-7fcf-eb5920a883af/icon175x175.png',
+    link: 'https://itunes.apple.com/it/app/myped/id1064907558?ls=1&mt=8',
+    author: 'Impronta Advance',
+  },
+  {
     name: 'Nalathe Kerala',
     icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
