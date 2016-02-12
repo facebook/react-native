@@ -55,7 +55,7 @@ fetch('https://mywebsite.com/endpoint.php')
 2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
 
 ```js
-async getUsersFromApi() {
+async function getUsersFromApi() {
   try {
     let response = await fetch('https://mywebsite.com/endpoint/');
     return response.users;
