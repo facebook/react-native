@@ -26,6 +26,8 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
+NSString *const RCTJSCThreadName = @"com.facebook.React.JavaScript";
+
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -172,7 +174,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
                                                        selector:@selector(runRunLoopThread)
                                                          object:nil];
-  javaScriptThread.name = @"com.facebook.React.JavaScript";
+  javaScriptThread.name = RCTJSCThreadName;
 
   if ([javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
     [javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
