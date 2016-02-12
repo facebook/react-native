@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
@@ -43,12 +44,16 @@ class Module {
     return this._cache.get(
       this.path,
       'isHaste',
-      () => this._readDocBlock().then(data => !!data.id)
+      () => this._readDocBlock().then(({id}) => !!id)
     );
   }
 
-  getCode() {
-    return this.read().then(({code}) => code);
+  getCode(transformOptions) {
+    return this.read(transformOptions).then(({code}) => code);
+  }
+
+  getMap(transformOptions) {
+    return this.read(transformOptions).then(({map}) => map);
   }
 
   getName() {
@@ -83,12 +88,8 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies() {
-    return this._cache.get(
-      this.path,
-      'dependencies',
-      () => this.read().then(data => data.dependencies)
-    );
+  getDependencies(transformOptions) {
+    return this.read(transformOptions).then(data => data.dependencies);
   }
 
   invalidate() {
@@ -108,56 +109,50 @@ class Module {
     const id = provides && !this._depGraphHelpers.isNodeModulesDir(this.path)
         ? /^\S+/.exec(provides)[0]
         : undefined;
-    return [id, moduleDocBlock];
+    return {id, moduleDocBlock};
   }
 
-  _readDocBlock() {
-    const reading = this._reading || this._docBlock;
-    if (reading) {
-      return reading;
+  _readDocBlock(contentPromise) {
+    if (!this._docBlock) {
+      if (!contentPromise) {
+        contentPromise = this._fastfs.readWhile(this.path, whileInDocBlock);
+      }
+      this._docBlock = contentPromise
+        .then(docBlock => this._parseDocBlock(docBlock));
     }
-    this._docBlock = this._fastfs.readWhile(this.path, whileInDocBlock)
-      .then(docBlock => {
-        const [id] = this._parseDocBlock(docBlock);
-        return {id};
-      });
     return this._docBlock;
   }
 
-  read() {
-    if (this._reading) {
-      return this._reading;
-    }
+  read(transformOptions) {
+    return this._cache.get(
+      this.path,
+      cacheKey('moduleData', transformOptions),
+      () => {
+        const fileContentPromise = this._fastfs.readFile(this.path);
+        return Promise.all([
+          fileContentPromise,
+          this._readDocBlock(fileContentPromise)
+        ]).then(([code, {id, moduleDocBlock}]) => {
+          // Ignore requires in JSON files or generated code. An example of this
+          // is prebuilt files like the SourceMap library.
+          if (this.isJSON() || 'extern' in moduleDocBlock) {
+            return {id, code, dependencies: []};
+          } else {
+            const transformCode = this._transformCode;
+            const codePromise = transformCode
+                ? transformCode(this, code, transformOptions)
+                : Promise.resolve({code});
 
-    this._reading = this._fastfs.readFile(this.path).then(content => {
-      const [id, moduleDocBlock] = this._parseDocBlock(content);
-
-      // Ignore requires in JSON files or generated code. An example of this
-      // is prebuilt files like the SourceMap library.
-      if (this.isJSON() || 'extern' in moduleDocBlock) {
-        return {
-          id,
-          dependencies: [],
-          code: content,
-        };
-      } else {
-        const transformCode = this._transformCode;
-        const codePromise = transformCode
-            ? transformCode(this, content)
-            : Promise.resolve({code: content});
-
-        return codePromise.then(({code, dependencies}) => {
-          const {deps} = this._extractor(code);
-          return {
-            id,
-            code,
-            dependencies: dependencies || deps.sync,
-          };
-        });
+            return codePromise.then(({code, dependencies, map}) => {
+              if (!dependencies) {
+                dependencies = this._extractor(code).deps.sync;
+              }
+              return {id, code, dependencies, map};
+            });
+          }
+        })
       }
-    });
-
-    return this._reading;
+    );
   }
 
   hash() {
@@ -205,6 +200,40 @@ function whileInDocBlock(chunk, i, result) {
 
   // check for end of doc block
   return !/\*\//.test(result);
+}
+
+// use weak map to speed up hash creation of known objects
+const knownHashes = new WeakMap();
+function stableObjectHash(object) {
+  let digest = knownHashes.get(object);
+
+  if (!digest) {
+    const hash = crypto.createHash('md5');
+    stableObjectHash.addTo(object, hash);
+    digest = hash.digest('base64');
+    knownHashes.set(object, digest);
+  }
+
+  return digest;
+}
+stableObjectHash.addTo = function addTo(value, hash) {
+  if (value === null || typeof value !== 'object') {
+    hash.update(JSON.stringify(value));
+  } else {
+    Object.keys(value).sort().forEach(key => {
+      const valueForKey = value[key];
+      if (valueForKey !== undefined) {
+        hash.update(key);
+        addTo(valueForKey, hash);
+      }
+    });
+  }
+};
+
+function cacheKey(field, transformOptions) {
+  return transformOptions !== undefined
+      ? stableObjectHash(transformOptions) + '\0' + field
+      : field;
 }
 
 module.exports = Module;
