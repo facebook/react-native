@@ -349,8 +349,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   __block UIView *hitView;
 
+  NSArray *subviews = [self contentView].reactSubviews;
+  NSUInteger subviewCount = subviews.count;
   [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
-    UIView *stickyHeader = [self contentView].reactSubviews[idx];
+    if (idx >= subviewCount) {
+      *stop = YES;
+      return;
+    }
+    UIView *stickyHeader = subviews[idx];
     CGPoint convertedPoint = [stickyHeader convertPoint:point fromView:self];
     hitView = [stickyHeader hitTest:convertedPoint withEvent:event];
     *stop = (hitView != nil);
