@@ -70,7 +70,7 @@ private:
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
-  std::unique_ptr<JSExecutor> m_jsExecutor;
+  std::unique_ptr<JSExecutor> m_mainExecutor;
 };
 
 } }
