@@ -54,7 +54,7 @@ fetch('https://mywebsite.com/endpoint/', {
 2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
   
   ```js
-  var MyComponent = React.createClass({
+  class MyComponent extends React.Component {
     ...
     async getUsersFromApi() {
       try {
@@ -62,11 +62,12 @@ fetch('https://mywebsite.com/endpoint/', {
         let responseJson = await response.json();
         return responseJson.users;
       } catch(error) {
-        throw error;
+        // Handle error
+        console.error(error);
       }
     }
     ...
-  })
+  }
   ```
 
 - Note: Errors thrown by rejected Promises need to be caught, or they will be swallowed silently
