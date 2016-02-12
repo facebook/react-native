@@ -16,6 +16,7 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 const RCTNetInfo = NativeModules.NetInfo;
+const deprecatedCallback = require('deprecatedCallback');
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
@@ -231,25 +232,12 @@ const NetInfo = {
   },
 
   isConnectionExpensive(): Promise {
-    if (arguments.length > 0) {
-      console.warn('NetInfo.isConnectionMetered(callback) is deprecated. Use the returned Promise instead.');
-      const callback = arguments[1];
-      if (Platform.OS === 'android') {
-        RCTNetInfo.isConnectionMetered().then(
-          metered => callback(metered),
-          error => callback(null, error)
-        );
-      } else {
-        callback(null, 'Unsupported');
-      }
-      return;
-    }
-    if (Platform.OS === 'android') {
-      return RCTNetInfo.isConnectionMetered();
-    } else {
-      // TODO t9296080 consider polyfill and more features later on
-      Promise.reject(new Error('Currently not supported on iOS'));
-    }
+    return deprecatedCallback(
+      Platform.OS === 'android' ? RCTNetInfo.isConnectionMetered() : Promise.reject(new Error('Currently not supported on iOS')),
+      Array.prototype.slice.call(arguments),
+      'single-callback-value-first',
+      'NetInfo.isConnectionMetered(callback) is deprecated. Use the returned Promise instead.'
+    );
   },
 };
 
