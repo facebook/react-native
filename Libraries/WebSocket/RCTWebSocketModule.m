@@ -44,9 +44,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(NSDictionary *)options socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
 {
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL protocols:protocols options:options];
+  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL protocols:protocols headers:headers];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
   if (!_sockets) {
