@@ -163,6 +163,22 @@ var ToTheLeft = {
   },
 };
 
+var ToTheLeftIOS = {
+  transformTranslate: {
+    from: {x: 0, y: 0, z: 0},
+    to: {x: -Dimensions.get('window').width * 0.3, y: 0, z: 0},
+    min: 0,
+    max: 1,
+    type: 'linear',
+    extrapolate: true,
+    round: PixelRatio.get(),
+  },
+  opacity: {
+    value: 1.0,
+    type: 'constant',
+  },
+};
+
 var ToTheUp = {
   transformTranslate: {
     from: {x: 0, y: 0, z: 0},
