@@ -656,9 +656,7 @@ static void executeApplicationScript(
     const std::string& script,
     const std::string& sourceUri) {
   try {
-    // Execute the application script and collect/dispatch any native calls that might have occured
     bridge->executeApplicationScript(script, sourceUri);
-    bridge->flush();
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -669,15 +667,12 @@ static void loadApplicationUnbundle(
     AAssetManager *assetManager,
     const std::string& startupCode,
     const std::string& startupFileName) {
-
   try {
-    // Load the application unbundle and collect/dispatch any native calls that might have occured
     bridge->loadApplicationUnbundle(
       std::unique_ptr<JSModulesUnbundle>(
         new JniJSModulesUnbundle(assetManager, startupFileName)),
       startupCode,
       startupFileName);
-    bridge->flush();
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -818,8 +813,8 @@ std::string getDeviceCacheDir() {
 }
 
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override {
-    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(cb);
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override {
+    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(bridge);
   }
 };
 

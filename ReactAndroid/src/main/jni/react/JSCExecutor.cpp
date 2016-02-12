@@ -10,9 +10,10 @@
 #include <folly/String.h>
 #include <sys/time.h>
 
+#include "Bridge.h"
 #include "JSCHelpers.h"
-#include "Value.h"
 #include "Platform.h"
+#include "Value.h"
 
 #ifdef WITH_JSC_EXTRA_TRACING
 #include "JSCTracing.h"
@@ -45,13 +46,6 @@ namespace react {
 
 static std::unordered_map<JSContextRef, JSCExecutor*> s_globalContextRefToJSCExecutor;
 
-static JSValueRef nativeFlushQueueImmediate(
-    JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
-    const JSValueRef arguments[],
-    JSValueRef *exception);
 static JSValueRef nativePerformanceNow(
     JSContextRef ctx,
     JSObjectRef function,
@@ -86,14 +80,15 @@ static std::string executeJSCallWithJSC(
   return Value(ctx, result).toJSONString();
 }
 
-std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(FlushImmediateCallback cb) {
-  return std::unique_ptr<JSExecutor>(new JSCExecutor(cb, cacheDir_));
+std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(Bridge *bridge) {
+  return std::unique_ptr<JSExecutor>(new JSCExecutor(bridge, cacheDir_));
 }
 
-JSCExecutor::JSCExecutor(FlushImmediateCallback cb, const std::string& cacheDir) :
-    m_flushImmediateCallback(cb), m_deviceCacheDir(cacheDir) {
+JSCExecutor::JSCExecutor(Bridge *bridge, const std::string& cacheDir) :
+    m_bridge(bridge),
+    m_deviceCacheDir(cacheDir),
+    m_messageQueueThread(MessageQueues::getCurrentMessageQueueThread()) {
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
-  m_messageQueueThread = MessageQueues::getCurrentMessageQueueThread();
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
   installGlobalFunction(m_context, "nativePerformanceNow", nativePerformanceNow);
@@ -152,6 +147,7 @@ void JSCExecutor::executeApplicationScript(
     //  in which a cache file for that script will be stored.
     evaluateScript(m_context, jsScript, jsSourceURL, m_deviceCacheDir.c_str());
   }
+  flush();
 }
 
 void JSCExecutor::loadApplicationUnbundle(
@@ -165,28 +161,31 @@ void JSCExecutor::loadApplicationUnbundle(
   executeApplicationScript(startupCode, sourceURL);
 }
 
-std::string JSCExecutor::flush() {
+void JSCExecutor::flush() {
   // TODO: Make this a first class function instead of evaling. #9317773
-  return executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+  std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
+  m_bridge->callNativeModules(calls, true);
 }
 
-std::string JSCExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+void JSCExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
   // TODO:  Make this a first class function instead of evaling. #9317773
   std::vector<folly::dynamic> call{
     (double) moduleId,
     (double) methodId,
     std::move(arguments),
   };
-  return executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
+  std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
+  m_bridge->callNativeModules(calls, true);
 }
 
-std::string JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
   // TODO: Make this a first class function instead of evaling. #9317773
   std::vector<folly::dynamic> call{
     (double) callbackId,
     std::move(arguments)
   };
-  return executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
+  std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
+  m_bridge->callNativeModules(calls, true);
 }
 
 void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
@@ -240,7 +239,7 @@ void JSCExecutor::handleMemoryPressureCritical() {
 }
 
 void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
-  m_flushImmediateCallback(queueJSON, false);
+  m_bridge->callNativeModules(queueJSON, false);
 }
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
@@ -271,7 +270,7 @@ void JSCExecutor::onMessageReceived(int workerId, const std::string& json) {
   JSValueRef args[] = { JSCWebWorker::createMessageObject(m_context, json) };
   onmessageValue.asObject().callAsFunction(1, args);
 
-  m_flushImmediateCallback(flush(), true);
+  flush();
 }
 
 int JSCExecutor::addWebWorker(const std::string& script, JSValueRef workerRef) {
@@ -348,7 +347,7 @@ static JSValueRef createErrorString(JSContextRef ctx, const char *msg) {
   return JSValueMakeString(ctx, String(msg));
 }
 
-static JSValueRef nativeFlushQueueImmediate(
+JSValueRef JSCExecutor::nativeFlushQueueImmediate(
     JSContextRef ctx,
     JSObjectRef function,
     JSObjectRef thisObject,

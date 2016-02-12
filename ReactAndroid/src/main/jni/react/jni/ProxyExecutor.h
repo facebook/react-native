@@ -19,7 +19,7 @@ class ProxyExecutorOneTimeFactory : public CountableJSExecutorFactory {
 public:
   ProxyExecutorOneTimeFactory(jni::global_ref<jobject>&& executorInstance) :
     m_executor(std::move(executorInstance)) {}
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback ignoredCallback) override;
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override;
 
 private:
   jni::global_ref<jobject> m_executor;
@@ -27,8 +27,9 @@ private:
 
 class ProxyExecutor : public JSExecutor {
 public:
-  ProxyExecutor(jni::global_ref<jobject>&& executorInstance) :
-    m_executor(std::move(executorInstance)) {}
+  ProxyExecutor(jni::global_ref<jobject>&& executorInstance, Bridge *bridge) :
+    m_executor(std::move(executorInstance)),
+    m_bridge(bridge) {}
   virtual ~ProxyExecutor() override;
   virtual void executeApplicationScript(
     const std::string& script,
@@ -37,12 +38,11 @@ public:
     std::unique_ptr<JSModulesUnbundle> bundle,
     const std::string& startupCode,
     const std::string& sourceURL) override;
-  virtual std::string flush() override;
-  virtual std::string callFunction(
+  virtual void callFunction(
     const double moduleId,
     const double methodId,
     const folly::dynamic& arguments) override;
-  virtual std::string invokeCallback(
+  virtual void invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) override;
   virtual void setGlobalVariable(
@@ -51,6 +51,7 @@ public:
 
 private:
   jni::global_ref<jobject> m_executor;
+  Bridge *m_bridge;
 };
 
 } }

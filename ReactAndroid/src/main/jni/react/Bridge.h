@@ -5,10 +5,11 @@
 #include <functional>
 #include <map>
 #include <vector>
-#include "Value.h"
+
 #include "Executor.h"
 #include "MethodCall.h"
 #include "JSModulesUnbundle.h"
+#include "Value.h"
 
 namespace folly {
 
@@ -25,11 +26,6 @@ public:
 
   Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback);
   virtual ~Bridge();
-
-  /**
-   * Flush get the next queue of changes.
-   */
-  void flush();
 
   /**
    * Executes a function with the module ID and method ID and any additional
@@ -62,6 +58,11 @@ public:
   void stopProfiler(const std::string& title, const std::string& filename);
   void handleMemoryPressureModerate();
   void handleMemoryPressureCritical();
+
+  /**
+   * TODO: get rid of isEndOfBatch
+   */
+  void callNativeModules(const std::string& callJSON, bool isEndOfBatch);
 private:
   Callback m_callback;
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),

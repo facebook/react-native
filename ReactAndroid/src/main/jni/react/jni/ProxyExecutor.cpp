@@ -8,6 +8,7 @@
 #include <jni/LocalString.h>
 #include <folly/json.h>
 
+#include <react/Bridge.h>
 namespace facebook {
 namespace react {
 
@@ -27,12 +28,12 @@ static std::string executeJSCallWithProxy(
   return result->toString();
 }
 
-std::unique_ptr<JSExecutor> ProxyExecutorOneTimeFactory::createJSExecutor(FlushImmediateCallback ignoredCallback) {
+std::unique_ptr<JSExecutor> ProxyExecutorOneTimeFactory::createJSExecutor(Bridge *bridge) {
   FBASSERTMSGF(
     m_executor.get() != nullptr,
     "Proxy instance should not be null. Did you attempt to call createJSExecutor() on this factory "
     "instance more than once?");
-  return std::unique_ptr<JSExecutor>(new ProxyExecutor(std::move(m_executor)));
+  return std::unique_ptr<JSExecutor>(new ProxyExecutor(std::move(m_executor), bridge));
 }
 
 ProxyExecutor::~ProxyExecutor() {
@@ -57,25 +58,23 @@ void ProxyExecutor::loadApplicationUnbundle(std::unique_ptr<JSModulesUnbundle>, 
     "Loading application unbundles is not supported for proxy executors");
 }
 
-std::string ProxyExecutor::flush() {
-  return executeJSCallWithProxy(m_executor.get(), "flushedQueue", std::vector<folly::dynamic>());
-}
-
-std::string ProxyExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+void ProxyExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
   std::vector<folly::dynamic> call{
     (double) moduleId,
     (double) methodId,
     std::move(arguments),
   };
-  return executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
+  std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
+  m_bridge->callNativeModules(result, true);
 }
 
-std::string ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
+void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
   std::vector<folly::dynamic> call{
     (double) callbackId,
     std::move(arguments)
   };
-  return executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
+  std::string result = executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
+  m_bridge->callNativeModules(result, true);
 }
 
 void ProxyExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {

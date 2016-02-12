@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+
 #include "JSModulesUnbundle.h"
 
 namespace folly {
@@ -16,13 +17,11 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
+class Bridge;
 class JSExecutor;
-
-typedef std::function<void(std::string, bool)> FlushImmediateCallback;
-
 class JSExecutorFactory {
 public:
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) = 0;
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) = 0;
   virtual ~JSExecutorFactory() {};
 };
 
@@ -44,22 +43,19 @@ public:
     const std::string& sourceURL) = 0;
 
   /**
-   * Executes BatchedBridge.flushedQueue in JS to get the next queue of changes.
-   */
-  virtual std::string flush() = 0;
-
-  /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,
-   * method ID and optional additional arguments in JS, and returns the next
-   * queue.
+   * method ID and optional additional arguments in JS. The executor is responsible
+   * for using Bridge->callNativeModules to invoke any necessary native modules methods.
    */
-  virtual std::string callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) = 0;
+  virtual void callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) = 0;
 
   /**
    * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
-   * and optional additional arguments in JS and returns the next queue.
+   * and optional additional arguments in JS and returns the next queue. The executor
+   * is responsible for using Bridge->callNativeModules to invoke any necessary
+   * native modules methods.
    */
-  virtual std::string invokeCallback(const double callbackId, const folly::dynamic& arguments) = 0;
+  virtual void invokeCallback(const double callbackId, const folly::dynamic& arguments) = 0;
 
   virtual void setGlobalVariable(
     const std::string& propName,
