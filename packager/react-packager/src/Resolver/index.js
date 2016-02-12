@@ -60,7 +60,7 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'string',
     required: false,
   },
-  isUnbundle: {
+  unbundle: {
     type: 'boolean',
     default: false
   },
@@ -144,7 +144,7 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = opts.isUnbundle
+    const moduleSystem = opts.unbundle
         ? path.join(__dirname, 'polyfills/require-unbundle.js')
         : path.join(__dirname, 'polyfills/require.js');
 
