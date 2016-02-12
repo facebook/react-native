@@ -38,7 +38,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  *
  * ```
  * componentDidMount() {
- *   var url = Linking.getInitialURL().then(url) => {
+ *   var url = Linking.getInitialURL().then((url) => {
  *     if (url) {
  *       console.log('Initial url is: ' + url);
  *     }
