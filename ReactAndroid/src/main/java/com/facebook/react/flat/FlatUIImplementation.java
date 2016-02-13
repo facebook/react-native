@@ -118,6 +118,7 @@ public class FlatUIImplementation extends UIImplementation {
     return new AndroidView(viewManager);
   }
 
+  @Override
   protected void handleCreateView(
       ReactShadowNode cssNode,
       int rootViewTag,
