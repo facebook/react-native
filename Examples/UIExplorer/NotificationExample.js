@@ -42,6 +42,16 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
+          onPress={() => this._last.push(new Notification('Notification with TAG',
+          {
+            body: 'This will not replace the previous notification',
+            tag: 'notification_with_tag',
+          }))}>
+          <View style={styles.button}>
+            <Text>Notification with TAG</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
           onPress={() => this._last.push(new Notification('Notification with body and count and vibration',
           {
             body: 'Notification body with some text',

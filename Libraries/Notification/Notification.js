@@ -16,7 +16,7 @@ const { NotificationModule } = require('NativeModules');
 const Platform = require('Platform');
 const invariant = require('invariant');
 
-let lastNotificationId = 0;
+const NOTIFICATION_ID = 0;
 
 type NotificationDetails = {
   body?: string;
@@ -96,9 +96,8 @@ class Notification {
       'Title must be a string'
     );
 
-    lastNotificationId++;
-    NotificationModule.presentLocalNotification({ title, ...details }, lastNotificationId);
-    this._id = lastNotificationId;
+    NotificationModule.presentLocalNotification({ ...details, title }, NOTIFICATION_ID);
+    this._id = NOTIFICATION_ID;
     this._tag = details ? details.tag : null;
   }
 
