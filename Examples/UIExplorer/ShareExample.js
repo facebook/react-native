@@ -72,14 +72,8 @@ class ShareMessageExample extends React.Component {
     Share.shareTextContent({
       message: 'React Native | A framework for building native apps using React'
     })
-    .then((result) => {
-      if(!result) {
-        this.setState({result:'Canceled'})
-      } else {
-        this.setState({result:result})
-      }
-    })
-    .catch((err) => console.error(err))
+    .then((result) => this.setState({result:result}))
+    .catch(()=> this.setState({result:'Canceled'}))
   }
   shareTextContent() {
     Share.shareTextContent({
