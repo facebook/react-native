@@ -166,7 +166,7 @@ const NetInfo = {
   addEventListener(
     eventName: ChangeEventName,
     handler: Function
-  ): void {
+  ): {remove: () => void} {
     const listener = RCTDeviceEventEmitter.addListener(
       DEVICE_CONNECTIVITY_EVENT,
       (appStateData) => {
@@ -174,6 +174,9 @@ const NetInfo = {
       }
     );
     _subscriptions.set(handler, listener);
+    return {
+      remove: () => NetInfo.removeEventListener(eventName, handler)
+    };
   },
 
   removeEventListener(
@@ -203,7 +206,7 @@ const NetInfo = {
     addEventListener(
       eventName: ChangeEventName,
       handler: Function
-    ): void {
+    ): {remove: () => void} {
       const listener = (connection) => {
         handler(_isConnected(connection));
       };
@@ -212,6 +215,9 @@ const NetInfo = {
         eventName,
         listener
       );
+      return {
+        remove: () => NetInfo.isConnected.removeEventListener(eventName, handler)
+      };
     },
 
     removeEventListener(
