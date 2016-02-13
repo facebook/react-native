@@ -93,6 +93,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   PixelRatio: require('PixelRatio'),
   PushNotificationIOS: require('PushNotificationIOS'),
   Settings: require('Settings'),
+  Share: require('Share'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
   TimePickerAndroid: require('TimePickerAndroid'),
