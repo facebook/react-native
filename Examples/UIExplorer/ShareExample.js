@@ -84,7 +84,8 @@ class ShareMessageExample extends React.Component {
       dialogTitle: 'Share React Native website',
       excludedActivityTypes: [
         'com.apple.UIKit.activity.PostToTwitter'
-      ]
+      ],
+      tintColor: 'green'
     })
     .then((result) => this.setState({result:result}))
     .catch(()=> this.setState({result:'Canceled'}))

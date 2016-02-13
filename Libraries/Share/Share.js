@@ -58,12 +58,15 @@ class Share {
         'Invalid Content: should be a string. Was: ' + content
       );
     }
-    options = options || {};
-    return Platform.OS === 'android' 
-      ? ShareModule.shareTextContent(contents, options.dialogTitle)
+    return Platform.OS === 'android'
+      ? ShareModule.shareTextContent(contents, typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null)
       : new Promise((resolve, reject) => {
+        let actionSheetOptions = {...contents, ...options};
+        if(typeof options === 'object' && options.tintColor) {
+          actionSheetOptions.tintColor = processColor(options.tintColor);
+        }
         ActionSheetManager.showShareActionSheetWithOptions(
-          {...contents, tintColor: processColor(options.tintColor)},
+          actionSheetOptions,
           console.error,
           (success, activityType) => {
             if(success) {
