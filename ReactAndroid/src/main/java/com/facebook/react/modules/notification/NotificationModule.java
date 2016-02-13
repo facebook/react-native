@@ -100,12 +100,14 @@ public class NotificationModule extends ReactContextBaseJavaModule {
       builder.setContentIntent(contentIntent);
     }
 
-    getNotificationManager().notify(handle, builder.build());
+    String tag = details.hasKey("tag") ? details.getString("tag") : null;
+
+    getNotificationManager().notify(tag, handle, builder.build());
   }
 
   @ReactMethod
-  public void cancelLocalNotification(final int handle) {
-    getNotificationManager().cancel(handle);
+  public void cancelLocalNotification(final String tag, final int handle) {
+    getNotificationManager().cancel(tag, handle);
   }
 
   @ReactMethod
