@@ -57,7 +57,7 @@ var APIS = [
   require('./LayoutExample'),
   require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./NetInfoExample'),
-  require('./NotificationExample'),
+  require('./NotificationAndroidExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
   require('./TimePickerAndroidExample'),

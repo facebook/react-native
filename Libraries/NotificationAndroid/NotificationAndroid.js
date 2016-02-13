@@ -13,7 +13,6 @@
 'use strict';
 
 const { NotificationModule } = require('NativeModules');
-const Platform = require('Platform');
 const invariant = require('invariant');
 
 const NOTIFICATION_ID = 0;
@@ -59,20 +58,11 @@ type NotificationDetails = {
  * - `link (string)` : The link to open on tap on the notification (optional).
  * - `tag (string)` : A string identifier for the notification (optional).
  */
-class Notification {
+class NotificationAndroid {
   /**
    * The current permission to display notifications
    */
   static permission: string;
-
-  /**
-   * Requests permission from the user to display notifications.
-   *
-   * @platform ios
-   */
-  static requestPermission() {
-    console.warn('Notification.requestPermission() is currently not implemented');
-  }
 
   /**
    * Shows a new local notification.
@@ -104,6 +94,4 @@ class Notification {
   }
 }
 
-Notification.permission = Platform.OS === 'android' ? 'granted' : 'default';
-
-module.exports = Notification;
+module.exports = NotificationAndroid;

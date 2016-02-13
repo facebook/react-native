@@ -17,7 +17,7 @@
 
 var React = require('react-native');
 var {
-  Notification,
+  NotificationAndroid,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -36,13 +36,13 @@ var SimpleNotificationExampleBlock = React.createClass({
     return (
       <View>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({ title: 'Notification with title' }))}>
+          onPress={() => this._last.push(NotificationAndroid.show({ title: 'Notification with title' }))}>
           <View style={styles.button}>
             <Text>Notification with title</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({
+          onPress={() => this._last.push(NotificationAndroid.show({
             title: 'Notification with TAG',
             body: 'This will not replace the previous notification',
             tag: 'notification_with_tag',
@@ -52,7 +52,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({
+          onPress={() => this._last.push(NotificationAndroid.show({
             title: 'Notification with body and count and vibration',
             body: 'Notification body with some text',
             vibrate: [200, 100, 200],
@@ -63,7 +63,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({
+          onPress={() => this._last.push(NotificationAndroid.show({
             title: 'Notification with link',
             body: 'This will open a link on tapping',
             link: 'http://facebook.github.io/react-native/',
@@ -73,7 +73,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({
+          onPress={() => this._last.push(NotificationAndroid.show({
             title: 'High Priority Notification',
             body: 'This will show a heads-up notification',
             priority: 'high',
@@ -83,7 +83,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({
+          onPress={() => this._last.push(NotificationAndroid.show({
             title: 'Silent Notification',
             body: 'This will not issue any sounds or vibrations',
             silent: true,
@@ -93,7 +93,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(Notification.show({
+          onPress={() => this._last.push(NotificationAndroid.show({
             title: 'Sticky Notification',
             body: 'You cannot dismiss this',
             sticky: true,
@@ -108,13 +108,13 @@ var SimpleNotificationExampleBlock = React.createClass({
             n && n.dismiss();
           }}>
           <View style={styles.button}>
-            <Text>Close the last notification</Text>
+            <Text>Dismiss the last notification</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => Notification.dismissAll()}>
+          onPress={() => NotificationAndroid.dismissAll()}>
           <View style={styles.button}>
-            <Text>Close all notifications</Text>
+            <Text>Dismiss all notifications</Text>
           </View>
         </TouchableHighlight>
       </View>
@@ -122,7 +122,7 @@ var SimpleNotificationExampleBlock = React.createClass({
   },
 });
 
-var NotificationExample = React.createClass({
+var NotificationAndroidExample = React.createClass({
   render: function() {
     return (
       <UIExplorerBlock title={'Notification'}>
@@ -143,7 +143,7 @@ var styles = StyleSheet.create({
   },
 });
 
-NotificationExample.title = 'Notification';
-NotificationExample.description = 'Local notifications';
+NotificationAndroidExample.title = 'NotificationAndroid';
+NotificationAndroidExample.description = 'Manage statusbar notifications on Android';
 
-module.exports = NotificationExample;
+module.exports = NotificationAndroidExample;

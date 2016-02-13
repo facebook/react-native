@@ -78,7 +78,7 @@ var ReactNative = {
   get LinkingIOS() { return require('LinkingIOS'); },
   get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
-  get Notification() { return require('Notification'); },
+  get NotificationAndroid() { return require('NotificationAndroid'); },
   get PanResponder() { return require('PanResponder'); },
   get PixelRatio() { return require('PixelRatio'); },
   get PushNotificationIOS() { return require('PushNotificationIOS'); },
