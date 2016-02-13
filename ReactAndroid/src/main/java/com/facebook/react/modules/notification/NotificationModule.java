@@ -50,7 +50,7 @@ public class NotificationModule extends ReactContextBaseJavaModule {
     builder.setAutoCancel(true);
 
     if (!(details.hasKey("silent") && details.getBoolean("silent"))) {
-      builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+      builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     }
 
     if (details.hasKey("title")) {
