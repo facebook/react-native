@@ -9,14 +9,14 @@
 
 package com.facebook.react.flat;
 
-import java.util.ArrayList;
-
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
@@ -240,7 +240,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         isAndroidView,
         needsCustomLayoutForChildren);
 
-    if (node.isVirtualAnchor()) {
+    // this is a temporary measure to skip adding node regions for RCTTextInput. This will be fixed
+    // in a patch soon which will convert AndroidView into an interface, thus allowing RCTTextInput
+    // to be treated as an AndroidView
+    boolean skipAddingNodeRegion = node instanceof RCTTextInput;
+    if (!isAndroidView && node.isVirtualAnchor() && !skipAddingNodeRegion) {
       // If RCTText is mounted to View, virtual children will not receive any touch events
       // because they don't get added to nodeRegions, so nodeRegions will be empty and
       // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
@@ -274,6 +278,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           drawCommands,
           listeners,
           nodeRegions);
+    }
+
+    if (node.hasUpdates()) {
+      node.onCollectExtraUpdates(mOperationsQueue);
+      node.markUpdateSeen();
     }
 
     final FlatShadowNode[] nativeChildren = mNativeChildren.finish();

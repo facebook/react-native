@@ -67,7 +67,7 @@ import com.facebook.react.uimanager.ViewProps;
   }
 
   /**
-   * Collects DrawCommands produced by this FlatShadoNode.
+   * Collects DrawCommands produced by this FlatShadowNode.
    */
   protected void collectState(
       StateBuilder stateBuilder,

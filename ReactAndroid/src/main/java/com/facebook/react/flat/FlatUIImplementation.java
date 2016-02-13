@@ -58,13 +58,14 @@ public class FlatUIImplementation extends UIImplementation {
 
     TypefaceCache.setAssetManager(reactContext.getAssets());
 
-    viewManagers = new ArrayList<ViewManager>(viewManagers);
+    viewManagers = new ArrayList<>(viewManagers);
     viewManagers.add(new RCTViewManager());
     viewManagers.add(new RCTTextManager());
     viewManagers.add(new RCTRawTextManager());
     viewManagers.add(new RCTVirtualTextManager());
     viewManagers.add(new RCTTextInlineImageManager());
     viewManagers.add(new RCTImageViewManager());
+    viewManagers.add(new RCTTextInputManager());
 
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
     FlatNativeViewHierarchyManager nativeViewHierarchyManager = new FlatNativeViewHierarchyManager(
