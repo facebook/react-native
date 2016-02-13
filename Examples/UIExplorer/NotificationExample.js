@@ -36,14 +36,14 @@ var SimpleNotificationExampleBlock = React.createClass({
     return (
       <View>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Notification with title'))}>
+          onPress={() => this._last.push(Notification.show({ title: 'Notification with title' }))}>
           <View style={styles.button}>
             <Text>Notification with title</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Notification with TAG',
-          {
+          onPress={() => this._last.push(Notification.show({
+            title: 'Notification with TAG',
             body: 'This will not replace the previous notification',
             tag: 'notification_with_tag',
           }))}>
@@ -52,8 +52,8 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Notification with body and count and vibration',
-          {
+          onPress={() => this._last.push(Notification.show({
+            title: 'Notification with body and count and vibration',
             body: 'Notification body with some text',
             vibrate: [200, 100, 200],
             count: 3,
@@ -63,8 +63,8 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Notification with link',
-          {
+          onPress={() => this._last.push(Notification.show({
+            title: 'Notification with link',
             body: 'This will open a link on tapping',
             link: 'http://facebook.github.io/react-native/',
           }))}>
@@ -73,8 +73,8 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('High Priority Notification',
-          {
+          onPress={() => this._last.push(Notification.show({
+            title: 'High Priority Notification',
             body: 'This will show a heads-up notification',
             priority: 'high',
           }))}>
@@ -83,8 +83,8 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Silent Notification',
-          {
+          onPress={() => this._last.push(Notification.show({
+            title: 'Silent Notification',
             body: 'This will not issue any sounds or vibrations',
             silent: true,
           }))}>
@@ -93,8 +93,8 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Sticky Notification',
-          {
+          onPress={() => this._last.push(Notification.show({
+            title: 'Sticky Notification',
             body: 'You cannot dismiss this',
             sticky: true,
           }))}>
@@ -105,14 +105,14 @@ var SimpleNotificationExampleBlock = React.createClass({
         <TouchableHighlight style={styles.wrapper}
           onPress={() => {
             const n = this._last.pop();
-            n && n.close();
+            n && n.dismiss();
           }}>
           <View style={styles.button}>
             <Text>Close the last notification</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => Notification.closeAll()}>
+          onPress={() => Notification.dismissAll()}>
           <View style={styles.button}>
             <Text>Close all notifications</Text>
           </View>

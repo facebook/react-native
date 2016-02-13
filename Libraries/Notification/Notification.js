@@ -19,6 +19,7 @@ const invariant = require('invariant');
 const NOTIFICATION_ID = 0;
 
 type NotificationDetails = {
+  title: string;
   body?: string;
   count?: number;
   priority?: string;
@@ -34,19 +35,21 @@ type NotificationDetails = {
  *
  * ### Basic usage
  *
- * To show a new local notification, create a new `Notification` object,
+ * To show a new local notification, call `Notification.show` with a `details` object,
  *
  * ```
- * const notification = new Notification('Test notification');
+ * const notification = Notification.show({
+ *   title: 'Test notification',
+ *   body: 'This notification will change your life'
+ * });
  *
  * // Close the notification after 5 seconds
  * setTimeout(() => notification.close(), 5000);
  * ```
  *
- * The `Notification` constructor takes two arguments, a `title` and an optional `details` object.
- *
  * The `details` object can contain the following properties:
  *
+ * - `title (string)` : The title of the notification.
  * - `body (string)` : The body of the message in the notification (optional).
  * - `count (number)` : The count to be displayed for the notification (optional).
  * - `priority (max | high | default | low | min)` : Priority of the notification (optional).
@@ -72,42 +75,32 @@ class Notification {
   }
 
   /**
-   * Closes all local notifications.
+   * Shows a new local notification.
+   *
+   * returns an object with a `dismiss` method to dismiss the notification.
    *
    * @platform android
    */
-  static closeAll() {
-    NotificationModule.cancelAllLocalNotifications();
-  }
-
-  _id: number;
-  _tag: ?string;
-
-  /**
-   * Creates a new local notification.
-   *
-   * returns the notification instance with a close method to close the notification.
-   *
-   * @platform android
-   */
-  constructor(title: string, details?: NotificationDetails) {
+  static show(details: NotificationDetails) {
     invariant(
-      typeof title === 'string',
-      'Title must be a string'
+      typeof details === 'object' && details !== null && typeof details.title === 'string',
+      'Details must be a valid object with a title property'
     );
 
-    NotificationModule.presentLocalNotification({ ...details, title }, NOTIFICATION_ID);
-    this._id = NOTIFICATION_ID;
-    this._tag = details ? details.tag : null;
+    NotificationModule.presentLocalNotification(details, NOTIFICATION_ID);
+
+    return {
+      dismiss: () => NotificationModule.cancelLocalNotification(NOTIFICATION_ID, details ? details.tag : null)
+    };
   }
 
   /**
-   * Closes the current local notification instance.
+   * Dismisses all local notifications.
    *
    * @platform android
    */
-  close() {
-    NotificationModule.cancelLocalNotification(this._tag, this._id);
+  static dismissAll() {
+    NotificationModule.cancelAllLocalNotifications();
   }
 }
 
