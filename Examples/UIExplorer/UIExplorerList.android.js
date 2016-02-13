@@ -59,6 +59,7 @@ var APIS = [
   require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
+  require('./ShareExample'),
   require('./TimePickerAndroidExample'),
   require('./TimerExample'),
   require('./ToastAndroidExample.android'),

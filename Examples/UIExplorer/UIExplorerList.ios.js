@@ -80,6 +80,7 @@ var APIS = [
   require('./PointerEventsExample'),
   require('./PushNotificationIOSExample'),
   require('./RCTRootViewIOSExample'),
+  require('./ShareExample'),
   require('./StatusBarIOSExample'),
   require('./TimerExample'),
   require('./TransformExample'),

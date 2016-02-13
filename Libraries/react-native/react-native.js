@@ -82,6 +82,7 @@ var ReactNative = {
   get PixelRatio() { return require('PixelRatio'); },
   get PushNotificationIOS() { return require('PushNotificationIOS'); },
   get Settings() { return require('Settings'); },
+  get Share() { return require('Share'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
