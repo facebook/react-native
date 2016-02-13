@@ -47,7 +47,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           onPress={() => this._last.push(Notification.presentLocalNotification({
             title: 'Notification with title, body and count',
             body: 'Notification body with some text',
-            count: 3
+            count: 3,
           }))}>
           <View style={styles.button}>
             <Text>Notification with title, body and count</Text>
@@ -57,7 +57,7 @@ var SimpleNotificationExampleBlock = React.createClass({
           onPress={() => this._last.push(Notification.presentLocalNotification({
             title: 'Notification with link',
             body: 'This will open a link on tapping',
-            link: 'http://facebook.github.io/react-native/'
+            link: 'http://facebook.github.io/react-native/',
           }))}>
           <View style={styles.button}>
             <Text>Notification with link</Text>
@@ -65,9 +65,29 @@ var SimpleNotificationExampleBlock = React.createClass({
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
           onPress={() => this._last.push(Notification.presentLocalNotification({
+            title: 'High Priority Notification',
+            body: 'This will show a heads-up notification',
+            priority: 'high',
+          }))}>
+          <View style={styles.button}>
+            <Text>High Priority Notification</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => this._last.push(Notification.presentLocalNotification({
+            title: 'Silent Notification',
+            body: 'This will not issue any sounds or vibrations',
+            silent: true,
+          }))}>
+          <View style={styles.button}>
+            <Text>Silent Notification</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.wrapper}
+          onPress={() => this._last.push(Notification.presentLocalNotification({
             title: 'Sticky Notification',
             body: 'You cannot dismiss this',
-            sticky: true
+            sticky: true,
           }))}>
           <View style={styles.button}>
             <Text>Sticky Notification</Text>

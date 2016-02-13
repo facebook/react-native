@@ -20,7 +20,10 @@ type NotificationDetails = {
   title: string,
   body?: string;
   count?: number;
+  priority?: string;
   sticky?: boolean;
+  silent?: boolean;
+  link?: string;
 }
 
 class Notification {
@@ -29,11 +32,13 @@ class Notification {
    *
    * details is an object containing:
    *
-   * - `title` : The title of the notification.
-   * - `body` : The body of the message in the notification (optional).
-   * - `count` : The count to be displayed for the notification (optional).
-   * - `sticky` : Whether the notification is sorted above the regular notifications and is unclosable (optional).
-   * - `link` : The link to open on tap on the notification (optional).
+   * - `title (string)` : The title of the notification.
+   * - `body (string)` : The body of the message in the notification (optional).
+   * - `count (number)` : The count to be displayed for the notification (optional).
+   * - `priority (max | high | default | low | min)` : Priority of the notification (optional).
+   * - `sticky (boolean)` : Whether the notification is sorted above the regular notifications and is unclosable (optional).
+   * - `silent (boolean)` : Whether the notification should not issue any sounds or vibrations (optional).
+   * - `link (string)` : The link to open on tap on the notification (optional).
    *
    * @platform android
    */

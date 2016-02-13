@@ -49,6 +49,10 @@ public class NotificationModule extends ReactContextBaseJavaModule {
 
     builder.setAutoCancel(true);
 
+    if (!(details.hasKey("silent") && details.getBoolean("silent"))) {
+      builder.setDefaults(NotificationCompat.DEFAULT_ALL);
+    }
+
     if (details.hasKey("title")) {
       String title = details.getString("title");
       builder.setContentTitle(title);
@@ -65,6 +69,29 @@ public class NotificationModule extends ReactContextBaseJavaModule {
 
     if (details.hasKey("sticky")) {
       builder.setOngoing(details.getBoolean("sticky"));
+    }
+
+    if (details.hasKey("priority")) {
+      int priority;
+
+      switch (details.getString("priority")) {
+        case "max":
+          priority = NotificationCompat.PRIORITY_MAX;
+          break;
+        case "high":
+          priority = NotificationCompat.PRIORITY_HIGH;
+          break;
+        case "low":
+          priority = NotificationCompat.PRIORITY_LOW;
+          break;
+        case "min":
+          priority = NotificationCompat.PRIORITY_MIN;
+          break;
+        default:
+          priority = NotificationCompat.PRIORITY_DEFAULT;
+      }
+
+      builder.setPriority(priority);
     }
 
     if (details.hasKey("link")) {
