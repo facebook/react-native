@@ -343,30 +343,55 @@ import com.facebook.csslayout.Spacing;
       int width = getBounds().width();
       int height = getBounds().height();
 
+      // if the path drawn previously is of the same color,
+      // there would be a slight white space between each border
+      // after drawing is done, we will re-enable anti-alias
+      mPaint.setAntiAlias(false);
+
       if (borderLeft > 0 && colorLeft != Color.TRANSPARENT) {
         mPaint.setColor(colorLeft);
-        canvas.drawRect(0, borderTop, borderLeft, height - borderBottom, mPaint);
+        Path leftBorderPath = new Path();
+        leftBorderPath.lineTo(borderLeft, borderTop);
+        leftBorderPath.lineTo(borderLeft, height - borderBottom);
+        leftBorderPath.lineTo(0, height);
+        leftBorderPath.lineTo(0, 0);
+        canvas.drawPath(leftBorderPath, mPaint);
       }
 
       if (borderTop > 0 && colorTop != Color.TRANSPARENT) {
         mPaint.setColor(colorTop);
-        canvas.drawRect(0, 0, width, borderTop, mPaint);
+        Path topBorderPath = new Path();
+        topBorderPath.lineTo(borderLeft, borderTop);
+        topBorderPath.lineTo(width - borderRight, borderTop);
+        topBorderPath.lineTo(width, 0);
+        topBorderPath.lineTo(0, 0);
+        canvas.drawPath(topBorderPath, mPaint);
       }
 
       if (borderRight > 0 && colorRight != Color.TRANSPARENT) {
         mPaint.setColor(colorRight);
-        canvas.drawRect(
-            width - borderRight,
-            borderTop,
-            width,
-            height - borderBottom,
-            mPaint);
+        Path rightBorderPath = new Path();
+        rightBorderPath.moveTo(width, 0);
+        rightBorderPath.lineTo(width, height);
+        rightBorderPath.lineTo(width - borderRight, height - borderBottom);
+        rightBorderPath.lineTo(width - borderRight, borderTop);
+        rightBorderPath.lineTo(width, 0);
+        canvas.drawPath(rightBorderPath, mPaint);
       }
 
       if (borderBottom > 0 && colorBottom != Color.TRANSPARENT) {
         mPaint.setColor(colorBottom);
-        canvas.drawRect(0, height - borderBottom, width, height, mPaint);
+        Path bottomBorderPath = new Path();
+        bottomBorderPath.moveTo(0, height);
+        bottomBorderPath.lineTo(width, height);
+        bottomBorderPath.lineTo(width - borderRight, height - borderBottom);
+        bottomBorderPath.lineTo(borderLeft, height - borderBottom);
+        bottomBorderPath.lineTo(0, height);
+        canvas.drawPath(bottomBorderPath, mPaint);
       }
+
+      // re-enable anti alias
+      mPaint.setAntiAlias(true);
     }
   }
 
