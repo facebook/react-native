@@ -32,6 +32,7 @@ var EXAMPLES = {
   'Basic': require('./NavigationBasicExample'),
   'Animated Card Stack': require('./NavigationAnimatedExample'),
   'Composition': require('./NavigationCompositionExample'),
+  'Tic Tac Toe': require('./NavigationTicTacToeExample'),
 };
 
 var EXAMPLE_STORAGE_KEY = 'NavigationExampleExample';
