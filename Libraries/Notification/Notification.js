@@ -13,6 +13,7 @@
 'use strict';
 
 const { NotificationModule } = require('NativeModules');
+const invariant = require('invariant');
 
 let lastNotificationId = 0;
 
@@ -43,9 +44,14 @@ class Notification {
    * @platform android
    */
   static presentLocalNotification(details: NotificationDetails): number {
-      lastNotificationId++;
-      NotificationModule.presentLocalNotification(details, lastNotificationId);
-      return lastNotificationId;
+    invariant(
+      typeof details === 'object' && details !== null,
+      'Details must be a valid object'
+    );
+
+    lastNotificationId++;
+    NotificationModule.presentLocalNotification(details, lastNotificationId);
+    return lastNotificationId;
   }
 
   /**
