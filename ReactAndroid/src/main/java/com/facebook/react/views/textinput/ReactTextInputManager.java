@@ -34,6 +34,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -48,8 +49,7 @@ import com.facebook.react.views.text.TextInlineImageSpan;
 /**
  * Manages instances of TextInput.
  */
-public class ReactTextInputManager extends
-    BaseViewManager<ReactEditText, ReactTextInputShadowNode> {
+public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
 
   /* package */ static final String REACT_CLASS = "AndroidTextInput";
 
@@ -83,12 +83,12 @@ public class ReactTextInputManager extends
   }
 
   @Override
-  public ReactTextInputShadowNode createShadowNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
   }
 
   @Override
-  public Class<ReactTextInputShadowNode> getShadowNodeClass() {
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
     return ReactTextInputShadowNode.class;
   }
 
