@@ -24,6 +24,7 @@ type NotificationDetails = {
   priority?: string;
   sticky?: boolean;
   silent?: boolean;
+  vibrate?: Array<number>;
   link?: string;
   tag?: string;
 }
@@ -50,7 +51,8 @@ type NotificationDetails = {
  * - `count (number)` : The count to be displayed for the notification (optional).
  * - `priority (max | high | default | low | min)` : Priority of the notification (optional).
  * - `sticky (boolean)` : Whether the notification is sorted above the regular notifications and is unclosable (optional).
- * - `silent (boolean)` : Whether the notification should not issue any sounds or vibrations (optional).
+ * - `silent (boolean)` : Whether the notification should not issue any sounds (optional).
+ * - `vibrate` (Array<number>) : Vibration pattern to use, e.g. - (refer - https://developer.mozilla.org/en-US/docs/Web/API/Vibration_API) (optional).
  * - `link (string)` : The link to open on tap on the notification (optional).
  * - `tag (string)` : A string identifier for the notification (optional).
  */

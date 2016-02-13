@@ -21,6 +21,7 @@ import android.support.v4.app.NotificationCompat;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 public class NotificationModule extends ReactContextBaseJavaModule {
@@ -92,6 +93,17 @@ public class NotificationModule extends ReactContextBaseJavaModule {
       }
 
       builder.setPriority(priority);
+    }
+
+    if (details.hasKey("vibrate")) {
+      ReadableArray vibrate = details.getArray("vibrate");
+      long[] pattern = new long[vibrate.size()];
+
+      for (int i = 0; i < vibrate.size(); i++) {
+        pattern[i] = vibrate.getInt(i);
+      }
+
+      builder.setVibrate(pattern);
     }
 
     if (details.hasKey("link")) {

@@ -42,13 +42,14 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.push(new Notification('Notification with title, body and count',
+          onPress={() => this._last.push(new Notification('Notification with body and count and vibration',
           {
             body: 'Notification body with some text',
+            vibrate: [200, 100, 200],
             count: 3,
           }))}>
           <View style={styles.button}>
-            <Text>Notification with title, body and count</Text>
+            <Text>Notification with body and count and vibration</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
@@ -92,7 +93,10 @@ var SimpleNotificationExampleBlock = React.createClass({
           </View>
         </TouchableHighlight>
         <TouchableHighlight style={styles.wrapper}
-          onPress={() => this._last.pop().close()}>
+          onPress={() => {
+            const n = this._last.pop();
+            n && n.close();
+          }}>
           <View style={styles.button}>
             <Text>Close the last notification</Text>
           </View>
