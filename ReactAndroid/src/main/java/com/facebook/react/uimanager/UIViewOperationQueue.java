@@ -673,6 +673,10 @@ public class UIViewOperationQueue {
                      operations.get(i).execute();
                    }
                  }
+
+                 // Clear layout animation, as animation only apply to current UI operations batch.
+                 mNativeViewHierarchyManager.clearLayoutAnimation();
+
                  if (mViewHierarchyUpdateDebugListener != null) {
                    mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
                  }
@@ -723,9 +727,6 @@ public class UIViewOperationQueue {
           mDispatchUIRunnables.get(i).run();
         }
         mDispatchUIRunnables.clear();
-
-        // Clear layout animation, as animation only apply to current UI operations batch.
-        mNativeViewHierarchyManager.clearLayoutAnimation();
       }
 
       ReactChoreographer.getInstance().postFrameCallback(

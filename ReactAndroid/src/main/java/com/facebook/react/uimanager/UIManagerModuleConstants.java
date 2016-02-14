@@ -12,7 +12,6 @@ package com.facebook.react.uimanager;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
@@ -80,7 +79,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
         .build();
   }
 
-  public static Map<String, Object> getConstants(DisplayMetrics displayMetrics) {
+  public static Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<String, Object>();
     constants.put(
         "UIView",
@@ -92,6 +91,8 @@ import com.facebook.react.uimanager.events.TouchEventType;
                 "ScaleAspectFill",
                 ImageView.ScaleType.CENTER_CROP.ordinal())));
 
+    DisplayMetrics displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
+    DisplayMetrics screenDisplayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics();
     constants.put(
         "Dimensions",
         MapBuilder.of(
@@ -106,7 +107,19 @@ import com.facebook.react.uimanager.events.TouchEventType;
                 "fontScale",
                 displayMetrics.scaledDensity,
                 "densityDpi",
-                displayMetrics.densityDpi)));
+                displayMetrics.densityDpi),
+        "screenPhysicalPixels",
+        MapBuilder.of(
+            "width",
+            screenDisplayMetrics.widthPixels,
+            "height",
+            screenDisplayMetrics.heightPixels,
+            "scale",
+            screenDisplayMetrics.density,
+            "fontScale",
+            screenDisplayMetrics.scaledDensity,
+            "densityDpi",
+            screenDisplayMetrics.densityDpi)));
 
     constants.put(
         "StyleConstants",

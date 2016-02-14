@@ -13,6 +13,7 @@
 const React = require('React');
 const Platform = require('Platform');
 const ColorPropType = require('ColorPropType');
+const View = require('View');
 
 const requireNativeComponent = require('requireNativeComponent');
 
@@ -33,6 +34,7 @@ const RefreshControl = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Called when the view starts refreshing.
      */
@@ -74,21 +76,18 @@ const RefreshControl = React.createClass({
   },
 
   render() {
-    if (Platform.OS === 'ios') {
-      return <NativeRefreshControl {...this.props}/>;
-    } else {
-      // On Android the ScrollView is wrapped so this component doesn't render
-      // anything and only acts as a way to configure the wrapper view.
-      // ScrollView will wrap itself in a AndroidSwipeRefreshLayout using props
-      // from this.
-      return null;
-    }
+    return <NativeRefreshControl {...this.props} />;
   },
 });
 
 if (Platform.OS === 'ios') {
   var NativeRefreshControl = requireNativeComponent(
     'RCTRefreshControl',
+    RefreshControl
+  );
+} else if (Platform.OS === 'android') {
+  var NativeRefreshControl = requireNativeComponent(
+    'AndroidSwipeRefreshLayout',
     RefreshControl
   );
 }

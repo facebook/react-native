@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(saveImageWithTag:(NSString *)imageTag
           RCTLogWarn(@"Error saving cropped image: %@", saveError);
           reject(RCTErrorUnableToSave, nil, saveError);
         } else {
-          resolve(@[assetURL.absoluteString]);
+          resolve(assetURL.absoluteString);
         }
       }];
     });
@@ -110,22 +110,22 @@ static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
                               BOOL hasNextPage)
 {
   if (!assets.count) {
-    resolve(@[@{
+    resolve(@{
       @"edges": assets,
       @"page_info": @{
         @"has_next_page": @NO,
       }
-    }]);
+    });
     return;
   }
-  resolve(@[@{
+  resolve(@{
     @"edges": assets,
     @"page_info": @{
       @"start_cursor": assets[0][@"node"][@"image"][@"uri"],
       @"end_cursor": assets[assets.count - 1][@"node"][@"image"][@"uri"],
       @"has_next_page": @(hasNextPage),
     }
-  }]);
+  });
 }
 
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params

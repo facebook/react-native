@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const isAbsolutePath = require('absolute-path');
 const path = require('path');
@@ -15,7 +16,15 @@ const extractRequires = require('./lib/extractRequires');
 
 class Module {
 
-  constructor({ file, fastfs, moduleCache, cache, extractor, depGraphHelpers }) {
+  constructor({
+    file,
+    fastfs,
+    moduleCache,
+    cache,
+    extractor = extractRequires,
+    transformCode,
+    depGraphHelpers,
+  }) {
     if (!isAbsolutePath(file)) {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
@@ -27,6 +36,7 @@ class Module {
     this._moduleCache = moduleCache;
     this._cache = cache;
     this._extractor = extractor;
+    this._transformCode = transformCode;
     this._depGraphHelpers = depGraphHelpers;
   }
 
@@ -34,17 +44,25 @@ class Module {
     return this._cache.get(
       this.path,
       'isHaste',
-      () => this.read().then(data => !!data.id)
+      () => this._readDocBlock().then(({id}) => !!id)
     );
+  }
+
+  getCode(transformOptions) {
+    return this.read(transformOptions).then(({code}) => code);
+  }
+
+  getMap(transformOptions) {
+    return this.read(transformOptions).then(({map}) => map);
   }
 
   getName() {
     return this._cache.get(
       this.path,
       'name',
-      () => this.read().then(data => {
-        if (data.id) {
-          return data.id;
+      () => this._readDocBlock().then(({id}) => {
+        if (id) {
+          return id;
         }
 
         const p = this.getPackage();
@@ -70,61 +88,71 @@ class Module {
     return this._moduleCache.getPackageForModule(this);
   }
 
-  getDependencies() {
-    return this._cache.get(
-      this.path,
-      'dependencies',
-      () => this.read().then(data => data.dependencies)
-    );
-  }
-
-  getAsyncDependencies() {
-    return this._cache.get(
-      this.path,
-      'asyncDependencies',
-      () => this.read().then(data => data.asyncDependencies)
-    );
+  getDependencies(transformOptions) {
+    return this.read(transformOptions).then(data => data.dependencies);
   }
 
   invalidate() {
     this._cache.invalidate(this.path);
   }
 
-  read() {
-    if (!this._reading) {
-      this._reading = this._fastfs.readFile(this.path).then(content => {
-        const data = {};
+  _parseDocBlock(docBlock) {
+    // Extract an id for the module if it's using @providesModule syntax
+    // and if it's NOT in node_modules (and not a whitelisted node_module).
+    // This handles the case where a project may have a dep that has @providesModule
+    // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
+    // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
+    // project-specific code that is using @providesModule.
+    const moduleDocBlock = docblock.parseAsObject(docBlock);
+    const provides = moduleDocBlock.providesModule || moduleDocBlock.provides;
 
-        // Set an id on the module if it's using @providesModule syntax
-        // and if it's NOT in node_modules (and not a whitelisted node_module).
-        // This handles the case where a project may have a dep that has @providesModule
-        // docblock comments, but doesn't want it to conflict with whitelisted @providesModule
-        // modules, such as react-haste, fbjs-haste, or react-native or with non-dependency,
-        // project-specific code that is using @providesModule.
-        const moduleDocBlock = docblock.parseAsObject(content);
-        if (!this._depGraphHelpers.isNodeModulesDir(this.path) &&
-            (moduleDocBlock.providesModule || moduleDocBlock.provides)) {
-          data.id = /^(\S*)/.exec(
-            moduleDocBlock.providesModule || moduleDocBlock.provides
-          )[1];
-        }
+    const id = provides && !this._depGraphHelpers.isNodeModulesDir(this.path)
+        ? /^\S+/.exec(provides)[0]
+        : undefined;
+    return {id, moduleDocBlock};
+  }
 
-        // Ignore requires in JSON files or generated code. An example of this
-        // is prebuilt files like the SourceMap library.
-        if (this.isJSON() || 'extern' in moduleDocBlock) {
-          data.dependencies = [];
-          data.asyncDependencies = [];
-        } else {
-          var dependencies = (this._extractor || extractRequires)(content).deps;
-          data.dependencies = dependencies.sync;
-          data.asyncDependencies = dependencies.async;
-        }
-
-        return data;
-      });
+  _readDocBlock(contentPromise) {
+    if (!this._docBlock) {
+      if (!contentPromise) {
+        contentPromise = this._fastfs.readWhile(this.path, whileInDocBlock);
+      }
+      this._docBlock = contentPromise
+        .then(docBlock => this._parseDocBlock(docBlock));
     }
+    return this._docBlock;
+  }
 
-    return this._reading;
+  read(transformOptions) {
+    return this._cache.get(
+      this.path,
+      cacheKey('moduleData', transformOptions),
+      () => {
+        const fileContentPromise = this._fastfs.readFile(this.path);
+        return Promise.all([
+          fileContentPromise,
+          this._readDocBlock(fileContentPromise)
+        ]).then(([code, {id, moduleDocBlock}]) => {
+          // Ignore requires in JSON files or generated code. An example of this
+          // is prebuilt files like the SourceMap library.
+          if (this.isJSON() || 'extern' in moduleDocBlock) {
+            return {id, code, dependencies: []};
+          } else {
+            const transformCode = this._transformCode;
+            const codePromise = transformCode
+                ? transformCode(this, code, transformOptions)
+                : Promise.resolve({code});
+
+            return codePromise.then(({code, dependencies, map}) => {
+              if (!dependencies) {
+                dependencies = this._extractor(code).deps.sync;
+              }
+              return {id, code, dependencies, map};
+            });
+          }
+        })
+      }
+    );
   }
 
   hash() {
@@ -157,6 +185,55 @@ class Module {
       path: this.path,
     };
   }
+}
+
+function whileInDocBlock(chunk, i, result) {
+  // consume leading whitespace
+  if (!/\S/.test(result)) {
+    return true;
+  }
+
+  // check for start of doc block
+  if (!/^\s*\/(\*{2}|\*?$)/.test(result)) {
+    return false;
+  }
+
+  // check for end of doc block
+  return !/\*\//.test(result);
+}
+
+// use weak map to speed up hash creation of known objects
+const knownHashes = new WeakMap();
+function stableObjectHash(object) {
+  let digest = knownHashes.get(object);
+
+  if (!digest) {
+    const hash = crypto.createHash('md5');
+    stableObjectHash.addTo(object, hash);
+    digest = hash.digest('base64');
+    knownHashes.set(object, digest);
+  }
+
+  return digest;
+}
+stableObjectHash.addTo = function addTo(value, hash) {
+  if (value === null || typeof value !== 'object') {
+    hash.update(JSON.stringify(value));
+  } else {
+    Object.keys(value).sort().forEach(key => {
+      const valueForKey = value[key];
+      if (valueForKey !== undefined) {
+        hash.update(key);
+        addTo(valueForKey, hash);
+      }
+    });
+  }
+};
+
+function cacheKey(field, transformOptions) {
+  return transformOptions !== undefined
+      ? stableObjectHash(transformOptions) + '\0' + field
+      : field;
 }
 
 module.exports = Module;

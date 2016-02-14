@@ -106,10 +106,14 @@ public class NetInfoModule extends ReactContextBaseJavaModule
     IntentFilter filter = new IntentFilter();
     filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     getReactApplicationContext().registerReceiver(mConnectivityBroadcastReceiver, filter);
+    mConnectivityBroadcastReceiver.setRegistered(true);
   }
 
   private void unregisterReceiver() {
-    getReactApplicationContext().unregisterReceiver(mConnectivityBroadcastReceiver);
+    if (mConnectivityBroadcastReceiver.isRegistered()) {
+      getReactApplicationContext().unregisterReceiver(mConnectivityBroadcastReceiver);
+      mConnectivityBroadcastReceiver.setRegistered(false);
+    }
   }
 
   private void updateAndSendConnectionType() {
@@ -154,6 +158,17 @@ public class NetInfoModule extends ReactContextBaseJavaModule
    * NB: It is possible on some devices to receive certain connection type changes multiple times.
    */
   private class ConnectivityBroadcastReceiver extends BroadcastReceiver {
+
+    //TODO: Remove registered check when source of crash is found. t9846865
+    private boolean isRegistered = false;
+
+    public void setRegistered(boolean registered) {
+      isRegistered = registered;
+    }
+
+    public boolean isRegistered() {
+      return isRegistered;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {

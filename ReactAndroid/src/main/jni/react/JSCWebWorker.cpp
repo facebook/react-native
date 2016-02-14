@@ -1,26 +1,21 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
+#include "JSCWebWorker.h"
+
 #include <unistd.h>
 #include <condition_variable>
 #include <mutex>
 #include <unordered_map>
 
-#include <fb/assert.h>
-#include <fb/log.h>
+#include <glog/logging.h>
 #include <folly/Memory.h>
-#include <jni/fbjni/Exceptions.h>
-#include <jni/LocalReference.h>
 
-#include "JSCWebWorker.h"
 #include "JSCHelpers.h"
-#include "jni/JMessageQueueThread.h"
-#include "jni/JSLoader.h"
-#include "jni/WebWorkers.h"
+#include "MessageQueueThread.h"
+#include "Platform.h"
 #include "Value.h"
 
 #include <JavaScriptCore/JSValueRef.h>
-
-using namespace facebook::jni;
 
 namespace facebook {
 namespace react {
@@ -33,17 +28,18 @@ JSCWebWorker::JSCWebWorker(int id, JSCWebWorkerOwner *owner, std::string scriptS
     scriptName_(std::move(scriptSrc)),
     owner_(owner) {
   ownerMessageQueueThread_ = owner->getMessageQueueThread();
-  FBASSERTMSGF(ownerMessageQueueThread_, "Owner MessageQueueThread must not be null");
-  workerMessageQueueThread_ = WebWorkers::createWebWorkerThread(id, ownerMessageQueueThread_.get());
-  FBASSERTMSGF(workerMessageQueueThread_, "Failed to create worker thread");
+  CHECK(ownerMessageQueueThread_) << "Owner MessageQueue must not be null";
+  workerMessageQueueThread_ = WebWorkerUtil::createWebWorkerThread(id, ownerMessageQueueThread_.get());
+  CHECK(workerMessageQueueThread_) << "Failed to create worker thread";
 
   workerMessageQueueThread_->runOnQueue([this] () {
     initJSVMAndLoadScript();
   });
 }
 
+
 JSCWebWorker::~JSCWebWorker() {
-  FBASSERTMSGF(isTerminated(), "Didn't terminate the web worker before releasing it!");
+  CHECK(isTerminated()) << "Didn't terminate the web worker before releasing it!";;
 }
 
 void JSCWebWorker::postMessage(JSValueRef msg) {
@@ -99,17 +95,17 @@ bool JSCWebWorker::isTerminated() {
 }
 
 void JSCWebWorker::initJSVMAndLoadScript() {
-  FBASSERTMSGF(!isTerminated(), "Worker was already finished!");
-  FBASSERTMSGF(!context_, "Worker JS VM was already created!");
+  CHECK(!isTerminated()) << "Worker was already finished!";
+  CHECK(!context_) << "Worker JS VM was already created!";
 
   context_ = JSGlobalContextCreateInGroup(
       NULL, // use default JS 'global' object
       NULL // create new group (i.e. new VM)
-  ); 
+  );
   s_globalContextRefToJSCWebWorker[context_] = this;
-  
+
   // TODO(9604438): Protect against script does not exist
-  std::string script = loadScriptFromAssets(scriptName_);
+  std::string script = WebWorkerUtil::loadScriptFromAssets(scriptName_);
   evaluateScript(context_, String(script.c_str()), String(scriptName_.c_str()));
 
   installGlobalFunction(context_, "postMessage", nativePostMessage);
