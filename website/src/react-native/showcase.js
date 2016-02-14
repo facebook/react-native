@@ -77,11 +77,23 @@ var featured = [
     author: 'Myntra Designs',
   },
   {
+    name: 'Noodler',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
+    link: 'http://www.noodler-app.com/',
+    author: 'Michele Humes & Joshua Sierles',
+  },
+  {
     name: 'React Native Playground',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple1/v4/20/ec/8e/20ec8eb8-9e12-6686-cd16-7ac9e3ef1d52/mzl.ngvuoybx.png',
     linkAppStore: 'https://itunes.apple.com/us/app/react-native-playground/id1002032944?mt=8',
     linkPlayStore: 'https://play.google.com/store/apps/details?id=org.rnplay.playground',
     author: 'Joshua Sierles',
+  },
+  {
+    name: 'Round - A better way to remember your medicine',
+    icon: 'https://s3.mzstatic.com/us/r30/Purple69/v4/d3/ee/54/d3ee54cf-13b6-5f56-0edc-6c70ac90b2be/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/round-beautiful-medication/id1059591124?mt=8',
+    author: 'Circadian Design',
   },
   {
     name: 'Running',
@@ -90,6 +102,15 @@ var featured = [
     author: 'Gyroscope Innovations',
     blogs: [
       'https://blog.gyrosco.pe/the-making-of-gyroscope-running-a4ad10acc0d0',
+    ],
+  },
+  {
+    name: 'Spero for Cancer',
+    icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
+    link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
+    author: 'Spero.io',
+    videos: [
+      'https://www.youtube.com/watch?v=JImX3L6qnj8',
     ],
   },
   {
@@ -119,6 +140,12 @@ var featured = [
       'https://medium.com/@clayallsopp/making-tucci-what-is-it-and-why-eaa2bf94c1df#.lmm3dmkaf',
       'https://medium.com/@clayallsopp/making-tucci-the-technical-details-cc7aded6c75f#.wf72nq372',
     ],
+  },
+  {
+    name: 'WPV',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
+    author: 'Yamill Vallecillo',
   },
 ];
 
@@ -394,18 +421,6 @@ var apps = [
     author: 'Rhyble',
   },
   {
-    name: 'Ncredible',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple2/v4/a9/00/74/a9007400-7ccf-df10-553b-3b6cb67f3f5f/icon350x350.png',
-    link: 'https://itunes.apple.com/ca/app/ncredible/id1019662810?mt=8',
-    author: 'NBC News Digital, LLC',
-  },
-  {
-    name: 'Noodler',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/noodler-noodle-soup-oracle/id1013183002?mt=8',
-    author: 'Michele Humes & Joshua Sierles',
-  },
-  {
     name: 'Night Light',
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
     link: 'https://itunes.apple.com/gb/app/night-light-feeding-light/id1016843582?mt=8',
@@ -464,12 +479,6 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/51/ca/49/51ca4924-61c8-be1d-ab6d-afa510b1d393/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/rota-worker-shifts-on-demand/id1042111289?mt=8',
     author: 'Rota',
-  },
-  {
-    name: 'Round - A better way to remember your medicine',
-    icon: 'https://s3.mzstatic.com/us/r30/Purple69/v4/d3/ee/54/d3ee54cf-13b6-5f56-0edc-6c70ac90b2be/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/round-beautiful-medication/id1059591124?mt=8',
-    author: 'Circadian Design',
   },
   {
     name: 'RWpodPlayer - audio player for RWpod podcast',
@@ -546,12 +555,6 @@ var apps = [
     author: 'Moritz Schwörer (@mosch)',
   },
   {
-    name: 'WPV',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
-    link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
-    author: 'Yamill Vallecillo',
-  },
-  {
     name: 'Yoloci',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/fa/e5/26/fae52635-b97c-bd53-2ade-89e2a4326745/icon175x175.jpeg',
     link: 'https://itunes.apple.com/de/app/yoloci/id991323225?mt=8',
@@ -615,6 +618,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
+        {this._renderVideos(app)}
       </div>
     );
 
@@ -648,6 +652,30 @@ var AppList = React.createClass({
   },
 
   _renderBlogPost: function(url, i) {
+    return (
+      <a href={url} target="blank">
+        {i + 1}&nbsp;
+      </a>
+    );
+  },
+
+  _renderVideos: function(app) {
+    if (!app.videos) {
+      return;
+    }
+
+    if (app.videos.length === 1) {
+      return (
+        <p><a href={app.videos[0]} target="blank">Video</a></p>
+      );
+    } else if (app.videos.length > 1) {
+      return (
+        <p>Videos: {app.videos.map(this._renderVideo)}</p>
+      );
+    }
+  },
+
+  _renderVideo: function(url, i) {
     return (
       <a href={url} target="blank">
         {i + 1}&nbsp;
