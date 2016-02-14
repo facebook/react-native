@@ -4,7 +4,7 @@ title: Getting Started
 layout: docs
 category: Quick Start
 permalink: docs/getting-started.html
-next: android-setup
+next: getting-started-linux
 ---
 
 ## Requirements
@@ -31,8 +31,16 @@ _NOTE:_ There is experimental [Windows and Linux support](docs/linux-windows-sup
 
 ## Quick start
 
+Install the React Native command line tools:
+
     $ npm install -g react-native-cli
+
+__NOTE__: If you see the error, `EACCES: permission denied`, please run the command: `sudo npm install -g react-native-cli`.
+
+Create a React Native project:
+
     $ react-native init AwesomeProject
+
 
 **To run the iOS app:**
 
