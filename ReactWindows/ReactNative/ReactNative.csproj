@@ -183,6 +183,7 @@
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
     <Compile Include="Reflection\EnumHelpers.cs" />
+    <Compile Include="Touch\IOnInterceptTouchEventListener.cs" />
     <Compile Include="Touch\TouchHandler.cs" />
     <Compile Include="UIManager\BorderedContentControl.cs" />
     <Compile Include="UIManager\BorderExtensions.cs" />
@@ -226,7 +227,6 @@
     <Compile Include="IReactPackage.cs" />
     <Compile Include="Shell\MainReactPackage.cs" />
     <Compile Include="Touch\JavaScriptResponderHandler.cs" />
-    <Compile Include="Touch\IOnInterceptTouchEventListener.cs" />
     <Compile Include="Animation\ReactAnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
     <Compile Include="UIManager\MeasureAssertions.cs" />

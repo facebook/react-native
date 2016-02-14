@@ -99,7 +99,7 @@ namespace ReactNative.UIManager
             var view = CreateViewInstance(reactContext);
             AddEventEmitters(reactContext, view);
 
-            // TODO: enable touch intercepting view groups
+            // TODO: enable touch intercepting view parents
 
             return view;
         }
