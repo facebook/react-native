@@ -62,14 +62,14 @@ class Share {
       ? ShareModule.shareTextContent(contents, typeof options === 'object' && options.dialogTitle ? options.dialogTitle : null)
       : new Promise((resolve, reject) => {
         let actionSheetOptions = {...contents, ...options};
-        if(typeof options === 'object' && options.tintColor) {
+        if (typeof options === 'object' && options.tintColor) {
           actionSheetOptions.tintColor = processColor(options.tintColor);
         }
         ActionSheetManager.showShareActionSheetWithOptions(
           actionSheetOptions,
           console.error,
           (success, activityType) => {
-            if(success) {
+            if (success) {
               resolve(activityType)
             } else {
               reject()
