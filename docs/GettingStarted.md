@@ -25,7 +25,7 @@ We recommend periodically running `brew update && brew upgrade` to keep your pro
 
 ## Android Setup
 
-To write React Native apps for Android, you will need to install the Android SDK (and an Android emulator if you want to work on your app without having to use a physical device). See [Android setup guide](android-setup.html) for instructions on how to set up your Android environment.
+To write React Native apps for Android, you will need to install the Android SDK (and an Android emulator if you want to work on your app without having to use a physical device). See [Android setup guide](docs/android-setup.html) for instructions on how to set up your Android environment.
 
 _NOTE:_ There is experimental [Windows and Linux support](docs/linux-windows-support.html) for Android development.
 
