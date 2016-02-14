@@ -19,7 +19,7 @@ namespace ReactNative.UIManager
         private double _absoluteRight;
         private double _absoluteBottom;
 
-        private IDictionary<int, ReactShadowNode> _nativeChildren;
+        private List<ReactShadowNode> _nativeChildren;
 
         /// <summary>
         /// Nodes that return <code>true</code> will be treated as "virtual"
@@ -389,10 +389,10 @@ namespace ReactNative.UIManager
 
             if (_nativeChildren == null)
             {
-                _nativeChildren = new Dictionary<int, ReactShadowNode>(4);
+                _nativeChildren = new List<ReactShadowNode>(4);
             }
 
-            _nativeChildren.Add(nativeIndex, child);
+            _nativeChildren.Insert(nativeIndex, child);
             child._nativeParent = this;
         }
 
@@ -408,7 +408,7 @@ namespace ReactNative.UIManager
             }
 
             var removed = _nativeChildren[i];
-            _nativeChildren.Remove(i);
+            _nativeChildren.RemoveAt(i);
             removed._nativeParent = null;
         }
 
@@ -419,9 +419,9 @@ namespace ReactNative.UIManager
         {
             if (_nativeChildren != null)
             {
-                foreach (var pair in _nativeChildren)
+                foreach (var item in _nativeChildren)
                 {
-                    pair.Value._nativeParent = null;
+                    item._nativeParent = null;
                 }
 
                 _nativeChildren.Clear();
@@ -435,15 +435,7 @@ namespace ReactNative.UIManager
         /// <returns>The index, or -1 if none is found.</returns>
         public int GetIndexOfNativeChild(ReactShadowNode nativeChild)
         {
-            foreach (var pair in _nativeChildren)
-            {
-                if (pair.Value == nativeChild)
-                {
-                    return pair.Key;
-                }
-            }
-
-            return -1;
+            return _nativeChildren.IndexOf(nativeChild);
         }
 
         /// <summary>
