@@ -344,7 +344,7 @@ your project, you will need to install it with `npm i react-tween-state
 --save` from your project directory.
 
 ```javascript
-var tweenState = require('react-tween-state');
+import tweenState from 'react-tween-state';
 
 var App = React.createClass({
   mixins: [tweenState.Mixin],
@@ -402,7 +402,7 @@ the middle of a press, it will animate back from the current state to
 the original value.
 
 ```javascript
-var rebound = require('rebound');
+import rebound from 'rebound';
 
 var App = React.createClass({
   // First we initialize the spring and add a listener, which calls
@@ -532,8 +532,7 @@ make them customizable, React Native exposes a
 [NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
 
 ```javascript
-var React = require('react-native');
-var { Dimensions } = React;
+import { Dimensions } from 'react-native';
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 

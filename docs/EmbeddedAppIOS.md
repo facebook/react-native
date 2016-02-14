@@ -66,11 +66,10 @@ Copy & paste following starter code for `index.ios.js` – it’s a barebones Re
 ```
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   Text,
   View
-} = React;
+} from 'react-native';
 
 var styles = React.StyleSheet.create({
   container: {
