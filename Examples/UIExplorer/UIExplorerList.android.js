@@ -55,7 +55,6 @@ var APIS = [
   require('./LayoutEventsExample'),
   require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./LayoutExample'),
-  require('./NavigationExperimental/NavigationExperimentalExample'),
   require('./NetInfoExample'),
   require('./PanResponderExample'),
   require('./PointerEventsExample'),
