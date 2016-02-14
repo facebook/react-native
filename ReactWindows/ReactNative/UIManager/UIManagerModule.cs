@@ -396,14 +396,11 @@ namespace ReactNative.UIManager
         {
             var batchId = _batchId++;
 
-            Context.RunOnDispatcherQueueThread(() =>
+            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "onBatchCompleteUI")
+                .With("BatchId", batchId))
             {
-                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "onBatchCompleteUI")
-                    .With("BatchId", batchId))
-                {
-                    _uiImplementation.DispatchViewUpdates(_eventDispatcher, batchId);
-                }
-            });
+                _uiImplementation.DispatchViewUpdates(_eventDispatcher, batchId);
+            }
         }
 
         #endregion

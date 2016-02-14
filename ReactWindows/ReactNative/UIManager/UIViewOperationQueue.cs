@@ -333,8 +333,6 @@ namespace ReactNative.UIManager
         /// <param name="batchId">The batch identifier.</param>
         internal void ExecuteOperations(int batchId)
         {
-            DispatcherHelpers.AssertOnDispatcher();
-
             var operations = default(IList<Action>);
             lock (_operationsLock)
             {
@@ -345,19 +343,22 @@ namespace ReactNative.UIManager
                 }
             }
 
-            using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "DispatchUI")
-                .With("BatchId", batchId))
+            _reactContext.RunOnDispatcherQueueThread(() =>
             {
-                if (operations != null)
+                using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "DispatchUI")
+                    .With("BatchId", batchId))
                 {
-                    foreach (var operation in operations)
+                    if (operations != null)
                     {
-                        operation();
+                        foreach (var operation in operations)
+                        {
+                            operation();
+                        }
                     }
                 }
-            }
 
-            _nativeViewHierarchyManager.ClearLayoutAnimation();
+                _nativeViewHierarchyManager.ClearLayoutAnimation();
+            });
         }
 
         private void EnqueueOperation(Action action)

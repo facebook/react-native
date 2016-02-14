@@ -70,14 +70,12 @@ namespace ReactNative.Views.Text
             // WinRT lacks the tools needed to "predict" the height of text.
             // Instead, we simply instantiate the Inline object, insert it into
             // a text block, and extract how tall the element will be.
-            DispatcherHelpers.AssertOnDispatcher();
-
             if (_isVirtual)
             {
                 return;
             }
 
-            _inline = FromTextCSSNode(this);
+            _inline = DispatcherHelpers.CallOnDispatcher(() => FromTextCSSNode(this)).Result;
             MarkUpdated();
         }
 
@@ -204,27 +202,32 @@ namespace ReactNative.Views.Text
             // the UI thread from handling other work.
             //
             // TODO: determine another way to measure text elements.
-            var shadowNode = (ReactTextShadowNode)node;
-            var textBlock = new TextBlock
+            var task = DispatcherHelpers.CallOnDispatcher(() =>
             {
-                TextWrapping = TextWrapping.Wrap,
-            };
+                var shadowNode = (ReactTextShadowNode)node;
+                var textBlock = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                };
 
-            textBlock.Inlines.Add(shadowNode._inline);
+                textBlock.Inlines.Add(shadowNode._inline);
 
-            try
-            {
-                var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
-                var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
-                textBlock.Measure(new Size(adjustedWidth, adjustedHeight));
-                return new MeasureOutput(
-                    (float)textBlock.DesiredSize.Width,
-                    (float)textBlock.DesiredSize.Height);
-            }
-            finally
-            {
-                textBlock.Inlines.Clear();
-            }
+                try
+                {
+                    var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
+                    var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
+                    textBlock.Measure(new Size(adjustedWidth, adjustedHeight));
+                    return new MeasureOutput(
+                        (float)textBlock.DesiredSize.Width,
+                        (float)textBlock.DesiredSize.Height);
+                }
+                finally
+                {
+                    textBlock.Inlines.Clear();
+                }
+            });
+
+            return task.Result;
         }
         
         private static Inline FromTextCSSNode(ReactTextShadowNode textNode)
