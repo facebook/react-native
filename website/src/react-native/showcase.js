@@ -488,7 +488,7 @@ var apps = [
   {
     name: 'sneat: réservez les meilleurs restaurants de Paris',
     icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
-    linkAppStore: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
+    link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
     author: 'sneat'
   },
   {
