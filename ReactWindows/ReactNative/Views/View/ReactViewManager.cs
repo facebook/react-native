@@ -122,15 +122,7 @@ namespace ReactNative.Views.View
         {
             if (color.HasValue)
             {
-                if (view.HasCustomBorder)
-                {
-                    view.SetBackgroundColor(color.Value);
-                }
-                else
-                {
-                    var panel = GetPanel(view);
-                    panel.Background = new SolidColorBrush(ColorHelpers.Parse(color.Value));
-                }
+                view.SetBackgroundColor(color.Value);
             }
         }
 

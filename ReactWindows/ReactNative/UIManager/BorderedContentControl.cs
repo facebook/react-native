@@ -4,7 +4,6 @@ using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using System;
 
 namespace ReactNative.UIManager
 {
@@ -32,10 +31,7 @@ namespace ReactNative.UIManager
             base.Content = content;
         }
 
-        /// <summary>
-        /// Signals if the view has a custom border.
-        /// </summary>
-        public bool HasCustomBorder
+        private bool HasCustomBorder
         {
             get
             {
@@ -51,21 +47,21 @@ namespace ReactNative.UIManager
         /// An intentional override of the <see cref="ContentControl.Content"/>
         /// property that returns the child without any borders.
         /// </summary>
-        public new FrameworkElement Content
+        public new UIElement Content
         {
             get
             {
                 if (!HasCustomBorder)
                 {
-                    return (FrameworkElement)base.Content;
+                    return (UIElement)base.Content;
                 }
                 else if (_customBorder != null)
                 {
-                    return (FrameworkElement)_customBorder.Child;
+                    return _customBorder.Child;
                 }
                 else
                 {
-                    return (FrameworkElement)_customBottomBorder.Child;
+                    return _customBottomBorder.Child;
                 }
             }
         }
@@ -163,10 +159,8 @@ namespace ReactNative.UIManager
         /// <param name="value">The masked color value.</param>
         public void SetBackgroundColor(uint value)
         {
-            if (_customBorder != null)
-            {
-                _customBorder.Background = new SolidColorBrush(ColorHelpers.Parse(value));
-            }
+            EnsureBorder();
+            _customBorder.Background = new SolidColorBrush(ColorHelpers.Parse(value));
         }
 
         /// <summary>
