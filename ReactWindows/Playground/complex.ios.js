@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 import React, {
     AppRegistry,
     Component,
@@ -33,7 +33,7 @@ class AnimationExample extends Component {
     onPress(index) {
 
         // Uncomment to animate the next state change.
-        // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
         // Or use a Custom Layout Animation
         // LayoutAnimation.configureNext(CustomLayoutAnimation);

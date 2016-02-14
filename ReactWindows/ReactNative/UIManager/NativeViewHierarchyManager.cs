@@ -571,8 +571,8 @@ namespace ReactNative.UIManager
             {
                 viewToUpdate.Width = width;
                 viewToUpdate.Height = height;
-                Canvas.SetLeft(viewToUpdate, x);
-                Canvas.SetTop(viewToUpdate, y);
+                viewToUpdate.SetValue(Canvas.LeftProperty, x);
+                viewToUpdate.SetValue(Canvas.TopProperty, y);
             }
         }
     }

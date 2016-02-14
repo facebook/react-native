@@ -272,7 +272,7 @@ namespace ReactNative.UIManager
                 for (var i = 0; i < numToRemove; ++i)
                 {
                     var indexToRemove = removeFrom[i];
-                    var tagToRemove = cssNodeToManage.GetChildAt(i).ReactTag;
+                    var tagToRemove = cssNodeToManage.GetChildAt(indexToRemove).ReactTag;
                     indicesToRemove[numToMove + i] = indexToRemove;
                     tagsToRemove[numToMove + i] = tagToRemove;
                     tagsToDelete[i] = tagToRemove;
@@ -474,8 +474,6 @@ namespace ReactNative.UIManager
         /// <param name="batchId">The batch identifier.</param>
         public void DispatchViewUpdates(EventDispatcher eventDispatcher, int batchId)
         {
-            DispatcherHelpers.AssertOnDispatcher();
-
             foreach (var tag in _shadowNodeRegistry.RootNodeTags)
             {
                 var cssRoot = _shadowNodeRegistry.GetNode(tag);
