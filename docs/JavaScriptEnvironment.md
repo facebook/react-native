@@ -22,7 +22,7 @@ Syntax transformers make writing code more enjoyable by allowing you to use new 
 
 As of version 0.5.0, React Native ships with the [Babel JavaScript compiler](https://babeljs.io). Check [Babel documentation](http://babeljs.io/docs/advanced/transformers/) on its supported transformations for more details.
 
-Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/master/babel-preset/configs/main.js#L16).
+Here's a full list of React Native's [enabled transformations](https://github.com/facebook/react-native/blob/194092e7290c2a2e50e0263bac67686df418b915/babel-preset/configs/main.js#L16).
 
 ES5
 
