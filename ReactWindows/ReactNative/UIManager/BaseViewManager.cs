@@ -58,6 +58,11 @@ namespace ReactNative.UIManager
             view.Opacity = opacity;
         }
 
+        /// <summary>
+        /// Sets the elevation of the <typeparamref name="TFrameworkElement"/>.
+        /// </summary>
+        /// <param name="view">The framework element instance.</param>
+        /// <param name="elevation">The elevation value.</param>
         [ReactProperty(PROP_ELEVATION)]
         public void SetElevation(TFrameworkElement view, double elevation)
         {

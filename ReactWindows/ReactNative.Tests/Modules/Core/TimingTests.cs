@@ -186,18 +186,18 @@ namespace ReactNative.Tests.Modules.Core
             var ids = new List<int>();
             jsTimers.InvocationHandler = handler;
 
-            var catalystInstance = new TestCatalystInstance(jsTimers);
-            context.InitializeWithInstance(catalystInstance);
+            var reactInstance = new TestReactInstance(jsTimers);
+            context.InitializeWithInstance(reactInstance);
             var timing = new Timing(context);
             timing.Initialize();
             return timing;
         }
 
-        class TestCatalystInstance : MockReactInstance
+        class TestReactInstance : MockReactInstance
         {
             private readonly object _jsTimers;
 
-            public TestCatalystInstance(JSTimersExecution jsTimers)
+            public TestReactInstance(JSTimersExecution jsTimers)
                 : base()
             {
                 _jsTimers = jsTimers;

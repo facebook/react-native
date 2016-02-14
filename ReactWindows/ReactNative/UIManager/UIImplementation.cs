@@ -72,15 +72,15 @@ namespace ReactNative.UIManager
         public void RegisterRootView(
             SizeMonitoringCanvas rootView,
             int tag,
-            float width,
-            float height,
+            double width,
+            double height,
             ThemedReactContext context)
         {
             var rootCssNode = CreateRootShadowNode();
             rootCssNode.ReactTag = tag;
             rootCssNode.ThemedContext = context;
-            rootCssNode.Width = width;
-            rootCssNode.Height = height;
+            rootCssNode.Width = (float)width;
+            rootCssNode.Height = (float)height;
             _shadowNodeRegistry.AddRootNode(rootCssNode);
 
             // Register it with the NativeViewHierarchyManager.
@@ -107,13 +107,13 @@ namespace ReactNative.UIManager
         /// <param name="eventDispatcher">The event dispatcher.</param>
         public void UpdateRootNodeSize(
             int rootViewTag,
-            float newWidth,
-            float newHeight,
+            double newWidth,
+            double newHeight,
             EventDispatcher eventDispatcher)
         {
             var rootCssNode = _shadowNodeRegistry.GetNode(rootViewTag);
-            rootCssNode.Width = newWidth;
-            rootCssNode.Height = newHeight;
+            rootCssNode.Width = (float)newWidth;
+            rootCssNode.Height = (float)newHeight;
 
             // If we're in the middle of a batch, the change will be
             // automatically dispatched at the end of the batch. The event

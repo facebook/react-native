@@ -43,8 +43,7 @@ namespace ReactNative.UIManager
     /// 
     /// TODO: 
     /// 1) AnimationRegistry
-    /// 2) Measure
-    /// 3) ShowPopupMenu
+    /// 2) ShowPopupMenu
     /// </remarks>
     public class NativeViewHierarchyManager
     {

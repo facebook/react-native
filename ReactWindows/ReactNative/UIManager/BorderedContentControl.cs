@@ -50,18 +50,17 @@ namespace ReactNative.UIManager
         /// Sets the border width.
         /// </summary>
         /// <param name="width">The width.</param>
-        public void SetBorderWidth(double width)
+        public void SetBorderWidth(CSSSpacingType kind, double width)
         {
             var customBorder = EnsureBorder();
-            customBorder.BorderThickness = new Thickness(width);
+            customBorder.SetBorderWidth(kind, width);
         }
 
         /// <summary>
         /// Sets the border color.
         /// </summary>
-        /// <param name="kind">The width specification.</param>
         /// <param name="color">The masked color.</param>
-        public void SetBorderColor(CSSSpacingType kind, uint color)
+        public void SetBorderColor(uint color)
         {
             var customBorder = EnsureBorder();
             customBorder.BorderBrush = new SolidColorBrush(ColorHelpers.Parse(color));
@@ -73,8 +72,8 @@ namespace ReactNative.UIManager
         /// <param name="value">The masked color value.</param>
         public void SetBackgroundColor(uint value)
         {
-            EnsureBorder();
-            _customBorder.Background = new SolidColorBrush(ColorHelpers.Parse(value));
+            var customBorder = EnsureBorder();
+            customBorder.Background = new SolidColorBrush(ColorHelpers.Parse(value));
         }
 
         /// <summary>
