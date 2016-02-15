@@ -18,7 +18,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
-var ScrollView = require('ScrollView')
+var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
 var invariant = require('invariant');
