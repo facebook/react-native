@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -40,7 +42,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -214,6 +215,14 @@ public class DevSupportManagerImpl implements DevSupportManager {
             mRedBoxDialog.show();
           }
         });
+  }
+
+  @Override
+  public void hideRedboxDialog() {
+    // dismiss redbox if exists
+    if (mRedBoxDialog != null) {
+      mRedBoxDialog.dismiss();
+    }
   }
 
   private void showNewError(
@@ -520,6 +529,18 @@ public class DevSupportManagerImpl implements DevSupportManager {
     }
     if (reactContext != null) {
       mDebugOverlayController = new DebugOverlayController(reactContext);
+    }
+
+    if (mDevSettings.isHotModuleReplacementEnabled() && mCurrentContext != null) {
+      try {
+        URL sourceUrl = new URL(getSourceUrl());
+        String path = sourceUrl.getPath().substring(1); // strip initial slash in path
+        String host = sourceUrl.getHost();
+        int port = sourceUrl.getPort();
+        mCurrentContext.getJSModule(HMRClient.class).enable("android", path, host, port);
+      } catch (MalformedURLException e) {
+        showNewJavaError(e.getMessage(), e);
+      }
     }
 
     reloadSettings();
