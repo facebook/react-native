@@ -17,7 +17,7 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 *Before* submitting a pull request, please make sure the following is done…
 
 1. Fork the repo and create your branch from `master`.
-2. If you've added code that should be tested, add tests!
+2. **Describe your test plan in your commit.** If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
 4. Add the copyright notice to the top of any new files you've added.
 5. Ensure tests pass on Travis and Circle CI.
