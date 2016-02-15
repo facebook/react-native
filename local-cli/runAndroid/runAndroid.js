@@ -92,17 +92,20 @@ function buildAndRun(args, reject) {
   }
 
   try {
-    const packageName = fs.readFileSync(
-      'app/src/main/AndroidManifest.xml',
+    const manifest = fs.readFileSync(
+      'app/build/intermediates/manifests/full/debug/AndroidManifest.xml',
       'utf8'
-    ).match(/package="(.+?)"/)[1];
+    );
+
+    const applicationId = manifest.match(/package="(.+?)"/)[1];
+    const packageName = manifest.match(/android:name="(.+?\.MainActivity)"/)[1];
 
     const adbPath = process.env.ANDROID_HOME
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
       : 'adb';
 
     const adbArgs = [
-      'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+      'shell', 'am', 'start', '-n', applicationId + '/' + packageName
     ];
 
     console.log(chalk.bold(
