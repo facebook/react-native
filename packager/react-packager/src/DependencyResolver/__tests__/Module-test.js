@@ -10,6 +10,7 @@
 
 jest
   .dontMock('absolute-path')
+  .dontMock('json-stable-stringify')
   .dontMock('../fastfs')
   .dontMock('../lib/extractRequires')
   .dontMock('../lib/replacePatterns')
