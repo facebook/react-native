@@ -35,10 +35,10 @@ mkdir(`-p`, `build`);
 const currentCommit = exec(`git rev-parse HEAD`).stdout.trim();
 const latestTagCommit = exec(`git ls-remote origin latest`).stdout.split(/\s/)[0];
 // pass along which branch contains latest version so that gh-pages root could mark it as latest
-const branchWithLatestTag = exec(`git branch --contains latest`).stdout;
+const branchWithLatestTag = exec(`git branch -r --contains ${latestTagCommit}`).stdout.split('/')[1];
 let latestVersion = ``;
 if (branchWithLatestTag.indexOf(`-stable`) !== -1) {
-  latestVersion = branchWithLatestTag.slice(0, branchWithLatestTag.indexOf(`-stable`)).trim();
+  latestVersion = branchWithLatestTag.slice(0, branchWithLatestTag.indexOf(`-stable`));
 }
 
 if (!CI_PULL_REQUEST && CIRCLE_PROJECT_USERNAME === `facebook`) {
