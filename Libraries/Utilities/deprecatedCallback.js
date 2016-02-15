@@ -36,7 +36,7 @@ module.exports = function(promise: Promise, callbacks: Array<Function>, type: st
       res => success(res),
       err => error(err)
     );
-  case 'single-callback-value-first': // handles func(callback(err, value))
+  case 'single-callback-value-first': // handles func(callback(value, err))
     [ callback ] = callbacks;
     return promise.then(
       res => callback(res),
