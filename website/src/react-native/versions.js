@@ -24,7 +24,7 @@ var versions = React.createClass({
     ].concat(availableDocs.map((version) => {
       const isLatest =  Metadata.config.RN_LATEST_VERSION === version;
       return {
-        title: isLatest ? `${version} + (current)` : version,
+        title: isLatest ? `${version} (current)` : version,
         path: isLatest ? '/react-native' : '/react-native/releases/' + version
       }
     }));
