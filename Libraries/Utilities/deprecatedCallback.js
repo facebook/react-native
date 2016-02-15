@@ -19,7 +19,7 @@ module.exports = function(promise: Promise, callbacks: Array<Function>, type: st
     return promise;
   }
 
-  let success, error;
+  let success, error, callback;
 
   console.warn(warning);
 
@@ -36,13 +36,19 @@ module.exports = function(promise: Promise, callbacks: Array<Function>, type: st
       res => success(res),
       err => error(err)
     );
-  case 'node': // handles func(callback)
-    const [ callback ] = callbacks;
+  case 'single-callback-value-first': // handles func(callback(value, err))
+    [ callback ] = callbacks;
+    return promise.then(
+      res => callback(res),
+      err => callback(null, err)
+    );
+  case 'node': // handles func(callback(err, value))
+    [ callback ] = callbacks;
     return promise.then(
       res => callback(null, res),
       err => callback(err)
     );
   default:
-    throw new Error(`Type of callbacks not specified. Must be one of 'success-first', 'error-first', or 'node'`);
+    throw new Error(`Type of callbacks not specified. Must be one of 'success-first', 'error-first', 'single-callback-value-first', or 'node'`);
   }
 };
