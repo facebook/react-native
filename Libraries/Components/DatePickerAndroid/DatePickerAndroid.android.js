@@ -52,7 +52,7 @@ class DatePickerAndroid {
    *   * `date` (`Date` object or timestamp in milliseconds) - date to show by default
    *   * `minDate` (`Date` or timestamp in milliseconds) - minimum date that can be selected
    *   * `maxDate` (`Date` object or timestamp in milliseconds) - minimum date that can be selected
-   * 
+   *
    * Returns a Promise which will be invoked an object containing `action`, `year`, `month` (0-11),
    * `day` if the user picked a date. If the user dismissed the dialog, the Promise will
    * still be resolved with action being `DatePickerAndroid.dismissedAction` and all the other keys

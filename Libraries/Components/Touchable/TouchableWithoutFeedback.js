@@ -29,7 +29,7 @@ var PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * Do not use unless you have a very good reason. All the elements that
  * respond to press should have a visual feedback when touched. This is
  * one of the primary reason a "web" app doesn't feel "native".
- * 
+ *
  * > **NOTE**: TouchableWithoutFeedback supports only one child
  * >
  * > If you wish to have several child components, wrap them in a View.

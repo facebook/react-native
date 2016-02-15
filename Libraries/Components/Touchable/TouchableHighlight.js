@@ -213,9 +213,9 @@ var TouchableHighlight = React.createClass({
 
   _hasPressHandler: function() {
     return !!(
-      this.props.onPress || 
-      this.props.onPressIn || 
-      this.props.onPressOut || 
+      this.props.onPress ||
+      this.props.onPressIn ||
+      this.props.onPressOut ||
       this.props.onLongPress
     );
   },

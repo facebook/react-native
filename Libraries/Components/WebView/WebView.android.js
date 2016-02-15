@@ -186,7 +186,7 @@ var WebView = React.createClass({
     } else if (this.props.url) {
       source.uri = this.props.url;
     }
-    
+
     if (source.method === 'POST' && source.headers) {
       console.warn('WebView: `source.headers` is not supported when using POST.');
     } else if (source.method === 'GET' && source.body) {
