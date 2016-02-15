@@ -60,6 +60,15 @@ public interface NativeModule {
   boolean canOverrideExistingModule();
 
   /**
+   * Called on the JS thread after a ReactBridge has been created. This is useful for native modules
+   * that need to do any setup before the JS bundle has been loaded. An example of this would be
+   * installing custom functionality into the JavaScriptCore context.
+   *
+   * @param bridge the ReactBridge instance that has just been created
+   */
+  void onReactBridgeInitialized(ReactBridge bridge);
+
+  /**
    * Called before {CatalystInstance#onHostDestroy}
    */
   void onCatalystInstanceDestroy();
