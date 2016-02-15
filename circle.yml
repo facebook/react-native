@@ -17,7 +17,7 @@ dependencies:
     - npm install -g npm@3.2
     - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
-    cache_directories:
+  cache_directories:
     - "ReactAndroid/build/downloads"
   override:
     - npm install
