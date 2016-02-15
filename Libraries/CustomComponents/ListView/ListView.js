@@ -234,6 +234,7 @@ var ListView = React.createClass({
    */
   getScrollResponder: function() {
     return this.refs[SCROLLVIEW_REF] && 
+      this.refs[SCROLLVIEW_REF].hasOwnProperty('getScrollResponder') &&
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
