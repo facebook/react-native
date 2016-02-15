@@ -128,11 +128,10 @@ Copy & paste the following code to `index.android.js` in your root folder — it
 ```js
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   Text,
   View
-} = React;
+} from 'react-native';
 
 class MyAwesomeApp extends React.Component {
   render() {
