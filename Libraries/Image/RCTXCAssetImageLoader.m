@@ -41,6 +41,7 @@ RCT_EXPORT_MODULE()
     
     if (bundlePath) {
       NSString *targetBundleName = RCTBundlePathForURL([NSURL URLWithString:bundlePath]);
+      NSString *targetBundleNameWithExtension = [NSString stringWithFormat:@"%@%@", targetBundleName, @".bundle"];
       NSMutableArray *bundles = [[NSBundle allBundles] mutableCopy];
       
       // Get any bundle files included in the mainBundle and add them to the array
@@ -66,7 +67,12 @@ RCT_EXPORT_MODULE()
       for (NSBundle *bundle in bundles) {
         NSString *bundleName = bundle.infoDictionary[@"CFBundleName"];
         
-        if ([bundleName isEqualToString:targetBundleName]) {
+        // Note: Looks like some frameworks won't have 'infoDictionary' set up correctly
+        if (!bundleName) {
+          bundleName = [bundle.bundleURL lastPathComponent];
+        }
+        
+        if ([bundleName isEqualToString:targetBundleName] || [bundleName isEqualToString:targetBundleNameWithExtension]) {
           targetBundle = bundle;
           break;
         }
