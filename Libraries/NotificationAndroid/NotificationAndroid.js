@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Notification
+ * @providesModule NotificationAndroid
  * @flow
  */
 
@@ -30,20 +30,20 @@ type NotificationDetails = {
 }
 
 /**
- * `Notification` provides a way to manage local notifications for your app.
+ * `NotificationAndroid` provides a way to manage statusbar notifications for your app.
  *
  * ### Basic usage
  *
- * To show a new local notification, call `Notification.show` with a `details` object,
+ * To show a new statusbar notification, call `NotificationAndroid.show` with a `details` object,
  *
  * ```
- * const notification = Notification.show({
+ * const notification = NotificationAndroid.show({
  *   title: 'Test notification',
  *   body: 'This notification will change your life'
  * });
  *
  * // Close the notification after 5 seconds
- * setTimeout(() => notification.close(), 5000);
+ * setTimeout(() => notification.dismiss(), 5000);
  * ```
  *
  * The `details` object can contain the following properties:
@@ -59,10 +59,6 @@ type NotificationDetails = {
  * - `tag (string)` : A string identifier for the notification (optional).
  */
 class NotificationAndroid {
-  /**
-   * The current permission to display notifications
-   */
-  static permission: string;
 
   /**
    * Shows a new local notification.
@@ -80,7 +76,7 @@ class NotificationAndroid {
     NotificationModule.presentLocalNotification(details, NOTIFICATION_ID);
 
     return {
-      dismiss: () => NotificationModule.cancelLocalNotification(NOTIFICATION_ID, details ? details.tag : null)
+      dismiss: () => NotificationModule.cancelLocalNotification(details ? details.tag : null, NOTIFICATION_ID)
     };
   }
 
