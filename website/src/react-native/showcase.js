@@ -484,6 +484,12 @@ var apps = [
     author: 'Alexey Ledak',
   },
   {
+    name: 'Text Blast',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/4f/29/58/4f2958a1-7f35-9260-6340-c67ac29d7740/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/text-blast-2016/id1023852862?mt=8',
+    author: 'Sesh',
+  },
+  {
     name: 'Tong Xing Wang',
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
