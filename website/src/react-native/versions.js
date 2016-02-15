@@ -15,21 +15,29 @@ var versions = React.createClass({
   render: function() {
 
     var availableDocs = (Metadata.config.RN_AVAILABLE_DOCS_VERSIONS || '').split(',');
+
     var versions = [
       {
-        title: 'next',
+        title: 'master',
         path: '/react-native/releases/next',
       },
-      {
-        title: 'stable',
-        path: '/react-native',
-      },
     ].concat(availableDocs.map((version) => {
+      const isLatest =  Metadata.config.RN_LATEST_VERSION === version;
       return {
-        title: version,
-        path: '/react-native/releases/' + version
+        title: isLatest ? `${version} + (current)` : version,
+        path: isLatest ? '/react-native' : '/react-native/releases/' + version
       }
     }));
+
+    if (!Metadata.config.RN_LATEST_VERSION) {
+      versions = [
+        {
+          title: 'current',
+          path: '/react-native',
+        },
+      ].concat(versions);
+    }
+
     var versionsLi = versions.map((version) =>
       <li><a href={version.path}>{version.title}</a></li>
     );
