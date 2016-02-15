@@ -128,6 +128,7 @@
     "image-size": "^0.3.5",
     "immutable": "^3.7.5",
     "joi": "^6.6.1",
+    "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
     "jstransform": "^11.0.3",
     "mkdirp": "^0.5.1",
