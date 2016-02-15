@@ -198,6 +198,10 @@ void JSCExecutor::setGlobalVariable(const std::string& propName, const std::stri
   JSObjectSetProperty(m_context, globalObject, jsPropertyName, valueToInject, 0, NULL);
 }
 
+void* JSCExecutor::getJavaScriptContext() {
+  return m_context;
+}
+
 bool JSCExecutor::supportsProfiling() {
   #ifdef WITH_FBSYSTRACE
   return true;

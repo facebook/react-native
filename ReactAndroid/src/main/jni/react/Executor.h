@@ -60,6 +60,9 @@ public:
   virtual void setGlobalVariable(
     const std::string& propName,
     const std::string& jsonValue) = 0;
+  virtual void* getJavaScriptContext() {
+    return nullptr;
+  };
   virtual bool supportsProfiling() {
     return false;
   };

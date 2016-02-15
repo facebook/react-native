@@ -127,6 +127,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
 
+    mJavaRegistry.notifyReactBridgeInitialized(bridge);
     return bridge;
   }
 

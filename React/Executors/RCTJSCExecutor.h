@@ -17,6 +17,15 @@
 RCT_EXTERN NSString *const RCTJSCThreadName;
 
 /**
+ * This notification fires on the JS thread immediately after a `JSContext`
+ * is fully initialized, but before the JS bundle has been loaded. The object
+ * of this notification is the `JSContext`. Native modules should listen for
+ * notification only if they need to install custom functionality into the
+ * context. Note that this notification won't fire when debugging in Chrome.
+ */
+RCT_EXTERN NSString *const RCTJavaScriptContextCreatedNotification;
+
+/**
  * Uses a JavaScriptCore context as the execution engine.
  */
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>
