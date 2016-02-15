@@ -12,6 +12,11 @@
 #import "RCTJavaScriptExecutor.h"
 
 /**
+ * Default name for the JS thread
+ */
+RCT_EXTERN NSString *const RCTJSCThreadName;
+
+/**
  * Uses a JavaScriptCore context as the execution engine.
  */
 @interface RCTJSCExecutor : NSObject <RCTJavaScriptExecutor>

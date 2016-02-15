@@ -267,7 +267,7 @@ it provides much less control than `Animated` and other animation libraries, so
 you may need to use another approach if you can't get `LayoutAnimation` to do
 what you want.
 
-![](/react-native/img/LayoutAnimationExample.gif)
+![](img/LayoutAnimationExample.gif)
 
 ```javascript
 var App = React.createClass({
@@ -344,7 +344,7 @@ your project, you will need to install it with `npm i react-tween-state
 --save` from your project directory.
 
 ```javascript
-var tweenState = require('react-tween-state');
+import tweenState from 'react-tween-state';
 
 var App = React.createClass({
   mixins: [tweenState.Mixin],
@@ -376,7 +376,7 @@ var App = React.createClass({
 ```
 [Run this example](https://rnplay.org/apps/4FUQ-A)
 
-![](/react-native/img/TweenState.gif)
+![](img/TweenState.gif)
 
 Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
@@ -395,14 +395,14 @@ value and end value.  Rebound [is used
 internally](https://github.com/facebook/react-native/search?utf8=%E2%9C%93&q=rebound)
 by React Native on `Navigator` and `WarningBox`.
 
-![](/react-native/img/ReboundImage.gif)
+![](img/ReboundImage.gif)
 
 Notice that Rebound animations can be interrupted - if you release in
 the middle of a press, it will animate back from the current state to
 the original value.
 
 ```javascript
-var rebound = require('rebound');
+import rebound from 'rebound';
 
 var App = React.createClass({
   // First we initialize the spring and add a listener, which calls
@@ -440,7 +440,7 @@ var App = React.createClass({
       transform: [{scaleX: this.state.scale}, {scaleY: this.state.scale}],
     };
 
-    var imageUri = "https://facebook.github.io/react-native/img/ReboundExample.png";
+    var imageUri = "img/ReboundExample.png";
 
     return (
       <View style={styles.container}>
@@ -461,13 +461,13 @@ oscillate around the end value. In the above example, we would add
 See the below gif for an example of where in your interface you might
 use this.
 
-![](/react-native/img/Rebound.gif) Screenshot from
+![](img/Rebound.gif) Screenshot from
 [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view).
 You can run a similar example [here](https://rnplay.org/apps/qHU_5w).
 
 #### A sidenote about setNativeProps
 
-As mentioned [in the Direction Manipulation section](/react-native/docs/direct-manipulation.html),
+As mentioned [in the Direction Manipulation section](docs/direct-manipulation.html),
 `setNativeProps` allows us to modify properties of native-backed
 components (components that are actually backed by native views, unlike
 composite components) directly, without having to `setState` and
@@ -497,7 +497,7 @@ render: function() {
     <View style={styles.container}>
       <TouchableWithoutFeedback onPressIn={this._onPressIn} onPressOut={this._onPressOut}>
         <Image ref={component => this._photo = component}
-               source={{uri: "https://facebook.github.io/react-native/img/ReboundExample.png"}}
+               source={{uri: "img/ReboundExample.png"}}
                style={{width: 250, height: 200}} />
       </TouchableWithoutFeedback>
     </View>
@@ -516,14 +516,14 @@ frames per second), look into using `setNativeProps` or
 `shouldComponentUpdate` to optimize them. You may also want to defer any
 computationally intensive work until after animations are complete,
 using the
-[InteractionManager](/react-native/docs/interactionmanager.html). You
+[InteractionManager](docs/interactionmanager.html). You
 can monitor the frame rate by using the In-App Developer Menu "FPS
 Monitor" tool.
 
 ### Navigator Scene Transitions
 
 As mentioned in the [Navigator
-Comparison](https://facebook.github.io/react-native/docs/navigator-comparison.html#content),
+Comparison](docs/navigator-comparison.html#content),
 `Navigator` is implemented in JavaScript and `NavigatorIOS` is a wrapper
 around native functionality provided by `UINavigationController`, so
 these scene transitions apply only to `Navigator`. In order to re-create
@@ -532,8 +532,7 @@ make them customizable, React Native exposes a
 [NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
 
 ```javascript
-var React = require('react-native');
-var { Dimensions } = React;
+import { Dimensions } from 'react-native';
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 

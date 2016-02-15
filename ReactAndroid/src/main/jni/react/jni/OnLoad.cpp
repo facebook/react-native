@@ -651,14 +651,12 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   setCountableForJava(env, obj, std::move(bridge));
 }
 
-static void executeApplicationScript(
+static void loadApplicationScript(
     const RefPtr<CountableBridge>& bridge,
     const std::string& script,
     const std::string& sourceUri) {
   try {
-    // Execute the application script and collect/dispatch any native calls that might have occured
-    bridge->executeApplicationScript(script, sourceUri);
-    bridge->flush();
+    bridge->loadApplicationScript(script, sourceUri);
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -669,15 +667,12 @@ static void loadApplicationUnbundle(
     AAssetManager *assetManager,
     const std::string& startupCode,
     const std::string& startupFileName) {
-
   try {
-    // Load the application unbundle and collect/dispatch any native calls that might have occured
     bridge->loadApplicationUnbundle(
       std::unique_ptr<JSModulesUnbundle>(
         new JniJSModulesUnbundle(assetManager, startupFileName)),
       startupCode,
       startupFileName);
-    bridge->flush();
   } catch (...) {
     translatePendingCppExceptionToJavaException();
   }
@@ -694,15 +689,15 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
   auto script = react::loadScriptFromAssets(manager, assetNameStr);
   #ifdef WITH_FBSYSTRACE
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
-    "executeApplicationScript",
+    "loadApplicationScript",
     "assetName", assetNameStr);
   #endif
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
   if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
-    loadApplicationUnbundle(bridge, manager, script, assetNameStr);
+    loadApplicationUnbundle(bridge, manager, script, "file://" + assetNameStr);
   } else {
-    executeApplicationScript(bridge, script, assetNameStr);
+    loadApplicationScript(bridge, script, "file://" + assetNameStr);
   }
   if (env->ExceptionCheck()) {
     return;
@@ -720,11 +715,11 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
   #ifdef WITH_FBSYSTRACE
   auto sourceURLStr = sourceURL == NULL ? fileNameStr : fromJString(env, sourceURL);
   FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_"
-    "executeApplicationScript",
+    "loadApplicationScript",
     "sourceURL", sourceURLStr);
   #endif
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromFile_read"));
-  executeApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
+  loadApplicationScript(bridge, script, jni::fromJString(env, sourceURL));
   if (env->ExceptionCheck()) {
     return;
   }
@@ -818,8 +813,8 @@ std::string getDeviceCacheDir() {
 }
 
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
-  virtual std::unique_ptr<JSExecutor> createJSExecutor(FlushImmediateCallback cb) override {
-    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(cb);
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override {
+    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(bridge);
   }
 };
 
