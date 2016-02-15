@@ -19,6 +19,6 @@ const TimePickerAndroid = {
       message: 'TimePickerAndroid is not supported on this platform.'
     });
   },
-}
+};
 
 module.exports = TimePickerAndroid;
