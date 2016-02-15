@@ -45,11 +45,11 @@ import React, {
 } from 'react-native';
 
 class ImageBrowserApp extends React.Component {
-  renderImage: function(imgURI) {
+  renderImage(imgURI) {
     return (
       <Image source={{uri: imgURI}} />
     );
-  },
+  }
   render() {
     return (
       <View>
