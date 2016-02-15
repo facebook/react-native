@@ -31,14 +31,6 @@ const readFile = Promise.denodeify(fs.readFile);
 const noop = () => {};
 
 const validateOpts = declareOpts({
-  packagerHost: {
-    type: 'string',
-    required: true,
-  },
-  packagerPort: {
-    type: 'number',
-    required: true,
-  },
   projectRoots: {
     type: 'array',
     required: true,
@@ -167,10 +159,9 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, path) {
-    const {packagerHost, packagerPort} = this._opts;
+  _sourceHMRURL(platform, host, port, path) {
     return this._hmrURL(
-      `http://${packagerHost}:${packagerPort}`,
+      `http://${host}:${port}`,
       platform,
       'bundle',
       path,
@@ -211,10 +202,10 @@ class Bundler {
     );
   }
 
-  hmrBundle(options) {
+  hmrBundle(options, host, port) {
     return this._bundle({
       bundle: new HMRBundle({
-        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform, host, port),
         sourceMappingURLFn: this._sourceMappingHMRURL.bind(
           this,
           options.platform,
