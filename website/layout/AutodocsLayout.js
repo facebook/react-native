@@ -175,15 +175,15 @@ var ComponentDoc = React.createClass({
           if (name === 'LayoutPropTypes') {
             name = 'Flexbox';
             link =
-              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =
-              <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
+              <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
           }
           return (
             <div className="prop" key={name}>
