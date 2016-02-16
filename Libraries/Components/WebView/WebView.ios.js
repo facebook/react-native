@@ -231,6 +231,7 @@ var WebView = React.createClass({
      * **NOTE** : "In order for video to play inline, not only does this
      * property need to be set to true, but the video element in the HTML
      * document must also include the webkit-playsinline attribute."
+     * @platform ios
      */
     allowsInlineMediaPlayback: PropTypes.bool,
 
@@ -238,7 +239,6 @@ var WebView = React.createClass({
      * Determines whether HTML5 audio & videos require the user to tap before they can
      * start playing
      * default value `false`
-     * @platform ios
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
