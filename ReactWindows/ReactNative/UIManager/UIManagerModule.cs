@@ -108,9 +108,9 @@ namespace ReactNative.UIManager
                 var newWidth = args.NewSize.Width;
                 var newHeight = args.NewSize.Height;
 
-                Context.RunOnDispatcherQueueThread(() =>
+                Context.RunOnNativeModulesQueueThread(() =>
                 {
-                    Context.AssertOnDispatcherQueueThread();
+                    Context.AssertOnNativeModulesQueueThread();
                     _uiImplementation.UpdateRootNodeSize(tag, newWidth, newHeight, _eventDispatcher);
                 });
             });
