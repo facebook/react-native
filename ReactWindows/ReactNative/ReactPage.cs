@@ -19,6 +19,7 @@ namespace ReactNative
         private readonly Action _onBackPressed;
 
         private bool _isShiftKeyDown;
+        private bool _isControlKeyDown;
 
         /// <summary>
         /// Instantiates the <see cref="ReactPage"/>.
@@ -106,12 +107,16 @@ namespace ReactNative
                 {
                     _isShiftKeyDown = true;
                 }
-                else if (_isShiftKeyDown && e.Key == VirtualKey.F11)
+                else if (e.Key == VirtualKey.Control)
+                {
+                    _isControlKeyDown = true;
+                }
+                else if (_isShiftKeyDown && e.Key == VirtualKey.F10)
                 {
                     _reactInstanceManager.DevSupportManager.ShowDevOptionsDialog();
                     e.Handled = true;
                 }
-                else if (_isShiftKeyDown && e.Key == VirtualKey.F12)
+                else if (_isControlKeyDown && e.Key == VirtualKey.R)
                 {
                     _reactInstanceManager.DevSupportManager.HandleReloadJavaScript();
                     e.Handled = true;
@@ -135,6 +140,10 @@ namespace ReactNative
                 else if (e.Key == VirtualKey.Shift)
                 {
                     _isShiftKeyDown = false;
+                }
+                else if (e.Key == VirtualKey.Control)
+                {
+                    _isControlKeyDown = false;
                 }
             }
         }
