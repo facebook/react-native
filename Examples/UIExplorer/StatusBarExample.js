@@ -57,22 +57,22 @@ const showHideTransitions = [
   'slide',
 ];
 
+function getValue(values: Array<any>, index: number): any {
+  return values[index % values.length];
+}
+
 const StatusBarExample = React.createClass({
   getInitialState(): State {
     return {
       animated: true,
-      backgroundColor: this._getValue(colors, 0),
-      showHideTransition: this._getValue(showHideTransitions, 0),
+      backgroundColor: getValue(colors, 0),
+      showHideTransition: getValue(showHideTransitions, 0),
     };
   },
 
   _colorIndex: 0,
   _barStyleIndex: 0,
   _showHideTransitionIndex: 0,
-
-  _getValue(values: Array<any>, index: number): any {
-    return values[index % values.length];
-  },
 
   render() {
     return (
@@ -110,10 +110,10 @@ const StatusBarExample = React.createClass({
             style={styles.wrapper}
             onPress={() => {
               this._barStyleIndex++;
-              this.setState({barStyle: this._getValue(barStyles, this._barStyleIndex)});
+              this.setState({barStyle: getValue(barStyles, this._barStyleIndex)});
             }}>
             <View style={styles.button}>
-              <Text>style: '{this._getValue(barStyles, this._barStyleIndex)}'</Text>
+              <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
             </View>
           </TouchableHighlight>
         </View>
@@ -138,13 +138,13 @@ const StatusBarExample = React.createClass({
               this._showHideTransitionIndex++;
               this.setState({
                 showHideTransition:
-                this._getValue(showHideTransitions, this._showHideTransitionIndex),
+                getValue(showHideTransitions, this._showHideTransitionIndex),
               });
             }}>
             <View style={styles.button}>
               <Text>
                 showHideTransition:
-                '{this._getValue(showHideTransitions, this._showHideTransitionIndex)}'
+                '{getValue(showHideTransitions, this._showHideTransitionIndex)}'
               </Text>
             </View>
           </TouchableHighlight>
@@ -155,10 +155,10 @@ const StatusBarExample = React.createClass({
             style={styles.wrapper}
             onPress={() => {
               this._colorIndex++;
-              this.setState({backgroundColor: this._getValue(colors, this._colorIndex)});
+              this.setState({backgroundColor: getValue(colors, this._colorIndex)});
             }}>
             <View style={styles.button}>
-              <Text>backgroundColor: '{this._getValue(colors, this._colorIndex)}'</Text>
+              <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
             </View>
           </TouchableHighlight>
         </View>
@@ -181,10 +181,115 @@ const StatusBarExample = React.createClass({
   },
 });
 
+const StatusBarStaticExample = React.createClass({
+  _colorIndex: 0,
+  _barStyleIndex: 0,
+  _showHideTransitionIndex: 0,
+
+  getInitialState() {
+    return {
+      backgroundColor: getValue(colors, 0),
+      barStyle: getValue(barStyles, 0),
+      hidden: false,
+      networkActivityIndicatorVisible: false,
+      translucent: false,
+    };
+  },
+
+  render() {
+    return (
+      <View>
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => {
+              const hidden = !this.state.hidden;
+              StatusBar.setHidden(hidden, 'slide');
+              this.setState({hidden});
+            }}>
+            <View style={styles.button}>
+              <Text>hidden: {this.state.hidden ? 'true' : 'false'}</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <Text style={styles.title}>iOS</Text>
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => {
+              this._barStyleIndex++;
+              const barStyle = getValue(barStyles, this._barStyleIndex);
+              StatusBar.setBarStyle(barStyle, true);
+              this.setState({barStyle});
+            }}>
+            <View style={styles.button}>
+              <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => {
+              const networkActivityIndicatorVisible = !this.state.networkActivityIndicatorVisible;
+              StatusBar.setNetworkActivityIndicatorVisible(networkActivityIndicatorVisible);
+              this.setState({networkActivityIndicatorVisible});
+            }}>
+            <View style={styles.button}>
+              <Text>
+                networkActivityIndicatorVisible:
+                {this.state.networkActivityIndicatorVisible ? 'true' : 'false'}
+              </Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <Text style={styles.title}>Android</Text>
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => {
+              this._colorIndex++;
+              const backgroundColor = getValue(colors, this._colorIndex);
+              StatusBar.setBackgroundColor(backgroundColor, true);
+              this.setState({backgroundColor});
+            }}>
+            <View style={styles.button}>
+              <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => {
+              const translucent = !this.state.translucent;
+              const backgroundColor = !this.state.translucent ? 'rgba(0, 0, 0, 0.4)' : 'black';
+              StatusBar.setTranslucent(translucent);
+              StatusBar.setBackgroundColor(backgroundColor, true);
+              this.setState({
+                translucent,
+                backgroundColor,
+              });
+            }}>
+            <View style={styles.button}>
+              <Text>translucent: {this.state.translucent ? 'true' : 'false'}</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      </View>
+    );
+  },
+});
+
 exports.examples = [{
-  title: 'Status Bar',
+  title: 'StatusBar',
   render() {
     return <StatusBarExample />;
+  },
+}, {
+  title: 'StatusBar static API',
+  render() {
+    return <StatusBarStaticExample />;
   },
 }];
 

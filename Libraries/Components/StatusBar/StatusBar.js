@@ -19,6 +19,17 @@ const processColor = require('processColor');
 
 const StatusBarManager = require('NativeModules').StatusBarManager;
 
+export type StatusBarStyle = $Enum<{
+  'default': string,
+  'light-content': string,
+}>;
+
+export type StatusBarAnimation = $Enum<{
+  'none': string,
+  'fade': string,
+  'slide': string,
+}>;
+
 type DefaultProps = {
   animated: boolean;
 };
@@ -26,16 +37,10 @@ type DefaultProps = {
 /**
  * Merges the prop stack with the default values.
  */
-function mergePropsStack(propsStack: Array<Object>): Object {
+function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Object {
   return propsStack.reduce((prev, cur) => {
     return Object.assign(prev, cur);
-  }, {
-    backgroundColor: 'black',
-    barStyle: 'default',
-    translucent: false,
-    hidden: false,
-    networkActivityIndicatorVisible: false,
-  });
+  }, defaultValues);
 }
 
 /**
@@ -64,10 +69,75 @@ function mergePropsStack(propsStack: Array<Object>): Object {
  *    />
  *  </View>
  * ```
+ *
+ * ### Imperative API
+ *
+ * For cases where using a component is not ideal, there is also an imperative
+ * API exposed as static functions on the component. It is however not recommended
+ * to use the static API and the compoment for the same prop because any value
+ * set by the static API will get overriden by the one set by the component in
+ * the next render.
  */
 const StatusBar = React.createClass({
   statics: {
     _propsStack: [],
+    _defaultProps: {
+      backgroundColor: 'black',
+      barStyle: 'default',
+      translucent: false,
+      hidden: false,
+      networkActivityIndicatorVisible: false,
+    },
+
+    // Provide an imperative API as static functions of the component.
+    // See the corresponding prop for more detail.
+    setHidden(hidden: boolean, animation?: StatusBarAnimation) {
+      animation = animation || 'none';
+      StatusBar._defaultProps.hidden = hidden;
+      if (Platform.OS === 'ios') {
+        StatusBarManager.setHidden(hidden, animation);
+      } else if (Platform.OS === 'android') {
+        StatusBarManager.setHidden(hidden);
+      }
+    },
+
+    setBarStyle(style: StatusBarStyle, animated?: boolean) {
+      if (Platform.OS !== 'ios') {
+        console.warn('`setBarStyle` is only available on iOS');
+        return;
+      }
+      animated = animated || false;
+      StatusBar._defaultProps.barStyle = style;
+      StatusBarManager.setStyle(style, animated);
+    },
+
+    setNetworkActivityIndicatorVisible(visible: boolean) {
+      if (Platform.OS !== 'ios') {
+        console.warn('`setNetworkActivityIndicatorVisible` is only available on iOS');
+        return;
+      }
+      StatusBar._defaultProps.networkActivityIndicatorVisible = visible;
+      StatusBarManager.setNetworkActivityIndicatorVisible(visible);
+    },
+
+    setBackgroundColor(color, animated?: boolean) {
+      if (Platform.OS !== 'android') {
+        console.warn('`setBackgroundColor` is only available on Android');
+        return;
+      }
+      animated = animated || false;
+      StatusBar._defaultProps.backgroundColor = color;
+      StatusBarManager.setColor(processColor(color), animated);
+    },
+
+    setTranslucent(translucent: boolean) {
+      if (Platform.OS !== 'android') {
+        console.warn('`setTranslucent` is only available on Android');
+        return;
+      }
+      StatusBar._defaultProps.translucent = translucent;
+      StatusBarManager.setTranslucent(translucent);
+    },
   },
 
   propTypes: {
@@ -156,7 +226,7 @@ const StatusBar = React.createClass({
    * Updates the native status bar with the props from the stack.
    */
   _updatePropsStack() {
-    const mergedProps = mergePropsStack(StatusBar._propsStack);
+    const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
 
     if (Platform.OS === 'ios') {
       if (mergedProps.barStyle !== undefined) {
