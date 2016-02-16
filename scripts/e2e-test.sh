@@ -42,7 +42,9 @@ cd $TEMP
 # sinopia is npm registry proxy, it is used to make npm
 # think react-native and react-native-cli are actually
 # published on npm
-which sinopia || npm install -g sinopia
+# Temporarily installing sinopia from a github fork
+# TODO t10060166 use npm repo when bug is fixed
+which sinopia || npm install -g git://github.com/bestander/sinopia.git#057155985fe955ed6066d1fc2edc159c63dec675
 
 # but in order to make npm use sinopia we temporarily
 # replace its config file
@@ -60,7 +62,7 @@ npm publish $ROOT
 npm publish $ROOT/react-native-cli
 
 npm install -g react-native-cli
-react-native init EndToEndTest --verbose
+react-native init EndToEndTest
 cd EndToEndTest/ios
 
 # Make sure we installed local version of react-native
