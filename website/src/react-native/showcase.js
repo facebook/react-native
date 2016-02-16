@@ -376,6 +376,12 @@ var apps = [
     author: 'wei ping woon',
   },
   {
+    name: 'My IP',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/a2/61/58/a261584d-a4cd-cbfa-cf9d-b5f1f15a7139/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/app/id1031729525?mt=8&at=11l7ss&ct=reactnativeshowcase',
+    author: 'Josh Buchea',
+  }
+  {
     name: 'MyPED',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/88/1f/fb/881ffb3b-7986-d427-7fcf-eb5920a883af/icon175x175.png',
     link: 'https://itunes.apple.com/it/app/myped/id1064907558?ls=1&mt=8',
