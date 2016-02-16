@@ -10,6 +10,7 @@
 
 jest
   .dontMock('absolute-path')
+  .dontMock('json-stable-stringify')
   .dontMock('../fastfs')
   .dontMock('../lib/extractRequires')
   .dontMock('../lib/replacePatterns')
@@ -201,9 +202,9 @@ describe('Module', () => {
     let transformCode;
     const fileContents = 'arbitrary(code);';
     const exampleCode = `
-      require('a');
-      arbitrary.code('b');
-      require('c');`;
+      ${'require'}('a');
+      ${'System.import'}('b');
+      ${'require'}('c');`;
 
     beforeEach(function() {
       transformCode = jest.genMockFn();
@@ -280,7 +281,7 @@ describe('Module', () => {
       const callsEqual = ([path1, key1], [path2, key2]) => {
         expect(path1).toEqual(path2);
         expect(key1).toEqual(key2);
-      }
+      };
 
       it('gets dependencies from the cache with the same cache key for the same transform options', () => {
         const options = {some: 'options'};
@@ -292,7 +293,6 @@ describe('Module', () => {
       });
 
       it('gets dependencies from the cache with the same cache key for the equivalent transform options', () => {
-        const options = {some: 'options'};
         module.getDependencies({a: 'b', c: 'd'}); // first call
         module.getDependencies({c: 'd', a: 'b'}); // second call
 
@@ -317,7 +317,6 @@ describe('Module', () => {
       });
 
       it('gets code from the cache with the same cache key for the equivalent transform options', () => {
-        const options = {some: 'options'};
         module.getCode({a: 'b', c: 'd'}); // first call
         module.getCode({c: 'd', a: 'b'}); // second call
 

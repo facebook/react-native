@@ -39,7 +39,7 @@ function extractRequires(code) {
     .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
       deps.sync.push(dep);
       return match;
-    })
+    });
 
   return {code, deps};
 }

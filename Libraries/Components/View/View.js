@@ -53,7 +53,7 @@ const AccessibilityComponentType = [
 
 const forceTouchAvailable = (UIManager.RCTView.Constants &&
   UIManager.RCTView.Constants.forceTouchAvailable) || false;
-  
+
 const statics = {
   AccessibilityTraits,
   AccessibilityComponentType,
