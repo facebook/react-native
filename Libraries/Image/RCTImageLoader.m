@@ -41,6 +41,11 @@
   NSOperationQueue *_imageDecodeQueue;
   dispatch_queue_t _URLCacheQueue;
   NSURLCache *_URLCache;
+  NSMutableArray *_pendingTasks;
+  NSInteger _activeTasks;
+  NSMutableArray *_pendingDecodes;
+  NSInteger _scheduledDecodes;
+  NSUInteger _activeBytes;
 }
 
 @synthesize bridge = _bridge;
@@ -49,6 +54,11 @@ RCT_EXPORT_MODULE()
 
 - (void)setUp
 {
+  // Set defaults
+  _maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks ?: 4;
+  _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
+  _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 *1024; // 30MB
+
   // Get image loaders and decoders
   NSMutableArray<id<RCTImageURLLoader>> *loaders = [NSMutableArray array];
   NSMutableArray<id<RCTImageDataDecoder>> *decoders = [NSMutableArray array];
@@ -203,6 +213,50 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                 completionBlock:callback];
 }
 
+- (void)dequeueTasks
+{
+  dispatch_async(_URLCacheQueue, ^{
+
+    // Remove completed tasks
+    for (RCTNetworkTask *task in _pendingTasks.reverseObjectEnumerator) {
+      switch (task.status) {
+        case RCTNetworkTaskFinished:
+          [_pendingTasks removeObject:task];
+          _activeTasks--;
+          break;
+        case RCTNetworkTaskPending:
+        case RCTNetworkTaskInProgress:
+          // Do nothing
+          break;
+      }
+    }
+
+    // Start queued decode
+    NSInteger activeDecodes = _scheduledDecodes - _pendingDecodes.count;
+    while (activeDecodes == 0 || (_activeBytes <= _maxConcurrentDecodingBytes &&
+                                  activeDecodes <= _maxConcurrentDecodingTasks)) {
+      dispatch_block_t decodeBlock = _pendingDecodes.firstObject;
+      if (decodeBlock) {
+        [_pendingDecodes removeObjectAtIndex:0];
+        decodeBlock();
+      } else {
+        break;
+      }
+    }
+
+    // Start queued tasks
+    for (RCTNetworkTask *task in _pendingTasks) {
+      if (MAX(_activeTasks, _scheduledDecodes) >= _maxConcurrentLoadingTasks) {
+        break;
+      }
+      if (task.status == RCTNetworkTaskPending) {
+        [task start];
+        _activeTasks++;
+      }
+    }
+  });
+}
+
 /**
  * This returns either an image, or raw image data, depending on the loading
  * path taken. This is useful if you want to skip decoding, e.g. when preloading
@@ -327,8 +381,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
 
     // Download image
-    RCTNetworkTask *task = [_bridge.networking networkTaskWithRequest:request completionBlock:
-                            ^(NSURLResponse *response, NSData *data, NSError *error) {
+    RCTNetworkTask *task = [_bridge.networking networkTaskWithRequest:request completionBlock:^(NSURLResponse *response, NSData *data, NSError *error) {
       if (error) {
         completionHandler(error, nil);
         return;
@@ -348,14 +401,26 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         // Process image data
         processResponse(response, data, nil);
 
+        //clean up
+        [weakSelf dequeueTasks];
+
       });
 
     }];
     task.downloadProgressBlock = progressHandler;
-    [task start];
+
+    if (!_pendingTasks) {
+      _pendingTasks = [NSMutableArray new];
+    }
+    [_pendingTasks addObject:task];
+    if (MAX(_activeTasks, _scheduledDecodes) < _maxConcurrentLoadingTasks) {
+      [task start];
+      _activeTasks++;
+    }
 
     cancelLoad = ^{
       [task cancel];
+      [weakSelf dequeueTasks];
     };
 
   });
@@ -453,7 +518,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __block volatile uint32_t cancelled = 0;
   void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
     if ([NSThread isMainThread]) {
-
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -475,40 +539,71 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                        completionHandler:completionHandler];
   } else {
 
-    // Serialize decoding to prevent excessive memory usage
-    if (!_imageDecodeQueue) {
-      _imageDecodeQueue = [NSOperationQueue new];
-      _imageDecodeQueue.name = @"com.facebook.react.ImageDecoderQueue";
-      _imageDecodeQueue.maxConcurrentOperationCount = 2;
-    }
-    [_imageDecodeQueue addOperationWithBlock:^{
-      if (cancelled) {
-        return;
-      }
+    dispatch_async(_URLCacheQueue, ^{
+      dispatch_block_t decodeBlock = ^{
 
-      UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
+        // Calculate the size, in bytes, that the decompressed image will require
+        NSInteger decodedImageBytes = (size.width * scale) * (size.height * scale) * 4;
+
+        // Mark these bytes as in-use
+        _activeBytes += decodedImageBytes;
+
+        // Do actual decompression on a concurrent background queue
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          if (!cancelled) {
+
+            // Decompress the image data (this may be CPU and memory intensive)
+            UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
 
 #if RCT_DEV
 
-      CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
-      CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
-      if (imagePixelSize.width * imagePixelSize.height >
-          screenPixelSize.width * screenPixelSize.height) {
-        RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
-                   "than the screen size %@", NSStringFromCGSize(imagePixelSize),
-                   NSStringFromCGSize(screenPixelSize));
-      }
+            CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
+            CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
+            if (imagePixelSize.width * imagePixelSize.height >
+                screenPixelSize.width * screenPixelSize.height) {
+              RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
+                         "than the screen size %@", NSStringFromCGSize(imagePixelSize),
+                         NSStringFromCGSize(screenPixelSize));
+            }
 
 #endif
 
-      if (image) {
-        completionHandler(nil, image);
-      } else {
-        NSString *errorMessage = [NSString stringWithFormat:@"Error decoding image data <NSData %p; %tu bytes>", data, data.length];
-        NSError *finalError = RCTErrorWithMessage(errorMessage);
-        completionHandler(finalError, nil);
+            if (image) {
+              completionHandler(nil, image);
+            } else {
+              NSString *errorMessage = [NSString stringWithFormat:@"Error decoding image data <NSData %p; %tu bytes>", data, data.length];
+              NSError *finalError = RCTErrorWithMessage(errorMessage);
+              completionHandler(finalError, nil);
+            }
+          }
+
+          // We're no longer retaining the uncompressed data, so now we'll mark
+          // the decoding as complete so that the loading task queue can resume.
+          dispatch_async(_URLCacheQueue, ^{
+            _scheduledDecodes--;
+            _activeBytes -= decodedImageBytes;
+            [self dequeueTasks];
+          });
+        });
+      };
+
+      // The decode operation retains the compressed image data until it's
+      // complete, so we'll mark it as having started, in order to block
+      // further image loads from happening until we're done with the data.
+      _scheduledDecodes++;
+
+      if (!_pendingDecodes) {
+        _pendingDecodes = [NSMutableArray new];
       }
-    }];
+      NSInteger activeDecodes = _scheduledDecodes - _pendingDecodes.count - 1;
+      if (activeDecodes == 0 || (_activeBytes <= _maxConcurrentDecodingBytes &&
+                                 activeDecodes <= _maxConcurrentDecodingTasks)) {
+        decodeBlock();
+      } else {
+        [_pendingDecodes addObject:decodeBlock];
+      }
+
+    });
 
     return ^{
       OSAtomicOr32Barrier(1, &cancelled);
