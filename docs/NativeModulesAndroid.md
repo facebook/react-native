@@ -130,14 +130,14 @@ To make it simpler to access your new functionality from JavaScript, it is commo
  * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or
  *    ToastAndroid.LONG
  */
-var { NativeModules } = require('react-native');
+import { NativeModules } from 'react-native';
 module.exports = NativeModules.ToastAndroid;
 ```
 
 Now, from your other JavaScript file you can call the method like this:
 
 ```js
-var ToastAndroid = require('./ToastAndroid');
+import ToastAndroid from './ToastAndroid';
 
 ToastAndroid.show('Awesome', ToastAndroid.SHORT);
 ```
@@ -275,7 +275,7 @@ sendEvent(reactContext, "keyboardWillShow", params);
 JavaScript modules can then register to receive events by `addListenerOn` using the `Subscribable` mixin
 
 ```js
-var { DeviceEventEmitter } = require('react-native');
+import { DeviceEventEmitter } from 'react-native';
 ...
 
 var ScrollResponderMixin = {

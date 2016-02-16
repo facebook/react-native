@@ -4,7 +4,7 @@ general:
       - gh-pages # list of branches to ignore
 machine:
   node:
-    version: 5.1.0
+    version: 5.6.0
   environment:
     PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:$PATH"
     TERM: "dumb"
@@ -22,11 +22,8 @@ dependencies:
     - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
     - buck/bin/buck fetch ReactAndroid/src/test/...
     - buck/bin/buck fetch ReactAndroid/src/androidTest/...
-    # using npm@3 because of problems with shrink-wrapped optional deps installs on linux
-    - npm install -g npm@3.2
     - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
-    - cd website && npm install
   cache_directories:
     - "ReactAndroid/build/downloads"
     - "buck"
@@ -34,6 +31,7 @@ dependencies:
     - "website/node_modules"
   override:
     - npm install
+    - cd website && npm install
 
 test:
   pre:
