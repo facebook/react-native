@@ -185,7 +185,11 @@ ReactNativeBaseComponent.Mixin = {
     var tag = ReactNativeTagHandles.allocateTag();
 
     if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+      for (var key in this.viewConfig.validAttributes) {
+        if (this._currentElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(this._currentElement.props[key]);
+        }
+      }
     }
 
     var updatePayload = ReactNativeAttributePayload.create(
