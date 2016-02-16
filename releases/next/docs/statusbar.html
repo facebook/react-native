@@ -14,7 +14,11 @@ mounted. One use case is to specify status bar styles per route using <code>Navi
        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
      <span class="token punctuation">}</span>
    <span class="token operator">/</span><span class="token operator">&gt;</span>
- &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span></div></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="animated"></a>animated <span class="propType">bool</span> <a class="hash-link" href="#animated">#</a></h4><div><p>If the transition between status bar property changes should be animated.
+ &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span></div><h3><a class="anchor" name="imperative-api"></a>Imperative API <a class="hash-link" href="#imperative-api">#</a></h3><p>For cases where using a component is not ideal, there is also an imperative
+API exposed as static functions on the component. It is however not recommended
+to use the static API and the compoment for the same prop because any value
+set by the static API will get overriden by the one set by the component in
+the next render.</p></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="animated"></a>animated <span class="propType">bool</span> <a class="hash-link" href="#animated">#</a></h4><div><p>If the transition between status bar property changes should be animated.
 Supported for backgroundColor, barStyle and hidden.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="hidden"></a>hidden <span class="propType">bool</span> <a class="hash-link" href="#hidden">#</a></h4><div><p>If the status bar is hidden.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="backgroundcolor"></a><span class="platform">android</span>backgroundColor <span class="propType"><a href="colors.html">color</a></span> <a class="hash-link" href="#backgroundcolor">#</a></h4><div><p>The background color of the status bar.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="translucent"></a><span class="platform">android</span>translucent <span class="propType">bool</span> <a class="hash-link" href="#translucent">#</a></h4><div><p>If the status bar is translucent.
 When translucent is set to true, the app will draw under the status bar.
 This is useful when using a semi transparent status bar color.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="barstyle"></a><span class="platform">ios</span>barStyle <span class="propType">enum(&#x27;default&#x27;, &#x27;light-content&#x27;)</span> <a class="hash-link" href="#barstyle">#</a></h4><div><p>Sets the color of the status bar text.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="networkactivityindicatorvisible"></a><span class="platform">ios</span>networkActivityIndicatorVisible <span class="propType">bool</span> <a class="hash-link" href="#networkactivityindicatorvisible">#</a></h4><div><p>If the network activity indicator should be visible.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="showhidetransition"></a><span class="platform">ios</span>showHideTransition <span class="propType">enum(&#x27;fade&#x27;, &#x27;slide&#x27;)</span> <a class="hash-link" href="#showhidetransition">#</a></h4><div><p>The transition effect when showing and hiding the status bar using the <code>hidden</code>
@@ -62,22 +66,22 @@ const showHideTransitions <span class="token operator">=</span> <span class="tok
   <span class="token string">&#x27;slide&#x27;</span><span class="token punctuation">,</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span>
 
+<span class="token keyword">function</span> <span class="token function">getValue<span class="token punctuation">(</span></span>values<span class="token punctuation">:</span> Array&lt;any<span class="token operator">&gt;</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">:</span> any <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> values<span class="token punctuation">[</span>index <span class="token operator">%</span> values<span class="token punctuation">.</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
 const StatusBarExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> State <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
       animated<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
-      backgroundColor<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_getValue<span class="token punctuation">(</span></span>colors<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-      showHideTransition<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_getValue<span class="token punctuation">(</span></span>showHideTransitions<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      backgroundColor<span class="token punctuation">:</span> <span class="token function">getValue<span class="token punctuation">(</span></span>colors<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      showHideTransition<span class="token punctuation">:</span> <span class="token function">getValue<span class="token punctuation">(</span></span>showHideTransitions<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   _colorIndex<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
   _barStyleIndex<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
   _showHideTransitionIndex<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
-
-  <span class="token function">_getValue<span class="token punctuation">(</span></span>values<span class="token punctuation">:</span> Array&lt;any<span class="token operator">&gt;</span><span class="token punctuation">,</span> index<span class="token punctuation">:</span> number<span class="token punctuation">)</span><span class="token punctuation">:</span> any <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> values<span class="token punctuation">[</span>index <span class="token operator">%</span> values<span class="token punctuation">.</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -115,10 +119,10 @@ const StatusBarExample <span class="token operator">=</span> React<span class="t
             style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
             onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
               <span class="token keyword">this</span><span class="token punctuation">.</span>_barStyleIndex<span class="token operator">++</span><span class="token punctuation">;</span>
-              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>barStyle<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_getValue<span class="token punctuation">(</span></span>barStyles<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_barStyleIndex<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>barStyle<span class="token punctuation">:</span> <span class="token function">getValue<span class="token punctuation">(</span></span>barStyles<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_barStyleIndex<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
             <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
             &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-              &lt;Text<span class="token operator">&gt;</span>style<span class="token punctuation">:</span> <span class="token string">&#x27;{this._getValue(barStyles, this._barStyleIndex)}&#x27;</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>style<span class="token punctuation">:</span> <span class="token string">&#x27;{getValue(barStyles, this._barStyleIndex)}&#x27;</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
             &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
           &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
@@ -143,13 +147,13 @@ const StatusBarExample <span class="token operator">=</span> React<span class="t
               <span class="token keyword">this</span><span class="token punctuation">.</span>_showHideTransitionIndex<span class="token operator">++</span><span class="token punctuation">;</span>
               <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
                 showHideTransition<span class="token punctuation">:</span>
-                <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_getValue<span class="token punctuation">(</span></span>showHideTransitions<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_showHideTransitionIndex<span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token function">getValue<span class="token punctuation">(</span></span>showHideTransitions<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_showHideTransitionIndex<span class="token punctuation">)</span><span class="token punctuation">,</span>
               <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
             <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
             &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
               &lt;Text<span class="token operator">&gt;</span>
                 showHideTransition<span class="token punctuation">:</span>
-                <span class="token string">&#x27;{this._getValue(showHideTransitions, this._showHideTransitionIndex)}&#x27;</span>
+                <span class="token string">&#x27;{getValue(showHideTransitions, this._showHideTransitionIndex)}&#x27;</span>
               &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
             &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
           &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
@@ -160,10 +164,10 @@ const StatusBarExample <span class="token operator">=</span> React<span class="t
             style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
             onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
               <span class="token keyword">this</span><span class="token punctuation">.</span>_colorIndex<span class="token operator">++</span><span class="token punctuation">;</span>
-              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>backgroundColor<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_getValue<span class="token punctuation">(</span></span>colors<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_colorIndex<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>backgroundColor<span class="token punctuation">:</span> <span class="token function">getValue<span class="token punctuation">(</span></span>colors<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_colorIndex<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
             <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
             &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-              &lt;Text<span class="token operator">&gt;</span>backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;{this._getValue(colors, this._colorIndex)}&#x27;</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;{getValue(colors, this._colorIndex)}&#x27;</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
             &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
           &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
@@ -186,10 +190,115 @@ const StatusBarExample <span class="token operator">=</span> React<span class="t
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
+const StatusBarStaticExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  _colorIndex<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  _barStyleIndex<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  _showHideTransitionIndex<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      backgroundColor<span class="token punctuation">:</span> <span class="token function">getValue<span class="token punctuation">(</span></span>colors<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      barStyle<span class="token punctuation">:</span> <span class="token function">getValue<span class="token punctuation">(</span></span>barStyles<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      hidden<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      networkActivityIndicatorVisible<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      translucent<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View<span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;TouchableHighlight
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+              const hidden <span class="token operator">=</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>hidden<span class="token punctuation">;</span>
+              StatusBar<span class="token punctuation">.</span><span class="token function">setHidden<span class="token punctuation">(</span></span>hidden<span class="token punctuation">,</span> <span class="token string">&#x27;slide&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>hidden<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>hidden<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>hidden <span class="token operator">?</span> <span class="token string">&#x27;true&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;false&#x27;</span><span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token operator">&gt;</span>iOS&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;TouchableHighlight
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>_barStyleIndex<span class="token operator">++</span><span class="token punctuation">;</span>
+              const barStyle <span class="token operator">=</span> <span class="token function">getValue<span class="token punctuation">(</span></span>barStyles<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_barStyleIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              StatusBar<span class="token punctuation">.</span><span class="token function">setBarStyle<span class="token punctuation">(</span></span>barStyle<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>barStyle<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>style<span class="token punctuation">:</span> <span class="token string">&#x27;{getValue(barStyles, this._barStyleIndex)}&#x27;</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;TouchableHighlight
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+              const networkActivityIndicatorVisible <span class="token operator">=</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>networkActivityIndicatorVisible<span class="token punctuation">;</span>
+              StatusBar<span class="token punctuation">.</span><span class="token function">setNetworkActivityIndicatorVisible<span class="token punctuation">(</span></span>networkActivityIndicatorVisible<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>networkActivityIndicatorVisible<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>
+                networkActivityIndicatorVisible<span class="token punctuation">:</span>
+                <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>networkActivityIndicatorVisible <span class="token operator">?</span> <span class="token string">&#x27;true&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;false&#x27;</span><span class="token punctuation">}</span>
+              &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+        &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token operator">&gt;</span>Android&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;TouchableHighlight
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>_colorIndex<span class="token operator">++</span><span class="token punctuation">;</span>
+              const backgroundColor <span class="token operator">=</span> <span class="token function">getValue<span class="token punctuation">(</span></span>colors<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_colorIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              StatusBar<span class="token punctuation">.</span><span class="token function">setBackgroundColor<span class="token punctuation">(</span></span>backgroundColor<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>backgroundColor<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;{getValue(colors, this._colorIndex)}&#x27;</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          &lt;TouchableHighlight
+            style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>wrapper<span class="token punctuation">}</span>
+            onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+              const translucent <span class="token operator">=</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>translucent<span class="token punctuation">;</span>
+              const backgroundColor <span class="token operator">=</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>translucent <span class="token operator">?</span> <span class="token string">&#x27;rgba(0, 0, 0, 0.4)&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;black&#x27;</span><span class="token punctuation">;</span>
+              StatusBar<span class="token punctuation">.</span><span class="token function">setTranslucent<span class="token punctuation">(</span></span>translucent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              StatusBar<span class="token punctuation">.</span><span class="token function">setBackgroundColor<span class="token punctuation">(</span></span>backgroundColor<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+                translucent<span class="token punctuation">,</span>
+                backgroundColor<span class="token punctuation">,</span>
+              <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+            &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;Text<span class="token operator">&gt;</span>translucent<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>translucent <span class="token operator">?</span> <span class="token string">&#x27;true&#x27;</span> <span class="token punctuation">:</span> <span class="token string">&#x27;false&#x27;</span><span class="token punctuation">}</span>&lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>TouchableHighlight<span class="token operator">&gt;</span>
+        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
 exports<span class="token punctuation">.</span>examples <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
-  title<span class="token punctuation">:</span> <span class="token string">&#x27;Status Bar&#x27;</span><span class="token punctuation">,</span>
+  title<span class="token punctuation">:</span> <span class="token string">&#x27;StatusBar&#x27;</span><span class="token punctuation">,</span>
   <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> &lt;StatusBarExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  title<span class="token punctuation">:</span> <span class="token string">&#x27;StatusBar static API&#x27;</span><span class="token punctuation">,</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> &lt;StatusBarStaticExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 
