@@ -14,7 +14,7 @@ const Promise = require('promise');
 const crawl = require('../crawlers');
 const getPlatformExtension = require('../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
-const path = require('path');
+const path = require('fast-path');
 const util = require('util');
 const DependencyGraphHelpers = require('./DependencyGraphHelpers');
 const ResolutionRequest = require('./ResolutionRequest');
@@ -46,6 +46,7 @@ class DependencyGraph {
     extractRequires,
     transformCode,
     shouldThrowOnUnresolvedErrors = () => true,
+    enableAssetMap,
   }) {
     this._opts = {
       activity: activity || defaultActivity,
@@ -60,8 +61,9 @@ class DependencyGraph {
       extensions: extensions || ['js', 'json'],
       mocksPattern,
       extractRequires,
-      shouldThrowOnUnresolvedErrors,
       transformCode,
+      shouldThrowOnUnresolvedErrors,
+      enableAssetMap: enableAssetMap || true,
     };
     this._cache = cache;
     this._helpers = new DependencyGraphHelpers(this._opts);
@@ -121,25 +123,33 @@ class DependencyGraph {
       ignoreFilePath: this._opts.ignoreFilePath,
       assetExts: this._opts.assetExts,
       activity: this._opts.activity,
+      enabled: this._opts.enableAssetMap,
     });
 
     this._loading = Promise.all([
       this._fastfs.build()
         .then(() => {
           const hasteActivity = activity.startEvent('Building Haste Map');
-          return this._hasteMap.build().then(() => activity.endEvent(hasteActivity));
+          return this._hasteMap.build().then(map => {
+            activity.endEvent(hasteActivity);
+            return map;
+          });
         }),
       this._deprecatedAssetMap.build(),
-    ]).then(() =>
-      activity.endEvent(depGraphActivity)
-    ).catch(err => {
-      const error = new Error(
-        `Failed to build DependencyGraph: ${err.message}`
-      );
-      error.type = ERROR_BUILDING_DEP_GRAPH;
-      error.stack = err.stack;
-      throw error;
-    });
+    ]).then(
+      response => {
+        activity.endEvent(depGraphActivity);
+        return response[0]; // Return the haste map
+      },
+      err => {
+        const error = new Error(
+          `Failed to build DependencyGraph: ${err.message}`
+        );
+        error.type = ERROR_BUILDING_DEP_GRAPH;
+        error.stack = err.stack;
+        throw error;
+      }
+    );
 
     return this._loading;
   }

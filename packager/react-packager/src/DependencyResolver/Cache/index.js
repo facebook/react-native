@@ -51,11 +51,9 @@ class Cache {
       throw new Error('Use absolute paths');
     }
 
-    var recordP = this.has(filepath, field)
+    return this.has(filepath, field)
       ? this._data[filepath].data[field]
       : this.set(filepath, field, loaderCb(filepath));
-
-    return recordP.then(record => record);
   }
 
   invalidate(filepath, field) {
