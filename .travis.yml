@@ -3,9 +3,9 @@ language: objective-c
 osx_image: xcode7.2
 
 cache:
-    directories:
-        - node_modules
-        - .nvm
+  directories:
+    - node_modules
+    - .nvm
 
 install:
   - brew reinstall nvm
@@ -17,6 +17,7 @@ install:
   - npm config set spin=false
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm install
+  - npm cache ls
 
 script:
 - |
@@ -69,4 +70,3 @@ branches:
   only:
     - master
     - /^.*-stable$/
-    
