@@ -1,12 +1,12 @@
 'use strict';
 
 const isAbsolutePath = require('absolute-path');
-const path = require('path');
+const path = require('fast-path');
 
 class Package {
 
   constructor({ file, fastfs, cache }) {
-    this.path = path.resolve(file);
+    this.path = file;
     this.root = path.dirname(this.path);
     this._fastfs = fastfs;
     this.type = 'Package';

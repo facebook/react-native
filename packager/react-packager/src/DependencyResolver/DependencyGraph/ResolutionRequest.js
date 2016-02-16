@@ -10,7 +10,8 @@
 
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const util = require('util');
-const path = require('path');
+const path = require('fast-path');
+const realPath = require('path');
 const isAbsolutePath = require('absolute-path');
 const getAssetDataFromName = require('../lib/getAssetDataFromName');
 const Promise = require('promise');
@@ -287,7 +288,7 @@ class ResolutionRequest {
 
           const searchQueue = [];
           for (let currDir = path.dirname(fromModule.path);
-               currDir !== path.parse(fromModule.path).root;
+               currDir !== realPath.parse(fromModule.path).root;
                currDir = path.dirname(currDir)) {
             searchQueue.push(
               path.join(currDir, 'node_modules', realModuleName)

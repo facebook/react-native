@@ -13,23 +13,27 @@ jest
   .dontMock('events')
   .dontMock('../')
   .setMock('child_process', {
-    exec: function(cmd, cb) {
-      cb(null, '/usr/bin/watchman');
-    },
+    exec: (cmd, cb) => cb(null, '/usr/bin/watchman'),
   });
 
-var sane = require('sane');
+const sane = require('sane');
 
-describe('FileWatcher', function() {
-  var Watcher;
-  var FileWatcher;
-  var config;
+describe('FileWatcher', () => {
+  let WatchmanWatcher;
+  let NodeWatcher;
+  let FileWatcher;
+  let config;
 
-  beforeEach(function() {
-    Watcher = sane.WatchmanWatcher;
-    Watcher.prototype.once.mockImplementation(function(type, callback) {
-      callback();
-    });
+  beforeEach(() => {
+    WatchmanWatcher = sane.WatchmanWatcher;
+    WatchmanWatcher.prototype.once.mockImplementation(
+      (type, callback) => callback()
+    );
+    NodeWatcher = sane.NodeWatcher;
+    NodeWatcher.prototype.once.mockImplementation(
+      (type, callback) => callback()
+    );
+
     FileWatcher = require('../');
 
     config = [{
@@ -41,38 +45,45 @@ describe('FileWatcher', function() {
     }];
   });
 
-  pit('it should get the watcher instance when ready', function() {
-    var fileWatcher = new FileWatcher(config);
-    return fileWatcher.getWatchers().then(function(watchers) {
-      watchers.forEach(function(watcher) {
-        expect(watcher instanceof Watcher).toBe(true);
+  pit('gets the watcher instance when ready', () => {
+    const fileWatcher = new FileWatcher(config, {useWatchman: true});
+    return fileWatcher.getWatchers().then(watchers => {
+      watchers.forEach(watcher => {
+        expect(watcher instanceof WatchmanWatcher).toBe(true);
       });
     });
   });
 
-  pit('should emit events', function() {
-    var cb;
-    Watcher.prototype.on.mockImplementation(function(type, callback) {
+  pit('gets the node watcher if watchman is disabled', () => {
+    const fileWatcher = new FileWatcher(config, {useWatchman: false});
+    return fileWatcher.getWatchers().then(watchers => {
+      watchers.forEach(watcher => {
+        expect(watcher instanceof NodeWatcher).toBe(true);
+      });
+    });
+  });
+
+  pit('emits events', () => {
+    let cb;
+    WatchmanWatcher.prototype.on.mockImplementation((type, callback) => {
       cb = callback;
     });
-    var fileWatcher = new FileWatcher(config);
-    var handler = jest.genMockFn();
+    const fileWatcher = new FileWatcher(config, {useWatchman: true});
+    const handler = jest.genMockFn();
     fileWatcher.on('all', handler);
-    return fileWatcher.getWatchers().then(function() {
+    return fileWatcher.getWatchers().then(watchers => {
       cb(1, 2, 3, 4);
       jest.runAllTimers();
       expect(handler.mock.calls[0]).toEqual([1, 2, 3, 4]);
     });
   });
 
-  pit('it should end the watcher', function() {
-    var fileWatcher = new FileWatcher(config);
-    Watcher.prototype.close.mockImplementation(function(callback) {
-      callback();
-    });
+  pit('ends the watcher', () => {
+    const fileWatcher = new FileWatcher(config, {useWatchman: true});
+    WatchmanWatcher.prototype.close.mockImplementation(callback => callback());
 
-    return fileWatcher.end().then(function() {
-      expect(Watcher.prototype.close).toBeCalled();
+    return fileWatcher.end().then(() => {
+      expect(WatchmanWatcher.prototype.close).toBeCalled();
     });
   });
 });

@@ -10,4 +10,5 @@
 
 module.exports = {
   WatchmanWatcher: jest.genMockFromModule('sane/src/watchman_watcher'),
+  NodeWatcher: jest.genMockFromModule('sane/src/node_watcher'),
 };

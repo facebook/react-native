@@ -11,7 +11,7 @@
 const AssetModule_DEPRECATED = require('../AssetModule_DEPRECATED');
 const Fastfs = require('../fastfs');
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
-const path = require('path');
+const path = require('fast-path');
 const Promise = require('promise');
 
 class DeprecatedAssetMap {
@@ -23,8 +23,9 @@ class DeprecatedAssetMap {
     ignoreFilePath,
     helpers,
     activity,
+    enabled,
   }) {
-    if (roots == null || roots.length === 0) {
+    if (roots == null || roots.length === 0 || !enabled) {
       this._disabled = true;
       return;
     }
@@ -32,15 +33,18 @@ class DeprecatedAssetMap {
     this._helpers = helpers;
     this._map = Object.create(null);
     this._assetExts = assetExts;
-    this._fastfs = new Fastfs(
-      'Assets',
-      roots,
-      fileWatcher,
-      { ignore: ignoreFilePath, crawling: fsCrawl, activity }
-    );
     this._activity = activity;
 
-    this._fastfs.on('change', this._processFileChange.bind(this));
+    if (!this._disabled) {
+      this._fastfs = new Fastfs(
+        'Assets',
+        roots,
+        fileWatcher,
+        { ignore: ignoreFilePath, crawling: fsCrawl, activity }
+      );
+
+      this._fastfs.on('change', this._processFileChange.bind(this));
+    }
   }
 
   build() {
@@ -89,7 +93,7 @@ class DeprecatedAssetMap {
     if (this._assetExts.indexOf(ext) !== -1) {
       const name = assetName(file, ext);
       if (this._map[name] != null) {
-        debug('Conflcting assets', name);
+        debug('Conflicting assets', name);
       }
 
       this._map[name] = new AssetModule_DEPRECATED({ file });

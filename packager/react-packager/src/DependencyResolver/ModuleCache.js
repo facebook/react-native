@@ -3,7 +3,7 @@
 const AssetModule = require('./AssetModule');
 const Package = require('./Package');
 const Module = require('./Module');
-const path = require('path');
+const path = require('fast-path');
 
 class ModuleCache {
 
@@ -26,7 +26,6 @@ class ModuleCache {
   }
 
   getModule(filePath) {
-    filePath = path.resolve(filePath);
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
@@ -46,7 +45,6 @@ class ModuleCache {
   }
 
   getAssetModule(filePath) {
-    filePath = path.resolve(filePath);
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
@@ -59,7 +57,6 @@ class ModuleCache {
   }
 
   getPackage(filePath) {
-    filePath = path.resolve(filePath);
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,

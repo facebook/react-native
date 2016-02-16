@@ -8,19 +8,21 @@
  */
 'use strict';
 
-const SUPPORTED_PLATFORM_EXTS = ['android', 'ios', 'web'];
-
-const re = new RegExp(
-  '[^\\.]+\\.(' + SUPPORTED_PLATFORM_EXTS.join('|') + ')\\.\\w+$'
-);
+const SUPPORTED_PLATFORM_EXTS = {
+  android: true,
+  ios: true,
+  web: true,
+};
 
 // Extract platform extension: index.ios.js -> ios
 function getPlatformExtension(file) {
-  const match = file.match(re);
-  if (match && match[1]) {
-    return match[1];
+  const last = file.lastIndexOf('.');
+  const secondToLast = file.lastIndexOf('.', last - 1);
+  if (secondToLast === -1) {
+    return null;
   }
-  return null;
+  const platform = file.substring(secondToLast + 1, last);
+  return SUPPORTED_PLATFORM_EXTS[platform] ? platform : null;
 }
 
 module.exports = getPlatformExtension;
