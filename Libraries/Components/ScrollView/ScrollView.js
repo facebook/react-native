@@ -391,7 +391,7 @@ var ScrollView = React.createClass({
    */
   scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
     console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
-    this.scrollTo({x, y, animated: false});
+    this.scrollTo({y, x, animated: false});
   },
 
   handleScroll: function(e: Object) {
