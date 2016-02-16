@@ -556,6 +556,12 @@ var apps = [
     icon: 'http://7xk1ez.com2.z0.glb.qiniucdn.com/logo-mobile-0114logo_welcom.png',
     link: 'https://itunes.apple.com/us/app/ni-zao-me/id1025294933?l=zh&ls=1&mt=8',
     author: 'Scott Chen(@NZAOM)'
+  },
+  {
+    name: '中瑞财富',
+    icon: 'https://www.zrcaifu.com/public/images/app_icon_for_rn.png',
+    link: 'https://itunes.apple.com/us/app/zhong-rui-cai-fuapp/id1075720040?l=zh&ls=1&mt=8',
+    author: 'Zrcaifu'
   }
 ];
 
