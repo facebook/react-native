@@ -75,7 +75,8 @@
     ],
     "unmockedModulePathPatterns": [
       "promise",
-      "source-map"
+      "source-map",
+      "fast-path"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
@@ -122,6 +123,7 @@
     "connect": "^2.8.3",
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
+    "fast-path": "^1.1.0",
     "fbjs": "^0.6.0",
     "fbjs-scripts": "^0.4.0",
     "graceful-fs": "^4.1.2",

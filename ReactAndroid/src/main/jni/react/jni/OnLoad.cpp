@@ -760,6 +760,11 @@ static void setGlobalVariable(JNIEnv* env, jobject obj, jstring propName, jstrin
   bridge->setGlobalVariable(fromJString(env, propName), fromJString(env, jsonValue));
 }
 
+static jlong getJavaScriptContext(JNIEnv *env, jobject obj) {
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
+  return (uintptr_t) bridge->getJavaScriptContext();
+}
+
 static jboolean supportsProfiling(JNIEnv* env, jobject obj) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   return bridge->supportsProfiling() ? JNI_TRUE : JNI_FALSE;
@@ -944,7 +949,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("stopProfiler", bridge::stopProfiler),
         makeNativeMethod("handleMemoryPressureModerate", bridge::handleMemoryPressureModerate),
         makeNativeMethod("handleMemoryPressureCritical", bridge::handleMemoryPressureCritical),
-
+        makeNativeMethod("getJavaScriptContextNativePtrExperimental", bridge::getJavaScriptContext),
     });
 
     jclass nativeRunnableClass = env->FindClass("com/facebook/react/bridge/queue/NativeRunnableDeprecated");
