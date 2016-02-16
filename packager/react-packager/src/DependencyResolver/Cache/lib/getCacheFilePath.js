@@ -9,7 +9,7 @@
 'use strict';
 
 const crypto = require('crypto');
-const path = require('path');
+const path = require('fast-path');
 
 function getCacheFilePath(tmpdir, ...args) {
   const hash = crypto.createHash('md5');

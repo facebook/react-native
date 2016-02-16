@@ -182,7 +182,7 @@ class Server {
 
     this._fileWatcher = options.nonPersistent
       ? FileWatcher.createDummyWatcher()
-      : new FileWatcher(watchRootConfigs);
+      : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
       projectRoots: opts.projectRoots,

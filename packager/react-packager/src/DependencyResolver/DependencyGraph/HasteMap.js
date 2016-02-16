@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 'use strict';
-const path = require('path');
+const path = require('fast-path');
 const getPlatformExtension = require('../lib/getPlatformExtension');
 const Promise = require('promise');
 
@@ -31,18 +31,18 @@ class HasteMap {
 
   build() {
     this._map = Object.create(null);
-
-    let promises = this._fastfs.findFilesByExts(this._extensions, {
-      ignore: (file) => this._helpers.isNodeModulesDir(file),
-    }).map(file => this._processHasteModule(file));
-
-    promises = promises.concat(
-      this._fastfs.findFilesByName('package.json', {
-        ignore: (file) => this._helpers.isNodeModulesDir(file),
-      }).map(file => this._processHastePackage(file))
-    );
-
-    return Promise.all(promises);
+    const promises = [];
+    this._fastfs.getAllFiles().forEach(filePath => {
+      if (!this._helpers.isNodeModulesDir(filePath)) {
+        if (this._extensions.indexOf(path.extname(filePath).substr(1)) !== -1) {
+          promises.push(this._processHasteModule(filePath));
+        }
+        if (filePath.endsWith('/package.json')) {
+          promises.push(this._processHastePackage(filePath));
+        }
+      }
+    });
+    return Promise.all(promises).then(() => this._map);
   }
 
   processFileChange(type, absPath) {
@@ -106,7 +106,7 @@ class HasteMap {
 
   _processHastePackage(file) {
     file = path.resolve(file);
-    const p = this._moduleCache.getPackage(file, this._fastfs);
+    const p = this._moduleCache.getPackage(file);
     return p.isHaste()
       .then(isHaste => isHaste && p.getName()
             .then(name => this._updateHasteMap(name, p)))

@@ -12,7 +12,7 @@ const crypto = require('crypto');
 const docblock = require('./DependencyGraph/docblock');
 const isAbsolutePath = require('absolute-path');
 const jsonStableStringify = require('json-stable-stringify');
-const path = require('path');
+const path = require('fast-path');
 const extractRequires = require('./lib/extractRequires');
 
 class Module {
@@ -30,7 +30,7 @@ class Module {
       throw new Error('Expected file to be absolute path but got ' + file);
     }
 
-    this.path = path.resolve(file);
+    this.path = file;
     this.type = 'Module';
 
     this._fastfs = fastfs;
@@ -132,7 +132,7 @@ class Module {
         const fileContentPromise = this._fastfs.readFile(this.path);
         return Promise.all([
           fileContentPromise,
-          this._readDocBlock(fileContentPromise)
+          this._readDocBlock(fileContentPromise),
         ]).then(([code, {id, moduleDocBlock}]) => {
           // Ignore requires in JSON files or generated code. An example of this
           // is prebuilt files like the SourceMap library.
@@ -151,7 +151,7 @@ class Module {
               return {id, code, dependencies, map};
             });
           }
-        })
+        });
       }
     );
   }
