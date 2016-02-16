@@ -17,6 +17,7 @@ install:
   - npm config set spin=false
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm install
+  - npm cache ls
 
 script:
 - |
