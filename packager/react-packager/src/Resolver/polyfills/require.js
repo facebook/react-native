@@ -118,8 +118,8 @@ if (__DEV__) { // HMR
       mod.module.hot.acceptCallback();
     } else {
       console.warn(
-        '[HMR] Module `' + id + '` can\'t be hot reloaded because it ' +
-        'doesn\'t provide accept callback hook. Reload the app to get the updates.'
+        '[HMR] Module `' + id + '` can\'t be hot reloaded because it\'s not a ' +
+        'React component. To get the changes reload the JS bundle.'
       );
     }
   }
