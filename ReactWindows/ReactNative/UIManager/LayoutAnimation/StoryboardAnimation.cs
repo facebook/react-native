@@ -75,7 +75,7 @@ namespace ReactNative.UIManager.LayoutAnimation
                 SpringIntensity = 4;
             }
 
-            ((ElasticEase)InterpolationType.Spring.EasingFunction()).Springiness = SpringIntensity;
+            ((ElasticEase)InterpolationType.Spring.AsEasingFunction()).Springiness = SpringIntensity;
 
             Type = config.TryGetValue(CONFIG_TYPE, out type)
                 ? EnumHelpers.Parse<InterpolationType>(type.Value<string>())

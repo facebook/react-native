@@ -1,4 +1,5 @@
 ﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
@@ -20,19 +21,20 @@ namespace ReactNative.UIManager.LayoutAnimation
 
         public override Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height)
         {
-            var animation = default(Storyboard);
-            var transform = view.RenderTransform as TranslateTransform;
-            var animateLocation = (GetYDistance(transform) != y || GetXDistance(transform) != x);
-            var animateSize = (view.Height != height || view.Width != width);
+            var currentX = Canvas.GetLeft(view);
+            var currentY = Canvas.GetTop(view);
+            var currentWidth = view.Width;
+            var currentHeight = view.Height;
 
-            if (animateLocation || animateLocation)
+            if (x != currentX || y != currentY || width != currentWidth || height != currentHeight)
             {
-                animation = new Storyboard();
+                var animation = new Storyboard();
                 view.RenderTransform = new TranslateTransform();
-                animation.SetRepositionTimelines(base.Type.EasingFunction(), view, x, y, width, height, base.DurationMS);
+                animation.SetRepositionTimelines(Type.AsEasingFunction(), view, x, y, width, height, DurationMS);
+                return animation;
             }
 
-            return animation;
+            return null;
         }
 
         private double GetXDistance(TranslateTransform transform)
