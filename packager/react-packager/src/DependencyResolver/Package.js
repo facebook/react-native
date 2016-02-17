@@ -83,8 +83,16 @@ class Package {
 
   read() {
     if (!this._reading) {
+      var path = this.path;
       this._reading = this._fastfs.readFile(this.path)
-        .then(jsonStr => JSON.parse(jsonStr));
+        .then(jsonStr => {
+          try {
+            return JSON.parse(jsonStr);
+          } catch (e) {
+            e.message = 'Error while parsing ' + path + ': ' + e.message;
+            throw e;
+          }
+        });
     }
 
     return this._reading;
