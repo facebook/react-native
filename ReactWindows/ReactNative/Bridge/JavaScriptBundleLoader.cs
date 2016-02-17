@@ -115,7 +115,8 @@ namespace ReactNative.Bridge
             {
                 try
                 {
-                    var storageFile = await StorageFile.GetFileFromPathAsync(_cachedFileLocation);
+                    var localFolder = ApplicationData.Current.LocalFolder;
+                    var storageFile = await localFolder.GetFileAsync(_cachedFileLocation);
                     using (var stream = await storageFile.OpenStreamForReadAsync())
                     using (var reader = new StreamReader(stream))
                     {

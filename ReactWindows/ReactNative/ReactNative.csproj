@@ -152,9 +152,12 @@
     <Compile Include="Bridge\Queue\MessageQueueThreadSpec.cs" />
     <Compile Include="Bridge\ReflectionReactDelegateFactory.cs" />
     <Compile Include="Collections\HeapBasedPriorityQueue.cs" />
+    <Compile Include="DevSupport\DebugServerException.cs" />
+    <Compile Include="DevSupport\DevInternalSettings.cs" />
     <Compile Include="DevSupport\DevOptionDialog.xaml.cs">
       <DependentUpon>DevOptionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DevSupport\DevServerHelper.cs" />
     <Compile Include="DevSupport\DevSupportManager.cs" />
     <Compile Include="DevSupport\DisabledDevSupportManager.cs" />
     <Compile Include="DevSupport\IReactInstanceDevCommandsHandler.cs" />

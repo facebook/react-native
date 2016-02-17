@@ -83,6 +83,15 @@ namespace ReactNative.Modules.Core
             }
         }
 
+        [ReactMethod]
+        public void dismissRedbox()
+        {
+            if (_devSupportManager.IsEnabled)
+            {
+                _devSupportManager.HideRedboxDialog();
+            }
+        }
+
         private void ShowOrThrowError(string title, JArray details, int exceptionId)
         {
             if (_devSupportManager.IsEnabled)

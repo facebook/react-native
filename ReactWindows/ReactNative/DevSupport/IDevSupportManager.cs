@@ -11,14 +11,14 @@ namespace ReactNative.DevSupport
     public interface IDevSupportManager
     {
         /// <summary>
+        /// The cached JavaScript bundle.
+        /// </summary>
+        string CachedJavaScriptBundleFile { get; }
+
+        /// <summary>
         /// Enables or disables the instance.
         /// </summary>
         bool IsEnabled { get; set; }
-
-        /// <summary>
-        /// The source URL.
-        /// </summary>
-        string SourceUrl { get; }
 
         /// <summary>
         /// The source map URL.
@@ -26,9 +26,9 @@ namespace ReactNative.DevSupport
         string SourceMapUrl { get; }
 
         /// <summary>
-        /// The cached JavaScript bundle.
+        /// The source URL.
         /// </summary>
-        string CachedJavaScriptBundleFile { get; }
+        string SourceUrl { get; }
 
         /// <summary>
         /// Handle a native exception.
@@ -40,6 +40,16 @@ namespace ReactNative.DevSupport
         /// Handles reloading the JavaScript bundle.
         /// </summary>
         void HandleReloadJavaScript();
+
+        /// <summary>
+        /// Dismisses the red box exception dialog.
+        /// </summary>
+        void HideRedboxDialog();
+
+        /// <summary>
+        /// Reload developer settings.
+        /// </summary>
+        void ReloadSettings();
 
         /// <summary>
         /// Show the developer options dialog.

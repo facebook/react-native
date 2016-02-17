@@ -351,8 +351,14 @@ namespace ReactNative
                 DispatcherHelpers.Initialize();
             }
 
-            // TODO: handle developer support loading.
-            RecreateReactContextInBackgroundFromBundleFile();
+            if (_useDeveloperSupport && _jsBundleFile == null && _jsMainModuleName != null)
+            {
+                _devSupportManager.HandleReloadJavaScript();
+            }
+            else
+            {
+                RecreateReactContextInBackgroundFromBundleFile();
+            }
         }
 
         private void RecreateReactContextInBackgroundFromBundleFile()
@@ -720,7 +726,6 @@ namespace ReactNative
             /// <returns>A react instance manager.</returns>
             public ReactInstanceManager Build()
             {
-                AssertNotNull(_jsBundleFile, nameof(JavaScriptBundleFile));
                 AssertNotNull(_initialLifecycleState, nameof(InitialLifecycleState));
 
                 if (!_useDeveloperSupport && _jsBundleFile == null)

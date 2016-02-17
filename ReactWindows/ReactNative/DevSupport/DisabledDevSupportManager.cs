@@ -6,18 +6,18 @@ namespace ReactNative.DevSupport
 {
     class DisabledDevSupportManager : IDevSupportManager
     {
-        public bool IsEnabled
-        {
-            get;
-            set;
-        }
-
-        public string SourceUrl
+        public string CachedJavaScriptBundleFile
         {
             get
             {
                 return null;
             }
+        }
+
+        public bool IsEnabled
+        {
+            get;
+            set;
         }
 
         public string SourceMapUrl
@@ -28,7 +28,7 @@ namespace ReactNative.DevSupport
             }
         }
 
-        public string CachedJavaScriptBundleFile
+        public string SourceUrl
         {
             get
             {
@@ -42,6 +42,14 @@ namespace ReactNative.DevSupport
         }
 
         public void HandleReloadJavaScript()
+        {
+        }
+
+        public void HideRedboxDialog()
+        {
+        }
+
+        public void ReloadSettings()
         {
         }
 

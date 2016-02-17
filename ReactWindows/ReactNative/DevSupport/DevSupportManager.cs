@@ -3,23 +3,33 @@ using ReactNative.Bridge;
 using ReactNative.Common;
 using ReactNative.Tracing;
 using System;
+using System.IO;
+using System.Reactive.Disposables;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 
 namespace ReactNative.DevSupport
 {
     class DevSupportManager : IDevSupportManager
     {
         private const int NativeErrorCookie = -1;
+        private const string JSBundleFileName = "ReactNativeDevBundle.js";
 
         private readonly ShakeAccelerometer _accelerometer = ShakeAccelerometer.GetDefault();
+        private readonly SerialDisposable _pollingDisposable = new SerialDisposable();
 
         private readonly IReactInstanceDevCommandsHandler _reactInstanceCommandsHandler;
         private readonly string _jsBundleFile;
         private readonly string _jsAppBundleName;
-        
+        private readonly DevInternalSettings _devSettings;
+        private readonly DevServerHelper _devServerHelper;
+
+        private bool _isDevSupportEnabled = true;
+        private bool _isShakeDetectorRegistered;
+
         private RedBoxDialog _redBoxDialog;
         private Action _dismissRedBoxDialog;
         private bool _redBoxDialogOpen;
@@ -33,23 +43,29 @@ namespace ReactNative.DevSupport
             _reactInstanceCommandsHandler = reactInstanceCommandsHandler;
             _jsBundleFile = jsBundleFile;
             _jsAppBundleName = jsAppBundleName;
-
-            RegisterDevOptionsMenuTriggers();
+            _devSettings = new DevInternalSettings(this);
+            _devServerHelper = new DevServerHelper(_devSettings);
+            ReloadSettings();
         }
 
-        public bool IsEnabled { get; set; } = true;
-
-        public string SourceUrl
+        public string CachedJavaScriptBundleFile
         {
             get
             {
-                if (_jsAppBundleName == null)
-                {
-                    return "";
-                }
+                return JSBundleFileName;
+            }
+        }
 
-                // TODO: use dev server helpers
-                throw new NotImplementedException();
+        public bool IsEnabled
+        {
+            get
+            {
+                return _isDevSupportEnabled;
+            }
+            set
+            {
+                _isDevSupportEnabled = value;
+                ReloadSettings();
             }
         }
 
@@ -62,17 +78,20 @@ namespace ReactNative.DevSupport
                     return "";
                 }
 
-                // TODO: use dev server helpers
-                throw new NotImplementedException();
+                return _devServerHelper.GetSourceMapUrl(_jsAppBundleName);
             }
         }
 
-        public string CachedJavaScriptBundleFile
+        public string SourceUrl
         {
             get
             {
-                // TODO: choose local file for caching
-                throw new NotImplementedException();
+                if (_jsAppBundleName == null)
+                {
+                    return "";
+                }
+
+                return _devServerHelper.GetSourceUrl(_jsAppBundleName);
             }
         }
 
@@ -97,25 +116,52 @@ namespace ReactNative.DevSupport
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            var dismissRedBoxDialog = _dismissRedBoxDialog;
-            if (_redBoxDialogOpen && dismissRedBoxDialog != null)
-            {
-                dismissRedBoxDialog();
-            }
+            HideRedboxDialog();
 
             var progressDialog = new ProgressDialog("Please wait...", "Fetching JavaScript bundle.");
             var dialogOperation = progressDialog.ShowAsync();
 
             if (_jsBundleFile == null)
             {
-                await ReloadJavaScriptFromServerAsync(progressDialog.Token);
+                await ReloadJavaScriptFromServerAsync(dialogOperation.Cancel, progressDialog.Token);
             }
             else
             {
                 await ReloadJavaScriptFromFileAsync(progressDialog.Token);
+                dialogOperation.Cancel();
             }
+        }
 
-            dialogOperation.Cancel();
+        public void HideRedboxDialog()
+        {
+            var dismissRedBoxDialog = _dismissRedBoxDialog;
+            if (_redBoxDialogOpen && dismissRedBoxDialog != null)
+            {
+                dismissRedBoxDialog();
+            }
+        }
+
+        public void ReloadSettings()
+        {
+            if (_isDevSupportEnabled)
+            {
+                RegisterDevOptionsMenuTriggers();
+                if (_devSettings.IsJavaScriptDevModeEnabled)
+                {
+                    _pollingDisposable.Disposable =
+                        _devServerHelper.StartPollingOnChangeEndpoint(HandleReloadJavaScript);
+                }
+                else
+                {
+                    // Disposes any existing poller
+                    _pollingDisposable.Disposable = Disposable.Empty;
+                }
+            }
+            else
+            {
+                UnregisterDevOptionsMenuTriggers();
+                _pollingDisposable.Disposable = Disposable.Empty;
+            }
         }
 
         public void ShowDevOptionsDialog()
@@ -133,9 +179,16 @@ namespace ReactNative.DevSupport
                     _devOptionDialog = null;
                 };
 
+                var liveReloadEnabled = _devSettings.IsReloadOnJavaScriptChangeEnabled;
+                var liveReloadSettingName = liveReloadEnabled
+                    ? "Disable Live Reload"
+                    : "Enable Live Reload";
+
                 var options = new[]
                 {
                     new DevOptionHandler("Reload JavaScript", HandleReloadJavaScript),
+                    new DevOptionHandler(liveReloadSettingName, () => 
+                        _devSettings.IsReloadOnJavaScriptChangeEnabled = !liveReloadEnabled),
                 };
 
                 foreach (var option in options)
@@ -204,15 +257,36 @@ namespace ReactNative.DevSupport
                 };
 
                 var asyncInfo = _redBoxDialog.ShowAsync();
-
                 _dismissRedBoxDialog = asyncInfo.Cancel;
             });
         }
 
-        private Task ReloadJavaScriptFromServerAsync(CancellationToken token)
+        private async Task ReloadJavaScriptFromServerAsync(Action dismissProgress, CancellationToken token)
         {
-            // TODO: implement loading from bundle server
-            throw new NotImplementedException();
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var localFile = await localFolder.CreateFileAsync(JSBundleFileName, CreationCollisionOption.ReplaceExisting);
+            using (var stream = await localFile.OpenStreamForWriteAsync())
+            {
+                try
+                {
+                    await _devServerHelper.DownloadBundleFromUrlAsync(_jsAppBundleName, stream, token);
+                    dismissProgress();
+                    DispatcherHelpers.RunOnDispatcher(_reactInstanceCommandsHandler.OnJavaScriptBundleLoadedFromServer);
+                }
+                catch (DebugServerException ex)
+                {
+                    dismissProgress();
+                    ShowNewNativeError(ex.Message, ex);
+                }
+                catch (Exception ex)
+                {
+                    dismissProgress();
+                    ShowNewNativeError(
+                        "Unable to download JS bundle. Did you forget to " +
+                        "start the development server or connect your device?",
+                        ex);
+                }
+            }
         }
 
         private Task ReloadJavaScriptFromFileAsync(CancellationToken token)
@@ -223,13 +297,25 @@ namespace ReactNative.DevSupport
 
         private void RegisterDevOptionsMenuTriggers()
         {
-            if (_accelerometer != null)
+            if (!_isShakeDetectorRegistered && _accelerometer != null)
             {
-                _accelerometer.Shaken += (sender, args) =>
-                {
-                    ShowDevOptionsDialog();
-                };
+                _isShakeDetectorRegistered = true;
+                _accelerometer.Shaken += OnAccelerometerShake;
             }
+        }
+
+        private void UnregisterDevOptionsMenuTriggers()
+        {
+            if (_isShakeDetectorRegistered && _accelerometer != null)
+            {
+                _accelerometer.Shaken -= OnAccelerometerShake;
+                _isShakeDetectorRegistered = false;
+            }
+        }
+
+        private void OnAccelerometerShake(object sender, EventArgs args)
+        {
+            ShowDevOptionsDialog();
         }
 
         class DevOptionHandler
