@@ -48,6 +48,7 @@ public:
   virtual void setGlobalVariable(
     const std::string& propName,
     const std::string& jsonValue) override;
+  virtual void* getJavaScriptContext() override;
   virtual bool supportsProfiling() override;
   virtual void startProfiler(const std::string &titleString) override;
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;

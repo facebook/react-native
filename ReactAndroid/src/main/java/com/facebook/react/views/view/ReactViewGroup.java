@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
@@ -34,7 +35,7 @@ import com.facebook.react.uimanager.ReactPointerEventsView;
  * initializes most of the storage needed for them.
  */
 public class ReactViewGroup extends ViewGroup implements
-    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView {
+    ReactInterceptingViewGroup, ReactClippingViewGroup, ReactPointerEventsView, ReactHitSlopView {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
@@ -87,6 +88,7 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable View[] mAllChildren = null;
   private int mAllChildrenCount;
   private @Nullable Rect mClippingRect;
+  private @Nullable Rect mHitSlopRect;
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
@@ -511,6 +513,15 @@ public class ReactViewGroup extends ViewGroup implements
       }
     }
     return mReactBackgroundDrawable;
+  }
+
+  @Override
+  public @Nullable Rect getHitSlopRect() {
+    return mHitSlopRect;
+  }
+
+  public void setHitSlopRect(@Nullable Rect rect) {
+    mHitSlopRect = rect;
   }
 
 }

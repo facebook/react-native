@@ -134,7 +134,8 @@ var cfg = {
     items: true,
     selected: true,
   }
-}
+};
+
 var DropdownPicker = requireNativeComponent('AndroidDropdownPicker', PickerAndroid, cfg);
 var DialogPicker = requireNativeComponent('AndroidDialogPicker', PickerAndroid, cfg);
 
