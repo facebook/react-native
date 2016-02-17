@@ -12,7 +12,15 @@ wraps two colored boxes and custom component in a row with padding.</p><div clas
 performance, although inline styles are also supported.</p></div><h3><a class="anchor" name="props"></a>Props <a class="hash-link" href="#props">#</a></h3><div class="props"><div class="prop"><h4 class="propTitle"><a class="anchor" name="accessibilitylabel"></a>accessibilityLabel <span class="propType">string</span> <a class="hash-link" href="#accessibilitylabel">#</a></h4><div><p>Overrides the text that&#x27;s read by the screen reader when the user interacts
 with the element. By default, the label is constructed by traversing all the
 children and accumulating all the Text nodes separated by space.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="accessible"></a>accessible <span class="propType">bool</span> <a class="hash-link" href="#accessible">#</a></h4><div><p>When true, indicates that the view is an accessibility element. By default,
-all the touchable elements are accessible.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onaccessibilitytap"></a>onAccessibilityTap <span class="propType">function</span> <a class="hash-link" href="#onaccessibilitytap">#</a></h4><div><p>When <code>accessible</code> is true, the system will try to invoke this function
+all the touchable elements are accessible.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="hitslop"></a>hitSlop <span class="propType">{top: number, left: number, bottom: number, right: number}</span> <a class="hash-link" href="#hitslop">#</a></h4><div><p>This defines how far a touch event can start away from the view.
+Typical interface guidelines recommend touch targets that are at least
+30 - 40 points/density-independent pixels. If a Touchable view has a
+height of 20 the touchable height can be extended to 40 with
+<code>hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}</code>
+<strong> NOTE </strong>
+The touch area never extends past the parent view bounds and the Z-index
+of sibling views always takes precedence if a touch hits two overlapping
+views.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onaccessibilitytap"></a>onAccessibilityTap <span class="propType">function</span> <a class="hash-link" href="#onaccessibilitytap">#</a></h4><div><p>When <code>accessible</code> is true, the system will try to invoke this function
 when the user performs accessibility tap gesture.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onlayout"></a>onLayout <span class="propType">function</span> <a class="hash-link" href="#onlayout">#</a></h4><div><p>Invoked on mount and layout changes with</p><p>  {nativeEvent: { layout: {x, y, width, height}}}.</p><p>This event is fired immediately once the layout has been calculated, but
 the new layout may not yet be reflected on the screen at the time the
 event is received, especially if a layout animation is in progress.</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="onmagictap"></a>onMagicTap <span class="propType">function</span> <a class="hash-link" href="#onmagictap">#</a></h4><div><p>When <code>accessible</code> is true, the system will invoke this function when the
