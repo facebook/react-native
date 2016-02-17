@@ -3,9 +3,9 @@ language: objective-c
 osx_image: xcode7.2
 
 cache:
-    directories:
-        - node_modules
-        - .nvm
+  directories:
+    - node_modules
+    - .nvm
 
 install:
   - brew reinstall nvm
@@ -69,4 +69,3 @@ branches:
   only:
     - master
     - /^.*-stable$/
-    
