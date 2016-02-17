@@ -176,6 +176,10 @@ var TouchableHighlight = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function() {
     return this.props.delayPressIn;
   },
@@ -230,6 +234,7 @@ var TouchableHighlight = React.createClass({
         ref={UNDERLAY_REF}
         style={this.state.underlayStyle}
         onLayout={this.props.onLayout}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
         onResponderGrant={this.touchableHandleResponderGrant}
