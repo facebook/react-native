@@ -380,8 +380,8 @@ public class UIImplementation {
   }
 
   /**
-   * Determines the location on screen, width, and height of the given view and returns the values
-   * via an async callback.
+   * Determines the location on screen, width, and height of the given view relative to the root
+   * view and returns the values via an async callback.
    */
   public void measure(int reactTag, Callback callback) {
     // This method is called by the implementation of JS touchable interface (see Touchable.js for
@@ -389,6 +389,15 @@ public class UIImplementation {
     // a touchable view with a given reactTag, or when user drag finger back into the press
     // activation area of a touchable view that have been activated before.
     mOperationsQueue.enqueueMeasure(reactTag, callback);
+  }
+
+  /**
+   * Determines the location on screen, width, and height of the given view relative to the device
+   * screen and returns the values via an async callback.  This is the absolute position including
+   * things like the status bar
+   */
+  public void measureInWindow(int reactTag, Callback callback) {
+    mOperationsQueue.enqueueMeasureInWindow(reactTag, callback);
   }
 
   /**
