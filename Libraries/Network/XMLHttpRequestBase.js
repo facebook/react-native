@@ -25,6 +25,12 @@ const DONE = 4;
  */
 class XMLHttpRequestBase {
 
+  static UNSENT: number;
+  static OPENED: number;
+  static HEADERS_RECEIVED: number;
+  static LOADING: number;
+  static DONE: number;
+
   UNSENT: number;
   OPENED: number;
   HEADERS_RECEIVED: number;
