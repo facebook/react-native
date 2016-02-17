@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
@@ -15,7 +16,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             get
             {
-                return DurationMS > 0;
+                return Duration > TimeSpan.Zero;
             }
         }
 
@@ -29,8 +30,16 @@ namespace ReactNative.UIManager.LayoutAnimation
             if (x != currentX || y != currentY || width != currentWidth || height != currentHeight)
             {
                 var animation = new Storyboard();
-                view.RenderTransform = new TranslateTransform();
-                animation.SetRepositionTimelines(Type.AsEasingFunction(), view, x, y, width, height, DurationMS);
+                view.RenderTransform = new TransformGroup
+                {
+                    Children =
+                    {
+                        new TranslateTransform(),
+                        new ScaleTransform()
+                    }
+                };
+
+                animation.SetRepositionTimelines(Type.AsEasingFunction(), view, x, y, width, height, Duration);
                 return animation;
             }
 

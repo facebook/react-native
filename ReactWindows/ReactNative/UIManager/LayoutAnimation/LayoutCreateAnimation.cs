@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
@@ -17,7 +18,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             get
             {
-                return DurationMS > 0;
+                return Duration > TimeSpan.Zero;
             }
         }
 
@@ -42,12 +43,12 @@ namespace ReactNative.UIManager.LayoutAnimation
 
                 if (PropertyType == AnimatedPropertyType.Opacity)
                 {
-                    animation.SetOpacityTimeline(base.Type.AsEasingFunction(), view, fromValue, toValue, base.DurationMS);
+                    animation.SetOpacityTimeline(base.Type.AsEasingFunction(), view, fromValue, toValue, Duration);
                 }
                 else if (PropertyType == AnimatedPropertyType.ScaleXY)
                 {
                     view.RenderTransform = new TranslateTransform();
-                    animation.SetRepositionTimelines(base.Type.AsEasingFunction(), view, x, y, width, height, base.DurationMS);
+                    animation.SetRepositionTimelines(base.Type.AsEasingFunction(), view, x, y, width, height, Duration);
                     //animation.SetScalingTimeline(base.EasingFunction, view, fromValue, toValue, speedRatio, base.DurationMS);
                 }
             }

@@ -36,7 +36,7 @@ class AnimationExample extends Component {
         // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
         // Or use a Custom Layout Animation
-        // LayoutAnimation.configureNext(CustomLayoutAnimation);
+        LayoutAnimation.configureNext(CustomLayoutAnimation);
 
         this.setState({index: index});
     }

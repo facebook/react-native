@@ -16,7 +16,10 @@ namespace ReactNative.UIManager.LayoutAnimation
         private const float ScalingTransitionStartXPoint = .5f;
         private const float ScalingTransitionStartYPoint = .5f;
         private const string ScalingTargetPropertyTypeNameFormat = "(UIElement.RenderTransform).(ScaleTransform.Scale{0})";
-        private const string RespositionTargetPropertyTypeNameFormat = "(UIElement.RenderTransform).(TranslateTransform.{0})";
+        private const string TranslateXPropertyPath = "(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.X)";
+        private const string TranslateYPropertyPath = "(UIElement.RenderTransform).(TransformGroup.Children)[0].(TranslateTransform.Y)";
+        private const string ScaleXPropertyPath = "(UIElement.RenderTransform).(TransformGroup.Children)[1].(ScaleTransform.ScaleX)";
+        private const string ScaleYPropertyPath = "(UIElement.RenderTransform).(TransformGroup.Children)[1].(ScaleTransform.ScaleY)";
 
         /// <summary>
         /// Creates the opacity transitioning timeline for a alpha storyboard effect.
@@ -33,14 +36,14 @@ namespace ReactNative.UIManager.LayoutAnimation
             FrameworkElement view,
             float startingfactor, 
             float endFactor, 
-            int duration)
+            TimeSpan duration)
         {
             var timeline = new DoubleAnimation
             {
                 EasingFunction = easingFunc,
                 From = startingfactor,
                 To = endFactor,
-                Duration = TimeSpan.FromMilliseconds(duration)
+                Duration = duration,
             };
 
             Storyboard.SetTarget(timeline, view);
@@ -124,45 +127,49 @@ namespace ReactNative.UIManager.LayoutAnimation
             float newY,
             float newWidth,
             float newHeight,
-            int duration)
+            TimeSpan duration)
         {
             var transform = view.RenderTransform as TranslateTransform;
             var currentX = Canvas.GetLeft(view);
             var currentY = Canvas.GetTop(view);
+            var currentWidth = view.Width;
+            var currentHeight = view.Height;
 
             if (currentX != newX)
             {
                 view.SetValue(Canvas.LeftProperty, newX);
-                var propertyName = string.Format(CultureInfo.InvariantCulture, RespositionTargetPropertyTypeNameFormat, "X");
                 var offset = currentX - newX;
                 storyboard.Children.Add(
-                    CreateTranslateTransformTimeline(view, offset, 0, easingFunc, propertyName, duration));
+                    CreateDoubleAnimation(
+                        view, offset, 0, easingFunc, TranslateXPropertyPath, duration));
             }
 
             if (currentY != newY)
             {
                 view.SetValue(Canvas.TopProperty, newY);
-                var propertyName = string.Format(CultureInfo.InvariantCulture, RespositionTargetPropertyTypeNameFormat, "Y");
                 var offset = currentY - newY;
                 storyboard.Children.Add(
-                    CreateTranslateTransformTimeline(view, offset, 0, easingFunc, propertyName, duration));
+                    CreateDoubleAnimation(
+                        view, offset, 0, easingFunc, TranslateYPropertyPath, duration));
             }
 
-            //if (view.Width != newWidth)
-            //{
-            //    var timelineWidth = CreateTranslateTransformTimeline(
-            //        view, view.ActualWidth, newWidth, easingFunc, "Width", duration);
-            //    timelineWidth.EnableDependentAnimation = true;
-            //    storyboard.Children.Add(timelineWidth);
-            //}
+            if (currentWidth != newWidth)
+            {
+                view.Width = newWidth;
+                var factor = currentWidth / newWidth;
+                storyboard.Children.Add(
+                    CreateDoubleAnimation(
+                        view, factor, 1.0, easingFunc, ScaleXPropertyPath, duration));
+            }
 
-            //if (view.Height != newHeight)
-            //{
-            //    var timelineHeight = CreateTranslateTransformTimeline(
-            //        view, view.ActualHeight, newHeight, easingFunc, "Height", duration);
-            //    timelineHeight.EnableDependentAnimation = true;
-            //    storyboard.Children.Add(timelineHeight);
-            //}
+            if (view.Height != newHeight)
+            {
+                view.Height = newHeight;
+                var factor = currentHeight / newHeight;
+                storyboard.Children.Add(
+                    CreateDoubleAnimation(
+                        view, factor, 1.0, easingFunc, ScaleYPropertyPath, duration));
+            }
         }
 
         private static bool HasChanged(double currentValue, double newValue)
@@ -170,24 +177,25 @@ namespace ReactNative.UIManager.LayoutAnimation
             return currentValue != newValue;
         }
 
-        private static DoubleAnimation CreateTranslateTransformTimeline(
+        private static DoubleAnimation CreateDoubleAnimation(
             FrameworkElement view,
             double from, 
             double to,
             EasingFunctionBase easingFunc,
             string targetPropertyName,
-            int durationMS)
+            TimeSpan duration)
         {
             var timeline = new DoubleAnimation
             {
                 From = from,
                 To = to,
-                Duration = TimeSpan.FromMilliseconds(durationMS),
-                EasingFunction = easingFunc
+                Duration = duration,
+                EasingFunction = easingFunc,
             };
 
             Storyboard.SetTarget(timeline, view);
             Storyboard.SetTargetProperty(timeline, targetPropertyName);
+            timeline.EnableDependentAnimation = false;
 
             return timeline;
         }
