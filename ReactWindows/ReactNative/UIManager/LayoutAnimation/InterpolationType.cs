@@ -6,11 +6,6 @@
     public enum InterpolationType
     {
         /// <summary>
-        /// None.
-        /// </summary>
-        None,
-
-        /// <summary>
         /// Linear interpolation type.
         /// </summary>
         Linear,

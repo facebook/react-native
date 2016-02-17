@@ -7,11 +7,6 @@
     public enum AnimatedPropertyType
     {
         /// <summary>
-        /// None.
-        /// </summary>
-        None,
-        
-        /// <summary>
         /// The opacity property.
         /// </summary>
         Opacity,
