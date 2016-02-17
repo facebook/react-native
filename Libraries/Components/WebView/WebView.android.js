@@ -142,6 +142,12 @@ var WebView = React.createClass({
     };
   },
 
+  getDefaultProps: function() {
+    return {
+      javaScriptEnabled : true,
+    };
+  },
+
   componentWillMount: function() {
     if (this.props.startInLoadingState) {
       this.setState({viewState: WebViewState.LOADING});
@@ -170,16 +176,6 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
-    var {javaScriptEnabled, domStorageEnabled} = this.props;
-    if (this.props.javaScriptEnabledAndroid) {
-      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
-      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
-    }
-    if (this.props.domStorageEnabledAndroid) {
-      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
-      domStorageEnabled = this.props.domStorageEnabledAndroid;
-    }
-
     var source = this.props.source || {};
     if (this.props.html) {
       source.html = this.props.html;
@@ -201,8 +197,8 @@ var WebView = React.createClass({
         source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
-        javaScriptEnabled={javaScriptEnabled}
-        domStorageEnabled={domStorageEnabled}
+        javaScriptEnabled={this.props.javaScriptEnabled}
+        domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
