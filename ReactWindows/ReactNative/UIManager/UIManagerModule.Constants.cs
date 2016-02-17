@@ -22,7 +22,7 @@ namespace ReactNative.UIManager
         /// The view managers exported by the module.
         /// </param>
         /// <returns>The constants map.</returns>
-        public static Dictionary<string, object> CreateConstants(IReadOnlyList<ViewManager> viewManagers)
+        public static Dictionary<string, object> CreateConstants(IReadOnlyList<IViewManager> viewManagers)
         {
             var constants = GetConstants();
             var bubblingEventTypesConstants = GetBubblingEventTypeConstants();

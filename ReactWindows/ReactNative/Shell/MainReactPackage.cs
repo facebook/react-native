@@ -42,10 +42,10 @@ namespace ReactNative.Shell
             return new List<Type>(0);
         }
 
-        public IReadOnlyList<ViewManager> CreateViewManagers(
+        public IReadOnlyList<IViewManager> CreateViewManagers(
             ReactContext reactContext)
         {
-            return new List<ViewManager>
+            return new List<IViewManager>
             {
                 //new ReactDrawerLayoutManager(),
                 //new ReactHorizontalScrollViewManager(),

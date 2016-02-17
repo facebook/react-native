@@ -114,6 +114,7 @@
     <Compile Include="Internal\MockInvocationHandler.cs" />
     <Compile Include="Internal\MockJavaScriptExecutor.cs" />
     <Compile Include="Internal\MockEvent.cs" />
+    <Compile Include="Internal\MockViewManager.cs" />
     <Compile Include="Modules\AppState\AppStateModuleTests.cs" />
     <Compile Include="Modules\Core\JSTimersExecutionTests.cs" />
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />

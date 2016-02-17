@@ -10,7 +10,7 @@ namespace ReactNative.UIManager
     /// </summary>
     public class ViewManagerRegistry
     {
-        private readonly IDictionary<string, ViewManager> _registry;
+        private readonly IDictionary<string, IViewManager> _registry;
 
         /// <summary>
         /// Instantiates the <see cref="ViewManagerRegistry"/>.
@@ -18,12 +18,12 @@ namespace ReactNative.UIManager
         /// <param name="viewManagers">
         /// The view managers to include in the registry.
         /// </param>
-        public ViewManagerRegistry(IReadOnlyList<ViewManager> viewManagers)
+        public ViewManagerRegistry(IReadOnlyList<IViewManager> viewManagers)
         {
             if (viewManagers == null)
                 throw new ArgumentNullException(nameof(viewManagers));
 
-            _registry = new Dictionary<string, ViewManager>();
+            _registry = new Dictionary<string, IViewManager>();
 
             foreach (var viewManager in viewManagers)
             {
@@ -36,12 +36,12 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="className">The view manager class name.</param>
         /// <returns>The view manager.</returns>
-        public ViewManager Get(string className)
+        public IViewManager Get(string className)
         {
             if (className == null)
                 throw new ArgumentNullException(nameof(className));
 
-            var viewManager = default(ViewManager);
+            var viewManager = default(IViewManager);
             if (_registry.TryGetValue(className, out viewManager))
             {
                 return viewManager;

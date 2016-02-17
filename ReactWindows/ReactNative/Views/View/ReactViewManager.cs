@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
-using Windows.UI.Xaml.Media;
 
 namespace ReactNative.Views.View
 {
     /// <summary>
     /// View manager for React view instances.
     /// </summary>
-    public class ReactViewManager : ViewParentManager
+    public class ReactViewManager : ViewParentManager<BorderedContentControl>
     {
         private const string ReactClass = ViewProperties.ViewClassName;
         private const int CommandSetPressed = 1;
@@ -49,7 +48,7 @@ namespace ReactNative.Views.View
         /// <param name="parent">The parent view.</param>
         /// <param name="child">The child view.</param>
         /// <param name="index">The index.</param>
-        public override void AddView(FrameworkElement parent, FrameworkElement child, int index)
+        public override void AddView(BorderedContentControl parent, FrameworkElement child, int index)
         {
             var panel = GetInstance(parent);
             panel.Children.Insert(index, child);
@@ -60,7 +59,7 @@ namespace ReactNative.Views.View
         /// </summary>
         /// <param name="parent">The view parent.</param>
         /// <returns>The number of children.</returns>
-        public override int GetChildCount(FrameworkElement parent)
+        public override int GetChildCount(BorderedContentControl parent)
         {
             var panel = GetInstance(parent);
             return panel.Children.Count;
@@ -72,7 +71,7 @@ namespace ReactNative.Views.View
         /// <param name="parent">The parent view.</param>
         /// <param name="index">The index.</param>
         /// <returns>The child view.</returns>
-        public override FrameworkElement GetChildAt(FrameworkElement parent, int index)
+        public override FrameworkElement GetChildAt(BorderedContentControl parent, int index)
         {
             var panel = GetInstance(parent);
             return (FrameworkElement)panel.Children[index];
@@ -83,7 +82,7 @@ namespace ReactNative.Views.View
         /// </summary>
         /// <param name="parent">The view parent.</param>
         /// <param name="index">The index.</param>
-        public override void RemoveChildAt(FrameworkElement parent, int index)
+        public override void RemoveChildAt(BorderedContentControl parent, int index)
         {
             var panel = GetInstance(parent);
             panel.Children.RemoveAt(index);
@@ -93,7 +92,7 @@ namespace ReactNative.Views.View
         /// Removes all children from the view parent.
         /// </summary>
         /// <param name="parent">The view parent.</param>
-        public override void RemoveAllChildren(FrameworkElement parent)
+        public override void RemoveAllChildren(BorderedContentControl parent)
         {
             var panel = GetInstance(parent);
             panel.Children.Clear();
@@ -108,7 +107,7 @@ namespace ReactNative.Views.View
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public override void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        public override void ReceiveCommand(BorderedContentControl view, int commandId, JArray args)
         {
             var panel = GetInstance(view);
             if (args.Count != 1)
@@ -187,17 +186,12 @@ namespace ReactNative.Views.View
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
+        protected override BorderedContentControl CreateViewInstance(ThemedReactContext reactContext)
         {
             return new BorderedContentControl(new ReactCanvas());
         }
 
-        private ReactCanvas GetInstance(FrameworkElement element)
-        {
-            return GetPanel((BorderedContentControl)element);
-        }
-
-        private ReactCanvas GetPanel(BorderedContentControl control)
+        private ReactCanvas GetInstance(BorderedContentControl control)
         {
             return (ReactCanvas)control.Content;
         }

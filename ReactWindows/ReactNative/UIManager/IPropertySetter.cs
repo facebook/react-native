@@ -10,6 +10,6 @@ namespace ReactNative.UIManager
 
         void UpdateShadowNodeProperty(ReactShadowNode shadowNode, ReactStylesDiffMap value);
 
-        void UpdateViewManagerProperty(ViewManager viewManager, FrameworkElement view, ReactStylesDiffMap value);
+        void UpdateViewManagerProperty(IViewManager viewManager, FrameworkElement view, ReactStylesDiffMap value);
     }
 }

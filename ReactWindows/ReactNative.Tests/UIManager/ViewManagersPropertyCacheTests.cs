@@ -188,45 +188,11 @@ namespace ReactNative.Tests.UIManager
             Assert.IsNull(instance.GroupValue[2]);
         }
 
-        class EmptyTest : ViewManager
+        class EmptyTest : MockViewManager
         {
-            #region ViewManager
-
-            public override string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override Type ShadowNodeType
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override ReactShadowNode CreateShadowNodeInstance()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void UpdateExtraData(FrameworkElement root, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
-            {
-                throw new NotImplementedException();
-            }
-
-            #endregion
         }
 
-        class ViewManagerValueTest : ViewManager
+        class ViewManagerValueTest : MockViewManager
         {
             public string FooValue;
 
@@ -243,41 +209,6 @@ namespace ReactNative.Tests.UIManager
             {
                 BarValues[index] = value;
             }
-
-            #region ViewManager
-
-            public override string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override Type ShadowNodeType
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override ReactShadowNode CreateShadowNodeInstance()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void UpdateExtraData(FrameworkElement root, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
-            {
-                throw new NotImplementedException();
-            }
-
-            #endregion
         }
 
         class ShadowNodeValueTest : ReactShadowNode
@@ -299,7 +230,7 @@ namespace ReactNative.Tests.UIManager
             }
         }
 
-        class DefaultsTest : ViewManager
+        class DefaultsTest : MockViewManager
         {
             #region ViewManager Test Methods
 
@@ -421,41 +352,6 @@ namespace ReactNative.Tests.UIManager
             public void TestGroup(FrameworkElement element, int index, string value)
             {
                 GroupValue[index] = value;
-            }
-
-            #endregion
-
-            #region ViewManager
-
-            public override string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override Type ShadowNodeType
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override ReactShadowNode CreateShadowNodeInstance()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void UpdateExtraData(FrameworkElement root, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
-            {
-                throw new NotImplementedException();
             }
 
             #endregion

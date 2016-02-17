@@ -10,7 +10,7 @@ namespace ReactNative.Views.Scroll
     /// <remarks>
     /// TODO: implement this as a proper ScrollViewer instead of a ListView.
     /// </remarks>
-    public class ReactScrollViewManager : ViewParentManager
+    public class ReactScrollViewManager : ViewParentManager<ListView>
     {
         private const string ReactClass = "RCTScrollView";
 
@@ -22,32 +22,32 @@ namespace ReactNative.Views.Scroll
             }
         }
 
-        public override void AddView(FrameworkElement parent, FrameworkElement child, int index)
+        public override void AddView(ListView parent, FrameworkElement child, int index)
         {
-            ((ListView)parent).Items.Insert(index, child);
+            parent.Items.Insert(index, child);
         }
 
-        public override FrameworkElement GetChildAt(FrameworkElement parent, int index)
+        public override FrameworkElement GetChildAt(ListView parent, int index)
         {
-            return (FrameworkElement)((ListView)parent).Items[index];
+            return (FrameworkElement)parent.Items[index];
         }
 
-        public override int GetChildCount(FrameworkElement parent)
+        public override int GetChildCount(ListView parent)
         {
-            return ((ListView)parent).Items.Count;
+            return parent.Items.Count;
         }
 
-        public override void RemoveAllChildren(FrameworkElement parent)
+        public override void RemoveAllChildren(ListView parent)
         {
-            ((ListView)parent).Items.Clear();
+            parent.Items.Clear();
         }
 
-        public override void RemoveChildAt(FrameworkElement parent, int index)
+        public override void RemoveChildAt(ListView parent, int index)
         {
-            ((ListView)parent).Items.RemoveAt(index);
+            parent.Items.RemoveAt(index);
         }
 
-        protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
+        protected override ListView CreateViewInstance(ThemedReactContext reactContext)
         {
             return new ListView();
         }

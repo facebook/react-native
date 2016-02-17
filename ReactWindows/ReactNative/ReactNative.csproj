@@ -232,6 +232,8 @@
     <Compile Include="Touch\JavaScriptResponderHandler.cs" />
     <Compile Include="Animation\ReactAnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
+    <Compile Include="UIManager\IViewManager.cs" />
+    <Compile Include="UIManager\IViewParentManager.cs" />
     <Compile Include="UIManager\MeasureAssertions.cs" />
     <Compile Include="UIManager\ReactStylesDiffMap.cs" />
     <Compile Include="UIManager\ReactStylesDiffMapExtensions.cs" />
@@ -293,7 +295,6 @@
     <Compile Include="UIManager\ViewParentManager.cs" />
     <Compile Include="UIManager\PanelViewParentManager.cs" />
     <Compile Include="UIManager\ViewManager.cs" />
-    <Compile Include="UIManager\ViewManager.Generic.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="Views\Scroll\ReactScrollViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextBoxProperties.cs" />

@@ -17,7 +17,7 @@ namespace ReactNative.UIManager
         /// <returns></returns>
         public UIImplementation Create(
             ReactContext reactContext, 
-            IReadOnlyList<ViewManager> viewManagers)
+            IReadOnlyList<IViewManager> viewManagers)
         {
             return new UIImplementation(reactContext, viewManagers);
         }

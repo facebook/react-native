@@ -185,7 +185,7 @@ namespace ReactNative.Tests.UIManager
             Assert.AreEqual("myInt", setter.PropertyType);
         }
 
-        class Test : ViewManager
+        class Test : MockViewManager
         {
             #region ViewManager Test Methods
 
@@ -272,41 +272,6 @@ namespace ReactNative.Tests.UIManager
             [ReactPropertyGroup("foo", "bar", "baz")]
             public void TestGroup(FrameworkElement element, int index, string value)
             {
-            }
-
-            #endregion
-
-            #region ViewManager Implementation
-
-            public override string Name
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override Type ShadowNodeType
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override ReactShadowNode CreateShadowNodeInstance()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void UpdateExtraData(FrameworkElement root, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
-            {
-                throw new NotImplementedException();
             }
 
             #endregion
