@@ -18,7 +18,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var UIManager = require('UIManager');
 var View = require('View');
-var ScrollView = require('ScrollView')
+var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
 var invariant = require('invariant');
@@ -284,16 +284,6 @@ var WebView = React.createClass({
         this.props.onShouldStartLoadWithRequest(event.nativeEvent);
       RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
     });
-
-    var {javaScriptEnabled, domStorageEnabled} = this.props;
-    if (this.props.javaScriptEnabledAndroid) {
-      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
-      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
-    }
-    if (this.props.domStorageEnabledAndroid) {
-      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
-      domStorageEnabled = this.props.domStorageEnabledAndroid;
-    }
 
     var decelerationRate = processDecelerationRate(this.props.decelerationRate);
 

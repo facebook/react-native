@@ -317,8 +317,7 @@ var apps = [
   {
     name: 'LoadDocs',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/b5/ca/78/b5ca78ca-392d-6874-48bf-762293482d42/icon350x350.jpeg',
-    linkAppStore: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.convoy.loaddoc&hl=en',
+    link: 'https://itunes.apple.com/us/app/loaddocs/id1041596066',
     author: 'LoadDocs',
   },
   {
@@ -364,17 +363,23 @@ var apps = [
     link: 'https://itunes.apple.com/cn/app/mockingbot/id1050565468?l=en&mt=8',
     author: 'YuanYi Zhang (@mockingbot)',
   },
-	{
-		name: 'MoneyLion',
-		icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/d7/9d/ad/d79daddc-8d67-8a6c-61e2-950425946dd2/icon350x350.jpeg',
-		link: 'https://itunes.apple.com/us/app/moneylion/id1064677082?mt=8',
-		author: 'MoneyLion LLC',
-	},
+  {
+    name: 'MoneyLion',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/d7/9d/ad/d79daddc-8d67-8a6c-61e2-950425946dd2/icon350x350.jpeg',
+    link: 'https://itunes.apple.com/us/app/moneylion/id1064677082?mt=8',
+    author: 'MoneyLion LLC',
+  },
   {
     name: 'Mr. Dapper',
     icon: 'http://is5.mzstatic.com/image/pf/us/r30/Purple4/v4/e8/3f/7c/e83f7cb3-2602-f8e8-de9a-ce0a775a4a14/mzl.hmdjhfai.png',
     link: 'https://itunes.apple.com/us/app/mr.-dapper-men-fashion-app/id989735184?ls=1&mt=8',
     author: 'wei ping woon',
+  },
+  {
+    name: 'My IP',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/a2/61/58/a261584d-a4cd-cbfa-cf9d-b5f1f15a7139/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/app/id1031729525?mt=8&at=11l7ss&ct=reactnativeshowcase',
+    author: 'Josh Buchea',
   },
   {
     name: 'MyPED',
@@ -486,6 +491,12 @@ var apps = [
     author: 'Dobbit Co., Ltd.'
   },
   {
+    name: 'sneat: réservez les meilleurs restaurants de Paris',
+    icon: 'http://a3.mzstatic.com/eu/r30/Purple49/v4/71/71/df/7171df47-6e03-8619-19a8-07f52186b0ed/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/fr/app/sneat-reservez-les-meilleurs/id1062510079?l=en&mt=8',
+    author: 'sneat'
+  },
+  {
     name: 'Spero for Cancer',
     icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
     link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
@@ -502,6 +513,12 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
     author: 'Alexey Ledak',
+  },
+  {
+    name: 'Text Blast',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/4f/29/58/4f2958a1-7f35-9260-6340-c67ac29d7740/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/text-blast-2016/id1023852862?mt=8',
+    author: 'Sesh',
   },
   {
     name: 'This AM',

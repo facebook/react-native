@@ -15,7 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Activity;
@@ -110,7 +113,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      new ConcurrentLinkedQueue<>();
+      Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
@@ -599,6 +602,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     mReactInstanceEventListeners.add(listener);
   }
 
+  @Override
+  public void removeReactInstanceEventListener(ReactInstanceEventListener listener) {
+    mReactInstanceEventListeners.remove(listener);
+  }
+
   @VisibleForTesting
   @Override
   public @Nullable ReactContext getCurrentReactContext() {
@@ -655,7 +663,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
       attachMeasuredRootViewToInstance(rootView, catalystInstance);
     }
 
-    for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
+    ReactInstanceEventListener[] listeners =
+      new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
+    listeners = mReactInstanceEventListeners.toArray(listeners);
+
+    for (ReactInstanceEventListener listener : listeners) {
       listener.onReactContextInitialized(reactContext);
     }
   }

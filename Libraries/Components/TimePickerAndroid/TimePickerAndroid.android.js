@@ -62,6 +62,6 @@ class TimePickerAndroid {
    * The dialog has been dismissed.
    */
   static get dismissedAction() { return 'dismissedAction'; }
-};
+}
 
 module.exports = TimePickerAndroid;

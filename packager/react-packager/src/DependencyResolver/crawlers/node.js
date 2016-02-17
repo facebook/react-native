@@ -3,7 +3,7 @@
 const Promise = require('promise');
 const debug = require('debug')('ReactNativePackager:DependencyGraph');
 const fs = require('graceful-fs');
-const path = require('path');
+const path = require('fast-path');
 
 const readDir = Promise.denodeify(fs.readdir);
 const stat = Promise.denodeify(fs.stat);

@@ -136,6 +136,11 @@ public abstract class ReactInstanceManager {
    */
   public abstract void addReactInstanceEventListener(ReactInstanceEventListener listener);
 
+  /**
+   * Remove a listener previously added with {@link #addReactInstanceEventListener}.
+   */
+  public abstract void removeReactInstanceEventListener(ReactInstanceEventListener listener);
+
   @VisibleForTesting
   public abstract @Nullable ReactContext getCurrentReactContext();
 

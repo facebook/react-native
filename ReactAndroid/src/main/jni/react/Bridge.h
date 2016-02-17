@@ -54,6 +54,7 @@ public:
     const std::string& startupCode,
     const std::string& sourceURL);
   void setGlobalVariable(const std::string& propName, const std::string& jsonValue);
+  void* getJavaScriptContext();
   bool supportsProfiling();
   void startProfiler(const std::string& title);
   void stopProfiler(const std::string& title, const std::string& filename);

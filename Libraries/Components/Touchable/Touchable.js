@@ -432,6 +432,16 @@ var TouchableMixin = {
     var pressExpandRight = pressRectOffset.right;
     var pressExpandBottom = pressRectOffset.bottom;
 
+    var hitSlop = this.touchableGetHitSlop ?
+      this.touchableGetHitSlop() : null;
+
+    if (hitSlop) {
+      pressExpandLeft += hitSlop.left;
+      pressExpandTop += hitSlop.top;
+      pressExpandRight += hitSlop.right;
+      pressExpandBottom += hitSlop.bottom;
+    }
+
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
