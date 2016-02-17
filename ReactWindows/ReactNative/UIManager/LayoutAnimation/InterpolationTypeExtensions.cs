@@ -6,23 +6,22 @@ namespace ReactNative.UIManager.LayoutAnimation
 {
     static class InterpolationTypeExtensions
     {
-        private static readonly BackEase s_easeIn = new BackEase
+        private static readonly QuadraticEase s_easeIn = new QuadraticEase
         {
             EasingMode = EasingMode.EaseIn,
-            Amplitude = 0.5
         };
 
-        private static readonly BackEase s_easeOut = new BackEase
+        private static readonly QuadraticEase s_easeOut = new QuadraticEase
         {
             EasingMode = EasingMode.EaseOut,
-            Amplitude = 0.5
         };
 
-        private static readonly BackEase s_easeInOut = new BackEase
+        private static readonly QuadraticEase s_easeInOut = new QuadraticEase
         {
             EasingMode = EasingMode.EaseInOut,
-            Amplitude = 0.5
         };
+
+        private static readonly BounceEase s_spring = new BounceEase(); // TODO: implement proper spring
 
         public static EasingFunctionBase GetEasingFunction(this InterpolationType interpolationType, JObject data)
         {
@@ -36,9 +35,11 @@ namespace ReactNative.UIManager.LayoutAnimation
                     return s_easeOut;
                 case InterpolationType.EaseInEaseOut:
                     return s_easeInOut;
+                case InterpolationType.Spring:
+                    // TODO: enable `springDamping`
+                    return s_spring;
                 case InterpolationType.Linear:
                     return null;
-                case InterpolationType.Spring:
                 default:
                     throw new NotImplementedException();
             }
