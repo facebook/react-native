@@ -16,7 +16,7 @@ namespace ReactNative.Tests.UIManager
         public void UIManagerModule_ArgumentChecks()
         {
             var context = new ReactContext();
-            var viewManagers = new List<ViewManager>();
+            var viewManagers = new List<IViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
             AssertEx.Throws<ArgumentNullException>(
@@ -32,7 +32,7 @@ namespace ReactNative.Tests.UIManager
         public void UIManagerModule_CustomEvents_Constants()
         {
             var context = new ReactContext();
-            var viewManagers = new List<ViewManager>();
+            var viewManagers = new List<IViewManager>();
             var uiImplementation = new UIImplementation(context, viewManagers);
 
             var module = new UIManagerModule(context, viewManagers, uiImplementation);
@@ -60,7 +60,7 @@ namespace ReactNative.Tests.UIManager
         public void UIManagerModule_Constants_ViewManagerOverrides()
         {
             var context = new ReactContext();
-            var viewManagers = new List<ViewManager> { new TestViewManager() };
+            var viewManagers = new List<IViewManager> { new TestViewManager() };
             var uiImplementation = new UIImplementation(context, viewManagers);
 
             var module = new UIManagerModule(context, viewManagers, uiImplementation);
@@ -72,7 +72,7 @@ namespace ReactNative.Tests.UIManager
             Assert.AreEqual(42, constants.GetMap("customDirectEventTypes").GetValue("topLoadingError"));
         }
 
-        class TestViewManager : ViewManager
+        class TestViewManager : MockViewManager
         {
             public override IReadOnlyDictionary<string, object> CommandsMap
             {
@@ -112,6 +112,14 @@ namespace ReactNative.Tests.UIManager
                 }
             }
 
+            public override IReadOnlyDictionary<string, string> NativeProperties
+            {
+                get
+                {
+                    return null;
+                }
+            }
+
             public override string Name
             {
                 get
@@ -126,21 +134,6 @@ namespace ReactNative.Tests.UIManager
                 {
                     return typeof(ReactShadowNode);
                 }
-            }
-
-            public override ReactShadowNode CreateShadowNodeInstance()
-            {
-                return null;
-            }
-
-            public override void UpdateExtraData(FrameworkElement root, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
-            {
-                throw new NotImplementedException();
             }
         }
     }

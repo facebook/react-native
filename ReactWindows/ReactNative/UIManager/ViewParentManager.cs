@@ -6,7 +6,8 @@ namespace ReactNative.UIManager
     /// <summary>
     /// Class providing child management API for view managers.
     /// </summary>
-    public abstract class ViewParentManager : ViewManager
+    public abstract class ViewParentManager<TFrameworkElement> : BaseViewManager<TFrameworkElement, LayoutShadowNode>, IViewParentManager
+        where TFrameworkElement : FrameworkElement
     {
         /// <summary>
         /// The <see cref="Type"/> instance that represents the type of shadow
@@ -21,7 +22,7 @@ namespace ReactNative.UIManager
         {
             get
             {
-                return typeof(LayoutShadowNode);
+                return base.ShadowNodeType;
             }
         }
 
@@ -37,12 +38,11 @@ namespace ReactNative.UIManager
             }
         }
 
-
         /// <summary>
         /// Creates a shadow node instance for the view manager.
         /// </summary>
         /// <returns>The shadow node instance.</returns>
-        public sealed override ReactShadowNode CreateShadowNodeInstance()
+        public sealed override LayoutShadowNode CreateShadowNodeInstance()
         {
             return new LayoutShadowNode();
         }
@@ -54,7 +54,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="root">The root view.</param>
         /// <param name="extraData">The extra data.</param>
-        public override void UpdateExtraData(FrameworkElement root, object extraData)
+        public override void UpdateExtraData(TFrameworkElement root, object extraData)
         {
         }
 
@@ -64,14 +64,14 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="child">The child view.</param>
         /// <param name="index">The index.</param>
-        public abstract void AddView(FrameworkElement parent, FrameworkElement child, int index);
+        public abstract void AddView(TFrameworkElement parent, FrameworkElement child, int index);
 
         /// <summary>
         /// Gets the number of children in the view parent.
         /// </summary>
         /// <param name="parent">The view parent.</param>
         /// <returns>The number of children.</returns>
-        public abstract int GetChildCount(FrameworkElement parent);
+        public abstract int GetChildCount(TFrameworkElement parent);
 
         /// <summary>
         /// Gets the child at the given index.
@@ -79,19 +79,48 @@ namespace ReactNative.UIManager
         /// <param name="parent">The parent view.</param>
         /// <param name="index">The index.</param>
         /// <returns>The child view.</returns>
-        public abstract FrameworkElement GetChildAt(FrameworkElement parent, int index);
+        public abstract FrameworkElement GetChildAt(TFrameworkElement parent, int index);
 
         /// <summary>
         /// Removes the child at the given index.
         /// </summary>
         /// <param name="parent">The view parent.</param>
         /// <param name="index">The index.</param>
-        public abstract void RemoveChildAt(FrameworkElement parent, int index);
+        public abstract void RemoveChildAt(TFrameworkElement parent, int index);
 
         /// <summary>
         /// Removes all children from the view parent.
         /// </summary>
         /// <param name="parent">The view parent.</param>
-        public abstract void RemoveAllChildren(FrameworkElement parent);
+        public abstract void RemoveAllChildren(TFrameworkElement parent);
+
+        #region IViewParentManager
+
+        void IViewParentManager.AddView(FrameworkElement parent, FrameworkElement child, int index)
+        {
+            AddView((TFrameworkElement)parent, child, index);
+        }
+
+        int IViewParentManager.GetChildCount(FrameworkElement parent)
+        {
+            return GetChildCount((TFrameworkElement)parent);
+        }
+
+        FrameworkElement IViewParentManager.GetChildAt(FrameworkElement parent, int index)
+        {
+            return GetChildAt((TFrameworkElement)parent, index);
+        }
+
+        void IViewParentManager.RemoveChildAt(FrameworkElement parent, int index)
+        {
+            RemoveChildAt((TFrameworkElement)parent, index);
+        }
+
+        void IViewParentManager.RemoveAllChildren(FrameworkElement parent)
+        {
+            RemoveAllChildren((TFrameworkElement)parent);
+        }
+
+        #endregion
     }
 }

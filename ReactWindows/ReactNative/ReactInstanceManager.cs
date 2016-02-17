@@ -324,14 +324,14 @@ namespace ReactNative
         /// The application context.
         /// </param>
         /// <returns>The list of view managers.</returns>
-        public IReadOnlyList<ViewManager> CreateAllViewManagers(ReactContext reactContext)
+        public IReadOnlyList<IViewManager> CreateAllViewManagers(ReactContext reactContext)
         {
             if (reactContext == null)
                 throw new ArgumentNullException(nameof(reactContext));
 
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createAllViewManagers"))
             {
-                var allViewManagers = new List<ViewManager>();
+                var allViewManagers = new List<IViewManager>();
                 foreach (var package in _packages)
                 {
                     allViewManagers.AddRange(

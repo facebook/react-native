@@ -75,10 +75,10 @@ namespace ReactNative
             };
         }
 
-        public IReadOnlyList<ViewManager> CreateViewManagers(
+        public IReadOnlyList<IViewManager> CreateViewManagers(
             ReactContext reactContext)
         {
-            return new List<ViewManager>(0);
+            return new List<IViewManager>(0);
         }
     }
 }

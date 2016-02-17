@@ -144,11 +144,24 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
+        /// Called when the <see cref="Border"/> is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ViewManager{Border}"/>
+        /// subclass. Unregister all event handlers for the <see cref="Border"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The <see cref="Border"/>.</param>
+        public override void OnDropViewInstance(ThemedReactContext reactContext, Border view)
+        {
+            view.Loaded -= OnInterceptImageLoadedEvent;
+            view.Loading -= OnInterceptImageLoadingEvent;
+        }
+
+        /// <summary>
         /// Creates the image view instance.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The image view instance.</returns>
-        protected override Border CreateViewInstanceCore(ThemedReactContext reactContext)
+        protected override Border CreateViewInstance(ThemedReactContext reactContext)
         {
             return new Border();
         }
@@ -162,19 +175,6 @@ namespace ReactNative.Views.Image
         {
             view.Loading += OnInterceptImageLoadingEvent;
             view.Loaded += OnInterceptImageLoadedEvent;
-        }
-
-        /// <summary>
-        /// Called when the <see cref="Border"/> is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ViewManager{Border}"/>
-        /// subclass. Unregister all event handlers for the <see cref="Border"/>.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The <see cref="Border"/>.</param>
-        protected override void OnDropViewInstance(ThemedReactContext reactContext, Border view)
-        {
-            view.Loaded -= OnInterceptImageLoadedEvent;
-            view.Loading -= OnInterceptImageLoadingEvent;
         }
 
         /// <summary>

@@ -12,7 +12,9 @@ namespace ReactNative.UIManager
     /// <see cref="ReactShadowNode"/> subclasses used for calculating position
     /// and size for the corresponding native view.
     /// </summary>
-    public abstract class ViewManager
+    public abstract class ViewManager<TFrameworkElement, TReactShadowNode> : IViewManager
+        where TFrameworkElement : FrameworkElement
+        where TReactShadowNode : ReactShadowNode
     {
         /// <summary>
         /// The name of this view manager. This will be the name used to 
@@ -29,7 +31,13 @@ namespace ReactNative.UIManager
         /// collect properties exposed using the <see cref="ReactPropertyAttribute"/>
         /// annotation from the <see cref="ReactShadowNode"/> subclass.
         /// </summary>
-        public abstract Type ShadowNodeType { get; }
+        public virtual Type ShadowNodeType
+        {
+            get
+            {
+                return typeof(TReactShadowNode);
+            }
+        }
 
         /// <summary>
         /// The commands map for the view manager.
@@ -68,7 +76,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="viewToUpdate">The view to update.</param>
         /// <param name="properties">The properties.</param>
-        public void UpdateProperties(FrameworkElement viewToUpdate, ReactStylesDiffMap properties)
+        public void UpdateProperties(TFrameworkElement viewToUpdate, ReactStylesDiffMap properties)
         {
             var propertySetters =
                 ViewManagersPropertyCache.GetNativePropertySettersForViewManagerType(GetType());
@@ -92,7 +100,7 @@ namespace ReactNative.UIManager
         /// <param name="reactContext">The context.</param>
         /// <param name="jsResponderHandler">The responder handler.</param>
         /// <returns>The view.</returns>
-        public FrameworkElement CreateView(
+        public TFrameworkElement CreateView(
             ThemedReactContext reactContext,
             JavaScriptResponderHandler jsResponderHandler)
         {
@@ -114,7 +122,7 @@ namespace ReactNative.UIManager
         /// <remarks>
         /// Derived classes do not need to call this base method.
         /// </remarks>
-        public virtual void OnDropViewInstance(ThemedReactContext reactContext, FrameworkElement view)
+        public virtual void OnDropViewInstance(ThemedReactContext reactContext, TFrameworkElement view)
         {
         }
 
@@ -128,7 +136,7 @@ namespace ReactNative.UIManager
         /// <see cref="ReactShadowNode"/>.
         /// </remarks>
         /// <returns>The shadow node instance.</returns>
-        public abstract ReactShadowNode CreateShadowNodeInstance();
+        public abstract TReactShadowNode CreateShadowNodeInstance();
 
         /// <summary>
         /// Implement this method to receive optional extra data enqueued from
@@ -137,7 +145,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="root">The root view.</param>
         /// <param name="extraData">The extra data.</param>
-        public abstract void UpdateExtraData(FrameworkElement root, object extraData);
+        public abstract void UpdateExtraData(TFrameworkElement root, object extraData);
 
         /// <summary>
         /// Implement this method to receive events/commands directly from
@@ -148,7 +156,7 @@ namespace ReactNative.UIManager
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        public virtual void ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        public virtual void ReceiveCommand(TFrameworkElement view, int commandId, JArray args)
         {
         }
 
@@ -157,7 +165,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
-        protected abstract FrameworkElement CreateViewInstance(ThemedReactContext reactContext);
+        protected abstract TFrameworkElement CreateViewInstance(ThemedReactContext reactContext);
 
         /// <summary>
         /// Subclasses can override this method to install custom event 
@@ -169,7 +177,7 @@ namespace ReactNative.UIManager
         /// Consider overriding this method if your view needs to emit events
         /// besides basic touch events to JavaScript (e.g., scroll events).
         /// </remarks>
-        protected virtual void AddEventEmitters(ThemedReactContext reactContext, FrameworkElement view)
+        protected virtual void AddEventEmitters(ThemedReactContext reactContext, TFrameworkElement view)
         {
         }
 
@@ -179,8 +187,42 @@ namespace ReactNative.UIManager
         /// for properties updated in the current transaction have been called).
         /// </summary>
         /// <param name="view">The view.</param>
-        protected virtual void OnAfterUpdateTransaction(FrameworkElement view)
+        protected virtual void OnAfterUpdateTransaction(TFrameworkElement view)
         {
         }
+
+        #region IViewManager
+
+        void IViewManager.UpdateProperties(FrameworkElement viewToUpdate, ReactStylesDiffMap properties)
+        {
+            UpdateProperties((TFrameworkElement)viewToUpdate, properties);
+        }
+
+        FrameworkElement IViewManager.CreateView(ThemedReactContext reactContext, JavaScriptResponderHandler jsResponderHandler)
+        {
+            return CreateView(reactContext, jsResponderHandler);
+        }
+
+        void IViewManager.OnDropViewInstance(ThemedReactContext reactContext, FrameworkElement view)
+        {
+            OnDropViewInstance(reactContext, (TFrameworkElement)view);
+        }
+
+        ReactShadowNode IViewManager.CreateShadowNodeInstance()
+        {
+            return CreateShadowNodeInstance();
+        }
+
+        void IViewManager.UpdateExtraData(FrameworkElement root, object extraData)
+        {
+            UpdateExtraData((TFrameworkElement)root, extraData);
+        }
+
+        void IViewManager.ReceiveCommand(FrameworkElement view, int commandId, JArray args)
+        {
+            ReceiveCommand((TFrameworkElement)view, commandId, args);
+        }
+
+        #endregion
     }
 }

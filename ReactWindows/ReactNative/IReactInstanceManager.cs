@@ -125,6 +125,6 @@ namespace ReactNative
         /// The application context.
         /// </param>
         /// <returns>The list of view managers.</returns>
-        IReadOnlyList<ViewManager> CreateAllViewManagers(ReactContext reactContext);
+        IReadOnlyList<IViewManager> CreateAllViewManagers(ReactContext reactContext);
     }
 }

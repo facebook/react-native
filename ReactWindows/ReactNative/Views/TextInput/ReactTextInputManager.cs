@@ -209,7 +209,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <param name="view">The <see cref="TextBox"/>.</param>
-        protected override void OnDropViewInstance(ThemedReactContext reactContext, TextBox view)
+        public override void OnDropViewInstance(ThemedReactContext reactContext, TextBox view)
         {
             view.TextChanged -= this.OnInterceptTextChangeEvent;
             // TODO: Figure out how to get intercept focus to work this to work.
@@ -221,7 +221,7 @@ namespace ReactNative.Views.TextInput
         /// </summary>
         /// <param name="reactContext"></param>
         /// <returns></returns>
-        protected override TextBox CreateViewInstanceCore(ThemedReactContext reactContext)
+        protected override TextBox CreateViewInstance(ThemedReactContext reactContext)
         {
             return new TextBox();
         }
@@ -248,7 +248,7 @@ namespace ReactNative.Views.TextInput
             root.BorderThickness = new Thickness(border);
         }
 
-        protected override void UpdateExtraData(TextBox root, object extraData)
+        public override void UpdateExtraData(TextBox root, object extraData)
         {
             var reactTextBoxStyle = (ReactTextBoxProperties)extraData;
 
@@ -260,7 +260,7 @@ namespace ReactNative.Views.TextInput
             root.SetReactTextBoxProperties(reactTextBoxStyle);
         }
 
-        protected override ReactTextInputShadowNode CreateShadowNodeInstanceCore()
+        public override ReactTextInputShadowNode CreateShadowNodeInstance()
         {
             return new ReactTextInputShadowNode(false);
         }
@@ -274,7 +274,7 @@ namespace ReactNative.Views.TextInput
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
         /// <param name="args">Optional arguments for the command.</param>
-        protected override void ReceiveCommand(TextBox view, int commandId, JArray args)
+        public override void ReceiveCommand(TextBox view, int commandId, JArray args)
         {
             if (commandId == FOCUS_TEXT_INPUT)
             {

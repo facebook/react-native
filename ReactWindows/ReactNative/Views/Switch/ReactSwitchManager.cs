@@ -63,22 +63,9 @@ namespace ReactNative.Views.Switch
         /// view. 
         /// </summary>
         /// <returns>The shadow node instance.</returns>
-        protected override ReactSwitchShadowNode CreateShadowNodeInstanceCore()
+        public override ReactSwitchShadowNode CreateShadowNodeInstance()
         {
             return new ReactSwitchShadowNode();
-        }
-
-        /// <summary>
-        /// Creates a new view instance of type <see cref="ToggleSwitch"/>.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <returns>The view instance.</returns>
-        protected override ToggleSwitch CreateViewInstanceCore(ThemedReactContext reactContext)
-        {
-            var view = new ToggleSwitch();
-            view.OnContent = null;
-            view.OffContent = null;
-            return view;
         }
 
         /// <summary>
@@ -88,8 +75,33 @@ namespace ReactNative.Views.Switch
         /// </summary>
         /// <param name="root">The root view.</param>
         /// <param name="extraData">The extra data.</param>
-        protected override void UpdateExtraData(ToggleSwitch root, object extraData)
+        public override void UpdateExtraData(ToggleSwitch root, object extraData)
         {
+        }
+
+        /// <summary>
+        /// Called when view is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ReactSwitchManager"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <param name="view">The view.</param>
+        public override void OnDropViewInstance(ThemedReactContext reactContext, ToggleSwitch view)
+        {
+            view.Toggled -= OnToggled;
+        }
+
+
+        /// <summary>
+        /// Creates a new view instance of type <see cref="ToggleSwitch"/>.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <returns>The view instance.</returns>
+        protected override ToggleSwitch CreateViewInstance(ThemedReactContext reactContext)
+        {
+            var view = new ToggleSwitch();
+            view.OnContent = null;
+            view.OffContent = null;
+            return view;
         }
 
         /// <summary>
@@ -101,17 +113,6 @@ namespace ReactNative.Views.Switch
         protected override void AddEventEmitters(ThemedReactContext reactContext, ToggleSwitch view)
         {
             view.Toggled += OnToggled;
-        }
-
-        /// <summary>
-        /// Called when view is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ReactSwitchManager"/>.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The view.</param>
-        protected override void OnDropViewInstance(ThemedReactContext reactContext, ToggleSwitch view)
-        {
-            view.Toggled -= OnToggled;
         }
 
         private void OnToggled(object sender, RoutedEventArgs e)

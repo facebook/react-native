@@ -81,7 +81,7 @@ namespace ReactNative.UIManager
             Invoke(shadowNode, GetShadowNodeArgs(properties));
         }
 
-        public void UpdateViewManagerProperty(ViewManager viewManager, FrameworkElement view, ReactStylesDiffMap properties)
+        public void UpdateViewManagerProperty(IViewManager viewManager, FrameworkElement view, ReactStylesDiffMap properties)
         {
             if (viewManager == null)
                 throw new ArgumentNullException(nameof(viewManager));

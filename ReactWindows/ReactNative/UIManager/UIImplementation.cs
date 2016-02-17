@@ -32,7 +32,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <param name="viewManagers">The view managers.</param>
-        public UIImplementation(ReactContext reactContext, IReadOnlyList<ViewManager> viewManagers)
+        public UIImplementation(ReactContext reactContext, IReadOnlyList<IViewManager> viewManagers)
             : this(reactContext, new ViewManagerRegistry(viewManagers))
         {
         }
@@ -606,7 +606,7 @@ namespace ReactNative.UIManager
             return _shadowNodeRegistry.GetNode(reactTag);
         }
 
-        private ViewManager ResolveViewManager(string className)
+        private IViewManager ResolveViewManager(string className)
         {
             return _viewManagers.Get(className);
         }
@@ -738,7 +738,7 @@ namespace ReactNative.UIManager
                         node.ViewClass));
             }
 
-            var viewParentManager = viewManager as ViewParentManager;
+            var viewParentManager = viewManager as IViewParentManager;
             if (viewParentManager == null)
             {
                 throw new InvalidOperationException(

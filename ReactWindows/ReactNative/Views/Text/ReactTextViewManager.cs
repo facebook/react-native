@@ -24,23 +24,10 @@ namespace ReactNative.Views.Text
         }
 
         /// <summary>
-        /// Creates the view instance.
-        /// </summary>
-        /// <param name="reactContext">The react context.</param>
-        /// <returns>The view instance.</returns>
-        protected override TextBlock CreateViewInstanceCore(ThemedReactContext reactContext)
-        {
-            return new TextBlock
-            {
-                TextWrapping = TextWrapping.Wrap,
-            };
-        }
-
-        /// <summary>
         /// Creates the shadow node instance.
         /// </summary>
         /// <returns>The shadow node instance.</returns>
-        protected override ReactTextShadowNode CreateShadowNodeInstanceCore()
+        public override ReactTextShadowNode CreateShadowNodeInstance()
         {
             return new ReactTextShadowNode(false);
         }
@@ -50,11 +37,24 @@ namespace ReactNative.Views.Text
         /// </summary>
         /// <param name="root">The view instance.</param>
         /// <param name="extraData">The aggregated virtual node changes.</param>
-        protected override void UpdateExtraData(TextBlock root, object extraData)
+        public override void UpdateExtraData(TextBlock root, object extraData)
         {
             var inline = (Inline)extraData;
             root.Inlines.Clear();
             root.Inlines.Add(inline);
+        }
+
+        /// <summary>
+        /// Creates the view instance.
+        /// </summary>
+        /// <param name="reactContext">The react context.</param>
+        /// <returns>The view instance.</returns>
+        protected override TextBlock CreateViewInstance(ThemedReactContext reactContext)
+        {
+            return new TextBlock
+            {
+                TextWrapping = TextWrapping.Wrap,
+            };
         }
     }
 }

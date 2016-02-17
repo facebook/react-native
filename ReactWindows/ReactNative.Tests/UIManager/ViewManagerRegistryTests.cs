@@ -17,7 +17,7 @@ namespace ReactNative.Tests.UIManager
                 () => new ViewManagerRegistry(null),
                 ex => Assert.AreEqual("viewManagers", ex.ParamName));
 
-            var registry = new ViewManagerRegistry(new List<ViewManager>());
+            var registry = new ViewManagerRegistry(new List<IViewManager>());
 
             AssertEx.Throws<ArgumentNullException>(
                 () => registry.Get(null),
@@ -32,11 +32,11 @@ namespace ReactNative.Tests.UIManager
         public void ViewManagerRegistry_Simple()
         {
             var viewManager = new TestViewManager();
-            var registry = new ViewManagerRegistry(new List<ViewManager> { viewManager });
+            var registry = new ViewManagerRegistry(new List<IViewManager> { viewManager });
             Assert.AreSame(viewManager, registry.Get(viewManager.Name));
         }
 
-        class TestViewManager : ViewManager
+        class TestViewManager : MockViewManager
         {
             public override string Name
             {
@@ -44,29 +44,6 @@ namespace ReactNative.Tests.UIManager
                 {
                     return "Test";
                 }
-            }
-
-            public override Type ShadowNodeType
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public override ReactShadowNode CreateShadowNodeInstance()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void UpdateExtraData(FrameworkElement root, object extraData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override FrameworkElement CreateViewInstance(ThemedReactContext reactContext)
-            {
-                throw new NotImplementedException();
             }
         }
     }

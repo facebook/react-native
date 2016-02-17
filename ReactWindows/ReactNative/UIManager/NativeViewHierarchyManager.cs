@@ -47,7 +47,7 @@ namespace ReactNative.UIManager
     /// </remarks>
     public class NativeViewHierarchyManager
     {
-        private readonly IDictionary<int, ViewManager> _tagsToViewManagers;
+        private readonly IDictionary<int, IViewManager> _tagsToViewManagers;
         private readonly IDictionary<int, FrameworkElement> _tagsToViews;
         private readonly IDictionary<int, bool> _rootTags;
         private readonly ViewManagerRegistry _viewManagers;
@@ -64,7 +64,7 @@ namespace ReactNative.UIManager
             _viewManagers = viewManagers;
             _layoutAnimator = new LayoutAnimationManager();
             _tagsToViews = new Dictionary<int, FrameworkElement>();
-            _tagsToViewManagers = new Dictionary<int, ViewManager>();
+            _tagsToViewManagers = new Dictionary<int, IViewManager>();
             _rootTags = new Dictionary<int, bool>();
             _jsResponderHandler = new JavaScriptResponderHandler();
             _rootViewManager = new RootViewManager();
@@ -123,10 +123,10 @@ namespace ReactNative.UIManager
             {
                 var viewToUpdate = ResolveView(tag);
                 
-                var parentViewManager = default(ViewManager);
-                var parentViewParentManager = default(ViewParentManager);
+                var parentViewManager = default(IViewManager);
+                var parentViewParentManager = default(IViewParentManager);
                 if (!_tagsToViewManagers.TryGetValue(parentTag, out parentViewManager) || 
-                    (parentViewParentManager = parentViewManager as ViewParentManager) == null)
+                    (parentViewParentManager = parentViewManager as IViewParentManager) == null)
                 {
                     throw new InvalidOperationException(
                         string.Format(
@@ -201,7 +201,7 @@ namespace ReactNative.UIManager
         /// <param name="tagsToDelete">Tags to delete.</param>
         public void ManageChildren(int tag, int[] indicesToRemove, ViewAtIndex[] viewsToAdd, int[] tagsToDelete)
         {
-            var viewManager = default(ViewManager);
+            var viewManager = default(IViewManager);
             if (!_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 throw new InvalidOperationException(
@@ -211,7 +211,7 @@ namespace ReactNative.UIManager
                         tag));
             }
 
-            var viewParentManager = (ViewParentManager)viewManager;
+            var viewParentManager = (IViewParentManager)viewManager;
             var viewToManage = _tagsToViews[tag];
 
             var lastIndexToRemove = viewParentManager.GetChildCount(viewToManage);
@@ -493,9 +493,9 @@ namespace ReactNative.UIManager
             return view;
         }
 
-        private ViewManager ResolveViewManager(int tag)
+        private IViewManager ResolveViewManager(int tag)
         {
-            var viewManager = default(ViewManager);
+            var viewManager = default(IViewManager);
             if (!_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 throw new InvalidOperationException(
@@ -529,10 +529,10 @@ namespace ReactNative.UIManager
                 mgr.OnDropViewInstance(view.GetReactContext(), view);
             }
 
-            var viewManager = default(ViewManager);
+            var viewManager = default(IViewManager);
             if (_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
-                var viewParentManager = viewManager as ViewParentManager;
+                var viewParentManager = viewManager as IViewParentManager;
                 if (viewParentManager != null)
                 {
                     for (var i = viewParentManager.GetChildCount(view) - 1; i >= 0; --i)
