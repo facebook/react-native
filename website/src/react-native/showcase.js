@@ -126,6 +126,12 @@ var featured = [
     author: 'Iodine Inc.',
   },
   {
+    name: 'This AM',
+    icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
+    link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
+    author: 'Refinery29',
+  },
+  {
     name: 'Townske',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/8b/42/20/8b4220af-5165-91fd-0f05-014332df73ef/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/townske-stunning-city-guides/id1018136179?ls=1&mt=8',
@@ -528,12 +534,6 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/4f/29/58/4f2958a1-7f35-9260-6340-c67ac29d7740/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/text-blast-2016/id1023852862?mt=8',
     author: 'Sesh',
-  },
-  {
-    name: 'This AM',
-    icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
-    link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
-    author: 'Refinery29',
   },
   {
     name: 'Tong Xing Wang',
