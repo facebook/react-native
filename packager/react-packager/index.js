@@ -10,12 +10,14 @@
 
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
+require('fast-path').replace();
 useGracefulFs();
 
 var debug = require('debug');
 var omit = require('underscore').omit;
 var Activity = require('./src/Activity');
 
+exports.createServer = createServer;
 exports.middleware = function(options) {
   var server = createServer(options);
   return server.processRequest.bind(server);

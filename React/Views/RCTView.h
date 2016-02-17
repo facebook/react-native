@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "RCTBorderStyle.h"
 #import "RCTComponent.h"
 #import "RCTPointerEvents.h"
 
@@ -83,5 +84,15 @@
 @property (nonatomic, assign) CGFloat borderBottomWidth;
 @property (nonatomic, assign) CGFloat borderLeftWidth;
 @property (nonatomic, assign) CGFloat borderWidth;
+
+/**
+ * Border styles.
+ */
+@property (nonatomic, assign) RCTBorderStyle borderStyle;
+
+/**
+ *  Insets used when hit testing inside this view.
+ */
+@property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
 @end

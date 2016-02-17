@@ -72,14 +72,14 @@ class Easing {
   static elastic(bounciness: number = 1): (t: number) => number {
     var p = bounciness * Math.PI;
     return (t) => 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p);
-  };
+  }
 
   static back(s: number): (t: number) => number {
     if (s === undefined) {
       s = 1.70158;
     }
     return (t) => t * t * ((s + 1) * t - s);
-  };
+  }
 
   static bounce(t: number): number {
     if (t < 1 / 2.75) {
@@ -98,7 +98,7 @@ class Easing {
 
     t -= 2.625 / 2.75;
     return 7.5625 * t * t + 0.984375;
-  };
+  }
 
   static bezier(
     x1: number,

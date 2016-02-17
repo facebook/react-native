@@ -22,6 +22,9 @@
 @end
 
 @implementation RCTUITextView
+{
+  BOOL _jsRequestingFirstResponder;
+}
 
 - (void)paste:(id)sender
 {
@@ -29,12 +32,26 @@
   [super paste:sender];
 }
 
+- (void)reactWillMakeFirstResponder
+{
+  _jsRequestingFirstResponder = YES;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return _jsRequestingFirstResponder;
+}
+
+- (void)reactDidMakeFirstResponder
+{
+  _jsRequestingFirstResponder = NO;
+}
+
 @end
 
 @implementation RCTTextView
 {
   RCTEventDispatcher *_eventDispatcher;
-  BOOL _jsRequestingFirstResponder;
   NSString *_placeholder;
   UITextView *_placeholderView;
   UITextView *_textView;
@@ -44,6 +61,9 @@
   NSMutableArray<UIView *> *_subviews;
   BOOL _blockTextShouldChange;
   UITextRange *_previousSelectionRange;
+  NSUInteger _previousTextLength;
+  CGFloat _previousContentHeight;
+  UIScrollView *_scrollView;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -54,16 +74,22 @@
     _contentInset = UIEdgeInsetsZero;
     _eventDispatcher = eventDispatcher;
     _placeholderTextColor = [self defaultPlaceholderTextColor];
+    _blurOnSubmit = NO;
 
-    _textView = [[RCTUITextView alloc] initWithFrame:self.bounds];
+    _textView = [[RCTUITextView alloc] initWithFrame:CGRectZero];
     _textView.backgroundColor = [UIColor clearColor];
     _textView.scrollsToTop = NO;
+    _textView.scrollEnabled = NO;
     _textView.delegate = self;
+
+    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.scrollsToTop = NO;
+    [_scrollView addSubview:_textView];
 
     _previousSelectionRange = _textView.selectedTextRange;
 
     _subviews = [NSMutableArray new];
-    [self addSubview:_textView];
+    [self addSubview:_scrollView];
   }
   return self;
 }
@@ -139,16 +165,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // we temporarily block all textShouldChange events so they are not applied.
   _blockTextShouldChange = YES;
 
-  // We compute the new selectedRange manually to make sure the cursor is at the
-  // end of the newly inserted/deleted text after update.
-  NSRange range = _textView.selectedRange;
-  CGPoint contentOffset = _textView.contentOffset;
+  UITextRange *selection = _textView.selectedTextRange;
+  NSInteger oldTextLength = _textView.attributedText.length;
 
   _textView.attributedText = _pendingAttributedText;
   _pendingAttributedText = nil;
-  _textView.selectedRange = range;
+
+  if (selection.empty) {
+    // maintain cursor position relative to the end of the old text
+    NSInteger start = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:selection.start];
+    NSInteger offsetFromEnd = oldTextLength - start;
+    NSInteger newOffset = _textView.attributedText.length - offsetFromEnd;
+    UITextPosition *position = [_textView positionFromPosition:_textView.beginningOfDocument offset:newOffset];
+    _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
+  }
+
   [_textView layoutIfNeeded];
-  _textView.contentOffset = contentOffset;
 
   [self _setPlaceholderVisibility];
 
@@ -174,9 +206,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   CGRect frame = UIEdgeInsetsInsetRect(self.bounds, adjustedFrameInset);
   _textView.frame = frame;
   _placeholderView.frame = frame;
+  _scrollView.frame = frame;
+  [self updateContentSize];
 
   _textView.textContainerInset = adjustedTextContainerInset;
   _placeholderView.textContainerInset = adjustedTextContainerInset;
+}
+
+- (void)updateContentSize
+{
+  CGSize size = (CGSize){_scrollView.frame.size.width, INFINITY};
+  size.height = [_textView sizeThatFits:size].height;
+  _scrollView.contentSize = size;
+  _textView.frame = (CGRect){CGPointZero, size};
 }
 
 - (void)updatePlaceholder
@@ -186,6 +228,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   if (_placeholder) {
     _placeholderView = [[UITextView alloc] initWithFrame:self.bounds];
+    _placeholderView.editable = NO;
+    _placeholderView.userInteractionEnabled = NO;
     _placeholderView.backgroundColor = [UIColor clearColor];
     _placeholderView.scrollEnabled = false;
     _placeholderView.scrollsToTop = NO;
@@ -209,16 +253,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   _textView.font = font;
   [self updatePlaceholder];
-}
-
-- (UIColor *)textColor
-{
-  return _textView.textColor;
-}
-
-- (void)setTextColor:(UIColor *)textColor
-{
-  _textView.textColor = textColor;
 }
 
 - (void)setPlaceholder:(NSString *)placeholder
@@ -257,11 +291,35 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (textView.textWasPasted) {
     textView.textWasPasted = NO;
   } else {
+    
     [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                    reactTag:self.reactTag
                                        text:nil
                                         key:text
                                  eventCount:_nativeEventCount];
+
+    if (_blurOnSubmit && [text isEqualToString:@"\n"]) {
+
+      // TODO: the purpose of blurOnSubmit on RCTextField is to decide if the
+      // field should lose focus when return is pressed or not. We're cheating a
+      // bit here by using it on RCTextView to decide if return character should
+      // submit the form, or be entered into the field.
+      //
+      // The reason this is cheating is because there's no way to specify that
+      // you want the return key to be swallowed *and* have the field retain
+      // focus (which was what blurOnSubmit was originally for). For the case
+      // where _blurOnSubmit = YES, this is still the correct and expected
+      // behavior though, so we'll leave the don't-blur-or-add-newline problem
+      // to be solved another day.
+
+      [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                     reactTag:self.reactTag
+                                         text:self.text
+                                          key:nil
+                                   eventCount:_nativeEventCount];
+      [self resignFirstResponder];
+      return NO;
+    }
   }
 
   if (_maxLength == nil) {
@@ -296,18 +354,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _previousSelectionRange = textView.selectedTextRange;
 
     UITextRange *selection = textView.selectedTextRange;
-    NSInteger start = [textView offsetFromPosition:[textView beginningOfDocument] toPosition:selection.start];
-    NSInteger end = [textView offsetFromPosition:[textView beginningOfDocument] toPosition:selection.end];
+    NSInteger start = [textView offsetFromPosition:textView.beginningOfDocument toPosition:selection.start];
+    NSInteger end = [textView offsetFromPosition:textView.beginningOfDocument toPosition:selection.end];
     _onSelectionChange(@{
       @"selection": @{
         @"start": @(start),
         @"end": @(end),
       },
     });
-  }
-
-  if (textView.editable && [textView isFirstResponder]) {
-    [textView scrollRangeToVisible:textView.selectedRange];
   }
 }
 
@@ -316,9 +370,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   NSInteger eventLag = _nativeEventCount - _mostRecentEventCount;
   if (eventLag == 0 && ![text isEqualToString:_textView.text]) {
     UITextRange *selection = _textView.selectedTextRange;
+    NSInteger oldTextLength = _textView.text.length;
+
     _textView.text = text;
+
+    if (selection.empty) {
+      // maintain cursor position relative to the end of the old text
+      NSInteger start = [_textView offsetFromPosition:_textView.beginningOfDocument toPosition:selection.start];
+      NSInteger offsetFromEnd = oldTextLength - start;
+      NSInteger newOffset = text.length - offsetFromEnd;
+      UITextPosition *position = [_textView positionFromPosition:_textView.beginningOfDocument offset:newOffset];
+      _textView.selectedTextRange = [_textView textRangeFromPosition:position toPosition:position];
+    }
+
     [self _setPlaceholderVisibility];
-    _textView.selectedTextRange = selection; // maintain cursor position/selection - this is robust to out of bounds
+    [self updateContentSize]; //keep the text wrapping when the length of
+    //the textline has been extended longer than the length of textinputView
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
     RCTLogWarn(@"Native TextInput(%@) is %zd events ahead of JS - try to make your JS faster.", self.text, eventLag);
   }
@@ -362,21 +429,46 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeFocus
                                  reactTag:self.reactTag
-                                     text:textView.text
+                                     text:nil
                                       key:nil
                                eventCount:_nativeEventCount];
 }
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+  [self updateContentSize];
   [self _setPlaceholderVisibility];
   _nativeEventCount++;
-  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeChange
-                                 reactTag:self.reactTag
-                                     text:textView.text
-                                      key:nil
-                               eventCount:_nativeEventCount];
 
+  if (!self.reactTag) {
+    return;
+  }
+
+  // When the context size increases, iOS updates the contentSize twice; once
+  // with a lower height, then again with the correct height. To prevent a
+  // spurious event from being sent, we track the previous, and only send the
+  // update event if it matches our expectation that greater text length
+  // should result in increased height. This assumption is, of course, not
+  // necessarily true because shorter text might include more linebreaks, but
+  // in practice this works well enough.
+  NSUInteger textLength = textView.text.length;
+  CGFloat contentHeight = textView.contentSize.height;
+  if (textLength >= _previousTextLength) {
+    contentHeight = MAX(contentHeight, _previousContentHeight);
+  }
+  _previousTextLength = textLength;
+  _previousContentHeight = contentHeight;
+
+  NSDictionary *event = @{
+    @"text": self.text,
+    @"contentSize": @{
+      @"height": @(contentHeight),
+      @"width": @(textView.contentSize.width)
+    },
+    @"target": self.reactTag,
+    @"eventCount": @(_nativeEventCount),
+  };
+  [_eventDispatcher sendInputEventWithName:@"change" body:event];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
@@ -386,39 +478,49 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                                      text:textView.text
                                       key:nil
                                eventCount:_nativeEventCount];
+
+  [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
+                                 reactTag:self.reactTag
+                                     text:nil
+                                      key:nil
+                               eventCount:_nativeEventCount];
+}
+
+- (BOOL)isFirstResponder
+{
+  return [_textView isFirstResponder];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return [_textView canBecomeFirstResponder];
+}
+
+- (void)reactWillMakeFirstResponder
+{
+  [_textView reactWillMakeFirstResponder];
 }
 
 - (BOOL)becomeFirstResponder
 {
-  _jsRequestingFirstResponder = YES;
-  BOOL result = [_textView becomeFirstResponder];
-  _jsRequestingFirstResponder = NO;
-  return result;
+  return [_textView becomeFirstResponder];
+}
+
+- (void)reactDidMakeFirstResponder
+{
+  [_textView reactDidMakeFirstResponder];
 }
 
 - (BOOL)resignFirstResponder
 {
   [super resignFirstResponder];
-  BOOL result = [_textView resignFirstResponder];
-  if (result) {
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
-                                   reactTag:self.reactTag
-                                       text:_textView.text
-                                        key:nil
-                                 eventCount:_nativeEventCount];
-  }
-  return result;
+  return [_textView resignFirstResponder];
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   [self updateFrames];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-  return _jsRequestingFirstResponder;
 }
 
 - (UIFont *)defaultPlaceholderFont

@@ -12,7 +12,7 @@ to wait more than a few seconds after starting the packager.
 
 The main deviation from the node module system is the support for our
 proprietary module format known as `@providesModule`. However, we
-discourage people to use this module format because going forward, we
+discourage people from using this module format because going forward we
 want to completely separate our infrastructure from React Native and
 provide an experience most JavaScript developers are familiar with,
 namely the node module format. We want to even go further, and let you
@@ -112,6 +112,9 @@ middleware. Takes the following options:
   should be used as a persistent deamon to watch files and update
   itself
 * `assetRoots` array: Where should the packager look for assets
+* `getTransformOptionsModulePath` string: Path to module that exports a function
+  that acts as a middleware for generating options to pass to the transformer
+  based on the bundle and module being transformed.
 
 ### ReactPackager.buildPackageFromUrl(options, url)
 
@@ -144,5 +147,5 @@ is informed by React Native needs.
 ### Why didn't you use webpack?
 
 We love webpack, however, when we tried on our codebase it was slower
-than our developers would like it to be. You find can more discussion about
-the subject [here](https://github.com/facebook/react-native/issues/5)
+than our developers would like it to be. You can find more discussion about
+the subject [here](https://github.com/facebook/react-native/issues/5).

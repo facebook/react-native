@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * register themselves using {@link CxxModuleWrapper}.
  */
 public interface NativeModule {
-  public static interface NativeMethod {
+  interface NativeMethod {
     void invoke(CatalystInstance catalystInstance, ReadableNativeArray parameters);
     String getType();
   }
@@ -31,28 +31,45 @@ public interface NativeModule {
    * @return the name of this module. This will be the name used to {@code require()} this module
    * from javascript.
    */
-  public String getName();
+  String getName();
 
   /**
    * @return methods callable from JS on this module
    */
-  public Map<String, NativeMethod> getMethods();
+  Map<String, NativeMethod> getMethods();
 
   /**
    * Append a field which represents the constants this module exports
    * to JS.  If no constants are exported this should do nothing.
    */
-  public void writeConstantsField(JsonGenerator jg, String fieldName) throws IOException;
+  void writeConstantsField(JsonGenerator jg, String fieldName) throws IOException;
 
   /**
    * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()}
    * after the CatalystInstance has been created, in order to initialize NativeModules that require
    * the CatalystInstance or JS modules.
    */
-  public void initialize();
+  void initialize();
+
+  /**
+   * Return true if you intend to override some other native module that was registered e.g. as part
+   * of a different package (such as the core one). Trying to override without returning true from
+   * this method is considered an error and will throw an exception during initialization. By
+   * default all modules return false.
+   */
+  boolean canOverrideExistingModule();
+
+  /**
+   * Called on the JS thread after a ReactBridge has been created. This is useful for native modules
+   * that need to do any setup before the JS bundle has been loaded. An example of this would be
+   * installing custom functionality into the JavaScriptCore context.
+   *
+   * @param bridge the ReactBridge instance that has just been created
+   */
+  void onReactBridgeInitialized(ReactBridge bridge);
 
   /**
    * Called before {CatalystInstance#onHostDestroy}
    */
-  public void onCatalystInstanceDestroy();
+  void onCatalystInstanceDestroy();
 }

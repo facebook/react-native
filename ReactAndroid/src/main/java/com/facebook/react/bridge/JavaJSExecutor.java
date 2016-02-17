@@ -18,7 +18,11 @@ import com.facebook.proguard.annotations.DoNotStrip;
  */
 @DoNotStrip
 public interface JavaJSExecutor {
-  public static class ProxyExecutorException extends Exception {
+  interface Factory {
+    JavaJSExecutor create() throws Exception;
+  }
+
+  class ProxyExecutorException extends Exception {
     public ProxyExecutorException(Throwable cause) {
       super(cause);
     }
@@ -36,17 +40,16 @@ public interface JavaJSExecutor {
    * @param sourceURL url or file location from which script content was loaded
    */
   @DoNotStrip
-  void executeApplicationScript(String script, String sourceURL) throws ProxyExecutorException;
+  void loadApplicationScript(String script, String sourceURL) throws ProxyExecutorException;
 
   /**
    * Execute javascript method within js context
-   * @param modulename name of the common-js like module to execute the method from
    * @param methodName name of the method to be executed
    * @param jsonArgsArray json encoded array of arguments provided for the method call
    * @return json encoded value returned from the method call
    */
   @DoNotStrip
-  String executeJSCall(String modulename, String methodName, String jsonArgsArray)
+  String executeJSCall(String methodName, String jsonArgsArray)
       throws ProxyExecutorException;
 
   @DoNotStrip

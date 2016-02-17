@@ -237,7 +237,7 @@ var styles = StyleSheet.create({
     marginBottom: 20,
   },
   tryAgain: {
-    backgroundColor: '#887766',
+    backgroundColor: '#887761',
     padding: 20,
     borderRadius: 5,
   },
@@ -279,7 +279,7 @@ var styles = StyleSheet.create({
     backgroundColor: '#eeeecc',
   },
   tile8: {
-    backgroundColor: '#ffbb88',
+    backgroundColor: '#ffbb87',
   },
   tile16: {
     backgroundColor: '#ff9966',

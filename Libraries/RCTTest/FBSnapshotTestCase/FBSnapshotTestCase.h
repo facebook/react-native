@@ -71,7 +71,7 @@ FBSnapshotVerifyLayerWithReferenceDirectorySuffix(layer__, identifier__, @""); \
 @property (readwrite, nonatomic, assign) BOOL recordMode;
 
 /**
- Performs the comparisong or records a snapshot of the layer if recordMode is YES.
+ Performs the comparisons or records a snapshot of the layer if recordMode is YES.
  @param layer The Layer to snapshot
  @param referenceImagesDirectory The directory in which reference images are stored.
  @param identifier An optional identifier, used if there are multiple snapshot tests in a given -test method.
@@ -84,7 +84,7 @@ FBSnapshotVerifyLayerWithReferenceDirectorySuffix(layer__, identifier__, @""); \
                          error:(NSError **)errorPtr;
 
 /**
- Performs the comparisong or records a snapshot of the view if recordMode is YES.
+ Performs the comparisons or records a snapshot of the view if recordMode is YES.
  @param view The view to snapshot
  @param referenceImagesDirectory The directory in which reference images are stored.
  @param identifier An optional identifier, used if there are multiple snapshot tests in a given -test method.

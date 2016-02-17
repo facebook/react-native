@@ -1,7 +1,7 @@
 'use strict';
 
 const Promise = require('promise');
-const path = require('path');
+const path = require('fast-path');
 
 function watchmanRecReadDir(roots, {ignore, fileWatcher, exts}) {
   const files = [];
@@ -38,20 +38,16 @@ function watchmanRecReadDir(roots, {ignore, fileWatcher, exts}) {
 
           const cmd = Promise.denodeify(watcher.client.command.bind(watcher.client));
           return cmd(['query', watchedRoot, {
-            'suffix': exts,
-            'expression': ['allof', ['type', 'f'], 'exists', dirExpr],
-            'fields': ['name'],
+            suffix: exts,
+            expression: ['allof', ['type', 'f'], 'exists', dirExpr],
+            fields: ['name'],
           }]).then(resp => {
             if ('warning' in resp) {
               console.warn('watchman warning: ', resp.warning);
             }
 
             resp.files.forEach(filePath => {
-              filePath = path.join(
-                watchedRoot,
-                filePath
-              );
-
+              filePath = watchedRoot + path.sep + filePath;
               if (!ignore(filePath)) {
                 files.push(filePath);
               }
@@ -64,7 +60,7 @@ function watchmanRecReadDir(roots, {ignore, fileWatcher, exts}) {
 }
 
 function isDescendant(root, child) {
-  return path.relative(root, child).indexOf('..') !== 0;
+  return child.startsWith(root);
 }
 
 module.exports = watchmanRecReadDir;

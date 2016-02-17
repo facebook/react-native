@@ -19,4 +19,3 @@
 @interface RCTScrollViewManager : RCTViewManager
 
 @end
-

@@ -11,10 +11,9 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var RCTUIManager = NativeModules.UIManager;
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
 var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
@@ -57,7 +56,7 @@ function warnForStyleProps(props, validAttributes) {
  * composite components that aren't directly backed by a native view. This will
  * generally include most components that you define in your own app. For more
  * information, see [Direct
- * Manipulation](/react-native/docs/direct-manipulation.html).
+ * Manipulation](docs/direct-manipulation.html).
  */
 var NativeMethodsMixin = {
   /**
@@ -75,10 +74,10 @@ var NativeMethodsMixin = {
    * Note that these measurements are not available until after the rendering
    * has been completed in native. If you need the measurements as soon as
    * possible, consider using the [`onLayout`
-   * prop](/react-native/docs/view.html#onlayout) instead.
+   * prop](docs/view.html#onlayout) instead.
    */
   measure: function(callback: MeasureOnSuccessCallback) {
-    RCTUIManager.measure(
+    UIManager.measure(
       findNodeHandle(this),
       mountSafeCallback(this, callback)
     );
@@ -97,7 +96,7 @@ var NativeMethodsMixin = {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail: () => void /* currently unused */
   ) {
-    RCTUIManager.measureLayout(
+    UIManager.measureLayout(
       findNodeHandle(this),
       relativeToNativeNode,
       mountSafeCallback(this, onFail),
@@ -109,7 +108,7 @@ var NativeMethodsMixin = {
    * This function sends props straight to native. They will not participate in
    * future diff process - this means that if you do not include them in the
    * next render, they will remain active (see [Direct
-   * Manipulation](/react-native/docs/direct-manipulation.html)).
+   * Manipulation](docs/direct-manipulation.html)).
    */
   setNativeProps: function(nativeProps: Object) {
     if (__DEV__) {
@@ -121,7 +120,7 @@ var NativeMethodsMixin = {
       this.viewConfig.validAttributes
     );
 
-    RCTUIManager.updateView(
+    UIManager.updateView(
       findNodeHandle(this),
       this.viewConfig.uiViewClassName,
       updatePayload

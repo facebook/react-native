@@ -15,6 +15,7 @@
 
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
 var DebugComponentOwnershipModule = require('NativeModules').DebugComponentOwnershipModule;
 var InspectorUtils = require('InspectorUtils');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
@@ -35,7 +36,7 @@ function getRootTagForTag(tag: number): ?number {
   return ReactNativeTagHandles.rootNodeIDToTag[rootID];
 }
 
-module.exports = {
+var RCTDebugComponentOwnership = {
 
   /**
    * Asynchronously returns the owner hierarchy as an array of strings. Request id is
@@ -53,3 +54,10 @@ module.exports = {
     DebugComponentOwnershipModule.receiveOwnershipHierarchy(requestID, tag, ownerHierarchy);
   },
 };
+
+BatchedBridge.registerCallableModule(
+  'RCTDebugComponentOwnership',
+  RCTDebugComponentOwnership
+);
+
+module.exports = RCTDebugComponentOwnership;

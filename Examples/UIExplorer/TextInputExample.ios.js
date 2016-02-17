@@ -96,6 +96,29 @@ var TextEventsExample = React.createClass({
   }
 });
 
+class AutoExpandingTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: '', height: 0};
+  }
+  render() {
+    return (
+      <TextInput
+        {...this.props}
+        multiline={true}
+        onChange={(event) => {
+          this.setState({
+            text: event.nativeEvent.text,
+            height: event.nativeEvent.contentSize.height,
+          });
+        }}
+        style={[styles.default, {height: Math.max(35, this.state.height)}]}
+        value={this.state.text}
+      />
+    );
+  }
+}
+
 class RewriteExample extends React.Component {
   constructor(props) {
     super(props);
@@ -120,6 +143,27 @@ class RewriteExample extends React.Component {
         <Text style={[styles.remainder, {color: remainderColor}]}>
           {remainder}
         </Text>
+      </View>
+    );
+  }
+}
+
+class RewriteExampleInvalidCharacters extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: ''};
+  }
+  render() {
+    return (
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          onChangeText={(text) => {
+            this.setState({text: text.replace(/\s/g, '')});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
       </View>
     );
   }
@@ -158,7 +202,7 @@ class TokenizedTextExample extends React.Component {
     //highlight hashtags
     parts = parts.map((text) => {
       if (/^#/.test(text)) {
-        return <Text style={styles.hashtag}>{text}</Text>;
+        return <Text key={text} style={styles.hashtag}>{text}</Text>;
       } else {
         return text;
       }
@@ -181,52 +225,52 @@ class TokenizedTextExample extends React.Component {
 
 var BlurOnSubmitExample = React.createClass({
   focusNextField(nextField) {
-    this.refs[nextField].focus()
+    this.refs[nextField].focus();
   },
 
   render: function() {
     return (
       <View>
         <TextInput
-          ref='1'
+          ref="1"
           style={styles.default}
-          placeholder='blurOnSubmit = false'
-          returnKeyType='next'
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('2')}
         />
         <TextInput
-          ref='2'
+          ref="2"
           style={styles.default}
-          keyboardType='email-address'
-          placeholder='blurOnSubmit = false'
-          returnKeyType='next'
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('3')}
         />
         <TextInput
-          ref='3'
+          ref="3"
           style={styles.default}
-          keyboardType='url'
-          placeholder='blurOnSubmit = false'
-          returnKeyType='next'
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('4')}
         />
         <TextInput
-          ref='4'
+          ref="4"
           style={styles.default}
-          keyboardType='numeric'
-          placeholder='blurOnSubmit = false'
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
           blurOnSubmit={false}
           onSubmitEditing={() => this.focusNextField('5')}
         />
         <TextInput
-          ref='5'
+          ref="5"
           style={styles.default}
-          keyboardType='numbers-and-punctuation'
-          placeholder='blurOnSubmit = true'
-          returnKeyType='done'
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
         />
       </View>
     );
@@ -304,13 +348,25 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.default} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.default}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
     title: "Live Re-Write (<sp>  ->  '_') + maxLength",
     render: function() {
       return <RewriteExample />;
+    }
+  },
+  {
+    title: 'Live Re-Write (no spaces allowed)',
+    render: function() {
+      return <RewriteExampleInvalidCharacters />;
     }
   },
   {
@@ -487,6 +543,25 @@ exports.examples = [
     }
   },
   {
+    title: 'Colored highlight/cursor for text input',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            selectionColor={"green"}
+            defaultValue="Highlight me"
+          />
+          <TextInput
+            style={styles.default}
+            selectionColor={"rgba(86, 76, 205, 1)"}
+            defaultValue="Highlight me"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Clear button mode',
     render: function () {
       return (
@@ -545,6 +620,27 @@ exports.examples = [
     }
   },
   {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+  },
+  {
+    title: 'Multiline blur on submit',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.multiline}
+            placeholder="blurOnSubmit = true"
+            returnKeyType="next"
+            blurOnSubmit={true}
+            multiline={true}
+            onSubmitEditing={event => alert(event.nativeEvent.text)}
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Multiline',
     render: function() {
       return (
@@ -583,13 +679,23 @@ exports.examples = [
     }
   },
   {
+    title: 'Auto-expanding',
+    render: function() {
+      return (
+        <View>
+          <AutoExpandingTextInput
+            placeholder="height increases with content"
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Attributed text',
     render: function() {
       return <TokenizedTextExample />;
     }
-  },
-  {
-    title: 'Blur on submit',
-    render: function(): ReactElement { return <BlurOnSubmitExample />; },
   },
 ];

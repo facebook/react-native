@@ -12,13 +12,10 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import com.facebook.csslayout.CSSNode;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily
@@ -43,6 +40,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  * children (e.g. {@link #getNativeChildCount()}). See {@link NativeViewHierarchyOptimizer} for more
  * information.
  */
+@ReactPropertyHolder
 public class ReactShadowNode extends CSSNode {
 
   private int mReactTag;
@@ -170,18 +168,8 @@ public class ReactShadowNode extends CSSNode {
   public void onBeforeLayout() {
   }
 
-  public final void updateProperties(CatalystStylesDiffMap props) {
-    Map<String, ViewManagersPropertyCache.PropSetter> propSetters =
-        ViewManagersPropertyCache.getNativePropSettersForShadowNodeClass(getClass());
-    ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ViewManagersPropertyCache.PropSetter setter = propSetters.get(key);
-      if (setter != null) {
-        setter.updateShadowNodeProp(this, props);
-      }
-    }
+  public final void updateProperties(ReactStylesDiffMap props) {
+    ViewManagerPropertyUpdater.updateProps(this, props);
     onAfterUpdateTransaction();
   }
 
@@ -203,37 +191,18 @@ public class ReactShadowNode extends CSSNode {
       float absoluteX,
       float absoluteY,
       UIViewOperationQueue uiViewOperationQueue,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer,
-      EventDispatcher eventDispatcher) {
+      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     if (mNodeUpdated) {
       onCollectExtraUpdates(uiViewOperationQueue);
     }
 
     if (hasNewLayout()) {
-      float absoluteLeft = Math.round(absoluteX + getLayoutX());
-      float absoluteTop = Math.round(absoluteY + getLayoutY());
-      float absoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
-      float absoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
-      // If the layout didn't change this should calculate exactly same values, it's fine to compare
-      // floats with "==" in this case
-      if (absoluteLeft != mAbsoluteLeft || absoluteTop != mAbsoluteTop ||
-          absoluteRight != mAbsoluteRight || absoluteBottom != mAbsoluteBottom) {
-        mAbsoluteLeft = absoluteLeft;
-        mAbsoluteTop = absoluteTop;
-        mAbsoluteRight = absoluteRight;
-        mAbsoluteBottom = absoluteBottom;
+      mAbsoluteLeft = Math.round(absoluteX + getLayoutX());
+      mAbsoluteTop = Math.round(absoluteY + getLayoutY());
+      mAbsoluteRight = Math.round(absoluteX + getLayoutX() + getLayoutWidth());
+      mAbsoluteBottom = Math.round(absoluteY + getLayoutY() + getLayoutHeight());
 
-        nativeViewHierarchyOptimizer.handleUpdateLayout(this);
-        if (mShouldNotifyOnLayout) {
-          eventDispatcher.dispatchEvent(
-              OnLayoutEvent.obtain(
-                  getReactTag(),
-                  getScreenX(),
-                  getScreenY(),
-                  getScreenWidth(),
-                  getScreenHeight()));
-        }
-      }
+      nativeViewHierarchyOptimizer.handleUpdateLayout(this);
     }
   }
 
@@ -276,12 +245,16 @@ public class ReactShadowNode extends CSSNode {
     return Assertions.assertNotNull(mThemedContext);
   }
 
-  protected void setThemedContext(ThemedReactContext themedContext) {
+  public void setThemedContext(ThemedReactContext themedContext) {
     mThemedContext = themedContext;
   }
 
   public void setShouldNotifyOnLayout(boolean shouldNotifyOnLayout) {
     mShouldNotifyOnLayout = shouldNotifyOnLayout;
+  }
+
+  public boolean shouldNotifyOnLayout() {
+    return mShouldNotifyOnLayout;
   }
 
   /**

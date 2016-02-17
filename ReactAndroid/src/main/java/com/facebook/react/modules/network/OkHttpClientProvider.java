@@ -13,8 +13,6 @@ import javax.annotation.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
-import com.facebook.react.bridge.ReactContext;
-
 import com.squareup.okhttp.OkHttpClient;
 
 /**
@@ -25,21 +23,12 @@ public class OkHttpClientProvider {
 
   // Centralized OkHttpClient for all networking requests.
   private static @Nullable OkHttpClient sClient;
-  private static ForwardingCookieHandler sCookieHandler;
 
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
       sClient = createClient();
     }
     return sClient;
-  }
-
-  public static OkHttpClient getCookieAwareOkHttpClient(ReactContext context) {
-    if (sCookieHandler == null) {
-      sCookieHandler = new ForwardingCookieHandler(context);
-      getOkHttpClient().setCookieHandler(sCookieHandler);
-    }
-    return getOkHttpClient();
   }
 
   private static OkHttpClient createClient() {

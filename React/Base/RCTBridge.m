@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 
 #import <objc/runtime.h>
 
@@ -22,21 +22,13 @@ NSString *const RCTReloadNotification = @"RCTReloadNotification";
 NSString *const RCTJavaScriptWillStartLoadingNotification = @"RCTJavaScriptWillStartLoadingNotification";
 NSString *const RCTJavaScriptDidLoadNotification = @"RCTJavaScriptDidLoadNotification";
 NSString *const RCTJavaScriptDidFailToLoadNotification = @"RCTJavaScriptDidFailToLoadNotification";
-NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
-
-@class RCTBatchedBridge;
+NSString *const RCTDidInitializeModuleNotification = @"RCTDidInitializeModuleNotification";
 
 @interface RCTBatchedBridge : RCTBridge <RCTInvalidating>
 
 @property (nonatomic, weak) RCTBridge *parentBridge;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
-
-@end
-
-@interface RCTBridge ()
-
-@property (nonatomic, strong) RCTBatchedBridge *batchedBridge;
 
 @end
 
@@ -65,6 +57,9 @@ void RCTRegisterModule(Class moduleClass)
 
   // Register module
   [RCTModuleClasses addObject:moduleClass];
+
+  objc_setAssociatedObject(moduleClass, &RCTBridgeModuleClassIsRegistered,
+                           @NO, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 /**
@@ -87,15 +82,17 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 }
 
 /**
- * Check if class has been registered
+ * This function checks if a class has been registered
  */
-BOOL RCTBridgeModuleClassIsRegistered(Class);
 BOOL RCTBridgeModuleClassIsRegistered(Class cls)
 {
   return [objc_getAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered) ?: @YES boolValue];
 }
 
 @implementation RCTBridge
+{
+  NSURL *_delegateBundleURL;
+}
 
 dispatch_queue_t RCTJSThread;
 
@@ -124,10 +121,6 @@ dispatch_queue_t RCTJSThread;
           if (![RCTModuleClasses containsObject:cls]) {
             RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
                        "RCT_EXPORT_MODULE()?", cls);
-
-            RCTRegisterModule(cls);
-            objc_setAssociatedObject(cls, &RCTBridgeModuleClassIsRegistered,
-                                     @NO, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
           }
           break;
         }
@@ -222,17 +215,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [commands registerKeyCommandWithInput:@"r"
                           modifierFlags:UIKeyModifierCommand
                                  action:^(__unused UIKeyCommand *command) {
-                                    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
-                                                                                        object:nil
-                                                                                      userInfo:nil];
-                                 }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                        object:nil
+                                                      userInfo:nil];
+  }];
 
 #endif
 }
 
+- (NSArray<Class> *)moduleClasses
+{
+  return self.batchedBridge.moduleClasses;
+}
+
+- (id)moduleForName:(NSString *)moduleName
+{
+  return [self.batchedBridge moduleForName:moduleName];
+}
+
+- (id)moduleForClass:(Class)moduleClass
+{
+  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+}
+
 - (RCTEventDispatcher *)eventDispatcher
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTEventDispatcher class])];
+  return [self moduleForClass:[RCTEventDispatcher class]];
 }
 
 - (void)reload
@@ -250,48 +258,44 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainThread();
 
-  _bundleURL = [self.delegate sourceURLForBridge:self] ?: _bundleURL;
+  // Only update bundleURL from delegate if delegate bundleURL has changed
+  NSURL *previousDelegateURL = _delegateBundleURL;
+  _delegateBundleURL = [self.delegate sourceURLForBridge:self];
+  if (_delegateBundleURL && ![_delegateBundleURL isEqual:previousDelegateURL]) {
+    _bundleURL = _delegateBundleURL;
+  }
 
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
-  _batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
+  self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
 - (BOOL)isLoading
 {
-  return _batchedBridge.loading;
+  return self.batchedBridge.loading;
 }
 
 - (BOOL)isValid
 {
-  return _batchedBridge.valid;
+  return self.batchedBridge.valid;
+}
+
+- (BOOL)isBatchActive
+{
+  return [_batchedBridge isBatchActive];
 }
 
 - (void)invalidate
 {
-  RCTAssertMainThread();
+  RCTBatchedBridge *batchedBridge = (RCTBatchedBridge *)self.batchedBridge;
+  self.batchedBridge = nil;
 
-  [_batchedBridge invalidate];
-  _batchedBridge = nil;
-}
-
-- (void)logMessage:(NSString *)message level:(NSString *)level
-{
-  [_batchedBridge logMessage:message level:level];
-}
-
-- (NSDictionary *)modules
-{
-  return _batchedBridge.modules;
-}
-
-#define RCT_INNER_BRIDGE_ONLY(...) \
-- (void)__VA_ARGS__ \
-{ \
-  NSString *errorMessage = [NSString stringWithFormat:@"Called method \"%@\" on top level bridge. \
-    This method should oly be called from bridge instance in a bridge module", @(__func__)]; \
-  RCTFatal(RCTErrorWithMessage(errorMessage)); \
+  if (batchedBridge) {
+    RCTExecuteOnMainThread(^{
+      [batchedBridge invalidate];
+    }, NO);
+  }
 }
 
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args
@@ -299,7 +303,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self.batchedBridge enqueueJSCall:moduleDotMethod args:args];
 }
 
-RCT_INNER_BRIDGE_ONLY(_invokeAndProcessModule:(__unused NSString *)module
-                      method:(__unused NSString *)method
-                      arguments:(__unused NSArray *)args);
+- (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
+{
+  [self.batchedBridge enqueueCallback:cbID args:args];
+}
+
+@end
+
+@implementation RCTBridge(Deprecated)
+
+NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
+
+- (NSDictionary *)modules
+{
+  return self.batchedBridge.modules;
+}
+
 @end

@@ -9,11 +9,8 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import android.util.DisplayMetrics;
 
 import com.facebook.react.common.MapBuilder;
 
@@ -25,7 +22,6 @@ import com.facebook.react.common.MapBuilder;
 
   private static final String CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
   private static final String CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
-  private static final String LAYOUT_ONLY_PROPS = "layoutOnlyProps";
 
   /**
    * Generates map of constants that is then exposed by {@link UIManagerModule}. The constants map
@@ -40,10 +36,8 @@ import com.facebook.react.common.MapBuilder;
    * {@link UIManagerModuleConstants}.
    * TODO(6845124): Create a test for this
    */
-  /* package */ static Map<String, Object> createConstants(
-      DisplayMetrics displayMetrics,
-      List<ViewManager> viewManagers) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants(displayMetrics);
+  /* package */ static Map<String, Object> createConstants(List<ViewManager> viewManagers) {
+    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
     Map bubblingEventTypesConstants = UIManagerModuleConstants.getBubblingEventTypeConstants();
     Map directEventTypesConstants = UIManagerModuleConstants.getDirectEventTypeConstants();
 
@@ -76,7 +70,6 @@ import com.facebook.react.common.MapBuilder;
 
     constants.put(CUSTOM_BUBBLING_EVENT_TYPES_KEY, bubblingEventTypesConstants);
     constants.put(CUSTOM_DIRECT_EVENT_TYPES_KEY, directEventTypesConstants);
-    constants.put(LAYOUT_ONLY_PROPS, UIManagerModuleConstants.getLayoutOnlyPropsConstants());
 
     return constants;
   }

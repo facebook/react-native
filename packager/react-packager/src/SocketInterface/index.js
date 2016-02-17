@@ -30,17 +30,26 @@ const SocketInterface = {
         const value = options[key];
         if (value) {
           hash.update(
-            typeof value === 'string' ? value : JSON.stringify(value)
+            options[key] != null && typeof value === 'string'
+              ? value
+              : JSON.stringify(value)
           );
         }
       });
 
-      const sockPath = path.join(
+      let sockPath = path.join(
         tmpdir,
         'react-packager-' + hash.digest('hex')
       );
+      if (process.platform === 'win32'){
+        // on Windows, use a named pipe, convert sockPath into a valid pipe name
+        // based on https://gist.github.com/domenic/2790533
+        sockPath = sockPath.replace(/^\//, '')
+        sockPath = sockPath.replace(/\//g, '-')
+        sockPath = '\\\\.\\pipe\\' + sockPath
+      }
 
-      if (fs.existsSync(sockPath)) {
+      if (existsSync(sockPath)) {
         var sock = net.connect(sockPath);
         sock.on('connect', () => {
           SocketClient.create(sockPath).then(
@@ -124,6 +133,15 @@ function createServer(resolve, reject, options, sockPath) {
     type: 'createSocketServer',
     data: { sockPath, options }
   });
+}
+
+function existsSync(filename) {
+  try {
+    fs.accessSync(filename);
+    return true;
+  } catch(ex) {
+    return false;
+  }
 }
 
 module.exports = SocketInterface;

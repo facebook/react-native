@@ -15,7 +15,7 @@
 
 // WARNING: This is an optimized version that fails on hasOwnProperty checks
 // and non objects. It's not spec-compliant. It's a perf optimization.
-/* eslint global-strict:0 */
+/* eslint strict:0 */
 Object.assign = function(target, sources) {
   if (__DEV__) {
     if (target == null) {
@@ -39,7 +39,7 @@ Object.assign = function(target, sources) {
       if (typeof nextSource !== 'object' &&
           typeof nextSource !== 'function') {
         throw new TypeError(
-          'In this environment the target of assign MUST be an object.' +
+          'In this environment the sources for assign MUST be an object.' +
           'This error is a performance optimization and not spec compliant.'
         );
       }
@@ -54,7 +54,7 @@ Object.assign = function(target, sources) {
         var hasOwnProperty = Object.prototype.hasOwnProperty;
         if (!hasOwnProperty.call(nextSource, key)) {
           throw new TypeError(
-            'One of the sources to assign has an enumerable key on the ' +
+            'One of the sources for assign has an enumerable key on the ' +
             'prototype chain. This is an edge case that we do not support. ' +
             'This error is a performance optimization and not spec compliant.'
           );

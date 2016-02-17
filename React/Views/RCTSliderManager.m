@@ -77,12 +77,15 @@ static void RCTSendSliderEvent(RCTSlider *sender, BOOL continuous)
 RCT_EXPORT_VIEW_PROPERTY(value, float);
 RCT_EXPORT_VIEW_PROPERTY(step, float);
 RCT_EXPORT_VIEW_PROPERTY(trackImage, UIImage);
+RCT_EXPORT_VIEW_PROPERTY(minimumTrackImage, UIImage);
+RCT_EXPORT_VIEW_PROPERTY(maximumTrackImage, UIImage);
 RCT_EXPORT_VIEW_PROPERTY(minimumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(maximumValue, float);
 RCT_EXPORT_VIEW_PROPERTY(minimumTrackTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(maximumTrackTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(onValueChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSlidingComplete, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(thumbImage, UIImage);
 RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSlider)
 {
   if (json) {

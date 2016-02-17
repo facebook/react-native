@@ -19,12 +19,14 @@ import android.app.Application;
 import android.content.Intent;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevSupportManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.ViewManager;
 
 /**
@@ -46,6 +48,18 @@ import com.facebook.react.uimanager.ViewManager;
  * have a static method, and so cannot (in Java < 8), be one.
  */
 public abstract class ReactInstanceManager {
+
+  /**
+   * Listener interface for react instance events.
+   */
+  public interface ReactInstanceEventListener {
+    /**
+     * Called when the react context is initialized (all modules registered). Always called on the
+     * UI thread.
+     */
+    void onReactContextInitialized(ReactContext context);
+  }
+
   public abstract DevSupportManager getDevSupportManager();
 
   /**
@@ -117,6 +131,16 @@ public abstract class ReactInstanceManager {
   public abstract List<ViewManager> createAllViewManagers(
     ReactApplicationContext catalystApplicationContext);
 
+  /**
+   * Add a listener to be notified of react instance events.
+   */
+  public abstract void addReactInstanceEventListener(ReactInstanceEventListener listener);
+
+  /**
+   * Remove a listener previously added with {@link #addReactInstanceEventListener}.
+   */
+  public abstract void removeReactInstanceEventListener(ReactInstanceEventListener listener);
+
   @VisibleForTesting
   public abstract @Nullable ReactContext getCurrentReactContext();
 
@@ -140,13 +164,24 @@ public abstract class ReactInstanceManager {
     protected @Nullable Application mApplication;
     protected boolean mUseDeveloperSupport;
     protected @Nullable LifecycleState mInitialLifecycleState;
+    protected @Nullable UIImplementationProvider mUIImplementationProvider;
+    protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
 
     protected Builder() {
     }
 
     /**
+     * Sets a provider of {@link UIImplementation}.
+     * Uses default provider if null is passed.
+     */
+    public Builder setUIImplementationProvider(
+        @Nullable UIImplementationProvider uiImplementationProvider) {
+      mUIImplementationProvider = uiImplementationProvider;
+      return this;
+    }
+
+    /**
      * Name of the JS bundle file to be loaded from application's raw assets.
-     *
      * Example: {@code "index.android.js"}
      */
     public Builder setBundleAssetName(String bundleAssetName) {
@@ -156,7 +191,7 @@ public abstract class ReactInstanceManager {
     /**
      * Path to the JS bundle file to be loaded from the file system.
      *
-     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle}
+     * Example: {@code "assets://index.android.js" or "/sdcard/main.jsbundle"}
      */
     public Builder setJSBundleFile(String jsBundleFile) {
       mJSBundleFile = jsBundleFile;
@@ -215,6 +250,16 @@ public abstract class ReactInstanceManager {
     }
 
     /**
+     * Set the exception handler for all native module calls. If not set, the default
+     * {@link DevSupportManager} will be used, which shows a redbox in dev mode and rethrows
+     * (crashes the app) in prod mode.
+     */
+    public Builder setNativeModuleCallExceptionHandler(NativeModuleCallExceptionHandler handler) {
+      mNativeModuleCallExceptionHandler = handler;
+      return this;
+    }
+
+    /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
      * <ul>
@@ -231,6 +276,11 @@ public abstract class ReactInstanceManager {
           mJSMainModuleName != null || mJSBundleFile != null,
           "Either MainModuleName or JS Bundle File needs to be provided");
 
+      if (mUIImplementationProvider == null) {
+        // create default UIImplementationProvider if the provided one is null.
+        mUIImplementationProvider = new UIImplementationProvider();
+      }
+
       return new ReactInstanceManagerImpl(
           Assertions.assertNotNull(
               mApplication,
@@ -240,7 +290,9 @@ public abstract class ReactInstanceManager {
           mPackages,
           mUseDeveloperSupport,
           mBridgeIdleDebugListener,
-          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"));
+          Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
+          mUIImplementationProvider,
+          mNativeModuleCallExceptionHandler);
     }
   }
 }

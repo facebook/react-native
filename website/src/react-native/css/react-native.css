@@ -312,6 +312,14 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   display: inline;
 }
 
+.nav-main a.nav-version {
+  font-size: 16px;
+  font-weight: 800;
+  color: #05A5D1;
+  margin-left: 5px;
+  text-decoration: underline;
+}
+
 .hero {
   background: #05A5D1;
   padding: 50px 0;
@@ -476,6 +484,15 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 .tutorial-mock img {
   border: 1px solid #ccc;
   box-shadow: 5px 5px 5px #888888;
+}
+
+.versions ul {
+  list-style: none;
+}
+
+.versions li {
+  font-size: 16px;
+  padding-top: 10px;
 }
 
 #examples h3, .home-presentation h3 {
@@ -699,6 +716,10 @@ figure {
 .inner-content {
   float: left;
   width: 650px;
+}
+
+.showcaseSection .inner-content {
+  width: 800px;
 }
 
 .nosidebar .inner-content {
@@ -1037,6 +1058,11 @@ div[data-twttr-id] iframe {
   margin-top: 0;
 }
 
+.compactProps .propTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
 .prop {
   padding: 5px 10px;
 }
@@ -1067,16 +1093,46 @@ div[data-twttr-id] iframe {
   -ms-user-select: none;
 }
 
-.edit-github {
-  font-size: 15px;
-  font-weight: normal;
-  float: right;
+.color {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  position: relative;
+  top: 5px;
 }
 
-.run-example {
-  font-size: 15px;
-  float: right;
-  margin-right: 20px;
+.color::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.deprecated {
+  margin-bottom: 24px;
+}
+
+.deprecatedTitle {
+  margin-bottom: 6px;
+  line-height: 18px;
+  font-weight: bold;
+  color: #ffa500;
+}
+
+.deprecatedIcon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: top;
+}
+
+.deprecatedMessage {
+  margin-left: 26px;
 }
 
 #content {
@@ -1084,18 +1140,17 @@ div[data-twttr-id] iframe {
 }
 
 .showcaseHeader {
-  text-align: center;
   padding-bottom: 15px;
   padding-top: 15px;
+  text-align: center;
 }
 
 .showcase {
-  margin: 30px auto;
+  margin: 30px auto 10px auto;
   width: 100%;
   display: inline-block;
   text-align: center;
   vertical-align: top;
-  transition: 0.2s opacity ease-in;
 }
 
 @media only screen
@@ -1109,7 +1164,7 @@ div[data-twttr-id] iframe {
 @media only screen
   and (min-device-width: 1024px) {
   .showcase {
-    width: 25%;
+    width: 20%;
   }
 }
 
@@ -1128,6 +1183,7 @@ div[data-twttr-id] iframe {
 
 .showcase p {
   margin-top: 5px;
+  font-weight: normal;
 }
 
 .showcase a {
@@ -1208,5 +1264,107 @@ div[data-twttr-id] iframe {
   }
   ol {
     margin: 0;
+  }
+}
+
+
+@media only screen and (max-device-width: 840px) {
+  .showcaseSection .inner-content {
+    width: 100%;
+  }
+}
+
+/** Algolia Doc Search **/
+
+
+div.algolia-search-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 15px;
+}
+
+@media screen and (max-width: 960px) {
+  div.algolia-search-wrapper {
+    display: none;
+  }
+}
+
+input#algolia-doc-search {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  background: transparent url('../img/search.png') no-repeat left center;
+  background-size: 16px 16px;
+
+  padding-left: 30px;
+  font-size: 16px;
+  line-height: 20px;
+  background-color: #3B3738;
+  border-bottom: solid 3px #3B3738;
+  color: white;
+  outline: none;
+  width: 130px;
+  height: 53px;
+
+  transition: border-color .2s ease, width .2s ease;
+  -webkit-transition: border-color .2s ease, width .2s ease;
+  -moz-transition: border-color .2s ease, width .2s ease;
+  -o-transition: border-color .2s ease, width .2s ease;
+}
+
+input#algolia-doc-search:focus {
+  border-color: #05A5D1;
+  width: 240px;
+}
+
+@media screen and (max-width: 1085px) {
+  input#algolia-doc-search:focus {
+    width: 178px;
+  }
+}
+
+.algolia-autocomplete {
+  vertical-align: top;
+  height: 53px;
+
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* Bottom border of each suggestion */
+.algolia-docsearch-suggestion {
+  border-bottom-color: #05A5D1;
+}
+/* Main category headers */
+.algolia-docsearch-suggestion--category-header {
+  background-color: #3B3738;
+}
+/* Highlighted search terms */
+.algolia-docsearch-suggestion--highlight {
+  color: #05A5D1;
+}
+/* Highligted search terms in the main category headers */
+.algolia-docsearch-suggestion--category-header .algolia-docsearch-suggestion--highlight  {
+  background-color: #05A5D1;
+}
+/* Currently selected suggestion */
+.aa-cursor .algolia-docsearch-suggestion--content {
+  color: #05A5D1;
+}
+.aa-cursor .algolia-docsearch-suggestion {
+  background: hsl(198, 100%, 96%);
+}
+
+/* For bigger screens, when displaying results in two columns */
+@media (min-width: 768px) {
+  /* Bottom border of each suggestion */
+  .algolia-docsearch-suggestion {
+    border-bottom-color: hsl(198, 100%, 94%);
+  }
+  /* Left column, with secondary category header */
+  .algolia-docsearch-suggestion--subcategory-column {
+    border-right-color: hsl(198, 100%, 94%);
+    background-color: hsl(198, 100%, 96%);
+    color: #3B3738;
   }
 }

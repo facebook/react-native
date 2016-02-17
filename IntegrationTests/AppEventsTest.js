@@ -24,8 +24,15 @@ var deepDiffer = require('deepDiffer');
 
 var TEST_PAYLOAD = {foo: 'bar'};
 
+type AppEvent = { data: Object, ts: number, };
+type State = {
+  sent: 'none' | AppEvent,
+  received: 'none' | AppEvent,
+  elapsed?: string,
+};
+
 var AppEventsTest = React.createClass({
-  getInitialState: function() {
+  getInitialState(): State {
     return {sent: 'none', received: 'none'};
   },
   componentDidMount: function() {

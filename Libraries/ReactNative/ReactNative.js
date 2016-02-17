@@ -26,7 +26,6 @@ var ReactNativeMount = require('ReactNativeMount');
 var ReactPropTypes = require('ReactPropTypes');
 var ReactUpdates = require('ReactUpdates');
 
-var deprecated = require('deprecated');
 var findNodeHandle = require('findNodeHandle');
 var invariant = require('invariant');
 var onlyChild = require('onlyChild');
@@ -85,6 +84,7 @@ var ReactNative = {
     map: ReactChildren.map,
     forEach: ReactChildren.forEach,
     count: ReactChildren.count,
+    toArray: ReactChildren.toArray,
     only: onlyChild
   },
   Component: ReactComponent,

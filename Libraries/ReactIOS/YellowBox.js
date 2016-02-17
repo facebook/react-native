@@ -14,7 +14,6 @@
 
 const EventEmitter = require('EventEmitter');
 import type EmitterSubscription from 'EmitterSubscription';
-const Map = require('Map');
 const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
@@ -84,7 +83,7 @@ function updateWarningMap(format, ...args): void {
   ].join(' ');
 
   const count = _warningMap.has(warning) ? _warningMap.get(warning) : 0;
-  _warningMap.set(warning, count + 2);
+  _warningMap.set(warning, count + 1);
   _warningEmitter.emit('warning', _warningMap);
 }
 
@@ -122,7 +121,13 @@ const WarningRow = ({count, warning, onPress}) => {
   );
 };
 
-const WarningInspector = ({count, warning, onClose, onDismiss}) => {
+const WarningInspector = ({
+  count,
+  warning,
+  onClose,
+  onDismiss,
+  onDismissAll,
+}) => {
   const ScrollView = require('ScrollView');
   const Text = require('Text');
   const TouchableHighlight = require('TouchableHighlight');
@@ -151,7 +156,16 @@ const WarningInspector = ({count, warning, onClose, onDismiss}) => {
             style={styles.inspectorButton}
             underlayColor="transparent">
             <Text style={styles.inspectorButtonText}>
-              Dismiss Warning
+              Dismiss
+            </Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            activeOpacity={0.5}
+            onPress={onDismissAll}
+            style={styles.inspectorButton}
+            underlayColor="transparent">
+            <Text style={styles.inspectorButtonText}>
+              Dismiss All
             </Text>
           </TouchableHighlight>
         </View>
@@ -175,9 +189,13 @@ class YellowBox extends React.Component {
     };
     this.dismissWarning = warning => {
       const {inspecting, warningMap} = this.state;
-      warningMap.delete(warning);
+      if (warning) {
+        warningMap.delete(warning);
+      } else {
+        warningMap.clear();
+      }
       this.setState({
-        inspecting: inspecting === warning ? null : inspecting,
+        inspecting: (warning && inspecting !== warning) ? inspecting : null,
         warningMap,
       });
     };
@@ -217,6 +235,7 @@ class YellowBox extends React.Component {
         warning={inspecting}
         onClose={() => this.setState({inspecting: null})}
         onDismiss={() => this.dismissWarning(inspecting)}
+        onDismissAll={() => this.dismissWarning(null)}
       /> :
       null;
 
@@ -242,7 +261,7 @@ class YellowBox extends React.Component {
     ];
     return (
       <View style={inspector ? styles.fullScreen : listStyle}>
-        <ScrollView style={listStyle}>
+        <ScrollView style={listStyle} scrollsToTop={false}>
           {rows}
         </ScrollView>
         {inspector}
@@ -280,11 +299,8 @@ var styles = StyleSheet.create({
     bottom: 0,
   },
   inspectorButton: {
+    flex: 1,
     padding: 22,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
   inspectorButtonText: {
     color: textColor,

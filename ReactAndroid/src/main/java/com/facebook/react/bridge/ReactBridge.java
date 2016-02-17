@@ -56,6 +56,19 @@ public class ReactBridge extends Countable {
     super.dispose();
   }
 
+  public void handleMemoryPressure(MemoryPressure level) {
+    switch (level) {
+      case MODERATE:
+        handleMemoryPressureModerate();
+        break;
+      case CRITICAL:
+        handleMemoryPressureCritical();
+        break;
+      default:
+        throw new IllegalArgumentException("Unknown level: " + level);
+    }
+  }
+
   private native void initialize(
       JavaScriptExecutor jsExecutor,
       ReactCallback callback,
@@ -72,4 +85,15 @@ public class ReactBridge extends Countable {
   public native boolean supportsProfiling();
   public native void startProfiler(String title);
   public native void stopProfiler(String title, String filename);
+  private native void handleMemoryPressureModerate();
+  private native void handleMemoryPressureCritical();
+
+  /**
+   * This method will return a long representing the underlying JSGlobalContextRef pointer or
+   * 0 (representing NULL) when in Chrome debug mode, and is only useful if passed back through
+   * the JNI to native code that will use it with the JavaScriptCore C API.
+   * **WARNING:** This method is *experimental* and should only be used when no other option is
+   * available. It will likely change in a future release!
+   */
+  public native long getJavaScriptContextNativePtrExperimental();
 }

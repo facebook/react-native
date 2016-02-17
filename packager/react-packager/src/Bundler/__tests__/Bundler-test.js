@@ -46,6 +46,7 @@ describe('Bundler', function() {
   }
 
   var getDependencies;
+  var getModuleSystemDependencies;
   var wrapModule;
   var bundler;
   var assetServer;
@@ -53,10 +54,12 @@ describe('Bundler', function() {
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
+    getModuleSystemDependencies = jest.genMockFn();
     wrapModule = jest.genMockFn();
     Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
+        getModuleSystemDependencies: getModuleSystemDependencies,
         wrapModule: wrapModule,
       };
     });
@@ -112,6 +115,10 @@ describe('Bundler', function() {
       });
     });
 
+    getModuleSystemDependencies.mockImpl(function() {
+      return [];
+    });
+
     JSTransformer.prototype.loadFileAndTransform
       .mockImpl(function(path) {
         return Promise.resolve({
@@ -123,7 +130,10 @@ describe('Bundler', function() {
       });
 
     wrapModule.mockImpl(function(response, module, code) {
-      return Promise.resolve('lol ' + code + ' lol');
+      return module.getName().then(name => ({
+        name,
+        code: 'lol ' + code + ' lol'
+      }));
     });
 
     sizeOf.mockImpl(function(path, cb) {
@@ -151,43 +161,29 @@ describe('Bundler', function() {
       runBeforeMainModule: [],
       runModule: true,
       sourceMapUrl: 'source_map_url',
-    }).then(function(p) {
-        expect(p.addModule.mock.calls[0][0]).toEqual({
-          code: 'lol transformed /root/foo.js lol',
-          map: 'sourcemap /root/foo.js',
-          sourceCode: 'source /root/foo.js',
-          sourcePath: '/root/foo.js',
-        });
+    }).then(bundle => {
+        const ithAddedModule = (i) => bundle.addModule.mock.calls[i][2].path;
 
-        expect(p.addModule.mock.calls[1][0]).toEqual({
-          code: 'lol transformed /root/bar.js lol',
-          map: 'sourcemap /root/bar.js',
-          sourceCode: 'source /root/bar.js',
-          sourcePath: '/root/bar.js'
-        });
+        expect(ithAddedModule(0)).toEqual('/root/foo.js');
+        expect(ithAddedModule(1)).toEqual('/root/bar.js');
+        expect(ithAddedModule(2)).toEqual('/root/img/img.png');
+        expect(ithAddedModule(3)).toEqual('/root/img/new_image.png');
+        expect(ithAddedModule(4)).toEqual('/root/file.json');
 
-        var imgModule_DEPRECATED = {
+        expect(bundle.finalize.mock.calls[0]).toEqual([
+          {runMainModule: true, runBeforeMainModule: []}
+        ]);
+
+        expect(bundle.addAsset.mock.calls).toContain([{
           __packager_asset: true,
           path: '/root/img/img.png',
           uri: 'img',
           width: 25,
           height: 50,
           deprecated: true,
-        };
+        }]);
 
-        expect(p.addModule.mock.calls[2][0]).toEqual({
-          code: 'lol module.exports = ' +
-            JSON.stringify(imgModule_DEPRECATED) +
-            '; lol',
-          sourceCode: 'module.exports = ' +
-            JSON.stringify(imgModule_DEPRECATED) +
-            ';',
-          sourcePath: '/root/img/img.png',
-          virtual: true,
-          map: undefined,
-        });
-
-        var imgModule = {
+        expect(bundle.addAsset.mock.calls).toContain([{
           __packager_asset: true,
           fileSystemLocation: '/root/img',
           httpServerLocation: '/assets/img',
@@ -202,39 +198,7 @@ describe('Bundler', function() {
           hash: 'i am a hash',
           name: 'img',
           type: 'png',
-        };
-
-        expect(p.addModule.mock.calls[3][0]).toEqual({
-          code: 'lol module.exports = require("AssetRegistry").registerAsset(' +
-            JSON.stringify(imgModule) +
-            '); lol',
-          sourceCode: 'module.exports = require("AssetRegistry").registerAsset(' +
-            JSON.stringify(imgModule) +
-            ');',
-          sourcePath: '/root/img/new_image.png',
-          virtual: true,
-          map: undefined,
-        });
-
-        expect(p.addModule.mock.calls[4][0]).toEqual({
-          code: 'lol module.exports = {"json":true}; lol',
-          sourceCode: 'module.exports = {"json":true};',
-          sourcePath: '/root/file.json',
-          map: undefined,
-          virtual: true,
-        });
-
-        expect(p.finalize.mock.calls[0]).toEqual([
-          {runMainModule: true, runBeforeMainModule: []}
-        ]);
-
-        expect(p.addAsset.mock.calls).toContain([
-          imgModule_DEPRECATED
-        ]);
-
-        expect(p.addAsset.mock.calls).toContain([
-          imgModule
-        ]);
+        }]);
 
         // TODO(amasad) This fails with 0 != 5 in OSS
         //expect(ProgressBar.prototype.tick.mock.calls.length).toEqual(modules.length);
@@ -242,11 +206,12 @@ describe('Bundler', function() {
   });
 
   pit('gets the list of dependencies from the resolver', function() {
-    return bundler.getDependencies('/root/foo.js', true)
-      .then(
-        () => expect(getDependencies)
-                .toBeCalledWith('/root/foo.js', { dev: true })
-      );
+    return bundler.getDependencies('/root/foo.js', true).then(() =>
+      expect(getDependencies).toBeCalledWith(
+        '/root/foo.js',
+        { dev: true, recursive: true },
+      )
+    );
   });
 
   describe('getOrderedDependencyPaths', () => {

@@ -49,7 +49,7 @@ Then you just need a little bit of JavaScript to make this a usable React compon
 ```javascript
 // MapView.js
 
-var { requireNativeComponent } = require('react-native');
+import { requireNativeComponent } from 'react-native';
 
 // requireNativeComponent automatically resolves this to "RCTMapManager"
 module.exports = requireNativeComponent('RCTMap', null);
@@ -79,8 +79,7 @@ This isn't very well documented though - in order to know what properties are av
 
 ```javascript
 // MapView.js
-var React = require('react-native');
-var { requireNativeComponent } = React;
+import React, { requireNativeComponent } from 'react-native';
 
 class MapView extends React.Component {
   render() {
@@ -267,7 +266,7 @@ RCT_EXPORT_MODULE()
 }
 ```
 
-You can see we're setting the manager as the delegate for every view that it vends, then in the delegate method `-mapView:regionDidChangeAnimated:` the region is combined with the `reactTag` target to make an event that is dispatched to the corresponding React component instance in your application via `sendInputEventWithName:body:`.  The event name `@"topChange"` maps to the `onChange` callback prop in JavaScript (mappings are [here](https://github.com/facebook/react-native/blob/master/React/Modules/RCTUIManager.m#L1165)).  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
+You can see we're setting the manager as the delegate for every view that it vends, then in the delegate method `-mapView:regionDidChangeAnimated:` the region is combined with the `reactTag` target to make an event that is dispatched to the corresponding React component instance in your application via `sendInputEventWithName:body:`.  The event name `@"topChange"` maps to the `onChange` callback prop in JavaScript.  This callback is invoked with the raw event, which we typically process in the wrapper component to make a simpler API:
 
 ```javascript
 // MapView.js
@@ -302,7 +301,8 @@ Since all our native react views are subclasses of `UIView`, most style attribut
 ```javascript
 // DatePickerIOS.ios.js
 
-var RCTDatePickerIOSConsts = require('react-native').NativeModules.UIManager.RCTDatePicker.Constants;
+import { UIManager } from 'react-native';
+var RCTDatePickerIOSConsts = UIManager.RCTDatePicker.Constants;
 ...
   render: function() {
     return (

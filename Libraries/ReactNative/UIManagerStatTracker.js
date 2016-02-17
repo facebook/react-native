@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 var installed = false;
 var UIManagerStatTracker = {
@@ -32,20 +32,20 @@ var UIManagerStatTracker = {
         statLogHandle = setImmediate(printStats);
       }
     }
-    var createViewOrig = RCTUIManager.createView;
-    RCTUIManager.createView = function(tag, className, rootTag, props) {
+    var createViewOrig = UIManager.createView;
+    UIManager.createView = function(tag, className, rootTag, props) {
       incStat('createView', 1);
       incStat('setProp', Object.keys(props || []).length);
       createViewOrig(tag, className, rootTag, props);
     };
-    var updateViewOrig = RCTUIManager.updateView;
-    RCTUIManager.updateView = function(tag, className, props) {
+    var updateViewOrig = UIManager.updateView;
+    UIManager.updateView = function(tag, className, props) {
       incStat('updateView', 1);
       incStat('setProp', Object.keys(props || []).length);
       updateViewOrig(tag, className, props);
     };
-    var manageChildrenOrig = RCTUIManager.manageChildren;
-    RCTUIManager.manageChildren = function(tag, moveFrom, moveTo, addTags, addIndices, remove) {
+    var manageChildrenOrig = UIManager.manageChildren;
+    UIManager.manageChildren = function(tag, moveFrom, moveTo, addTags, addIndices, remove) {
       incStat('manageChildren', 1);
       incStat('move', Object.keys(moveFrom || []).length);
       incStat('remove', Object.keys(remove || []).length);

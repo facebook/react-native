@@ -14,13 +14,12 @@
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var ReactNativeEventEmitter = require('ReactNativeEventEmitter');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var ReactNativeViewPool = require('ReactNativeViewPool');
 var ReactMultiChild = require('ReactMultiChild');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+var invariant = require('invariant');
 var warning = require('warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
@@ -48,31 +47,6 @@ var ReactNativeBaseComponent = function(
 };
 
 /**
- * Generates and caches arrays of the form:
- *
- *    [0, 1, 2, 3]
- *    [0, 1, 2, 3, 4]
- *    [0, 1]
- *
- * @param {number} size Size of array to generate.
- * @return {Array<number>} Array with values that mirror the index.
- */
-var cachedIndexArray = function(size) {
-  var cachedResult = cachedIndexArray._cache[size];
-  if (!cachedResult) {
-    var arr = [];
-    for (var i = 0; i < size; i++) {
-      arr[i] = i;
-    }
-    cachedIndexArray._cache[size] = arr;
-    return arr;
-  } else {
-    return cachedResult;
-  }
-};
-cachedIndexArray._cache = {};
-
-/**
  * Mixin for containers that contain UIViews. NOTE: markup is rendered markup
  * which is a `viewID` ... see the return value for `mountComponent` !
  */
@@ -89,7 +63,6 @@ ReactNativeBaseComponent.Mixin = {
   unmountComponent: function() {
     deleteAllListeners(this._rootNodeID);
     this.unmountChildren();
-    ReactNativeViewPool.release(this);
     this._rootNodeID = null;
   },
 
@@ -107,11 +80,11 @@ ReactNativeBaseComponent.Mixin = {
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
     if (mountImages.length) {
-      var indexes = cachedIndexArray(mountImages.length);
+
       // TODO: Pool these per platform view class. Reusing the `mountImages`
       // array would likely be a jit deopt.
       var createdTags = [];
-      for (var i = 0; i < mountImages.length; i++) {
+      for (var i = 0, l = mountImages.length; i < l; i++) {
         var mountImage = mountImages[i];
         var childTag = mountImage.tag;
         var childID = mountImage.rootNodeID;
@@ -125,8 +98,7 @@ ReactNativeBaseComponent.Mixin = {
         );
         createdTags[i] = mountImage.tag;
       }
-      RCTUIManager
-        .manageChildren(containerTag, null, null, createdTags, indexes, null);
+      UIManager.setChildren(containerTag, createdTags);
     }
   },
 
@@ -143,7 +115,11 @@ ReactNativeBaseComponent.Mixin = {
     this._currentElement = nextElement;
 
     if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+      for (var key in this.viewConfig.validAttributes) {
+        if (nextElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(nextElement.props[key]);
+        }
+      }
     }
 
     var updatePayload = ReactNativeAttributePayload.diff(
@@ -153,7 +129,7 @@ ReactNativeBaseComponent.Mixin = {
     );
 
     if (updatePayload) {
-      RCTUIManager.updateView(
+      UIManager.updateView(
         ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(this._rootNodeID),
         this.viewConfig.uiViewClassName,
         updatePayload
@@ -206,7 +182,34 @@ ReactNativeBaseComponent.Mixin = {
   mountComponent: function(rootID, transaction, context) {
     this._rootNodeID = rootID;
 
-    var tag = ReactNativeViewPool.acquire(this);
+    var tag = ReactNativeTagHandles.allocateTag();
+
+    if (__DEV__) {
+      for (var key in this.viewConfig.validAttributes) {
+        if (this._currentElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(this._currentElement.props[key]);
+        }
+      }
+    }
+
+    var updatePayload = ReactNativeAttributePayload.create(
+      this._currentElement.props,
+      this.viewConfig.validAttributes
+    );
+
+    var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
+    if (nativeTopRootID == null) {
+      invariant(
+        false,
+        'nativeTopRootID not found for tag ' + tag + ' view type ' +
+          this.viewConfig.uiViewClassName + ' with rootID ' + rootID);
+    }
+    UIManager.createView(
+      tag,
+      this.viewConfig.uiViewClassName,
+      ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID],
+      updatePayload
+    );
 
     this._registerListenersUponCreation(this._currentElement.props);
     this.initializeChildren(

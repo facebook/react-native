@@ -39,10 +39,12 @@ TESTS.forEach(
 // Modules required for integration tests
 require('LoggingTestModule');
 
+type Test = any;
+
 var IntegrationTestsApp = React.createClass({
   getInitialState: function() {
     return {
-      test: null,
+      test: (null: ?Test),
     };
   },
   render: function() {

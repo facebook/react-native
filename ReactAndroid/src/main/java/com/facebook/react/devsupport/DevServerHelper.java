@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +26,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.ConnectionPool;
@@ -33,6 +33,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+
 import okio.Okio;
 import okio.Sink;
 
@@ -55,14 +56,14 @@ public class DevServerHelper {
   private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s/%s.bundle?platform=android&dev=%s";
+      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
       "http://%s/launch-chrome-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
       "http://%s/onchange";
-  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy";
+  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
   private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
@@ -91,6 +92,7 @@ public class DevServerHelper {
   private boolean mOnChangePollingEnabled;
   private @Nullable OkHttpClient mOnChangePollingClient;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
+  private @Nullable Call mDownloadBundleFromURLCall;
 
   public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
@@ -120,10 +122,17 @@ public class DevServerHelper {
   }
 
   /**
-   * @return whether we should enabled dev mode or not when requesting JS bundles.
+   * @return whether we should enable dev mode when requesting JS bundles.
    */
   private boolean getDevMode() {
     return mSettings.isJSDevModeEnabled();
+  }
+
+  /**
+   * @return whether we should enabled HMR when requesting JS bundles.
+   */
+  private boolean getHMR() {
+    return mSettings.isHotModuleReplacementEnabled();
   }
 
   /**
@@ -160,27 +169,49 @@ public class DevServerHelper {
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private static String createBundleURL(String host, String jsModulePath, boolean devMode) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode);
+  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr) {
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr);
   }
 
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
       final String jsModulePath,
       final File outputFile) {
-    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode());
-    Request request = new Request.Builder()
+    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR());
+    final Request request = new Request.Builder()
         .url(bundleURL)
         .build();
-    Call call = mClient.newCall(request);
-    call.enqueue(new Callback() {
+    mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
+    mDownloadBundleFromURLCall.enqueue(new Callback() {
       @Override
       public void onFailure(Request request, IOException e) {
-        callback.onFailure(e);
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Could not connect to development server.\n\n")
+          .append("URL: ").append(request.urlString()).append("\n\n")
+          .append("Try the following to fix the issue:\n")
+          .append("\u2022 Ensure that the packager server is running\n")
+          .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
+          .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
+          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
+        callback.onFailure(new DebugServerException(sb.toString()));
       }
 
       @Override
       public void onResponse(Response response) throws IOException {
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
         // Check for server errors. If the server error has the expected form, fail with more info.
         if (!response.isSuccessful()) {
           String body = response.body().string();
@@ -188,7 +219,12 @@ public class DevServerHelper {
           if (debugServerException != null) {
             callback.onFailure(debugServerException);
           } else {
-            callback.onFailure(new IOException("Unexpected response code: " + response.code()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("The development server returned response error code: ").append(response.code()).append("\n\n")
+              .append("URL: ").append(request.urlString()).append("\n\n")
+              .append("Body:\n")
+              .append(body);
+            callback.onFailure(new DebugServerException(sb.toString()));
           }
           return;
         }
@@ -207,6 +243,13 @@ public class DevServerHelper {
     });
   }
 
+  public void cancelDownloadBundleFromURL() {
+    if (mDownloadBundleFromURLCall != null) {
+      mDownloadBundleFromURLCall.cancel();
+      mDownloadBundleFromURLCall = null;
+    }
+  }
+
   public void isPackagerRunning(final PackagerStatusCallback callback) {
     String statusURL = createPackagerStatusURL(getDebugServerHost());
     Request request = new Request.Builder()
@@ -217,7 +260,10 @@ public class DevServerHelper {
         new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {
-            FLog.e(ReactConstants.TAG, "IOException requesting status from packager", e);
+            FLog.w(
+                ReactConstants.TAG,
+                "The packager does not seem to be running as we got an IOException requesting " +
+                    "its status: " + e.getMessage());
             callback.onPackagerStatusFetched(false);
           }
 
@@ -351,17 +397,17 @@ public class DevServerHelper {
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode());
+    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode());
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the Chrome proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode());
+    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR());
   }
 }

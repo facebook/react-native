@@ -15,6 +15,7 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTTouchEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -23,7 +24,7 @@
 // module if we were to assume that modules and RootViews had a 1:1 relationship
 @implementation RCTTouchHandler
 {
-  __weak RCTBridge *_bridge;
+  __weak RCTEventDispatcher *_eventDispatcher;
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
@@ -46,7 +47,7 @@
 
   if ((self = [super initWithTarget:self action:@selector(handleGestureUpdate:)])) {
 
-    _bridge = bridge;
+    _eventDispatcher = [bridge moduleForClass:[RCTEventDispatcher class]];
     _dispatchedInitialTouches = NO;
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
@@ -108,11 +109,9 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     }
 
     // Create touch
-    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:9];
+    NSMutableDictionary *reactTouch = [[NSMutableDictionary alloc] initWithCapacity:RCTMaxTouches];
     reactTouch[@"target"] = reactTag;
     reactTouch[@"identifier"] = @(touchID);
-    reactTouch[@"touches"] = (id)kCFNull;        // We hijack this touchObj to serve both as an event
-    reactTouch[@"changedTouches"] = (id)kCFNull; // and as a Touch object, so making this JIT friendly.
 
     // Add to arrays
     [_touchViews addObject:targetView];
@@ -150,6 +149,13 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   reactTouch[@"locationX"] = @(touchViewLocation.x);
   reactTouch[@"locationY"] = @(touchViewLocation.y);
   reactTouch[@"timestamp"] =  @(nativeTouch.timestamp * 1000); // in ms, for JS
+
+  // TODO: force for a 'normal' touch is usually 1.0;
+  // should we expose a `normalTouchForce` constant somewhere (which would
+  // have a value of `1.0 / nativeTouch.maximumPossibleForce`)?
+  if (RCTForceTouchAvailable()) {
+    reactTouch[@"force"] = @(RCTZeroIfNaN(nativeTouch.force / nativeTouch.maximumPossibleForce));
+  }
 }
 
 /**
@@ -191,9 +197,10 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     [reactTouches addObject:[touch copy]];
   }
 
-  eventName = RCTNormalizeInputEventName(eventName);
-  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
-                    args:@[eventName, reactTouches, changedIndexes]];
+  RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                     reactTouches:reactTouches
+                                                   changedIndexes:changedIndexes];
+  [_eventDispatcher sendEvent:event];
 }
 
 #pragma mark - Gesture Recognizer Delegate Callbacks
@@ -309,6 +316,12 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 - (void)reset
 {
   _dispatchedInitialTouches = NO;
+}
+
+- (void)cancel
+{
+  self.enabled = NO;
+  self.enabled = YES;
 }
 
 @end

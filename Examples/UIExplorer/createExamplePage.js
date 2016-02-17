@@ -39,11 +39,13 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
     },
 
     getBlock: function(example: Example, i) {
-      if (example.platform) {
-        if (Platform.OS !== example.platform) {
-          return;
+      // Filter platform-specific examples
+      var {title, description, platform} = example;
+      if (platform) {
+        if (Platform.OS !== platform) {
+          return null;
         }
-        example.title += ' (' + example.platform + ' only)';
+        title += ' (' + platform + ' only)';
       }
       // Hack warning: This is a hack because the www UI explorer requires
       // renderComponent to be called.
@@ -74,8 +76,8 @@ var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
       return (
         <UIExplorerBlock
           key={i}
-          title={example.title}
-          description={example.description}>
+          title={title}
+          description={description}>
           {renderedComponent}
         </UIExplorerBlock>
       );

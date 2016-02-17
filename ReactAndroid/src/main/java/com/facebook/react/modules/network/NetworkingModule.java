@@ -14,7 +14,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.CookieHandler;
+
+import java.util.concurrent.TimeUnit;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -58,6 +59,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
 
   private final OkHttpClient mClient;
+  private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
   private boolean mShuttingDown;
 
@@ -68,6 +70,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     super(reactContext);
     mClient = client;
     mClient.networkInterceptors().add(new StethoInterceptor());
+    mCookieHandler = new ForwardingCookieHandler(reactContext);
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
   }
@@ -76,7 +79,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.getCookieAwareOkHttpClient(context));
+    this(context, null, OkHttpClientProvider.getOkHttpClient());
   }
 
   /**
@@ -85,11 +88,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.getCookieAwareOkHttpClient(context));
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient());
   }
 
   public NetworkingModule(ReactApplicationContext reactContext, OkHttpClient client) {
     this(reactContext, null, client);
+  }
+
+  @Override
+  public void initialize() {
+    mClient.setCookieHandler(mCookieHandler);
   }
 
   @Override
@@ -102,24 +110,36 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     mShuttingDown = true;
     mClient.cancel(null);
 
-    CookieHandler cookieHandler = mClient.getCookieHandler();
-    if (cookieHandler instanceof ForwardingCookieHandler) {
-      ((ForwardingCookieHandler) cookieHandler).destroy();
-    }
+    mCookieHandler.destroy();
+    mClient.setCookieHandler(null);
   }
 
   @ReactMethod
+  /**
+  * @param timeout value of 0 results in no timeout
+  */
   public void sendRequest(
       String method,
       String url,
       final int requestId,
       ReadableArray headers,
       ReadableMap data,
-      final boolean useIncrementalUpdates) {
+      final boolean useIncrementalUpdates,
+      int timeout) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
+    }
+
+    OkHttpClient client = mClient;
+    // If the current timeout does not equal the passed in timeout, we need to clone the existing
+    // client and set the timeout explicitly on the clone.  This is cheap as everything else is
+    // shared under the hood.
+    // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
+    if (timeout != mClient.getConnectTimeout()) {
+      client = mClient.clone();
+      client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
     }
 
     Headers requestHeaders = extractHeaders(headers, data);
@@ -132,7 +152,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     requestBuilder.headers(requestHeaders);
 
     if (data == null) {
-      requestBuilder.method(method, null);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         onRequestError(requestId, "Payload is set but no content-type header specified");
@@ -177,11 +197,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, multipartBuilder.build());
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      // Ignore and treat it as if it were null.
-      requestBuilder.method(method, null);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
-    mClient.newCall(requestBuilder.build()).enqueue(
+    client.newCall(requestBuilder.build()).enqueue(
         new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {
@@ -285,6 +304,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     args.pushInt(requestId);
     args.pushInt(response.code());
     args.pushMap(headers);
+    args.pushString(response.request().urlString());
 
     getEventEmitter().emit("didReceiveNetworkResponse", args);
   }
@@ -319,10 +339,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void clearCookies(com.facebook.react.bridge.Callback callback) {
-    CookieHandler cookieHandler = mClient.getCookieHandler();
-    if (cookieHandler instanceof ForwardingCookieHandler) {
-      ((ForwardingCookieHandler) cookieHandler).clearCookies(callback);
-    }
+    mCookieHandler.clearCookies(callback);
   }
 
   private @Nullable MultipartBuilder constructMultipartBody(

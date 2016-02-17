@@ -31,7 +31,7 @@ var queryLayoutByID = require('queryLayoutByID');
  *
  * A good tap interaction isn't as simple as you might think. There should be a
  * slight delay before showing a highlight when starting a touch. If a
- * subsequent touch move exceeds the boundary of the elemement, it should
+ * subsequent touch move exceeds the boundary of the element, it should
  * unhighlight, but if that same touch is brought back within the boundary, it
  * should rehighlight again. A touch can move in and out of that boundary
  * several times, each time toggling highlighting, but a "press" is only
@@ -49,24 +49,24 @@ var queryLayoutByID = require('queryLayoutByID');
  *
  * - Choose the rendered component who's touches should start the interactive
  *   sequence. On that rendered node, forward all `Touchable` responder
- *   handlers. You can choose any rendered node you like. Choose a node who's
+ *   handlers. You can choose any rendered node you like. Choose a node whose
  *   hit target you'd like to instigate the interaction sequence:
  *
  *   // In render function:
  *   return (
- *     <div
+ *     <View
  *       onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
  *       onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
  *       onResponderGrant={this.touchableHandleResponderGrant}
  *       onResponderMove={this.touchableHandleResponderMove}
  *       onResponderRelease={this.touchableHandleResponderRelease}
  *       onResponderTerminate={this.touchableHandleResponderTerminate}>
- *       <div>
+ *       <View>
  *         Even though the hit detection/interactions are triggered by the
  *         wrapping (typically larger) node, we usually end up implementing
  *         custom logic that highlights this inner one.
- *       </div>
- *     </div>
+ *       </View>
+ *     </View>
  *   );
  *
  * - You may set up your own handlers for each of these events, so long as you
@@ -426,12 +426,22 @@ var TouchableMixin = {
         top: PRESS_EXPAND_PX,
         bottom: PRESS_EXPAND_PX
       };
-      
+
     var pressExpandLeft = pressRectOffset.left;
     var pressExpandTop = pressRectOffset.top;
     var pressExpandRight = pressRectOffset.right;
     var pressExpandBottom = pressRectOffset.bottom;
-    
+
+    var hitSlop = this.touchableGetHitSlop ?
+      this.touchableGetHitSlop() : null;
+
+    if (hitSlop) {
+      pressExpandLeft += hitSlop.left;
+      pressExpandTop += hitSlop.top;
+      pressExpandRight += hitSlop.right;
+      pressExpandBottom += hitSlop.bottom;
+    }
+
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
@@ -456,6 +466,11 @@ var TouchableMixin = {
           pressExpandBottom;
     if (isTouchWithinActive) {
       this._receiveSignal(Signals.ENTER_PRESS_RECT, e);
+      var curState = this.state.touchable.touchState;
+      if (curState === States.RESPONDER_INACTIVE_PRESS_IN) {
+        // fix for t7967420
+        this._cancelLongPressDelayTimeout();
+      }
     } else {
       this._cancelLongPressDelayTimeout();
       this._receiveSignal(Signals.LEAVE_PRESS_RECT, e);
@@ -564,7 +579,15 @@ var TouchableMixin = {
 
   _handleLongDelay: function(e) {
     this.longPressDelayTimeout = null;
-    this._receiveSignal(Signals.LONG_PRESS_DETECTED, e);
+    var curState = this.state.touchable.touchState;
+    if (curState !== States.RESPONDER_ACTIVE_PRESS_IN &&
+        curState !== States.RESPONDER_ACTIVE_LONG_PRESS_IN) {
+      console.error('Attempted to transition from state `' + curState + '` to `' +
+        States.RESPONDER_ACTIVE_LONG_PRESS_IN + '`, which is not supported. This is ' +
+        'most likely due to `Touchable.longPressDelayTimeout` not being cancelled.');
+    } else {
+      this._receiveSignal(Signals.LONG_PRESS_DETECTED, e);
+    }
   },
 
   /**
@@ -577,13 +600,13 @@ var TouchableMixin = {
    */
   _receiveSignal: function(signal, e) {
     var curState = this.state.touchable.touchState;
-    if (!(Transitions[curState] && Transitions[curState][signal])) {
+    var nextState = Transitions[curState] && Transitions[curState][signal];
+    if (!nextState) {
       throw new Error(
         'Unrecognized signal `' + signal + '` or state `' + curState +
         '` for Touchable responder `' + this.state.touchable.responderID + '`'
       );
     }
-    var nextState = Transitions[curState][signal];
     if (nextState === States.ERROR) {
       throw new Error(
         'Touchable cannot transition from `' + curState + '` to `' + signal +
@@ -610,7 +633,9 @@ var TouchableMixin = {
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
-    this.pressInLocation = {pageX: pageX, pageY: pageY};
+    var locationX = touch && touch.locationX;
+    var locationY = touch && touch.locationY;
+    this.pressInLocation = {pageX, pageY, locationX, locationY};
   },
 
   _getDistanceBetweenPoints: function (aX, aY, bX, bY) {
@@ -655,7 +680,7 @@ var TouchableMixin = {
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
-        this.pressOutDelayTimeout = this.setTimeout(function() {
+        this.pressOutDelayTimeout = setTimeout(() => {
           this.touchableHandleActivePressOut(e);
         }, this.touchableGetPressOutDelayMS());
       } else {

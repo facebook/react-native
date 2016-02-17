@@ -60,6 +60,14 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'string',
     required: false,
   },
+  unbundle: {
+    type: 'boolean',
+    default: false
+  },
+  recursive: {
+    type: 'boolean',
+    default: true,
+  },
 });
 
 class Resolver {
@@ -77,8 +85,8 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'fbjs-haste',
-        'react-haste',
+        'fbjs',
+        'react',
         'react-native',
         // Parse requires AsyncStorage. They will
         // change that to require('react-native') which
@@ -87,39 +95,79 @@ class Resolver {
         'parse',
       ],
       platforms: ['ios', 'android'],
+      preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
+      shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
     });
 
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
+
+    this._depGraph.load().catch(err => {
+      console.error(err.message + '\n' + err.stack);
+      process.exit(1);
+    });
+  }
+
+  getShallowDependencies(entryFile) {
+    return this._depGraph.getShallowDependencies(entryFile);
+  }
+
+  stat(filePath) {
+    return this._depGraph.getFS().stat(filePath);
+  }
+
+  getModuleForPath(entryFile) {
+    return this._depGraph.getModuleForPath(entryFile);
   }
 
   getDependencies(main, options) {
     const opts = getDependenciesValidateOpts(options);
 
-    return this._depGraph.getDependencies(main, opts.platform).then(
-      resolutionResponse => {
-        this._getPolyfillDependencies(opts.dev).reverse().forEach(
-          polyfill => resolutionResponse.prependDependency(polyfill)
-        );
+    return this._depGraph.getDependencies(
+      main,
+      opts.platform,
+      opts.recursive,
+    ).then(resolutionResponse => {
+      this._getPolyfillDependencies().reverse().forEach(
+        polyfill => resolutionResponse.prependDependency(polyfill)
+      );
 
-        return resolutionResponse.finalize();
-      }
-    );
+      return resolutionResponse.finalize();
+    });
   }
 
-  _getPolyfillDependencies(isDev) {
-    const polyfillModuleNames = [
-     isDev
+  getModuleSystemDependencies(options) {
+    const opts = getDependenciesValidateOpts(options);
+
+    const prelude = opts.dev
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
-        : path.join(__dirname, 'polyfills/prelude.js'),
-      path.join(__dirname, 'polyfills/require.js'),
+        : path.join(__dirname, 'polyfills/prelude.js');
+
+    const moduleSystem = opts.unbundle
+        ? path.join(__dirname, 'polyfills/require-unbundle.js')
+        : path.join(__dirname, 'polyfills/require.js');
+
+    return [
+      prelude,
+      moduleSystem
+    ].map(moduleName => new Polyfill({
+      path: moduleName,
+      id: moduleName,
+      dependencies: [],
+      isPolyfill: true,
+    }));
+  }
+
+  _getPolyfillDependencies() {
+    const polyfillModuleNames = [
       path.join(__dirname, 'polyfills/polyfills.js'),
       path.join(__dirname, 'polyfills/console.js'),
       path.join(__dirname, 'polyfills/error-guard.js'),
       path.join(__dirname, 'polyfills/String.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.prototype.es6.js'),
       path.join(__dirname, 'polyfills/Array.es6.js'),
+      path.join(__dirname, 'polyfills/Object.es7.js'),
       path.join(__dirname, 'polyfills/babelHelpers.js'),
     ].concat(this._polyfillModuleNames);
 
@@ -133,10 +181,10 @@ class Resolver {
     );
   }
 
-  wrapModule(resolutionResponse, module, code) {
+  resolveRequires(resolutionResponse, module, code) {
     return Promise.resolve().then(() => {
       if (module.isPolyfill()) {
-        return Promise.resolve(code);
+        return Promise.resolve({code});
       }
 
       const resolvedDeps = Object.create(null);
@@ -163,16 +211,29 @@ class Resolver {
           }
         };
 
-        return module.getName().then(
-          name => defineModuleCode({
-            code: code.replace(replacePatterns.IMPORT_RE, relativizeCode)
-                      .replace(replacePatterns.EXPORT_RE, relativizeCode)
-                      .replace(replacePatterns.REQUIRE_RE, relativizeCode),
-            moduleName: name,
-          })
-        );
+        code = code
+          .replace(replacePatterns.IMPORT_RE, relativizeCode)
+          .replace(replacePatterns.EXPORT_RE, relativizeCode)
+          .replace(replacePatterns.REQUIRE_RE, relativizeCode);
+
+        return module.getName().then(name => {
+          return {name, code};
+        });
       });
     });
+  }
+
+  wrapModule(resolutionResponse, module, code) {
+    if (module.isPolyfill()) {
+      return Promise.resolve({
+        code: definePolyfillCode(code),
+      });
+    }
+
+    return this.resolveRequires(resolutionResponse, module, code).then(
+      ({name, code}) => {
+        return {name, code: defineModuleCode(name, code)};
+      });
   }
 
   getDebugInfo() {
@@ -181,13 +242,21 @@ class Resolver {
 
 }
 
-function defineModuleCode({moduleName, code}) {
+function defineModuleCode(moduleName, code) {
   return [
     `__d(`,
     `'${moduleName}',`,
     'function(global, require, module, exports) {',
     `  ${code}`,
     '\n});',
+  ].join('');
+}
+
+function definePolyfillCode(code) {
+  return [
+    '(function(global) {',
+    code,
+    `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');
 }
 
