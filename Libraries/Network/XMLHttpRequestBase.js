@@ -66,12 +66,6 @@ class XMLHttpRequestBase {
     this._url = null;
     this._aborted = false;
   }
-  
-  static get UNSENT() { return 0; }
-  static get OPENED() { return 1; }
-  static get HEADERS_RECEIVED() { return 2; }
-  static get LOADING() { return 3; }
-  static get DONE() { return 4; }
 
   _reset() {
     this.readyState = this.UNSENT;
@@ -270,5 +264,11 @@ class XMLHttpRequestBase {
     }
   }
 }
+
+XMLHttpRequestBase.UNSENT = 0;
+XMLHttpRequestBase.OPENED = 1;
+XMLHttpRequestBase.HEADERS_RECEIVED = 2;
+XMLHttpRequestBase.LOADING = 3;
+XMLHttpRequestBase.DONE = 4;
 
 module.exports = XMLHttpRequestBase;
