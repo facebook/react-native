@@ -53,7 +53,7 @@ namespace ReactNative.UIManager
         private readonly ViewManagerRegistry _viewManagers;
         private readonly JavaScriptResponderHandler _jsResponderHandler;
         private readonly RootViewManager _rootViewManager;
-        private readonly LayoutAnimationManager _layoutAnimator;
+        private readonly LayoutAnimationController _layoutAnimator;
 
         /// <summary>
         /// Instantiates the <see cref="NativeViewHierarchyManager"/>.
@@ -62,7 +62,7 @@ namespace ReactNative.UIManager
         public NativeViewHierarchyManager(ViewManagerRegistry viewManagers)
         {
             _viewManagers = viewManagers;
-            _layoutAnimator = new LayoutAnimationManager();
+            _layoutAnimator = new LayoutAnimationController();
             _tagsToViews = new Dictionary<int, FrameworkElement>();
             _tagsToViewManagers = new Dictionary<int, IViewManager>();
             _rootTags = new Dictionary<int, bool>();
@@ -185,7 +185,7 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Clears out the <see cref="LayoutAnimationManager"/>.
+        /// Clears out the <see cref="LayoutAnimationController"/>.
         /// </summary>
         public void ClearLayoutAnimation()
         {
@@ -561,10 +561,10 @@ namespace ReactNative.UIManager
             }
             else
             {
+                Canvas.SetLeft(viewToUpdate, x);
+                Canvas.SetTop(viewToUpdate, y);
                 viewToUpdate.Width = width;
                 viewToUpdate.Height = height;
-                viewToUpdate.SetValue(Canvas.LeftProperty, x);
-                viewToUpdate.SetValue(Canvas.TopProperty, y);
             }
         }
     }

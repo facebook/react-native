@@ -1,63 +1,20 @@
-﻿using System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-
-namespace ReactNative.UIManager.LayoutAnimation
+﻿namespace ReactNative.UIManager.LayoutAnimation
 {
     /// <summary>
     /// Base Layout animation manager responsible for establishing the basic
     /// animation <see cref="Storyboard"/>.
     /// </summary>
-    class LayoutCreateAnimation : StoryboardAnimation
+    class LayoutCreateAnimation : BaseLayoutAnimation
     {
         /// <summary>
-        /// Indicates if the animation frame is valid for rendering.
+        /// Signals if the animation should be performed in reverse.
         /// </summary>
-        protected override bool IsValid
+        protected override bool IsReverse
         {
             get
             {
-                return Duration > TimeSpan.Zero;
+                return false;
             }
-        }
-
-
-        /// <summary>
-        /// The animation creation implementation for the next animation layout configuration cycle.
-        /// </summary>
-        /// <param name="view">The native <see cref="FrameworkElement"/> component.</param>
-        /// <param name="x">The X coordinate.</param>
-        /// <param name="y">The new Y coordinate.</param>
-        /// <param name="width">The new width for <see cref="FrameworkElement"/>.</param>
-        /// <param name="height">The new height for the <see cref="FrameworkElement"/>.</param>
-        /// <returns>The animation storyboard.</returns>
-        public override Storyboard CreateAnimationImpl(FrameworkElement view, int x, int y, int width, int height)
-        {
-            var animation = default(Storyboard);
-
-            if (PropertyType != AnimatedPropertyType.None)
-            {
-                animation = new Storyboard();
-                float fromValue = 0, toValue = 1;
-
-                if (PropertyType == AnimatedPropertyType.Opacity)
-                {
-                    animation.SetOpacityTimeline(base.Type.AsEasingFunction(), view, fromValue, toValue, Duration);
-                }
-                else if (PropertyType == AnimatedPropertyType.ScaleXY)
-                {
-                    view.RenderTransform = new TranslateTransform();
-                    animation.SetRepositionTimelines(base.Type.AsEasingFunction(), view, x, y, width, height, Duration);
-                    //animation.SetScalingTimeline(base.EasingFunction, view, fromValue, toValue, speedRatio, base.DurationMS);
-                }
-            }
-            else
-            {
-                return null;
-            }
-
-            return animation;
         }
     }
 }

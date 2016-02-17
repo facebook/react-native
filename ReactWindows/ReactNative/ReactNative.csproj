@@ -234,6 +234,9 @@
     <Compile Include="UIManager\BaseViewManager.cs" />
     <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\IViewParentManager.cs" />
+    <Compile Include="UIManager\LayoutAnimation\BaseLayoutAnimation.cs" />
+    <Compile Include="UIManager\LayoutAnimation\JObjectExtensions.cs" />
+    <Compile Include="UIManager\LayoutAnimation\LayoutAnimation.cs" />
     <Compile Include="UIManager\MeasureAssertions.cs" />
     <Compile Include="UIManager\ReactStylesDiffMap.cs" />
     <Compile Include="UIManager\ReactStylesDiffMapExtensions.cs" />
@@ -250,14 +253,11 @@
     <Compile Include="UIManager\AppRegistry.cs" />
     <Compile Include="UIManager\Events\TouchEventType.cs" />
     <Compile Include="UIManager\Events\TouchEventTypeExtensions.cs" />
-    <Compile Include="UIManager\LayoutAnimation\LayoutAnimationType.cs" />
     <Compile Include="UIManager\LayoutAnimation\InterpolationTypeExtensions.cs" />
-    <Compile Include="UIManager\LayoutAnimation\StoryboardAnimation.cs" />
     <Compile Include="UIManager\LayoutAnimation\AnimatedPropertyType.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutCreateAnimation.cs" />
-    <Compile Include="UIManager\LayoutAnimation\LayoutAnimationManager.cs" />
+    <Compile Include="UIManager\LayoutAnimation\LayoutAnimationController.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutUpdateAnimation.cs" />
-    <Compile Include="UIManager\LayoutAnimation\StoryboardExtensions.cs" />
     <Compile Include="Views\Image\ImageExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\InterpolationType.cs" />
     <Compile Include="UIManager\UIImplementationProvider.cs" />

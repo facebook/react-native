@@ -10,13 +10,13 @@ import React, {
 } from 'react-native';
 
 var CustomLayoutAnimation = {
-    duration: 200,
+    duration: 500,
     create: {
         type: LayoutAnimation.Types.linear,
         property: LayoutAnimation.Properties.opacity,
     },
     update: {
-        type: LayoutAnimation.Types.curveEaseInEaseOut,
+        type: LayoutAnimation.Types.linear,
     },
 };
 
@@ -33,7 +33,7 @@ class AnimationExample extends Component {
     onPress(index) {
 
         // Uncomment to animate the next state change.
-        // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        //LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
         // Or use a Custom Layout Animation
         LayoutAnimation.configureNext(CustomLayoutAnimation);

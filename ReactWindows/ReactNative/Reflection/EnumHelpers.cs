@@ -36,6 +36,15 @@ namespace ReactNative.Reflection
             return (T)result;
         }
 
+        public static T? ParseNullable<T>(string value)
+            where T : struct
+        {
+            if (value == null)
+                return null;
+
+            return Parse<T>(value);
+        }
+
         private static string Normalize(string value)
         {
             return value.ToLowerInvariant().Replace("-", "");
