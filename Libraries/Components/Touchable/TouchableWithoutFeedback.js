@@ -80,6 +80,15 @@ var TouchableWithoutFeedback = React.createClass({
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
     pressRetentionOffset: EdgeInsetsPropType,
+    /**
+     * This defines how far your touch can start away from the button. This is
+     * added to `pressRetentionOffset` when moving off of the button.
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
   },
 
   getInitialState: function() {
@@ -118,6 +127,10 @@ var TouchableWithoutFeedback = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function(): ?Object {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function(): number {
     return this.props.delayPressIn || 0;
   },
@@ -140,6 +153,7 @@ var TouchableWithoutFeedback = React.createClass({
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

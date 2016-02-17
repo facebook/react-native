@@ -13,12 +13,14 @@ import javax.annotation.Nullable;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.touch.ReactHitSlopView;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}.
@@ -118,7 +120,7 @@ public class TouchTargetHelper {
       }
     }
     return viewGroup;
-}
+  }
 
   /**
    * Returns whether the touch point is within the child View
@@ -144,12 +146,24 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-        && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
-      outLocalPoint.set(localX, localY);
-      return true;
+    if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
+      Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
+      if ((localX >= -hitSlopRect.left && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
+          && (localY >= -hitSlopRect.top && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
+        outLocalPoint.set(localX, localY);
+        return true;
+      }
+
+      return false;
+    } else {
+      if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
+          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
+        outLocalPoint.set(localX, localY);
+        return true;
+      }
+
+      return false;
     }
-    return false;
   }
 
 

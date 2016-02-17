@@ -93,7 +93,14 @@ exports.examples = [
     return <ForceTouchExample />;
   },
   platform: 'ios',
-}];
+}, {
+   title: 'Touchable Hit Slop',
+   description: '<Touchable*> components accept hitSlop prop which extends the touch area ' +
+     'without changing the view bounds.',
+   render: function(): ReactElement {
+     return <TouchableHitSlop />;
+   },
+ }];
 
 var TextOnPressBox = React.createClass({
   getInitialState: function() {
@@ -243,6 +250,48 @@ var ForceTouchExample = React.createClass({
   },
 });
 
+var TouchableHitSlop = React.createClass({
+  getInitialState: function() {
+    return {
+      timesPressed: 0,
+    };
+  },
+  onPress: function() {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  },
+  render: function() {
+    var log = '';
+    if (this.state.timesPressed > 1) {
+      log = this.state.timesPressed + 'x onPress';
+    } else if (this.state.timesPressed > 0) {
+      log = 'onPress';
+    }
+
+    return (
+      <View testID="touchable_hit_slop">
+        <View style={[styles.row, {justifyContent: 'center'}]}>
+          <TouchableOpacity
+            onPress={this.onPress}
+            style={styles.hitSlopWrapper}
+            hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
+            testID="touchable_hit_slop_button">
+            <Text style={styles.hitSlopButton}>
+              Press Outside This View
+            </Text>
+          </TouchableOpacity>
+         </View>
+        <View style={styles.logBox}>
+          <Text>
+            {log}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+});
+
 var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
 
 var styles = StyleSheet.create({
@@ -264,12 +313,19 @@ var styles = StyleSheet.create({
   button: {
     color: '#007AFF',
   },
+  hitSlopButton: {
+    color: 'white',
+  },
   wrapper: {
     borderRadius: 8,
   },
   wrapperCustom: {
     borderRadius: 8,
     padding: 6,
+  },
+  hitSlopWrapper: {
+    backgroundColor: 'red',
+    marginVertical: 30,
   },
   logBox: {
     padding: 20,
