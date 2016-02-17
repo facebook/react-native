@@ -254,6 +254,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   }
 
   /**
+   * Determines the location on screen, width, and height of the given view relative to the device
+   * screen and returns the values via an async callback.  This is the absolute position including
+   * things like the status bar
+   */
+  @ReactMethod
+  public void measureInWindow(int reactTag, Callback callback) {
+    mUIImplementation.measureInWindow(reactTag, callback);
+  }
+
+  /**
    * Measures the view specified by tag relative to the given ancestorTag. This means that the
    * returned x, y are relative to the origin x, y of the ancestor view. Results are stored in the
    * given outputBuffer. We allow ancestor view and measured view to be the same, in which case
