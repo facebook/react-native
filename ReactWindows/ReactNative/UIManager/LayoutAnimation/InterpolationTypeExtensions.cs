@@ -25,7 +25,7 @@ namespace ReactNative.UIManager.LayoutAnimation
 
         private static readonly EasingFunctionBase s_spring = new ElasticEase { Oscillations = 3 };
 
-        public static EasingFunctionBase EasingFunction(this InterpolationType interpolationType)
+        public static EasingFunctionBase AsEasingFunction(this InterpolationType interpolationType)
         {
             var storyboard = new Storyboard();
 

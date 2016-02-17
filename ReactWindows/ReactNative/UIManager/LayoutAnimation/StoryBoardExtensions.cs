@@ -130,35 +130,39 @@ namespace ReactNative.UIManager.LayoutAnimation
             var currentX = Canvas.GetLeft(view);
             var currentY = Canvas.GetTop(view);
 
-            if (HasChanged(currentX, newX))
+            if (currentX != newX)
             {
+                view.SetValue(Canvas.LeftProperty, newX);
                 var propertyName = string.Format(CultureInfo.InvariantCulture, RespositionTargetPropertyTypeNameFormat, "X");
+                var offset = currentX - newX;
                 storyboard.Children.Add(
-                    CreateTranslateTransformTimeline(view, currentX, newX, easingFunc, propertyName, duration));
+                    CreateTranslateTransformTimeline(view, offset, 0, easingFunc, propertyName, duration));
             }
 
-            if (HasChanged(currentY, newY))
+            if (currentY != newY)
             {
+                view.SetValue(Canvas.TopProperty, newY);
                 var propertyName = string.Format(CultureInfo.InvariantCulture, RespositionTargetPropertyTypeNameFormat, "Y");
+                var offset = currentY - newY;
                 storyboard.Children.Add(
-                    CreateTranslateTransformTimeline(view, currentY, newY, easingFunc, propertyName, duration));
+                    CreateTranslateTransformTimeline(view, offset, 0, easingFunc, propertyName, duration));
             }
 
-            if (HasChanged(view.Width, newWidth))
-            {
-                var timelineWidth = CreateTranslateTransformTimeline(
-                    view, view.ActualWidth, newWidth, easingFunc, "Width", duration);
-                timelineWidth.EnableDependentAnimation = true;
-                storyboard.Children.Add(timelineWidth);
-            }
+            //if (view.Width != newWidth)
+            //{
+            //    var timelineWidth = CreateTranslateTransformTimeline(
+            //        view, view.ActualWidth, newWidth, easingFunc, "Width", duration);
+            //    timelineWidth.EnableDependentAnimation = true;
+            //    storyboard.Children.Add(timelineWidth);
+            //}
 
-            if (HasChanged(view.Height, newHeight))
-            {
-                var timelineHeight = CreateTranslateTransformTimeline(
-                    view, view.ActualHeight, newHeight, easingFunc, "Height", duration);
-                timelineHeight.EnableDependentAnimation = true;
-                storyboard.Children.Add(timelineHeight);
-            }
+            //if (view.Height != newHeight)
+            //{
+            //    var timelineHeight = CreateTranslateTransformTimeline(
+            //        view, view.ActualHeight, newHeight, easingFunc, "Height", duration);
+            //    timelineHeight.EnableDependentAnimation = true;
+            //    storyboard.Children.Add(timelineHeight);
+            //}
         }
 
         private static bool HasChanged(double currentValue, double newValue)

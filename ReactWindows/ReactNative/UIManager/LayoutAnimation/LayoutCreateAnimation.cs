@@ -42,12 +42,12 @@ namespace ReactNative.UIManager.LayoutAnimation
 
                 if (PropertyType == AnimatedPropertyType.Opacity)
                 {
-                    animation.SetOpacityTimeline(base.Type.EasingFunction(), view, fromValue, toValue, base.DurationMS);
+                    animation.SetOpacityTimeline(base.Type.AsEasingFunction(), view, fromValue, toValue, base.DurationMS);
                 }
                 else if (PropertyType == AnimatedPropertyType.ScaleXY)
                 {
                     view.RenderTransform = new TranslateTransform();
-                    animation.SetRepositionTimelines(base.Type.EasingFunction(), view, x, y, width, height, base.DurationMS);
+                    animation.SetRepositionTimelines(base.Type.AsEasingFunction(), view, x, y, width, height, base.DurationMS);
                     //animation.SetScalingTimeline(base.EasingFunction, view, fromValue, toValue, speedRatio, base.DurationMS);
                 }
             }
