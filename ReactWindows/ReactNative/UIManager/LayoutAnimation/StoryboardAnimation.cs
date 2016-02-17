@@ -29,7 +29,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <summary>
         /// Sets the duration of the animation.
         /// </summary>
-        protected int DurationMS { private set; get; }
+        protected TimeSpan Duration { private set; get; }
 
         /// <summary>
         /// Sets the delay of the start of the animation.
@@ -78,15 +78,16 @@ namespace ReactNative.UIManager.LayoutAnimation
             ((ElasticEase)InterpolationType.Spring.AsEasingFunction()).Springiness = SpringIntensity;
 
             Type = config.TryGetValue(CONFIG_TYPE, out type)
-                ? EnumHelpers.Parse<InterpolationType>(type.Value<string>())
+                ? EnumHelpers.Parse<InterpolationType>(type.Value<string>() ?? "None")
                 : InterpolationType.None;
 
-            DurationMS = config.TryGetValue(CONFIG_DURATION, out duration) ? duration.Value<int>() : globalDuration;
+            Duration = TimeSpan.FromMilliseconds(
+                config.TryGetValue(CONFIG_DURATION, out duration) ? duration.Value<int>() : globalDuration);
             DelayMS = config.TryGetValue(CONFIG_DELAY, out delay) ? delay.Value<int>() : 0;
 
             if (!IsValid)
             {
-                throw new InvalidOperationException(string.Format("Invalid layout animation exception. Likely due to duration of {0} not being set", DurationMS));
+                throw new InvalidOperationException(string.Format("Invalid layout animation exception. Likely due to duration of {0} not being set", Duration));
             }
         }
 
@@ -110,7 +111,7 @@ namespace ReactNative.UIManager.LayoutAnimation
 
             if (storyboard != null)
             {
-                storyboard.Duration = TimeSpan.FromMilliseconds(DurationMS);
+                storyboard.Duration = Duration;
                 storyboard.BeginTime = TimeSpan.FromMilliseconds(DelayMS);
             }
 
@@ -124,7 +125,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             PropertyType = AnimatedPropertyType.None;
             Type = InterpolationType.None;
-            DurationMS = 0;
+            Duration = TimeSpan.Zero;
             DelayMS = 0;
         }
     }

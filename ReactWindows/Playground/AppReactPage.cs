@@ -11,7 +11,8 @@ namespace Playground
         {
             get
             {
-                return "ms-appx:///main.jsbundle";
+                return base.JavaScriptBundleFile;
+                //return "ms-appx:///main.jsbundle";
             }
         }
 

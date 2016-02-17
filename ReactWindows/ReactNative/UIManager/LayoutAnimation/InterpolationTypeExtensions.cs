@@ -40,8 +40,8 @@ namespace ReactNative.UIManager.LayoutAnimation
                 case InterpolationType.Spring:
                     return s_spring;
                 case InterpolationType.Linear:
-                    return null;
                 case InterpolationType.None:
+                    return null;
                 default:
                     throw new NotImplementedException();
             }
