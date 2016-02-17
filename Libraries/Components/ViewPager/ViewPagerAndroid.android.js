@@ -223,6 +223,7 @@ var ViewPagerAndroid = React.createClass({
         {...this.props}
         ref={VIEWPAGER_REF}
         style={this.props.style}
+        scrollEnabled={this.props.scrollEnabled}
         onPageScroll={this._onPageScroll}
         onPageScrollStateChanged={this._onPageScrollStateChanged}
         onPageSelected={this._onPageSelected}

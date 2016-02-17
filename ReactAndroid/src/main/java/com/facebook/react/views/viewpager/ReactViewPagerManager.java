@@ -120,4 +120,9 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   public void setPageMargin(ReactViewPager pager, float margin) {
     pager.setPageMargin((int) PixelUtil.toPixelFromDIP(margin));
   }
+
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactViewPager parent, boolean scrollEnabled) {
+    parent.scrollEnabled = scrollEnabled;
+  }
 }
