@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 
-import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.Spacing;
 import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
@@ -387,14 +387,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     node.collectState(this, left, top, right, bottom, clipLeft, clipTop, clipRight, clipBottom);
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
-      FlatShadowNode child = (FlatShadowNode) node.getChildAt(i);
+      ReactShadowNode child = node.getChildAt(i);
       if (child.isVirtual()) {
         markLayoutSeenRecursively(child);
         continue;
       }
 
       processNodeAndCollectState(
-          child,
+          (FlatShadowNode) child,
           left,
           top,
           clipLeft,
@@ -406,7 +406,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
   }
 
-  private void markLayoutSeenRecursively(CSSNode node) {
+  private void markLayoutSeenRecursively(ReactShadowNode node) {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
