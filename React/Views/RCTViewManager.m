@@ -193,6 +193,17 @@ RCT_CUSTOM_VIEW_PROPERTY(borderStyle, RCTBorderStyle, RCTView)
     view.borderStyle = json ? [RCTConvert RCTBorderStyle:json] : defaultView.borderStyle;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
+{
+  if ([view respondsToSelector:@selector(setHitTestEdgeInsets:)]) {
+    if (json) {
+      UIEdgeInsets hitSlopInsets = [RCTConvert UIEdgeInsets:json];
+      view.hitTestEdgeInsets = UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
+    } else {
+      view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
+    }
+  }
+}
 RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 
