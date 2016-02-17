@@ -76,7 +76,7 @@ function uInt32Buffer(n) {
 
 function buildModuleTable(buffers) {
   // table format:
-  //  - table_length: uint_32 length of all table entries in bytes
+  //  - table_length: uint_32 length of all table entries in bytes + the table length itself
   //  - entries: entry...
   //
   // entry:

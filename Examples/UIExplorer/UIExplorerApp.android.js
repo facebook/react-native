@@ -25,6 +25,7 @@ var {
   StyleSheet,
   ToolbarAndroid,
   View,
+  StatusBar,
 } = React;
 var UIExplorerList = require('./UIExplorerList.android');
 
@@ -98,6 +99,9 @@ var UIExplorerApp = React.createClass({
     var Component = this.state.example.component;
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#589c90"
+        />
         <ToolbarAndroid
           logo={require('image!launcher_icon')}
           navIcon={require('image!ic_menu_black_24dp')}
@@ -105,12 +109,21 @@ var UIExplorerApp = React.createClass({
           style={styles.toolbar}
           title={this.state.example.title}
         />
-        <Component />
+        <Component
+          ref={(example) => { this._exampleRef = example; }}
+        />
       </View>
     );
   },
 
   _handleBackButtonPress: function() {
+    if (
+      this._exampleRef &&
+      this._exampleRef.handleBackAction &&
+      this._exampleRef.handleBackAction()
+    ) {
+      return true;
+    }
     if (this.state.example.title !== this._getUIExplorerHome().title) {
       this.onSelectExample(this._getUIExplorerHome());
       return true;

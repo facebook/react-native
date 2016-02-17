@@ -30,7 +30,6 @@
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var Map = require('Map');
 var NavigationContext = require('NavigationContext');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 var NavigatorNavigationBar = require('NavigatorNavigationBar');
@@ -43,6 +42,7 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var clamp = require('clamp');
+var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var rebound = require('rebound');
@@ -225,17 +225,11 @@ var Navigator = React.createClass({
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('willfocus', callback)` instead.
-     *
      * Will emit the target route upon mounting and before each nav transition
      */
     onWillFocus: PropTypes.func,
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('didfocus', callback)` instead.
-     *
      * Will be called with the new route of each scene after the transition is
      * complete or after the initial mounting
      */

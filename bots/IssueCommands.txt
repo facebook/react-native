@@ -1,0 +1,14 @@
+/answered
+comment Closing this issue as the question has been answered. Please help us by first discussing on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) before filing a bug. It's the best system for Q&A. Many people from the community hang out there and will be able to see and answer your question. This lets us use the GitHub bug tracker for bugs.
+close
+
+/duplicate (#[0-9]+)
+comment This issue is a duplicate of {match0}.
+close
+
+/expected
+comment This is expected behavior. Closing as we'd like to use the GitHub issue tracker for bugs. If you'd like to change how this feature works please post a feature request on [Product Pains](https://productpains.com/product/react-native/) and let's discuss there. If it gets upvoted enough it might get implemented by the community.
+close
+
+/label (.*)
+add-label {match0}

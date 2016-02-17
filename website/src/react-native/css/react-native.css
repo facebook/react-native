@@ -312,6 +312,14 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   display: inline;
 }
 
+.nav-main a.nav-version {
+  font-size: 16px;
+  font-weight: 800;
+  color: #05A5D1;
+  margin-left: 5px;
+  text-decoration: underline;
+}
+
 .hero {
   background: #05A5D1;
   padding: 50px 0;
@@ -476,6 +484,15 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
 .tutorial-mock img {
   border: 1px solid #ccc;
   box-shadow: 5px 5px 5px #888888;
+}
+
+.versions ul {
+  list-style: none;
+}
+
+.versions li {
+  font-size: 16px;
+  padding-top: 10px;
 }
 
 #examples h3, .home-presentation h3 {
@@ -1041,6 +1058,11 @@ div[data-twttr-id] iframe {
   margin-top: 0;
 }
 
+.compactProps .propTitle div {
+  font-weight: normal;
+  margin-left: 20px;
+}
+
 .prop {
   padding: 5px 10px;
 }
@@ -1071,16 +1093,46 @@ div[data-twttr-id] iframe {
   -ms-user-select: none;
 }
 
-.edit-github {
-  font-size: 15px;
-  font-weight: normal;
-  float: right;
+.color {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  position: relative;
+  top: 5px;
 }
 
-.run-example {
-  font-size: 15px;
-  float: right;
-  margin-right: 20px;
+.color::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.deprecated {
+  margin-bottom: 24px;
+}
+
+.deprecatedTitle {
+  margin-bottom: 6px;
+  line-height: 18px;
+  font-weight: bold;
+  color: #ffa500;
+}
+
+.deprecatedIcon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: top;
+}
+
+.deprecatedMessage {
+  margin-left: 26px;
 }
 
 #content {
@@ -1241,7 +1293,7 @@ input#algolia-doc-search {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-family: proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  background: transparent url('/react-native/img/search.png') no-repeat left center;
+  background: transparent url('../img/search.png') no-repeat left center;
   background-size: 16px 16px;
 
   padding-left: 30px;

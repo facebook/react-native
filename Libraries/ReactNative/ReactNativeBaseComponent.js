@@ -19,6 +19,7 @@ var ReactMultiChild = require('ReactMultiChild');
 var UIManager = require('UIManager');
 
 var deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+var invariant = require('invariant');
 var warning = require('warning');
 
 var registrationNames = ReactNativeEventEmitter.registrationNames;
@@ -79,7 +80,7 @@ ReactNativeBaseComponent.Mixin = {
     // no children - let's avoid calling out to the native bridge for a large
     // portion of the children.
     if (mountImages.length) {
-      
+
       // TODO: Pool these per platform view class. Reusing the `mountImages`
       // array would likely be a jit deopt.
       var createdTags = [];
@@ -114,7 +115,11 @@ ReactNativeBaseComponent.Mixin = {
     this._currentElement = nextElement;
 
     if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+      for (var key in this.viewConfig.validAttributes) {
+        if (nextElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(nextElement.props[key]);
+        }
+      }
     }
 
     var updatePayload = ReactNativeAttributePayload.diff(
@@ -180,7 +185,11 @@ ReactNativeBaseComponent.Mixin = {
     var tag = ReactNativeTagHandles.allocateTag();
 
     if (__DEV__) {
-      deepFreezeAndThrowOnMutationInDev(this._currentElement.props);
+      for (var key in this.viewConfig.validAttributes) {
+        if (this._currentElement.props.hasOwnProperty(key)) {
+          deepFreezeAndThrowOnMutationInDev(this._currentElement.props[key]);
+        }
+      }
     }
 
     var updatePayload = ReactNativeAttributePayload.create(
@@ -189,10 +198,16 @@ ReactNativeBaseComponent.Mixin = {
     );
 
     var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
+    if (nativeTopRootID == null) {
+      invariant(
+        false,
+        'nativeTopRootID not found for tag ' + tag + ' view type ' +
+          this.viewConfig.uiViewClassName + ' with rootID ' + rootID);
+    }
     UIManager.createView(
       tag,
       this.viewConfig.uiViewClassName,
-      nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
+      ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID],
       updatePayload
     );
 

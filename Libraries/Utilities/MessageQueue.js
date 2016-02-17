@@ -16,6 +16,7 @@
 let Systrace = require('Systrace');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
+let Platform = require('Platform');
 
 let invariant = require('invariant');
 let keyMirror = require('keyMirror');
@@ -318,10 +319,17 @@ class MessageQueue {
     if (type === MethodTypes.remoteAsync) {
       fn = function(...args) {
         return new Promise((resolve, reject) => {
-          self.__nativeCall(module, method, args, resolve, (errorData) => {
-            var error = createErrorFromErrorData(errorData);
-            reject(error);
-          });
+          self.__nativeCall(
+            module,
+            method,
+            args,
+            (data) => {
+              resolve(data);
+            },
+            (errorData) => {
+              var error = createErrorFromErrorData(errorData);
+              reject(error);
+            });
         });
       };
     } else {

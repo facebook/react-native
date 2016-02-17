@@ -98,6 +98,20 @@ var styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: 'lightgrey',
   },
+  border9: {
+    borderWidth: 10,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'black',
+  },
+  border10: {
+    borderWidth: 10,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'black',
+    elevation: 10
+  }
 });
 
 exports.title = 'Border';
@@ -178,6 +192,21 @@ exports.examples = [
           <View style={[styles.box, styles.border8, {borderRightWidth: 5}]} />
         </View>
       );
+    }
+  },
+  {
+    title: 'Corner Radii',
+    description: 'borderTopLeftRadius & borderBottomRightRadius',
+    render() {
+      return <View style={[styles.box, styles.border9]} />;
+    }
+  },
+  {
+    title: 'Corner Radii / Elevation',
+    description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
+    platform: 'android',
+    render() {
+      return <View style={[styles.box, styles.border10]} />;
     }
   },
 ];

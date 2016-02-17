@@ -14,13 +14,15 @@ const Promise = require('promise');
 const crawl = require('../crawlers');
 const getPlatformExtension = require('../lib/getPlatformExtension');
 const isAbsolutePath = require('absolute-path');
-const path = require('path');
+const path = require('fast-path');
 const util = require('util');
 const DependencyGraphHelpers = require('./DependencyGraphHelpers');
 const ResolutionRequest = require('./ResolutionRequest');
 const ResolutionResponse = require('./ResolutionResponse');
 const HasteMap = require('./HasteMap');
 const DeprecatedAssetMap = require('./DeprecatedAssetMap');
+
+const ERROR_BUILDING_DEP_GRAPH = 'DependencyGraphError';
 
 const defaultActivity = {
   startEvent: () => {},
@@ -42,7 +44,9 @@ class DependencyGraph {
     extensions,
     mocksPattern,
     extractRequires,
+    transformCode,
     shouldThrowOnUnresolvedErrors = () => true,
+    enableAssetMap,
   }) {
     this._opts = {
       activity: activity || defaultActivity,
@@ -54,19 +58,16 @@ class DependencyGraph {
       providesModuleNodeModules,
       platforms: platforms || [],
       preferNativePlatform: preferNativePlatform || false,
-      cache,
-      extensions: extensions || ['js', 'jsx', 'json'],
+      extensions: extensions || ['js', 'json'],
       mocksPattern,
       extractRequires,
+      transformCode,
       shouldThrowOnUnresolvedErrors,
+      enableAssetMap: enableAssetMap || true,
     };
-    this._cache = this._opts.cache;
+    this._cache = cache;
     this._helpers = new DependencyGraphHelpers(this._opts);
-    this.load().catch((err) => {
-      // This only happens at initialization. Live errors are easier to recover from.
-      console.error('Error building DependencyGraph:\n', err.stack);
-      process.exit(1);
-    });
+    this.load();
   }
 
   load() {
@@ -98,12 +99,13 @@ class DependencyGraph {
 
     this._fastfs.on('change', this._processFileChange.bind(this));
 
-    this._moduleCache = new ModuleCache(
-      this._fastfs,
-      this._cache,
-      this._opts.extractRequires,
-      this._helpers
-    );
+    this._moduleCache = new ModuleCache({
+      fastfs: this._fastfs,
+      cache: this._cache,
+      extractRequires: this._opts.extractRequires,
+      transformCode: this._opts.transformCode,
+      depGraphHelpers: this._helpers,
+    });
 
     this._hasteMap = new HasteMap({
       fastfs: this._fastfs,
@@ -121,17 +123,32 @@ class DependencyGraph {
       ignoreFilePath: this._opts.ignoreFilePath,
       assetExts: this._opts.assetExts,
       activity: this._opts.activity,
+      enabled: this._opts.enableAssetMap,
     });
 
     this._loading = Promise.all([
       this._fastfs.build()
         .then(() => {
           const hasteActivity = activity.startEvent('Building Haste Map');
-          return this._hasteMap.build().then(() => activity.endEvent(hasteActivity));
+          return this._hasteMap.build().then(map => {
+            activity.endEvent(hasteActivity);
+            return map;
+          });
         }),
       this._deprecatedAssetMap.build(),
-    ]).then(() =>
-      activity.endEvent(depGraphActivity)
+    ]).then(
+      response => {
+        activity.endEvent(depGraphActivity);
+        return response[0]; // Return the haste map
+      },
+      err => {
+        const error = new Error(
+          `Failed to build DependencyGraph: ${err.message}`
+        );
+        error.type = ERROR_BUILDING_DEP_GRAPH;
+        error.stack = err.stack;
+        throw error;
+      }
     );
 
     return this._loading;
@@ -145,8 +162,8 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryPath).getDependencies();
   }
 
-  stat(filePath) {
-    return this._fastfs.stat(filePath);
+  getFS() {
+    return this._fastfs;
   }
 
   /**
@@ -156,7 +173,11 @@ class DependencyGraph {
     return this._moduleCache.getModule(entryFile);
   }
 
-  getDependencies(entryPath, platform) {
+  getAllModules() {
+    return this.load().then(() => this._moduleCache.getAllModules());
+  }
+
+  getDependencies(entryPath, platform, recursive = true) {
     return this.load().then(() => {
       platform = this._getRequestPlatform(entryPath, platform);
       const absPath = this._getAbsolutePath(entryPath);
@@ -174,10 +195,11 @@ class DependencyGraph {
 
       const response = new ResolutionResponse();
 
-      return Promise.all([
-        req.getOrderedDependencies(response, this._opts.mocksPattern),
-        req.getAsyncDependencies(response),
-      ]).then(() => response);
+      return req.getOrderedDependencies(
+        response,
+        this._opts.mocksPattern,
+        recursive,
+      ).then(() => response);
     });
   }
 

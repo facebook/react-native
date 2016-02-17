@@ -18,7 +18,6 @@ const lineCommentRe = /\/\/.+(\n|$)/g;
 function extractRequires(code) {
   var deps = {
     sync: [],
-    async: [],
   };
 
   code = code
@@ -39,15 +38,6 @@ function extractRequires(code) {
     })
     .replace(replacePatterns.REQUIRE_RE, (match, pre, quot, dep, post) => {
       deps.sync.push(dep);
-      return match;
-    })
-    // Parse async dependencies this module has. As opposed to what happens
-    // with sync dependencies, when the module is required, it's async
-    // dependencies won't be loaded into memory. This is deferred till the
-    // code path gets to the import statement:
-    //   System.import('dep1')
-    .replace(replacePatterns.SYSTEM_IMPORT_RE, (match, pre, quot, dep, post) => {
-      deps.async.push([dep]);
       return match;
     });
 

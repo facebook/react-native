@@ -102,24 +102,6 @@ var TextInput = React.createClass({
      */
     autoFocus: PropTypes.bool,
     /**
-     * Set the position of the cursor from where editing will begin.
-     * @platform android
-     */
-    textAlign: PropTypes.oneOf([
-      'start',
-      'center',
-      'end',
-    ]),
-    /**
-     * Aligns text vertically within the TextInput.
-     * @platform android
-     */
-    textAlignVertical: PropTypes.oneOf([
-      'top',
-      'center',
-      'bottom',
-    ]),
-    /**
      * If false, text is not editable. The default value is true.
      */
     editable: PropTypes.bool,
@@ -250,6 +232,10 @@ var TextInput = React.createClass({
      */
     secureTextEntry: PropTypes.bool,
     /**
+    * The highlight (and cursor on ios) color of the text input
+    */
+    selectionColor: PropTypes.string,
+    /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
      * @platform ios
@@ -304,10 +290,6 @@ var TextInput = React.createClass({
      * Styles
      */
     style: Text.propTypes.style,
-    /**
-     * Used to locate this view in end-to-end tests
-     */
-    testID: PropTypes.string,
     /**
      * The color of the textInput underline.
      * @platform android
@@ -471,6 +453,9 @@ var TextInput = React.createClass({
       <TouchableWithoutFeedback
         onPress={this._onPress}
         rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityTraits={props.accessibilityTraits}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -491,10 +476,6 @@ var TextInput = React.createClass({
 
     var autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
-    var textAlign = UIManager.AndroidTextInput.Constants.TextAlign[this.props.textAlign];
-    var textAlignVertical =
-      UIManager.AndroidTextInput.Constants.TextAlignVertical[this.props.textAlignVertical];
-
     var children = this.props.children;
     var childCount = 0;
     ReactChildren.forEach(children, () => ++childCount);
@@ -512,8 +493,6 @@ var TextInput = React.createClass({
         style={[this.props.style]}
         autoCapitalize={autoCapitalize}
         autoCorrect={this.props.autoCorrect}
-        textAlign={textAlign}
-        textAlignVertical={textAlignVertical}
         keyboardType={this.props.keyboardType}
         mostRecentEventCount={0}
         multiline={this.props.multiline}
@@ -530,6 +509,7 @@ var TextInput = React.createClass({
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
@@ -539,6 +519,9 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
+        accessible={this.props.accessible}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityComponentType={this.props.accessibilityComponentType}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -548,6 +531,10 @@ var TextInput = React.createClass({
   _onFocus: function(event: Event) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.focus();
     }
   },
 
@@ -588,6 +575,10 @@ var TextInput = React.createClass({
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.blur();
     }
   },
 

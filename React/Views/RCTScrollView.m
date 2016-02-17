@@ -59,11 +59,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (uint16_t)coalescingKey
-{
-  return 0;
-}
-
 - (NSDictionary *)body
 {
   NSDictionary *body = @{
@@ -132,6 +127,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 + (NSString *)moduleDotMethod
 {
   return @"RCTEventEmitter.receiveEvent";
+}
+
+- (NSArray *)arguments
+{
+  return @[self.viewTag, RCTNormalizeInputEventName(self.eventName), [self body]];
 }
 
 @end
@@ -275,6 +275,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   UIView *contentView = [self contentView];
   CGFloat scrollTop = self.bounds.origin.y + self.contentInset.top;
+  // If the RefreshControl is refreshing, remove it's height so sticky headers are
+  // positioned properly when scrolling down while refreshing.
+  if (self.refreshControl != nil && self.refreshControl.refreshing) {
+    scrollTop -= self.refreshControl.frame.size.height;
+  }
 
   // Find the section headers that need to be docked
   __block UIView *previousHeader = nil;
@@ -344,8 +349,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   __block UIView *hitView;
 
+  NSArray *subviews = [self contentView].reactSubviews;
+  NSUInteger subviewCount = subviews.count;
   [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
-    UIView *stickyHeader = [self contentView].reactSubviews[idx];
+    if (idx >= subviewCount) {
+      *stop = YES;
+      return;
+    }
+    UIView *stickyHeader = subviews[idx];
     CGPoint convertedPoint = [stickyHeader convertPoint:point fromView:self];
     hitView = [stickyHeader hitTest:convertedPoint withEvent:event];
     *stop = (hitView != nil);
@@ -838,6 +849,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setBouncesZoom, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setCanCancelContentTouches, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setDecelerationRate, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setDirectionalLockEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setIndicatorStyle, UIScrollViewIndicatorStyle)
 RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, UIScrollViewKeyboardDismissMode)
 RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, CGFloat)
 RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, CGFloat)

@@ -30,7 +30,7 @@ var UIExplorerPage = require('./UIExplorerPage');
 
 var ListViewSimpleExample = React.createClass({
   statics: {
-    title: '<ListView> - Simple',
+    title: '<ListView>',
     description: 'Performant, scrollable list of data.'
   },
 
@@ -50,13 +50,14 @@ var ListViewSimpleExample = React.createClass({
   render: function() {
     return (
       <UIExplorerPage
-        title={this.props.navigator ? null : '<ListView> - Simple'}
+        title={this.props.navigator ? null : '<ListView>'}
         noSpacer={true}
         noScroll={true}>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
           renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
+          renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator} />}
         />
       </UIExplorerPage>
     );
@@ -74,7 +75,6 @@ var ListViewSimpleExample = React.createClass({
               {rowData + ' - ' + LOREM_IPSUM.substr(0, rowHash % 301 + 10)}
             </Text>
           </View>
-          <View style={styles.separator} />
         </View>
       </TouchableHighlight>
     );

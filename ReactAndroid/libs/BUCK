@@ -1,0 +1,22 @@
+android_prebuilt_aar(
+    name = 'appcompat',
+    aar = ':appcompat-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'appcompat-binary-aar',
+    url = 'mvn:com.android.support:appcompat-v7:aar:23.0.1',
+    sha1 = '7d659f671541394a8bc2b9f909950aa2a5ec87ff',
+)
+
+android_prebuilt_aar(
+  name = 'android-jsc',
+  aar = ':android-jsc-aar',
+)
+
+remote_file(
+  name = 'android-jsc-aar',
+  url = 'mvn:org.webkit:android-jsc:aar:r174650',
+  sha1 = '880cedd93f43e0fc841f01f2fa185a63d9230f85',
+)

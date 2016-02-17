@@ -10,9 +10,11 @@
 
 const _ = require('underscore');
 const base64VLQ = require('./base64-vlq');
+const BundleBase = require('./BundleBase');
 const UglifyJS = require('uglify-js');
 const ModuleTransport = require('../lib/ModuleTransport');
 const Activity = require('../Activity');
+const crypto = require('crypto');
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
@@ -24,11 +26,9 @@ const getNameAndCode = ({name, code}) => ({name, code});
 const getNameAndMinifiedCode =
   ({name, code}) => ({name, code: minifyCode(code)});
 
-class Bundle {
+class Bundle extends BundleBase {
   constructor(sourceMapUrl) {
-    this._finalized = false;
-    this._modules = [];
-    this._assets = [];
+    super();
     this._sourceMap = false;
     this._sourceMapUrl = sourceMapUrl;
     this._shouldCombineSourceMaps = false;
@@ -36,58 +36,49 @@ class Bundle {
     this._numRequireCalls = 0;
   }
 
-  setMainModuleId(moduleId) {
-    this._mainModuleId = moduleId;
-  }
+  addModule(resolver, response, module, transformed) {
+    return resolver.wrapModule(
+      response,
+      module,
+      transformed.code
+    ).then(({code, name}) => {
+      const moduleTransport = new ModuleTransport({
+        code,
+        name,
+        map: transformed.map,
+        sourceCode: transformed.sourceCode,
+        sourcePath: transformed.sourcePath,
+        virtual: transformed.virtual,
+      });
 
-  addModule(module) {
-    if (!(module instanceof ModuleTransport)) {
-      throw new Error('Expeceted a ModuleTransport object');
-    }
+      // If we get a map from the transformer we'll switch to a mode
+      // were we're combining the source maps as opposed to
+      if (!this._shouldCombineSourceMaps && moduleTransport.map != null) {
+        this._shouldCombineSourceMaps = true;
+      }
 
-    // If we get a map from the transformer we'll switch to a mode
-    // were we're combining the source maps as opposed to
-    if (!this._shouldCombineSourceMaps && module.map != null) {
-      this._shouldCombineSourceMaps = true;
-    }
-
-    this._modules.push(module);
-  }
-
-  getModules() {
-    return this._modules;
-  }
-
-  getMainModuleId() {
-    return this._mainModuleId;
+      super.addModule(moduleTransport);
+    });
   }
 
   setNumPrependedModules(n) {
     this._numPrependedModules = n;
   }
 
-  addAsset(asset) {
-    this._assets.push(asset);
-  }
-
   finalize(options) {
     options = options || {};
     if (options.runMainModule) {
       options.runBeforeMainModule.forEach(this._addRequireCall, this);
-      this._addRequireCall(this._mainModuleId);
+      this._addRequireCall(super.getMainModuleId());
     }
 
-    Object.freeze(this._modules);
-    Object.seal(this._modules);
-    Object.freeze(this._assets);
-    Object.seal(this._assets);
-    this._finalized = true;
+    super.finalize();
   }
 
   _addRequireCall(moduleId) {
     const code = ';require("' + moduleId + '");';
     const name = 'require-' + moduleId;
-    this.addModule(new ModuleTransport({
+    super.addModule(new ModuleTransport({
       name,
       code,
       virtual: true,
@@ -95,21 +86,6 @@ class Bundle {
       sourcePath: name + '.js',
     }));
     this._numRequireCalls += 1;
-  }
-
-  _assertFinalized() {
-    if (!this._finalized) {
-      throw new Error('Bundle needs to be finalized before getting any source');
-    }
-  }
-
-  _getSource(dev) {
-    if (this._source) {
-      return this._source;
-    }
-
-    this._source = _.pluck(this._modules, 'code').join('\n');
-    return this._source;
   }
 
   _getInlineSourceMap(dev) {
@@ -123,7 +99,7 @@ class Bundle {
   }
 
   getSource(options) {
-    this._assertFinalized();
+    super.assertFinalized();
 
     options = options || {};
 
@@ -131,7 +107,7 @@ class Bundle {
       return this.getMinifiedSourceAndMap(options.dev).code;
     }
 
-    let source = this._getSource(options.dev);
+    let source = super.getSource();
 
     if (options.inlineSourceMap) {
       source += SOURCEMAPPING_URL + this._getInlineSourceMap(options.dev);
@@ -143,7 +119,7 @@ class Bundle {
   }
 
   getUnbundle({minify}) {
-    const allModules = this._modules.slice();
+    const allModules = super.getModules().slice();
     const prependedModules = this._numPrependedModules;
     const requireCalls = this._numRequireCalls;
 
@@ -163,13 +139,13 @@ class Bundle {
   }
 
   getMinifiedSourceAndMap(dev) {
-    this._assertFinalized();
+    super.assertFinalized();
 
     if (this._minifiedSourceAndMap) {
       return this._minifiedSourceAndMap;
     }
 
-    let source = this._getSource(dev);
+    let source = this.getSource();
     let map = this.getSourceMap();
 
     if (!dev) {
@@ -230,12 +206,12 @@ class Bundle {
   _getCombinedSourceMaps(options) {
     const result = {
       version: 3,
-      file: 'bundle.js',
+      file: this._getSourceMapFile(),
       sections: [],
     };
 
     let line = 0;
-    this._modules.forEach(function(module) {
+    super.getModules().forEach(function(module) {
       let map = module.map;
       if (module.virtual) {
         map = generateSourceMapForVirtualModule(module);
@@ -256,7 +232,7 @@ class Bundle {
   }
 
   getSourceMap(options) {
-    this._assertFinalized();
+    super.assertFinalized();
 
     options = options || {};
 
@@ -270,23 +246,30 @@ class Bundle {
 
     const mappings = this._getMappings();
     const map = {
-      file: 'bundle.js',
-      sources: _.pluck(this._modules, 'sourcePath'),
+      file: this._getSourceMapFile(),
+      sources: _.pluck(super.getModules(), 'sourcePath'),
       version: 3,
       names: [],
       mappings: mappings,
       sourcesContent: options.excludeSource
-    ? [] : _.pluck(this._modules, 'sourceCode')
+    ? [] : _.pluck(super.getModules(), 'sourceCode')
     };
     return map;
   }
 
-  getAssets() {
-    return this._assets;
+  getEtag() {
+    var eTag = crypto.createHash('md5').update(this.getSource()).digest('hex');
+    return eTag;
+  }
+
+  _getSourceMapFile() {
+    return this._sourceMapUrl
+      ? this._sourceMapUrl.replace('.map', '.bundle')
+      : 'bundle.js';
   }
 
   _getMappings() {
-    const modules = this._modules;
+    const modules = super.getModules();
 
     // The first line mapping in our package is basically the base64vlq code for
     // zeros (A).
@@ -333,7 +316,7 @@ class Bundle {
   }
 
   getJSModulePaths() {
-    return this._modules.filter(function(module) {
+    return super.getModules().filter(function(module) {
       // Filter out non-js files. Like images etc.
       return !module.virtual;
     }).map(function(module) {
@@ -343,7 +326,7 @@ class Bundle {
 
   getDebugInfo() {
     return [
-      '<div><h3>Main Module:</h3> ' + this._mainModuleId + '</div>',
+      '<div><h3>Main Module:</h3> ' + super.getMainModuleId() + '</div>',
       '<style>',
       'pre.collapsed {',
       '  height: 10px;',
@@ -355,7 +338,7 @@ class Bundle {
       '}',
       '</style>',
       '<h3> Module paths and transformed code: </h3>',
-      this._modules.map(function(m) {
+      super.getModules().map(function(m) {
         return '<div> <h4> Path: </h4>' + m.sourcePath + '<br/> <h4> Source: </h4>' +
                '<code><pre class="collapsed" onclick="this.classList.remove(\'collapsed\')">' +
                _.escape(m.code) + '</pre></code></div>';
@@ -364,15 +347,11 @@ class Bundle {
   }
 
   toJSON() {
-    if (!this._finalized) {
-      throw new Error('Cannot serialize bundle unless finalized');
-    }
+    this.assertFinalized('Cannot serialize bundle unless finalized');
 
     return {
-      modules: this._modules,
-      assets: this._assets,
+      ...super.toJSON(),
       sourceMapUrl: this._sourceMapUrl,
-      mainModuleId: this._mainModuleId,
       numPrependedModules: this._numPrependedModules,
       numRequireCalls: this._numRequireCalls,
     };
@@ -380,18 +359,12 @@ class Bundle {
 
   static fromJSON(json) {
     const bundle = new Bundle(json.sourceMapUrl);
-    bundle._mainModuleId = json.mainModuleId;
-    bundle._assets = json.assets;
-    bundle._modules = json.modules;
+
     bundle._sourceMapUrl = json.sourceMapUrl;
     bundle._numPrependedModules = json.numPrependedModules;
     bundle._numRequireCalls = json.numRequireCalls;
 
-    Object.freeze(bundle._modules);
-    Object.seal(bundle._modules);
-    Object.freeze(bundle._assets);
-    Object.seal(bundle._assets);
-    bundle._finalized = true;
+    BundleBase.fromJSON(bundle, json);
 
     return bundle;
   }

@@ -12,15 +12,8 @@
 
   <application>
     <activity
-    android:name="com.facebook.react.testing.ReactAppTestActivity"/>
-    <!--<activity-->
-            <!--android:name="com.facebook.react.testing.ReactAppTestActivity"-->
-            <!--android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"-->
-    <!--/>-->
+            android:name="com.facebook.react.testing.ReactAppTestActivity"
+            android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"
+    />
   </application>
-  <instrumentation
-          android:name="android.support.test.runner.AndroidJUnitRunner"
-          android:targetPackage="com.facebook.react.tests"
-          android:label="Integration tests for catalyst."/>
-
 </manifest>

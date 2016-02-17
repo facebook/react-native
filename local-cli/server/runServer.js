@@ -33,8 +33,6 @@ function runServer(args, config, readyCallback) {
     .use(statusPageMiddleware)
     .use(systraceProfileMiddleware)
     .use(cpuProfilerMiddleware)
-    // Temporarily disable flow check until it's more stable
-    //.use(getFlowTypeCheckMiddleware(args))
     .use(packagerServer.processRequest.bind(packagerServer));
 
   args.projectRoots.forEach(root => app.use(connect.static(root)));
@@ -77,13 +75,13 @@ function getPackagerServer(args, config) {
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: transformerPath,
     assetRoots: args.assetRoots,
-    assetExts: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
-    resetCache: args.resetCache || args['reset-cache'],
-    polyfillModuleNames: [
-      require.resolve(
-        '../../Libraries/JavaScriptAppEngine/polyfills/document.js'
-      ),
+    assetExts: [
+      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
+      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
+      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
+      'html', // Document formats
     ],
+    resetCache: args.resetCache || args['reset-cache'],
     verbose: args.verbose,
   });
 }

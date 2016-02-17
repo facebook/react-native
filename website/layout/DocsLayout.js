@@ -9,10 +9,12 @@
  * @providesModule DocsLayout
  */
 
+var DocsSidebar = require('DocsSidebar');
+var HeaderWithGithub = require('HeaderWithGithub');
+var Marked = require('Marked');
 var React = require('React');
 var Site = require('Site');
-var Marked = require('Marked');
-var DocsSidebar = require('DocsSidebar');
+
 var DocsLayout = React.createClass({
   render: function() {
     var metadata = this.props.metadata;
@@ -23,11 +25,15 @@ var DocsLayout = React.createClass({
           <DocsSidebar metadata={metadata} />
           <div className="inner-content">
             <a id="content" />
-            <h1>{metadata.title}</h1>
+            <HeaderWithGithub
+              title={metadata.title}
+              level={1}
+              path={'docs/' + metadata.filename}
+            />
             <Marked>{content}</Marked>
             <div className="docs-prevnext">
-              {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
-              {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
+              {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
+              {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
           </div>
         </section>

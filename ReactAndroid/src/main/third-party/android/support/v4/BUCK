@@ -1,0 +1,23 @@
+android_prebuilt_aar(
+    name = 'lib-support-v4',
+    aar = ':lib-support-v4-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'lib-support-v4-binary-aar',
+    url = 'mvn:com.android.support:support-v4:aar:23.0.1',
+    sha1 = '9e8da0e4ecf9f63258c7fbd273889252cba2d0c3',
+)
+
+prebuilt_jar(
+    name = 'lib-support-annotations',
+    binary_jar = ':lib-support-annotations-binary-aar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'lib-support-annotations-binary-aar',
+    url = 'mvn:com.android.support:support-annotations:jar:22.2.0',
+    sha1 = '66b42a1f3eb7676070b7ef7f14b603483aecbee1',
+)

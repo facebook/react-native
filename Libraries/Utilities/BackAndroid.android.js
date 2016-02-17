@@ -11,7 +11,6 @@
 
 'use strict';
 
-var Set = require('Set');
 var DeviceEventManager = require('NativeModules').DeviceEventManager;
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
@@ -24,8 +23,9 @@ type BackPressEventName = $Enum<{
 var _backPressSubscriptions = new Set();
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
+  var backPressSubscriptions = new Set(_backPressSubscriptions);
   var invokeDefault = true;
-  _backPressSubscriptions.forEach((subscription) => {
+  backPressSubscriptions.forEach((subscription) => {
     if (subscription()) {
       invokeDefault = false;
     }
@@ -60,8 +60,11 @@ var BackAndroid = {
   addEventListener: function (
     eventName: BackPressEventName,
     handler: Function
-  ): void {
+  ): {remove: () => void} {
     _backPressSubscriptions.add(handler);
+    return {
+      remove: () => BackAndroid.removeEventListener(eventName, handler),
+    };
   },
 
   removeEventListener: function(

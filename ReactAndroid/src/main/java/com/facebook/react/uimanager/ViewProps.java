@@ -70,12 +70,18 @@ public class ViewProps {
   public static final String ON = "on";
   public static final String RESIZE_MODE = "resizeMode";
   public static final String TEXT_ALIGN = "textAlign";
+  public static final String TEXT_ALIGN_VERTICAL = "textAlignVertical";
 
   public static final String BORDER_WIDTH = "borderWidth";
   public static final String BORDER_LEFT_WIDTH = "borderLeftWidth";
   public static final String BORDER_TOP_WIDTH = "borderTopWidth";
   public static final String BORDER_RIGHT_WIDTH = "borderRightWidth";
   public static final String BORDER_BOTTOM_WIDTH = "borderBottomWidth";
+  public static final String BORDER_RADIUS = "borderRadius";
+  public static final String BORDER_TOP_LEFT_RADIUS = "borderTopLeftRadius";
+  public static final String BORDER_TOP_RIGHT_RADIUS = "borderTopRightRadius";
+  public static final String BORDER_BOTTOM_LEFT_RADIUS = "borderBottomLeftRadius";
+  public static final String BORDER_BOTTOM_RIGHT_RADIUS = "borderBottomRightRadius";
   public static final int[] BORDER_SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
   };
