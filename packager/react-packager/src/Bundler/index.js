@@ -103,15 +103,24 @@ class Bundler {
       mtime = '';
     }
 
+    const cacheKeyParts =  [
+      'react-packager-cache',
+      version,
+      opts.cacheVersion,
+      opts.projectRoots.join(',').split(path.sep).join('-'),
+      mtime,
+    ];
+
+    if (opts.transformModulePath) {
+      const transformer = require(opts.transformModulePath);
+      if (typeof transformer.cacheKey !== 'undefined') {
+        cacheKeyParts.push(transformer.cacheKey);
+      }
+    }
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
-      cacheKey: [
-        'react-packager-cache',
-        version,
-        opts.cacheVersion,
-        opts.projectRoots.join(',').split(path.sep).join('-'),
-        mtime
-      ].join('$'),
+      cacheKey: cacheKeyParts.join('$'),
     });
 
     this._resolver = new Resolver({
