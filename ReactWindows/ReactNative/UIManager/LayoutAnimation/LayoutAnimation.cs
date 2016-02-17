@@ -21,15 +21,6 @@ namespace ReactNative.UIManager.LayoutAnimation
         protected abstract bool IsValid { get; }
 
         /// <summary>
-        /// The interpolation type.
-        /// </summary>
-        protected InterpolationType? InterpolationType
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// The easing function for the animation.
         /// </summary>
         protected EasingFunctionBase Interpolator
@@ -110,10 +101,9 @@ namespace ReactNative.UIManager.LayoutAnimation
                 ? default(TimeSpan?)
                 : TimeSpan.FromMilliseconds(data.Value<int>("delay"));
 
-            InterpolationType = EnumHelpers.ParseNullable<InterpolationType>(
-                data.Value<string>("type"));
-
-            Interpolator = InterpolationType?.GetEasingFunction(data);
+            Interpolator = EnumHelpers
+                .ParseNullable<InterpolationType>(data.Value<string>("type"))?
+                .GetEasingFunction(data);
 
             if (!IsValid)
             {
