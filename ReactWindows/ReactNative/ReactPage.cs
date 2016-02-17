@@ -12,11 +12,9 @@ namespace ReactNative
     /// <summary>
     /// Base page for React Native applications.
     /// </summary>
-    public class ReactPage : Page
+    public abstract class ReactPage : Page
     {
         private readonly IReactInstanceManager _reactInstanceManager;
-        private readonly string _mainComponentName;
-        private readonly Action _onBackPressed;
 
         private bool _isShiftKeyDown;
         private bool _isControlKeyDown;
@@ -24,22 +22,58 @@ namespace ReactNative
         /// <summary>
         /// Instantiates the <see cref="ReactPage"/>.
         /// </summary>
-        /// <param name="jsBundleFile">The JavaScript bundle file.</param>
-        /// <param name="mainComponentName">The main component name.</param>
-        /// <param name="packages">The list of react packages.</param>
-        public ReactPage(
-            string jsBundleFile,
-            string mainComponentName,
-            IReadOnlyList<IReactPackage> packages,
-            Action onBackPressed)
+        protected ReactPage()
         {
-            _mainComponentName = mainComponentName;
-            _onBackPressed = onBackPressed;
-            _reactInstanceManager = CreateReactInstanceManager(jsBundleFile, packages);
-
+            _reactInstanceManager = CreateReactInstanceManager();
             RootView = CreateRootView();
             Content = RootView;
         }
+
+        /// <summary>
+        /// The custom path of the bundle file.
+        /// </summary>
+        /// <remarks>
+        /// This is used in cases where the bundle should be loaded from a
+        /// custom path.
+        /// </remarks>
+        public virtual string JavaScriptBundleFile
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The name of the main module.
+        /// </summary>
+        /// <remarks>
+        /// This is used to determine the URL used to fetch the JavaScript
+        /// bundle from the packager server. It is only used when dev support
+        /// is enabled.
+        /// </remarks>
+        public virtual string JavaScriptMainModuleName
+        {
+            get
+            {
+                return "index.ios";
+            }
+        }
+
+        /// <summary>
+        /// The name of the main component registered from JavaScript.
+        /// </summary>
+        public abstract string MainComponentName { get; }
+
+        /// <summary>
+        /// Signals whether developer mode should be enabled.
+        /// </summary>
+        public abstract bool UseDeveloperSupport { get; }
+
+        /// <summary>
+        /// The list of <see cref="IReactPackage"/>s used by the application.
+        /// </summary>
+        public abstract List<IReactPackage> Packages { get; }
 
         /// <summary>
         /// The root view managed by the page.
@@ -55,7 +89,7 @@ namespace ReactNative
         public void OnCreate()
         {
             RootView.Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"];
-            RootView.StartReactApplication(_reactInstanceManager, _mainComponentName);
+            RootView.StartReactApplication(_reactInstanceManager, MainComponentName);
         }
 
         /// <summary>
@@ -71,7 +105,7 @@ namespace ReactNative
         /// </summary>
         public void OnResume()
         {
-            _reactInstanceManager.OnResume(_onBackPressed);
+            _reactInstanceManager.OnResume(OnBackPressed);
         }
 
         /// <summary>
@@ -94,6 +128,13 @@ namespace ReactNative
         {
             return new ReactRootView();
         }
+        
+        /// <summary>
+        /// Action to take when the back button is pressed.
+        /// </summary>
+        protected virtual void OnBackPressed()
+        {
+        }
 
         /// <summary>
         /// Captures the key down events to 
@@ -109,7 +150,7 @@ namespace ReactNative
                 }
                 else if (e.Key == VirtualKey.Control)
                 {
-                    _isControlKeyDown = true;
+                    _isControlKeyDown = true;   
                 }
                 else if (_isShiftKeyDown && e.Key == VirtualKey.F10)
                 {
@@ -148,22 +189,17 @@ namespace ReactNative
             }
         }
 
-        private IReactInstanceManager CreateReactInstanceManager(string jsBundleFile, IReadOnlyList<IReactPackage> packages)
+        private IReactInstanceManager CreateReactInstanceManager()
         {
             var builder = new ReactInstanceManager.Builder
             {
-#if DEBUG
-                UseDeveloperSupport = true,
-#endif
+                UseDeveloperSupport = UseDeveloperSupport,
                 InitialLifecycleState = LifecycleState.Resumed,
-                JavaScriptBundleFile = jsBundleFile,
+                JavaScriptBundleFile = JavaScriptBundleFile,
+                JavaScriptMainModuleName = JavaScriptMainModuleName,
             };
 
-            foreach (var package in packages)
-            {
-                builder.Packages.Add(package);
-            }
-
+            builder.Packages.AddRange(Packages);
             return builder.Build();
         }
     }
