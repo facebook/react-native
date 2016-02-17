@@ -100,7 +100,7 @@ import com.facebook.react.uimanager.ViewProps;
   }
 
   @ReactProp(name = "overflow")
-  public void setOverflow(String overflow) {
+  public final void setOverflow(String overflow) {
     mClipToBounds = "hidden".equals(overflow);
     invalidate();
   }
@@ -141,7 +141,7 @@ import com.facebook.react.uimanager.ViewProps;
   /**
    * Returns an array of DrawCommands to perform during the View's draw pass.
    */
-  /* package */ DrawCommand[] getDrawCommands() {
+  /* package */ final DrawCommand[] getDrawCommands() {
     return mDrawCommands;
   }
 
@@ -149,7 +149,7 @@ import com.facebook.react.uimanager.ViewProps;
    * Sets an array of DrawCommands to perform during the View's draw pass. StateBuilder uses old
    * draw commands to compare to new draw commands and see if the View neds to be redrawn.
    */
-  /* package */ void setDrawCommands(DrawCommand[] drawCommands) {
+  /* package */ final void setDrawCommands(DrawCommand[] drawCommands) {
     mDrawCommands = drawCommands;
   }
 
@@ -157,14 +157,14 @@ import com.facebook.react.uimanager.ViewProps;
    * Sets an array of AttachDetachListeners to call onAttach/onDetach when they are attached to or
    * detached from a View that this shadow node maps to.
    */
-  /* package */ void setAttachDetachListeners(AttachDetachListener[] listeners) {
+  /* package */ final void setAttachDetachListeners(AttachDetachListener[] listeners) {
     mAttachDetachListeners = listeners;
   }
 
   /**
    * Returns an array of AttachDetachListeners associated with this shadow node.
    */
-  /* package */ AttachDetachListener[] getAttachDetachListeners() {
+  /* package */ final AttachDetachListener[] getAttachDetachListeners() {
     return mAttachDetachListeners;
   }
 
@@ -218,7 +218,7 @@ import com.facebook.react.uimanager.ViewProps;
   /**
    * Sets boundaries of the View that this node maps to relative to the parent left/top coordinate.
    */
-  /* package */ void setViewBounds(int left, int top, int right, int bottom) {
+  /* package */ final void setViewBounds(int left, int top, int right, int bottom) {
     mViewLeft = left;
     mViewTop = top;
     mViewRight = right;
@@ -228,28 +228,28 @@ import com.facebook.react.uimanager.ViewProps;
   /**
    * Left position of the View this node maps to relative to the parent View.
    */
-  /* package */ int getViewLeft() {
+  /* package */ final int getViewLeft() {
     return mViewLeft;
   }
 
   /**
    * Top position of the View this node maps to relative to the parent View.
    */
-  /* package */ int getViewTop() {
+  /* package */ final int getViewTop() {
     return mViewTop;
   }
 
   /**
    * Right position of the View this node maps to relative to the parent View.
    */
-  /* package */ int getViewRight() {
+  /* package */ final int getViewRight() {
     return mViewRight;
   }
 
   /**
    * Bottom position of the View this node maps to relative to the parent View.
    */
-  /* package */ int getViewBottom() {
+  /* package */ final int getViewBottom() {
     return mViewBottom;
   }
 
