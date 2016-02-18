@@ -21,7 +21,12 @@ namespace ReactNative.UIManager.LayoutAnimation
             EasingMode = EasingMode.EaseInOut,
         };
 
-        private static readonly BounceEase s_spring = new BounceEase(); // TODO: implement proper spring
+        /// <remarks>
+        /// We're currently using bounce ease because of an exception thrown by
+        /// XAML if the width or height property shrinks below zero.
+        /// TODO: implement proper spring interpolation function.
+        /// </remarks>
+        private static readonly BounceEase s_spring = new BounceEase();
 
         public static EasingFunctionBase GetEasingFunction(this InterpolationType interpolationType, JObject data)
         {
@@ -36,7 +41,6 @@ namespace ReactNative.UIManager.LayoutAnimation
                 case InterpolationType.EaseInEaseOut:
                     return s_easeInOut;
                 case InterpolationType.Spring:
-                    // TODO: enable `springDamping`
                     return s_spring;
                 case InterpolationType.Linear:
                     return null;

@@ -67,7 +67,7 @@ namespace ReactNative.Chakra.Executor
 
             // Set up the arguments to pass in
             var callArguments = new JavaScriptValue[arguments.Count + 1];
-            callArguments[0] = _globalObject; // TODO: What is first argument?
+            callArguments[0] = _globalObject;
 
             for (var i = 0; i < arguments.Count; ++i)
             {
@@ -138,10 +138,6 @@ namespace ReactNative.Chakra.Executor
             // Set the current context
             var context = _runtime.CreateContext();
             JavaScriptContext.Current = context;
-
-            // Set the WinRT namespace (TODO: needed?)
-            Native.ThrowIfError(
-                Native.JsProjectWinRTNamespace("Windows"));
 
 #if DEBUG
             // Start debugging.

@@ -9,8 +9,7 @@ namespace ReactNative.UIManager
     /// </summary>
     public class LayoutShadowNode : ReactShadowNode
     {
-        // TODO: replace with CSSConstants.Undefined
-        private const float Undefined = float.NaN;
+        private const float Undefined = CSSConstants.Undefined;
 
         /// <summary>
         /// Set the width of the shadow node.

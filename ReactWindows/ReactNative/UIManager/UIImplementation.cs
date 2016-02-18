@@ -427,10 +427,10 @@ namespace ReactNative.UIManager
             try
             {
                 MeasureLayout(tag, ancestorTag, _measureBuffer);
-                var relativeX = _measureBuffer[0]; // TODO: convert pixels to DIP?
-                var relativeY = _measureBuffer[1]; // TODO: convert pixels to DIP?
-                var width = _measureBuffer[2]; // TODO: convert pixels to DIP?
-                var height = _measureBuffer[3]; // TODO: convert pixels to DIP?
+                var relativeX = _measureBuffer[0];
+                var relativeY = _measureBuffer[1];
+                var width = _measureBuffer[2];
+                var height = _measureBuffer[3];
                 successCallback.Invoke(relativeX, relativeY, width, height);
             }
             catch (Exception e)
@@ -452,10 +452,10 @@ namespace ReactNative.UIManager
             try
             {
                 MeasureLayoutRelativeToParent(tag, _measureBuffer);
-                var relativeX = _measureBuffer[0]; // TODO: convert pixels to DIP?
-                var relativeY = _measureBuffer[1]; // TODO: convert pixels to DIP?
-                var width = _measureBuffer[2]; // TODO: convert pixels to DIP?
-                var height = _measureBuffer[3]; // TODO: convert pixels to DIP?
+                var relativeX = _measureBuffer[0];
+                var relativeY = _measureBuffer[1];
+                var width = _measureBuffer[2];
+                var height = _measureBuffer[3];
                 successCallback.Invoke(relativeX, relativeY, width, height);
             }
             catch (Exception e)

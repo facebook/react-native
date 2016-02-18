@@ -31,9 +31,6 @@ namespace ReactNative
     /// lifecycle events to the instance manager (i.e., <see cref="OnSuspend"/>,
     /// <see cref="OnDestroy"/>, and <see cref="OnResume(IDefaultHardwareBackButtonHandler)"/>).
     /// </summary>
-    /// <remarks>
-    /// TODO: additional debugging support and memory pressure management.
-    /// </remarks>
     public class ReactInstanceManager : IReactInstanceManager
     {
         private readonly List<ReactRootView> _attachedRootViews = new List<ReactRootView>();
@@ -208,7 +205,10 @@ namespace ReactNative
             _lifecycleState = LifecycleState.BeforeResume;
             _defaultBackButtonHandler = null;
 
-            // TODO: dev support manager settings
+            if (_useDeveloperSupport)
+            {
+                _devSupportManager.IsEnabled = false;
+            }
 
             var currentReactContext = _currentReactContext;
             if (currentReactContext != null)
@@ -235,7 +235,10 @@ namespace ReactNative
 
             _defaultBackButtonHandler = onBackPressed;
 
-            // TODO: dev support manager notifications
+            if (_useDeveloperSupport)
+            {
+                _devSupportManager.IsEnabled = true;
+            }
 
             var currentReactContext = _currentReactContext;
             if (currentReactContext != null)
@@ -251,7 +254,11 @@ namespace ReactNative
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            // TODO: dev support manager and memory pressure hooks
+            // TODO: memory pressure hooks
+            if (_useDeveloperSupport)
+            {
+                _devSupportManager.IsEnabled = false;
+            }
 
             var currentReactContext = _currentReactContext;
             if (currentReactContext != null)
@@ -476,7 +483,7 @@ namespace ReactNative
             // Reset view content as it's going to be populated by the 
             // application content from JavaScript
             rootView.Children.Clear();
-            // TODO: reset root view tag?
+            rootView.Tag = null;
 
             var uiManagerModule = reactInstance.GetNativeModule<UIManagerModule>();
             var rootTag = uiManagerModule.AddMeasuredRootView(rootView);
@@ -527,8 +534,10 @@ namespace ReactNative
             var jsModulesBuilder = new JavaScriptModulesConfig.Builder();
 
             var reactContext = new ReactContext();
-
-            // TODO: set dev support manager on the context.
+            if (_useDeveloperSupport)
+            {
+                reactContext.NativeModuleCallExceptionHandler = _devSupportManager.HandleException;
+            }
 
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createAndProcessCoreModulesPackage"))
             {

@@ -61,11 +61,6 @@ namespace Playground
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
@@ -101,12 +96,7 @@ namespace Playground
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
-
-            //TODO: Save application state and stop any background activity
             _reactPage.OnSuspend();
-
-            deferral.Complete();
         }
 
         /// <summary>

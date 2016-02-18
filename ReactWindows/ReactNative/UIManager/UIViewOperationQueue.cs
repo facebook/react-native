@@ -65,26 +65,8 @@ namespace ReactNative.UIManager
             SizeMonitoringCanvas rootView, 
             ThemedReactContext themedRootContext)
         {
-            if (DispatcherHelpers.IsOnDispatcher())
-            {
-                _nativeViewHierarchyManager.AddRootView(tag, rootView, themedRootContext);
-            }
-            else
-            {
-                var eventHandler = new AutoResetEvent(false);
-                _reactContext.RunOnDispatcherQueueThread(() =>
-                {
-                    _nativeViewHierarchyManager.AddRootView(tag, rootView, themedRootContext);
-                    eventHandler.Set();
-                });
-
-                // TODO: make asynchronous?
-                if (!eventHandler.WaitOne(5000))
-                {
-                    // TODO: soft assertion?
-                    throw new InvalidOperationException("Timed out adding root view.");
-                }
-            }
+            DispatcherHelpers.AssertOnDispatcher();
+            _nativeViewHierarchyManager.AddRootView(tag, rootView, themedRootContext);
         }
 
         /// <summary>
@@ -272,10 +254,10 @@ namespace ReactNative.UIManager
                     return;
                 }
 
-                var x = _measureBuffer[0]; // TODO: convert pixels to DIP?
-                var y = _measureBuffer[1]; // TODO: convert pixels to DIP?
-                var width = _measureBuffer[2]; // TODO: convert pixels to DIP?
-                var height = _measureBuffer[3]; // TODO: convert pixels to DIP?
+                var x = _measureBuffer[0];
+                var y = _measureBuffer[1];
+                var width = _measureBuffer[2];
+                var height = _measureBuffer[3];
                 callback.Invoke(0, 0, width, height, x, y);
             });
         }
@@ -321,10 +303,10 @@ namespace ReactNative.UIManager
                     return;
                 }
 
-                var x = _measureBuffer[0] - containerX; // TODO: convert to DIP from pixel?
-                var y = _measureBuffer[1] - containerY; // TODO: convert to DIP from pixel?
-                var width = _measureBuffer[2]; // TODO: convert to DIP from pixel?
-                var height = _measureBuffer[3]; // TODO: convert to DIP from pixel?
+                var x = _measureBuffer[0] - containerX;
+                var y = _measureBuffer[1] - containerY;
+                var width = _measureBuffer[2];
+                var height = _measureBuffer[3];
                 callback.Invoke(touchTargetReactTag, x, y, width, height);
             });
         }

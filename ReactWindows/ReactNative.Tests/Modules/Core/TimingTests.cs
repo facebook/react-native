@@ -35,6 +35,7 @@ namespace ReactNative.Tests.Modules.Core
         [TestMethod]
         public void Timing_ManyTimers()
         {
+            // TODO: investigate non-determinism
             var ids = new List<int>();
             var waitHandle = new AutoResetEvent(false);
             var timing = CreateModule(new MockInvocationHandler((name, args) =>
