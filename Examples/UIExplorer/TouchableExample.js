@@ -23,6 +23,7 @@ var {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  UIManager,
   View,
 } = React;
 
@@ -85,7 +86,21 @@ exports.examples = [
   render: function(): ReactElement {
     return <TouchableDelayEvents />;
   },
-}];
+}, {
+  title: '3D Touch / Force Touch',
+  description: 'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
+  render: function(): ReactElement {
+    return <ForceTouchExample />;
+  },
+  platform: 'ios',
+}, {
+   title: 'Touchable Hit Slop',
+   description: '<Touchable*> components accept hitSlop prop which extends the touch area ' +
+     'without changing the view bounds.',
+   render: function(): ReactElement {
+     return <TouchableHitSlop />;
+   },
+ }];
 
 var TextOnPressBox = React.createClass({
   getInitialState: function() {
@@ -133,18 +148,21 @@ var TouchableFeedbackEvents = React.createClass({
     return (
       <View testID="touchable_feedback_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
-        <TouchableOpacity
-          style={styles.wrapper}
-          testID="touchable_feedback_events_button"
-          onPress={() => this._appendEvent('press')}
-          onPressIn={() => this._appendEvent('pressIn')}
-          onPressOut={() => this._appendEvent('pressOut')}
-          onLongPress={() => this._appendEvent('longPress')}>
-          <Text style={styles.button}>
-            Press Me
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.wrapper}
+            testID="touchable_feedback_events_button"
+            accessibilityLabel="touchable feedback events"
+            accessibilityTraits="button"
+            accessibilityComponentType="button"
+            onPress={() => this._appendEvent('press')}
+            onPressIn={() => this._appendEvent('pressIn')}
+            onPressOut={() => this._appendEvent('pressOut')}
+            onLongPress={() => this._appendEvent('longPress')}>
+            <Text style={styles.button}>
+              Press Me
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View testID="touchable_feedback_events_console" style={styles.eventLogBox}>
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
@@ -169,21 +187,21 @@ var TouchableDelayEvents = React.createClass({
     return (
       <View testID="touchable_delay_events">
         <View style={[styles.row, {justifyContent: 'center'}]}>
-        <TouchableOpacity
-          style={styles.wrapper}
-          testID="touchable_delay_events_button"
-          onPress={() => this._appendEvent('press')}
-          delayPressIn={400}
-          onPressIn={() => this._appendEvent('pressIn - 400ms delay')}
-          delayPressOut={1000}
-          onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
-          delayLongPress={800}
-          onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
-          <Text style={styles.button}>
-            Press Me
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.wrapper}
+            testID="touchable_delay_events_button"
+            onPress={() => this._appendEvent('press')}
+            delayPressIn={400}
+            onPressIn={() => this._appendEvent('pressIn - 400ms delay')}
+            delayPressOut={1000}
+            onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
+            delayLongPress={800}
+            onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
+            <Text style={styles.button}>
+              Press Me
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.eventLogBox} testID="touchable_delay_events_console">
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
@@ -196,6 +214,82 @@ var TouchableDelayEvents = React.createClass({
     eventLog.unshift(eventName);
     this.setState({eventLog});
   },
+});
+
+var ForceTouchExample = React.createClass({
+  getInitialState: function() {
+    return {
+      force: 0,
+    };
+  },
+  _renderConsoleText: function() {
+    return View.forceTouchAvailable ?
+      'Force: ' + this.state.force.toFixed(3) :
+      '3D Touch is not available on this device';
+  },
+  render: function() {
+    return (
+      <View testID="touchable_3dtouch_event">
+        <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
+          <Text>{this._renderConsoleText()}</Text>
+        </View>
+        <View style={[styles.row, {justifyContent: 'center'}]}>
+          <View
+            style={styles.wrapper}
+            testID="touchable_3dtouch_button"
+            onStartShouldSetResponder={() => true}
+            onResponderMove={(event) => this.setState({force: event.nativeEvent.force})}
+            onResponderRelease={(event) => this.setState({force: 0})}>
+            <Text style={styles.button}>
+              Press Me
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  },
+});
+
+var TouchableHitSlop = React.createClass({
+  getInitialState: function() {
+    return {
+      timesPressed: 0,
+    };
+  },
+  onPress: function() {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  },
+  render: function() {
+    var log = '';
+    if (this.state.timesPressed > 1) {
+      log = this.state.timesPressed + 'x onPress';
+    } else if (this.state.timesPressed > 0) {
+      log = 'onPress';
+    }
+
+    return (
+      <View testID="touchable_hit_slop">
+        <View style={[styles.row, {justifyContent: 'center'}]}>
+          <TouchableOpacity
+            onPress={this.onPress}
+            style={styles.hitSlopWrapper}
+            hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
+            testID="touchable_hit_slop_button">
+            <Text style={styles.hitSlopButton}>
+              Press Outside This View
+            </Text>
+          </TouchableOpacity>
+         </View>
+        <View style={styles.logBox}>
+          <Text>
+            {log}
+          </Text>
+        </View>
+      </View>
+    );
+  }
 });
 
 var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
@@ -219,6 +313,9 @@ var styles = StyleSheet.create({
   button: {
     color: '#007AFF',
   },
+  hitSlopButton: {
+    color: 'white',
+  },
   wrapper: {
     borderRadius: 8,
   },
@@ -226,10 +323,14 @@ var styles = StyleSheet.create({
     borderRadius: 8,
     padding: 6,
   },
+  hitSlopWrapper: {
+    backgroundColor: 'red',
+    marginVertical: 30,
+  },
   logBox: {
     padding: 20,
     margin: 10,
-    borderWidth: 1 / PixelRatio.get(),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
   },
@@ -237,9 +338,17 @@ var styles = StyleSheet.create({
     padding: 10,
     margin: 10,
     height: 120,
-    borderWidth: 1 / PixelRatio.get(),
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
+  },
+  forceTouchBox: {
+    padding: 10,
+    margin: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#f0f0f0',
+    backgroundColor: '#f9f9f9',
+    alignItems: 'center',
   },
   textBlock: {
     fontWeight: '500',

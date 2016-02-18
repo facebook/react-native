@@ -31,6 +31,7 @@ typedef struct {
   double timeout;
   double maximumAge;
   double accuracy;
+  double distanceFilter;
 } RCTLocationOptions;
 
 @implementation RCTConvert (RCTLocationOptions)
@@ -38,10 +39,15 @@ typedef struct {
 + (RCTLocationOptions)RCTLocationOptions:(id)json
 {
   NSDictionary<NSString *, id> *options = [RCTConvert NSDictionary:json];
+
+  double distanceFilter = options[@"distanceFilter"] == NULL ? RCT_DEFAULT_LOCATION_ACCURACY
+    : [RCTConvert double:options[@"distanceFilter"]] ?: kCLDistanceFilterNone;
+
   return (RCTLocationOptions){
     .timeout = [RCTConvert NSTimeInterval:options[@"timeout"]] ?: INFINITY,
     .maximumAge = [RCTConvert NSTimeInterval:options[@"maximumAge"]] ?: INFINITY,
-    .accuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBest : RCT_DEFAULT_LOCATION_ACCURACY
+    .accuracy = [RCTConvert BOOL:options[@"enableHighAccuracy"]] ? kCLLocationAccuracyBest : RCT_DEFAULT_LOCATION_ACCURACY,
+    .distanceFilter = distanceFilter
   };
 }
 
@@ -128,12 +134,16 @@ RCT_EXPORT_MODULE()
 {
   if (!_locationManager) {
     _locationManager = [CLLocationManager new];
-    _locationManager.distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
+    _locationManager.distanceFilter = _observerOptions.distanceFilter;
     _locationManager.delegate = self;
   }
 
   // Request location access permission
-  if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
+    [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+    [_locationManager requestAlwaysAuthorization];
+  } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+    [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
     [_locationManager requestWhenInUseAuthorization];
   }
 
@@ -327,8 +337,9 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
 - (void)checkLocationConfig
 {
-  if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"]) {
-    RCTLogError(@"NSLocationWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
+  if (!([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] ||
+    [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"])) {
+    RCTLogError(@"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription key must be present in Info.plist to use geolocation.");
   }
 }
 

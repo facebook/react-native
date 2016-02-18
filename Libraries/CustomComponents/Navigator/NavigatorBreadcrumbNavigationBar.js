@@ -36,6 +36,7 @@ var View = require('View');
 
 var { Map } = require('immutable');
 
+var guid = require('guid');
 var invariant = require('invariant');
 
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
@@ -134,9 +135,13 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
       this._setPropsIfExists('title_' + index, TITLE_PROPS[index]);
     }
     var right = this.refs['right_' + index];
-    if (right &&
-        interpolate.RightItem(RIGHT_BUTTON_PROPS[index].style, amount)) {
-      right.setNativeProps(RIGHT_BUTTON_PROPS[index]);
+
+    const rightButtonStyle = RIGHT_BUTTON_PROPS[index].style;
+    if (right && interpolate.RightItem(rightButtonStyle, amount)) {
+      right.setNativeProps({
+        style: rightButtonStyle,
+        pointerEvents: rightButtonStyle.opacity === 0 ? 'none' : 'auto',
+      });
     }
   },
 
@@ -175,11 +180,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
   },
 
   componentWillMount: function() {
-    this._descriptors = {
-      crumb: new Map(),
-      title: new Map(),
-      right: new Map(),
-    };
+    this._reset();
   },
 
   render: function() {
@@ -188,12 +189,28 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var titles = navState.routeStack.map(this._getTitle);
     var buttons = navState.routeStack.map(this._getRightButton);
     return (
-      <View style={[styles.breadCrumbContainer, this.props.style]}>
+      <View
+        key={this._key}
+        style={[styles.breadCrumbContainer, this.props.style]}>
         {titles}
         {icons}
         {buttons}
       </View>
     );
+  },
+
+  immediatelyRefresh: function() {
+    this._reset();
+    this.forceUpdate();
+  },
+
+  _reset() {
+    this._key = guid();
+    this._descriptors = {
+      crumb: new Map(),
+      title: new Map(),
+      right: new Map(),
+    };
   },
 
   _getBreadcrumb: function(route, index) {

@@ -27,11 +27,7 @@ var ReactPropTypes = require('ReactPropTypes');
  */
 var LayoutPropTypes = {
   width: ReactPropTypes.number,
-  maxWidth: ReactPropTypes.number,
-  minWidth: ReactPropTypes.number,
   height: ReactPropTypes.number,
-  maxHeight: ReactPropTypes.number,
-  minHeight: ReactPropTypes.number,
   top: ReactPropTypes.number,
   left: ReactPropTypes.number,
   right: ReactPropTypes.number,

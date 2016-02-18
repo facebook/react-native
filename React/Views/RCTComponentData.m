@@ -77,11 +77,11 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (UIView *)createViewWithTag:(NSNumber *)tag props:(NSDictionary<NSString *, id> *)props
+- (UIView *)createViewWithTag:(NSNumber *)tag
 {
   RCTAssertMainThread();
 
-  UIView *view = (UIView *)(props ? [self.manager viewWithProps:props] : [_manager view]);
+  UIView *view = [_manager view];
   view.reactTag = tag;
   view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
@@ -172,6 +172,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
         // Ordinary property handlers
         NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
+        if (!typeSignature) {
+          RCTLogError(@"No +[RCTConvert %@] function found.", NSStringFromSelector(type));
+          return ^(__unused id<RCTComponent> view, __unused id json){};
+        }
         switch (typeSignature.methodReturnType[0]) {
 
   #define RCT_CASE(_value, _type) \
@@ -296,7 +300,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   if (!_defaultView) {
-    _defaultView = [self createViewWithTag:nil props:nil];
+    _defaultView = [self createViewWithTag:nil];
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {

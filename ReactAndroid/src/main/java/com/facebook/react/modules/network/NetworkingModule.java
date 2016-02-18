@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import java.util.concurrent.TimeUnit;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -113,17 +115,31 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  /**
+  * @param timeout value of 0 results in no timeout
+  */
   public void sendRequest(
       String method,
       String url,
       final int requestId,
       ReadableArray headers,
       ReadableMap data,
-      final boolean useIncrementalUpdates) {
+      final boolean useIncrementalUpdates,
+      int timeout) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
     if (requestId != 0) {
       requestBuilder.tag(requestId);
+    }
+
+    OkHttpClient client = mClient;
+    // If the current timeout does not equal the passed in timeout, we need to clone the existing
+    // client and set the timeout explicitly on the clone.  This is cheap as everything else is
+    // shared under the hood.
+    // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
+    if (timeout != mClient.getConnectTimeout()) {
+      client = mClient.clone();
+      client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
     }
 
     Headers requestHeaders = extractHeaders(headers, data);
@@ -181,11 +197,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, multipartBuilder.build());
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      // Ignore and treat it as if it were null.
-      requestBuilder.method(method, null);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
-    mClient.newCall(requestBuilder.build()).enqueue(
+    client.newCall(requestBuilder.build()).enqueue(
         new Callback() {
           @Override
           public void onFailure(Request request, IOException e) {
@@ -289,6 +304,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     args.pushInt(requestId);
     args.pushInt(response.code());
     args.pushMap(headers);
+    args.pushString(response.request().urlString());
 
     getEventEmitter().emit("didReceiveNetworkResponse", args);
   }

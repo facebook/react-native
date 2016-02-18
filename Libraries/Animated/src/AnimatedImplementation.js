@@ -165,9 +165,9 @@ class TimingAnimation extends Animation {
   ) {
     super();
     this._toValue = config.toValue;
-    this._easing = config.easing || easeInOut;
+    this._easing = config.easing !== undefined ? config.easing : easeInOut;
     this._duration = config.duration !== undefined ? config.duration : 500;
-    this._delay = config.delay || 0;
+    this._delay = config.delay !== undefined ? config.delay : 0;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
   }
 
@@ -252,7 +252,7 @@ class DecayAnimation extends Animation {
     config: DecayAnimationConfigSingle,
   ) {
     super();
-    this._deceleration = config.deceleration || 0.998;
+    this._deceleration = config.deceleration !== undefined ? config.deceleration : 0.998;
     this._velocity = config.velocity;
     this.__isInteraction = config.isInteraction !== undefined ? config.isInteraction : true;
   }
@@ -577,7 +577,7 @@ class AnimatedValue extends AnimatedWithChildren {
 
   /**
    * Adds an asynchronous listener to the value so you can observe updates from
-   * animations or whathaveyou.  This is useful because there is no way to
+   * animations.  This is useful because there is no way to
    * synchronously read the value because it might be driven natively.
    */
   addListener(callback: ValueListenerCallback): string {
@@ -1556,7 +1556,7 @@ var event = function(
  * interaction patterns, like drag-and-drop.
  *
  * You can see more example usage in `AnimationExample.js`, the Gratuitous
- * Animation App, and [Animations documentation guide](http://facebook.github.io/react-native/docs/animations.html).
+ * Animation App, and [Animations documentation guide](docs/animations.html).
  *
  * Note that `Animated` is designed to be fully serializable so that animations
  * can be run in a high performance way, independent of the normal JavaScript

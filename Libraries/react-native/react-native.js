@@ -18,11 +18,14 @@ var ReactNative = {
   get DatePickerIOS() { return require('DatePickerIOS'); },
   get DrawerLayoutAndroid() { return require('DrawerLayoutAndroid'); },
   get Image() { return require('Image'); },
+  get ImageEditor() { return require('ImageEditor'); },
+  get ImageStore() { return require('ImageStore'); },
   get ListView() { return require('ListView'); },
   get MapView() { return require('MapView'); },
   get Modal() { return require('Modal'); },
   get Navigator() { return require('Navigator'); },
   get NavigatorIOS() { return require('NavigatorIOS'); },
+  get Picker() { return require('Picker'); },
   get PickerIOS() { return require('PickerIOS'); },
   get ProgressBarAndroid() { return require('ProgressBarAndroid'); },
   get ProgressViewIOS() { return require('ProgressViewIOS'); },
@@ -32,6 +35,9 @@ var ReactNative = {
   get SnapshotViewIOS() { return require('SnapshotViewIOS'); },
   get Switch() { return require('Switch'); },
   get PullToRefreshViewAndroid() { return require('PullToRefreshViewAndroid'); },
+  get RecyclerViewBackedScrollView() { return require('RecyclerViewBackedScrollView'); },
+  get RefreshControl() { return require('RefreshControl'); },
+  get StatusBar() { return require('StatusBar'); },
   get SwitchAndroid() { return require('SwitchAndroid'); },
   get SwitchIOS() { return require('SwitchIOS'); },
   get TabBarIOS() { return require('TabBarIOS'); },
@@ -55,18 +61,22 @@ var ReactNative = {
   get AlertIOS() { return require('AlertIOS'); },
   get Animated() { return require('Animated'); },
   get AppRegistry() { return require('AppRegistry'); },
+  get AppState() { return require('AppState'); },
   get AppStateIOS() { return require('AppStateIOS'); },
   get AsyncStorage() { return require('AsyncStorage'); },
   get BackAndroid() { return require('BackAndroid'); },
   get CameraRoll() { return require('CameraRoll'); },
   get Clipboard() { return require('Clipboard'); },
+  get DatePickerAndroid() { return require('DatePickerAndroid'); },
   get Dimensions() { return require('Dimensions'); },
   get Easing() { return require('Easing'); },
   get ImagePickerIOS() { return require('ImagePickerIOS'); },
   get IntentAndroid() { return require('IntentAndroid'); },
   get InteractionManager() { return require('InteractionManager'); },
   get LayoutAnimation() { return require('LayoutAnimation'); },
+  get Linking() { return require('Linking'); },
   get LinkingIOS() { return require('LinkingIOS'); },
+  get NavigationExperimental() { return require('NavigationExperimental'); },
   get NetInfo() { return require('NetInfo'); },
   get PanResponder() { return require('PanResponder'); },
   get PixelRatio() { return require('PixelRatio'); },
@@ -74,6 +84,7 @@ var ReactNative = {
   get Settings() { return require('Settings'); },
   get StatusBarIOS() { return require('StatusBarIOS'); },
   get StyleSheet() { return require('StyleSheet'); },
+  get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get UIManager() { return require('UIManager'); },
   get VibrationIOS() { return require('VibrationIOS'); },
 
@@ -86,6 +97,7 @@ var ReactNative = {
   get requireNativeComponent() { return require('requireNativeComponent'); },
 
   // Prop Types
+  get ColorPropType() { return require('ColorPropType'); },
   get EdgeInsetsPropType() { return require('EdgeInsetsPropType'); },
   get PointPropType() { return require('PointPropType'); },
 
@@ -101,7 +113,7 @@ var ReactNative = {
     get createFragment() { return require('ReactFragment').create; },
     get update() { return require('update'); },
   },
-  
+
   // Note: this must be placed last to prevent eager
   // evaluation of the getter-wrapped submodules above
   ...require('React'),
@@ -109,11 +121,11 @@ var ReactNative = {
 
 if (__DEV__) {
   Object.defineProperty(ReactNative.addons, 'Perf', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactDefaultPerf'),
   });
   Object.defineProperty(ReactNative.addons, 'TestUtils', {
-    enumerable: true, 
+    enumerable: true,
     get: () => require('ReactTestUtils'),
   });
 }

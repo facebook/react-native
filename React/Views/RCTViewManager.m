@@ -55,11 +55,6 @@ RCT_EXPORT_MODULE()
   return _bridge.uiManager.methodQueue;
 }
 
-- (UIView *)viewWithProps:(__unused NSDictionary<NSString *, id> *)props
-{
-  return [self view];
-}
-
 - (UIView *)view
 {
   return [RCTView new];
@@ -94,6 +89,11 @@ RCT_EXPORT_MODULE()
 - (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[];
+}
+
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return @{@"forceTouchAvailable": @(RCTForceTouchAvailable())};
 }
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
@@ -193,6 +193,17 @@ RCT_CUSTOM_VIEW_PROPERTY(borderStyle, RCTBorderStyle, RCTView)
     view.borderStyle = json ? [RCTConvert RCTBorderStyle:json] : defaultView.borderStyle;
   }
 }
+RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
+{
+  if ([view respondsToSelector:@selector(setHitTestEdgeInsets:)]) {
+    if (json) {
+      UIEdgeInsets hitSlopInsets = [RCTConvert UIEdgeInsets:json];
+      view.hitTestEdgeInsets = UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
+    } else {
+      view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
+    }
+  }
+}
 RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMagicTap, RCTDirectEventBlock)
 
@@ -239,10 +250,6 @@ RCT_EXPORT_SHADOW_PROPERTY(left, CGFloat);
 
 RCT_EXPORT_SHADOW_PROPERTY(width, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(height, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(minWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(minHeight, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxWidth, CGFloat)
-RCT_EXPORT_SHADOW_PROPERTY(maxHeight, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(borderTopWidth, CGFloat)
 RCT_EXPORT_SHADOW_PROPERTY(borderRightWidth, CGFloat)

@@ -9,20 +9,19 @@
 
 package com.facebook.react.bridge.queue;
 
-import com.facebook.jni.Countable;
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * A Runnable that has a native run implementation.
  */
 @DoNotStrip
-public class NativeRunnable extends Countable implements Runnable {
+public class NativeRunnable implements Runnable {
 
-  /**
-   * Should only be instantiated via native (JNI) code.
-   */
-  @DoNotStrip
-  private NativeRunnable() {
+  private final HybridData mHybridData;
+
+  private NativeRunnable(HybridData hybridData) {
+    mHybridData = hybridData;
   }
 
   public native void run();

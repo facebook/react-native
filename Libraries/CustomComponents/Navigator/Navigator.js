@@ -30,7 +30,6 @@
 var AnimationsDebugModule = require('NativeModules').AnimationsDebugModule;
 var Dimensions = require('Dimensions');
 var InteractionMixin = require('InteractionMixin');
-var Map = require('Map');
 var NavigationContext = require('NavigationContext');
 var NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 var NavigatorNavigationBar = require('NavigatorNavigationBar');
@@ -43,6 +42,7 @@ var TimerMixin = require('react-timer-mixin');
 var View = require('View');
 
 var clamp = require('clamp');
+var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
 var invariant = require('invariant');
 var rebound = require('rebound');
@@ -175,6 +175,7 @@ var GESTURE_ACTIONS = [
  *  - `replace(route)` - Replace the current scene with a new route
  *  - `replaceAtIndex(route, index)` - Replace a scene as specified by an index
  *  - `replacePrevious(route)` - Replace the previous scene
+ *  - `resetTo(route)` - Navigate to a new scene and reset route stack
  *  - `immediatelyResetRouteStack(routeStack)` - Reset every scene with an
  *     array of routes
  *  - `popToRoute(route)` - Pop to a particular scene, as specified by its
@@ -188,11 +189,11 @@ var Navigator = React.createClass({
   propTypes: {
     /**
      * Optional function that allows configuration about scene animations and
-     * gestures. Will be invoked with the route and should return a scene
-     * configuration object
+     * gestures. Will be invoked with the route and the routeStack and should
+     * return a scene configuration object
      *
      * ```
-     * (route) => Navigator.SceneConfigs.FloatFromRight
+     * (route, routeStack) => Navigator.SceneConfigs.FloatFromRight
      * ```
      */
     configureScene: PropTypes.func,
@@ -203,7 +204,7 @@ var Navigator = React.createClass({
      *
      * ```
      * (route, navigator) =>
-     *   <MySceneComponent title={route.title} />
+     *   <MySceneComponent title={route.title} navigator={navigator} />
      * ```
      */
     renderScene: PropTypes.func.isRequired,
@@ -224,17 +225,11 @@ var Navigator = React.createClass({
     initialRouteStack: PropTypes.arrayOf(PropTypes.object),
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('willfocus', callback)` instead.
-     *
      * Will emit the target route upon mounting and before each nav transition
      */
     onWillFocus: PropTypes.func,
 
     /**
-     * @deprecated
-     * Use `navigationContext.addListener('didfocus', callback)` instead.
-     *
      * Will be called with the new route of each scene after the transition is
      * complete or after the initial mounting
      */
@@ -292,7 +287,7 @@ var Navigator = React.createClass({
     }
     return {
       sceneConfigStack: routeStack.map(
-        (route) => this.props.configureScene(route)
+        (route) => this.props.configureScene(route, routeStack)
       ),
       routeStack,
       presentedIndex: initialRouteIndex,
@@ -367,7 +362,7 @@ var Navigator = React.createClass({
     this.setState({
       routeStack: nextRouteStack,
       sceneConfigStack: nextRouteStack.map(
-        this.props.configureScene
+        route => this.props.configureScene(route, nextRouteStack)
       ),
       presentedIndex: destIndex,
       activeGesture: null,
@@ -912,7 +907,7 @@ var Navigator = React.createClass({
     var nextStack = activeStack.concat([route]);
     var destIndex = nextStack.length - 1;
     var nextAnimationConfigStack = activeAnimationConfigStack.concat([
-      this.props.configureScene(route),
+      this.props.configureScene(route, nextStack),
     ]);
     this._emitWillFocus(nextStack[destIndex]);
     this.setState({
@@ -980,7 +975,7 @@ var Navigator = React.createClass({
     var nextRouteStack = this.state.routeStack.slice();
     var nextAnimationModeStack = this.state.sceneConfigStack.slice();
     nextRouteStack[index] = route;
-    nextAnimationModeStack[index] = this.props.configureScene(route);
+    nextAnimationModeStack[index] = this.props.configureScene(route, nextRouteStack);
 
     if (index === this.state.presentedIndex) {
       this._emitWillFocus(route);
@@ -1084,13 +1079,16 @@ var Navigator = React.createClass({
   },
 
   _renderNavigationBar: function() {
-    if (!this.props.navigationBar) {
+    let { navigationBar } = this.props;
+    if (!navigationBar) {
       return null;
     }
-    return React.cloneElement(this.props.navigationBar, {
+    return React.cloneElement(navigationBar, {
       ref: (navBar) => {
-        this.props.navigationBar.ref instanceof Function && this.props.navigationBar.ref(navBar);
         this._navBar = navBar;
+        if (navigationBar && typeof navigationBar.ref === 'function') {
+          navigationBar.ref(navBar);
+        }
       },
       navigator: this._navigationBarNavigator,
       navState: this.state,

@@ -12,9 +12,10 @@ package com.facebook.react.views.scroll;
 import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 
 /**
  * View manager for {@link ReactHorizontalScrollView} components.
@@ -38,9 +39,19 @@ public class ReactHorizontalScrollViewManager
     return new ReactHorizontalScrollView(context);
   }
 
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactHorizontalScrollView view, boolean value) {
+    view.setScrollEnabled(value);
+  }
+
   @ReactProp(name = "showsHorizontalScrollIndicator")
   public void setShowsHorizontalScrollIndicator(ReactHorizontalScrollView view, boolean value) {
     view.setHorizontalScrollBarEnabled(value);
+  }
+
+  @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
+  public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
+    view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   /**
@@ -68,13 +79,10 @@ public class ReactHorizontalScrollViewManager
   public void scrollTo(
       ReactHorizontalScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.smoothScrollTo(data.mDestX, data.mDestY);
-  }
-
-  @Override
-  public void scrollWithoutAnimationTo(
-      ReactHorizontalScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.scrollTo(data.mDestX, data.mDestY);
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+    } else {
+      scrollView.scrollTo(data.mDestX, data.mDestY);
+    }
   }
 }

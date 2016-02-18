@@ -14,10 +14,22 @@
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
+const UNSENT = 0;
+const OPENED = 1;
+const HEADERS_RECEIVED = 2;
+const LOADING = 3;
+const DONE = 4;
+
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
 class XMLHttpRequestBase {
+
+  static UNSENT: number;
+  static OPENED: number;
+  static HEADERS_RECEIVED: number;
+  static LOADING: number;
+  static DONE: number;
 
   UNSENT: number;
   OPENED: number;
@@ -32,6 +44,8 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   status: number;
+  timeout: number;
+  responseURL: ?string;
 
   upload: ?{
     onprogress?: (event: Object) => void;
@@ -48,15 +62,16 @@ class XMLHttpRequestBase {
   _lowerCaseResponseHeaders: Object;
 
   constructor() {
-    this.UNSENT = 0;
-    this.OPENED = 1;
-    this.HEADERS_RECEIVED = 2;
-    this.LOADING = 3;
-    this.DONE = 4;
+    this.UNSENT = UNSENT;
+    this.OPENED = OPENED;
+    this.HEADERS_RECEIVED = HEADERS_RECEIVED;
+    this.LOADING = LOADING;
+    this.DONE = DONE;
 
     this.onreadystatechange = null;
     this.onload = null;
     this.upload = undefined; /* Upload not supported yet */
+    this.timeout = 0;
 
     this._reset();
     this._method = null;
@@ -69,6 +84,7 @@ class XMLHttpRequestBase {
     this.responseHeaders = undefined;
     this.responseText = '';
     this.status = 0;
+    delete this.responseURL;
 
     this._requestId = null;
 
@@ -110,11 +126,16 @@ class XMLHttpRequestBase {
     }
   }
 
-  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object): void {
+  _didReceiveResponse(requestId: number, status: number, responseHeaders: ?Object, responseURL: ?string): void {
     if (requestId === this._requestId) {
       this.status = status;
       this.setResponseHeaders(responseHeaders);
       this.setReadyState(this.HEADERS_RECEIVED);
+      if (responseURL || responseURL === '') {
+        this.responseURL = responseURL;
+      } else {
+        delete this.responseURL;
+      }
     }
   }
 
@@ -179,6 +200,9 @@ class XMLHttpRequestBase {
       // async is default
       throw new Error('Synchronous http requests are not supported');
     }
+    if (!url) {
+      throw new Error('Cannot load an empty url');
+    }
     this._reset();
     this._method = method;
     this._url = url;
@@ -186,7 +210,7 @@ class XMLHttpRequestBase {
     this.setReadyState(this.OPENED);
   }
 
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     throw new Error('Subclass must define sendImpl method');
   }
 
@@ -198,7 +222,7 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    this.sendImpl(this._method, this._url, this._headers, data);
+    this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
 
   abort(): void {
@@ -235,7 +259,7 @@ class XMLHttpRequestBase {
     if (onreadystatechange) {
       // We should send an event to handler, but since we don't process that
       // event anywhere, let's leave it empty
-      onreadystatechange(null);
+      onreadystatechange.call(this, null);
     }
     if (newState === this.DONE && !this._aborted) {
       this._sendLoad();
@@ -252,5 +276,11 @@ class XMLHttpRequestBase {
     }
   }
 }
+
+XMLHttpRequestBase.UNSENT = UNSENT;
+XMLHttpRequestBase.OPENED = OPENED;
+XMLHttpRequestBase.HEADERS_RECEIVED = HEADERS_RECEIVED;
+XMLHttpRequestBase.LOADING = LOADING;
+XMLHttpRequestBase.DONE = DONE;
 
 module.exports = XMLHttpRequestBase;

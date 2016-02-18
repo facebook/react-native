@@ -19,6 +19,7 @@
     "__DEV__": true,
     "__dirname": false,
     "__fbBatchedBridgeConfig": false,
+    "alert": false,
     "cancelAnimationFrame": false,
     "clearImmediate": true,
     "clearInterval": false,
@@ -26,8 +27,11 @@
     "console": false,
     "document": false,
     "escape": false,
+    "Event": false,
+    "EventTarget": false,
     "exports": false,
     "fetch": false,
+    "FormData": false,
     "global": false,
     "jest": false,
     "Map": true,
@@ -43,7 +47,29 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false
+    "pit": false,
+
+    // Flow global types.
+    "ReactComponent": false,
+    "ReactClass": false,
+    "ReactElement": false,
+    "ReactPropsCheckType": false,
+    "ReactPropsChainableTypeChecker": false,
+    "ReactPropTypes": false,
+    "SyntheticEvent": false,
+    "$Either": false,
+    "$All": false,
+    "$Tuple": false,
+    "$Supertype": false,
+    "$Subtype": false,
+    "$Shape": false,
+    "$Diff": false,
+    "$Keys": false,
+    "$Enum": false,
+    "$Exports": false,
+    "$FlowIssue": false,
+    "$FlowFixMe": false,
+    "$FixMe": false
   },
 
   "rules": {
@@ -81,7 +107,7 @@
     "curly": 1,                      // specify curly brace conventions for all control statements
     "default-case": 0,               // require default case in switch statements (off by default)
     "dot-notation": 1,               // encourages use of dot notation whenever possible
-    "eqeqeq": 1,                     // require the use of === and !==
+    "eqeqeq": [1, "allow-null"],     // require the use of === and !==
     "guard-for-in": 0,               // make sure for-in loops have an if statement (off by default)
     "no-alert": 1,                   // disallow the use of alert, confirm, and prompt
     "no-caller": 1,                  // disallow use of arguments.caller or arguments.callee

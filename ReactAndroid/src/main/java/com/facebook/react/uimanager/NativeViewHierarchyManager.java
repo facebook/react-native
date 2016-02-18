@@ -106,7 +106,7 @@ public class NativeViewHierarchyManager {
     mLayoutAnimationEnabled = enabled;
   }
 
-  public void updateProperties(int tag, CatalystStylesDiffMap props) {
+  public void updateProperties(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
 
     ViewManager viewManager = resolveViewManager(tag);
@@ -190,7 +190,7 @@ public class NativeViewHierarchyManager {
       ThemedReactContext themedContext,
       int tag,
       String className,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      @Nullable ReactStylesDiffMap initialProps) {
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
         Systrace.TRACE_TAG_REACT_VIEW,
@@ -424,9 +424,7 @@ public class NativeViewHierarchyManager {
     UiThreadUtil.assertOnUiThread();
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
-      resolveViewManager(view.getId()).onDropViewInstance(
-          (ThemedReactContext) view.getContext(),
-          view);
+      resolveViewManager(view.getId()).onDropViewInstance(view);
     }
     ViewManager viewManager = mTagsToViewManagers.get(view.getId());
     if (view instanceof ViewGroup && viewManager instanceof ViewGroupManager) {
@@ -480,6 +478,28 @@ public class NativeViewHierarchyManager {
 
     outputBuffer[0] = outputBuffer[0] - rootX;
     outputBuffer[1] = outputBuffer[1] - rootY;
+    outputBuffer[2] = v.getWidth();
+    outputBuffer[3] = v.getHeight();
+  }
+
+  /**
+   * Returns the coordinates of a view relative to the entire phone screen (not just the RootView
+   * which is what measure will return)
+   *
+   * @param tag - the tag for the view
+   * @param outputBuffer - output buffer that contains [x,y,width,height] of the view in coordinates
+   *  relative to the device window
+   */
+  public void measureInWindow(int tag, int[] outputBuffer) {
+    UiThreadUtil.assertOnUiThread();
+    View v = mTagsToViews.get(tag);
+    if (v == null) {
+      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+    }
+
+    v.getLocationOnScreen(outputBuffer);
+
+    // outputBuffer[0,1] already contain what we want
     outputBuffer[2] = v.getWidth();
     outputBuffer[3] = v.getHeight();
   }

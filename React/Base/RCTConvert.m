@@ -118,8 +118,31 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
 + (NSURLRequest *)NSURLRequest:(id)json
 {
-  NSURL *URL = [self NSURL:json];
-  return URL ? [NSURLRequest requestWithURL:URL] : nil;
+  if ([json isKindOfClass:[NSString class]]) {
+    NSURL *URL = [self NSURL:json];
+    return URL ? [NSURLRequest requestWithURL:URL] : nil;
+  }
+  if ([json isKindOfClass:[NSDictionary class]]) {
+    NSURL *URL = [self NSURL:json[@"uri"] ?: json[@"url"]];
+    if (!URL) {
+      return nil;
+    }
+    NSData *body = [self NSData:json[@"body"]];
+    NSString *method = [self NSString:json[@"method"]].uppercaseString ?: @"GET";
+    NSDictionary *headers = [self NSDictionary:json[@"headers"]];
+    if ([method isEqualToString:@"GET"] && headers == nil && body == nil) {
+      return [NSURLRequest requestWithURL:URL];
+    }
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    request.HTTPBody = body;
+    request.HTTPMethod = method;
+    request.allHTTPHeaderFields = headers;
+    return [request copy];
+  }
+  if (json) {
+    RCTLogConvertError(json, @"a valid URLRequest");
+  }
+  return nil;
 }
 
 + (RCTFileURL *)RCTFileURL:(id)json
@@ -475,8 +498,34 @@ RCT_ENUM_CONVERTER(RCTFontStyle, (@{
 
 static RCTFontWeight RCTWeightOfFont(UIFont *font)
 {
+  static NSDictionary *nameToWeight;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    nameToWeight = @{
+      @"normal": @(UIFontWeightRegular),
+      @"bold": @(UIFontWeightBold),
+      @"ultralight": @(UIFontWeightUltraLight),
+      @"thin": @(UIFontWeightThin),
+      @"light": @(UIFontWeightLight),
+      @"regular": @(UIFontWeightRegular),
+      @"medium": @(UIFontWeightMedium),
+      @"semibold": @(UIFontWeightSemibold),
+      @"bold": @(UIFontWeightBold),
+      @"heavy": @(UIFontWeightHeavy),
+      @"black": @(UIFontWeightBlack),
+    };
+  });
+
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return [traits[UIFontWeightTrait] doubleValue];
+  RCTFontWeight weight = [traits[UIFontWeightTrait] doubleValue];
+  if (weight == 0.0) {
+    for (NSString *name in nameToWeight) {
+      if ([font.fontName.lowercaseString hasSuffix:name]) {
+        return [nameToWeight[name] doubleValue];
+      }
+    }
+  }
+  return weight;
 }
 
 static BOOL RCTFontIsItalic(UIFont *font)

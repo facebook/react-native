@@ -15,7 +15,7 @@ import java.util.Map;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.views.view.ReactClippingViewGroupHelper;
@@ -40,6 +40,11 @@ public class ReactScrollViewManager
   @Override
   public ReactScrollView createViewInstance(ThemedReactContext context) {
     return new ReactScrollView(context);
+  }
+
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactScrollView view, boolean value) {
+    view.setScrollEnabled(value);
   }
 
   @ReactProp(name = "showsVerticalScrollIndicator")
@@ -82,14 +87,11 @@ public class ReactScrollViewManager
   public void scrollTo(
       ReactScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.smoothScrollTo(data.mDestX, data.mDestY);
-  }
-
-  @Override
-  public void scrollWithoutAnimationTo(
-      ReactScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.scrollTo(data.mDestX, data.mDestY);
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+    } else {
+      scrollView.scrollTo(data.mDestX, data.mDestY);
+    }
   }
 
   @Override

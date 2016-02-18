@@ -25,13 +25,14 @@ var View = require('View');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var deepDiffer = require('deepDiffer');
+var deprecatedPropType = require('deprecatedPropType');
 var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
 var invariant = require('invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
-
+var processDecelerationRate = require('processDecelerationRate');
 var PropTypes = React.PropTypes;
 
 var SCROLLVIEW = 'ScrollView';
@@ -129,17 +130,35 @@ var ScrollView = React.createClass({
     contentContainerStyle: StyleSheetPropType(ViewStylePropTypes),
     /**
      * A floating-point number that determines how quickly the scroll view
-     * decelerates after the user lifts their finger. Reasonable choices include
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
      *   - Normal: 0.998 (the default)
      *   - Fast: 0.9
      * @platform ios
      */
-    decelerationRate: PropTypes.number,
+    decelerationRate: PropTypes.oneOfType([
+      PropTypes.oneOf(['fast', 'normal']),
+      PropTypes.number,
+    ]),
     /**
      * When true, the scroll view's children are arranged horizontally in a row
      * instead of vertically in a column. The default value is false.
      */
     horizontal: PropTypes.bool,
+    /**
+     * The style of the scroll indicators.
+     *   - `default` (the default), same as `black`.
+     *   - `black`, scroll indicator is black. This style is good against a white content background.
+     *   - `white`, scroll indicator is white. This style is good against a black content background.
+     * @platform ios
+     */
+    indicatorStyle: PropTypes.oneOf([
+      'default', // default
+      'black',
+      'white',
+    ]),
     /**
      * When true, the ScrollView will try to lock to only vertical or horizontal
      * scrolling while dragging.  The default value is false.
@@ -208,7 +227,6 @@ var ScrollView = React.createClass({
     /**
      * When false, the content does not scroll.
      * The default value is true.
-     * @platform ios
      */
     scrollEnabled: PropTypes.bool,
     /**
@@ -269,7 +287,7 @@ var ScrollView = React.createClass({
     snapToInterval: PropTypes.number,
     /**
      * When `snapToInterval` is set, `snapToAlignment` will define the relationship
-     * of the the snapping to the scroll view.
+     * of the snapping to the scroll view.
      *   - `start` (the default) will align the snap at the left (horizontal) or top (vertical)
      *   - `center` will align the snap in the center
      *   - `end` will align the snap at the right (horizontal) or bottom (vertical)
@@ -294,19 +312,20 @@ var ScrollView = React.createClass({
     zoomScale: PropTypes.number,
 
     /**
-     * When defined, displays a UIRefreshControl.
-     * Invoked with a function to stop refreshing when the UIRefreshControl is animating.
+     * A RefreshControl component, used to provide pull-to-refresh
+     * functionality for the ScrollView.
      *
-     * ```
-     * (endRefreshing) => {
-     *      endRefreshing();
-     * }
-     * ```
-     *
+     * See [RefreshControl](docs/refreshcontrol.html).
+     */
+    refreshControl: PropTypes.element,
+
+    /**
      * @platform ios
      */
-    onRefreshStart: PropTypes.func,
-
+    onRefreshStart: deprecatedPropType(
+      PropTypes.func,
+      'Use the `refreshControl` prop instead.'
+    ),
   },
 
   mixins: [ScrollResponder.Mixin],
@@ -335,21 +354,44 @@ var ScrollView = React.createClass({
     return this;
   },
 
+  getScrollableNode: function(): any {
+    return React.findNodeHandle(this.refs[SCROLLVIEW]);
+  },
+
   getInnerViewNode: function(): any {
     return React.findNodeHandle(this.refs[INNERVIEW]);
   },
 
-  scrollTo: function(destY?: number, destX?: number) {
+  /**
+   * Scrolls to a given x, y offset, either immediately or with a smooth animation.
+   * Syntax:
+   *
+   * scrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
+   */
+  scrollTo: function(
+    y?: number | { x?: number, y?: number, animated?: boolean },
+    x?: number,
+    animated?: boolean
+  ) {
+    if (typeof y === 'number') {
+      console.warn('`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = y || {});
+    }
     // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollTo(destX || 0, destY || 0);
+    this.getScrollResponder().scrollResponderScrollTo({x: x || 0, y: y || 0, animated: animated !== false});
   },
 
-  scrollWithoutAnimationTo: function(destY?: number, destX?: number) {
-    // $FlowFixMe - Don't know how to pass Mixin correctly. Postpone for now
-    this.getScrollResponder().scrollResponderScrollWithouthAnimationTo(
-      destX || 0,
-      destY || 0,
-    );
+  /**
+   * Deprecated, do not use.
+   */
+  scrollWithoutAnimationTo: function(y: number = 0, x: number = 0) {
+    console.warn('`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead');
+    this.scrollTo({x, y, animated: false});
   },
 
   handleScroll: function(e: Object) {
@@ -445,11 +487,17 @@ var ScrollView = React.createClass({
     };
 
     var onRefreshStart = this.props.onRefreshStart;
-    // this is necessary because if we set it on props, even when empty,
-    // it'll trigger the default pull-to-refresh behavior on native.
-    props.onRefreshStart = onRefreshStart
-      ? function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this)
-      : null;
+    if (onRefreshStart) {
+      // this is necessary because if we set it on props, even when empty,
+      // it'll trigger the default pull-to-refresh behavior on native.
+      props.onRefreshStart =
+        function() { onRefreshStart && onRefreshStart(this.endRefreshing); }.bind(this);
+    }
+
+    var { decelerationRate } = this.props;
+    if (decelerationRate) {
+      props.decelerationRate = processDecelerationRate(decelerationRate);
+    }
 
     var ScrollViewClass;
     if (Platform.OS === 'ios') {
@@ -466,6 +514,29 @@ var ScrollView = React.createClass({
       'ScrollViewClass must not be undefined'
     );
 
+    var refreshControl = this.props.refreshControl;
+    if (refreshControl) {
+      if (Platform.OS === 'ios') {
+        // On iOS the RefreshControl is a child of the ScrollView.
+        return (
+          <ScrollViewClass {...props} ref={SCROLLVIEW}>
+            {refreshControl}
+            {contentContainer}
+          </ScrollViewClass>
+        );
+      } else if (Platform.OS === 'android') {
+        // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
+        // Since the ScrollView is wrapped add the style props to the
+        // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
+        return React.cloneElement(
+          refreshControl,
+          {style: props.style},
+          <ScrollViewClass {...props} style={styles.base} ref={SCROLLVIEW}>
+            {contentContainer}
+          </ScrollViewClass>
+        );
+      }
+    }
     return (
       <ScrollViewClass {...props} ref={SCROLLVIEW}>
         {contentContainer}
@@ -495,6 +566,7 @@ var validAttributes = {
   contentOffset: {diff: pointsDiffer},
   decelerationRate: true,
   horizontal: true,
+  indicatorStyle: true,
   keyboardDismissMode: true,
   keyboardShouldPersistTaps: true,
   maximumZoomScale: true,

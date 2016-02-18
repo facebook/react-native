@@ -11,7 +11,8 @@ package com.facebook.react.bridge;
 
 import java.util.Collection;
 
-import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.annotations.VisibleForTesting;
 
@@ -28,7 +29,7 @@ public interface CatalystInstance {
   @DoNotStrip
   void invokeCallback(final int callbackID, final NativeArray arguments);
   /**
-   * Destroys this catalyst instance, waiting for any other threads in CatalystQueueConfiguration
+   * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
    * fully shut down other threads.
    */
@@ -41,7 +42,7 @@ public interface CatalystInstance {
   @VisibleForTesting
   void initialize();
 
-  CatalystQueueConfiguration getCatalystQueueConfiguration();
+  ReactQueueConfiguration getReactQueueConfiguration();
 
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
@@ -66,4 +67,7 @@ public interface CatalystInstance {
   boolean supportsProfiling();
   void startProfiler(String title);
   void stopProfiler(String title, String filename);
+
+  @VisibleForTesting
+  void setGlobalVariable(String propName, String jsonValue);
 }

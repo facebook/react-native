@@ -28,7 +28,7 @@ You can also iterate quickly on device using the development server. Follow one 
 
 > Hint
 >
-> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (to reload, debug, etc.)
+> Most modern android devices don't have a hardware menu button, which we use to trigger the developer menu. In that case you can shake the device to open the dev menu (to reload, debug, etc.). Alternatively, you can run the command `adb shell input keyevent 82` to open the dev menu (82 being the [Menu](http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU) key code).
 
 ### Using adb reverse
 

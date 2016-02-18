@@ -16,6 +16,7 @@
 let Systrace = require('Systrace');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
+let Platform = require('Platform');
 
 let invariant = require('invariant');
 let keyMirror = require('keyMirror');
@@ -24,7 +25,10 @@ let stringifySafe = require('stringifySafe');
 let MODULE_IDS = 0;
 let METHOD_IDS = 1;
 let PARAMS = 2;
+let CALL_IDS = 3;
 let MIN_TIME_BETWEEN_FLUSHES_MS = 5;
+
+let TRACE_TAG_REACT_APPS = 1 << 17;
 
 let SPY_MODE = false;
 
@@ -47,12 +51,14 @@ class MessageQueue {
     this.RemoteModules = {};
 
     this._callableModules = {};
-    this._queue = [[],[],[]];
+    this._queue = [[], [], [], 0];
     this._moduleTable = {};
     this._methodTable = {};
     this._callbacks = [];
     this._callbackID = 0;
+    this._callID = 0;
     this._lastFlush = 0;
+    this._eventLoopStartTime = new Date().getTime();
 
     [
       'invokeCallbackAndReturnFlushedQueue',
@@ -99,14 +105,18 @@ class MessageQueue {
     this.__callImmediates();
 
     let queue = this._queue;
-    this._queue = [[],[],[]];
+    this._queue = [[], [], [], this._callID];
     return queue[0].length ? queue : null;
   }
 
   processModuleConfig(config, moduleID) {
     const module = this._genModule(config, moduleID);
-    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable)
+    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
     return module;
+  }
+
+  getEventLoopRunningTime() {
+    return new Date().getTime() - this._eventLoopStartTime;
   }
 
   /**
@@ -131,6 +141,11 @@ class MessageQueue {
       onSucc && params.push(this._callbackID);
       this._callbacks[this._callbackID++] = onSucc;
     }
+
+    global.nativeTraceBeginAsyncFlow &&
+      global.nativeTraceBeginAsyncFlow(TRACE_TAG_REACT_APPS, 'native', this._callID);
+    this._callID++;
+
     this._queue[MODULE_IDS].push(module);
     this._queue[METHOD_IDS].push(method);
     this._queue[PARAMS].push(params);
@@ -139,9 +154,10 @@ class MessageQueue {
     if (global.nativeFlushQueueImmediate &&
         now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS) {
       global.nativeFlushQueueImmediate(this._queue);
-      this._queue = [[],[],[]];
+      this._queue = [[], [], [], this._callID];
       this._lastFlush = now;
     }
+    Systrace.counterEvent('pending_js_to_native_queue', this._queue[0].length);
     if (__DEV__ && SPY_MODE && isFinite(module)) {
       console.log('JS->N : ' + this._remoteModuleTable[module] + '.' +
         this._remoteMethodTable[module][method] + '(' + JSON.stringify(params) + ')');
@@ -150,6 +166,7 @@ class MessageQueue {
 
   __callFunction(module, method, args) {
     this._lastFlush = new Date().getTime();
+    this._eventLoopStartTime = this._lastFlush;
     if (isFinite(module)) {
       method = this._methodTable[module][method];
       module = this._moduleTable[module];
@@ -169,21 +186,22 @@ class MessageQueue {
   }
 
   __invokeCallback(cbID, args) {
-    Systrace.beginEvent(`MessageQueue.invokeCallback(${cbID})`);
     this._lastFlush = new Date().getTime();
+    this._eventLoopStartTime = this._lastFlush;
     let callback = this._callbacks[cbID];
-    if (!callback || __DEV__) {
-      let debug = this._debugInfo[cbID >> 1];
-      let module = debug && this._remoteModuleTable[debug[0]];
-      let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
-      invariant(
-        callback,
-        `Callback with id ${cbID}: ${module}.${method}() not found`
-      );
-      if (callback && SPY_MODE) {
-        console.log('N->JS : <callback for ' + module + '.' + method + '>(' + JSON.stringify(args) + ')');
-      }
+    let debug = this._debugInfo[cbID >> 1];
+    let module = debug && this._remoteModuleTable[debug[0]];
+    let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
+    invariant(
+      callback,
+      `Callback with id ${cbID}: ${module}.${method}() not found`
+    );
+    let profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
+    if (callback && SPY_MODE && __DEV__) {
+      console.log('N->JS : ' + profileName + '(' + JSON.stringify(args) + ')');
     }
+    Systrace.beginEvent(
+      `MessageQueue.invokeCallback(${profileName}, ${stringifySafe(args)})`);
     this._callbacks[cbID & ~1] = null;
     this._callbacks[cbID |  1] = null;
     callback.apply(null, args);
@@ -301,10 +319,17 @@ class MessageQueue {
     if (type === MethodTypes.remoteAsync) {
       fn = function(...args) {
         return new Promise((resolve, reject) => {
-          self.__nativeCall(module, method, args, resolve, (errorData) => {
-            var error = createErrorFromErrorData(errorData);
-            reject(error);
-          });
+          self.__nativeCall(
+            module,
+            method,
+            args,
+            (data) => {
+              resolve(data);
+            },
+            (errorData) => {
+              var error = createErrorFromErrorData(errorData);
+              reject(error);
+            });
         });
       };
     } else {

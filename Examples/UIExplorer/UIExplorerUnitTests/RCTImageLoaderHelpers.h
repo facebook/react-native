@@ -15,7 +15,7 @@
 #import "RCTImageLoader.h"
 
 typedef BOOL (^RCTImageURLLoaderCanLoadImageURLHandler)(NSURL *requestURL);
-typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(NSURL *imageURL, CGSize size, CGFloat scale, UIViewContentMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler);
+typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(NSURL *imageURL, CGSize size, CGFloat scale, RCTResizeMode resizeMode, RCTImageLoaderProgressBlock progressHandler, RCTImageLoaderCompletionBlock completionHandler);
 
 @interface RCTConcreteImageURLLoader : NSObject <RCTImageURLLoader>
 
@@ -26,7 +26,7 @@ typedef RCTImageLoaderCancellationBlock (^RCTImageURLLoaderLoadImageURLHandler)(
 @end
 
 typedef BOOL (^RCTImageDataDecoderCanDecodeImageDataHandler)(NSData *imageData);
-typedef RCTImageLoaderCancellationBlock (^RCTImageDataDecoderDecodeImageDataHandler)(NSData *imageData, CGSize size, CGFloat scale, UIViewContentMode resizeMode, RCTImageLoaderCompletionBlock completionHandler);
+typedef RCTImageLoaderCancellationBlock (^RCTImageDataDecoderDecodeImageDataHandler)(NSData *imageData, CGSize size, CGFloat scale, RCTResizeMode resizeMode, RCTImageLoaderCompletionBlock completionHandler);
 
 @interface RCTConcreteImageDecoder : NSObject <RCTImageDataDecoder>
 

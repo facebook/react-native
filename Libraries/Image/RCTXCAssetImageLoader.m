@@ -25,7 +25,7 @@ RCT_EXPORT_MODULE()
  - (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
                                                size:(CGSize)size
                                               scale:(CGFloat)scale
-                                         resizeMode:(UIViewContentMode)resizeMode
+                                         resizeMode:(RCTResizeMode)resizeMode
                                     progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                   completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {

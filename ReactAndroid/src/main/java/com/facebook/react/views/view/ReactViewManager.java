@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Map;
 
-import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 
@@ -25,11 +25,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactProp;
-import com.facebook.react.uimanager.ReactPropGroup;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -53,9 +52,23 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setFocusable(accessible);
   }
 
-  @ReactProp(name = "borderRadius")
-  public void setBorderRadius(ReactViewGroup view, float borderRadius) {
-    view.setBorderRadius(PixelUtil.toPixelFromDIP(borderRadius));
+  @ReactPropGroup(names = {
+      ViewProps.BORDER_RADIUS,
+      ViewProps.BORDER_TOP_LEFT_RADIUS,
+      ViewProps.BORDER_TOP_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+  }, defaultFloat = CSSConstants.UNDEFINED)
+  public void setBorderRadius(ReactViewGroup view, int index, float borderRadius) {
+    if (!CSSConstants.isUndefined(borderRadius)) {
+      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
+    }
+
+    if (index == 0) {
+      view.setBorderRadius(borderRadius);
+    } else {
+      view.setBorderRadius(borderRadius, index - 1);
+    }
   }
 
   @ReactProp(name = "borderStyle")
@@ -63,12 +76,18 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setBorderStyle(borderStyle);
   }
 
-  @ReactProp(name = "elevation")
-  public void setElevation(ReactViewGroup view, float elevation) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setElevation(PixelUtil.toPixelFromDIP(elevation));
+  @ReactProp(name = "hitSlop")
+  public void setHitSlop(final ReactViewGroup view, @Nullable ReadableMap hitSlop) {
+    if (hitSlop == null) {
+      view.setHitSlopRect(null);
+    } else {
+      view.setHitSlopRect(new Rect(
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("left")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("top")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("right")),
+          (int) PixelUtil.toPixelFromDIP(hitSlop.getDouble("bottom"))
+      ));
     }
-    // Do nothing on API < 21
   }
 
   @ReactProp(name = "pointerEvents")
@@ -84,14 +103,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
     view.setTranslucentBackgroundDrawable(bg == null ?
             null : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
-  }
-
-  @ReactProp(name = ViewProps.BORDER_WIDTH, defaultFloat = CSSConstants.UNDEFINED)
-  public void setBorderWidth(ReactViewGroup view, float width) {
-    if (!CSSConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
-    view.setBorderWidth(Spacing.ALL, width);
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)

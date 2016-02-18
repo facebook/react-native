@@ -20,7 +20,7 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -47,7 +47,7 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     view.setEnabled(enabled);
   }
 
-  @ReactProp(name = "colors")
+  @ReactProp(name = "colors", customType = "ColorArray")
   public void setColors(ReactSwipeRefreshLayout view, @Nullable ReadableArray colors) {
     if (colors != null) {
       int[] colorValues = new int[colors.size()];
@@ -71,8 +71,15 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
   }
 
   @ReactProp(name = "refreshing")
-  public void setRefreshing(ReactSwipeRefreshLayout view, boolean refreshing) {
-    view.setRefreshing(refreshing);
+  public void setRefreshing(final ReactSwipeRefreshLayout view, final boolean refreshing) {
+    // Use `post` otherwise the control won't start refreshing if refreshing is true when
+    // the component gets mounted.
+    view.post(new Runnable() {
+      @Override
+      public void run() {
+        view.setRefreshing(refreshing);
+      }
+    });
   }
 
   @Override
