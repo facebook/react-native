@@ -38,6 +38,7 @@ NSString *const RCTRemoteNotificationsRegistered = @"RemoteNotificationsRegister
   notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
   notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
   notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
+  notification.category = [RCTConvert NSString:details[@"category"]];
   return notification;
 }
 
