@@ -48,7 +48,7 @@ function requireImpl(id) {
   if (!mod) {
     var msg = 'Requiring unknown module "' + id + '"';
     if (__DEV__) {
-      msg += '. If you are sure the module is there, try restarting the packager.';
+      msg += '. If you are sure the module is there, try restarting the packager or running "npm install".';
     }
     throw new Error(msg);
   }
