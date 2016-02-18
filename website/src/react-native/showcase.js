@@ -71,6 +71,12 @@ var featured = [
     author: 'MovieLaLa'
   },
   {
+    name: 'MyMuesli',
+    icon: 'https://lh3.googleusercontent.com/1dCCeiyjuWRgY-Cnv-l-lOA1sVH3Cn0vkVWWZnaBQbhHOhsngLcnfy68WEerudPUysc=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.mymuesli',
+    author: 'Shawn Khameneh (@shawnscode), 3DWD'
+  },
+  {
     name: 'Myntra',
     icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
     link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
