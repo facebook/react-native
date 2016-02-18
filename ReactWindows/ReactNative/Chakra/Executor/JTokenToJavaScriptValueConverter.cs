@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿#if NATIVE_JSON_MARSHALING
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace ReactNative.Chakra.Executor
@@ -115,3 +116,4 @@ namespace ReactNative.Chakra.Executor
         }
     }
 }
+#endif

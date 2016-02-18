@@ -71,14 +71,14 @@ namespace ReactNative.Chakra.Executor
 
             for (var i = 0; i < arguments.Count; ++i)
             {
-                callArguments[i + 1] = JTokenToJavaScriptValueConverter.Convert(arguments[i]);
+                callArguments[i + 1] = ConvertJson(arguments[i]);
             }
 
             // Invoke the function
             var result = method.CallFunction(callArguments);
 
             // Convert the result
-            return JavaScriptValueToJTokenConverter.Convert(result);
+            return ConvertJson(result);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace ReactNative.Chakra.Executor
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            var javaScriptValue = JTokenToJavaScriptValueConverter.Convert(value);
+            var javaScriptValue = ConvertJson(value);
             var propertyId = JavaScriptPropertyId.FromString(propertyName);
             _globalObject.SetProperty(propertyId, javaScriptValue, true);
         }
@@ -121,7 +121,7 @@ namespace ReactNative.Chakra.Executor
                 throw new ArgumentNullException(nameof(propertyName));
 
             var propertyId = JavaScriptPropertyId.FromString(propertyName);
-            return JavaScriptValueToJTokenConverter.Convert(_globalObject.GetProperty(propertyId));
+            return ConvertJson(_globalObject.GetProperty(propertyId));
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace ReactNative.Chakra.Executor
 
         #region Console Callbacks
 
-        private static JavaScriptValue ConsoleLog(
+        private JavaScriptValue ConsoleLog(
             JavaScriptValue callee,
             bool isConstructCall,
             JavaScriptValue[] arguments,
@@ -188,7 +188,7 @@ namespace ReactNative.Chakra.Executor
             return ConsoleCallback("Log", callee, isConstructCall, arguments, argumentCount, callbackData);
         }
 
-        private static JavaScriptValue ConsoleWarn(
+        private JavaScriptValue ConsoleWarn(
             JavaScriptValue callee,
             bool isConstructCall,
             JavaScriptValue[] arguments,
@@ -198,7 +198,7 @@ namespace ReactNative.Chakra.Executor
             return ConsoleCallback("Warn", callee, isConstructCall, arguments, argumentCount, callbackData);
         }
 
-        private static JavaScriptValue ConsoleError(
+        private JavaScriptValue ConsoleError(
             JavaScriptValue callee,
             bool isConstructCall,
             JavaScriptValue[] arguments,
@@ -208,7 +208,7 @@ namespace ReactNative.Chakra.Executor
             return ConsoleCallback("Error", callee, isConstructCall, arguments, argumentCount, callbackData);
         }
 
-        private static JavaScriptValue ConsoleCallback(
+        private JavaScriptValue ConsoleCallback(
             string kind,
             JavaScriptValue callee,
             bool isConstructCall,
@@ -237,7 +237,41 @@ namespace ReactNative.Chakra.Executor
             return JavaScriptValue.Invalid;
         }
 
-        private static string Stringify(JavaScriptValue value)
+#if NATIVE_JSON_MARSHALING
+        private JavaScriptValue ConvertJson(JToken token)
+        {
+            return JTokenToJavaScriptValueConverter.Convert(token);
+        }
+
+        private JToken ConvertJson(JavaScriptValue value)
+        {
+            return JavaScriptValueToJTokenConverter.Convert(value);
+        }
+#else
+        private JavaScriptValue ConvertJson(JToken token)
+        {
+            var jsonHelpers = _globalObject.GetProperty(JavaScriptPropertyId.FromString("JSON"));
+            var parseFunction = jsonHelpers.GetProperty(JavaScriptPropertyId.FromString("parse"));
+
+            var json = token.ToString(Formatting.None);
+            var jsonValue = JavaScriptValue.FromString(json);
+
+            return parseFunction.CallFunction(_globalObject, jsonValue);
+        }
+
+        private JToken ConvertJson(JavaScriptValue value)
+        {
+            var jsonHelpers = _globalObject.GetProperty(JavaScriptPropertyId.FromString("JSON"));
+            var stringifyFunction = jsonHelpers.GetProperty(JavaScriptPropertyId.FromString("stringify"));
+
+            var jsonValue = stringifyFunction.CallFunction(_globalObject, value);
+            var json = jsonValue.ToString();
+
+            return JToken.Parse(json);
+        }
+#endif
+
+        private string Stringify(JavaScriptValue value)
         {
             switch (value.ValueType)
             {
@@ -248,16 +282,14 @@ namespace ReactNative.Chakra.Executor
                 case JavaScriptValueType.Boolean:
                 case JavaScriptValueType.Object:
                 case JavaScriptValueType.Array:
-                    return JavaScriptValueToJTokenConverter.Convert(value).ToString(Formatting.None);
-                case JavaScriptValueType.Function:
-                    return "function";
+                    return ConvertJson(value).ToString(Formatting.None);
+                case JavaScriptValueType.Function:                    
                 case JavaScriptValueType.Error:
-                    return "error";
+                    return value.ConvertToString().ToString();
                 default:
                     throw new NotImplementedException();
             }
         }
-
-        #endregion
+#endregion
     }
 }
