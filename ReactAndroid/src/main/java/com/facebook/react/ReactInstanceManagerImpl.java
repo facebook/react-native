@@ -663,7 +663,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
       attachMeasuredRootViewToInstance(rootView, catalystInstance);
     }
 
-    for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
+    ReactInstanceEventListener[] listeners =
+      new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
+    listeners = mReactInstanceEventListeners.toArray(listeners);
+
+    for (ReactInstanceEventListener listener : listeners) {
       listener.onReactContextInitialized(reactContext);
     }
   }
