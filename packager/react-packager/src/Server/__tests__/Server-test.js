@@ -10,6 +10,7 @@
 
 jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('os')
+    .dontMock('underscore')
     .dontMock('path')
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
