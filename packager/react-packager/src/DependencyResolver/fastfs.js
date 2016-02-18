@@ -66,7 +66,10 @@ class Fastfs extends EventEmitter {
       if (activity) {
         activity.endEvent(fastfsActivity);
       }
-      this._fileWatcher.on('all', this._processFileChange.bind(this));
+      
+      if (this._fileWatcher) {
+        this._fileWatcher.on('all', this._processFileChange.bind(this));
+      }
     });
   }
 
