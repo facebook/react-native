@@ -598,6 +598,12 @@ var apps = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.plasticaromantica.utayomin',
     author: 'Takayuki IMAI'
   },
+  {
+    name: '烘焙帮',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
+    author: 'Hongbeibang'
+  },
 ];
 
 var AppList = React.createClass({
