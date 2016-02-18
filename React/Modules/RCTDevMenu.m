@@ -259,7 +259,7 @@ RCT_EXPORT_MODULE()
   return [kSupportedVersions containsObject:version];
 }
 
-- (void)socketProxy:(id<RCTWebSocketProxy>)sender didReceiveMessage:(NSDictionary<NSString *, id> *)message
+- (void)socketProxy:(__unused id<RCTWebSocketProxy>)sender didReceiveMessage:(NSDictionary<NSString *, id> *)message
 {
   if ([self isSupportedVersion:message[@"version"]]) {
     [self processTarget:message[@"target"] action:message[@"action"] options:message[@"options"]];
