@@ -116,7 +116,7 @@ public class FlatUIImplementation extends UIImplementation {
     }
 
     ViewManager viewManager = resolveViewManager(className);
-    return new AndroidView(viewManager);
+    return new NativeViewWrapper(viewManager);
   }
 
   @Override

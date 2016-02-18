@@ -9,20 +9,17 @@
 
 package com.facebook.react.flat;
 
-import javax.annotation.Nullable;
-
 import android.text.SpannableStringBuilder;
 
-import com.facebook.csslayout.Spacing;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextUpdate;
 
 import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
 
-public class RCTTextInput extends RCTVirtualText {
+public class RCTTextInput extends RCTVirtualText implements AndroidView {
   private int mJsEventCount = UNSET;
-  private @Nullable float[] mComputedPadding;
+  private boolean mPaddingChanged = false;
 
   public RCTTextInput() {
     forceMountToView();
@@ -46,15 +43,11 @@ public class RCTTextInput extends RCTVirtualText {
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
-
-    if (mComputedPadding != null) {
-      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), mComputedPadding);
-      mComputedPadding = null;
+    if (mJsEventCount != UNSET) {
+      ReactTextUpdate reactTextUpdate =
+          new ReactTextUpdate(getText(), mJsEventCount, false);
+      uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
-
-    ReactTextUpdate reactTextUpdate =
-        new ReactTextUpdate(getText(), mJsEventCount, false);
-    uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
   }
 
   @ReactProp(name = "mostRecentEventCount")
@@ -64,18 +57,20 @@ public class RCTTextInput extends RCTVirtualText {
 
   @Override
   public void setPadding(int spacingType, float padding) {
-    super.setPadding(spacingType, padding);
-    mComputedPadding = spacingToFloatArray(getPadding());
-    markUpdated();
+    if (getPadding().set(spacingType, padding)) {
+      mPaddingChanged = true;
+      dirty();
+    }
   }
 
-  private static float[] spacingToFloatArray(Spacing spacing) {
-    return new float[] {
-        spacing.get(Spacing.LEFT),
-        spacing.get(Spacing.TOP),
-        spacing.get(Spacing.RIGHT),
-        spacing.get(Spacing.BOTTOM),
-    };
+  @Override
+  public boolean isPaddingChanged() {
+    return mPaddingChanged;
+  }
+
+  @Override
+  public void resetPaddingChanged() {
+    mPaddingChanged = false;
   }
 
   /**
@@ -86,5 +81,10 @@ public class RCTTextInput extends RCTVirtualText {
     collectText(sb);
     applySpans(sb);
     return sb;
+  }
+
+  @Override
+  public boolean needsCustomLayoutForChildren() {
+    return false;
   }
 }

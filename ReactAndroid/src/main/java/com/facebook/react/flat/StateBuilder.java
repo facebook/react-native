@@ -240,11 +240,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         isAndroidView,
         needsCustomLayoutForChildren);
 
-    // this is a temporary measure to skip adding node regions for RCTTextInput. This will be fixed
-    // in a patch soon which will convert AndroidView into an interface, thus allowing RCTTextInput
-    // to be treated as an AndroidView
-    boolean skipAddingNodeRegion = node instanceof RCTTextInput;
-    if (!isAndroidView && node.isVirtualAnchor() && !skipAddingNodeRegion) {
+    if (!isAndroidView && node.isVirtualAnchor()) {
       // If RCTText is mounted to View, virtual children will not receive any touch events
       // because they don't get added to nodeRegions, so nodeRegions will be empty and
       // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
