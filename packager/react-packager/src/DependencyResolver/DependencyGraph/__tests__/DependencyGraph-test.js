@@ -1457,6 +1457,89 @@ describe('DependencyGraph', function() {
       });
     });
 
+    pit('should respect un-deduped depedencies', function() {
+      var root = '/root';
+      fs.__setMockFilesystem({
+        'root': {
+          'index.js': [
+            'require("aPackage");',
+            'require("bPackage");'
+          ].join('\n'),
+          'aPackage': {
+            'package.json': JSON.stringify({
+              name: 'aPackage',
+            }),
+            'index.js': 'require("bPackage")',
+            'node_modules': {
+              'bPackage': {
+                'package.json': JSON.stringify({
+                  name: 'aPackage',
+                  version: '1.0.0'
+                }),
+                'index.js': 'lol',
+              },
+            },
+          },
+          'bPackage': {
+            'index.js': 'lol',
+            'package.json': JSON.stringify({
+              name: 'bPackage',
+              version: '2.0.0'
+            }),
+          },
+        },
+      });
+
+      var dgraph = new DependencyGraph({
+        ...defaults,
+        roots: [root],
+      });
+      return getOrderedDependenciesAsJSON(dgraph, '/root/index.js').then(function(deps) {
+        expect(deps)
+          .toEqual([
+            {
+              id: '/root/index.js',
+              path: '/root/index.js',
+              dependencies: ['aPackage', 'bPackage'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'aPackage/index.js',
+              path: '/root/aPackage/index.js',
+              dependencies: ['bPackage'],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'bPackage/index.js',
+              path: '/root/aPackage/node_modules/bPackage/index.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+            {
+              id: 'bPackage/index.js',
+              path: '/root/bPackage/node_modules/index.js',
+              dependencies: [],
+              isAsset: false,
+              isAsset_DEPRECATED: false,
+              isJSON: false,
+              isPolyfill: false,
+              resolution: undefined,
+            },
+          ]);
+      });
+    });
     testBrowserField('browser');
     testBrowserField('react-native');
 
