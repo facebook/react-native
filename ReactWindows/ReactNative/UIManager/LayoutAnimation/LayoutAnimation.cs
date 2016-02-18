@@ -77,7 +77,6 @@ namespace ReactNative.UIManager.LayoutAnimation
                 animation.SpeedRatio = 0.1;
 #endif
                 animation.BeginTime = _delay;
-                // TODO: set interpolator?
             }
 
             return animation;

@@ -71,7 +71,7 @@ namespace ReactNative.Bridge
         /// Write the module descriptions to the given <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="writer">The JSON writer.</param>
-        public /* TODO: internal? */ void WriteModuleDescriptions(JsonWriter writer)
+        internal void WriteModuleDescriptions(JsonWriter writer)
         {
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "CreateJSON"))
             {
@@ -92,7 +92,7 @@ namespace ReactNative.Bridge
         /// <param name="moduleId">The module ID.</param>
         /// <param name="methodId">The method ID.</param>
         /// <param name="parameters">The parameters.</param>
-        internal /* TODO: public? */ void Invoke(
+        internal void Invoke(
             IReactInstance reactInstance,
             int moduleId,
             int methodId,
@@ -110,7 +110,7 @@ namespace ReactNative.Bridge
         /// Hook to notify modules that the <see cref="IReactInstance"/> has
         /// been initialized.
         /// </summary>
-        internal /* TODO: public? */ void NotifyReactInstanceInitialize()
+        internal void NotifyReactInstanceInitialize()
         {
             DispatcherHelpers.AssertOnDispatcher();
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyReactInstanceInitialize"))
@@ -126,7 +126,7 @@ namespace ReactNative.Bridge
         /// Hook to notify modules that the <see cref="IReactInstance"/> has
         /// been disposed.
         /// </summary>
-        internal /* TODO: public? */ void NotifyReactInstanceDispose()
+        internal void NotifyReactInstanceDispose()
         {
             DispatcherHelpers.AssertOnDispatcher();
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "NativeModuleRegistry_NotifyReactInstanceDestroy"))

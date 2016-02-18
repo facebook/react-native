@@ -51,7 +51,8 @@ namespace ReactNative.UIManager.LayoutAnimation
                         storyboard.Children.Add(CreateOpacityAnimation(view, fromValue, toValue));
                         break;
                     case AnimatedPropertyType.ScaleXY:
-                        throw new NotImplementedException(/* TODO */);
+                        // TODO: implement this layout animation option
+                        throw new NotImplementedException();
                     default:
                         throw new InvalidOperationException(
                             "Missing animation for property: " + animatedProperty.Value);

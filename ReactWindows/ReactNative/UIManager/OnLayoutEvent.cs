@@ -37,10 +37,10 @@ namespace ReactNative.UIManager
                     "layout",
                     new JObject
                     {
-                        { "x", _x /* TODO: convert DIPs to pixels? */ },
-                        { "y", _y /* TODO: convert DIPs to pixels? */ },
-                        { "width", _width /* TODO: convert DIPs to pixels? */ },
-                        { "height", _height /* TODO: convert DIPs to pixels? */ },
+                        { "x", _x },
+                        { "y", _y },
+                        { "width", _width },
+                        { "height", _height },
                     }
                 },
             };

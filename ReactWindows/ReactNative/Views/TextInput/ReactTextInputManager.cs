@@ -18,7 +18,7 @@ namespace ReactNative.Views.TextInput
         private const string PROP_ROTATION_X = "rotationX";
         private const string PROP_PLACEHOLDER = "placeholder";
         private const string PROP_TEXT_ALIGN = "textAlign";
-        private const string PROP_VERITCAL_TEXT_ALIGN = "textAlignVertical";
+        private const string PROP_VERTICAL_TEXT_ALIGN = "textAlignVertical";
         private const string PROP_MAX_LENGTH = "maxLength";
         private const string PROP_TEXT = "text";
         private const string PROP_IS_EDITABLE = "editable";
@@ -121,7 +121,7 @@ namespace ReactNative.Views.TextInput
         /// <remarks>
         /// TODO: test this out.
         /// </remarks>
-        [ReactProperty(PROP_VERITCAL_TEXT_ALIGN)]
+        [ReactProperty(PROP_VERTICAL_TEXT_ALIGN)]
         public void SetTextVerticalAlign(TextBox view, string alignment)
         {
             var textAlignment = default(VerticalAlignment);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace ReactNative.Bridge
@@ -310,8 +311,7 @@ namespace ReactNative.Bridge
             }
             else
             {
-                // TODO: consider using ExceptionServices to rethrow.
-                throw exception;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
         }
 
