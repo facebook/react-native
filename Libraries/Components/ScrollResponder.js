@@ -461,7 +461,7 @@ var ScrollResponderMixin = {
     if (this.preventNegativeScrollOffset) {
       scrollOffsetY = Math.max(0, scrollOffsetY);
     }
-    this.scrollResponderScrollTo(0, scrollOffsetY);
+    this.scrollResponderScrollTo({y: scrollOffsetY});
 
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;
