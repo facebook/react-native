@@ -1,5 +1,5 @@
 /answered
-comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A and because of the reputation system it is likely the community will see and answer your question there. This also help us use the GitHub bug tracker for bugs only.
+comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
 close
 
 /duplicate (#[0-9]+)
@@ -11,7 +11,7 @@ comment The /expected comment above tells me this is expected behavior. Closing 
 close
 
 /question
-comment Hey {issue_author} and thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A and because of the reputation system it is likely the community will see and answer your question there. This also help us use the GitHub bug tracker for bugs only. I'm posting this here because GitHub issues haven't been working very well for us and because StackOverflow is so much better. Thanks for reading! :)
+comment Hey {issue_author} and thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
 add-label For Stack Overflow
 
 /label (.*)
