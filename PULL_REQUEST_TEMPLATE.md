@@ -1,4 +1,6 @@
-Explain the motivation for making this change. What existing problem does the pull request solve?
+Hey there and thanks for submitting a pull request! Please have a look at the following checklist so that others have enough information to review your pull request:
+
+Explain the **motivation** for making this change. What existing problem does the pull request solve?
 
 Example: When saying "Add a function to do X", explain why it is necessary to have a way to do X.
 
