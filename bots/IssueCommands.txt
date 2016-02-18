@@ -1,17 +1,22 @@
 /answered
-comment Closing this issue as the question has been answered. Please help us by first discussing on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) before filing a bug. It's the best system for Q&A. Many people from the community hang out there and will be able to see and answer your question. This lets us use the GitHub bug tracker for bugs.
+comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A and because of the reputation system it is likely the community will see and answer your question there. This also help us use the GitHub bug tracker for bugs only.
 close
 
 /duplicate (#[0-9]+)
-comment This issue is a duplicate of {match0}.
+comment {author} tells me this issue is a duplicate of {match0}. Let's discuss there, closing this one.
 close
 
 /expected
-comment This is expected behavior. Closing as we'd like to use the GitHub issue tracker for bugs. If you'd like to change how this feature works please post a feature request on [Product Pains](https://productpains.com/product/react-native/) and let's discuss there. If it gets upvoted enough it might get implemented by the community.
+comment The /expected comment above tells me this is expected behavior. Closing this as we'd like to use the GitHub issue tracker for bugs. If you'd like to change how this feature works please post a feature request on [Product Pains](https://productpains.com/product/react-native/) so that other people can vote on it.
 close
+
+/question
+comment Hey {issue_author} and thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A and because of the reputation system it is likely the community will see and answer your question there. This also help us use the GitHub bug tracker for bugs only. I'm posting this here because GitHub issues haven't been working very well for us and because StackOverflow is so much better. Thanks for reading! :)
+add-label For Stack Overflow
 
 /label (.*)
 add-label {match0}
 
 /reopen
+comment Okay, reopening this issue.
 reopen
