@@ -73,8 +73,8 @@ var featured = [
   {
     name: 'MyMuesli',
     icon: 'https://lh3.googleusercontent.com/1dCCeiyjuWRgY-Cnv-l-lOA1sVH3Cn0vkVWWZnaBQbhHOhsngLcnfy68WEerudPUysc=w300-rw',
-    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.mymuesli',
-    author: 'Shawn Khameneh (@shawnscode), 3DWD',
+    link: 'https://play.google.com/store/apps/details?id=com.mymuesli',
+    author: 'Shawn Khameneh (@shawnscode), 3DWD'
   },
   {
     name: 'Myntra',
