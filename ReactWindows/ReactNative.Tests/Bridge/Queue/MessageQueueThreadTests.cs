@@ -135,15 +135,16 @@ namespace ReactNative.Tests.Bridge.Queue
                 taskPoolThread
             };
 
+            var waitHandle = new AutoResetEvent(false);
             foreach (var queueThread in queueThreads)
             {
                 queueThread.Dispose();
-                AssertEx.Throws<ObjectDisposedException>(
-                    () => queueThread.RunOnQueue(() => { }), 
-                    ex => Assert.AreEqual("this", ex.ObjectName));
-                AssertEx.Throws<ObjectDisposedException>(
-                    () => queueThread.IsOnThread(),
-                    ex => Assert.AreEqual("this", ex.ObjectName));
+                queueThread.RunOnQueue(() =>
+                {
+                    waitHandle.Set();
+                });
+
+                Assert.IsFalse(waitHandle.WaitOne(500));
             }
         }
     }

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using ReactNative.Common;
+using ReactNative.Tracing;
+using System;
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -40,8 +43,6 @@ namespace ReactNative.Bridge.Queue
         /// </returns>
         public bool IsOnThread()
         {
-            AssertNotDisposed();
-
             return IsOnThreadCore();
         }
 
@@ -54,7 +55,11 @@ namespace ReactNative.Bridge.Queue
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            AssertNotDisposed();
+            if (IsDisposed)
+            {
+                Tracer.Write(ReactConstants.Tag, "Dropping enqueued action on disposed thread.");
+                return;
+            }
 
             Enqueue(action);
         }
@@ -97,14 +102,6 @@ namespace ReactNative.Bridge.Queue
             }
         }
 
-        private void AssertNotDisposed()
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException("this");
-            }
-        }
-
         /// <summary>
         /// Factory to create the action queue.
         /// </summary>
@@ -140,15 +137,20 @@ namespace ReactNative.Bridge.Queue
 
         class DispatcherMessageQueueThread : MessageQueueThread
         {
+            private static readonly IObserver<Action> s_nop = Observer.Create<Action>(_ => { });
+
             private readonly string _name;
-            private readonly Subject<Action> _actionObservable;
+            private readonly Subject<Action> _actionSubject;
             private readonly IDisposable _subscription;
+
+            private IObserver<Action> _actionObserver;
 
             public DispatcherMessageQueueThread(string name, Action<Exception> handler)
             {
                 _name = name;
-                _actionObservable = new Subject<Action>();
-                _subscription = _actionObservable
+                _actionSubject = new Subject<Action>();
+                _actionObserver = _actionSubject;
+                _subscription = _actionSubject
                     .ObserveOnDispatcher()
                     .Subscribe(action =>
                     {
@@ -165,7 +167,7 @@ namespace ReactNative.Bridge.Queue
 
             protected override void Enqueue(Action action)
             {
-                _actionObservable.OnNext(action);
+                _actionObserver.OnNext(action);
             }
 
             protected override bool IsOnThreadCore()
@@ -176,7 +178,8 @@ namespace ReactNative.Bridge.Queue
             protected override void Dispose(bool disposing)
             {
                 base.Dispose(disposing);
-                _actionObservable.Dispose();
+                Interlocked.Exchange(ref _actionObserver, s_nop);
+                _actionSubject.Dispose();
                 _subscription.Dispose();
             }
         }
