@@ -12,3 +12,6 @@ close
 
 /label (.*)
 add-label {match0}
+
+/reopen
+reopen
