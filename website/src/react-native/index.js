@@ -68,7 +68,7 @@ var App = React.createClass({
 {`// Android
 
 var React = require('react-native');
-var { DrawerLayoutAndroid, ProgressBarAndroid } = React;
+var { DrawerLayoutAndroid, ProgressBarAndroid, Text } = React;
 
 var App = React.createClass({
   render: function() {
