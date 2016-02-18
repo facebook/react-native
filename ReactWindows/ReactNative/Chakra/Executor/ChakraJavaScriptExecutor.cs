@@ -165,6 +165,8 @@ namespace ReactNative.Chakra.Executor
             Debug.WriteLine("Chakra initialization successful.");
         }
 
+        #region Console Callbacks
+
         private static void DefineHostCallback(
             JavaScriptValue obj,
             string callbackName,
@@ -175,8 +177,6 @@ namespace ReactNative.Chakra.Executor
             var function = JavaScriptValue.CreateFunction(callback, callbackData);
             obj.SetProperty(propertyId, function, true);
         }
-
-        #region Console Callbacks
 
         private JavaScriptValue ConsoleLog(
             JavaScriptValue callee,
@@ -237,6 +237,29 @@ namespace ReactNative.Chakra.Executor
             return JavaScriptValue.Invalid;
         }
 
+        private string Stringify(JavaScriptValue value)
+        {
+            switch (value.ValueType)
+            {
+                case JavaScriptValueType.Undefined:
+                case JavaScriptValueType.Null:
+                case JavaScriptValueType.Number:
+                case JavaScriptValueType.String:
+                case JavaScriptValueType.Boolean:
+                case JavaScriptValueType.Object:
+                case JavaScriptValueType.Array:
+                    return ConvertJson(value).ToString(Formatting.None);
+                case JavaScriptValueType.Function:
+                case JavaScriptValueType.Error:
+                    return value.ConvertToString().ToString();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        #endregion
+
+        #region JSON Marshaling
+
 #if NATIVE_JSON_MARSHALING
         private JavaScriptValue ConvertJson(JToken token)
         {
@@ -271,25 +294,6 @@ namespace ReactNative.Chakra.Executor
         }
 #endif
 
-        private string Stringify(JavaScriptValue value)
-        {
-            switch (value.ValueType)
-            {
-                case JavaScriptValueType.Undefined:
-                case JavaScriptValueType.Null:
-                case JavaScriptValueType.Number:
-                case JavaScriptValueType.String:
-                case JavaScriptValueType.Boolean:
-                case JavaScriptValueType.Object:
-                case JavaScriptValueType.Array:
-                    return ConvertJson(value).ToString(Formatting.None);
-                case JavaScriptValueType.Function:                    
-                case JavaScriptValueType.Error:
-                    return value.ConvertToString().ToString();
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-#endregion
+        #endregion
     }
 }
