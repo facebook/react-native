@@ -93,20 +93,14 @@ namespace ReactNative.Bridge
                 if (moduleType.GetTypeInfo().IsAbstract)
                 {
                     throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "JavaScript module '{0}' must not be abstract.",
-                            moduleType),
+                        $"JavaScript module '{moduleType}' must not be abstract.",
                         nameof(moduleType));
                 }
 
                 if (!typeof(IJavaScriptModule).IsAssignableFrom(moduleType))
                 {
                     throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "JavaScript module '{0}' must derive from IJavaScriptModule.",
-                            moduleType),
+                        $"JavaScript module '{moduleType}' must derive from IJavaScriptModule.",
                         nameof(moduleType));
                 }
 
@@ -114,10 +108,7 @@ namespace ReactNative.Bridge
                 if (defaultConstructor == null || !defaultConstructor.IsPublic)
                 {
                     throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "JavaScript module '{0}' must have a public default constructor.",
-                            moduleType),
+                        $"JavaScript module '{moduleType}' must have a public default constructor.",
                         nameof(moduleType));
                 }
 

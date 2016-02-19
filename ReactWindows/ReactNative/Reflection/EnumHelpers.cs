@@ -26,11 +26,7 @@ namespace ReactNative.Reflection
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(value),
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Invalid value '{0}' for type '{1}'.",
-                        value,
-                        typeof(T)));
+                    $"Invalid value '{value}' for type '{typeof(T)}'.");
             }
 
             return (T)result;

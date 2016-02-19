@@ -179,10 +179,7 @@ namespace ReactNative.UIManager
             if (cssNode == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Trying to update view with invalid tag '{0}'.",
-                        tag));
+                    $"Trying to update view with invalid tag '{tag}'.");
             }
 
             if (properties != null)
@@ -299,10 +296,7 @@ namespace ReactNative.UIManager
                 if (indexToRemove == lastIndexRemoved)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Repeated indices in removal list for view tag '{0}'.",
-                            viewTag));
+                        $"Repeated indices in removal list for view tag '{viewTag}'.");
                 }
 
                 cssNodeToManage.RemoveChildAt(indexToRemove);
@@ -316,10 +310,7 @@ namespace ReactNative.UIManager
                 if (cssNodeToAdd == null)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Trying to add unknown view tag '{0}'.",
-                            viewAtIndex.Tag));
+                        $"Trying to add unknown view tag '{viewAtIndex.Tag}'.");
                 }
 
                 cssNodeToManage.AddChildAt(cssNodeToAdd, viewAtIndex.Index);
@@ -360,10 +351,7 @@ namespace ReactNative.UIManager
             if (parent == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Node '{0}' is not attached to a parent.",
-                        oldTag));
+                    $"Node '{oldTag}' is not attached to a parent.");
             }
 
             var oldIndex = parent.IndexOf(oldNode);
@@ -629,11 +617,9 @@ namespace ReactNative.UIManager
             var ancestor = _shadowNodeRegistry.GetNode(ancestorTag);
             if (node == null || ancestor == null)
             {
+                var targetTag = node == null ? tag : ancestorTag;
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Tag '{0}' does not exist.",
-                        node == null ? tag : ancestorTag));
+                    $"Tag '{targetTag}' does not exist.");
             }
 
             if (node != ancestor)
@@ -644,11 +630,7 @@ namespace ReactNative.UIManager
                     if (currentParent == null)
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Tag '{0}' is not an ancestor of tag '{1}'.",
-                                ancestorTag,
-                                tag));
+                            $"Tag '{ancestorTag}' is not an ancestor of tag '{tag}'.");
                     }
 
                     currentParent = currentParent.Parent;
@@ -664,20 +646,14 @@ namespace ReactNative.UIManager
             if (node == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "No native view for tag '{0}' exists.",
-                        tag));
+                    $"No native view for tag '{tag}' exists.");
             }
 
             var parent = node.Parent;
             if (parent == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "View with tag '{0}' does not have a parent.",
-                        tag));
+                    $"View with tag '{tag}' does not have a parent.");
             }
 
             MeasureLayoutRelativeToVerifiedAncestor(node, parent, outputBuffer);
@@ -718,11 +694,7 @@ namespace ReactNative.UIManager
             if (_shadowNodeRegistry.GetNode(reactTag) == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Unable to execute operation '{0}' on view with non-existant tag '{1}'.",
-                        caller,
-                        reactTag));
+                    $"Unable to execute operation '{caller}' on view with non-existant tag '{reactTag}'.");
             }
         }
 
@@ -732,20 +704,14 @@ namespace ReactNative.UIManager
             if (viewManager == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Could not find view class '{0}'.",
-                        node.ViewClass));
+                    $"Could not find view class '{node.ViewClass}'.");
             }
 
             var viewParentManager = viewManager as IViewParentManager;
             if (viewParentManager == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Trying to use view '{0}' as a parent but its manager is not a ViewParentManager.",
-                        node.ViewClass));
+                    $"Trying to use view '{node.ViewClass}' as a parent but its manager is not a ViewParentManager.");
             }
 
             if (viewParentManager.NeedsCustomLayoutForChildren)

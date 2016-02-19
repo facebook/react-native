@@ -765,11 +765,7 @@ namespace ReactNative
             private void AssertNotNull(object value, string name)
             {
                 if (value == null)
-                    throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "{0} has not been set.",
-                            name));
+                    throw new InvalidOperationException($"'{name}' has not been set.");
             }
         }
 

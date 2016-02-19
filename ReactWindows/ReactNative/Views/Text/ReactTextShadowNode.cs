@@ -317,10 +317,7 @@ namespace ReactNative.Views.Text
                     if (textChild == null)
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Unexpected view type '{0}' nested under text node.",
-                                child.GetType()));
+                            $"Unexpected view type '{child.GetType()}' nested under text node.");
                     }
 
                     var childInline = BuildInlineFromTextCSSNode(textChild);

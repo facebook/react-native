@@ -480,11 +480,7 @@ namespace ReactNative.UIManager
             if (!found)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Child '{0}' was not a child of '{1}'.",
-                        child.ReactTag,
-                        ReactTag));
+                    $"Child '{child.ReactTag}' was not a child of '{ReactTag}'.");
             }
 
             return index;

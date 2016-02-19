@@ -129,10 +129,7 @@ namespace ReactNative.UIManager
                     (parentViewParentManager = parentViewManager as IViewParentManager) == null)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Trying to use view with tag '{0}' as a parent, but its manager doesn't extend ViewParentManager.",
-                            tag));
+                        $"Trying to use view with tag '{tag}' as a parent, but its manager doesn't extend ViewParentManager.");
                 }
 
                 if (!parentViewParentManager.NeedsCustomLayoutForChildren)
@@ -205,10 +202,7 @@ namespace ReactNative.UIManager
             if (!_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Trying to manage children with tag '{0}' which doesn't exist.",
-                        tag));
+                    $"Trying to manage children with tag '{tag}' which doesn't exist.");
             }
 
             var viewParentManager = (IViewParentManager)viewManager;
@@ -223,32 +217,19 @@ namespace ReactNative.UIManager
                     if (indexToRemove < 0)
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Trying to remove a negative index '{0}' on view tag '{1}'.",
-                                indexToRemove,
-                                tag));
+                            $"Trying to remove a negative index '{indexToRemove}' on view tag '{tag}'.");
                     }
 
                     if (indexToRemove >= viewParentManager.GetChildCount(viewToManage))
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Trying to remove a view index '{0}' greater than the child could for view tag '{1}'.",
-                                indexToRemove,
-                                tag));
+                            $"Trying to remove a view index '{indexToRemove}' greater than the child could for view tag '{tag}'.");
                     }
 
                     if (indexToRemove >= lastIndexToRemove)
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Trying to remove an out of order index '{0}' (last index was '{1}') for view tag '{2}'.",
-                                indexToRemove,
-                                lastIndexToRemove,
-                                tag));
+                            $"Trying to remove an out of order index '{indexToRemove}' (last index was '{lastIndexToRemove}') for view tag '{tag}'.");
                     }
 
                     viewParentManager.RemoveChildAt(viewToManage, indexToRemove);
@@ -265,10 +246,7 @@ namespace ReactNative.UIManager
                     if (!_tagsToViews.TryGetValue(viewAtIndex.Tag, out viewToAdd))
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Trying to add unknown view tag '{0}'.",
-                                viewAtIndex.Tag));
+                            $"Trying to add unknown view tag '{viewAtIndex.Tag}'.");
                     }
 
                     viewParentManager.AddView(viewToManage, viewToAdd, viewAtIndex.Index);
@@ -284,10 +262,7 @@ namespace ReactNative.UIManager
                     if (!_tagsToViews.TryGetValue(tagToDelete, out viewToDestroy))
                     {
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Trying to destroy unknown view tag '{0}'.",
-                                tagToDelete));
+                            $"Trying to destroy unknown view tag '{tagToDelete}'.");
                     }
 
                     DropView(viewToDestroy);
@@ -305,10 +280,7 @@ namespace ReactNative.UIManager
             if (!_rootTags.ContainsKey(rootViewTag))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "View with tag '{0}' is not registered as a root view.",
-                        rootViewTag));
+                    $"View with tag '{rootViewTag}' is not registered as a root view.");
             }
 
             var rootView = _tagsToViews[rootViewTag];
@@ -334,10 +306,7 @@ namespace ReactNative.UIManager
             if (rootView == null)
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Native view '{0}' is no longer on screen.",
-                        tag));
+                    $"Native view '{tag}' is no longer on screen.");
             }
 
             // TODO: better way to get relative position?
@@ -374,10 +343,7 @@ namespace ReactNative.UIManager
             if (!_tagsToViews.TryGetValue(reactTag, out view))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Could not find view with tag '{0}'.",
-                        reactTag));
+                    $"Could not find view with tag '{reactTag}'.");
             }
 
             return TouchTargetHelper.FindTargetTagForTouch(touchX, touchY, (Panel)view);
@@ -403,10 +369,7 @@ namespace ReactNative.UIManager
             if (!_tagsToViews.TryGetValue(reactTag, out view))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Could not find view with tag '{0}'.",
-                        reactTag));
+                    $"Could not find view with tag '{reactTag}'.");
             }
 
             throw new NotImplementedException();
@@ -433,10 +396,7 @@ namespace ReactNative.UIManager
             if (!_tagsToViews.TryGetValue(reactTag, out view))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Trying to send command to a non-existent view with tag '{0}.",
-                        reactTag));
+                    $"Trying to send command to a non-existent view with tag '{reactTag}.");
             }
 
             var viewManager = ResolveViewManager(reactTag);
@@ -484,10 +444,7 @@ namespace ReactNative.UIManager
             if (!_tagsToViews.TryGetValue(tag, out view))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Trying to resolve view with tag '{0}' which doesn't exist.",
-                        tag));
+                    $"Trying to resolve view with tag '{tag}' which doesn't exist.");
             }
 
             return view;
@@ -499,10 +456,7 @@ namespace ReactNative.UIManager
             if (!_tagsToViewManagers.TryGetValue(tag, out viewManager))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "ViewManager for tag '{0}' could not be found.",
-                        tag));
+                    $"ViewManager for tag '{tag}' could not be found.");
             }
 
             return viewManager;

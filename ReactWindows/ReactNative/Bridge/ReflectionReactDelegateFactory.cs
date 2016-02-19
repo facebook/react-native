@@ -55,12 +55,8 @@ namespace ReactNative.Bridge
 
         private Extractor CreateExtractor(Type type, string moduleName, string methodName)
         {
-            var exceptionFormat = string.Format(
-                CultureInfo.InvariantCulture,
-                "Error extracting argument for module '{0}' method '{1}' at index '{{0}}'.",
-                moduleName,
-                methodName);
-
+            var exceptionFormat =
+                $"Error extracting argument for module '{moduleName}' method '{methodName}' at index '{{0}}'.";
            
             if (type == typeof(ICallback))
             {
@@ -93,7 +89,7 @@ namespace ReactNative.Bridge
                         if (nextIndex >= arguments.Count)
                         {
                             throw new NativeArgumentsParseException(
-                                string.Format(exceptionFormat, index + " and " + (index + 1)),
+                                string.Format(exceptionFormat, index + "' and '" + (index + 1)),
                                 "jsArguments");
                         }
 
@@ -106,7 +102,7 @@ namespace ReactNative.Bridge
                         catch (Exception ex)
                         {
                             throw new NativeArgumentsParseException(
-                                string.Format(exceptionFormat, index + " and " + nextIndex),
+                                string.Format(exceptionFormat, index + "' and '" + nextIndex),
                                 "jsArguments",
                                 ex);
                         }
@@ -155,12 +151,7 @@ namespace ReactNative.Bridge
             if (jsArguments.Count != n) 
             {
                 throw new NativeArgumentsParseException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Module '{0}' method '{1}' got '{{0}}' arguments, expected '{2}'.",
-                        moduleInstance.Name,
-                        method.Name,
-                        n),
+                    $"Module '{moduleInstance.Name}' method '{method.Name}' got '{jsArguments.Count}' arguments, expected '{n}'.",
                     nameof(jsArguments));
             }
 

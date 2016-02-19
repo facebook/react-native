@@ -231,10 +231,7 @@ namespace ReactNative.Bridge
                     throw new ArgumentNullException(nameof(module));
                 if (module.Name == null)
                     throw new ArgumentException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Native module '{0}' cannot have a null `Name`.",
-                            module.GetType()),
+                        $"Native module '{module.GetType()}' cannot have a null `Name`.",
                         nameof(module));
 
                 var existing = default(INativeModule);

@@ -82,7 +82,7 @@ namespace ReactNative.Bridge
                 }
                 catch (Exception ex)
                 {
-                    var exceptionMessage = String.Format("File read exception for asset {0}", SourceUrl);
+                    var exceptionMessage = $"File read exception for asset '{SourceUrl}'.";
                     throw new InvalidOperationException(exceptionMessage, ex);
                 }
             }
@@ -125,7 +125,7 @@ namespace ReactNative.Bridge
                 }
                 catch (Exception ex)
                 {
-                    var exceptionMessage = String.Format("File read exception for asset {0}", SourceUrl);
+                    var exceptionMessage = $"File read exception for asset '{SourceUrl}'.";
                     throw new InvalidOperationException(exceptionMessage, ex);
                 }
             }

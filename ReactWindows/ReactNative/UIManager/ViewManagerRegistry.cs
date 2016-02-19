@@ -48,10 +48,7 @@ namespace ReactNative.UIManager
             }
 
             throw new ArgumentException(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "No view manager defined for class '{0}'.",
-                    className),
+                $"No view manager defined for class '{className}'.",
                 nameof(className));
         }
     }

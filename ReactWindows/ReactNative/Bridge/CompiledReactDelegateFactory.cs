@@ -98,7 +98,7 @@ namespace ReactNative.Bridge
             //     throw new NativeArgumentsParseException(
             //         string.Format(
             //             CultureInfo.InvariantCulture,
-            //             "Module 'moduleName' method 'methodName' got '{0}' arguments, expected 'parameterCount'."
+            //             "Module '{module.Name}' method '{method.Name}' got '{0}' arguments, expected '{parameterCount}'."
             //             jsArguments.Count));
             //
             blockStatements[3] = Expression.IfThen(
@@ -113,12 +113,7 @@ namespace ReactNative.Bridge
                             s_stringFormat,
                             Expression.Constant(CultureInfo.InvariantCulture),
                             Expression.Constant(
-                                string.Format(
-                                    CultureInfo.InvariantCulture,
-                                    "Module '{0}' method '{1}' got '{{0}}' arguments, expected '{2}'.",
-                                    module.Name,
-                                    method.Name,
-                                    argc)
+                                $"Module '{module.Name}' method '{method.Name}' got '{{0}}' arguments, expected '{argc}'."
                             ),
                             Expression.Convert(
                                 Expression.MakeMemberAccess(jsArgumentsParameter, s_countProperty),
@@ -181,12 +176,7 @@ namespace ReactNative.Bridge
                         Expression.New(
                             s_newNativeArgumentParseExceptionInner,
                             Expression.Constant(
-                                string.Format(
-                                    CultureInfo.InvariantCulture,
-                                    "Error extracting argument for module '{0}' method '{1}' at index '{2}'.",
-                                    moduleName,
-                                    methodName,
-                                    argumentIndex)
+                                $"Error extracting argument for module '{moduleName}' method '{methodName}' at index '{argumentIndex}'."
                             ),
                             Expression.Constant(parameterName),
                             ex
@@ -247,12 +237,7 @@ namespace ReactNative.Bridge
                         Expression.New(
                             s_newNativeArgumentParseException,
                             Expression.Constant(
-                                string.Format(
-                                    CultureInfo.InvariantCulture,
-                                    "Error extracting argument for module '{0}' method '{1}' at index '{2}'.",
-                                    moduleName,
-                                    methodName,
-                                    argumentIndex + " and " + (argumentIndex + 1))
+                                $"Error extracting argument for module '{moduleName}' method '{methodName}' at index '{argumentIndex}' and '{argumentIndex + 1}'."
                             ),
                             Expression.Constant(parameterName)
                         ),
