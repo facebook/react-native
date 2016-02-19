@@ -320,6 +320,41 @@ h1:hover .hash-link, h2:hover .hash-link, h3:hover .hash-link, h4:hover .hash-li
   text-decoration: underline;
 }
 
+.nav-version-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #3B3738;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+.nav-version-dropdown ul {
+  margin: 0;
+  padding: 5px 15px;
+}
+
+.nav-version-dropdown li {
+  display: block;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+}
+
+.nav-version-dropdown a:hover {
+  color: #fff;
+}
+
+.nav-version-container {
+  position: relative;
+  line-height: 50px;
+  display: inline-block;
+  height: 50px;
+}
+
+.nav-version-container:hover .nav-version-dropdown {
+  display: block;
+}
+
 .hero {
   background: #05A5D1;
   padding: 50px 0;
