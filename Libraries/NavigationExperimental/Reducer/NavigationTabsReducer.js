@@ -12,14 +12,14 @@
 'use strict';
 
 const NavigationFindReducer = require('NavigationFindReducer');
-const NavigationStateUtils = require('NavigationState');
+const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationReducer,
   NavigationReducerWithDefault,
   NavigationState,
   NavigationParentState
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 const ActionTypes = {
   JUMP_TO: 'react-native/NavigationExperimental/tabs-jumpTo',

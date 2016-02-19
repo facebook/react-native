@@ -17,12 +17,12 @@ const NavigationContainer = require('NavigationContainer');
 const NavigationHeader = require('NavigationHeader');
 const NavigationRootContainer = require('NavigationRootContainer');
 const NavigationReducer = require('NavigationReducer');
-const NavigationState = require('NavigationState');
+const NavigationStateUtils = require('NavigationStateUtils');
 const NavigationView = require('NavigationView');
 
 const NavigationExperimental = {
   // Core
-  State: NavigationState,
+  StateUtils: NavigationStateUtils,
   Reducer: NavigationReducer,
 
   // Containers

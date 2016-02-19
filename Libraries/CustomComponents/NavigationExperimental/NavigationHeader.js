@@ -40,7 +40,7 @@ const View = require('View');
 import type {
   NavigationState,
   NavigationParentState
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 type Props = {
   navigationState: NavigationParentState,

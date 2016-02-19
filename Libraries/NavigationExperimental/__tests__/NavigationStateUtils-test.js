@@ -14,7 +14,7 @@ jest
  .autoMockOff()
  .mock('ErrorUtils');
 
-var NavigationState = require('NavigationState');
+var NavigationStateUtils = require('NavigationStateUtils');
 
 var VALID_PARENT_STATES = [
   {children: ['a','b'], index: 0},
@@ -35,23 +35,23 @@ var INVALID_PARENT_STATES = [
   [],
 ];
 
-describe('NavigationState', () => {
+describe('NavigationStateUtils', () => {
 
   it('identifies parents correctly with getParent', () => {
     for (var i = 0; i <= VALID_PARENT_STATES.length; i++) {
       var navState = VALID_PARENT_STATES[0];
-      expect(NavigationState.getParent(navState)).toBe(navState);
+      expect(NavigationStateUtils.getParent(navState)).toBe(navState);
     }
     for (var i = 0; i <= INVALID_PARENT_STATES.length; i++) {
       var navState = INVALID_PARENT_STATES[0];
-      expect(NavigationState.getParent(navState)).toBe(null);
+      expect(NavigationStateUtils.getParent(navState)).toBe(null);
     }
   });
 
   it('can get children', () => {
     var fooState = {key: 'foo'};
     var navState = {children: [{key: 'foobar'}, fooState], index: 0};
-    expect(NavigationState.get(navState, 'foo')).toBe(fooState);
-    expect(NavigationState.get(navState, 'missing')).toBe(null);
+    expect(NavigationStateUtils.get(navState, 'foo')).toBe(fooState);
+    expect(NavigationStateUtils.get(navState, 'missing')).toBe(null);
   });
 });
