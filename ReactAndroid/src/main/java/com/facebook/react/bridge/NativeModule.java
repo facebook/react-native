@@ -72,4 +72,9 @@ public interface NativeModule {
    * Called before {CatalystInstance#onHostDestroy}
    */
   void onCatalystInstanceDestroy();
+
+  /**
+   * Whether this native module supports calls from web workers. Ignored for now.
+   */
+  boolean supportsWebWorkers();
 }
