@@ -15,9 +15,15 @@ namespace ReactNative.Chakra.Executor
     public class ChakraJavaScriptExecutor : IJavaScriptExecutor
     {
         private readonly JavaScriptRuntime _runtime;
-        private readonly JavaScriptValue _globalObject;
+        private readonly JavaScriptContext _context;
 
-        private JavaScriptSourceContext _sourceContext = JavaScriptSourceContext.None;
+        private JavaScriptValue _globalObject;
+        private JavaScriptValue _requireFunction;
+
+#if !NATIVE_JSON_MARSHALING
+        private JavaScriptValue _parseFunction;
+        private JavaScriptValue _stringifyFunction;
+#endif
 
         /// <summary>
         /// Instantiates the <see cref="ChakraJavaScriptExecutor"/>.
@@ -25,8 +31,8 @@ namespace ReactNative.Chakra.Executor
         public ChakraJavaScriptExecutor()
         {
             _runtime = JavaScriptRuntime.Create();
+            _context = _runtime.CreateContext();
             InitializeChakra();
-            _globalObject = JavaScriptValue.GlobalObject;
         }
 
         /// <summary>
@@ -45,40 +51,48 @@ namespace ReactNative.Chakra.Executor
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            // Try get global property
-            var modulePropertyId = JavaScriptPropertyId.FromString(moduleName);
-            var module = _globalObject.GetProperty(modulePropertyId);
+            JavaScriptContext.Current = _context;
 
-            if (module.ValueType != JavaScriptValueType.Object)
+            try
             {
-                // Get the require function
-                var requireId = JavaScriptPropertyId.FromString("require");
-                var requireFunction = _globalObject.GetProperty(requireId);
+                // Try get global property
+                var globalObject = EnsureGlobalObject();
+                var modulePropertyId = JavaScriptPropertyId.FromString(moduleName);
+                var module = globalObject.GetProperty(modulePropertyId);
 
-                // Get the module
-                var moduleString = JavaScriptValue.FromString(moduleName);
-                var requireArguments = new[] { _globalObject, moduleString };
-                module = requireFunction.CallFunction(requireArguments);
+                if (module.ValueType != JavaScriptValueType.Object)
+                {
+                    var requireFunction = EnsureRequireFunction();
+
+                    // Get the module
+                    var moduleString = JavaScriptValue.FromString(moduleName);
+                    var requireArguments = new[] { globalObject, moduleString };
+                    module = requireFunction.CallFunction(requireArguments);
+                }
+
+                // Get the method
+                var methodPropertyId = JavaScriptPropertyId.FromString(methodName);
+                var method = module.GetProperty(methodPropertyId);
+
+                // Set up the arguments to pass in
+                var callArguments = new JavaScriptValue[arguments.Count + 1];
+                callArguments[0] = EnsureGlobalObject(); // TODO: What is first argument?
+
+                for (var i = 0; i < arguments.Count; ++i)
+                {
+                    callArguments[i + 1] = ConvertJson(arguments[i]);
+                }
+
+                // Invoke the function
+                var result = method.CallFunction(callArguments);
+
+                // Convert the result
+                return ConvertJson(result);
             }
-
-            // Get the method
-            var methodPropertyId = JavaScriptPropertyId.FromString(methodName);
-            var method = module.GetProperty(methodPropertyId);
-
-            // Set up the arguments to pass in
-            var callArguments = new JavaScriptValue[arguments.Count + 1];
-            callArguments[0] = _globalObject;
-
-            for (var i = 0; i < arguments.Count; ++i)
+            finally
             {
-                callArguments[i + 1] = ConvertJson(arguments[i]);
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
             }
-
-            // Invoke the function
-            var result = method.CallFunction(callArguments);
-
-            // Convert the result
-            return ConvertJson(result);
         }
 
         /// <summary>
@@ -90,7 +104,16 @@ namespace ReactNative.Chakra.Executor
             if (script == null)
                 throw new ArgumentNullException(nameof(script));
 
-            JavaScriptContext.RunScript(script);
+            JavaScriptContext.Current = _context;
+
+            try
+            {
+                JavaScriptContext.RunScript(script);
+            }
+            finally
+            {
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
+            }
         }
 
         /// <summary>
@@ -105,9 +128,18 @@ namespace ReactNative.Chakra.Executor
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            var javaScriptValue = ConvertJson(value);
-            var propertyId = JavaScriptPropertyId.FromString(propertyName);
-            _globalObject.SetProperty(propertyId, javaScriptValue, true);
+            JavaScriptContext.Current = _context;
+
+            try
+            {
+                var javaScriptValue = ConvertJson(value);
+                var propertyId = JavaScriptPropertyId.FromString(propertyName);
+                EnsureGlobalObject().SetProperty(propertyId, javaScriptValue, true);
+            }
+            finally
+            {
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
+            }
         }
 
         /// <summary>
@@ -120,8 +152,17 @@ namespace ReactNative.Chakra.Executor
             if (propertyName == null)
                 throw new ArgumentNullException(nameof(propertyName));
 
-            var propertyId = JavaScriptPropertyId.FromString(propertyName);
-            return ConvertJson(_globalObject.GetProperty(propertyId));
+            JavaScriptContext.Current = _context;
+
+            try
+            {
+                var propertyId = JavaScriptPropertyId.FromString(propertyName);
+                return ConvertJson(EnsureGlobalObject().GetProperty(propertyId));
+            }
+            finally
+            {
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
+            }
         }
 
         /// <summary>
@@ -129,37 +170,78 @@ namespace ReactNative.Chakra.Executor
         /// </summary>
         public void Dispose()
         {
-            JavaScriptContext.Current = JavaScriptContext.Invalid;
             _runtime.Dispose();
         }
 
         private void InitializeChakra()
         {
-            // Set the current context
-            var context = _runtime.CreateContext();
-            JavaScriptContext.Current = context;
+            JavaScriptContext.Current = _context;
 
-#if DEBUG
-            // Start debugging.
-            if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
+            try
             {
-                JavaScriptContext.StartDebugging();
-            }
+#if DEBUG
+                // Start debugging.
+                if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
+                {
+                    JavaScriptContext.StartDebugging();
+                }
 #endif
 
-            var consolePropertyId = default(JavaScriptPropertyId);
-            Native.ThrowIfError(
-                Native.JsGetPropertyIdFromName("console", out consolePropertyId));
+                var consolePropertyId = default(JavaScriptPropertyId);
+                Native.ThrowIfError(
+                    Native.JsGetPropertyIdFromName("console", out consolePropertyId));
 
-            var consoleObject = JavaScriptValue.CreateObject();
-            JavaScriptValue.GlobalObject.SetProperty(consolePropertyId, consoleObject, true);
+                var consoleObject = JavaScriptValue.CreateObject();
+                EnsureGlobalObject().SetProperty(consolePropertyId, consoleObject, true);
 
-            DefineHostCallback(consoleObject, "log", ConsoleLog, IntPtr.Zero);
-            DefineHostCallback(consoleObject, "warn", ConsoleWarn, IntPtr.Zero);
-            DefineHostCallback(consoleObject, "error", ConsoleError, IntPtr.Zero);
+                DefineHostCallback(consoleObject, "log", ConsoleLog, IntPtr.Zero);
+                DefineHostCallback(consoleObject, "warn", ConsoleWarn, IntPtr.Zero);
+                DefineHostCallback(consoleObject, "error", ConsoleError, IntPtr.Zero);
 
-            Debug.WriteLine("Chakra initialization successful.");
+                Debug.WriteLine("Chakra initialization successful.");
+            }
+            finally
+            {
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
+            }
         }
+
+
+        #region JSON Marshaling
+
+#if NATIVE_JSON_MARSHALING
+        private JavaScriptValue ConvertJson(JToken token)
+        {
+            return JTokenToJavaScriptValueConverter.Convert(token);
+        }
+
+        private JToken ConvertJson(JavaScriptValue value)
+        {
+            return JavaScriptValueToJTokenConverter.Convert(value);
+        }
+#else
+        private JavaScriptValue ConvertJson(JToken token)
+        {
+            var parseFunction = EnsureParseFunction();
+
+            var json = token.ToString(Formatting.None);
+            var jsonValue = JavaScriptValue.FromString(json);
+
+            return parseFunction.CallFunction(_globalObject, jsonValue);
+        }
+
+        private JToken ConvertJson(JavaScriptValue value)
+        {
+            var stringifyFunction = EnsureStringifyFunction();
+
+            var jsonValue = stringifyFunction.CallFunction(_globalObject, value);
+            var json = jsonValue.ToString();
+
+            return JToken.Parse(json);
+        }
+#endif
+
+        #endregion
 
         #region Console Callbacks
 
@@ -254,41 +336,52 @@ namespace ReactNative.Chakra.Executor
         }
         #endregion
 
-        #region JSON Marshaling
+        #region Global Helpers
 
-#if NATIVE_JSON_MARSHALING
-        private JavaScriptValue ConvertJson(JToken token)
+        private JavaScriptValue EnsureGlobalObject()
         {
-            return JTokenToJavaScriptValueConverter.Convert(token);
+            if (!_globalObject.IsValid)
+            {
+                _globalObject = JavaScriptValue.GlobalObject;
+            }
+
+            return _globalObject;
         }
 
-        private JToken ConvertJson(JavaScriptValue value)
+        private JavaScriptValue EnsureRequireFunction()
         {
-            return JavaScriptValueToJTokenConverter.Convert(value);
-        }
-#else
-        private JavaScriptValue ConvertJson(JToken token)
-        {
-            var jsonHelpers = _globalObject.GetProperty(JavaScriptPropertyId.FromString("JSON"));
-            var parseFunction = jsonHelpers.GetProperty(JavaScriptPropertyId.FromString("parse"));
+            if (!_requireFunction.IsValid)
+            {
+                var globalObject = EnsureGlobalObject();
+                _requireFunction = globalObject.GetProperty(JavaScriptPropertyId.FromString("require"));
+            }
 
-            var json = token.ToString(Formatting.None);
-            var jsonValue = JavaScriptValue.FromString(json);
-
-            return parseFunction.CallFunction(_globalObject, jsonValue);
+            return _requireFunction;
         }
 
-        private JToken ConvertJson(JavaScriptValue value)
+        private JavaScriptValue EnsureParseFunction()
         {
-            var jsonHelpers = _globalObject.GetProperty(JavaScriptPropertyId.FromString("JSON"));
-            var stringifyFunction = jsonHelpers.GetProperty(JavaScriptPropertyId.FromString("stringify"));
+            if (!_parseFunction.IsValid)
+            {
+                var globalObject = EnsureGlobalObject();
+                var jsonObject = globalObject.GetProperty(JavaScriptPropertyId.FromString("JSON"));
+                _parseFunction = jsonObject.GetProperty(JavaScriptPropertyId.FromString("parse"));
+            }
 
-            var jsonValue = stringifyFunction.CallFunction(_globalObject, value);
-            var json = jsonValue.ToString();
-
-            return JToken.Parse(json);
+            return _parseFunction;
         }
-#endif
+
+        private JavaScriptValue EnsureStringifyFunction()
+        {
+            if (!_stringifyFunction.IsValid)
+            {
+                var globalObject = EnsureGlobalObject();
+                var jsonObject = globalObject.GetProperty(JavaScriptPropertyId.FromString("JSON"));
+                _stringifyFunction = jsonObject.GetProperty(JavaScriptPropertyId.FromString("stringify"));
+            }
+
+            return _stringifyFunction;
+        }
 
         #endregion
     }
