@@ -100,9 +100,9 @@ var PickerAndroid = React.createClass({
       var position = event.nativeEvent.position;
       if (position >= 0) {
         var value = this.props.children[position].props.value;
-        this.props.onValueChange(value);
+        this.props.onValueChange(value, position);
       } else {
-        this.props.onValueChange(null);
+        this.props.onValueChange(null, position);
       }
     }
 
