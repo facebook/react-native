@@ -80,6 +80,7 @@ import com.facebook.csslayout.Spacing;
   private @Nullable PathEffect mPathEffectForBorderStyle;
   private @Nullable Path mPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
+  private @Nullable Path mPathForBorder;
   private @Nullable RectF mTempRectForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadiusOutline;
   private boolean mNeedUpdatePathForBorderRadius = false;
@@ -343,30 +344,64 @@ import com.facebook.csslayout.Spacing;
       int width = getBounds().width();
       int height = getBounds().height();
 
+      // If the path drawn previously is of the same color,
+      // there would be a slight white space between borders
+      // with anti-alias set to true.
+      // Therefore we need to disable anti-alias, and
+      // after drawing is done, we will re-enable it.
+
+      mPaint.setAntiAlias(false);
+
+      if (mPathForBorder == null) {
+        mPathForBorder = new Path();
+      }
+
       if (borderLeft > 0 && colorLeft != Color.TRANSPARENT) {
         mPaint.setColor(colorLeft);
-        canvas.drawRect(0, borderTop, borderLeft, height - borderBottom, mPaint);
+        mPathForBorder.reset();
+        mPathForBorder.moveTo(0, 0);
+        mPathForBorder.lineTo(borderLeft, borderTop);
+        mPathForBorder.lineTo(borderLeft, height - borderBottom);
+        mPathForBorder.lineTo(0, height);
+        mPathForBorder.lineTo(0, 0);
+        canvas.drawPath(mPathForBorder, mPaint);
       }
 
       if (borderTop > 0 && colorTop != Color.TRANSPARENT) {
         mPaint.setColor(colorTop);
-        canvas.drawRect(0, 0, width, borderTop, mPaint);
+        mPathForBorder.reset();
+        mPathForBorder.moveTo(0, 0);
+        mPathForBorder.lineTo(borderLeft, borderTop);
+        mPathForBorder.lineTo(width - borderRight, borderTop);
+        mPathForBorder.lineTo(width, 0);
+        mPathForBorder.lineTo(0, 0);
+        canvas.drawPath(mPathForBorder, mPaint);
       }
 
       if (borderRight > 0 && colorRight != Color.TRANSPARENT) {
         mPaint.setColor(colorRight);
-        canvas.drawRect(
-            width - borderRight,
-            borderTop,
-            width,
-            height - borderBottom,
-            mPaint);
+        mPathForBorder.reset();
+        mPathForBorder.moveTo(width, 0);
+        mPathForBorder.lineTo(width, height);
+        mPathForBorder.lineTo(width - borderRight, height - borderBottom);
+        mPathForBorder.lineTo(width - borderRight, borderTop);
+        mPathForBorder.lineTo(width, 0);
+        canvas.drawPath(mPathForBorder, mPaint);
       }
 
       if (borderBottom > 0 && colorBottom != Color.TRANSPARENT) {
         mPaint.setColor(colorBottom);
-        canvas.drawRect(0, height - borderBottom, width, height, mPaint);
+        mPathForBorder.reset();
+        mPathForBorder.moveTo(0, height);
+        mPathForBorder.lineTo(width, height);
+        mPathForBorder.lineTo(width - borderRight, height - borderBottom);
+        mPathForBorder.lineTo(borderLeft, height - borderBottom);
+        mPathForBorder.lineTo(0, height);
+        canvas.drawPath(mPathForBorder, mPaint);
       }
+
+      // re-enable anti alias
+      mPaint.setAntiAlias(true);
     }
   }
 
