@@ -82,7 +82,7 @@ namespace ReactNative.Collections
         {
             if (_size == 0)
             {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Peek is not allowed on an empty queue."));
+                throw new InvalidOperationException("Peek is not allowed on an empty queue.");
             }
 
             CheckHeapInvariant();

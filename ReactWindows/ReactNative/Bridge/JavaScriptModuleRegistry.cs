@@ -52,10 +52,7 @@ namespace ReactNative.Bridge
             if (!_moduleInstances.TryGetValue(typeof(T), out instance))
             {
                 throw new InvalidOperationException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "JS module '{0}' hasn't been registered.",
-                        typeof(T)));
+                    $"JS module '{typeof(T)}' hasn't been registered.");
             }
 
             return (T)instance;

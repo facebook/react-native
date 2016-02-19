@@ -50,10 +50,7 @@ namespace ReactNative.UIManager
             if (!_rootTags.ContainsKey(tag))
             {
                 throw new KeyNotFoundException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "View with tag {0} is not registered as a root view.",
-                        tag));
+                    $"View with tag '{tag}' is not registered as a root view.");
             }
 
             _tagsToCssNodes.Remove(tag);
@@ -82,10 +79,7 @@ namespace ReactNative.UIManager
             if (_rootTags.TryGetValue(tag, out isRoot) && isRoot)
             {
                 throw new KeyNotFoundException(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Trying to remove root node {0} without using RemoveRootNode.",
-                        tag));
+                    $"Trying to remove root node '{tag}' without using RemoveRootNode.");
             }
 
             _tagsToCssNodes.Remove(tag);
@@ -105,10 +99,7 @@ namespace ReactNative.UIManager
             }
 
             throw new KeyNotFoundException(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    "Shadow node for tag '{0}' does not exist.",
-                    tag));
+                $"Shadow node for tag '{tag}' does not exist.");
         }
 
         /// <summary>

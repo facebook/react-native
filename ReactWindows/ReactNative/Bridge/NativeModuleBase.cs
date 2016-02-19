@@ -151,12 +151,7 @@ namespace ReactNative.Bridge
                 if (methodMap.TryGetValue(method.Name, out existingMethod))
                 {
                     throw new NotSupportedException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "React module '{0}' with name '{1}' has more than one ReactMethod with the name '{2}'.",
-                            GetType(),
-                            Name,
-                            method.Name));
+                        $"React module '{GetType()}' with name '{Name}' has more than one ReactMethod with the name '{method.Name}'.");
                 }
 
                 methodMap.Add(method.Name, new NativeMethod(this, method));

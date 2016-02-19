@@ -49,10 +49,7 @@ namespace ReactNative.Views.Image
                         return "topProgress";
                     default:
                         throw new InvalidOperationException(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                "Invalid image event '{0}'.",
-                                _eventType));
+                            $"Invalid image event '{_eventType}'.");
                 }
             }
         }

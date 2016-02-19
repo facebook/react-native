@@ -223,20 +223,13 @@ namespace ReactNative.UIManager
                 if (parameters.Length != 2)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Wrong number of arguments for property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"Wrong number of arguments for property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
                 if (!typeof(FrameworkElement).IsAssignableFrom(parameters[0].ParameterType))
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            "First parameter must be a framework element for property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"First parameter must be a framework element for property setter '{method.DeclaringType.Name}.{Name}'.");
                 }
 
                 return parameters[1].ParameterType;
@@ -273,29 +266,19 @@ namespace ReactNative.UIManager
                 if (parameters.Length != 3)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Wrong number of arguments for group property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"Wrong number of arguments for group property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
                 if (!typeof(FrameworkElement).IsAssignableFrom(parameters[0].ParameterType))
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            "First parameter must be a framework element for group property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"First parameter must be a framework element for group property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
                 if (parameters[1].ParameterType != typeof(int))
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            "Second parameter must be a property index for group property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"Second parameter must be a property index for group property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
 
@@ -331,11 +314,7 @@ namespace ReactNative.UIManager
                 if (parameters.Length != 1)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Wrong number of arguments for property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"Wrong number of arguments for property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
                 return  parameters[0].ParameterType;
@@ -371,20 +350,13 @@ namespace ReactNative.UIManager
                 if (parameters.Length != 2)
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Wrong number of arguments for group property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"Wrong number of arguments for group property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
                 if (parameters[0].ParameterType != typeof(int))
                 {
                     throw new InvalidOperationException(
-                        string.Format(
-                            "First parameter must be a property index for group property setter '{0}.{1}'.",
-                            method.DeclaringType.Name,
-                            method.Name));
+                        $"First parameter must be a property index for group property setter '{method.DeclaringType.Name}.{method.Name}'.");
                 }
 
                 return parameters[1].ParameterType;

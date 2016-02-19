@@ -112,11 +112,7 @@ namespace ReactNative.Bridge
                 if (method == lastMethod)
                 {
                     throw new NotSupportedException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Method overloading is not supported: {0}.{1}",
-                            ModuleInterface.Name,
-                            method));
+                        $"Method overloading is not supported: {ModuleInterface.Name}.{method}");
                 }
 
                 lastMethod = method;

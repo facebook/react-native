@@ -129,11 +129,7 @@ namespace ReactNative.Bridge.Queue
                     return new AnyBackgroundMessageQueueThread(spec.Name, handler);
                 default:
                     throw new InvalidOperationException(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Unknown thread type '{0}' with name '{1}'.", 
-                            spec.Kind,
-                            spec.Name));
+                        $"Unknown thread type '{spec.Kind}' with name '{spec.Name}'.");
             }
         }
 
