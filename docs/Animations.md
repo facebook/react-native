@@ -529,7 +529,7 @@ around native functionality provided by `UINavigationController`, so
 these scene transitions apply only to `Navigator`. In order to re-create
 the various animations provided by `UINavigationController` and also
 make them customizable, React Native exposes a
-[NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
+[NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API which is then handed over to the [Navigator](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/Navigator.js) `configureScene` prop.
 
 ```javascript
 import { Dimensions } from 'react-native';
