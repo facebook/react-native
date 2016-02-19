@@ -43,11 +43,12 @@ and navigation bar configuration. &quot;push&quot; and all the other navigation
 operations expect routes to be like this:</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="itemwrapperstyle"></a>itemWrapperStyle <span class="propType"><a href="docs/view.html#style">View#style</a></span> <a class="hash-link" href="#itemwrapperstyle">#</a></h4><div><p>The default wrapper style for components in the navigator.
 A common use case is to set the backgroundColor for every page</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="navigationbarhidden"></a>navigationBarHidden <span class="propType">bool</span> <a class="hash-link" href="#navigationbarhidden">#</a></h4><div><p>A Boolean value that indicates whether the navigation bar is hidden by default</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="shadowhidden"></a>shadowHidden <span class="propType">bool</span> <a class="hash-link" href="#shadowhidden">#</a></h4><div><p>A Boolean value that indicates whether to hide the 1px hairline shadow by default</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="tintcolor"></a>tintColor <span class="propType">string</span> <a class="hash-link" href="#tintcolor">#</a></h4><div><p>The default color used for buttons in the navigation bar</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="titletextcolor"></a>titleTextColor <span class="propType">string</span> <a class="hash-link" href="#titletextcolor">#</a></h4><div><p>The default text color of the navigation bar title</p></div></div><div class="prop"><h4 class="propTitle"><a class="anchor" name="translucent"></a>translucent <span class="propType">bool</span> <a class="hash-link" href="#translucent">#</a></h4><div><p>A Boolean value that indicates whether the navigation bar is translucent by default</p></div></div></div></div><div><table width="100%"><tbody><tr><td><h3><a class="anchor" name="examples"></a>Examples <a class="hash-link" href="#examples">#</a></h3></td><td style="text-align:right;"><a target="_blank" href="https://github.com/facebook/react-native/blob/master/Examples/UIExplorer/NavigatorIOSExample.js">Edit on GitHub</a></td></tr></tbody></table><div class="prism language-javascript"><span class="token string">&#x27;use strict&#x27;</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> ViewExample <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./ViewExample&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> createExamplePage <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./createExamplePage&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">var</span> <span class="token punctuation">{</span>
+const React <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;react-native&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+const ViewExample <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./ViewExample&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+const createExamplePage <span class="token operator">=</span> <span class="token function">require<span class="token punctuation">(</span></span><span class="token string">&#x27;./createExamplePage&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+const <span class="token punctuation">{</span>
   AlertIOS<span class="token punctuation">,</span>
+  NavigatorIOS<span class="token punctuation">,</span>
   ScrollView<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
@@ -55,8 +56,7 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
   View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> EmptyPage <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-
+const EmptyPage <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>emptyPage<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -66,41 +66,24 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
       &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> NavigatorIOSExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-
-  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;NavigatorIOS&gt;&#x27;</span><span class="token punctuation">,</span>
-    description<span class="token punctuation">:</span> <span class="token string">&#x27;iOS navigation capabilities&#x27;</span><span class="token punctuation">,</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-
+const NavigatorIOSExamplePage <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> recurseTitle <span class="token operator">=</span> <span class="token string">&#x27;Recurse Navigation&#x27;</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>topExampleRoute<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       recurseTitle <span class="token operator">+</span><span class="token operator">=</span> <span class="token string">&#x27; - more examples here&#x27;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       &lt;ScrollView style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>list<span class="token punctuation">}</span><span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>line<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>group<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>row<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-            &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>rowNote<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-              See <span class="token operator">&amp;lt;</span>UIExplorerApp<span class="token ignore">&amp;gt;</span> <span class="token keyword">for</span> top<span class="token operator">-</span>level usage<span class="token punctuation">.</span>
-            &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-        &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>line<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
-        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>groupSpace<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
-        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>line<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
-        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>group<span class="token punctuation">}</span><span class="token operator">&gt;</span>
           <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span>recurseTitle<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
             <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">push<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
               title<span class="token punctuation">:</span> NavigatorIOSExample<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
-              component<span class="token punctuation">:</span> NavigatorIOSExample<span class="token punctuation">,</span>
+              component<span class="token punctuation">:</span> NavigatorIOSExamplePage<span class="token punctuation">,</span>
               backButtonTitle<span class="token punctuation">:</span> <span class="token string">&#x27;Custom Back&#x27;</span><span class="token punctuation">,</span>
-              passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>topExampleRoute<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>topExampleRoute <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>route<span class="token punctuation">}</span><span class="token punctuation">,</span>
+              passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>depth<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">?</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">+</span> <span class="token number">1</span> <span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
             <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
           <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
           <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Push View Example&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
@@ -150,40 +133,39 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
           <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Pop to top&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
             <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">popToTop<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
           <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Replace here&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-            <span class="token keyword">var</span> prevRoute <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>route<span class="token punctuation">;</span>
-            <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">replace<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
-              title<span class="token punctuation">:</span> <span class="token string">&#x27;New Navigation&#x27;</span><span class="token punctuation">,</span>
-              component<span class="token punctuation">:</span> EmptyPage<span class="token punctuation">,</span>
-              rightButtonTitle<span class="token punctuation">:</span> <span class="token string">&#x27;Undo&#x27;</span><span class="token punctuation">,</span>
-              onRightButtonPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">replace<span class="token punctuation">(</span></span>prevRoute<span class="token punctuation">)</span><span class="token punctuation">,</span>
-              passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-                text<span class="token punctuation">:</span> <span class="token string">&#x27;The component is replaced, but there is currently no &#x27;</span> <span class="token operator">+</span>
-                  <span class="token string">&#x27;way to change the right button or title of the current route&#x27;</span><span class="token punctuation">,</span>
-              <span class="token punctuation">}</span>
-            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderReplace<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">}</span>
           <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderReplacePrevious<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">}</span>
           <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderReplacePreviousAndPop<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderPopToTopNavExample<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Exit NavigatorIOS Example&#x27;</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onExampleExit<span class="token punctuation">)</span><span class="token punctuation">}</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>line<span class="token punctuation">}</span><span class="token operator">/</span><span class="token operator">&gt;</span>
       &lt;<span class="token operator">/</span>ScrollView<span class="token operator">&gt;</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-  _renderPopToTopNavExample<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>topExampleRoute<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+  _renderReplace<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     <span class="token comment" spellcheck="true"> // this is to avoid replacing the top of the stack
+</span>      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Pop to top NavigatorIOSExample&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">popToRoute<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>topExampleRoute<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Replace here&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">var</span> prevRoute <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>route<span class="token punctuation">;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">replace<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+        title<span class="token punctuation">:</span> <span class="token string">&#x27;New Navigation&#x27;</span><span class="token punctuation">,</span>
+        component<span class="token punctuation">:</span> EmptyPage<span class="token punctuation">,</span>
+        rightButtonTitle<span class="token punctuation">:</span> <span class="token string">&#x27;Undo&#x27;</span><span class="token punctuation">,</span>
+        onRightButtonPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigator<span class="token punctuation">.</span><span class="token function">replace<span class="token punctuation">(</span></span>prevRoute<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+          text<span class="token punctuation">:</span> <span class="token string">&#x27;The component is replaced, but there is currently no &#x27;</span> <span class="token operator">+</span>
+            <span class="token string">&#x27;way to change the right button or title of the current route&#x27;</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   _renderReplacePrevious<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>topExampleRoute<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-     <span class="token comment" spellcheck="true"> // this is to avoid replacing the UIExplorerList at the top of the stack
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth &lt; <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     <span class="token comment" spellcheck="true"> // this is to avoid replacing the top of the stack
 </span>      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
     <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Replace previous&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
@@ -199,8 +181,8 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   _renderReplacePreviousAndPop<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>topExampleRoute<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-     <span class="token comment" spellcheck="true"> // this is to avoid replacing the UIExplorerList at the top of the stack
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth <span class="token operator">||</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>depth &lt; <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     <span class="token comment" spellcheck="true"> // this is to avoid replacing the top of the stack
 </span>      <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
     <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_renderRow<span class="token punctuation">(</span></span><span class="token string">&#x27;Replace previous and pop&#x27;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
@@ -231,7 +213,34 @@ A common use case is to set the backgroundColor for every page</p></div></div><d
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-<span class="token keyword">var</span> styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+const NavigatorIOSExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  statics<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;&lt;NavigatorIOS&gt;&#x27;</span><span class="token punctuation">,</span>
+    description<span class="token punctuation">:</span> <span class="token string">&#x27;iOS navigation capabilities&#x27;</span><span class="token punctuation">,</span>
+    external<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    const <span class="token punctuation">{</span>onExampleExit<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;NavigatorIOS
+        style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>container<span class="token punctuation">}</span>
+        initialRoute<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+          title<span class="token punctuation">:</span> NavigatorIOSExample<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+          component<span class="token punctuation">:</span> NavigatorIOSExamplePage<span class="token punctuation">,</span>
+          passProps<span class="token punctuation">:</span> <span class="token punctuation">{</span>onExampleExit<span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">}</span>
+        itemWrapperStyle<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>itemWrapper<span class="token punctuation">}</span>
+        tintColor<span class="token operator">=</span><span class="token string">&quot;#008888&quot;</span>
+      <span class="token operator">/</span><span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+const styles <span class="token operator">=</span> StyleSheet<span class="token punctuation">.</span><span class="token function">create<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  container<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    flex<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
   customWrapperStyle<span class="token punctuation">:</span> <span class="token punctuation">{</span>
     backgroundColor<span class="token punctuation">:</span> <span class="token string">&#x27;#bbdddd&#x27;</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
