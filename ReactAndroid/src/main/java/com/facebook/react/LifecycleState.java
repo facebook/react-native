@@ -21,7 +21,7 @@ package com.facebook.react;
  * RESUMED
  */
 public enum LifecycleState {
-
+  BEFORE_CREATE,
   BEFORE_RESUME,
   RESUMED,
 }

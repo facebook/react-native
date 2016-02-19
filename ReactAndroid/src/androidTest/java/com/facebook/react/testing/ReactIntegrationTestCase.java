@@ -74,7 +74,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         @Override
         public void run() {
           if (contextToDestroy != null) {
-            contextToDestroy.onDestroy();
+            contextToDestroy.destroy();
           }
         }
       });
