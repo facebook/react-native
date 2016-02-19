@@ -382,7 +382,7 @@ Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](#animated) instead)
+### Rebound (Not recommended - use [Animated](docs/animation.html) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is
