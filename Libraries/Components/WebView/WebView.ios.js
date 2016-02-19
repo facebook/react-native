@@ -213,7 +213,6 @@ var WebView = React.createClass({
 
     /**
      * Sets whether the webpage scales to fit the view and the user can change the scale.
-     * @platform ios
      */
     scalesPageToFit: PropTypes.bool,
 

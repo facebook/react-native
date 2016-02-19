@@ -75,7 +75,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     overridePendingTransition(0, 0);
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onPause();
+      mReactInstanceManager.onHostPause();
     }
   }
 
@@ -86,7 +86,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     mLifecycleState = LifecycleState.RESUMED;
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onResume(this, this);
+      mReactInstanceManager.onHostResume(this, this);
     }
   }
 
@@ -96,7 +96,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
     mDestroyCountDownLatch.countDown();
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onDestroy();
+      mReactInstanceManager.destroy();
     }
   }
 
@@ -114,7 +114,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
 
   public void resetRootViewForScreenshotTests() {
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onDestroy();
+      mReactInstanceManager.destroy();
       mReactInstanceManager = null;
     }
     mReactRootView = new ReactRootView(this);
@@ -148,7 +148,7 @@ public class ReactAppTestActivity extends FragmentActivity implements
         .setInitialLifecycleState(mLifecycleState);
 
     mReactInstanceManager = builder.build();
-    mReactInstanceManager.onResume(this, this);
+    mReactInstanceManager.onHostResume(this, this);
 
     Assertions.assertNotNull(mReactRootView).getViewTreeObserver().addOnGlobalLayoutListener(
         new ViewTreeObserver.OnGlobalLayoutListener() {
