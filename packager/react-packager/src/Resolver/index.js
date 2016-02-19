@@ -124,11 +124,11 @@ class Resolver {
   getDependencies(main, options) {
     const opts = getDependenciesValidateOpts(options);
 
-    return this._depGraph.getDependencies(
-      main,
-      opts.platform,
-      opts.recursive,
-    ).then(resolutionResponse => {
+    return this._depGraph.getDependencies({
+      entryPath: main,
+      platform: opts.platform,
+      recursive: opts.recursive,
+    }).then(resolutionResponse => {
       this._getPolyfillDependencies().reverse().forEach(
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
@@ -152,7 +152,7 @@ class Resolver {
       prelude,
       moduleSystem
     ].map(moduleName => new Polyfill({
-      path: moduleName,
+      file: moduleName,
       id: moduleName,
       dependencies: [],
       isPolyfill: true,
@@ -173,7 +173,7 @@ class Resolver {
 
     return polyfillModuleNames.map(
       (polyfillModuleName, idx) => new Polyfill({
-        path: polyfillModuleName,
+        file: polyfillModuleName,
         id: polyfillModuleName,
         dependencies: polyfillModuleNames.slice(0, idx),
         isPolyfill: true,
