@@ -30,7 +30,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  
+
   // If the control is refreshing when mounted we need to call
   // beginRefreshing in layoutSubview or it doesn't work.
   if (_isInitialRender && _initialRefreshingState) {
@@ -46,9 +46,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - self.frame.size.height};
   // Don't animate when the prop is set initialy.
   if (_isInitialRender) {
-    // Must use `[scrollView setContentOffset:offset animated:NO]` instead of just setting
-    // `scrollview.contentOffset` or it doesn't work, don't ask me why!
-    [scrollView setContentOffset:offset animated:NO];
+    scrollView.contentOffset = offset;
     [super beginRefreshing];
   } else {
     // `beginRefreshing` must be called after the animation is done. This is why it is impossible
