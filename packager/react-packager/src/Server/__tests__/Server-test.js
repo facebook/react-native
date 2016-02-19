@@ -21,10 +21,11 @@ jest.setMock('worker-farm', function() { return () => {}; })
 const Promise = require('promise');
 
 var Bundler = require('../../Bundler');
-var FileWatcher = require('../../DependencyResolver/FileWatcher');
 var Server = require('../');
 var Server = require('../../Server');
 var AssetServer = require('../../AssetServer');
+
+var FileWatcher;
 
 describe('processRequest', () => {
   var server;
@@ -58,6 +59,7 @@ describe('processRequest', () => {
   var triggerFileChange;
 
   beforeEach(() => {
+    FileWatcher = require('node-haste').FileWatcher;
     Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
