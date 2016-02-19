@@ -123,6 +123,12 @@ var WebView = React.createClass({
     injectedJavaScript: PropTypes.string,
 
     /**
+     * Sets whether the webpage scales to fit the view and the user can change the scale.
+     *
+     */
+    scalesPageToFit: PropTypes.bool,
+
+    /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
      * WebViewConfig. This prop will overwrite that config.
      */
@@ -145,6 +151,7 @@ var WebView = React.createClass({
   getDefaultProps: function() {
     return {
       javaScriptEnabled : true,
+      scalesPageToFit: true,
     };
   },
 
@@ -195,6 +202,7 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
+        scalesPageToFit={this.props.scalesPageToFit}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
