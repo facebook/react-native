@@ -97,7 +97,8 @@ JSCExecutor::JSCExecutor(
     Bridge *bridge,
     int workerId,
     JSCExecutor *owner,
-    const std::string& script) :
+    const std::string& script,
+    const std::unordered_map<std::string, std::string>& globalObjAsJSON) :
     m_bridge(bridge),
     m_workerId(workerId),
     m_owner(owner),
@@ -105,10 +106,14 @@ JSCExecutor::JSCExecutor(
     m_messageQueueThread(MessageQueues::getCurrentMessageQueueThread()) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
-  m_messageQueueThread->runOnQueue([this, script] () {
+  m_messageQueueThread->runOnQueue([this, script, globalObjAsJSON] () {
     initOnJSVMThread();
 
     installGlobalFunction(m_context, "postMessage", nativePostMessage);
+
+    for (auto& it : globalObjAsJSON) {
+      setGlobalVariable(it.first, it.second);
+    }
 
     // TODO(9604438): Protect against script does not exist
     std::string scriptSrc = WebWorkerUtil::loadScriptFromAssets(script);
@@ -302,14 +307,17 @@ void JSCExecutor::loadModule(uint32_t moduleId) {
 
 int JSCExecutor::addWebWorker(
     const std::string& script,
-    JSValueRef workerRef) {
+    JSValueRef workerRef,
+    JSValueRef globalObjRef) {
   static std::atomic_int nextWorkerId(1);
   int workerId = nextWorkerId++;
 
+  Object globalObj = Value(m_context, globalObjRef).asObject();
+
   auto workerMQT = WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
   std::unique_ptr<JSCExecutor> worker;
-  workerMQT->runOnQueueSync([this, &worker, &script, workerId] () {
-    worker.reset(new JSCExecutor(m_bridge, workerId, this, script));
+  workerMQT->runOnQueueSync([this, &worker, &script, &globalObj, workerId] () {
+    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap()));
   });
 
   Object workerObj = Value(m_context, workerRef).asObject();
@@ -487,7 +495,7 @@ JSValueRef JSCExecutor::nativeStartWorker(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef *exception) {
-  if (argumentCount != 2) {
+  if (argumentCount != 3) {
     *exception = createErrorString(ctx, "Got wrong number of args");
     return JSValueMakeUndefined(ctx);
   }
@@ -495,6 +503,7 @@ JSValueRef JSCExecutor::nativeStartWorker(
   std::string scriptFile = Value(ctx, arguments[0]).toString().str();
 
   JSValueRef worker = arguments[1];
+  JSValueRef globalObj = arguments[2];
 
   JSCExecutor *executor;
   try {
@@ -504,7 +513,7 @@ JSValueRef JSCExecutor::nativeStartWorker(
     return JSValueMakeUndefined(ctx);
   }
 
-  int workerId = executor->addWebWorker(scriptFile, worker);
+  int workerId = executor->addWebWorker(scriptFile, worker, globalObj);
 
   return JSValueMakeNumber(ctx, workerId);
 }
