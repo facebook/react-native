@@ -5,9 +5,6 @@ namespace ReactNative.Bridge.Queue
     /// <summary>
     /// Encapsulates an action queue.
     /// </summary>
-    /// <remarks>
-    /// TODO: Add thread name for logging purposes.
-    /// </remarks>
     public interface IMessageQueueThread
     {
         /// <summary>
