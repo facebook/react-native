@@ -87,21 +87,21 @@ describe('Resolver', function() {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
           expect(_.pluck(Polyfill.mock.calls, 0)).toEqual([
-            { path: 'polyfills/polyfills.js',
+            { file: 'polyfills/polyfills.js',
               id: 'polyfills/polyfills.js',
               isPolyfill: true,
               dependencies: []
             },
             { id: 'polyfills/console.js',
               isPolyfill: true,
-              path: 'polyfills/console.js',
+              file: 'polyfills/console.js',
               dependencies: [
                 'polyfills/polyfills.js'
               ],
             },
             { id: 'polyfills/error-guard.js',
               isPolyfill: true,
-              path: 'polyfills/error-guard.js',
+              file: 'polyfills/error-guard.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js'
@@ -109,7 +109,7 @@ describe('Resolver', function() {
             },
             { id: 'polyfills/String.prototype.es6.js',
               isPolyfill: true,
-              path: 'polyfills/String.prototype.es6.js',
+              file: 'polyfills/String.prototype.es6.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
@@ -118,7 +118,7 @@ describe('Resolver', function() {
             },
             { id: 'polyfills/Array.prototype.es6.js',
               isPolyfill: true,
-              path: 'polyfills/Array.prototype.es6.js',
+              file: 'polyfills/Array.prototype.es6.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
@@ -128,7 +128,7 @@ describe('Resolver', function() {
             },
             { id: 'polyfills/Array.es6.js',
               isPolyfill: true,
-              path: 'polyfills/Array.es6.js',
+              file: 'polyfills/Array.es6.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
@@ -139,7 +139,7 @@ describe('Resolver', function() {
             },
             { id: 'polyfills/Object.es7.js',
               isPolyfill: true,
-              path: 'polyfills/Object.es7.js',
+              file: 'polyfills/Object.es7.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
@@ -151,7 +151,7 @@ describe('Resolver', function() {
             },
             { id: 'polyfills/babelHelpers.js',
               isPolyfill: true,
-              path: 'polyfills/babelHelpers.js',
+              file: 'polyfills/babelHelpers.js',
               dependencies: [
                 'polyfills/polyfills.js',
                 'polyfills/console.js',
@@ -185,7 +185,7 @@ describe('Resolver', function() {
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(DependencyGraph.mock.instances[0].getDependencies)
-              .toBeCalledWith('/root/index.js', undefined, true);
+              .toBeCalledWith({ entryPath: '/root/index.js', platform: undefined, recursive: true });
           expect(result.dependencies[0]).toBe(Polyfill.mock.instances[0]);
           expect(result.dependencies[result.dependencies.length - 1])
               .toBe(module);
@@ -212,7 +212,7 @@ describe('Resolver', function() {
         .then((result) => {
           expect(result.mainModuleId).toEqual('index');
           expect(Polyfill.mock.calls[result.dependencies.length - 2]).toEqual([
-            { path: 'some module',
+            { file: 'some module',
               id: 'some module',
               isPolyfill: true,
               dependencies: [
