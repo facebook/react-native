@@ -110,8 +110,22 @@ var styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderBottomRightRadius: 20,
     borderColor: 'black',
-    elevation: 10
-  }
+    elevation: 10,
+  },
+  border11: {
+    width: 0,
+    height: 0,
+    borderStyle: 'solid',
+    overflow: 'hidden',
+    borderTopWidth: 50,
+    borderRightWidth: 0,
+    borderBottomWidth: 50,
+    borderLeftWidth: 100,
+    borderTopColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: 'red',
+  },
 });
 
 exports.title = 'Border';
@@ -207,6 +221,13 @@ exports.examples = [
     platform: 'android',
     render() {
       return <View style={[styles.box, styles.border10]} />;
+    }
+  },
+  {
+    title: 'CSS Trick - Triangle',
+    description: 'create a triangle by manipulating border colors and widths',
+    render() {
+      return <View style={[styles.border11]} />;
     }
   },
 ];
