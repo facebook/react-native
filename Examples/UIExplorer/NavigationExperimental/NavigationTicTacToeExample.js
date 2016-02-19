@@ -18,7 +18,6 @@
 
 var React = require('react-native');
 var {
-  // $FlowFixMe : this does exist..
   NavigationExperimental,
   StyleSheet,
   Text,

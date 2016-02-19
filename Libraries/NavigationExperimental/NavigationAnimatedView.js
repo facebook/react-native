@@ -13,15 +13,15 @@
 
 var Animated = require('Animated');
 var Map = require('Map');
-var NavigationStateUtils = require('NavigationState');
+var NavigationStateUtils = require('NavigationStateUtils');
 var NavigationContainer = require('NavigationContainer');
-var React = require('react-native');
+var React = require('React');
 var View = require('View');
 
 import type {
   NavigationState,
   NavigationParentState,
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 type NavigationScene = {
   index: number,

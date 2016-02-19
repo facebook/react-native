@@ -11,12 +11,10 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('React');
 var NavigationContainer = require('NavigationContainer');
-var {
-  StyleSheet,
-  View,
-} = React;
+var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var NavigationView = React.createClass({
   propTypes: {

@@ -40,7 +40,7 @@ const ENABLE_GESTURES = Platform.OS !== 'android';
 
 import type {
   NavigationParentState
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 type Layout = {
   initWidth: number,

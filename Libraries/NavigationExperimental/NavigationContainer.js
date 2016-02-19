@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var React = require('react-native');
+var React = require('React');
 var NavigationRootContainer = require('NavigationRootContainer');
 
 function createNavigationContainer(Component: React.Component): React.Component {
