@@ -11,9 +11,9 @@
 
 const path = require('path');
 const Activity = require('../Activity');
-const DependencyGraph = require('../DependencyResolver/DependencyGraph');
-const replacePatterns = require('../DependencyResolver/lib/replacePatterns');
-const Polyfill = require('../DependencyResolver/Polyfill');
+const DependencyGraph = require('node-haste');
+const replacePatterns = require('node-haste').replacePatterns;
+const Polyfill = require('node-haste').Polyfill;
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
 
