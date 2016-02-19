@@ -18,16 +18,13 @@ import android.graphics.Canvas;
  * The idea is to be able to reuse unmodified objects when we build up DrawCommands before we ship
  * them to UI thread, but we can only do that if DrawCommands are immutable.
  */
-/* package */ abstract class AbstractDrawCommand implements DrawCommand, Cloneable {
+/* package */ abstract class AbstractDrawCommand extends AbstractClippingDrawCommand
+    implements Cloneable {
 
   private float mLeft;
   private float mTop;
   private float mRight;
   private float mBottom;
-  private float mClipLeft;
-  private float mClipTop;
-  private float mClipRight;
-  private float mClipBottom;
   private boolean mFrozen;
 
   @Override
@@ -35,7 +32,7 @@ import android.graphics.Canvas;
     onPreDraw(parent, canvas);
     if (shouldClip()) {
       canvas.save();
-      canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
+      applyClipping(canvas);
       onDraw(canvas);
       canvas.restore();
     } else {
@@ -137,26 +134,11 @@ import android.graphics.Canvas;
     return mBottom;
   }
 
-  public final float getClipLeft() {
-    return mClipLeft;
-  }
-
-  public final float getClipTop() {
-    return mClipTop;
-  }
-
-  public final float getClipRight() {
-    return mClipRight;
-  }
-
-  public final float getClipBottom() {
-    return mClipBottom;
-  }
-
   protected abstract void onDraw(Canvas canvas);
 
   protected boolean shouldClip() {
-    return mLeft < mClipLeft || mTop < mClipTop || mRight > mClipRight || mBottom > mClipBottom;
+    return mLeft < getClipLeft() || mTop < getClipTop() ||
+        mRight > getClipRight() || mBottom > getClipBottom();
   }
 
   protected void onBoundsChanged() {
@@ -174,26 +156,10 @@ import android.graphics.Canvas;
     onBoundsChanged();
   }
 
-  private void setClipBounds(float clipLeft, float clipTop, float clipRight, float clipBottom) {
-    mClipLeft = clipLeft;
-    mClipTop = clipTop;
-    mClipRight = clipRight;
-    mClipBottom = clipBottom;
-  }
-
   /**
    * Returns true if boundaries match and don't need to be updated. False otherwise.
    */
   private boolean boundsMatch(float left, float top, float right, float bottom) {
     return mLeft == left && mTop == top && mRight == right && mBottom == bottom;
-  }
-
-  private boolean clipBoundsMatch(
-      float clipLeft,
-      float clipTop,
-      float clipRight,
-      float clipBottom) {
-    return mClipLeft == clipLeft && mClipTop == clipTop &&
-        mClipRight == clipRight && mClipBottom == clipBottom;
   }
 }
