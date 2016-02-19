@@ -19,7 +19,7 @@ const Platform = require('Platform');
 import type {
   NavigationState,
   NavigationReducer
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 export type NavigationRenderer = (
   navigationState: NavigationState,

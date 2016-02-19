@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule NavigationState
+ * @providesModule NavigationStateUtils
  * @flow
  */
 'use strict';
@@ -37,7 +37,7 @@ export type NavigationReducerWithDefault = (
   action: ?any
 ) => NavigationState;
 
-export function getParent(state: NavigationState): ?NavigationParentState {
+function getParent(state: NavigationState): ?NavigationParentState {
   if (
     (state instanceof Object) &&
     (state.children instanceof Array) &&
@@ -50,7 +50,7 @@ export function getParent(state: NavigationState): ?NavigationParentState {
   return null;
 }
 
-export function get(state: NavigationState, key: string): ?NavigationState {
+function get(state: NavigationState, key: string): ?NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return null;
@@ -59,7 +59,7 @@ export function get(state: NavigationState, key: string): ?NavigationState {
   return childState || null;
 }
 
-export function indexOf(state: NavigationState, key: string): ?number {
+function indexOf(state: NavigationState, key: string): ?number {
   const parentState = getParent(state);
   if (!parentState) {
     return null;
@@ -71,7 +71,7 @@ export function indexOf(state: NavigationState, key: string): ?number {
   return index;
 }
 
-export function push(state: NavigationState, newChildState: NavigationState): NavigationState {
+function push(state: NavigationState, newChildState: NavigationState): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -87,7 +87,7 @@ export function push(state: NavigationState, newChildState: NavigationState): Na
   };
 }
 
-export function pop(state: NavigationState): NavigationState {
+function pop(state: NavigationState): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -100,7 +100,7 @@ export function pop(state: NavigationState): NavigationState {
   };
 }
 
-export function reset(state: NavigationState, nextChildren: ?Array<NavigationState>, nextIndex: ?number): NavigationState {
+function reset(state: NavigationState, nextChildren: ?Array<NavigationState>, nextIndex: ?number): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -117,7 +117,7 @@ export function reset(state: NavigationState, nextChildren: ?Array<NavigationSta
   };
 }
 
-export function set(state: ?NavigationState, key: string, nextChildren: Array<NavigationState>, nextIndex: number): NavigationState {
+function set(state: ?NavigationState, key: string, nextChildren: Array<NavigationState>, nextIndex: number): NavigationState {
   if (!state) {
     return {
       children: nextChildren,
@@ -144,7 +144,7 @@ export function set(state: ?NavigationState, key: string, nextChildren: Array<Na
   };
 }
 
-export function jumpToIndex(state: NavigationState, index: number): NavigationState {
+function jumpToIndex(state: NavigationState, index: number): NavigationState {
   const parentState = getParent(state);
   if (parentState && parentState.index === index) {
     return parentState;
@@ -155,7 +155,7 @@ export function jumpToIndex(state: NavigationState, index: number): NavigationSt
   };
 }
 
-export function jumpTo(state: NavigationState, key: string): NavigationState {
+function jumpTo(state: NavigationState, key: string): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -171,7 +171,7 @@ export function jumpTo(state: NavigationState, key: string): NavigationState {
   };
 }
 
-export function replaceAt(state: NavigationState, key: string, newState: NavigationState): NavigationState {
+function replaceAt(state: NavigationState, key: string, newState: NavigationState): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -189,7 +189,7 @@ export function replaceAt(state: NavigationState, key: string, newState: Navigat
   };
 }
 
-export function replaceAtIndex(state: NavigationState, index: number, newState: NavigationState): NavigationState {
+function replaceAtIndex(state: NavigationState, index: number, newState: NavigationState): NavigationState {
   const parentState = getParent(state);
   if (!parentState) {
     return state;
@@ -201,3 +201,19 @@ export function replaceAtIndex(state: NavigationState, index: number, newState: 
     children,
   };
 }
+
+const NavigationStateUtils = {
+  getParent,
+  get: get,
+  indexOf,
+  push,
+  pop,
+  reset,
+  set: set,
+  jumpToIndex,
+  jumpTo,
+  replaceAt,
+  replaceAtIndex,
+};
+
+module.exports = NavigationStateUtils;
