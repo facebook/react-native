@@ -16,9 +16,14 @@ namespace ReactNative.Bridge.Queue
     /// </summary>
     public abstract class MessageQueueThread : IMessageQueueThread, IDisposable
     {
+        private readonly string _name;
+
         private int _disposed;
 
-        private MessageQueueThread() { }
+        private MessageQueueThread(string name)
+        {
+            _name = name;
+        }
 
         /// <summary>
         /// Flags if the <see cref="MessageQueueThread"/> is disposed.
@@ -54,7 +59,7 @@ namespace ReactNative.Bridge.Queue
 
             if (IsDisposed)
             {
-                Tracer.Write(ReactConstants.Tag, "Dropping enqueued action on disposed thread.");
+                Tracer.Write(ReactConstants.Tag, $"Dropping enqueued action on disposed '{_name}' thread.");
                 return;
             }
 
@@ -136,15 +141,14 @@ namespace ReactNative.Bridge.Queue
         {
             private static readonly IObserver<Action> s_nop = Observer.Create<Action>(_ => { });
 
-            private readonly string _name;
             private readonly Subject<Action> _actionSubject;
             private readonly IDisposable _subscription;
 
             private IObserver<Action> _actionObserver;
 
             public DispatcherMessageQueueThread(string name, Action<Exception> handler)
+                : base(name)
             {
-                _name = name;
                 _actionSubject = new Subject<Action>();
                 _actionObserver = _actionSubject;
                 _subscription = _actionSubject
@@ -185,14 +189,13 @@ namespace ReactNative.Bridge.Queue
         {
             private readonly object _gate = new object();
 
-            private readonly string _name;
             private readonly Action<Exception> _handler;
             private readonly TaskScheduler _taskScheduler;
             private readonly TaskFactory _taskFactory;
 
             public AnyBackgroundMessageQueueThread(string name, Action<Exception> handler)
+                : base(name)
             {
-                _name = name;
                 _handler = handler;
                 _taskScheduler = new LimitedConcurrencyLevelTaskScheduler(1);
                 _taskFactory = new TaskFactory(_taskScheduler);
