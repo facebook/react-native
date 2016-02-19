@@ -399,7 +399,7 @@ void RCTProfileInit(RCTBridge *bridge)
   dispatch_async(RCTProfileGetQueue(), ^{
     NSString *shadowQueue = @(dispatch_queue_get_label([[bridge uiManager] methodQueue]));
     NSArray *orderedThreads = @[@"JS async", RCTJSCThreadName, shadowQueue, @"main"];
-    [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, BOOL *stop) {
+    [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
       RCTProfileAddEvent(RCTProfileTraceEvents,
         @"ph": @"M", // metadata event
         @"name": @"thread_sort_index",

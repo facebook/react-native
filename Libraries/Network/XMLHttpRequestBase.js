@@ -14,10 +14,22 @@
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
+const UNSENT = 0;
+const OPENED = 1;
+const HEADERS_RECEIVED = 2;
+const LOADING = 3;
+const DONE = 4;
+
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
 class XMLHttpRequestBase {
+
+  static UNSENT: number;
+  static OPENED: number;
+  static HEADERS_RECEIVED: number;
+  static LOADING: number;
+  static DONE: number;
 
   UNSENT: number;
   OPENED: number;
@@ -50,11 +62,11 @@ class XMLHttpRequestBase {
   _lowerCaseResponseHeaders: Object;
 
   constructor() {
-    this.UNSENT = 0;
-    this.OPENED = 1;
-    this.HEADERS_RECEIVED = 2;
-    this.LOADING = 3;
-    this.DONE = 4;
+    this.UNSENT = UNSENT;
+    this.OPENED = OPENED;
+    this.HEADERS_RECEIVED = HEADERS_RECEIVED;
+    this.LOADING = LOADING;
+    this.DONE = DONE;
 
     this.onreadystatechange = null;
     this.onload = null;
@@ -264,5 +276,11 @@ class XMLHttpRequestBase {
     }
   }
 }
+
+XMLHttpRequestBase.UNSENT = UNSENT;
+XMLHttpRequestBase.OPENED = OPENED;
+XMLHttpRequestBase.HEADERS_RECEIVED = HEADERS_RECEIVED;
+XMLHttpRequestBase.LOADING = LOADING;
+XMLHttpRequestBase.DONE = DONE;
 
 module.exports = XMLHttpRequestBase;
