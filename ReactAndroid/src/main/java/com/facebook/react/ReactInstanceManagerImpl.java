@@ -18,8 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Activity;
 import android.app.Application;
@@ -73,7 +71,18 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.*;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
@@ -87,8 +96,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
  * The lifecycle of the instance of {@link ReactInstanceManagerImpl} should be bound to the activity
  * that owns the {@link ReactRootView} that is used to render react application using this
  * instance manager (see {@link ReactRootView#startReactApplication}). It's required to pass
- * owning activity's lifecycle events to the instance manager (see {@link #onPause},
- * {@link #onDestroy} and {@link #onResume}).
+ * owning activity's lifecycle events to the instance manager (see {@link #onHostPause},
+ * {@link #onHostDestroy} and {@link #onHostResume}).
  *
  * To instantiate an instance of this class use {@link #builder}.
  */
@@ -458,20 +467,16 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   }
 
   @Override
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
-
-    mLifecycleState = LifecycleState.BEFORE_RESUME;
 
     mDefaultBackButtonImpl = null;
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
+    moveToBeforeResumeLifecycleState();
     mCurrentActivity = null;
-    if (mCurrentReactContext != null) {
-      mCurrentReactContext.onPause();
-    }
   }
 
   /**
@@ -479,17 +484,16 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
    *
    * This method retains an instance to provided mDefaultBackButtonImpl. Thus it's
    * important to pass from the activity instance that owns this particular instance of {@link
-   * ReactInstanceManagerImpl}, so that once this instance receive {@link #onDestroy} event it will
+   * ReactInstanceManagerImpl}, so that once this instance receive {@link #onHostDestroy} event it will
    * clear the reference to that defaultBackButtonImpl.
    *
    * @param defaultBackButtonImpl a {@link DefaultHardwareBackBtnHandler} from an Activity that owns
    * this instance of {@link ReactInstanceManagerImpl}.
    */
   @Override
-  public void onResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+  public void onHostResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
 
-    mLifecycleState = LifecycleState.RESUMED;
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
     if (mUseDeveloperSupport) {
@@ -497,30 +501,80 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     }
 
     mCurrentActivity = activity;
-    if (mCurrentReactContext != null) {
-      mCurrentReactContext.onResume(activity);
-    }
+    moveToResumedLifecycleState(false);
   }
 
   @Override
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
+
+    if (mUseDeveloperSupport) {
+      mDevSupportManager.setDevSupportEnabled(false);
+    }
+
+    moveToBeforeCreateLifecycleState();
+    mCurrentActivity = null;
+  }
+
+  @Override
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
+    if (mUseDeveloperSupport) {
+      mDevSupportManager.setDevSupportEnabled(false);
+    }
+
+    moveToBeforeCreateLifecycleState();
 
     if (mReactContextInitAsyncTask != null) {
       mReactContextInitAsyncTask.cancel(true);
     }
 
     mMemoryPressureRouter.destroy(mApplicationContext);
-    if (mUseDeveloperSupport) {
-      mDevSupportManager.setDevSupportEnabled(false);
-    }
 
     if (mCurrentReactContext != null) {
-      mCurrentReactContext.onDestroy();
+      mCurrentReactContext.destroy();
       mCurrentReactContext = null;
       mHasStartedCreatingInitialContext = false;
     }
     mCurrentActivity = null;
+  }
+
+  private void moveToResumedLifecycleState(boolean force) {
+    if (mCurrentReactContext != null) {
+      // we currently don't have an onCreate callback so we call onResume for both transitions
+      if (force ||
+          mLifecycleState == LifecycleState.BEFORE_RESUME ||
+          mLifecycleState == LifecycleState.BEFORE_CREATE) {
+        mCurrentReactContext.onHostResume(mCurrentActivity);
+      }
+    }
+    mLifecycleState = LifecycleState.RESUMED;
+  }
+
+  private void moveToBeforeResumeLifecycleState() {
+    if (mCurrentReactContext != null) {
+      if (mLifecycleState == LifecycleState.BEFORE_CREATE) {
+        mCurrentReactContext.onHostResume(mCurrentActivity);
+        mCurrentReactContext.onHostPause();
+      } else if (mLifecycleState == LifecycleState.RESUMED) {
+        mCurrentReactContext.onHostPause();
+      }
+    }
+    mLifecycleState = LifecycleState.BEFORE_RESUME;
+  }
+
+  private void moveToBeforeCreateLifecycleState() {
+    if (mCurrentReactContext != null) {
+      if (mLifecycleState == LifecycleState.RESUMED) {
+        mCurrentReactContext.onHostPause();
+        mLifecycleState = LifecycleState.BEFORE_RESUME;
+      }
+      if (mLifecycleState == LifecycleState.BEFORE_RESUME) {
+        mCurrentReactContext.onHostDestroy();
+      }
+    }
+    mLifecycleState = LifecycleState.BEFORE_CREATE;
   }
 
   @Override
@@ -657,7 +711,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
     mMemoryPressureRouter.onNewReactContextCreated(reactContext);
-    moveReactContextToCurrentLifecycleState(reactContext);
+    moveReactContextToCurrentLifecycleState();
 
     for (ReactRootView rootView : mAttachedRootViews) {
       attachMeasuredRootViewToInstance(rootView, catalystInstance);
@@ -706,12 +760,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   private void tearDownReactContext(ReactContext reactContext) {
     UiThreadUtil.assertOnUiThread();
     if (mLifecycleState == LifecycleState.RESUMED) {
-      reactContext.onPause();
+      reactContext.onHostPause();
     }
     for (ReactRootView rootView : mAttachedRootViews) {
       detachViewFromInstance(rootView, reactContext.getCatalystInstance());
     }
-    reactContext.onDestroy();
+    reactContext.destroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
     mMemoryPressureRouter.onReactInstanceDestroyed();
   }
@@ -831,9 +885,9 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     }
   }
 
-  private void moveReactContextToCurrentLifecycleState(ReactApplicationContext reactContext) {
+  private void moveReactContextToCurrentLifecycleState() {
     if (mLifecycleState == LifecycleState.RESUMED) {
-      reactContext.onResume(mCurrentActivity);
+      moveToResumedLifecycleState(true);
     }
   }
 }
