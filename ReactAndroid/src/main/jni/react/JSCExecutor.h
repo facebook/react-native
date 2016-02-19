@@ -92,7 +92,8 @@ private:
       Bridge *bridge,
       int workerId,
       JSCExecutor *owner,
-      const std::string& script);
+      const std::string& script,
+      const std::unordered_map<std::string, std::string>& globalObjAsJSON);
 
   void initOnJSVMThread();
   void terminateOnJSVMThread();
@@ -100,7 +101,7 @@ private:
   void flushQueueImmediate(std::string queueJSON);
   void loadModule(uint32_t moduleId);
 
-  int addWebWorker(const std::string& script, JSValueRef workerRef);
+  int addWebWorker(const std::string& script, JSValueRef workerRef, JSValueRef globalObjRef);
   void postMessageToOwnedWebWorker(int worker, JSValueRef message, JSValueRef *exn);
   void postMessageToOwner(JSValueRef result);
   void receiveMessageFromOwnedWebWorker(int workerId, const std::string& message);

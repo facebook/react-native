@@ -52,6 +52,9 @@ public class JavaScriptModulesConfig {
       jg.writeEndObject();
     }
     jg.writeEndObject();
+    if (registration.getModuleInterface().isAnnotationPresent(SupportsWebWorkers.class)) {
+      jg.writeBooleanField("supportsWebWorkers", true);
+    }
   }
 
   public static class Builder {
