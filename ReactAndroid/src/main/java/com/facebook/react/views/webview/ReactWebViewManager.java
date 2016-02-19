@@ -259,6 +259,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     view.getSettings().setJavaScriptEnabled(enabled);
   }
 
+  @ReactProp(name = "scalesPageToFit")
+  public void setScalesPageToFit(WebView view, boolean enabled) {
+    view.getSettings().setUseWideViewPort(!enabled);
+  }
+
   @ReactProp(name = "domStorageEnabled")
   public void setDomStorageEnabled(WebView view, boolean enabled) {
     view.getSettings().setDomStorageEnabled(enabled);
