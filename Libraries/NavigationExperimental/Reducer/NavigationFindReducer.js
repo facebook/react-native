@@ -20,7 +20,7 @@
 import type {
   NavigationState,
   NavigationReducer
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 function NavigationFindReducer(reducers: Array<NavigationReducer>): NavigationReducer {
   return function(lastState: ?NavigationState, action: ?any): ?NavigationState {
