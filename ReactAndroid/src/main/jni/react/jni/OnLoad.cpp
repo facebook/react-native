@@ -3,6 +3,7 @@
 #include <android/asset_manager_jni.h>
 #include <android/input.h>
 #include <fb/log.h>
+#include <fbgloginit/fb/glog_init.h>
 #include <folly/json.h>
 #include <jni/Countable.h>
 #include <jni/Environment.h>
@@ -844,6 +845,7 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    facebook::gloginit::initialize(LOG_TAG);
     // Inject some behavior into react/
     ReactMarker::logMarker = bridge::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
