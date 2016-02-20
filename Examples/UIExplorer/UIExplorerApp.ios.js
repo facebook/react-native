@@ -12,33 +12,33 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * @providesModule UIExplorerApp
- * @flow
  */
 'use strict';
 
-var React = require('react-native');
-var UIExplorerList = require('./UIExplorerList.ios');
-var {
+const React = require('react-native');
+const UIExplorerList = require('./UIExplorerList.ios');
+const SetPropertiesExampleApp = require('./SetPropertiesExampleApp');
+const RootViewSizeFlexibilityExampleApp = require('./RootViewSizeFlexibilityExampleApp');
+const {
   AppRegistry,
   NavigatorIOS,
   StyleSheet,
-  Text,
-  TouchableHighlight,
   View,
   StatusBar,
 } = React;
 
-var UIExplorerApp = React.createClass({
+class UIExplorerApp extends React.Component {
 
-  getInitialState: function() {
-    return {
+  constructor(props) {
+    super(props);
+    this.state = {
       openExternalExample: (null: ?React.Component),
     };
-  },
+  }
 
-  render: function() {
+  render() {
     if (this.state.openExternalExample) {
-      var Example = this.state.openExternalExample;
+      const Example = this.state.openExternalExample;
       return (
         <Example
           onExampleExit={() => {
@@ -49,7 +49,7 @@ var UIExplorerApp = React.createClass({
     }
 
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.container}>
         <StatusBar barStyle="default" />
         <NavigatorIOS
           style={styles.container}
@@ -68,79 +68,15 @@ var UIExplorerApp = React.createClass({
       </View>
     );
   }
-});
 
-var styles = StyleSheet.create({
+}
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   itemWrapper: {
     backgroundColor: '#eaeaea',
-  },
-  bigContainer: {
-    flex: 1,
-    height: 60,
-    backgroundColor: 'gray',
-  },
-  smallContainer: {
-    flex: 1,
-    height: 40,
-    backgroundColor: 'gray',
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  whiteText: {
-    color: 'white',
-  }
-});
-
-var SetPropertiesExampleApp = React.createClass({
-
-  render: function() {
-    var wrapperStyle = {
-      backgroundColor: this.props.color,
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center'
-    };
-
-    return (
-      <View style={wrapperStyle}>
-        <Text>
-          Embedded React Native view
-        </Text>
-      </View>
-    );
-  },
-});
-
-var RootViewSizeFlexibilityExampleApp = React.createClass({
-
-  getInitialState: function () {
-    return { toggled: false };
-  },
-
-  _onPressButton: function() {
-    this.setState({ toggled: !this.state.toggled });
-  },
-
-  render: function() {
-    var viewStyle = this.state.toggled ? styles.bigContainer : styles.smallContainer;
-
-    return (
-      <TouchableHighlight onPress={this._onPressButton}>
-        <View style={viewStyle}>
-          <View style={styles.center}>
-            <Text style={styles.whiteText}>
-              React Native Button
-            </Text>
-          </View>
-        </View>
-      </TouchableHighlight>
-    );
   },
 });
 
