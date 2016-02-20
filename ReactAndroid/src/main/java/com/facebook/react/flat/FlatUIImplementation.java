@@ -132,8 +132,7 @@ public class FlatUIImplementation extends UIImplementation {
       }
 
       if (node.mountsToView()) {
-        int tag = cssNode.getReactTag();
-        mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
+        mStateBuilder.ensureBackingViewIsCreated(node, styles);
       }
     } else {
       super.handleCreateView(cssNode, rootViewTag, styles);
@@ -151,8 +150,7 @@ public class FlatUIImplementation extends UIImplementation {
       node.handleUpdateProperties(styles);
 
       if (node.mountsToView()) {
-        int tag = cssNode.getReactTag();
-        mStateBuilder.ensureBackingViewIsCreated(node, tag, styles);
+        mStateBuilder.ensureBackingViewIsCreated(node, styles);
       }
     } else {
       super.handleUpdateView(cssNode, className, styles);
@@ -427,13 +425,12 @@ public class FlatUIImplementation extends UIImplementation {
     }
 
     FlatShadowNode nonVirtualNode = (FlatShadowNode) node;
-    int nonVirtualTag = nonVirtualNode.getReactTag();
     nonVirtualNode.forceMountToView();
-    mStateBuilder.ensureBackingViewIsCreated(nonVirtualNode, nonVirtualTag, null);
+    mStateBuilder.ensureBackingViewIsCreated(nonVirtualNode, null);
 
     FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
     operationsQueue.enqueueSetJSResponder(
-        nonVirtualTag,
+        nonVirtualNode.getReactTag(),
         possiblyVirtualReactTag,
         blockNativeResponder);
   }

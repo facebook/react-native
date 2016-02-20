@@ -62,8 +62,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
    * DrawCommands that will then mount in UI thread to a root FlatViewGroup so that it can draw.
    */
   /* package */ void applyUpdates(EventDispatcher eventDispatcher, FlatShadowNode node) {
-    int tag = node.getReactTag();
-
     float width = node.getLayoutWidth();
     float height = node.getLayoutHeight();
     float left = node.getLayoutX();
@@ -73,7 +71,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     collectStateForMountableNode(
         node,
-        tag,
         left,
         top,
         right,
@@ -126,17 +123,18 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   /* package */ void ensureBackingViewIsCreated(
       FlatShadowNode node,
-      int tag,
       @Nullable ReactStylesDiffMap styles) {
     if (node.isBackingViewCreated()) {
       if (styles != null) {
         // if the View is already created, make sure propagate new styles.
-        mOperationsQueue.enqueueUpdateProperties(tag, node.getViewClass(), styles);
+        mOperationsQueue.enqueueUpdateProperties(node.getReactTag(), node.getViewClass(), styles);
       }
       return;
     }
 
+    int tag = node.getReactTag();
     mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), styles);
+
     node.signalBackingViewIsCreated();
   }
 
@@ -195,7 +193,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
    */
   private void collectStateForMountableNode(
       FlatShadowNode node,
-      int tag,
       float left,
       float top,
       float right,
@@ -213,7 +210,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     boolean needsCustomLayoutForChildren = false;
     if (node instanceof AndroidView) {
       AndroidView androidView = (AndroidView) node;
-      updateViewPadding(androidView, tag);
+      updateViewPadding(androidView, node.getReactTag());
 
       isAndroidView = true;
       needsCustomLayoutForChildren = androidView.needsCustomLayoutForChildren();
@@ -270,7 +267,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     if (shouldUpdateMountState) {
       mOperationsQueue.enqueueUpdateMountState(
-          tag,
+          node.getReactTag(),
           drawCommands,
           listeners,
           nodeRegions);
@@ -283,13 +280,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     final FlatShadowNode[] nativeChildren = mNativeChildren.finish();
     if (nativeChildren != null) {
-      updateNativeChildren(node, tag, node.getNativeChildren(), nativeChildren);
+      updateNativeChildren(node, node.getNativeChildren(), nativeChildren);
     }
   }
 
   private void updateNativeChildren(
       FlatShadowNode node,
-      int tag,
       FlatShadowNode[] oldNativeChildren,
       FlatShadowNode[] newNativeChildren) {
 
@@ -303,6 +299,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       mViewsToDetachAllChildrenFrom.add(node);
     }
 
+    int tag = node.getReactTag();
     int numViewsToAdd = newNativeChildren.length;
     final int[] viewsToAdd;
     if (numViewsToAdd == 0) {
@@ -425,8 +422,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float parentClipBottom,
       boolean parentIsAndroidView,
       boolean needsCustomLayout) {
-    int tag = node.getReactTag();
-
     float width = node.getLayoutWidth();
     float height = node.getLayoutHeight();
 
@@ -436,7 +431,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     float bottom = top + height;
 
     if (node.mountsToView()) {
-      ensureBackingViewIsCreated(node, tag, null);
+      ensureBackingViewIsCreated(node, null);
 
       addNativeChild(node);
       if (!parentIsAndroidView) {
@@ -449,7 +444,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
       collectStateForMountableNode(
           node,
-          tag,
           left - left,
           top - top,
           right - left,
@@ -479,11 +473,11 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
   }
 
-  private void updateViewPadding(AndroidView androidView, int tag) {
+  private void updateViewPadding(AndroidView androidView, int reactTag) {
     if (androidView.isPaddingChanged()) {
       Spacing padding = androidView.getPadding();
       mOperationsQueue.enqueueSetPadding(
-          tag,
+          reactTag,
           Math.round(padding.get(Spacing.LEFT)),
           Math.round(padding.get(Spacing.TOP)),
           Math.round(padding.get(Spacing.RIGHT)),
