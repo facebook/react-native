@@ -17,7 +17,9 @@ import android.app.Activity;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
+import android.view.WindowManager;
 
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -26,10 +28,9 @@ import com.facebook.react.bridge.UiThreadUtil;
 
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
-  private static final String ERROR_NO_ACTIVITY =
+  private static final String ERROR_NO_ACTIVITY = "E_NO_ACTIVITY";
+  private static final String ERROR_NO_ACTIVITY_MESSAGE =
     "Tried to change the status bar while not attached to an Activity";
-
-  private int mWindowFlags = 0;
 
   public StatusBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -44,7 +45,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   public void setColor(final int color, final boolean animated, final Promise res) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
-      res.reject(ERROR_NO_ACTIVITY);
+      res.reject(ERROR_NO_ACTIVITY, ERROR_NO_ACTIVITY_MESSAGE);
       return;
     }
 
@@ -85,21 +86,20 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   public void setTranslucent(final boolean translucent, final Promise res) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
-      res.reject(ERROR_NO_ACTIVITY);
+      res.reject(ERROR_NO_ACTIVITY, ERROR_NO_ACTIVITY_MESSAGE);
       return;
     }
     UiThreadUtil.runOnUiThread(
       new Runnable() {
         @Override
         public void run() {
+          int flags = activity.getWindow().getDecorView().getSystemUiVisibility();
           if (translucent) {
-            mWindowFlags |=
-              View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+            flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
           } else {
-            mWindowFlags &=
-              ~(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            flags &= ~(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
           }
-          activity.getWindow().getDecorView().setSystemUiVisibility(mWindowFlags);
+          activity.getWindow().getDecorView().setSystemUiVisibility(flags);
           ViewCompat.requestApplyInsets(activity.getWindow().getDecorView());
           res.resolve(null);
         }
@@ -111,7 +111,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   public void setHidden(final boolean hidden, final Promise res) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
-      res.reject(ERROR_NO_ACTIVITY);
+      res.reject(ERROR_NO_ACTIVITY, ERROR_NO_ACTIVITY_MESSAGE);
       return;
     }
     UiThreadUtil.runOnUiThread(
@@ -119,11 +119,13 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
         @Override
         public void run() {
           if (hidden) {
-            mWindowFlags |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
           } else {
-            mWindowFlags &= ~View.SYSTEM_UI_FLAG_FULLSCREEN;
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
           }
-          activity.getWindow().getDecorView().setSystemUiVisibility(mWindowFlags);
+
           res.resolve(null);
         }
       }
