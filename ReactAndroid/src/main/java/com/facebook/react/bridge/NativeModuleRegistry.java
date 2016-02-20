@@ -65,6 +65,7 @@ public class NativeModuleRegistry {
       for (ModuleDefinition moduleDef : mModuleTable) {
         jg.writeObjectFieldStart(moduleDef.name);
         jg.writeNumberField("moduleID", moduleDef.id);
+        jg.writeBooleanField("supportsWebWorkers", moduleDef.target.supportsWebWorkers());
         jg.writeObjectFieldStart("methods");
         for (int i = 0; i < moduleDef.methods.size(); i++) {
           MethodRegistration method = moduleDef.methods.get(i);

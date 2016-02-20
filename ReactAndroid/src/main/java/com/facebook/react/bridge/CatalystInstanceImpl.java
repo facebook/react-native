@@ -27,6 +27,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 
@@ -264,6 +265,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // TODO: tell all APIs to shut down
     mDestroyed = true;
     mJavaRegistry.notifyCatalystInstanceDestroy();
+
+    Systrace.unregisterListener(mTraceListener);
+
+    synchronouslyDisposeBridgeOnJSThread();
     mReactQueueConfiguration.destroy();
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
     if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
@@ -271,12 +276,19 @@ public class CatalystInstanceImpl implements CatalystInstance {
         listener.onTransitionToBridgeIdle();
       }
     }
+  }
 
-    Systrace.unregisterListener(mTraceListener);
-
-    // We can access the Bridge from any thread now because we know either we are on the JS thread
-    // or the JS thread has finished via ReactQueueConfiguration#destroy()
-    mBridge.dispose();
+  private void synchronouslyDisposeBridgeOnJSThread() {
+    final SimpleSettableFuture<Void> bridgeDisposeFuture = new SimpleSettableFuture<>();
+    mReactQueueConfiguration.getJSQueueThread().runOnQueue(
+        new Runnable() {
+          @Override
+          public void run() {
+            mBridge.dispose();
+            bridgeDisposeFuture.set(null);
+          }
+        });
+    bridgeDisposeFuture.getOrThrow();
   }
 
   @Override
