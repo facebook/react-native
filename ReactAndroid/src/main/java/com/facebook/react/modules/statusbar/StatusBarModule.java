@@ -19,7 +19,6 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
