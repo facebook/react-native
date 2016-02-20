@@ -56,6 +56,7 @@ type Route = {
   passProps?: Object;
   backButtonTitle?: string;
   backButtonIcon?: Object;
+  titleViewImage?: Object;
   leftButtonTitle?: string;
   leftButtonIcon?: Object;
   onLeftButtonPress?: Function;
@@ -197,6 +198,11 @@ var NavigatorIOS = React.createClass({
        * The title displayed in the nav bar and back button for this route
        */
       title: PropTypes.string.isRequired,
+
+      /**
+       * The title Image to be displayed in the nav bar instead of a title
+       */
+      titleViewImage: Image.propTypes.source,
 
       /**
        * Specify additional props passed to the component. NavigatorIOS will

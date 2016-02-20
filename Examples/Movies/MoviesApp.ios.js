@@ -32,6 +32,7 @@ var MoviesApp = React.createClass({
         style={styles.container}
         initialRoute={{
           title: 'Movies',
+          titleViewImage: require('./movies.png'),
           component: SearchScreen,
         }}
       />
