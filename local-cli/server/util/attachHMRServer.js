@@ -112,6 +112,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             return;
           }
 
+          client.ws.send(JSON.stringify({type: 'update-start'}));
           stat.then(() => {
             return packagerServer.getShallowDependencies(filename)
               .then(deps => {
@@ -136,10 +137,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   }).then(response => {
                     const module = packagerServer.getModuleForPath(filename);
 
-                    return {
-                      modulesToUpdate: [module],
-                      resolutionResponse: response,
-                    };
+                    return response.copy({dependencies: [module]});
                   });
                 }
 
@@ -169,13 +167,12 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     client.dependenciesModulesCache = dependenciesModulesCache;
                     client.shallowDependencies = shallowDependencies;
 
-                    return {
-                      modulesToUpdate,
-                      resolutionResponse,
-                    };
+                    return resolutionResponse.copy({
+                      dependencies: modulesToUpdate
+                    });
                   });
               })
-              .then(({modulesToUpdate, resolutionResponse}) => {
+              .then((resolutionResponse) => {
                 if (!client) {
                   return;
                 }
@@ -188,9 +185,8 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return packagerServer.buildBundleForHMR({
                   entryFile: client.bundleEntry,
                   platform: client.platform,
-                  modules: modulesToUpdate,
                   resolutionResponse,
-                })
+                });
               })
               .then(bundle => {
                 if (!client || !bundle || bundle.isEmpty()) {
@@ -240,7 +236,9 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             () => {
               // do nothing, file was removed
             },
-          );
+          ).finally(() => {
+            client.ws.send(JSON.stringify({type: 'update-done'}));
+          });
         });
 
         client.ws.on('error', e => {

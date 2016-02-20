@@ -8,9 +8,9 @@
  */
 'use strict';
 
-jest.setMock('worker-farm', function() { return () => {}; })
-    .setMock('uglify-js')
+jest.setMock('uglify-js')
     .mock('child_process')
+    .dontMock('underscore')
     .dontMock('../');
 
 var SocketInterface = require('../');

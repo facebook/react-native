@@ -162,6 +162,10 @@ var TouchableNativeFeedback = React.createClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
+  touchableGetHitSlop: function() {
+    return this.props.hitSlop;
+  },
+
   touchableGetHighlightDelayMS: function() {
     return this.props.delayPressIn;
   },
@@ -200,10 +204,12 @@ var TouchableNativeFeedback = React.createClass({
       ...onlyChild(this.props.children).props,
       nativeBackgroundAndroid: this.props.background,
       accessible: this.props.accessible !== false,
+      accessibilityLabel: this.props.accessibilityLabel,
       accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityTraits: this.props.accessibilityTraits,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
+      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,

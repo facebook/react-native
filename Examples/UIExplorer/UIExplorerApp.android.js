@@ -16,8 +16,8 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+const React = require('react-native');
+const {
   AppRegistry,
   BackAndroid,
   Dimensions,
@@ -25,30 +25,34 @@ var {
   StyleSheet,
   ToolbarAndroid,
   View,
+  StatusBar,
 } = React;
-var UIExplorerList = require('./UIExplorerList.android');
+const UIExplorerList = require('./UIExplorerList.android');
 
-var DRAWER_WIDTH_LEFT = 56;
+const DRAWER_WIDTH_LEFT = 56;
 
-var UIExplorerApp = React.createClass({
-  getInitialState: function() {
-    return {
+class UIExplorerApp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onSelectExample = this.onSelectExample.bind(this);
+    this._handleBackButtonPress = this._handleBackButtonPress.bind(this);
+    this.state = {
       example: this._getUIExplorerHome(),
     };
-  },
+  }
 
-  _getUIExplorerHome: function() {
+  _getUIExplorerHome() {
     return {
       title: 'UIExplorer',
       component: this._renderHome(),
     };
-  },
+  }
 
-  componentWillMount: function() {
+  componentWillMount() {
     BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <DrawerLayoutAndroid
         drawerPosition={DrawerLayoutAndroid.positions.Left}
@@ -58,19 +62,19 @@ var UIExplorerApp = React.createClass({
         renderNavigationView={this._renderNavigationView}>
         {this._renderNavigation()}
       </DrawerLayoutAndroid>
-      );
-  },
+    );
+  }
 
-  _renderNavigationView: function() {
+  _renderNavigationView() {
     return (
       <UIExplorerList
         onSelectExample={this.onSelectExample}
         isInDrawer={true}
       />
     );
-  },
+  }
 
-  onSelectExample: function(example) {
+  onSelectExample(example) {
     this.drawer.closeDrawer();
     if (example.title === this._getUIExplorerHome().title) {
       example = this._getUIExplorerHome();
@@ -78,10 +82,10 @@ var UIExplorerApp = React.createClass({
     this.setState({
       example: example,
     });
-  },
+  }
 
-  _renderHome: function() {
-    var onSelectExample = this.onSelectExample;
+  _renderHome() {
+    const onSelectExample = this.onSelectExample;
     return React.createClass({
       render: function() {
         return (
@@ -92,12 +96,15 @@ var UIExplorerApp = React.createClass({
         );
       }
     });
-  },
+  }
 
-  _renderNavigation: function() {
-    var Component = this.state.example.component;
+  _renderNavigation() {
+    const Component = this.state.example.component;
     return (
       <View style={styles.container}>
+        <StatusBar
+          backgroundColor="#589c90"
+        />
         <ToolbarAndroid
           logo={require('image!launcher_icon')}
           navIcon={require('image!ic_menu_black_24dp')}
@@ -105,21 +112,31 @@ var UIExplorerApp = React.createClass({
           style={styles.toolbar}
           title={this.state.example.title}
         />
-        <Component />
+        <Component
+          ref={(example) => { this._exampleRef = example; }}
+        />
       </View>
     );
-  },
+  }
 
-  _handleBackButtonPress: function() {
+  _handleBackButtonPress() {
+    if (
+      this._exampleRef &&
+      this._exampleRef.handleBackAction &&
+      this._exampleRef.handleBackAction()
+    ) {
+      return true;
+    }
     if (this.state.example.title !== this._getUIExplorerHome().title) {
       this.onSelectExample(this._getUIExplorerHome());
       return true;
     }
     return false;
-  },
-});
+  }
 
-var styles = StyleSheet.create({
+}
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -9,37 +9,37 @@
 'use strict';
 
 jest.dontMock('../')
-  .dontMock('underscore')
-  .dontMock('PixelRatio')
-  .dontMock('../../DependencyResolver/lib/extractRequires')
-  .dontMock('../../DependencyResolver/lib/replacePatterns');
+  .dontMock('underscore');
 
 jest.mock('path');
 
-var Promise = require('promise');
-var Resolver = require('../');
-var Module = require('../../DependencyResolver/Module');
-var Polyfill = require('../../DependencyResolver/Polyfill');
-var DependencyGraph = require('../../DependencyResolver/DependencyGraph');
+const Promise = require('promise');
+const Resolver = require('../');
+const DependencyGraph = require('node-haste');
 
-var path = require('path');
-var _ = require('underscore');
+const path = require('path');
+const _ = require('underscore');
+
+let Module;
+let Polyfill;
 
 describe('Resolver', function() {
   beforeEach(function() {
-    Polyfill.mockClear();
+    Module = require('node-haste').Module;
+    Polyfill = require('node-haste').Polyfill;
+
+    DependencyGraph.replacePatterns = require.requireActual('node-haste/lib/lib/replacePatterns');
 
     // For the polyfillDeps
-    path.join.mockImpl(function(a, b) {
-      return b;
-    });
+    path.join = jest.genMockFn().mockImpl((a, b) => b);
+
+    DependencyGraph.prototype.load.mockImpl(() => Promise.resolve());
   });
 
   class ResolutionResponseMock {
-    constructor({dependencies, mainModuleId, asyncDependencies}) {
+    constructor({dependencies, mainModuleId}) {
       this.dependencies = dependencies;
       this.mainModuleId = mainModuleId;
-      this.asyncDependencies = asyncDependencies;
     }
 
     prependDependency(dependency) {
@@ -79,7 +79,6 @@ describe('Resolver', function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
-          asyncDependencies: [],
         }));
       });
 
@@ -179,7 +178,6 @@ describe('Resolver', function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
-          asyncDependencies: [],
         }));
       });
 
@@ -207,7 +205,6 @@ describe('Resolver', function() {
         return Promise.resolve(new ResolutionResponseMock({
           dependencies: deps,
           mainModuleId: 'index',
-          asyncDependencies: [],
         }));
       });
 
@@ -636,7 +633,6 @@ describe('Resolver', function() {
       const resolutionResponse = new ResolutionResponseMock({
         dependencies: [module],
         mainModuleId: 'test module',
-        asyncDependencies: [],
       });
 
       resolutionResponse.getResolvedDependencyPairs = (module) => {

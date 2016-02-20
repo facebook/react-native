@@ -62,8 +62,8 @@ RCT_EXPORT_METHOD(cropImage:(NSString *)imageTag
       targetSize = [RCTConvert CGSize:cropData[@"displaySize"]]; // in pixels
       RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
       targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
-      transform = RCTTransformFromTargetRect(image.size, targetRect);
-      croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
+      transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
+      croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
     }
 
     // Store image

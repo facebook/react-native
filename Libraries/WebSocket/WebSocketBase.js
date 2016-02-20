@@ -7,10 +7,16 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebSocketBase
+ * @flow
  */
 'use strict';
 
 var EventTarget = require('event-target-shim');
+
+const CONNECTING = 0;
+const OPEN = 1;
+const CLOSING = 2;
+const CLOSED = 3;
 
 /**
  * Shared base for platform-specific WebSocket implementations.
@@ -35,10 +41,10 @@ class WebSocketBase extends EventTarget {
 
   constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
     super();
-    this.CONNECTING = 0;
-    this.OPEN = 1;
-    this.CLOSING = 2;
-    this.CLOSED = 3;
+    this.CONNECTING = CONNECTING;
+    this.OPEN = OPEN;
+    this.CLOSING = CLOSING;
+    this.CLOSED = CLOSED;
 
     if (typeof protocols === 'string') {
       protocols = [protocols];
@@ -84,7 +90,7 @@ class WebSocketBase extends EventTarget {
     throw new Error('Subclass must define closeConnectionImpl method');
   }
 
-  connectToSocketImpl(): void {
+  connectToSocketImpl(url: string, protocols: ?Array<string>, options: ?{origin?: string}): void {
     throw new Error('Subclass must define connectToSocketImpl method');
   }
 
@@ -92,7 +98,7 @@ class WebSocketBase extends EventTarget {
     throw new Error('Subclass must define cancelConnectionImpl method');
   }
 
-  sendStringImpl(): void {
+  sendStringImpl(message: string): void {
     throw new Error('Subclass must define sendStringImpl method');
   }
 
@@ -101,9 +107,9 @@ class WebSocketBase extends EventTarget {
   }
 }
 
-WebSocketBase.CONNECTING = 0;
-WebSocketBase.OPEN = 1;
-WebSocketBase.CLOSING = 2;
-WebSocketBase.CLOSED = 3;
+WebSocketBase.CONNECTING = CONNECTING;
+WebSocketBase.OPEN = OPEN;
+WebSocketBase.CLOSING = CLOSING;
+WebSocketBase.CLOSED = CLOSED;
 
 module.exports = WebSocketBase;

@@ -66,6 +66,7 @@ class Transformer {
 
     this._cache = opts.cache;
     this._transformModulePath = opts.transformModulePath;
+    this._projectRoots = opts.projectRoots;
 
     if (opts.transformModulePath != null) {
       let transformer;
@@ -129,6 +130,7 @@ class Transformer {
             filename: filePath,
             options: {
               ...options,
+              projectRoots: this._projectRoots,
               externalTransformModulePath: this._transformModulePath,
             },
           }).then(res => {

@@ -73,8 +73,8 @@ var AppContainer = React.createClass({
       return;
     }
 
-    this.setState({
-      rootImportanceForAccessibility: modalVisible ? 'no-hide-descendants' : 'auto',
+    this.refs.accessibilityWrapper.setNativeProps({
+      importantForAccessibility: modalVisible ? 'no-hide-descendants' : 'auto',
     });
   },
 
@@ -85,10 +85,14 @@ var AppContainer = React.createClass({
         ref="main"
         collapsable={!this.state.inspectorVisible}
         style={styles.appContainer}>
-        <RootComponent
-          {...this.props.initialProps}
-          rootTag={this.props.rootTag}
-          importantForAccessibility={this.state.rootImportanceForAccessibility}/>
+        <View
+          ref="accessibilityWrapper"
+          collapsable={true}
+          style={styles.appContainer}>
+          <RootComponent
+            {...this.props.initialProps}
+            rootTag={this.props.rootTag}/>
+        </View>
         <Portal
           onModalVisibilityChanged={this.setRootAccessibility}/>
       </View>;
@@ -128,11 +132,12 @@ var styles = StyleSheet.create({
   // This is needed so the application covers the whole screen
   // and therefore the contents of the Portal are not clipped.
   appContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
+    backgroundColor: 'transparent',
     bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
 });
 

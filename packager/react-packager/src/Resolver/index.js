@@ -11,9 +11,9 @@
 
 const path = require('path');
 const Activity = require('../Activity');
-const DependencyGraph = require('../DependencyResolver/DependencyGraph');
-const replacePatterns = require('../DependencyResolver/lib/replacePatterns');
-const Polyfill = require('../DependencyResolver/Polyfill');
+const DependencyGraph = require('node-haste');
+const replacePatterns = require('node-haste').replacePatterns;
+const Polyfill = require('node-haste').Polyfill;
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
 
@@ -60,7 +60,7 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'string',
     required: false,
   },
-  isUnbundle: {
+  unbundle: {
     type: 'boolean',
     default: false
   },
@@ -93,7 +93,6 @@ class Resolver {
         // should work after this release and we can
         // remove it from here.
         'parse',
-        'react-transform-hmr',
       ],
       platforms: ['ios', 'android'],
       preferNativePlatform: true,
@@ -103,6 +102,11 @@ class Resolver {
     });
 
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
+
+    this._depGraph.load().catch(err => {
+      console.error(err.message + '\n' + err.stack);
+      process.exit(1);
+    });
   }
 
   getShallowDependencies(entryFile) {
@@ -110,7 +114,7 @@ class Resolver {
   }
 
   stat(filePath) {
-    return this._depGraph.stat(filePath);
+    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {
@@ -140,7 +144,7 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = opts.isUnbundle
+    const moduleSystem = opts.unbundle
         ? path.join(__dirname, 'polyfills/require-unbundle.js')
         : path.join(__dirname, 'polyfills/require.js');
 

@@ -15,7 +15,7 @@ var Linking = require('Linking');
 var RCTLinkingManager = require('NativeModules').LinkingManager;
 var invariant = require('invariant');
 
-var _initialURL = RCTLinkingManager.initialURL;
+var _initialURL = RCTLinkingManager && RCTLinkingManager.initialURL;
 
 /**
  * NOTE: `LinkingIOS` is being deprecated. Use `Linking` instead.
