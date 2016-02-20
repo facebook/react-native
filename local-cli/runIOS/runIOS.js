@@ -52,10 +52,10 @@ function _runIOS(argv, config, resolve, reject) {
     throw new Error(`Cound't find ${args.simulator} simulator`);
   }
 
-  const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version})`;
+  const simulatorFullName = `${selectedSimulator.name} (${selectedSimulator.version}) [${selectedSimulator.udid}]`;
   console.log(`Launching ${simulatorFullName}...`);
   try {
-    child_process.spawnSync('xcrun', ['instruments', '-w', simulatorFullName]);
+    child_process.spawnSync('xcrun', ['instruments', '-w', selectedSimulator.udid]);
   } catch(e) {
     // instruments always fail with 255 because it expects more arguments,
     // but we want it to only launch the simulator
