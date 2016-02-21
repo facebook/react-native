@@ -27,7 +27,6 @@ var COMPONENTS = [
   require('./ListViewExample'),
   require('./PickerAndroidExample'),
   require('./ProgressBarAndroidExample'),
-  require('./PullToRefreshViewAndroidExample.android'),
   require('./RefreshControlExample'),
   require('./ScrollViewSimpleExample'),
   require('./StatusBarExample'),
