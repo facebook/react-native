@@ -11,12 +11,12 @@
  */
 'use strict';
 
-var NavigationStateUtils = require('NavigationState');
+var NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationState,
   NavigationReducer,
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 import type {
   BackAction,
