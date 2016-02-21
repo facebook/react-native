@@ -82,13 +82,5 @@ module.exports = yeoman.generators.NamedBase.extend({
         {name: this.name}
       );
     }
-  },
-
-  install: function() {
-    if (this.options.upgrade) {
-      return;
-    }
-
-    this.npmInstall('react', { '--save': true });
   }
 });
