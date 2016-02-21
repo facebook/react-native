@@ -28,7 +28,6 @@ repo_root=$(pwd)
 git branch | grep -o ${RELEASE}-stable && error "Branch already exists"
 java -version 2>&1 | grep ${JAVA_VERSION} || error "Java version must be 1.7.x in order to generate Javadoc. Check: java -version"
 
-git pull || error "Couldn't pull from remote repository"
 git checkout -b ${RELEASE}-stable || error "Couldn't create branch"
 
 success "Created release branch: ${RELEASE}-stable"
