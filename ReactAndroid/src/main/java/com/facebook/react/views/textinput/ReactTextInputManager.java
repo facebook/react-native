@@ -103,7 +103,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 MapBuilder.of(
                     "bubbled", "onSubmitEditing", "captured", "onSubmitEditingCapture")))
         .put(
-              "topEndEditing",
+            "topEndEditing",
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onEndEditing", "captured", "onEndEditingCapture")))

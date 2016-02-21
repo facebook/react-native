@@ -17,7 +17,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     extends ViewManager<T, C> {
 
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
-  private static final String PROP_DECOMPOSED_MATRIX = "C";
+  private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
