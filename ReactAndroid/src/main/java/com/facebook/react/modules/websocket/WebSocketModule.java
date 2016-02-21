@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.lang.IllegalStateException;
 import javax.annotation.Nullable;
 
+import android.net.Uri;
+import android.webkit.CookieManager;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -86,6 +89,27 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     Request.Builder builder = new Request.Builder()
         .tag(id)
         .url(url);
+
+    if (url != null) {
+      // Use the shared CookieManager to access the cookies
+      // set by WebViews inside the same app
+      CookieManager cookieManager = CookieManager.getInstance();
+
+      Uri parsedUrl = Uri.parse(url);
+      Uri.Builder builtUrl = parsedUrl.buildUpon();
+
+      // To get HTTPS-only cookies for wss URLs,
+      // replace wss with http in the URL.
+      if (parsedUrl.getScheme().equals("wss")) {
+        builtUrl.scheme("https");
+      }
+
+      String cookie = cookieManager.getCookie(builtUrl.build().toString());
+
+      if (cookie != null) {
+        builder.addHeader("Cookie", cookie);
+      }
+    }
 
     if (headers != null) {
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
