@@ -209,10 +209,9 @@ RCT_EXPORT_MODULE()
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
-  NSMutableDictionary *dict = [[RCTConvert NSDictionary:query[@"headers"]] mutableCopy];
-  [dict enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-    [dict setValue:[NSString stringWithFormat:@"%@", obj]
-            forKey:key];
+  NSMutableDictionary *headers = [[RCTConvert NSDictionary:query[@"headers"]] mutableCopy];
+  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+    [headers setValue:[NSString stringWithFormat:@"%@", obj] forKey:key];
   }];
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
