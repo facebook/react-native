@@ -356,7 +356,7 @@ And here is the modified `fetchData` method that updates the state accordingly:
   }
 ```
 
-The renderMovie function stays as it is except that we assign each item a key (read about [why dynamic children should be keyed](https://facebook.github.io/react/docs/multiple-components.html#dynamic-children)).
+`renderMovie` method stays as it is except that we assign each item a key (read about [why dynamic children should be keyed](https://facebook.github.io/react/docs/multiple-components.html#dynamic-children)).
 
 ```javascript
   renderMovie(movie) {
