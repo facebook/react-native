@@ -109,17 +109,27 @@ function buildAndRun(args, reject) {
       : 'adb';
 
     const devices = adb.getDevices();
+    
+    if(devices && devices.length > 0) {
+      devices.forEach((device) => {
 
-    devices.forEach((device) => {
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
 
-      const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
+        console.log(chalk.bold(
+          'Starting the app on ' + device + ' (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
+        ));
 
+        child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});  
+      }); 
+    } else {
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+      ];
       console.log(chalk.bold(
-        'Starting the app on ' + device + ' (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
+        'Starting the app (' + adbPath + ' ' + fallbackAdbArgs.join(' ') + ')...'
       ));
-
-      child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});  
-    });
+      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+    }
 
   } catch (e) {
     console.log(chalk.red(
