@@ -58,13 +58,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
 
 - (void)insertReactSubview:(UIView *)subview atIndex:(__unused NSInteger)atIndex
 {
+  RCTAssert([_modalViewController.view reactTag] == nil, @"Modal view can only have one subview");
   [subview addGestureRecognizer:_touchHandler];
+  subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
+                             UIViewAutoresizingFlexibleWidth;
   _modalViewController.view = subview;
 }
 
 - (void)removeReactSubview:(UIView *)subview
 {
   RCTAssert(subview == _modalViewController.view, @"Cannot remove view other than modal view");
+  [subview removeGestureRecognizer:_touchHandler];
   _modalViewController.view = nil;
 }
 
