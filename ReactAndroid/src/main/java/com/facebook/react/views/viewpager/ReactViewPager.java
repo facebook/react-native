@@ -125,7 +125,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   private final EventDispatcher mEventDispatcher;
   private boolean mIsCurrentItemFromJs;
-  private boolean mScrollEnabled = true;
+  private boolean mSwipeEnabled = true;
 
   public ReactViewPager(ReactContext reactContext) {
     super(reactContext);
@@ -142,7 +142,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    if (!mScrollEnabled) {
+    if (!mSwipeEnabled) {
       return false;
     }
 
@@ -155,7 +155,7 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
-    if (!mScrollEnabled) {
+    if (!mSwipeEnabled) {
       return false;
     }
 
@@ -168,8 +168,8 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
     mIsCurrentItemFromJs = false;
   }
 
-  public void setScrollEnabled(boolean scrollEnabled) {
-    mScrollEnabled = scrollEnabled;
+  public void setSwipeEnabled(boolean swipeEnabled) {
+    mSwipeEnabled = swipeEnabled;
   }
 
   /*package*/ void addViewToAdapter(View child, int index) {

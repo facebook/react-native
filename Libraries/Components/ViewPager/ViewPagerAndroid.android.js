@@ -128,7 +128,7 @@ var ViewPagerAndroid = React.createClass({
     * When false, the content does not scroll.
     * The default value is true.
     */
-    scrollEnabled: React.PropTypes.bool,
+    swipeEnabled: ReactPropTypes.bool,
   },
 
   componentDidMount: function() {
@@ -223,7 +223,7 @@ var ViewPagerAndroid = React.createClass({
         {...this.props}
         ref={VIEWPAGER_REF}
         style={this.props.style}
-        scrollEnabled={this.props.scrollEnabled}
+        swipeEnabled={this.props.swipeEnabled}
         onPageScroll={this._onPageScroll}
         onPageScrollStateChanged={this._onPageScrollStateChanged}
         onPageSelected={this._onPageSelected}
