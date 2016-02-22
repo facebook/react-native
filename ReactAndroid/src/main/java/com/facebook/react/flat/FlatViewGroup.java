@@ -9,16 +9,15 @@
 
 package com.facebook.react.flat;
 
+import javax.annotation.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
-import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,9 @@ import android.view.ViewParent;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.touch.ReactInterceptingViewGroup;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
+import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ReactPointerEventsView;
@@ -68,7 +68,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
       ReactContext reactContext = ((ReactContext) view.getContext());
       UIManagerModule uiManagerModule = reactContext.getNativeModule(UIManagerModule.class);
       uiManagerModule.getEventDispatcher().dispatchEvent(
-          new ImageLoadEvent(reactTag, SystemClock.uptimeMillis(), imageLoadEvent));
+          new ImageLoadEvent(reactTag, SystemClock.nanoTime(), imageLoadEvent));
     }
   }
 
@@ -234,7 +234,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
     // height is 0. This is because invalidate() has an optimization where it will not invalidate
     // empty Views at all. A quick fix is to invalidate a slightly larger region to make sure we
     // never hit that optimization.
-    // 
+    //
     // Another thing to note is that this may not work correctly with software rendering because
     // in software, Android tracks dirty regions to redraw. We would need to collect information
     // about all children boundaries (recursively) to track dirty region precisely.
