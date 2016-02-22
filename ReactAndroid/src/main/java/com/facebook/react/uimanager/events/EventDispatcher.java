@@ -75,14 +75,7 @@ public class EventDispatcher implements LifecycleEventListener {
         return 1;
       }
 
-      long diff = lhs.getTimestampMs() - rhs.getTimestampMs();
-      if (diff == 0) {
-        return 0;
-      } else if (diff < 0) {
-        return -1;
-      } else {
-        return 1;
-      }
+      return lhs.getTimestampMs() < rhs.getTimestampMs() ? -1 : 1;
     }
   };
 
