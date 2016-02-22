@@ -218,6 +218,12 @@ var apps = [
     author: 'Codementor',
   },
   {
+    name: 'Collegiate - Learn Anywhere',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/17/a9/60/17a960d3-8cbd-913a-9f08-ebd9139c116c/icon175x175.png',
+    link: 'https://itunes.apple.com/app/id1072463482',
+    author: 'Gaurav Arora',
+  },
+  {
     name: 'Company name search',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
