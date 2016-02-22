@@ -45,7 +45,7 @@ var TouchableWithoutFeedback = React.createClass({
       React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
     ]),
     /**
-     * Disable all component interactions if value is true
+     * If true, disable all interactions for this component.
      */
     disabled: React.PropTypes.bool,
     /**
