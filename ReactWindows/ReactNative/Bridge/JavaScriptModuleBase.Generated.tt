@@ -8,13 +8,13 @@
 var maxArgs = 4;
 var ordinals = new[]
 {
-	"first",
-	"second",
-	"third",
-	"fourth",
-	"fifth",
-	"sixth",
-	"seventh",
+    "first",
+    "second",
+    "third",
+    "fourth",
+    "fifth",
+    "sixth",
+    "seventh",
 };
 #>
 using System.Runtime.CompilerServices;
@@ -30,14 +30,14 @@ namespace ReactNative.Bridge
 for (var i = 0; i <= maxArgs; ++i)
 {
     var paramNames = Enumerable.Range(0, i).Select(x => "arg" + x).ToList();
-	var paramArgs = paramNames.Select(x => "object " + x).ToList();
+    var paramArgs = paramNames.Select(x => "object " + x).ToList();
 #>
-		/// <summary>
+        /// <summary>
         /// Invoke a JavaScript method with the given arguments.
         /// </summary>
 <#
     for (var j = 0; j < i; ++j)
-	{
+    {
 #>
         /// <param name="<#=paramNames[j]#>">The <#=ordinals[j]#> argument.</param>
 <#
@@ -55,23 +55,23 @@ for (var i = 0; i <= maxArgs; ++i)
         /// executed. This is to overcome the absense of a performant "proxy"
         /// implementation in the .NET framework.
         /// </remarks>
-		protected void Invoke(<#=string.Join("", paramArgs.Select(x => x + ", "))#>[CallerMemberName]string caller = null)
-		{
+        protected void Invoke(<#=string.Join("", paramArgs.Select(x => x + ", "))#>[CallerMemberName]string caller = null)
+        {
 <#
     if (i == 0)
-	{
+    {
 #>
-			Invoke(default(object[]), caller);
+            Invoke(default(object[]), caller);
 <#
     }
-	else
-	{
+    else
+    {
 #>
-			Invoke(new[] { <#=string.Join(", ", paramNames)#> }, caller);
+            Invoke(new[] { <#=string.Join(", ", paramNames)#> }, caller);
 <#
     }
 #>
-		}
+        }
 
 <#
 }
