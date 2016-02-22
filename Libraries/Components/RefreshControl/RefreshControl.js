@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule RefreshControl
+ * @flow
  */
 'use strict';
 
@@ -17,10 +18,10 @@ const View = require('View');
 
 const requireNativeComponent = require('requireNativeComponent');
 
-if (Platform.OS === 'ios') {
-  var RefreshLayoutConsts = {SIZE: {}};
-} else if (Platform.OS === 'android') {
+if (Platform.OS === 'android') {
   var RefreshLayoutConsts = require('NativeModules').UIManager.AndroidSwipeRefreshLayout.Constants;
+} else {
+  var RefreshLayoutConsts = {SIZE: {}};
 }
 
 /**

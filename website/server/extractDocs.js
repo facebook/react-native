@@ -203,7 +203,6 @@ var components = [
   '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
-  '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
