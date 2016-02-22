@@ -622,6 +622,15 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
     author: 'Hongbeibang'
   },
+  {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
 ];
 
 var AppList = React.createClass({
