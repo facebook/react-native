@@ -12,7 +12,6 @@ package com.facebook.react.views.picker;
 import javax.annotation.Nullable;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +22,12 @@ import android.widget.TextView;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.picker.events.PickerItemSelectEvent;
 
@@ -157,7 +157,7 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     @Override
     public void onItemSelected(int position) {
       mEventDispatcher.dispatchEvent( new PickerItemSelectEvent(
-              mReactPicker.getId(), SystemClock.uptimeMillis(), position));
+              mReactPicker.getId(), SystemClock.nanoTime(), position));
     }
   }
 }

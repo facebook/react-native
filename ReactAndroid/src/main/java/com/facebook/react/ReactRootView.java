@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -151,7 +151,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               mTargetTag,
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               TouchEventType.START,
               ev,
               mTargetCoordinates[0],
@@ -173,7 +173,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               mTargetTag,
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               TouchEventType.END,
               ev,
               mTargetCoordinates[0],
@@ -184,7 +184,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               mTargetTag,
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               TouchEventType.MOVE,
               ev,
               mTargetCoordinates[0],
@@ -194,7 +194,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               mTargetTag,
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               TouchEventType.START,
               ev,
               mTargetCoordinates[0],
@@ -204,7 +204,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       eventDispatcher.dispatchEvent(
           TouchEvent.obtain(
               mTargetTag,
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               TouchEventType.END,
               ev,
               mTargetCoordinates[0],
@@ -255,7 +255,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     Assertions.assertNotNull(eventDispatcher).dispatchEvent(
         TouchEvent.obtain(
             mTargetTag,
-            SystemClock.uptimeMillis(),
+            SystemClock.nanoTime(),
             TouchEventType.CANCEL,
             androidEvent,
             mTargetCoordinates[0],
