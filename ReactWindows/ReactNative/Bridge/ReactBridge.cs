@@ -109,6 +109,14 @@ namespace ReactNative.Bridge
             ProcessResponse(response);
         }
 
+        /// <summary>
+        /// Disposes the bridge.
+        /// </summary>
+        public void Dispose()
+        {
+            _jsExecutor.Dispose();
+        }
+
         private void ProcessResponse(JToken response)
         {
             var messages = response as JArray;

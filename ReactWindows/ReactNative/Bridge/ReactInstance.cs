@@ -182,6 +182,8 @@ namespace ReactNative.Bridge
 
             IsDisposed = true;
             _registry.NotifyReactInstanceDispose();
+
+            _bridge?.Dispose();
             QueueConfiguration.Dispose();
 
             if (Interlocked.Exchange(ref _pendingJsCalls, 0) != 0)
