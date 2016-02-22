@@ -27,6 +27,7 @@ RCT_EXTERN const CGFloat RCTMapZoomBoundBuffer;
 @property (nonatomic, strong) NSTimer *regionChangeObserveTimer;
 @property (nonatomic, copy) NSArray<NSString *> *annotationIDs;
 @property (nonatomic, copy) NSArray<NSString *> *overlayIDs;
+@property (nonatomic, copy) NSString *tileOverlayURLTemplate;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;

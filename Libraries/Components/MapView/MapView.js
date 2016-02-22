@@ -126,6 +126,17 @@ const MapView = React.createClass({
     ]),
 
     /**
+     * The tileOverlay URL template to use instead of the default tiles from Apple Maps, for use with MKTileOverlay
+     *
+     *  URL template is a string where the substrings "{x}", "{y}", "{z}", and "{scale}"
+     *  are replaced with values from a tile path to create a URL to load.
+     *  For example: http://server/path?x={x}&y={y}&z={z}&scale={scale}.
+     *
+     * @platform ios
+     */
+    tileOverlayURLTemplate: React.PropTypes.string,
+
+    /**
      * The region to be displayed by the map.
      *
      * The region is defined by the center coordinates and the span of
