@@ -1265,10 +1265,6 @@ RCT_EXPORT_METHOD(clearJSResponder)
         @"height": @(RCTScreenSize().height),
         @"scale": @(RCTScreenScale()),
       },
-      @"modalFullscreenView": @{
-        @"width": @(RCTScreenSize().width),
-        @"height": @(RCTScreenSize().height),
-      },
     },
   }];
 
