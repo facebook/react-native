@@ -98,7 +98,6 @@ var ActionSheetTintExample = React.createClass({
   }
 });
 
-
 var ShareActionSheetExample = React.createClass({
   getInitialState() {
     return {
@@ -121,7 +120,7 @@ var ShareActionSheetExample = React.createClass({
 
   showShareActionSheet() {
     ActionSheetIOS.showShareActionSheetWithOptions({
-      url: 'https://code.facebook.com',
+      url: this.props.url,
       message: 'message to go with the shared url',
       subject: 'a subject to go in the email heading',
       excludedActivityTypes: [
@@ -163,6 +162,14 @@ exports.examples = [
   },
   {
     title: 'Show Share Action Sheet',
-    render(): ReactElement { return <ShareActionSheetExample />; }
+    render(): ReactElement {
+      return <ShareActionSheetExample url="https://code.facebook.com" />;
+    }
+  },
+    {
+    title: 'Share Local Image',
+    render(): ReactElement {
+      return <ShareActionSheetExample url="bunny.png" />;
+    }
   }
 ];
