@@ -271,7 +271,6 @@ var styles = StyleSheet.create({
   // CELL TEXT
 
   cellText: {
-    borderRadius: 5,
     fontSize: 50,
     fontFamily: 'AvenirNext-Bold',
   },
