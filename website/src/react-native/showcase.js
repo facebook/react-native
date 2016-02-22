@@ -625,7 +625,7 @@ var apps = [
   {
     name: 'Reading',
     icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
-    linkPlayStore: 'http://www.wandoujia.com/apps/com.reading',
+    link: 'http://www.wandoujia.com/apps/com.reading',
     author: 'RichardCao',
     blogs: [
       'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
