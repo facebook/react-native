@@ -30,9 +30,15 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'install-debug',
     type: 'string',
     required: false,
+  }, {
+    command: 'root',
+    type: 'string',
+    description: 'Override the root directory for the android build (which contains the android directory)',
   }], argv);
 
-  if (!checkAndroid()) {
+  args.root = args.root || '';
+
+  if (!checkAndroid(args)) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
   }
@@ -52,13 +58,13 @@ function _runAndroid(argv, config, resolve, reject) {
 }
 
 // Verifies this is an Android project
-function checkAndroid() {
-  return fs.existsSync('android/gradlew');
+function checkAndroid(args) {
+  return fs.existsSync(path.join(args.root, 'android/gradlew'));
 }
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args, reject) {
-  process.chdir('android');
+  process.chdir(path.join(args.root, 'android'));
   try {
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
