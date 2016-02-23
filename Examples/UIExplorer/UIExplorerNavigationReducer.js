@@ -36,13 +36,20 @@ export type UIExplorerNavigationState = {
 };
 
 const UIExplorerStackReducer = StackReducer({
-  key: 'UIExplorerMainStack',
-  initialStates: [
-    {key: 'AppList'},
-  ],
-  initialIndex: 0,
-  matchAction: action => action.openExample && !!UIExplorerList.Modules[action.openExample],
-  actionStateMap: action => ({ key: action.openExample, }),
+  getPushedReducerForAction: (action) => {
+    if (action.type === 'UIExplorerExampleAction' && UIExplorerList.Modules[action.openExample]) {
+      return (state) => state || {key: action.openExample};
+    }
+    return null;
+  },
+  getReducerForState: (initialState) => (state) => state || initialState,
+  initialState: {
+    key: 'UIExplorerMainStack',
+    index: 0,
+    children: [
+      {key: 'AppList'},
+    ],
+  },
 });
 
 function UIExplorerNavigationReducer(lastState: ?UIExplorerNavigationState, action: any): UIExplorerNavigationState {
@@ -86,7 +93,7 @@ function UIExplorerNavigationReducer(lastState: ?UIExplorerNavigationState, acti
   if (newStack !== lastState.stack) {
     return {
       externalExample: null,
-      stack: UIExplorerStackReducer(null, action),      
+      stack: newStack,      
     }
   }
   return lastState;
