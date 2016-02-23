@@ -26,13 +26,13 @@ function getChromeAppName() {
 }
 
 function launchChromeDevTools(port) {
-    var debuggerURL = 'http://localhost:' + port + '/debugger-ui';
-    console.log('Launching Dev Tools...');
-    opn(debuggerURL, {app: [getChromeAppName()]}, function(err) {
-        if (err) {
-            console.error('Google Chrome exited with error:', err);
-        }
-    });
+  var debuggerURL = 'http://localhost:' + port + '/debugger-ui';
+  console.log('Launching Dev Tools...');
+  opn(debuggerURL, {app: [getChromeAppName()]}, function(err) {
+    if (err) {
+      console.error('Google Chrome exited with error:', err);
+    }
+  });
 }
 
 function escapePath(path) {
@@ -40,21 +40,21 @@ function escapePath(path) {
 }
 
 function launchDevTools(options, isChromeConnected) {
-    // Explicit config always wins
-    var customDebugger = process.env.REACT_DEBUGGER;
-    if (customDebugger) {
-        var projects = options.projectRoots.map(escapePath).join(' ');
-        var command = customDebugger + ' ' + projects;
-        console.log('Starting custom debugger by executing: ' + command);
-        child_process.exec(command, function (error, stdout, stderr) {
-            if (error !== null) {
-                console.log('Error while starting custom debugger: ' + error);
-            }
-        });
-    } else if (!isChromeConnected()) {
-        // Dev tools are not yet open; we need to open a session
-        launchChromeDevTools(options.port);
-    }
+  // Explicit config always wins
+  var customDebugger = process.env.REACT_DEBUGGER;
+  if (customDebugger) {
+    var projects = options.projectRoots.map(escapePath).join(' ');
+    var command = customDebugger + ' ' + projects;
+    console.log('Starting custom debugger by executing: ' + command);
+    child_process.exec(command, function (error, stdout, stderr) {
+      if (error !== null) {
+        console.log('Error while starting custom debugger: ' + error);
+      }
+    });
+  } else if (!isChromeConnected()) {
+    // Dev tools are not yet open; we need to open a session
+    launchChromeDevTools(options.port);
+  }
 }
 
 module.exports = function(options, isChromeConnected) {
@@ -83,8 +83,8 @@ module.exports = function(options, isChromeConnected) {
         launchDevTools(options, isChromeConnected);
         res.end('OK');
     } else if (req.url === '/launch-js-devtools') {
-        launchDevTools(options, isChromeConnected);
-        res.end('OK');
+      launchDevTools(options, isChromeConnected);
+      res.end('OK');
     } else {
       next();
     }
