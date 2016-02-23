@@ -80,13 +80,20 @@ type SceneRenderer = (
   index: number,
   position: Animated.Value,
   layout: Layout
-) => ReactElement
+) => ReactElement;
+
+type TimingSetter = (
+  position: Animated.Value,
+  newState: NavigationParentState,
+  lastState: NavigationParentState
+) => void;
 
 type Props = {
   navigationState: NavigationParentState;
   renderScene: SceneRenderer;
   renderOverlay: ?OverlayRenderer;
   style: any;
+  setTiming: ?TimingSetter;
 };
 
 class NavigationAnimatedView extends React.Component {
@@ -120,11 +127,8 @@ class NavigationAnimatedView extends React.Component {
     }
   }
   componentDidUpdate(lastProps) {
-    if (lastProps.navigationState.index !== this.props.navigationState.index) {
-      Animated.spring(
-        this.state.position,
-        {toValue: this.props.navigationState.index}
-      ).start();
+    if (lastProps.navigationState.index !== this.props.navigationState.index && this.props.setTiming) {
+      this.props.setTiming(this.state.position, this.props.navigationState, lastProps.navigationState);
     }
   }
   componentWillUnmount() {
@@ -219,6 +223,20 @@ class NavigationAnimatedView extends React.Component {
     return null;
   }
 }
+
+function setDefaultTiming(position, navigationState) {
+  Animated.spring(
+    position,
+    {
+      bounciness: 0,
+      toValue: navigationState.index,
+    }
+  ).start();
+}
+
+NavigationAnimatedView.defaultProps = {
+  setTiming: setDefaultTiming,
+};
 
 NavigationAnimatedView = NavigationContainer.create(NavigationAnimatedView);
 
