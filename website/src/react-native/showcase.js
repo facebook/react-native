@@ -631,6 +631,12 @@ var apps = [
       'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
     ],
   },
+  {
+    name: 'Emergency Kittens',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/42/79/c6/4279c605-f37e-bc9c-3730-706590349eed/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/emergency-kittens-adorable/id1071497489?ls=1&mt=8',
+    author: 'Clowder Labs',
+  },
 ];
 
 var AppList = React.createClass({
