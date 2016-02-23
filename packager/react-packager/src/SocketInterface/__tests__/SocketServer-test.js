@@ -11,6 +11,7 @@
 jest.setMock('uglify-js')
     .mock('net')
     .mock('fs')
+    .dontMock('node-haste/node_modules/throat')
     .dontMock('../SocketServer');
 
 var PackagerServer = require('../../Server');
