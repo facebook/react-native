@@ -24,6 +24,7 @@ const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 
 const {
+  Alert,
   Animated,
   AppRegistry,
   NavigationExperimental,
@@ -54,7 +55,36 @@ import type {
   UIExplorerExample,
 } from './UIExplorerList.ios'
 
+function PathActionMap(path: string): ?Object {
+  // Warning! Hacky parsing for example code. Use a library for this!
+  const exampleParts = path.split('/example/');
+  const exampleKey = exampleParts[1];
+  if (exampleKey) {
+    if (!UIExplorerList.Modules[exampleKey]) {
+      Alert.alert(`${exampleKey} example could not be found!`);
+      return null;
+    }
+    return UIExplorerActions.ExampleAction(exampleKey);
+  }
+  return null;
+}
+
+function URIActionMap(uri: ?string): ?Object {
+  // Warning! Hacky parsing for example code. Use a library for this!
+  if (!uri) {
+    return null;
+  }
+  const parts = uri.split('rnuiexplorer:/');
+  if (!parts[1]) {
+    return null;
+  }
+  const path = parts[1];
+  return PathActionMap(path);
+}
+
+
 class UIExplorerApp extends React.Component {
+  _navigationRootRef: ?NavigationRootContainer;
   _renderNavigation: Function;
   componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
@@ -64,7 +94,9 @@ class UIExplorerApp extends React.Component {
       <NavigationRootContainer
         persistenceKey="UIExplorerState"
         reducer={UIExplorerNavigationReducer}
+        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
         renderNavigation={this._renderNavigation}
+        linkingActionMap={URIActionMap}
       />
     );
   }
