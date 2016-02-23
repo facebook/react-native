@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.util.Map;
 
+import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
@@ -86,6 +87,13 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     } else {
       throw new JSApplicationIllegalArgumentException("Unknown drawerLockMode " + drawerLockMode);
+    }
+  }
+
+  @Override
+  public void setElevation(ReactDrawerLayout view, float elevation) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setDrawerElevation(PixelUtil.toPixelFromDIP(elevation));
     }
   }
 
