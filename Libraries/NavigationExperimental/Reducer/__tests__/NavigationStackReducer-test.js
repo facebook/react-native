@@ -15,183 +15,90 @@ jest
  .mock('ErrorUtils');
 
 const NavigationStackReducer = require('NavigationStackReducer');
-
-const {
-  JumpToAction,
-  JumpToIndexAction,
-  PopAction,
-  PushAction,
-  ResetAction,
-} = NavigationStackReducer;
+const NavigationRootContainer = require('NavigationRootContainer');
 
 describe('NavigationStackReducer', () => {
 
-  it('handles PushAction', () => {
-    const initialStates = [
-      {key: 'route0'},
-      {key: 'route1'},
-    ];
-    let reducer = NavigationStackReducer({
-      initialStates,
-      matchAction: () => true,
-      actionStateMap: (action) => action,
+  it('provides default/initial state', () => {
+    const initialState = {
+      children: [
+        {key: 'a'},
+      ],
+      index: 0,
+      key: 'myStack',
+    };
+    const reducer = NavigationStackReducer({
+      getPushedReducerForAction: (action) => null,
+      getReducerForState: (state) => () => state,
+      initialState,
     });
-
-    let state = reducer();
-    expect(state.children).toBe(initialStates);
-    expect(state.index).toBe(1);
-    expect(state.key).toBe('NAV_STACK_DEFAULT_KEY');
-
-    state = reducer(state, PushAction({key: 'route2'}));
-    expect(state.children[0].key).toBe('route0');
-    expect(state.children[1].key).toBe('route1');
-    expect(state.children[2].key).toBe('route2');
-    expect(state.index).toBe(2);
+    const dummyAction = {type: 'dummyAction'};
+    expect(reducer(null, dummyAction)).toBe(initialState);
   });
 
-  it('handles PopAction', () => {
-    let reducer = NavigationStackReducer({
-      initialStates: [
-        {key: 'a'},
-        {key: 'b'},
-      ],
-      initialIndex: 1,
-      key: 'myStack',
-      matchAction: () => true,
-      actionStateMap: (action) => action,
+  it('handles basic reducer pushing', () => {
+    const reducer = NavigationStackReducer({
+      getPushedReducerForAction: (action) => {
+        if (action.type === 'TestPushAction') {
+          return (state) => state || {key: action.testValue};
+        }
+        return null;
+      },
+      getReducerForState: (state) => () => state,
+      initialState: {
+        children: [
+          {key: 'first'},
+        ],
+        index: 0,
+        key: 'myStack'
+      }
     });
+    const state1 = reducer(null, {type: 'default'});
+    expect(state1.children.length).toBe(1);
+    expect(state1.children[0].key).toBe('first');
+    expect(state1.index).toBe(0);
 
-    let state = reducer();
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children.length).toBe(2);
-    expect(state.index).toBe(1);
-    expect(state.key).toBe('myStack');
-
-    state = reducer(state, PopAction());
-    expect(state.children[0].key).toBe('a');
-    expect(state.children.length).toBe(1);
-    expect(state.index).toBe(0);
-    expect(state.key).toBe('myStack');
-
-    // make sure Pop on an single-route state is a no-op
-    state = reducer(state, PopAction());
-    expect(state.children[0].key).toBe('a');
-    expect(state.children.length).toBe(1);
-    expect(state.index).toBe(0);
-    expect(state.key).toBe('myStack');
+    const action = {type: 'TestPushAction', testValue: 'second'};
+    const state2 = reducer(state1, action);
+    expect(state2.children.length).toBe(2);
+    expect(state2.children[0].key).toBe('first');
+    expect(state2.children[1].key).toBe('second');
+    expect(state2.index).toBe(1);
   });
 
-  it('handles JumpToAction', () => {
-    let reducer = NavigationStackReducer({
-      initialStates: [
-        {key: 'a'},
-        {key: 'b'},
-        {key: 'c'},
-      ],
-      initialIndex: 0,
-      key: 'myStack',
-      matchAction: () => true,
-      actionStateMap: (action) => action,
+  it('handles BackAction', () => {
+    const reducer = NavigationStackReducer({
+      getPushedReducerForAction: (action) => {
+        if (action.type === 'TestPushAction') {
+          return (state) => state || {key: action.testValue};
+        }
+        return null;
+      },
+      getReducerForState: (state) => () => state,
+      initialState: {
+        children: [
+          {key: 'a'},
+          {key: 'b'},
+        ],
+        index: 1,
+        key: 'myStack',
+      },
     });
 
-    let state = reducer();
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children[2].key).toBe('c');
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(0);
+    const state1 = reducer(null, {type: 'MyDefaultAction'});
+    expect(state1.children[0].key).toBe('a');
+    expect(state1.children[1].key).toBe('b');
+    expect(state1.children.length).toBe(2);
+    expect(state1.index).toBe(1);
+    expect(state1.key).toBe('myStack');
 
-    state = reducer(state, JumpToAction('b'));
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children[2].key).toBe('c');
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(1);
+    const state2 = reducer(state1, NavigationRootContainer.getBackAction());
+    expect(state2.children[0].key).toBe('a');
+    expect(state2.children.length).toBe(1);
+    expect(state2.index).toBe(0);
 
-    state = reducer(state, JumpToAction('c'));
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children[2].key).toBe('c');
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(2);
-
-    state = reducer(state, JumpToAction('c'));
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children[2].key).toBe('c');
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(2);
-    expect(state.key).toBe('myStack');
-  });
-
-  it('handles JumpToIndexAction', () => {
-    let reducer = NavigationStackReducer({
-      initialStates: [
-        {key: 'a'},
-        {key: 'b'},
-        {key: 'c'},
-      ],
-      initialIndex: 2,
-      key: 'myStack',
-      matchAction: () => true,
-      actionStateMap: (action) => action,
-    });
-
-    let state = reducer();
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(2);
-
-    state = reducer(state, JumpToIndexAction(0));
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(0);
-
-    state = reducer(state, JumpToIndexAction(1));
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children[2].key).toBe('c');
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(1);
-    expect(state.key).toBe('myStack');
-  });
-
-  it('handles ResetAction', () => {
-    let reducer = NavigationStackReducer({
-      initialStates: [
-        {key: 'a'},
-        {key: 'b'},
-      ],
-      initialIndex: 1,
-      key: 'myStack',
-      matchAction: () => true,
-      actionStateMap: (action) => action,
-    });
-
-    let state = reducer();
-    expect(state.children[0].key).toBe('a');
-    expect(state.children[1].key).toBe('b');
-    expect(state.children.length).toBe(2);
-    expect(state.index).toBe(1);
-
-    state = reducer(state, ResetAction([{key: 'c'}, {key: 'd'}], 0));
-    expect(state.children[0].key).toBe('c');
-    expect(state.children[1].key).toBe('d');
-    expect(state.children.length).toBe(2);
-    expect(state.index).toBe(0);
-
-    const newStates = [
-      {key: 'e'},
-      {key: 'f'},
-      {key: 'g'},
-    ];
-
-    state = reducer(state, ResetAction(newStates, 1));
-    expect(state.children[0].key).toBe('e');
-    expect(state.children[1].key).toBe('f');
-    expect(state.children[2].key).toBe('g');
-    expect(state.children.length).toBe(3);
-    expect(state.index).toBe(1);
-    expect(state.key).toBe('myStack');
+    const state3 = reducer(state2, NavigationRootContainer.getBackAction());
+    expect(state3).toBe(state2);
   });
 
 });

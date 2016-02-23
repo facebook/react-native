@@ -29,11 +29,20 @@ var {
 } = NavigationExperimental;
 
 const NavigationBasicReducer = NavigationReducer.StackReducer({
-  initialStates: [
-    {key: 'First Route'}
-  ],
-  matchAction: action => action.type === 'push',
-  actionStateMap: action => ({key: action.key}),
+  getPushedReducerForAction: (action) => {
+    if (action.type === 'push') {
+      return (state) => state || {key: action.key};
+    }
+    return null;
+  },
+  getReducerForState: (initialState) => (state) => state || initialState,
+  initialState: {
+    key: 'AnimatedExampleStackKey',
+    index: 0,
+    children: [
+      {key: 'First Route'},
+    ],
+  },
 });
 
 class NavigationAnimatedExample extends React.Component {

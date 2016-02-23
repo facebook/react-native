@@ -10,7 +10,9 @@
  * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ *
+ * @flow
+ */
 'use strict';
 
 const React = require('react-native');
@@ -32,6 +34,8 @@ const {
 const NavigationExampleRow = require('./NavigationExampleRow');
 const NavigationExampleTabBar = require('./NavigationExampleTabBar');
 
+import type {NavigationParentState} from 'NavigationStateUtils';
+
 const ExampleExitAction = () => ({
   isExitAction: true,
 });
@@ -39,25 +43,25 @@ ExampleExitAction.match = (action) => (
   action && action.isExitAction === true
 );
 
-const ExamplePageAction = (type) => ({
+const PageAction = (type) => ({
   type,
   isPageAction: true,
 });
-ExamplePageAction.match = (action) => (
+PageAction.match = (action) => (
   action && action.isPageAction === true
 );
 
-const ExampleSettingsPageAction = (type) => ({
-  ...ExamplePageAction(type),
-  isSettingsPageAction: true,
+const ExampleProfilePageAction = (type) => ({
+  ...PageAction(type),
+  isProfilePageAction: true,
 });
-ExampleSettingsPageAction.match = (action) => (
-  action && action.isSettingsPageAction === true
+ExampleProfilePageAction.match = (action) => (
+  action && action.isProfilePageAction === true
 );
 
-const ExampleInfoAction = () => ExamplePageAction('InfoPage');
+const ExampleInfoAction = () => PageAction('InfoPage');
 
-const ExampleNotifSettingsAction = () => ExampleSettingsPageAction('NotifSettingsPage');
+const ExampleNotifProfileAction = () => ExampleProfilePageAction('NotifProfilePage');
 
 const _jsInstanceUniqueId = '' + Date.now();
 let _uniqueIdCount = 0;
@@ -68,70 +72,70 @@ function pageStateActionMap(action) {
   };
 }
 
-function getTabActionMatcher(key) {
-  return function (action) {
-    if (!ExamplePageAction.match(action)) {
-      return false;
-    }
-    if (ExampleSettingsPageAction.match(action)) {
-      return key === 'settings';
-    }
-    return true;
-  };
-}
-
-var ExampleTabs = [
-  {
-    label: 'Account',
-    reducer: NavigationReducer.StackReducer({
-      initialStates: [
-        {type: 'AccountPage', key: 'base'}
-      ],
-      key: 'account',
-      matchAction: getTabActionMatcher('account'),
-      actionStateMap: pageStateActionMap,
-    }),
-  },
-  {
-    label: 'Notifications',
-    reducer: NavigationReducer.StackReducer({
-      initialStates: [
-        {type: 'NotifsPage', key: 'base'}
-      ],
-      key: 'notifs',
-      matchAction: getTabActionMatcher('notifs'),
-      actionStateMap: pageStateActionMap,
-    }),
-  },
-  {
-    label: 'Settings',
-    reducer: NavigationReducer.StackReducer({
-      initialStates: [
-        {type: 'SettingsPage', key: 'base'}
-      ],
-      key: 'settings',
-      matchAction: getTabActionMatcher('settings'),
-      actionStateMap: pageStateActionMap,
-    }),
-  },
-];
-
 const ExampleAppReducer = NavigationReducer.TabsReducer({
-  tabReducers: ExampleTabs.map(tab => tab.reducer),
+  key: 'AppNavigationState',
+  initialIndex: 0,
+  tabReducers: [
+    NavigationReducer.StackReducer({
+      getPushedReducerForAction: (action) => {
+        if (PageAction.match(action) && !ExampleProfilePageAction.match(action)) {
+          return (state) => (state || pageStateActionMap(action));
+        }
+        return null;
+      },
+      initialState: {
+        key: 'notifs',
+        index: 0,
+        children: [
+          {key: 'base', type: 'NotifsPage'},
+        ],
+      },
+    }),
+    NavigationReducer.StackReducer({
+      getPushedReducerForAction: (action) => {
+        if (PageAction.match(action) && !ExampleProfilePageAction.match(action)) {
+          return (state) => (state || pageStateActionMap(action));
+        }
+        return null;
+      },
+      initialState: {
+        key: 'settings',
+        index: 0,
+        children: [
+          {key: 'base', type: 'SettingsPage'},
+        ],
+      },
+    }),
+    NavigationReducer.StackReducer({
+      getPushedReducerForAction: (action) => {
+        if (PageAction.match(action) || ExampleProfilePageAction.match(action)) {
+          return (state) => (state || pageStateActionMap(action));
+        }
+        return null;
+      },
+      initialState: {
+        key: 'profile',
+        index: 0,
+        children: [
+          {key: 'base', type: 'ProfilePage'},
+        ],
+      },
+    }),
+  ],
 });
 
 function stateTypeTitleMap(pageState) {
   switch (pageState.type) {
-    case 'AccountPage':
-      return 'Account Page';
+    case 'ProfilePage':
+      return 'Profile Page';
     case 'NotifsPage':
       return 'Notifications';
     case 'SettingsPage':
       return 'Settings';
     case 'InfoPage':
       return 'Info Page';
-    case 'NotifSettingsPage':
-      return 'Notification Settings';
+    case 'NotifProfilePage':
+      return 'Page in Profile';
   }
 }
 
@@ -173,9 +177,9 @@ class ExampleTabScreen extends React.Component {
             }}
           />
           <NavigationExampleRow
-            text="Open notifs settings in settings tab"
+            text="Open a page in the profile tab"
             onPress={() => {
-              this.props.onNavigate(ExampleNotifSettingsAction());
+              this.props.onNavigate(ExampleNotifProfileAction());
             }}
           />
           <NavigationExampleRow
@@ -196,19 +200,19 @@ class NavigationCompositionExample extends React.Component {
     return (
       <NavigationRootContainer
         reducer={ExampleAppReducer}
-        persistenceKey="NavigationCompositionExampleState"
+        persistenceKey="NavigationCompositionState"
         ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
         renderNavigation={this.renderApp.bind(this)}
       />
     );
   }
-  handleBackAction() {
+  handleBackAction(): boolean {
     return (
       this.navRootContainer &&
       this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
     );
   }
-  renderApp(navigationState, onNavigate) {
+  renderApp(navigationState: NavigationParentState, onNavigate: Function) {
     if (!navigationState) {
       return null;
     }

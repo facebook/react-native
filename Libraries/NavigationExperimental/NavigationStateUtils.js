@@ -66,14 +66,10 @@ function indexOf(state: NavigationState, key: string): ?number {
   return index;
 }
 
-function push(state: NavigationState, newChildState: NavigationState): NavigationState {
-  const parentState = getParent(state);
-  if (!parentState) {
-    return state;
-  }
-  var lastChildren: Array<NavigationState> = parentState.children;
+function push(state: NavigationParentState, newChildState: NavigationState): NavigationParentState {
+  var lastChildren: Array<NavigationState> = state.children;
   return {
-    ...parentState,
+    ...state,
     children: [
       ...lastChildren,
       newChildState,
@@ -82,14 +78,10 @@ function push(state: NavigationState, newChildState: NavigationState): Navigatio
   };
 }
 
-function pop(state: NavigationState): NavigationState {
-  const parentState = getParent(state);
-  if (!parentState) {
-    return state;
-  }
-  const lastChildren = parentState.children;
+function pop(state: NavigationParentState): NavigationParentState {
+  const lastChildren = state.children;
   return {
-    ...parentState,
+    ...state,
     children: lastChildren.slice(0, lastChildren.length - 1),
     index: lastChildren.length - 2,
   };
