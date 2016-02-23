@@ -250,6 +250,7 @@ var apis = [
   '../Libraries/StyleSheet/StyleSheet.js',
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
+  '../Libraries/Utilities/UIManager.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 

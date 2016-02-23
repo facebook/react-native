@@ -221,6 +221,10 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./RCTRootViewIOSExample'),
   },
   {
+    key: 'SnapshotExample',
+    module: require('./SnapshotExample'),
+  },
+  {
     key: 'StatusBarIOSExample',
     module: require('./StatusBarIOSExample'),
   },
