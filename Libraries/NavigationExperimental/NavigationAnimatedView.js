@@ -164,7 +164,7 @@ class NavigationAnimatedView extends React.Component {
 
     if (lastState) {
       lastState.children.forEach((child, index) => {
-        if (!NavigationStateUtils.get(nextState, child.key)) {
+        if (!NavigationStateUtils.get(nextState, child.key) && index !== nextState.index) {
           nextScenes.push({
             index,
             state: child,
