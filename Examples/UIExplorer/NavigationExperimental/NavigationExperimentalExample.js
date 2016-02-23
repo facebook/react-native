@@ -35,7 +35,7 @@ var EXAMPLES = {
   'Tic Tac Toe': require('./NavigationTicTacToeExample'),
 };
 
-var EXAMPLE_STORAGE_KEY = 'NavigationExampleExample';
+var EXAMPLE_STORAGE_KEY = 'NavigationExperimentalExample';
 
 var NavigationExperimentalExample = React.createClass({
   statics: {

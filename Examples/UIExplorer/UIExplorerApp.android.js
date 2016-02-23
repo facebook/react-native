@@ -22,84 +22,111 @@ const {
   BackAndroid,
   Dimensions,
   DrawerLayoutAndroid,
+  NavigationExperimental,
   StyleSheet,
   ToolbarAndroid,
   View,
   StatusBar,
 } = React;
-const UIExplorerList = require('./UIExplorerList.android');
+const {
+  RootContainer: NavigationRootContainer,
+} = NavigationExperimental;
+const UIExplorerActions = require('./UIExplorerActions');
+const UIExplorerExampleList = require('./UIExplorerExampleList');
+const UIExplorerList = require('./UIExplorerList');
+const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
+const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 
-const DRAWER_WIDTH_LEFT = 56;
+var DRAWER_WIDTH_LEFT = 56;
 
 class UIExplorerApp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onSelectExample = this.onSelectExample.bind(this);
-    this._handleBackButtonPress = this._handleBackButtonPress.bind(this);
-    this.state = {
-      example: this._getUIExplorerHome(),
-    };
-  }
-
-  _getUIExplorerHome() {
-    return {
-      title: 'UIExplorer',
-      component: this._renderHome(),
-    };
-  }
-
   componentWillMount() {
-    BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress);
+    BackAndroid.addEventListener('hardwareBackPress', this._handleBackButtonPress.bind(this));
   }
 
   render() {
+    return (
+      <NavigationRootContainer
+        persistenceKey="UIExplorerStateNavState"
+        ref={navRootRef => { this._navigationRootRef = navRootRef; }}
+        reducer={UIExplorerNavigationReducer}
+        renderNavigation={this._renderApp.bind(this)}
+      />
+    );
+  }
+
+  _renderApp(navigationState, onNavigate) {
+    if (!navigationState) {
+      return null;
+    }
     return (
       <DrawerLayoutAndroid
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         drawerWidth={Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
         keyboardDismissMode="on-drag"
+        onDrawerOpen={() => {
+          this._overrideBackPressForDrawerLayout = true;
+        }}
+        onDrawerClose={() => {
+          this._overrideBackPressForDrawerLayout = false;
+        }}
         ref={(drawer) => { this.drawer = drawer; }}
-        renderNavigationView={this._renderNavigationView}>
-        {this._renderNavigation()}
+        renderNavigationView={this._renderDrawerContent.bind(this, onNavigate)}>
+        {this._renderNavigation(navigationState, onNavigate)}
       </DrawerLayoutAndroid>
     );
   }
 
-  _renderNavigationView() {
+  _renderDrawerContent(onNavigate) {
     return (
-      <UIExplorerList
-        onSelectExample={this.onSelectExample}
-        isInDrawer={true}
+      <UIExplorerExampleList
+        list={UIExplorerList}
+        displayTitleRow={true}
+        disableSearch={true}
+        onNavigate={(action) => {
+          this.drawer && this.drawer.closeDrawer();
+          onNavigate(action);
+        }}
       />
     );
   }
 
-  onSelectExample(example) {
-    this.drawer.closeDrawer();
-    if (example.title === this._getUIExplorerHome().title) {
-      example = this._getUIExplorerHome();
+  _renderNavigation(navigationState, onNavigate) {
+    if (navigationState.externalExample) {
+      var Component = UIExplorerList.Modules[navigationState.externalExample];
+      return (
+        <Component
+          onExampleExit={() => {
+            onNavigate(NavigationRootContainer.getBackAction());
+          }}
+          ref={(example) => { this._exampleRef = example; }}
+        />
+      );
     }
-    this.setState({
-      example: example,
-    });
-  }
-
-  _renderHome() {
-    const onSelectExample = this.onSelectExample;
-    return React.createClass({
-      render: function() {
-        return (
-          <UIExplorerList
-            onSelectExample={onSelectExample}
-            isInDrawer={false}
+    const {stack} = navigationState;
+    const title = UIExplorerStateTitleMap(stack.children[stack.index]);
+    if (stack && stack.children[1]) {
+      const {key} = stack.children[1];
+      const ExampleModule = UIExplorerList.Modules[key];
+      const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
+      return (
+        <View style={styles.container}>
+          <StatusBar
+            backgroundColor="#589c90"
           />
-        );
-      }
-    });
-  }
-
-  _renderNavigation() {
-    const Component = this.state.example.component;
+          <ToolbarAndroid
+            logo={require('image!launcher_icon')}
+            navIcon={require('image!ic_menu_black_24dp')}
+            onIconClicked={() => this.drawer.openDrawer()}
+            style={styles.toolbar}
+            title={title}
+          />
+          <ExampleComponent
+            ref={(example) => { this._exampleRef = example; }}
+          />
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <StatusBar
@@ -110,16 +137,24 @@ class UIExplorerApp extends React.Component {
           navIcon={require('image!ic_menu_black_24dp')}
           onIconClicked={() => this.drawer.openDrawer()}
           style={styles.toolbar}
-          title={this.state.example.title}
+          title={title}
         />
-        <Component
-          ref={(example) => { this._exampleRef = example; }}
+        <UIExplorerExampleList
+          list={UIExplorerList}
+          {...stack.children[0]}
         />
       </View>
     );
   }
 
   _handleBackButtonPress() {
+    if (this._overrideBackPressForDrawerLayout) {
+      // This hack is necessary because drawer layout provides an imperative API
+      // with open and close methods. This code would be cleaner if the drawer
+      // layout provided an `isOpen` prop and allowed us to pass a `onDrawerClose` handler.
+      this.drawer && this.drawer.closeDrawer();
+      return true;
+    }
     if (
       this._exampleRef &&
       this._exampleRef.handleBackAction &&
@@ -127,13 +162,13 @@ class UIExplorerApp extends React.Component {
     ) {
       return true;
     }
-    if (this.state.example.title !== this._getUIExplorerHome().title) {
-      this.onSelectExample(this._getUIExplorerHome());
-      return true;
+    if (this._navigationRootRef) {
+      return this._navigationRootRef.handleNavigation(
+        NavigationRootContainer.getBackAction()
+      );
     }
     return false;
   }
-
 }
 
 const styles = StyleSheet.create({

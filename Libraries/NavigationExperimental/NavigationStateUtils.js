@@ -30,11 +30,6 @@ export type NavigationAction = {
 export type NavigationReducer = (
   state: ?NavigationState,
   action: ?NavigationAction
-) => ?NavigationState;
-
-export type NavigationReducerWithDefault = (
-  state: ?NavigationState,
-  action: ?any
 ) => NavigationState;
 
 function getParent(state: NavigationState): ?NavigationParentState {

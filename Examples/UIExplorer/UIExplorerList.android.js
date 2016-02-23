@@ -15,102 +15,167 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
-  StyleSheet,
-  View,
-} = React;
-var UIExplorerListBase = require('./UIExplorerListBase');
-
-var COMPONENTS = [
-  require('./ImageExample'),
-  require('./ListViewExample'),
-  require('./PickerAndroidExample'),
-  require('./ProgressBarAndroidExample'),
-  require('./RefreshControlExample'),
-  require('./ScrollViewSimpleExample'),
-  require('./StatusBarExample'),
-  require('./SwitchExample'),
-  require('./TextExample.android'),
-  require('./TextInputExample.android'),
-  require('./ToolbarAndroidExample'),
-  require('./TouchableExample'),
-  require('./ViewExample'),
-  require('./ViewPagerAndroidExample.android'),
-  require('./WebViewExample'),
-];
-
-var APIS = [
-  require('./AccessibilityAndroidExample.android'),
-  require('./AlertExample').AlertExample,
-  require('./AppStateExample'),
-  require('./BorderExample'),
-  require('./CameraRollExample'),
-  require('./ClipboardExample'),
-  require('./DatePickerAndroidExample'),
-  require('./GeolocationExample'),
-  require('./ImageEditingExample'),
-  require('./IntentAndroidExample.android'),
-  require('./LayoutEventsExample'),
-  require('./LayoutExample'),
-  require('./NavigationExperimental/NavigationExperimentalExample'),
-  require('./NetInfoExample'),
-  require('./PanResponderExample'),
-  require('./PointerEventsExample'),
-  require('./TimePickerAndroidExample'),
-  require('./TimerExample'),
-  require('./ToastAndroidExample.android'),
-  require('./XHRExample'),
-];
-
-type Props = {
-  onSelectExample: Function,
-  isInDrawer: bool,
+export type UIExplorerExample = {
+  key: string;
+  module: React.Component;
 };
 
-class UIExplorerList extends React.Component {
-  props: Props;
-
-  render() {
-    return (
-      <UIExplorerListBase
-        components={COMPONENTS}
-        apis={APIS}
-        searchText=""
-        renderAdditionalView={this.renderAdditionalView.bind(this)}
-        onPressRow={this.onPressRow.bind(this)}
-      />
-    );
-  }
-
-  renderAdditionalView(renderRow, renderTextInput): React.Component {
-    if (this.props.isInDrawer) {
-      var homePage = renderRow({
-        title: 'UIExplorer',
-        description: 'List of examples',
-      }, -1);
-      return (
-        <View>
-          {homePage}
-        </View>
-      );
-    }
-    return renderTextInput(styles.searchTextInput);
-  }
-
-  onPressRow(example: any) {
-    var Component = UIExplorerListBase.makeRenderable(example);
-    this.props.onSelectExample({
-      title: Component.title,
-      component: Component,
-    });
-  }
-}
-
-var styles = StyleSheet.create({
-  searchTextInput: {
-    padding: 2,
+var ComponentExamples: Array<UIExplorerExample> = [
+  {
+    key: 'ImageExample',
+    module: require('./ImageExample'),
   },
+  {
+    key: 'ListViewExample',
+    module: require('./ListViewExample'),
+  },
+  {
+    key: 'PickerAndroidExample',
+    module: require('./PickerAndroidExample'),
+  },
+  {
+    key: 'ProgressBarAndroidExample',
+    module: require('./ProgressBarAndroidExample'),
+  },
+  {
+    key: 'RefreshControlExample',
+    module: require('./RefreshControlExample'),
+  },
+  {
+    key: 'ScrollViewSimpleExample',
+    module: require('./ScrollViewSimpleExample'),
+  },
+  {
+    key: 'StatusBarExample',
+    module: require('./StatusBarExample'),
+  },
+  {
+    key: 'SwitchExample',
+    module: require('./SwitchExample'),
+  },
+  {
+    key: 'TextExample',
+    module: require('./TextExample'),
+  },
+  {
+    key: 'TextInputExample',
+    module: require('./TextInputExample'),
+  },
+  {
+    key: 'ToolbarAndroidExample',
+    module: require('./ToolbarAndroidExample'),
+  },
+  {
+    key: 'TouchableExample',
+    module: require('./TouchableExample'),
+  },
+  {
+    key: 'ViewExample',
+    module: require('./ViewExample'),
+  },
+  {
+    key: 'ViewPagerAndroidExample',
+    module: require('./ViewPagerAndroidExample'),
+  },
+  {
+    key: 'WebViewExample',
+    module: require('./WebViewExample'),
+  },
+];
+
+const APIExamples = [
+  {
+    key: 'AccessibilityAndroidExample',
+    module: require('./AccessibilityAndroidExample'),
+  },
+  {
+    key: 'AlertExample',
+    module: require('./AlertExample').AlertExample,
+  },
+  {
+    key: 'AppStateExample',
+    module: require('./AppStateExample'),
+  },
+  {
+    key: 'BorderExample',
+    module: require('./BorderExample'),
+  },
+  {
+    key: 'CameraRollExample',
+    module: require('./CameraRollExample'),
+  },
+  {
+    key: 'ClipboardExample',
+    module: require('./ClipboardExample'),
+  },
+  {
+    key: 'DatePickerAndroidExample',
+    module: require('./DatePickerAndroidExample'),
+  },
+  {
+    key: 'GeolocationExample',
+    module: require('./GeolocationExample'),
+  },
+  {
+    key: 'ImageEditingExample',
+    module: require('./ImageEditingExample'),
+  },
+  {
+    key: 'IntentAndroidExample',
+    module: require('./IntentAndroidExample'),
+  },
+  {
+    key: 'LayoutEventsExample',
+    module: require('./LayoutEventsExample'),
+  },
+  {
+    key: 'LayoutExample',
+    module: require('./LayoutExample'),
+  },
+  {
+    key: 'NavigationExperimentalExample',
+    module: require('./NavigationExperimental/NavigationExperimentalExample'),
+  },
+  {
+    key: 'NetInfoExample',
+    module: require('./NetInfoExample'),
+  },
+  {
+    key: 'PanResponderExample',
+    module: require('./PanResponderExample'),
+  },
+  {
+    key: 'PointerEventsExample',
+    module: require('./PointerEventsExample'),
+  },
+  {
+    key: 'TimePickerAndroidExample',
+    module: require('./TimePickerAndroidExample'),
+  },
+  {
+    key: 'TimerExample',
+    module: require('./TimerExample'),
+  },
+  {
+    key: 'ToastAndroidExample',
+    module: require('./ToastAndroidExample'),
+  },
+  {
+    key: 'XHRExample',
+    module: require('./XHRExample'),
+  },
+];
+
+const Modules = {};
+
+APIExamples.concat(ComponentExamples).forEach(Example => {
+  Modules[Example.key] = Example.module;
 });
+
+const UIExplorerList = {
+  APIExamples,
+  ComponentExamples,
+  Modules,
+};
 
 module.exports = UIExplorerList;
