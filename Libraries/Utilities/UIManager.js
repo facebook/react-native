@@ -12,6 +12,7 @@
 'use strict';
 
 var UIManager = require('NativeModules').UIManager;
+var findNodeHandle = require('findNodeHandle');
 
 if (!UIManager.setChildren) {
 
@@ -39,7 +40,45 @@ if (!UIManager.setChildren) {
   UIManager.setChildren = function(containerTag, createdTags) {
     var indexes = this._cachedIndexArray(createdTags.length);
     UIManager.manageChildren(containerTag, null, null, createdTags, indexes, null);
-  } 
+  };
 }
+
+const _takeSnapshot = UIManager.takeSnapshot;
+
+/**
+ * Capture an image of the screen, window or an individual view. The image
+ * will be stored in a temporary file that will only exist for as long as the
+ * app is running.
+ * 
+ * The `view` argument can be the literal string `screen` or `window` if you
+ * want to capture the entire screen, or it can be a reference to a specific
+ * React Native component.
+ *
+ * The `options` argument may include:
+ * - width/height (number) - the width and height of the image to capture.
+ * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
+ * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
+ *
+ * Returns a Promise.
+ * @platform ios
+ */
+UIManager.takeSnapshot = async function(
+  view ?: 'screen' | 'window' | ReactElement | number,
+  options ?: {
+    width ?: number;
+    height ?: number;
+    format ?: 'png' | 'jpeg';
+    quality ?: number;
+  },
+) {
+  if (!_takeSnapshot) {
+    console.warn('UIManager.takeSnapshot is not available on this platform');
+    return;
+  }
+  if (typeof view !== 'number' && view !== 'screen' && view !== 'window') {
+    view = findNodeHandle(view) || 'screen';
+  }
+  return _takeSnapshot(view, options);
+};
 
 module.exports = UIManager;

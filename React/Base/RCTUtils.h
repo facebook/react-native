@@ -109,6 +109,9 @@ RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
 // Determines if a given image URL actually refers to an XCAsset
 RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL);
 
+// Creates a new, unique temporary file path with the specified extension
+RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);
+
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 
