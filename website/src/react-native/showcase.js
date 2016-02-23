@@ -269,6 +269,12 @@ var apps = [
     author: 'Sharath Prabhal',
   },
   {
+    name: 'Emergency Kittens',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/42/79/c6/4279c605-f37e-bc9c-3730-706590349eed/icon175x175.jpeg',
+    link:  'https://itunes.apple.com/us/app/emergency-kittens-adorable/id1071497489?ls=1&mt=8',
+    author: 'Clowder Labs',
+  },
+  {
     name: 'Fan of it',
     icon: 'http://a4.mzstatic.com/us/r30/Purple3/v4/c9/3f/e8/c93fe8fb-9332-e744-f04a-0f4f78e42aa8/icon350x350.png',
     link: 'https://itunes.apple.com/za/app/fan-of-it/id1017025530?mt=8',
@@ -475,6 +481,15 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
+  {
     name: 'RenovationFind',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
     link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
@@ -621,21 +636,6 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
     author: 'Hongbeibang'
-  },
-  {
-    name: 'Reading',
-    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
-    link: 'http://www.wandoujia.com/apps/com.reading',
-    author: 'RichardCao',
-    blogs: [
-      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
-    ],
-  },
-  {
-    name: 'Emergency Kittens',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/42/79/c6/4279c605-f37e-bc9c-3730-706590349eed/icon175x175.jpeg',
-    link:  'https://itunes.apple.com/us/app/emergency-kittens-adorable/id1071497489?ls=1&mt=8',
-    author: 'Clowder Labs',
   },
 ];
 
