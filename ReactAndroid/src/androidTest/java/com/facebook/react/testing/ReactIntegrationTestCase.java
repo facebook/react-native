@@ -70,14 +70,17 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
       mReactContext = null;
       mInstance = null;
 
+      final SimpleSettableFuture<Void> semaphore = new SimpleSettableFuture<>();
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           if (contextToDestroy != null) {
             contextToDestroy.destroy();
           }
+          semaphore.set(null);
         }
       });
+      semaphore.getOrThrow();
     }
   }
 
