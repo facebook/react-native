@@ -210,9 +210,9 @@ RCT_EXPORT_MODULE()
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
   NSMutableDictionary *headers = [[RCTConvert NSDictionary:query[@"headers"]] mutableCopy];
-  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-    [headers setValue:[NSString stringWithFormat:@"%@", obj] forKey:key];
-  }];
+  for (NSString *key in [headers allKeys]) {
+    headers[key] = [headers[key] description];
+  }
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   return [self processDataForHTTPQuery:data callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
