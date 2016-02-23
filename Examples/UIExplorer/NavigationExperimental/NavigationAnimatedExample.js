@@ -32,8 +32,8 @@ const NavigationBasicReducer = NavigationReducer.StackReducer({
   initialStates: [
     {key: 'First Route'}
   ],
-  matchAction: action => true,
-  actionStateMap: actionString => ({key: actionString}),
+  matchAction: action => action.type === 'push',
+  actionStateMap: action => ({key: action.key}),
 });
 
 class NavigationAnimatedExample extends React.Component {
@@ -45,7 +45,7 @@ class NavigationAnimatedExample extends React.Component {
       <NavigationRootContainer
         reducer={NavigationBasicReducer}
         ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
-        persistenceKey="NavigationAnimatedExampleState"
+        persistenceKey="NavigationAnimExampleState"
         renderNavigation={this._renderNavigated}
       />
     );
@@ -85,7 +85,7 @@ class NavigationAnimatedExample extends React.Component {
               <NavigationExampleRow
                 text="Push!"
                 onPress={() => {
-                  onNavigate('Route #' + navigationState.children.length);
+                  onNavigate({ type: 'push', key: 'Route #' + navigationState.children.length });
                 }}
               />
               <NavigationExampleRow
