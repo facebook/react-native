@@ -17,6 +17,7 @@ const BackAndroid = require('BackAndroid');
 const Platform = require('Platform');
 
 import type {
+  NavigationAction,
   NavigationState,
   NavigationReducer
 } from 'NavigationStateUtils';
@@ -38,6 +39,7 @@ type Props = {
   renderNavigation: NavigationRenderer;
   reducer: NavigationReducer;
   persistenceKey: ?string;
+  initialAction: NavigationAction;
 };
 
 class NavigationRootContainer extends React.Component {
@@ -47,7 +49,7 @@ class NavigationRootContainer extends React.Component {
     this.handleNavigation = this.handleNavigation.bind(this);
     let navState = null;
     if (!this.props.persistenceKey) {
-      navState = this.props.reducer(null, null);
+      navState = this.props.reducer(null, props.initialAction);
     }
     this.state = { navState };
   }
@@ -56,7 +58,7 @@ class NavigationRootContainer extends React.Component {
       AsyncStorage.getItem(this.props.persistenceKey, (err, storedString) => {
         if (err || !storedString) {
           this.setState({
-            navState: this.props.reducer(null, null),
+            navState: this.props.reducer(null, this.props.initialAction),
           });
           return;
         }
@@ -95,6 +97,12 @@ class NavigationRootContainer extends React.Component {
 
 NavigationRootContainer.childContextTypes = {
   onNavigate: React.PropTypes.func,
+};
+
+NavigationRootContainer.defaultProps = {
+  initialAction: {
+    type: 'NavigationRootContainerInitialAction',
+  },
 };
 
 NavigationRootContainer.getBackAction = getBackAction;
