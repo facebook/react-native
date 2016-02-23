@@ -24,6 +24,7 @@ const UIExplorerNavigationReducer = require('./UIExplorerNavigationReducer');
 const UIExplorerStateTitleMap = require('./UIExplorerStateTitleMap');
 
 const {
+  Animated,
   AppRegistry,
   NavigationExperimental,
   SnapshotViewIOS,
