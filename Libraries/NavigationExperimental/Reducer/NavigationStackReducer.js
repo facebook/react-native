@@ -15,6 +15,7 @@ var NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationState,
+  NavigationParentState,
   NavigationReducer,
 } from 'NavigationStateUtils';
 
@@ -26,121 +27,81 @@ export type NavigationStackReducerAction = BackAction | {
   type: string,
 };
 
-const ActionTypes = {
-  PUSH: 'react-native/NavigationExperimental/stack-push',
-  POP: 'react-native/NavigationExperimental/stack-pop',
-  JUMP_TO: 'react-native/NavigationExperimental/stack-jumpTo',
-  JUMP_TO_INDEX: 'react-native/NavigationExperimental/stack-jumpToIndex',
-  RESET: 'react-native/NavigationExperimental/stack-reset',
+export type ReducerForStateHandler = (state: NavigationState) => NavigationReducer;
+
+export type PushedReducerForActionHandler = (action: any) => ?NavigationReducer;
+
+export type StackReducerConfig = {
+  /*
+   * The initialState is that the reducer will use when there is no previous state.
+   * Must be a NavigationParentState:
+   *
+   * {
+   *   children: [
+   *     {key: 'subState0'},
+   *     {key: 'subState1'},
+   *   ],
+   *   index: 0,
+   *   key: 'navStackKey'
+   * }
+   */
+  initialState: NavigationParentState;
+
+  /*
+   * Returns the sub-reducer for a particular state to handle. This will be called
+   * when we need to handle an action on a sub-state. If no reducer is returned,
+   * no action will be taken
+   */
+  getReducerForState?: ReducerForStateHandler;
+
+  /*
+   * Returns a sub-reducer that will be used when pushing a new route. If a reducer
+   * is returned, it be called to get the new state that will be pushed
+   */
+  getPushedReducerForAction: PushedReducerForActionHandler;
 };
 
-const DEFAULT_KEY = 'NAV_STACK_DEFAULT_KEY';
+const defaultGetReducerForState = (initialState) => (state) => state || initialState;
 
-function NavigationStackPushAction(state: NavigationState): NavigationStackReducerAction {
-  return {
-    type: ActionTypes.PUSH,
-    state,
-  };
-}
-
-function NavigationStackPopAction(): NavigationStackReducerAction {
-  return {
-    type: ActionTypes.POP,
-  };
-}
-
-function NavigationStackJumpToAction(key: string): NavigationStackReducerAction {
-  return {
-    type: ActionTypes.JUMP_TO,
-    key,
-  };
-}
-
-function NavigationStackJumpToIndexAction(index: number): NavigationStackReducerAction {
-  return {
-    type: ActionTypes.JUMP_TO_INDEX,
-    index,
-  };
-}
-
-function NavigationStackResetAction(children: Array<NavigationState>, index: number): NavigationStackReducerAction {
-  return {
-    type: ActionTypes.RESET,
-    index,
-    children,
-  };
-}
-
-type StackReducerConfig = {
-  initialStates: Array<NavigationState>;
-  initialIndex: ?number;
-  key: ?string;
-  matchAction: (action: any) => boolean;
-  actionStateMap: (action: any) => NavigationState;
-};
-
-function NavigationStackReducer({initialStates, initialIndex, key, matchAction, actionStateMap}: StackReducerConfig): NavigationReducer {
+function NavigationStackReducer({initialState, getReducerForState, getPushedReducerForAction}: StackReducerConfig): NavigationReducer {
+  const getReducerForStateWithDefault = getReducerForState || defaultGetReducerForState;
   return function (lastState: ?NavigationState, action: any): NavigationState {
-    if (key == null) {
-      key = DEFAULT_KEY;
-    }
-    if (initialIndex == null) {
-      initialIndex = initialStates.length - 1;
-    }
     if (!lastState) {
-      lastState = {
-        index: initialIndex,
-        children: initialStates,
-        key,
-      };
+      return initialState;
     }
     const lastParentState = NavigationStateUtils.getParent(lastState);
-    if (!action || !lastParentState) {
+    if (!lastParentState) {
       return lastState;
     }
     switch (action.type) {
-      case ActionTypes.PUSH:
-        return NavigationStateUtils.push(
-          lastParentState,
-          action.state
-        );
-      case ActionTypes.POP:
       case 'BackAction':
         if (lastParentState.index === 0 || lastParentState.children.length === 1) {
           return lastParentState;
         }
         return NavigationStateUtils.pop(lastParentState);
-      case ActionTypes.JUMP_TO:
-        return NavigationStateUtils.jumpTo(
-          lastParentState,
-          action.key
-        );
-      case ActionTypes.JUMP_TO_INDEX:
-        return NavigationStateUtils.jumpToIndex(
-          lastParentState,
-          action.index
-        );
-      case ActionTypes.RESET:
-        return {
-          ...lastParentState,
-          index: action.index,
-          children: action.children,
-        };
     }
-    if (matchAction(action)) {
+
+    const activeSubState = lastParentState.children[lastParentState.index];
+    const activeSubReducer = getReducerForStateWithDefault(activeSubState);
+    const nextActiveState = activeSubReducer(activeSubState, action);
+    if (nextActiveState !== activeSubState) {
+      const nextChildren = [...lastParentState.children];
+      nextChildren[lastParentState.index] = nextActiveState;
+      return {
+        ...lastParentState,
+        children: nextChildren,
+      };
+    }
+
+    const subReducerToPush = getPushedReducerForAction(action);
+    if (subReducerToPush) {
       return NavigationStateUtils.push(
         lastParentState,
-        actionStateMap(action)
+        subReducerToPush(null, action)
       );
     }
     return lastParentState;
   };
 }
-
-NavigationStackReducer.PushAction = NavigationStackPushAction;
-NavigationStackReducer.PopAction = NavigationStackPopAction;
-NavigationStackReducer.JumpToAction = NavigationStackJumpToAction;
-NavigationStackReducer.JumpToIndexAction = NavigationStackJumpToIndexAction;
-NavigationStackReducer.ResetAction = NavigationStackResetAction;
 
 module.exports = NavigationStackReducer;

@@ -24,8 +24,6 @@ const ActionTypes = {
   JUMP_TO: 'react-native/NavigationExperimental/tabs-jumpTo',
 };
 
-const DEFAULT_KEY = 'TABS_STATE_DEFAULT_KEY';
-
 export type JumpToAction = {
   type: typeof ActionTypes.JUMP_TO,
   index: number,
@@ -44,9 +42,6 @@ type TabsReducerConfig = {
 };
 
 function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConfig): NavigationReducer {
-  if (key == null) {
-    key = DEFAULT_KEY;
-  }
   return function(lastNavState: ?NavigationState, action: ?any): NavigationState {
     if (!lastNavState) {
       lastNavState = {
@@ -89,16 +84,16 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       };
     });
     let selectedTabReducer = subReducers.splice(lastParentNavState.index, 1)[0];
-    subReducers.unshift(selectedTabReducer);
-    subReducers.push(function(navState: ?NavigationState, action: any): NavigationState {
+    subReducers.unshift(function(navState: ?NavigationState, action: any): NavigationState {
       if (navState && action.type === 'BackAction') {
         return NavigationStateUtils.jumpToIndex(
           lastParentNavState,
-          0
+          initialIndex || 0
         );
       }
       return lastParentNavState;
     });
+    subReducers.unshift(selectedTabReducer);
     const findReducer = NavigationFindReducer(subReducers, lastParentNavState);
     return findReducer(lastParentNavState, action);
   };
