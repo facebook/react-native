@@ -331,8 +331,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
-  public void handleMemoryPressure(MemoryPressure level) {
-    Assertions.assertNotNull(mBridge).handleMemoryPressure(level);
+  public void handleMemoryPressure(final MemoryPressure level) {
+    mReactQueueConfiguration.getJSQueueThread().runOnQueue(
+        new Runnable() {
+          @Override
+          public void run() {
+            Assertions.assertNotNull(mBridge).handleMemoryPressure(level);
+          }
+        });
   }
 
   /**

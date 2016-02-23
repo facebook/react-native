@@ -22,16 +22,16 @@ import type {
   NavigationReducer
 } from 'NavigationStateUtils';
 
-function NavigationFindReducer(reducers: Array<NavigationReducer>): NavigationReducer {
-  return function(lastState: ?NavigationState, action: ?any): ?NavigationState {
+function NavigationFindReducer(reducers: Array<NavigationReducer>, defaultState: NavigationState): NavigationReducer {
+  return function(lastState: ?NavigationState, action: ?any): NavigationState {
     for (let i = 0; i < reducers.length; i++) {
       let reducer = reducers[i];
       let newState = reducer(lastState, action);
       if (newState !== lastState) {
-        return newState;
+        return newState || defaultState;
       }
     }
-    return lastState;
+    return lastState || defaultState;
   };
 }
 
