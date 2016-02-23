@@ -15,6 +15,7 @@
 
 var React = require('react-native');
 var {
+  Animated,
   NavigationExperimental,
   StyleSheet,
   ScrollView,
@@ -80,6 +81,9 @@ class NavigationAnimatedExample extends React.Component {
             getTitle={state => state.key}
           />
         )}
+        setTiming={(pos, navState) => {
+          Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
+        }}
         renderScene={(state, index, position, layout) => (
           <NavigationCard
             key={state.key}
