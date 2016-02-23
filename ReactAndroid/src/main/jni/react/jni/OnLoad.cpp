@@ -727,14 +727,15 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
 }
 
 static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
-                         NativeArray::jhybridobject args) {
+                         NativeArray::jhybridobject args, jstring tracingName) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
     bridge->callFunction(
       (double) moduleId,
       (double) methodId,
-      std::move(arguments->array)
+      std::move(arguments->array),
+      fromJString(env, tracingName)
     );
   } catch (...) {
     translatePendingCppExceptionToJavaException();
