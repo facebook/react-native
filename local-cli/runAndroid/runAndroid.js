@@ -48,6 +48,8 @@ function _runAndroid(argv, config, resolve, reject) {
       console.log(chalk.bold('JS server already running.'));
     } else if (result === 'unrecognized') {
       console.warn(chalk.yellow('JS server not recognized, continuing with build...'));
+    } else if (argv.includes('--no-server')) {
+      console.warn(chalk.bold('--no-server argument is specified. JS server will not start.'));
     } else {
       // result == 'not_running'
       console.log(chalk.bold('Starting JS server...'));
