@@ -9,6 +9,7 @@
 'use strict';
 
 jest.setMock('worker-farm', function() { return () => {}; })
+    .dontMock('node-haste/node_modules/throat')
     .dontMock('os')
     .dontMock('underscore')
     .dontMock('path')

@@ -25,8 +25,7 @@ describe('Transformer', function() {
   var workers;
 
   beforeEach(function() {
-    Cache = require('node-haste').Cache;
-
+    Cache = jest.genMockFn();
     Cache.prototype.get = jest.genMockFn().mockImpl((a, b, c) => c());
 
     workers = jest.genMockFn();
