@@ -399,6 +399,21 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   });
 }
 
+- (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view
+{
+  RCTAssertMainThread();
+
+  NSNumber *reactTag = view.reactTag;
+  dispatch_async(_shadowQueue, ^{
+    RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+    RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
+
+    shadowView.intrinsicContentSize = size;
+
+    [self batchDidComplete];
+  });
+}
+
 - (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView
 {
   RCTAssertMainThread();
