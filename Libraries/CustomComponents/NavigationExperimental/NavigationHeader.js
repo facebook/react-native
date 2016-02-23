@@ -30,7 +30,7 @@
 const Animated = require('Animated');
 const Image = require('Image');
 const NavigationContainer = require('NavigationContainer');
-const NavigationReducer = require('NavigationReducer');
+const NavigationRootContainer = require('NavigationRootContainer');
 const React = require('react-native');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
@@ -103,7 +103,7 @@ class NavigationHeader extends React.Component {
     );
   }
   _handleBackPress() {
-    this.props.onNavigate(NavigationReducer.StackReducer.PopAction());
+    this.props.onNavigate(NavigationRootContainer.getBackAction());
   }
 }
 

@@ -31,7 +31,7 @@ const {
 
 type GameGrid = Array<Array<?string>>;
 
-const evenOddPlayerMap = ['o', 'x'];
+const evenOddPlayerMap = ['O', 'X'];
 const rowLeterMap = ['a', 'b', 'c'];
 
 function parseGame(game: string): GameGrid {
@@ -99,20 +99,20 @@ function isGameOver(gameString: string): boolean {
 
 class Cell extends React.Component {
   cellStyle() {
-    switch (this.props.value) {
-      case 'x':
+    switch (this.props.player) {
+      case 'X':
         return styles.cellX;
-      case 'o':
+      case 'O':
         return styles.cellO;
       default:
         return null;
     }
   }
   textStyle() {
-    switch (this.props.value) {
-      case 'x':
+    switch (this.props.player) {
+      case 'X':
         return styles.cellTextX;
-      case 'o':
+      case 'O':
         return styles.cellTextO;
       default:
         return {};
@@ -171,6 +171,11 @@ function TicTacToeGame(props) {
   );
   return (
     <View style={styles.container}>
+      <Text
+        style={styles.closeButton}
+        onPress={props.onExampleExit}>
+        Close
+      </Text>
       <Text style={styles.title}>EXTREME T3</Text>
       <View style={styles.board}>
         {rows}
@@ -184,18 +189,18 @@ function TicTacToeGame(props) {
 TicTacToeGame = NavigationContainer.create(TicTacToeGame);
 
 const GameActions = {
-  Turn: (row, col) => ({gameAction: 'turn', row, col }),
-  Reset: (row, col) => ({gameAction: 'reset' }),
+  Turn: (row, col) => ({type: 'TicTacToeTurnAction', row, col }),
+  Reset: (row, col) => ({type: 'TicTacToeResetAction' }),
 };
 
 function GameReducer(lastGame: ?string, action: Object): string {
-  if (!lastGame || !action || !action.gameAction) {
-    return lastGame || '';
+  if (!lastGame) {
+    lastGame = '';
   }
-  if (action.gameAction === 'reset') {
+  if (action.type === 'TicTacToeResetAction') {
     return '';
   }
-  if (!isGameOver(lastGame) && action.gameAction === 'turn') {
+  if (!isGameOver(lastGame) && action.type === 'TicTacToeTurnAction') {
     return playTurn(lastGame, action.row, action.col);
   }
   return lastGame;
@@ -206,10 +211,11 @@ class NavigationTicTacToeExample extends React.Component {
     return (
       <NavigationRootContainer
         reducer={GameReducer}
-        persistenceKey="TicTacToeGame"
+        persistenceKey="TicTacToeGameState"
         renderNavigation={(game) => (
           <TicTacToeGame
             game={game}
+            onExampleExit={this.props.onExampleExit}
           />
         )}
       />
@@ -221,6 +227,12 @@ NavigationTicTacToeExample.GameReducer = GameReducer;
 NavigationTicTacToeExample.GameActions = GameActions;
 
 const styles = StyleSheet.create({
+  closeButton: {
+    position: 'absolute',
+    left: 10,
+    top: 30,
+    fontSize: 14,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -257,7 +269,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#7ebd26',
   },
   cellText: {
-    borderRadius: 5,
     fontSize: 50,
     fontFamily: 'AvenirNext-Bold',
   },
