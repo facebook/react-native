@@ -179,7 +179,7 @@ var ViewPagerAndroidExample = React.createClass({
         <View style={styles.buttons}>
           <Button
             enabled={true}
-            text={this.state.swipeEnabled ? 'Swipe Enabled': 'Swipe Disabled'}
+            text={this.state.swipeEnabled ? 'Swipe Enabled' : 'Swipe Disabled'}
             onPress={() => this.setState({swipeEnabled: !this.state.swipeEnabled})}/>
         </View>
         <View style={styles.buttons}>
