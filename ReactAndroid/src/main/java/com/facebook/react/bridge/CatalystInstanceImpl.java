@@ -53,7 +53,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
-  private volatile int mTraceID = 0;
+  private final Object mTeardownLock = new Object();
 
   // Access from native modules thread
   private final NativeModuleRegistry mJavaRegistry;
@@ -168,42 +168,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final int methodId,
       final NativeArray arguments,
       final String tracingName) {
-    if (mDestroyed) {
-      FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
-      return;
+    synchronized (mTeardownLock) {
+      if (mDestroyed) {
+        FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
+        return;
+      }
+
+      incrementPendingJSCalls();
+
+      Assertions.assertNotNull(mBridge).callFunction(moduleId, methodId, arguments, tracingName);
     }
-
-    incrementPendingJSCalls();
-
-    final int traceID = mTraceID++;
-    Systrace.startAsyncFlow(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        tracingName,
-        traceID);
-
-    mReactQueueConfiguration.getJSQueueThread().runOnQueue(
-        new Runnable() {
-          @Override
-          public void run() {
-            mReactQueueConfiguration.getJSQueueThread().assertIsOnThread();
-
-            Systrace.endAsyncFlow(
-                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-                tracingName,
-                traceID);
-
-            if (mDestroyed) {
-              return;
-            }
-
-            Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, tracingName);
-            try {
-              Assertions.assertNotNull(mBridge).callFunction(moduleId, methodId, arguments);
-            } finally {
-              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-            }
-          }
-        });
   }
 
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
@@ -211,42 +185,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @DoNotStrip
   @Override
   public void invokeCallback(final int callbackID, final NativeArray arguments) {
-    if (mDestroyed) {
-      FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
-      return;
+    synchronized (mTeardownLock) {
+      if (mDestroyed) {
+        FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
+        return;
+      }
+
+      incrementPendingJSCalls();
+
+      Assertions.assertNotNull(mBridge).invokeCallback(callbackID, arguments);
     }
-
-    incrementPendingJSCalls();
-
-    final int traceID = mTraceID++;
-    Systrace.startAsyncFlow(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "<callback>",
-        traceID);
-
-    mReactQueueConfiguration.getJSQueueThread().runOnQueue(
-        new Runnable() {
-          @Override
-          public void run() {
-            mReactQueueConfiguration.getJSQueueThread().assertIsOnThread();
-
-            Systrace.endAsyncFlow(
-                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-                "<callback>",
-                traceID);
-
-            if (mDestroyed) {
-              return;
-            }
-
-            Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "<callback>");
-            try {
-              Assertions.assertNotNull(mBridge).invokeCallback(callbackID, arguments);
-            } finally {
-              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-            }
-          }
-        });
   }
 
   /**
@@ -258,18 +206,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
-    if (mDestroyed) {
-      return;
+    synchronized (mTeardownLock) {
+      if (mDestroyed) {
+        return;
+      }
+
+      // TODO: tell all APIs to shut down
+      mDestroyed = true;
+      mJavaRegistry.notifyCatalystInstanceDestroy();
+
+      Systrace.unregisterListener(mTraceListener);
+
+      synchronouslyDisposeBridgeOnJSThread();
+      mReactQueueConfiguration.destroy();
     }
-
-    // TODO: tell all APIs to shut down
-    mDestroyed = true;
-    mJavaRegistry.notifyCatalystInstanceDestroy();
-
-    Systrace.unregisterListener(mTraceListener);
-
-    synchronouslyDisposeBridgeOnJSThread();
-    mReactQueueConfiguration.destroy();
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
     if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
       for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
