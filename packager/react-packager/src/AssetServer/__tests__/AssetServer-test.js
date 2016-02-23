@@ -2,6 +2,7 @@
 
 jest
   .dontMock('node-haste/lib/lib/getPlatformExtension')
+  .dontMock('node-haste/node_modules/throat')
   .dontMock('../');
 
 jest

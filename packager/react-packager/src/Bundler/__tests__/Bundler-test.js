@@ -10,6 +10,7 @@
 
 jest
   .setMock('worker-farm', () => () => undefined)
+  .dontMock('node-haste/node_modules/throat')
   .dontMock('underscore')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
