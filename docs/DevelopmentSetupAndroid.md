@@ -72,7 +72,8 @@ Genymotion is much easier to set up than stock Google emulators. However, it's o
   * Intel x86 Atom System Image (for Android 5.1.1 - API 22)
   * Intel x86 Emulator Accelerator (HAXM installer)
 2. Click "Install Packages".
-3. [Configure hardware acceleration (HAXM)](http://developer.android.com/tools/devices/emulator.html#vm-mac), otherwise the emulator is going to be slow.
+3. [Configure hardware acceleration (HAXM)](http://developer.android.com/tools/devices/emulator.html#vm-mac), otherwise the emulator is going to be slow (or may not run at all).
+  * On a mac this is typically requires opening: `/usr/local/opt/android-sdk/extras/intel/Hardware_Accelerated_Execution_Manager/IntelHAXM_<version>.dmg` and installing the package within.
 4. Create an Android Virtual Device (AVD):
   1. Run `android avd` and click on **Create...**
   ![Create AVD dialog](img/CreateAVD.png)

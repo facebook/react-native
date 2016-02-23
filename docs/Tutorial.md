@@ -29,13 +29,21 @@ After installing these dependencies there are two simple commands to get a React
     This command fetches the React Native source code and dependencies and then creates a new Xcode project in `AwesomeProject/iOS/AwesomeProject.xcodeproj` and a gradle project in `AwesomeProject/android/app`.
 
 
-## Development
+## Overview
 
-For iOS, you can now open this new project (`AwesomeProject/ios/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in Xcode.
+In this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
 
-For Android, run `react-native run-android` from `AwesomeProject` to install the generated app on your emulator or device, and start the Node server which enables live code reloading. To see your changes you have to open the rage-shake-menu (either shake the device or press the menu button on devices, press F2 or Page Up for emulator, ⌘+M for Genymotion), and then press `Reload JS`.
+### Starting the app on iOS
 
-For this tutorial we'll be building a simple version of the Movies app that fetches 25 movies that are in theaters and displays them in a ListView.
+Open this new project (`AwesomeProject/ios/AwesomeProject.xcodeproj`) in Xcode and simply build and run it with `⌘+R`. Doing so will also start a Node server which enables live code reloading. With this you can see your changes by pressing `⌘+R` in the simulator rather than recompiling in Xcode.
+
+### Starting the app on Android
+
+In your terminal navigate into the `AwesomeProject` and run:
+
+    react-native run-android
+
+This will install the generated app on your emulator or device, as well as start the Node server which enables live code reloading. To see your changes you have to open the rage-shake-menu (either shake the device or press the menu button on devices, press F2 or Page Up for emulator, ⌘+M for Genymotion), and then press `Reload JS`.
 
 ### Hello World
 
