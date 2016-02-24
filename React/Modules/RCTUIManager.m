@@ -1191,9 +1191,7 @@ RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
 
     // Get view
     UIView *view;
-    if (target == nil || [target isEqual:@"screen"]) {
-      view = [[UIScreen mainScreen] snapshotViewAfterScreenUpdates:YES];
-    } else if ([target isEqual:@"window"]) {
+    if (target == nil || [target isEqual:@"window"]) {
       view = RCTKeyWindow();
     } else if ([target isKindOfClass:[NSNumber class]]) {
       view = viewRegistry[target];
@@ -1217,7 +1215,7 @@ RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
     UIGraphicsEndImageContext();
 
     if (!success || !image) {
-      reject(RCTErrorUnspecified, @"Failed to capture view snapshot", nil);
+      reject(RCTErrorUnspecified, @"Failed to capture view snapshot.", nil);
       return;
     }
 
