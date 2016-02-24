@@ -42,7 +42,6 @@ public class NetInfoModule extends ReactContextBaseJavaModule
   private static final String ERROR_MISSING_PERMISSION = "E_MISSING_PERMISSION";
 
   private final ConnectivityManager mConnectivityManager;
-  private final ConnectivityManagerCompat mConnectivityManagerCompat;
   private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
   private boolean mNoNetworkPermission = false;
 
@@ -52,7 +51,6 @@ public class NetInfoModule extends ReactContextBaseJavaModule
     super(reactContext);
     mConnectivityManager =
         (ConnectivityManager) reactContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-    mConnectivityManagerCompat = new ConnectivityManagerCompat();
     mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver();
   }
 
