@@ -82,7 +82,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       }
 
       Assertions.assertNotNull(mReactChoreographer)
-          .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this);
+          .postFrameCallback(ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS, this);
     }
   }
 
@@ -152,7 +152,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private void setChoreographerCallback() {
     if (!mFrameCallbackPosted) {
       Assertions.assertNotNull(mReactChoreographer).postFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS,
+          ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS,
           mFrameCallback);
       mFrameCallbackPosted = true;
     }
@@ -161,7 +161,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private void clearChoreographerCallback() {
     if (mFrameCallbackPosted) {
       Assertions.assertNotNull(mReactChoreographer).removeFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS,
+          ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS,
           mFrameCallback);
       mFrameCallbackPosted = false;
     }

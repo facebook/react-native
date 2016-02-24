@@ -51,6 +51,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -101,7 +102,7 @@ public class UIManagerModuleTest {
         return null;
       }
     }).when(choreographerMock).postFrameCallback(
-        any(ReactChoreographer.CallbackType.class),
+        anyInt(),
         any(Choreographer.FrameCallback.class));
 
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();

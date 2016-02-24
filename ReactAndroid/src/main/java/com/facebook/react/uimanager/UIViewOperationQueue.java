@@ -730,13 +730,13 @@ public class UIViewOperationQueue {
 
   /* package */ void resumeFrameCallback() {
     ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+        .postFrameCallback(ReactChoreographer.CALLBACK_TYPE_DISPATCH_UI, mDispatchUIFrameCallback);
   }
 
   /* package */ void pauseFrameCallback() {
 
     ReactChoreographer.getInstance()
-        .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+        .removeFrameCallback(ReactChoreographer.CALLBACK_TYPE_DISPATCH_UI, mDispatchUIFrameCallback);
   }
 
   /**
@@ -770,7 +770,7 @@ public class UIViewOperationQueue {
       }
 
       ReactChoreographer.getInstance().postFrameCallback(
-          ReactChoreographer.CallbackType.DISPATCH_UI, this);
+          ReactChoreographer.CALLBACK_TYPE_DISPATCH_UI, this);
     }
   }
 }

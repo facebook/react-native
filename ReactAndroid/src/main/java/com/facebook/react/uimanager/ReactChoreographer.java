@@ -25,34 +25,22 @@ import com.facebook.react.common.ReactConstants;
  */
 public class ReactChoreographer {
 
-  public static enum CallbackType {
+  /**
+   * For use by perf markers that need to happen immediately after draw
+   */
+  public static final int CALLBACK_TYPE_PERF_MARKERS = 0;
 
-    /**
-     * For use by perf markers that need to happen immediately after draw
-     */
-    PERF_MARKERS(0),
+  /**
+   * For use by {@link com.facebook.react.uimanager.UIManagerModule}
+   */
+  public static final int CALLBACK_TYPE_DISPATCH_UI = 1;
 
-    /**
-     * For use by {@link com.facebook.react.uimanager.UIManagerModule}
-     */
-    DISPATCH_UI(1),
+  /**
+   * Events that make JS do things.
+   */
+  public static final int CALLBACK_TYPE_TIMERS_EVENTS = 2;
 
-    /**
-     * Events that make JS do things.
-     */
-    TIMERS_EVENTS(2),
-    ;
-
-    private final int mOrder;
-
-    private CallbackType(int order) {
-      mOrder = order;
-    }
-
-    /*package*/ int getOrder() {
-      return mOrder;
-    }
-  }
+  private static final int CALLBACK_TYPE_COUNT = CALLBACK_TYPE_TIMERS_EVENTS + 1;
 
   private static ReactChoreographer sInstance;
 
@@ -74,15 +62,15 @@ public class ReactChoreographer {
   private ReactChoreographer() {
     mChoreographer = Choreographer.getInstance();
     mReactChoreographerDispatcher = new ReactChoreographerDispatcher();
-    mCallbackQueues = new ArrayDeque[CallbackType.values().length];
+    mCallbackQueues = new ArrayDeque[CALLBACK_TYPE_COUNT];
     for (int i = 0; i < mCallbackQueues.length; i++) {
       mCallbackQueues[i] = new ArrayDeque<>();
     }
   }
 
-  public void postFrameCallback(CallbackType type, Choreographer.FrameCallback frameCallback) {
+  public void postFrameCallback(int type, Choreographer.FrameCallback frameCallback) {
     UiThreadUtil.assertOnUiThread();
-    mCallbackQueues[type.getOrder()].addLast(frameCallback);
+    mCallbackQueues[type].addLast(frameCallback);
     mTotalCallbacks++;
     Assertions.assertCondition(mTotalCallbacks > 0);
     if (!mHasPostedCallback) {
@@ -91,9 +79,9 @@ public class ReactChoreographer {
     }
   }
 
-  public void removeFrameCallback(CallbackType type, Choreographer.FrameCallback frameCallback) {
+  public void removeFrameCallback(int type, Choreographer.FrameCallback frameCallback) {
     UiThreadUtil.assertOnUiThread();
-    if (mCallbackQueues[type.getOrder()].removeFirstOccurrence(frameCallback)) {
+    if (mCallbackQueues[type].removeFirstOccurrence(frameCallback)) {
       mTotalCallbacks--;
       maybeRemoveFrameCallback();
     } else {

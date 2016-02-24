@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -125,7 +124,7 @@ public class EventDispatcher implements LifecycleEventListener {
 
     mCurrentFrameCallback = new ScheduleDispatchFrameCallback();
     ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
+        .postFrameCallback(ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS, mCurrentFrameCallback);
   }
 
   @Override
@@ -248,7 +247,7 @@ public class EventDispatcher implements LifecycleEventListener {
         }
 
         ReactChoreographer.getInstance()
-            .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, this);
+            .postFrameCallback(ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS, this);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }
