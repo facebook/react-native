@@ -45,6 +45,10 @@ var TouchableWithoutFeedback = React.createClass({
       React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
     ]),
     /**
+     * If true, disable all interactions for this component.
+     */
+    disabled: React.PropTypes.bool,
+    /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
      */
