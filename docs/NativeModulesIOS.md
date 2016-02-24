@@ -133,7 +133,7 @@ and call it from JavaScript:
 ```javascript
 CalendarManager.addEvent('Birthday Party', {
   location: '4 Privet Drive, Surrey',
-  time: date.toTime(),
+  time: date.getTime(),
   description: '...'
 })
 ```
