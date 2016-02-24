@@ -50,11 +50,17 @@ import com.facebook.react.uimanager.ViewProps;
   protected void performApplySpans(SpannableStringBuilder builder, int begin, int end) {
     mFontStylingSpan.freeze();
 
+    // All spans will automatically extend to the right of the text, but not the left - except
+    // for spans that start at the beginning of the text.
+    final int flag = begin == 0 ?
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE :
+        Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
+
     builder.setSpan(
         mFontStylingSpan,
         begin,
         end,
-        Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        flag);
 
     if (mShadowStyleSpan.getColor() != 0 && mShadowStyleSpan.getRadius() != 0) {
       mShadowStyleSpan.freeze();
@@ -63,7 +69,7 @@ import com.facebook.react.uimanager.ViewProps;
           mShadowStyleSpan,
           begin,
           end,
-          Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+          flag);
     }
 
     for (int i = 0, childCount = getChildCount(); i < childCount; ++i) {
