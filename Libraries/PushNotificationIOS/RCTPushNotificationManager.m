@@ -182,7 +182,6 @@ RCT_EXPORT_METHOD(requestPermissions:(NSDictionary *)permissions)
     UIUserNotificationSettings *notificationSettings =
       [UIUserNotificationSettings settingsForTypes:(NSUInteger)types categories:nil];
     [app registerUserNotificationSettings:notificationSettings];
-    [app registerForRemoteNotifications];
   } else {
     [app registerForRemoteNotificationTypes:(NSUInteger)types];
   }
