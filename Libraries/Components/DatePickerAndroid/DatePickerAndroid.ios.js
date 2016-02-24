@@ -19,6 +19,6 @@ const DatePickerAndroid = {
       message: 'DatePickerAndroid is not supported on this platform.'
     });
   },
-}
+};
 
 module.exports = DatePickerAndroid;

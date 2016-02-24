@@ -589,6 +589,51 @@ BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL)
   return YES;
 }
 
+RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *extension, NSError **error)
+{
+  static NSError *setupError = nil;
+  static NSString *directory;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    directory = [NSTemporaryDirectory() stringByAppendingPathComponent:@"ReactNative"];
+    // If the temporary directory already exists, we'll delete it to ensure
+    // that temp files from the previous run have all been deleted. This is not
+    // a security measure, it simply prevents the temp directory from using too
+    // much space, as the circumstances under which iOS clears it automatically
+    // are not well-defined.
+    NSFileManager *fileManager = [NSFileManager new];
+    if ([fileManager fileExistsAtPath:directory]) {
+      [fileManager removeItemAtPath:directory error:NULL];
+    }
+    if (![fileManager fileExistsAtPath:directory]) {
+      NSError *localError = nil;
+      if (![fileManager createDirectoryAtPath:directory
+                  withIntermediateDirectories:YES
+                                   attributes:nil
+                                        error:&localError]) {
+        // This is bad
+        RCTLogError(@"Failed to create temporary directory: %@", localError);
+        setupError = localError;
+        directory = nil;
+      }
+    }
+  });
+
+  if (!directory || setupError) {
+    if (error) {
+      *error = setupError;
+    }
+    return nil;
+  }
+
+  // Append a unique filename
+  NSString *filename = [NSUUID new].UUIDString;
+  if (extension) {
+    filename = [filename stringByAppendingPathExtension:extension];
+  }
+  return [directory stringByAppendingPathComponent:filename];
+}
+
 static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
 {
   CGColorSpaceModel model = CGColorSpaceGetModel(CGColorGetColorSpace(color));

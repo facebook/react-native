@@ -56,10 +56,10 @@ function renderType(type) {
   if (type.name === 'custom') {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
-      return <a href={slugify(name) + '.html#style'}>{name}#style</a>
+      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>
     }
     if (type.raw === 'ColorPropType') {
-      return <a href={'colors.html'}>color</a>
+      return <a href={'docs/colors.html'}>color</a>
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
@@ -122,7 +122,7 @@ var ComponentDoc = React.createClass({
         </Header>
         {prop.deprecationMessage && <div className="deprecated">
           <div className="deprecatedTitle">
-            <img className="deprecatedIcon" src="/react-native/img/Warning.png" />
+            <img className="deprecatedIcon" src="img/Warning.png" />
             <span>Deprecated</span>
           </div>
           <div className="deprecatedMessage">
@@ -140,7 +140,7 @@ var ComponentDoc = React.createClass({
     return (
       <div className="prop" key={name}>
         <Header level={4} className="propTitle" toSlug={name}>
-          <a href={slugify(name) + '.html#props'}>{name} props...</a>
+          <a href={'docs/' + slugify(name) + '.html#props'}>{name} props...</a>
         </Header>
       </div>
     );
@@ -175,15 +175,15 @@ var ComponentDoc = React.createClass({
           if (name === 'LayoutPropTypes') {
             name = 'Flexbox';
             link =
-              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else if (name === 'TransformPropTypes') {
             name = 'Transforms';
             link =
-              <a href={slugify(name) + '.html#proptypes'}>{name}...</a>;
+              <a href={'docs/' + slugify(name) + '.html#proptypes'}>{name}...</a>;
           } else {
             name = name.replace('StylePropTypes', '');
             link =
-              <a href={slugify(name) + '.html#style'}>{name}#style...</a>;
+              <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style...</a>;
           }
           return (
             <div className="prop" key={name}>
@@ -416,7 +416,7 @@ var EmbeddedSimulator = React.createClass({
       <div className="column-left">
         <p><a className="modal-button-open"><strong>Run this example</strong></a></p>
         <div className="modal-button-open modal-button-open-img">
-          <img alt="Run example in simulator" width="170" height="358" src="/react-native/img/alertIOS.png" />
+          <img alt="Run example in simulator" width="170" height="358" src="img/alertIOS.png" />
         </div>
         <Modal />
       </div>
@@ -506,8 +506,8 @@ var Autodocs = React.createClass({
             {this.renderFullDescription(docs)}
             {this.renderExample(docs, metadata)}
             <div className="docs-prevnext">
-              {metadata.previous && <a className="docs-prev" href={metadata.previous + '.html#content'}>&larr; Prev</a>}
-              {metadata.next && <a className="docs-next" href={metadata.next + '.html#content'}>Next &rarr;</a>}
+              {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
+              {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
             </div>
           </div>
 

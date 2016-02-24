@@ -4,7 +4,6 @@
 
 #include <JavaScriptCore/JSStringRef.h>
 #include <glog/logging.h>
-#include <jni/fbjni/Exceptions.h>
 
 #include "Value.h"
 
@@ -56,7 +55,7 @@ JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef 
     auto line = exception.asObject().getProperty("line");
 
     std::ostringstream locationInfo;
-    std::string file = source != nullptr ? String::adopt(source).str() : "";
+    std::string file = source != nullptr ? String::ref(source).str() : "";
     locationInfo << "(" << (file.length() ? file : "<unknown file>");
     if (line != nullptr && line.isNumber()) {
       locationInfo << ":" << line.asInteger();

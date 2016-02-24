@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -29,18 +28,19 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -49,8 +49,7 @@ import com.facebook.react.views.text.TextInlineImageSpan;
 /**
  * Manages instances of TextInput.
  */
-public class ReactTextInputManager extends
-    BaseViewManager<ReactEditText, ReactTextInputShadowNode> {
+public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
 
   /* package */ static final String REACT_CLASS = "AndroidTextInput";
 
@@ -84,12 +83,12 @@ public class ReactTextInputManager extends
   }
 
   @Override
-  public ReactTextInputShadowNode createShadowNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactTextInputShadowNode();
   }
 
   @Override
-  public Class<ReactTextInputShadowNode> getShadowNodeClass() {
+  public Class<? extends LayoutShadowNode> getShadowNodeClass() {
     return ReactTextInputShadowNode.class;
   }
 
@@ -428,7 +427,7 @@ public class ReactTextInputManager extends
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               s.toString(),
               (int) PixelUtil.toDIPFromPixel(contentWidth),
               (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -437,7 +436,7 @@ public class ReactTextInputManager extends
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
               mEditText.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               newText,
               oldText,
               start,
@@ -463,17 +462,17 @@ public class ReactTextInputManager extends
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis()));
+                      SystemClock.nanoTime()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis()));
+                      SystemClock.nanoTime()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis(),
+                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
           }
@@ -491,7 +490,7 @@ public class ReactTextInputManager extends
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis(),
+                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
             return false;
@@ -521,7 +520,7 @@ public class ReactTextInputManager extends
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                SystemClock.uptimeMillis(),
+                SystemClock.nanoTime(),
                 start,
                 end
             )

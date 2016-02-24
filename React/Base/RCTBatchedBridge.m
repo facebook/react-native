@@ -35,7 +35,8 @@
 typedef NS_ENUM(NSUInteger, RCTBridgeFields) {
   RCTBridgeFieldRequestModuleIDs = 0,
   RCTBridgeFieldMethodIDs,
-  RCTBridgeFieldParamss,
+  RCTBridgeFieldParams,
+  RCTBridgeFieldCallID,
 };
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
@@ -64,6 +65,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   NSUInteger _syncInitializedModules;
   NSUInteger _asyncInitializedModules;
 }
+
+@synthesize flowID = _flowID;
+@synthesize flowIDMap = _flowIDMap;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
@@ -278,10 +282,11 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     id module = preregisteredModules[moduleName];
     if (!module) {
       // Check if the module class, or any of its superclasses override init
-      // or setBridge:. If they do, we assume that they are expecting to be
-      // initialized when the bridge first loads.
+      // or setBridge:, or has exported constants. If they do, we assume that
+      // they are expecting to be initialized when the bridge first loads.
       if ([moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod ||
-          [moduleClass instancesRespondToSelector:setBridgeSelector]) {
+          [moduleClass instancesRespondToSelector:setBridgeSelector] ||
+          RCTClassOverridesInstanceMethod(moduleClass, @selector(constantsToExport))) {
         module = [moduleClass new];
         if (!module) {
           module = (id)kCFNull;
@@ -456,7 +461,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
-    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path]];
+    NSString *host = self.bundleURL.host;
+    NSNumber *port = self.bundleURL.port;
+    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path, host, RCTNullIfNil(port)]];
   }
 
 #endif
@@ -606,6 +613,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       _frameUpdateObservers = nil;
       _pendingCalls = nil;
 
+      if (_flowIDMap != NULL) {
+        CFRelease(_flowIDMap);
+      }
     }];
   });
 }
@@ -812,15 +822,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)handleBuffer:(NSArray *)buffer
 {
   NSArray *requestsArray = [RCTConvert NSArray:buffer];
-  if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParamss) {
+
+  if (RCT_DEBUG && requestsArray.count <= RCTBridgeFieldParams) {
     RCTLogError(@"Buffer should contain at least %tu sub-arrays. Only found %tu",
-              RCTBridgeFieldParamss + 1, requestsArray.count);
+                RCTBridgeFieldParams + 1, requestsArray.count);
     return;
   }
 
   NSArray<NSNumber *> *moduleIDs = [RCTConvert NSNumberArray:requestsArray[RCTBridgeFieldRequestModuleIDs]];
   NSArray<NSNumber *> *methodIDs = [RCTConvert NSNumberArray:requestsArray[RCTBridgeFieldMethodIDs]];
-  NSArray<NSArray *> *paramsArrays = [RCTConvert NSArrayArray:requestsArray[RCTBridgeFieldParamss]];
+  NSArray<NSArray *> *paramsArrays = [RCTConvert NSArrayArray:requestsArray[RCTBridgeFieldParams]];
+
+  int64_t callID = -1;
+
+  if (requestsArray.count > 3) {
+    callID = [requestsArray[RCTBridgeFieldCallID] longLongValue];
+  }
 
   if (RCT_DEBUG && (moduleIDs.count != methodIDs.count || moduleIDs.count != paramsArrays.count)) {
     RCTLogError(@"Invalid data message - all must be length: %zd", moduleIDs.count);
@@ -853,6 +870,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       @autoreleasepool {
         for (NSNumber *indexObj in calls) {
           NSUInteger index = indexObj.unsignedIntegerValue;
+          if (callID != -1 && _flowIDMap != NULL) {
+            int64_t newFlowID = (int64_t)CFDictionaryGetValue(_flowIDMap, (const void *)(_flowID + index));
+            _RCTProfileEndFlowEvent(@(newFlowID));
+            CFDictionaryRemoveValue(_flowIDMap, (const void *)(_flowID + index));
+          }
           [self _handleRequestNumber:index
                             moduleID:[moduleIDs[index] integerValue]
                             methodID:[methodIDs[index] integerValue]
@@ -871,6 +893,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       dispatch_async(queue, block);
     }
   }
+
+  _flowID = callID;
 }
 
 - (void)partialBatchDidFlush

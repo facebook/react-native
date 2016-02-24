@@ -133,7 +133,7 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
-  public void onResume(@Nullable Activity activity) {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = activity;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -144,7 +144,7 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
@@ -154,15 +154,23 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onDestroy}
    */
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+    mCurrentActivity = null;
+  }
+
+  /**
+   * Destroy this instance, making it unusable.
+   */
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
-    mCurrentActivity = null;
   }
 
   /**

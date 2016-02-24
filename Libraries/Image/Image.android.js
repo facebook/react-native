@@ -63,7 +63,7 @@ var ImageViewAttributes = merge(ReactNativeViewAttributes.UIView, {
 var Image = React.createClass({
   propTypes: {
     ...View.propTypes,
-    style: StyleSheetPropType(ImageStylePropTypes), 
+    style: StyleSheetPropType(ImageStylePropTypes),
    /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or a static image
@@ -75,7 +75,7 @@ var Image = React.createClass({
       }),
       // Opaque type returned by require('./image.jpg')
       PropTypes.number,
-    ]).isRequired,
+    ]),
     /**
      * similarly to `source`, this property represents the resource used to render
      * the loading indicator for the image, displayed until image is ready to be

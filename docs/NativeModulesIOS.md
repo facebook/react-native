@@ -50,7 +50,8 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 Now, from your JavaScript file you can call the method like this:
 
 ```javascript
-var CalendarManager = require('react-native').NativeModules.CalendarManager;
+import { NativeModules } from 'react-native';
+var CalendarManager = NativeModules.CalendarManager;
 CalendarManager.addEvent('Birthday Party', '4 Privet Drive, Surrey');
 ```
 
@@ -188,7 +189,8 @@ RCT_REMAP_METHOD(findEvents,
   if (events) {
     resolve(events);
   } else {
-    reject(error);
+    NSError *error = ...
+    reject(@"no_events", @"There were no events", error);
   }
 }
 ```
@@ -286,7 +288,7 @@ You must create a class extension of RCTConvert like so:
 @implementation RCTConvert (StatusBarAnimation)
   RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{ @"statusBarAnimationNone" : @(UIStatusBarAnimationNone),
                                                @"statusBarAnimationFade" : @(UIStatusBarAnimationFade),
-                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)},
+                                               @"statusBarAnimationSlide" : @(UIStatusBarAnimationSlide)}),
                       UIStatusBarAnimationNone, integerValue)
 @end
 ```
@@ -333,7 +335,7 @@ The native module can signal events to JavaScript without being invoked directly
 JavaScript code can subscribe to these events:
 
 ```javascript
-var { NativeAppEventEmitter } = require('react-native');
+import { NativeAppEventEmitter } from 'react-native';
 
 var subscription = NativeAppEventEmitter.addListener(
   'EventReminder',
