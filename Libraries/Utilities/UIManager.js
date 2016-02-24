@@ -50,8 +50,8 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * will be stored in a temporary file that will only exist for as long as the
  * app is running.
  * 
- * The `view` argument can be the literal string `screen` or `window` if you
- * want to capture the entire screen, or it can be a reference to a specific
+ * The `view` argument can be the literal string `window` if you want to
+ * capture the entire window, or it can be a reference to a specific
  * React Native component.
  *
  * The `options` argument may include:
@@ -63,7 +63,7 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * @platform ios
  */
 UIManager.takeSnapshot = async function(
-  view ?: 'screen' | 'window' | ReactElement | number,
+  view ?: 'window' | ReactElement | number,
   options ?: {
     width ?: number;
     height ?: number;
@@ -75,8 +75,8 @@ UIManager.takeSnapshot = async function(
     console.warn('UIManager.takeSnapshot is not available on this platform');
     return;
   }
-  if (typeof view !== 'number' && view !== 'screen' && view !== 'window') {
-    view = findNodeHandle(view) || 'screen';
+  if (typeof view !== 'number' && view !== 'window') {
+    view = findNodeHandle(view) || 'window';
   }
   return _takeSnapshot(view, options);
 };

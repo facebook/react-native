@@ -44,7 +44,7 @@ var ScreenshotExample = React.createClass({
 
   takeScreenshot() {
     UIManager
-      .takeSnapshot('screen', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
+      .takeSnapshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
       .then((uri) => this.setState({uri}))
       .catch((error) => alert(error));
   }
