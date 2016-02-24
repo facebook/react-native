@@ -14,6 +14,8 @@
 
 #include "noncopyable.h"
 
+#include "AlignStack.h"
+
 #if WITH_FBJSCEXTENSIONS
 #include <jsc_stringref.h>
 #endif
@@ -26,13 +28,15 @@ class Context;
 
 class String : public noncopyable {
 public:
-  explicit String(const char* utf8) :
+  explicit String(const char* utf8) ALIGN_STACK :
     m_string(Adopt, JSStringCreateWithUTF8CString(utf8))
   {}
-  String(String&& other) :
+
+  String(String&& other) ALIGN_STACK :
     m_string(Adopt, other.m_string.leakRef())
   {}
-  String(const String& other) :
+
+  String(const String& other) ALIGN_STACK :
     m_string(other.m_string)
   {}
 
@@ -41,16 +45,16 @@ public:
   }
 
   // Length in characters
-  size_t length() const {
+  size_t length() const ALIGN_STACK {
     return JSStringGetLength(m_string.get());
   }
 
   // Length in bytes of a null-terminated utf8 encoded value
-  size_t utf8Size() const {
+  size_t utf8Size() const ALIGN_STACK {
     return JSStringGetMaximumUTF8CStringSize(m_string.get());
   }
 
-  std::string str() const {
+  std::string str() const ALIGN_STACK {
     size_t reserved = utf8Size();
     char* bytes = new char[reserved];
     size_t length = JSStringGetUTF8CString(m_string.get(), bytes, reserved) - 1;
@@ -59,11 +63,11 @@ public:
   }
 
   // Assumes that utf8 is null terminated
-  bool equals(const char* utf8) {
+  bool equals(const char* utf8) ALIGN_STACK {
     return JSStringIsEqualToUTF8CString(m_string.get(), utf8);
   }
 
-  static String createExpectingAscii(std::string const &utf8) {
+  static String createExpectingAscii(std::string const &utf8) ALIGN_STACK {
   #if WITH_FBJSCEXTENSIONS
     return String(Adopt, JSStringCreateWithUTF8CStringExpectAscii(utf8.c_str(), utf8.size()));
   #else
@@ -80,11 +84,11 @@ public:
   }
 
 private:
-  explicit String(JSStringRef string) :
+  explicit String(JSStringRef string) ALIGN_STACK :
     m_string(string)
   {}
 
-  String(AdoptTag tag, JSStringRef string) :
+  String(AdoptTag tag, JSStringRef string) ALIGN_STACK :
     m_string(tag, string)
   {}
 
@@ -106,7 +110,7 @@ public:
     other.m_isProtected = false;
   }
 
-  ~Object() {
+  ~Object() ALIGN_STACK {
     if (m_isProtected && m_obj) {
       JSValueUnprotect(m_context, m_obj);
     }
@@ -118,28 +122,28 @@ public:
 
   operator Value() const;
 
-  bool isFunction() const {
+  bool isFunction() const ALIGN_STACK {
     return JSObjectIsFunction(m_context, m_obj);
   }
 
-  Value callAsFunction(int nArgs, JSValueRef args[]);
+  Value callAsFunction(int nArgs, JSValueRef args[]) ALIGN_STACK;
 
-  Value getProperty(const String& propName) const;
+  Value getProperty(const String& propName) const ALIGN_STACK;
   Value getProperty(const char *propName) const;
-  Value getPropertyAtIndex(unsigned index) const;
-  void setProperty(const String& propName, const Value& value) const;
+  Value getPropertyAtIndex(unsigned index) const ALIGN_STACK;
+  void setProperty(const String& propName, const Value& value) const ALIGN_STACK;
   void setProperty(const char *propName, const Value& value) const;
-  std::vector<std::string> getPropertyNames() const;
-  std::unordered_map<std::string, std::string> toJSONMap() const;
+  std::vector<std::string> getPropertyNames() const ALIGN_STACK;
+  std::unordered_map<std::string, std::string> toJSONMap() const ALIGN_STACK;
 
-  void makeProtected() {
+  void makeProtected() ALIGN_STACK {
     if (!m_isProtected && m_obj) {
       JSValueProtect(m_context, m_obj);
       m_isProtected = true;
     }
   }
 
-  static Object getGlobalObject(JSContextRef ctx) {
+  static Object getGlobalObject(JSContextRef ctx) ALIGN_STACK {
     auto globalObj = JSContextGetGlobalObject(ctx);
     return Object(ctx, globalObj);
   }
@@ -147,7 +151,7 @@ public:
   /**
    * Creates an instance of the default object class.
    */
-  static Object create(JSContextRef ctx);
+  static Object create(JSContextRef ctx) ALIGN_STACK;
 
 private:
   JSContextRef m_context;
@@ -164,27 +168,27 @@ public:
     return m_value;
   }
 
-  bool isBoolean() const {
+  bool isBoolean() const ALIGN_STACK {
     return JSValueIsBoolean(context(), m_value);
   }
 
-  bool asBoolean() const {
+  bool asBoolean() const ALIGN_STACK {
     return JSValueToBoolean(context(), m_value);
   }
 
-  bool isNumber() const {
+  bool isNumber() const ALIGN_STACK {
     return JSValueIsNumber(context(), m_value);
   }
 
-  bool isNull() const {
+  bool isNull() const ALIGN_STACK {
     return JSValueIsNull(context(), m_value);
   }
 
-  bool isUndefined() const {
+  bool isUndefined() const ALIGN_STACK {
     return JSValueIsUndefined(context(), m_value);
   }
 
-  double asNumber() const {
+  double asNumber() const ALIGN_STACK {
     if (isNumber()) {
       return JSValueToNumber(context(), m_value, nullptr);
     } else {
@@ -200,22 +204,22 @@ public:
     return static_cast<uint32_t>(asNumber());
   }
 
-  bool isObject() const {
+  bool isObject() const ALIGN_STACK {
     return JSValueIsObject(context(), m_value);
   }
 
-  Object asObject();
+  Object asObject() ALIGN_STACK;
 
-  bool isString() const {
+  bool isString() const ALIGN_STACK {
     return JSValueIsString(context(), m_value);
   }
 
-  String toString() {
+  String toString() ALIGN_STACK {
     return String::adopt(JSValueToStringCopy(context(), m_value, nullptr));
   }
 
-  std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef ctx, const String& json);
+  std::string toJSONString(unsigned indent = 0) const ALIGN_STACK;
+  static Value fromJSON(JSContextRef ctx, const String& json) ALIGN_STACK;
 protected:
   JSContextRef context() const;
   JSContextRef m_context;
