@@ -140,6 +140,11 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     mPaddingChanged = false;
   }
 
+  @Override
+  boolean shouldAllowEmptySpans() {
+    return true;
+  }
+
   /**
    * Returns a new CharSequence that includes all the text and styling information to create Layout.
    */

@@ -53,11 +53,23 @@ import com.facebook.react.uimanager.ReactShadowNode;
   }
 
   /**
+   * Whether or not to allow empty spans to be set
+   * This is used to bypass an optimization in {@code applySpans} that skips applying spans if
+   * there is no text (since, for TextInput, for example, we want to apply the span even if there
+   * is no text so that newly typed text gets styled properly).
+   *
+   * @return a boolean representing whether or not we should allow empty spans
+   */
+  /* package */ boolean shouldAllowEmptySpans() {
+    return false;
+  }
+
+  /**
    * Recursively visits FlatTextShadowNode and its children,
    * applying spans to SpannableStringBuilder.
    */
   /* package */ final void applySpans(SpannableStringBuilder builder) {
-    if (mTextBegin != mTextEnd) {
+    if (mTextBegin != mTextEnd || shouldAllowEmptySpans()) {
       performApplySpans(builder, mTextBegin, mTextEnd);
     }
   }
