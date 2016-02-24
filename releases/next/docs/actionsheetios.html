@@ -8,6 +8,7 @@ In this way, you can share images, videos, PDF files, etc.</p></div></div></div>
   ActionSheetIOS<span class="token punctuation">,</span>
   StyleSheet<span class="token punctuation">,</span>
   Text<span class="token punctuation">,</span>
+  UIManager<span class="token punctuation">,</span>
   View<span class="token punctuation">,</span>
 <span class="token punctuation">}</span> <span class="token operator">=</span> React<span class="token punctuation">;</span>
 
@@ -115,9 +116,7 @@ In this way, you can share images, videos, PDF files, etc.</p></div></div></div>
         <span class="token string">&#x27;com.apple.UIKit.activity.PostToTwitter&#x27;</span>
       <span class="token punctuation">]</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-      console<span class="token punctuation">.</span><span class="token function">error<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token function">alert<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">(</span>success<span class="token punctuation">,</span> method<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
       <span class="token keyword">var</span> text<span class="token punctuation">;</span>
       <span class="token keyword">if</span> <span class="token punctuation">(</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -127,6 +126,50 @@ In this way, you can share images, videos, PDF files, etc.</p></div></div></div>
       <span class="token punctuation">}</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>text<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> ShareScreenshotExample <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+  <span class="token function">getInitialState<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      text<span class="token punctuation">:</span> <span class="token string">&#x27;&#x27;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      &lt;View<span class="token operator">&gt;</span>
+        &lt;Text onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>showShareActionSheet<span class="token punctuation">}</span> style<span class="token operator">=</span><span class="token punctuation">{</span>style<span class="token punctuation">.</span>button<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+          Click to show the Share ActionSheet
+        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+        &lt;Text<span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>text<span class="token punctuation">}</span>
+        &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+      &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">showShareActionSheet<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true"> // Take the snapshot (returns a temp file uri)
+</span>    UIManager<span class="token punctuation">.</span><span class="token function">takeSnapshot<span class="token punctuation">(</span></span><span class="token string">&#x27;window&#x27;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then<span class="token punctuation">(</span></span><span class="token punctuation">(</span>uri<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+     <span class="token comment" spellcheck="true"> // Share image data
+</span>      ActionSheetIOS<span class="token punctuation">.</span><span class="token function">showShareActionSheetWithOptions<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
+        url<span class="token punctuation">:</span> uri<span class="token punctuation">,</span>
+        excludedActivityTypes<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+          <span class="token string">&#x27;com.apple.UIKit.activity.PostToTwitter&#x27;</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token function">alert<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span>success<span class="token punctuation">,</span> method<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">var</span> text<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          text <span class="token operator">=</span> `Shared via $<span class="token punctuation">{</span>method<span class="token punctuation">}</span>`<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+          text <span class="token operator">=</span> <span class="token string">&#x27;You didn\&#x27;t share&#x27;</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState<span class="token punctuation">(</span></span><span class="token punctuation">{</span>text<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token function">alert<span class="token punctuation">(</span></span>error<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
@@ -154,10 +197,16 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
       <span class="token keyword">return</span> &lt;ShareActionSheetExample url<span class="token operator">=</span><span class="token string">&quot;https://code.facebook.com&quot;</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">{</span>
+  <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Share Local Image&#x27;</span><span class="token punctuation">,</span>
     <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
       <span class="token keyword">return</span> &lt;ShareActionSheetExample url<span class="token operator">=</span><span class="token string">&quot;bunny.png&quot;</span> <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Share Screenshot&#x27;</span><span class="token punctuation">,</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> &lt;ShareScreenshotExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">]</span><span class="token punctuation">;</span></div></div><div class="docs-prevnext"><a class="docs-next" href="docs/alert.html#content">Next →</a></div></div><noscript></noscript></section><footer class="wrap"><div class="center">© 2016 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>
