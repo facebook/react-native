@@ -1,5 +1,5 @@
 # Helpers for referring to React Native open source code.
-# test
+#
 # This lets us build React Native:
 # - At Facebook by running buck from the root of the fb repo
 # - Outside of Facebook by running buck in the root of the git repo
