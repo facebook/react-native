@@ -132,7 +132,7 @@ public class FlatUIImplementation extends UIImplementation {
       }
 
       if (node.mountsToView()) {
-        mStateBuilder.ensureBackingViewIsCreated(node, styles);
+        mStateBuilder.enqueueCreateOrUpdateView(node, styles);
       }
     } else {
       super.handleCreateView(cssNode, rootViewTag, styles);
@@ -150,7 +150,7 @@ public class FlatUIImplementation extends UIImplementation {
       node.handleUpdateProperties(styles);
 
       if (node.mountsToView()) {
-        mStateBuilder.ensureBackingViewIsCreated(node, styles);
+        mStateBuilder.enqueueCreateOrUpdateView(node, styles);
       }
     } else {
       super.handleUpdateView(cssNode, className, styles);
@@ -426,7 +426,7 @@ public class FlatUIImplementation extends UIImplementation {
 
     FlatShadowNode nonVirtualNode = (FlatShadowNode) node;
     nonVirtualNode.forceMountToView();
-    mStateBuilder.ensureBackingViewIsCreated(nonVirtualNode, null);
+    mStateBuilder.ensureBackingViewIsCreated(nonVirtualNode);
 
     FlatUIViewOperationQueue operationsQueue = mStateBuilder.getOperationsQueue();
     operationsQueue.enqueueSetJSResponder(

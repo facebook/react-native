@@ -121,7 +121,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mAttachDetachListeners.add(listener);
   }
 
-  /* package */ void ensureBackingViewIsCreated(
+  /* package */ void enqueueCreateOrUpdateView(
       FlatShadowNode node,
       @Nullable ReactStylesDiffMap styles) {
     if (node.isBackingViewCreated()) {
@@ -134,6 +134,17 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     int tag = node.getReactTag();
     mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), styles);
+
+    node.signalBackingViewIsCreated();
+  }
+
+  /* package */ void ensureBackingViewIsCreated(FlatShadowNode node) {
+    if (node.isBackingViewCreated()) {
+      return;
+    }
+
+    int tag = node.getReactTag();
+    mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), null);
 
     node.signalBackingViewIsCreated();
   }
@@ -445,7 +456,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     float bottom = top + height;
 
     if (node.mountsToView()) {
-      ensureBackingViewIsCreated(node, null);
+      ensureBackingViewIsCreated(node);
 
       addNativeChild(node);
       if (!parentIsAndroidView) {
