@@ -76,6 +76,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     view.setDrawerWidth(widthInPx);
   }
 
+  @ReactProp(name = "drawerGestureLock", defaultInt = DrawerLayout.LOCK_MODE_UNLOCKED)
+  public void setDrawerGestureLock(ReactDrawerLayout view, int drawerGestureLock) {
+    view.setDrawerGestureLock(drawerGestureLock);
+  }
+
   @Override
   public boolean needsCustomLayoutForChildren() {
     // Return true, since DrawerLayout will lay out it's own children.
@@ -105,8 +110,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
-        "DrawerPosition",
-        MapBuilder.of("Left", Gravity.START, "Right", Gravity.END));
+          "DrawerPosition",
+          MapBuilder.of("Left", Gravity.START, "Right", Gravity.END),
+          "DrawerGestureLock",
+          MapBuilder.of("Unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, "LockedOpen", DrawerLayout.LOCK_MODE_LOCKED_OPEN, "LockedClosed", DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        );
   }
 
   @Override

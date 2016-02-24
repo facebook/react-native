@@ -28,6 +28,7 @@ var INNERVIEW_REF = 'innerView';
 var DrawerLayoutValidAttributes = {
   drawerWidth: true,
   drawerPosition: true,
+  drawerGestureLock: true
 };
 
 var DRAWER_STATES = [
@@ -41,8 +42,9 @@ var DRAWER_STATES = [
  * Drawer (typically used for navigation) is rendered with `renderNavigationView`
  * and direct children are the main view (where your content goes). The navigation
  * view is initially not visible on the screen, but can be pulled in from the
- * side of the window specified by the `drawerPosition` prop and its width can
- * be set by the `drawerWidth` prop.
+ * side of the window specified by the `drawerPosition` prop, its width can
+ * be set by the `drawerWidth` prop, and it's locking state can be set by the
+ * `drawerGestureLock` prop.
  *
  * Example:
  *
@@ -57,6 +59,7 @@ var DRAWER_STATES = [
  *     <DrawerLayoutAndroid
  *       drawerWidth={300}
  *       drawerPosition={DrawerLayoutAndroid.positions.Left}
+ *       drawerGestureLock={DrawerLayoutAndroid.gestures.Unlocked} 
  *       renderNavigationView={() => navigationView}>
  *       <View style={{flex: 1, alignItems: 'center'}}>
  *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
@@ -70,6 +73,7 @@ var DRAWER_STATES = [
 var DrawerLayoutAndroid = React.createClass({
   statics: {
     positions: DrawerConsts.DrawerPosition,
+    gestures: DrawerConsts.DrawerGestureLock
   },
 
   propTypes: {
@@ -89,6 +93,17 @@ var DrawerLayoutAndroid = React.createClass({
     drawerPosition: ReactPropTypes.oneOf([
       DrawerConsts.DrawerPosition.Left,
       DrawerConsts.DrawerPosition.Right
+    ]),
+    /**
+     * Specifies if the drawer gestures would be locked.
+     *   - 'DrawerConsts.DrawerGestureLock.Unlocked' (the default), gestures will be enabled and the drawer will respond to both gestures and drawer commands.
+     *   - 'DrawerConsts.DrawerGestureLock.LockedOpen', the drawer will be locked opened, gestures will be disabled and the drawer respond only to drawer commands.
+     *   - 'DrawerConsts.DrawerGestureLock.LockedClosed', the drawer will be locked closed, gestures will be disabled and the drawer respond only to drawer commands.
+     */
+    drawerGestureLock: ReactPropTypes.oneOf([
+      DrawerConsts.DrawerGestureLock.Unlocked,
+      DrawerConsts.DrawerGestureLock.LockedOpen,
+      DrawerConsts.DrawerGestureLock.LockedClosed
     ]),
     /**
      * Specifies the width of the drawer, more precisely the width of the view that be pulled in
@@ -142,6 +157,7 @@ var DrawerLayoutAndroid = React.createClass({
         ref={RK_DRAWER_REF}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
+        drawerGestureLock={this.props.drawerGestureLock}
         style={styles.base}
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
