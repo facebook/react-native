@@ -24,6 +24,16 @@ def react_native_integration_tests_target(path):
 def react_native_dep(path):
   return '//ReactAndroid/src/main/' + path
 
+JSC_DEPS = [
+  '//native/third-party/jsc:jsc',
+  '//native/third-party/jsc:jsc_legacy_profiler',
+]
+
+JSC_INTERNAL_DEPS = [
+  '//native/third-party/jsc-internal:jsc',
+  '//native/third-party/jsc-internal:jsc_legacy_profiler',
+]
+
 INTERNAL_APP = 'PUBLIC'
 
 # React property preprocessor
