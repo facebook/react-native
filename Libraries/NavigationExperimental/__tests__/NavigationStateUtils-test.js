@@ -11,8 +11,7 @@
 'use strict';
 
 jest
- .autoMockOff()
- .mock('ErrorUtils');
+ .dontMock('NavigationStateUtils');
 
 var NavigationStateUtils = require('NavigationStateUtils');
 
