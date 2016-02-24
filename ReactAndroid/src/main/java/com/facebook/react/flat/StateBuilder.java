@@ -359,15 +359,20 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       node.markLayoutSeen();
     }
 
+    float roundedLeft = roundToPixel(left);
+    float roundedTop = roundToPixel(top);
+    float roundedRight = roundToPixel(right);
+    float roundedBottom = roundToPixel(bottom);
+
     // notify JS about layout event if requested
     if (node.shouldNotifyOnLayout()) {
       mOnLayoutEvents.add(
           OnLayoutEvent.obtain(
               node.getReactTag(),
-              Math.round(left),
-              Math.round(top),
-              Math.round(right - left),
-              Math.round(bottom - top)));
+              (int) roundedLeft,
+              (int) roundedTop,
+              (int) (roundedRight - roundedLeft),
+              (int) (roundedBottom - roundedTop)));
     }
 
     if (node.clipToBounds()) {
@@ -377,7 +382,16 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       clipBottom = Math.min(bottom, clipBottom);
     }
 
-    node.collectState(this, left, top, right, bottom, clipLeft, clipTop, clipRight, clipBottom);
+    node.collectState(
+        this,
+        roundedLeft,
+        roundedTop,
+        roundedRight,
+        roundedBottom,
+        roundToPixel(clipLeft),
+        roundToPixel(clipTop),
+        roundToPixel(clipRight),
+        clipBottom);
 
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       ReactShadowNode child = node.getChildAt(i);
@@ -498,5 +512,12 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
 
     return viewTags;
+  }
+
+  /**
+   * This is what Math.round() does, except it returns float.
+   */
+  private static float roundToPixel(float pos) {
+    return (float) Math.floor(pos + 0.5f);
   }
 }
