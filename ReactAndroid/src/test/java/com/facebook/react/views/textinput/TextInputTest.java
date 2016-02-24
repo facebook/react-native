@@ -12,6 +12,7 @@ package com.facebook.react.views.textinput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import android.util.DisplayMetrics;
 import android.view.Choreographer;
@@ -83,7 +84,9 @@ public class TextInputTest {
         return null;
       }
     }).when(choreographerMock).postFrameCallback(
-        any(ReactChoreographer.CallbackType.class),
+        ThreadLocalRandom.current().nextInt(
+          ReactChoreographer.CALLBACK_TYPE_PERF_MARKERS,
+          ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS + 1),
         any(Choreographer.FrameCallback.class));
   }
 

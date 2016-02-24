@@ -12,6 +12,7 @@ package com.facebook.react.views.text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import android.annotation.TargetApi;
 import android.graphics.Color;
@@ -92,7 +93,9 @@ public class ReactTextTest {
         return null;
       }
     }).when(choreographerMock).postFrameCallback(
-        any(ReactChoreographer.CallbackType.class),
+        ThreadLocalRandom.current().nextInt(
+          ReactChoreographer.CALLBACK_TYPE_PERF_MARKERS,
+          ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS + 1),
         any(Choreographer.FrameCallback.class));
   }
 

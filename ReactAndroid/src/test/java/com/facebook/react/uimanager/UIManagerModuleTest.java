@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import android.graphics.Color;
 import android.util.DisplayMetrics;
@@ -101,7 +102,9 @@ public class UIManagerModuleTest {
         return null;
       }
     }).when(choreographerMock).postFrameCallback(
-        any(ReactChoreographer.CallbackType.class),
+        ThreadLocalRandom.current().nextInt(
+          ReactChoreographer.CALLBACK_TYPE_PERF_MARKERS,
+          ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS + 1),
         any(Choreographer.FrameCallback.class));
 
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
