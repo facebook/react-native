@@ -87,7 +87,7 @@ public class TimingModuleTest {
     doAnswer(mPostFrameCallbackHandler)
         .when(mChoreographerMock)
         .postFrameCallback(
-            eq(ReactChoreographer.CallbackType.TIMERS_EVENTS),
+            eq(ReactChoreographer.CALLBACK_TYPE_TIMERS_EVENTS),
             any(Choreographer.FrameCallback.class));
 
     mTiming = new Timing(reactContext);
