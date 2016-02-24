@@ -43,6 +43,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   private final ArrayList<FlatShadowNode> mViewsToDetachAllChildrenFrom = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDetach = new ArrayList<>();
   private final ArrayList<FlatShadowNode> mViewsToDrop = new ArrayList<>();
+  private final ArrayList<FlatShadowNode> mViewsToUpdate = new ArrayList<>();
+  private final ArrayList<ReactStylesDiffMap> mStylesToUpdate = new ArrayList<>();
   private final ArrayList<OnLayoutEvent> mOnLayoutEvents = new ArrayList<>();
   private final ArrayList<FlatUIViewOperationQueue.UpdateViewBounds> mUpdateViewBoundsOperations =
       new ArrayList<>();
@@ -62,6 +64,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
    * DrawCommands that will then mount in UI thread to a root FlatViewGroup so that it can draw.
    */
   /* package */ void applyUpdates(EventDispatcher eventDispatcher, FlatShadowNode node) {
+    commitViewUpdates();
+
     float width = node.getLayoutWidth();
     float height = node.getLayoutHeight();
     float left = node.getLayoutX();
@@ -124,18 +128,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   /* package */ void enqueueCreateOrUpdateView(
       FlatShadowNode node,
       @Nullable ReactStylesDiffMap styles) {
-    if (node.isBackingViewCreated()) {
-      if (styles != null) {
-        // if the View is already created, make sure propagate new styles.
-        mOperationsQueue.enqueueUpdateProperties(node.getReactTag(), node.getViewClass(), styles);
-      }
-      return;
-    }
-
-    int tag = node.getReactTag();
-    mOperationsQueue.enqueueCreateView(node.getThemedContext(), tag, node.getViewClass(), styles);
-
-    node.signalBackingViewIsCreated();
+    mViewsToUpdate.add(node);
+    mStylesToUpdate.add(styles);
   }
 
   /* package */ void ensureBackingViewIsCreated(FlatShadowNode node) {
@@ -151,6 +145,36 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   /* package */ void dropView(FlatShadowNode node) {
     mViewsToDrop.add(node);
+  }
+
+  private void commitViewUpdates() {
+    for (int i = 0, numViewsToUpdate = mViewsToUpdate.size(); i != numViewsToUpdate; ++i) {
+      FlatShadowNode node = mViewsToUpdate.get(i);
+      if (node.getParent() == null) {
+        // Shadow node is not attached to the hierarchy, which means it is being discarded.
+        // No need to create or update view in this case, as the View is already gone as well.
+        continue;
+      }
+
+      if (node.isBackingViewCreated()) {
+        // if the View is already created, make sure propagate new styles.
+        mOperationsQueue.enqueueUpdateProperties(
+            node.getReactTag(),
+            node.getViewClass(),
+            mStylesToUpdate.get(i));
+      } else {
+        mOperationsQueue.enqueueCreateView(
+            node.getThemedContext(),
+            node.getReactTag(),
+            node.getViewClass(),
+            mStylesToUpdate.get(i));
+
+        node.signalBackingViewIsCreated();
+      }
+    }
+
+    mViewsToUpdate.clear();
+    mStylesToUpdate.clear();
   }
 
   private void addNodeRegion(
