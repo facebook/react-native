@@ -76,6 +76,19 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     view.setDrawerWidth(widthInPx);
   }
 
+  @ReactProp(name = "drawerLockMode")
+  public void setDrawerLockMode(ReactDrawerLayout view, @Nullable String drawerLockMode) {
+    if (drawerLockMode == null || "unlocked".equals(drawerLockMode)) {
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    } else if ("locked-closed".equals(drawerLockMode)) {
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    } else if ("locked-open".equals(drawerLockMode)) {
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Unknown drawerLockMode " + drawerLockMode);
+    }
+  }
+
   @Override
   public boolean needsCustomLayoutForChildren() {
     // Return true, since DrawerLayout will lay out it's own children.

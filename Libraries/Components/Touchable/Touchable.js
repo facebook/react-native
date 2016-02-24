@@ -337,7 +337,7 @@ var TouchableMixin = {
    * Must return true to start the process of `Touchable`.
    */
   touchableHandleStartShouldSetResponder: function() {
-    return true;
+    return !this.props.disabled;
   },
 
   /**
