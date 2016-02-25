@@ -75,10 +75,12 @@ type OverlayRenderer = (
   layout: Layout
 ) => ReactElement;
 
+type Position = Animated.Value;
+
 type SceneRenderer = (
   state: NavigationState,
   index: number,
-  position: Animated.Value,
+  position: Position,
   layout: Layout
 ) => ReactElement;
 
