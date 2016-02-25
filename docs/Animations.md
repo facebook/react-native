@@ -344,7 +344,7 @@ your project, you will need to install it with `npm i react-tween-state
 --save` from your project directory.
 
 ```javascript
-var tweenState = require('react-tween-state');
+import tweenState from 'react-tween-state';
 
 var App = React.createClass({
   mixins: [tweenState.Mixin],
@@ -382,7 +382,7 @@ Here we animated the opacity, but as you might guess, we can animate any
 numeric value. Read more about react-tween-state in its
 [README](https://github.com/chenglou/react-tween-state).
 
-### Rebound (Not recommended - use [Animated](#animated) instead)
+### Rebound (Not recommended - use [Animated](docs/animation.html) instead)
 
 [Rebound.js](https://github.com/facebook/rebound-js) is a JavaScript port of
 [Rebound for Android](https://github.com/facebook/rebound). It is
@@ -402,7 +402,7 @@ the middle of a press, it will animate back from the current state to
 the original value.
 
 ```javascript
-var rebound = require('rebound');
+import rebound from 'rebound';
 
 var App = React.createClass({
   // First we initialize the spring and add a listener, which calls
@@ -529,11 +529,10 @@ around native functionality provided by `UINavigationController`, so
 these scene transitions apply only to `Navigator`. In order to re-create
 the various animations provided by `UINavigationController` and also
 make them customizable, React Native exposes a
-[NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API.
+[NavigatorSceneConfigs](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/NavigatorSceneConfigs.js) API which is then handed over to the [Navigator](https://github.com/facebook/react-native/blob/master/Libraries/CustomComponents/Navigator/Navigator.js) `configureScene` prop.
 
 ```javascript
-var React = require('react-native');
-var { Dimensions } = React;
+import { Dimensions } from 'react-native';
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var BaseConfig = Navigator.SceneConfigs.FloatFromRight;
 

@@ -727,14 +727,15 @@ static void loadScriptFromFile(JNIEnv* env, jobject obj, jstring fileName, jstri
 }
 
 static void callFunction(JNIEnv* env, jobject obj, jint moduleId, jint methodId,
-                         NativeArray::jhybridobject args) {
+                         NativeArray::jhybridobject args, jstring tracingName) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   auto arguments = cthis(wrap_alias(args));
   try {
     bridge->callFunction(
       (double) moduleId,
       (double) methodId,
-      std::move(arguments->array)
+      std::move(arguments->array),
+      fromJString(env, tracingName)
     );
   } catch (...) {
     translatePendingCppExceptionToJavaException();
@@ -758,6 +759,11 @@ static void invokeCallback(JNIEnv* env, jobject obj, jint callbackId,
 static void setGlobalVariable(JNIEnv* env, jobject obj, jstring propName, jstring jsonValue) {
   auto bridge = extractRefPtr<CountableBridge>(env, obj);
   bridge->setGlobalVariable(fromJString(env, propName), fromJString(env, jsonValue));
+}
+
+static jlong getJavaScriptContext(JNIEnv *env, jobject obj) {
+  auto bridge = extractRefPtr<CountableBridge>(env, obj);
+  return (uintptr_t) bridge->getJavaScriptContext();
 }
 
 static jboolean supportsProfiling(JNIEnv* env, jobject obj) {
@@ -944,7 +950,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         makeNativeMethod("stopProfiler", bridge::stopProfiler),
         makeNativeMethod("handleMemoryPressureModerate", bridge::handleMemoryPressureModerate),
         makeNativeMethod("handleMemoryPressureCritical", bridge::handleMemoryPressureCritical),
-
+        makeNativeMethod("getJavaScriptContextNativePtrExperimental", bridge::getJavaScriptContext),
     });
 
     jclass nativeRunnableClass = env->FindClass("com/facebook/react/bridge/queue/NativeRunnableDeprecated");

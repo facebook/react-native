@@ -333,7 +333,17 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
+  public void onReactBridgeInitialized(ReactBridge bridge) {
+    // do nothing
+  }
+
+  @Override
   public void onCatalystInstanceDestroy() {
     // do nothing
+  }
+
+  @Override
+  public boolean supportsWebWorkers() {
+    return false;
   }
 }

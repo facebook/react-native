@@ -61,7 +61,7 @@ We found out that the primary cause of fatals in apps created with React Native 
 This library does not ship with React Native - in order to use it on your project, you will need to install it with `npm i react-timer-mixin --save` from your project directory.
 
 ```javascript
-var TimerMixin = require('react-timer-mixin');
+import TimerMixin from 'react-timer-mixin';
 
 var Component = React.createClass({
   mixins: [TimerMixin],

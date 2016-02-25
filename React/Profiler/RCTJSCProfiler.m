@@ -99,7 +99,9 @@ NSString *RCTJSCProfilerStop(JSContextRef ctx)
     if (isProfiling) {
       NSString *filename = [NSString stringWithFormat:@"cpu_profile_%ld.json", (long)CFAbsoluteTimeGetCurrent()];
       outputFile = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
-      RCTNativeProfilerEnd(ctx, JSCProfileName, outputFile.UTF8String);
+      if (RCTNativeProfilerEnd) {
+        RCTNativeProfilerEnd(ctx, JSCProfileName, outputFile.UTF8String);
+      }
       RCTLogInfo(@"Stopped JSC profiler for context: %p", ctx);
     } else {
       RCTLogWarn(@"Trying to stop JSC profiler on a context which is not being profiled.");

@@ -4,6 +4,7 @@ include_defs('//ReactAndroid/DEFS')
 SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
+  '//native/third-party/android-ndk:android',
   '//xplat/fbsystrace:fbsystrace',
   '//xplat/folly:molly',
   '//xplat/third-party/glog:glog',
@@ -52,6 +53,7 @@ react_library(
     'JSCMemory.h',
   ],
   exported_headers = [
+    'AlignStack.h',
     'Bridge.h',
     'Executor.h',
     'JSCExecutor.h',

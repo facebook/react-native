@@ -13,15 +13,15 @@
 
 var Animated = require('Animated');
 var Map = require('Map');
-var NavigationStateUtils = require('NavigationState');
+var NavigationStateUtils = require('NavigationStateUtils');
 var NavigationContainer = require('NavigationContainer');
-var React = require('react-native');
+var React = require('React');
 var View = require('View');
 
 import type {
   NavigationState,
   NavigationParentState,
-} from 'NavigationState';
+} from 'NavigationStateUtils';
 
 type NavigationScene = {
   index: number,
@@ -75,18 +75,27 @@ type OverlayRenderer = (
   layout: Layout
 ) => ReactElement;
 
+type Position = Animated.Value;
+
 type SceneRenderer = (
   state: NavigationState,
   index: number,
-  position: Animated.Value,
+  position: Position,
   layout: Layout
-) => ReactElement
+) => ReactElement;
+
+type TimingSetter = (
+  position: Animated.Value,
+  newState: NavigationParentState,
+  lastState: NavigationParentState
+) => void;
 
 type Props = {
   navigationState: NavigationParentState;
   renderScene: SceneRenderer;
   renderOverlay: ?OverlayRenderer;
   style: any;
+  setTiming: ?TimingSetter;
 };
 
 class NavigationAnimatedView extends React.Component {
@@ -120,11 +129,8 @@ class NavigationAnimatedView extends React.Component {
     }
   }
   componentDidUpdate(lastProps) {
-    if (lastProps.navigationState.index !== this.props.navigationState.index) {
-      Animated.spring(
-        this.state.position,
-        {toValue: this.props.navigationState.index}
-      ).start();
+    if (lastProps.navigationState.index !== this.props.navigationState.index && this.props.setTiming) {
+      this.props.setTiming(this.state.position, this.props.navigationState, lastProps.navigationState);
     }
   }
   componentWillUnmount() {
@@ -160,7 +166,7 @@ class NavigationAnimatedView extends React.Component {
 
     if (lastState) {
       lastState.children.forEach((child, index) => {
-        if (!NavigationStateUtils.get(nextState, child.key)) {
+        if (!NavigationStateUtils.get(nextState, child.key) && index !== nextState.index) {
           nextScenes.push({
             index,
             state: child,
@@ -219,6 +225,20 @@ class NavigationAnimatedView extends React.Component {
     return null;
   }
 }
+
+function setDefaultTiming(position, navigationState) {
+  Animated.spring(
+    position,
+    {
+      bounciness: 0,
+      toValue: navigationState.index,
+    }
+  ).start();
+}
+
+NavigationAnimatedView.defaultProps = {
+  setTiming: setDefaultTiming,
+};
 
 NavigationAnimatedView = NavigationContainer.create(NavigationAnimatedView);
 
