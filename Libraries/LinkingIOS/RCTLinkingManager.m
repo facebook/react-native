@@ -40,7 +40,7 @@ RCT_EXPORT_MODULE()
   } else if (_bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
     NSDictionary *userActivityDictionary = _bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
 
-    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
       initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
     }
   }
