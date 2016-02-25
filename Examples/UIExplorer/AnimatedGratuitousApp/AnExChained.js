@@ -26,6 +26,8 @@ var {
 } = React;
 
 class AnExChained extends React.Component {
+  state: any;
+
   constructor(props: Object) {
     super(props);
     this.state = {

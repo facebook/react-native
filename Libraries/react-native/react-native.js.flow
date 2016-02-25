@@ -23,7 +23,7 @@
 //
 //   var ReactNative = {...require('React'), /* additions */}
 //
-var ReactNative = Object.assign(Object.create(require('React')), {
+var ReactNative = Object.assign(Object.create(require('react')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   ART: require('ReactNativeART'),

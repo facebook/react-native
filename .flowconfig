@@ -48,6 +48,9 @@ Libraries/react-native/react-native-interface.js
 [options]
 module.system=haste
 
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+
 munge_underscores=true
 
 module.name_mapper='^image![a-zA-Z0-9$_-]+$' -> 'GlobalImageStub'
