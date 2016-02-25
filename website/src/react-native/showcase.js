@@ -323,6 +323,13 @@ var apps = [
     author: 'Arjun Komath',
   },
   {
+    name: 'Hover',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/ba/55/e6/ba55e6ee-71cf-b843-f592-0917c9b6c645/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/hover-1-drone-uav-pilot-app!/id947641516?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.analyticadevelopment.android.hover',
+    author: 'KevinEJohn',
+  },
+  {
     name: 'HSK Level 1 Chinese Flashcards',
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple1/v4/b2/4f/3a/b24f3ae3-2597-cc70-1040-731b425a5904/mzl.amxdcktl.jpg',
     link: 'https://itunes.apple.com/us/app/hsk-level-1-chinese-flashcards/id936639994',
