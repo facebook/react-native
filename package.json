@@ -30,7 +30,10 @@
         "parse",
         "react-transform-hmr"
       ],
-      "platforms": ["ios", "android"]
+      "platforms": [
+        "ios",
+        "android"
+      ]
     },
     "modulePathIgnorePatterns": [
       "/node_modules/(?!react|fbjs|react-native|parse|react-transform-hmr|core-js|promise)/",
@@ -109,8 +112,9 @@
     "npm-shrinkwrap.json"
   ],
   "scripts": {
-    "test": "NODE_ENV=test jest",
-    "lint": "eslint Examples/ Libraries/",
+    "test": "NODE_ENV=test node_modules/jest-cli/bin/jest.js",
+    "flow": "node_modules/flow-bin/cli.js check .",
+    "lint": "node_modules/eslint/bin/eslint.js Examples/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
   },
   "bin": {
@@ -172,10 +176,11 @@
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
+    "babel-eslint": "^5.0.0",
+    "eslint": "^2.2.0",
+    "eslint-plugin-react": "^4.1.0",
+    "flow-bin": "^0.21.0",
     "jest-cli": "0.9.0-fb2",
-    "babel-eslint": "4.1.4",
-    "eslint": "1.3.1",
-    "eslint-plugin-react": "3.3.1",
     "portfinder": "0.4.0"
   }
 }
