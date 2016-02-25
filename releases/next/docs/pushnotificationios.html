@@ -114,6 +114,8 @@ class <span class="token class-name">NotificationExample</span> extends <span cl
 <span class="token punctuation">}</span>
 
 class <span class="token class-name">NotificationPermissionExample</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> any<span class="token punctuation">;</span>
+
   <span class="token function">constructor<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span>state <span class="token operator">=</span> <span class="token punctuation">{</span>permissions<span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -156,7 +158,7 @@ exports<span class="token punctuation">.</span>description <span class="token op
 exports<span class="token punctuation">.</span>examples <span class="token operator">=</span> <span class="token punctuation">[</span>
 <span class="token punctuation">{</span>
   title<span class="token punctuation">:</span> <span class="token string">&#x27;Badge Number&#x27;</span><span class="token punctuation">,</span>
-  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
     PushNotificationIOS<span class="token punctuation">.</span><span class="token function">requestPermissions<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -175,13 +177,13 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
 <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">{</span>
   title<span class="token punctuation">:</span> <span class="token string">&#x27;Push Notifications&#x27;</span><span class="token punctuation">,</span>
-  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
     <span class="token keyword">return</span> &lt;NotificationExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">{</span>
   title<span class="token punctuation">:</span> <span class="token string">&#x27;Notifications Permissions&#x27;</span><span class="token punctuation">,</span>
-  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
     <span class="token keyword">return</span> &lt;NotificationPermissionExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span></div></div><div class="docs-prevnext"><a class="docs-next" href="docs/statusbarios.html#content">Next →</a></div></div><noscript></noscript></section><footer class="wrap"><div class="center">© 2016 Facebook Inc.</div></footer></div><div id="fb-root"></div><script>

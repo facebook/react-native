@@ -53,7 +53,7 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
 <span class="token punctuation">}</span><span class="token punctuation">,</span>
 <span class="token punctuation">{</span>
   title<span class="token punctuation">:</span> <span class="token string">&#x27;Prompt Options&#x27;</span><span class="token punctuation">,</span>
-  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Component <span class="token punctuation">{</span>
+  <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
     <span class="token keyword">return</span> &lt;PromptOptions <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -101,10 +101,14 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
 <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 
 class <span class="token class-name">PromptOptions</span> extends <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state<span class="token punctuation">:</span> any<span class="token punctuation">;</span>
+  customButtons<span class="token punctuation">:</span> Array&lt;Object<span class="token operator">&gt;</span><span class="token punctuation">;</span>
+
   <span class="token function">constructor<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">super<span class="token punctuation">(</span></span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    <span class="token keyword">this</span><span class="token punctuation">.</span>saveResponse <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>saveResponse<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true"> // $FlowFixMe this seems to be a Flow bug, `saveResponse` is defined below
+</span>    <span class="token keyword">this</span><span class="token punctuation">.</span>saveResponse <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>saveResponse<span class="token punctuation">.</span><span class="token function">bind<span class="token punctuation">(</span></span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token keyword">this</span><span class="token punctuation">.</span>customButtons <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
       text<span class="token punctuation">:</span> <span class="token string">&#x27;Custom OK&#x27;</span><span class="token punctuation">,</span>
