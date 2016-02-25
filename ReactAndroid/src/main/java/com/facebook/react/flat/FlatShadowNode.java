@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -50,6 +51,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private @Nullable DrawBackgroundColor mDrawBackground;
   private int mMoveToIndexInParent;
   private boolean mClipToBounds = false;
+  private boolean mIsUpdated = true;
 
   // last OnLayoutEvent info, only used when shouldNotifyOnLayout() is true.
   private int mLayoutX;
@@ -142,7 +144,34 @@ import com.facebook.react.uimanager.annotations.ReactProp;
    * color is changed).
    */
   protected final void invalidate() {
-    ((FlatRootShadowNode) getRootNode()).markUpdated(true);
+    FlatShadowNode node = this;
+
+    while (true) {
+      if (node.mountsToView()) {
+        if (node.mIsUpdated) {
+          // already updated
+          return;
+        }
+
+        node.mIsUpdated = true;
+      }
+
+      ReactShadowNode parent = node.getParent();
+      if (parent == null) {
+        // not attached to a hierarchy yet
+        return;
+      }
+
+      node = (FlatShadowNode) parent;
+    }
+  }
+
+  /* package */ final boolean isUpdated() {
+    return mIsUpdated;
+  }
+
+  /* package */ final void resetUpdated() {
+    mIsUpdated = false;
   }
 
   /**
@@ -267,9 +296,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
     if (mDrawView == null) {
       mDrawView = DrawView.INSTANCE;
-      if (getParent() != null) {
-        invalidate();
-      }
+      invalidate();
 
       // reset NodeRegion to allow it getting garbage-collected
       mNodeRegion = NodeRegion.EMPTY;

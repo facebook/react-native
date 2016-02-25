@@ -19,8 +19,6 @@ package com.facebook.react.flat;
     signalBackingViewIsCreated();
   }
 
-  private boolean mIsUpdated;
-
   /**
    * Returns true when this CSSNode tree needs to be re-laid out. If true, FlatUIImplementation
    * will request LayoutEngine to perform a layout pass to update node boundaries. This is used
@@ -28,20 +26,5 @@ package com.facebook.react.flat;
    */
   /* package */ boolean needsLayout() {
     return isDirty();
-  }
-
-  /**
-   * Returns true if there are updates to the node tree other than layout (such as a change in
-   * background color) that would require StateBuilder to re-collect drawing state.
-   */
-  /* package */ boolean isUpdated() {
-    return mIsUpdated;
-  }
-
-  /**
-   * Marks the node tree as requiring or not requiring a StateBuilder pass to collect drawing state.
-   */
-  /* package */ void markUpdated(boolean isUpdated) {
-    mIsUpdated = isUpdated;
   }
 }

@@ -418,7 +418,6 @@ public class FlatUIImplementation extends UIImplementation {
     }
 
     super.calculateRootLayout(rootNode);
-    rootNode.markUpdated(false);
     mStateBuilder.applyUpdates(eventDispatcher, rootNode);
   }
 

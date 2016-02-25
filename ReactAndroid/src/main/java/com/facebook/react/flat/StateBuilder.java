@@ -447,6 +447,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           isAndroidView,
           needsCustomLayoutForChildren);
     }
+
+    node.resetUpdated();
   }
 
   private void markLayoutSeenRecursively(ReactShadowNode node) {
