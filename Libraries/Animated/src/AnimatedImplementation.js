@@ -844,7 +844,7 @@ class AnimatedAddition extends AnimatedWithChildren {
   _a: Animated;
   _b: Animated;
 
-  constructor(a: Animated, b: Animated) {
+  constructor(a: Animated | number, b: Animated | number) {
     super();
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
@@ -873,7 +873,7 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   _a: Animated;
   _b: Animated;
 
-  constructor(a: Animated, b: Animated) {
+  constructor(a: Animated | number, b: Animated | number) {
     super();
     this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
     this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
