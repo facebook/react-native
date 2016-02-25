@@ -32,6 +32,7 @@ var EXAMPLES = {
   'Basic': require('./NavigationBasicExample'),
   'Animated Card Stack': require('./NavigationAnimatedExample'),
   'Composition': require('./NavigationCompositionExample'),
+  'Card Stack Example': require('./NavigationCardStackExample'),
   'Tic Tac Toe': require('./NavigationTicTacToeExample'),
 };
 
