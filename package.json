@@ -112,9 +112,9 @@
     "npm-shrinkwrap.json"
   ],
   "scripts": {
-    "test": "NODE_ENV=test node_modules/jest-cli/bin/jest.js",
-    "flow": "node_modules/flow-bin/cli.js check .",
-    "lint": "node_modules/eslint/bin/eslint.js Examples/ Libraries/",
+    "test": "NODE_ENV=test jest",
+    "flow": "flow check .",
+    "lint": "eslint Examples/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
   },
   "bin": {
