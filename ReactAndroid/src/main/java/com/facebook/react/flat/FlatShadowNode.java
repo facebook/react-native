@@ -12,10 +12,11 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.OnLayoutEvent;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * FlatShadowNode is a base class for all shadow node used in FlatUIImplementation. It extends
@@ -49,6 +50,12 @@ import com.facebook.react.uimanager.ViewProps;
   private @Nullable DrawBackgroundColor mDrawBackground;
   private int mMoveToIndexInParent;
   private boolean mClipToBounds = false;
+
+  // last OnLayoutEvent info, only used when shouldNotifyOnLayout() is true.
+  private int mLayoutX;
+  private int mLayoutY;
+  private int mLayoutWidth;
+  private int mLayoutHeight;
 
   /* package */ void handleUpdateProperties(ReactStylesDiffMap styles) {
     if (!mountsToView()) {
@@ -275,6 +282,19 @@ import com.facebook.react.uimanager.ViewProps;
     }
 
     return mDrawView;
+  }
+
+  /* package */ final OnLayoutEvent obtainLayoutEvent(int x, int y, int width, int height) {
+    if (mLayoutX == x && mLayoutY == y && mLayoutWidth == width && mLayoutHeight == height) {
+      return null;
+    }
+
+    mLayoutX = x;
+    mLayoutY = y;
+    mLayoutWidth = width;
+    mLayoutHeight = height;
+
+    return OnLayoutEvent.obtain(getReactTag(), x, y, width, height);
   }
 
   /* package */ final boolean mountsToView() {

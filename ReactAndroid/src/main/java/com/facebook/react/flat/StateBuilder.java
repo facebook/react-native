@@ -401,13 +401,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
     // notify JS about layout event if requested
     if (node.shouldNotifyOnLayout()) {
-      mOnLayoutEvents.add(
-          OnLayoutEvent.obtain(
-              node.getReactTag(),
-              (int) roundedLeft,
-              (int) roundedTop,
-              (int) (roundedRight - roundedLeft),
-              (int) (roundedBottom - roundedTop)));
+      OnLayoutEvent layoutEvent = node.obtainLayoutEvent(
+          Math.round(node.getLayoutX()),
+          Math.round(node.getLayoutY()),
+          (int) (roundedRight - roundedLeft),
+          (int) (roundedBottom - roundedTop));
+      if (layoutEvent != null) {
+        mOnLayoutEvents.add(layoutEvent);
+      }
     }
 
     if (node.clipToBounds()) {
