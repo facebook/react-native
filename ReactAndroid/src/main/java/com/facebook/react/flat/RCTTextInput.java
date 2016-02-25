@@ -28,10 +28,12 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextUpdate;
 
+import static com.facebook.react.views.text.ReactTextShadowNode.PROP_TEXT;
 import static com.facebook.react.views.text.ReactTextShadowNode.UNSET;
 
 public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode.MeasureFunction {
 
+  @Nullable private String mText;
   private int mJsEventCount = UNSET;
   private boolean mPaddingChanged = false;
   private int mNumberOfLines = UNSET;
@@ -122,6 +124,12 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     notifyChanged(true);
   }
 
+  @ReactProp(name = PROP_TEXT)
+  public void setText(@Nullable String text) {
+    mText = text;
+    markUpdated();
+  }
+
   @Override
   public void setPadding(int spacingType, float padding) {
     if (getPadding().set(spacingType, padding)) {
@@ -143,6 +151,13 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   @Override
   boolean shouldAllowEmptySpans() {
     return true;
+  }
+
+  protected void performCollectText(SpannableStringBuilder builder) {
+    if (mText != null) {
+      builder.append(mText);
+    }
+    super.performCollectText(builder);
   }
 
   /**
