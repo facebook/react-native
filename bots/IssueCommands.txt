@@ -1,5 +1,5 @@
 /answered
-comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
+comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
 close
 
 /duplicate (#[0-9]+)
@@ -11,11 +11,16 @@ comment The /expected comment above tells me this is expected behavior. Closing 
 close
 
 /question
-comment Hey {issue_author} and thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
+comment Hey {issue_author} and thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only. Will close this as this is really a question that should be asked on SO.
 add-label For Stack Overflow
+close
 
 /label (.*)
 add-label {match0}
+
+/no-reply
+comment Closing this issue as more information is needed to debug this and we haven't heard back from the author. Once there's more information we can reopen the issue.
+close
 
 /reopen
 comment Okay, reopening this issue.

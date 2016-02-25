@@ -5,14 +5,18 @@
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
+using fbsystrace::FbSystraceAsyncFlow;
 #endif
+
+#include "Platform.h"
 
 namespace facebook {
 namespace react {
 
 Bridge::Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback) :
     m_callback(std::move(callback)),
-    m_destroyed(std::shared_ptr<bool>(new bool(false))) {
+    m_destroyed(std::make_shared<bool>(false)),
+    m_mainJSMessageQueueThread(MessageQueues::getCurrentMessageQueueThread()) {
     m_mainExecutor = jsExecutorFactory->createJSExecutor(this);
 }
 
@@ -33,24 +37,64 @@ void Bridge::loadApplicationUnbundle(
   m_mainExecutor->loadApplicationUnbundle(std::move(unbundle), startupCode, sourceURL);
 }
 
-void Bridge::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+void Bridge::callFunction(
+    const double moduleId,
+    const double methodId,
+    const folly::dynamic& arguments,
+    const std::string& tracingName) {
   if (*m_destroyed) {
     return;
   }
+
   #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.callFunction");
+  int systraceCookie = m_systraceCookie++;
+  FbSystraceAsyncFlow::begin(
+      TRACE_TAG_REACT_CXX_BRIDGE,
+      tracingName.c_str(),
+      systraceCookie);
   #endif
-  m_mainExecutor->callFunction(moduleId, methodId, arguments);
+  std::shared_ptr<bool> isDestroyed = m_destroyed;
+  m_mainJSMessageQueueThread->runOnQueue([=] () {
+    if (*isDestroyed) {
+      return;
+    }
+    #ifdef WITH_FBSYSTRACE
+    FbSystraceAsyncFlow::end(
+        TRACE_TAG_REACT_CXX_BRIDGE,
+        tracingName.c_str(),
+        systraceCookie);
+    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
+    #endif
+    m_mainExecutor->callFunction(moduleId, methodId, arguments);
+  });
 }
 
 void Bridge::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
   if (*m_destroyed) {
     return;
   }
+
   #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
+  int systraceCookie = m_systraceCookie++;
+  FbSystraceAsyncFlow::begin(
+      TRACE_TAG_REACT_CXX_BRIDGE,
+      "<callback>",
+      systraceCookie);
   #endif
-  m_mainExecutor->invokeCallback(callbackId, arguments);
+  std::shared_ptr<bool> isDestroyed = m_destroyed;
+  m_mainJSMessageQueueThread->runOnQueue([=] () {
+    if (*isDestroyed) {
+      return;
+    }
+    #ifdef WITH_FBSYSTRACE
+    FbSystraceAsyncFlow::end(
+        TRACE_TAG_REACT_CXX_BRIDGE,
+        "<callback>",
+        systraceCookie);
+    FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
+    #endif
+    m_mainExecutor->invokeCallback(callbackId, arguments);
+  });
 }
 
 void Bridge::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
