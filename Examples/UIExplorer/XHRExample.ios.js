@@ -33,6 +33,7 @@ var XHRExampleHeaders = require('./XHRExampleHeaders');
 var XHRExampleFetch = require('./XHRExampleFetch');
 
 class Downloader extends React.Component {
+  state: any;
 
   xhr: XMLHttpRequest;
   cancelled: boolean;
@@ -120,6 +121,7 @@ class Downloader extends React.Component {
 var PAGE_SIZE = 20;
 
 class FormUploader extends React.Component {
+  state: any;
 
   _isMounted: boolean;
   _fetchRandomPhoto: () => void;
