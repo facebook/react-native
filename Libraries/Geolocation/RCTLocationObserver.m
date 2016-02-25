@@ -270,7 +270,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
       @"heading": @(location.course),
       @"speed": @(location.speed),
     },
-    @"timestamp": @(CFAbsoluteTimeGetCurrent() * 1000.0) // in ms
+    @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000) // in ms
   };
 
   // Send event
