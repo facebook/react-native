@@ -274,10 +274,15 @@ public class FlatUIImplementation extends UIImplementation {
    * and drops all Views used by it and its children.
    */
   private void removeChild(FlatShadowNode child) {
-    if (child.mountsToView()) {
+    if (child.mountsToView() && child.isBackingViewCreated()) {
       // this will recursively drop all subviews
       mStateBuilder.dropView(child);
+    } else {
+      for (int i = 0, childCount = child.getChildCount(); i != childCount; ++i) {
+        removeChild((FlatShadowNode) child.getChildAt(i));
+      }
     }
+
     removeShadowNode(child);
   }
 
