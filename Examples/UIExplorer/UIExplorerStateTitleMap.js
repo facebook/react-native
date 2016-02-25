@@ -15,7 +15,7 @@
  */
 'use strict';
 
-const UIExplorerList = require('./UIExplorerList.ios');
+const UIExplorerList = require('./UIExplorerList');
 
 import type {NavigationState} from 'NavigationStateUtils';
 
