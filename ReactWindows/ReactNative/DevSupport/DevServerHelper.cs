@@ -157,7 +157,6 @@ namespace ReactNative.DevSupport
             {
                 var onChangePollingClient = new HttpClient();
                 onChangePollingClient.DefaultRequestHeaders.Connection.Add("keep-alive");
-                onChangePollingClient.Timeout = TimeSpan.FromMilliseconds(HttpConnectTimeoutMs);
                 while (!disposable.IsDisposed)
                 {
                     var onChangeUrl = CreateOnChangeEndpointUrl(DebugServerHost);
