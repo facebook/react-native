@@ -98,6 +98,7 @@ function isGameOver(gameString: string): boolean {
 }
 
 class Cell extends React.Component {
+  props: any;
   cellStyle() {
     switch (this.props.player) {
       case 'X':
@@ -207,6 +208,9 @@ function GameReducer(lastGame: ?string, action: Object): string {
 }
 
 class NavigationTicTacToeExample extends React.Component {
+  static GameView = TicTacToeGame;
+  static GameReducer = GameReducer;
+  static GameActions = GameActions;
   render() {
     return (
       <NavigationRootContainer
@@ -222,9 +226,6 @@ class NavigationTicTacToeExample extends React.Component {
     );
   }
 }
-NavigationTicTacToeExample.GameView = TicTacToeGame;
-NavigationTicTacToeExample.GameReducer = GameReducer;
-NavigationTicTacToeExample.GameActions = GameActions;
 
 const styles = StyleSheet.create({
   closeButton: {

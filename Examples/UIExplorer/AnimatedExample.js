@@ -39,6 +39,8 @@ exports.examples = [
       'mounts.',
     render: function() {
       class FadeInView extends React.Component {
+        state: any;
+
         constructor(props) {
           super(props);
           this.state = {
@@ -66,6 +68,8 @@ exports.examples = [
         }
       }
       class FadeInExample extends React.Component {
+        state: any;
+
         constructor(props) {
           super(props);
           this.state = {
