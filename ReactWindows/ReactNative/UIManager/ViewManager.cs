@@ -149,9 +149,9 @@ namespace ReactNative.UIManager
 
         /// <summary>
         /// Implement this method to receive events/commands directly from
-        /// JavaScript through the <see cref="UIManager"/>.
+        /// JavaScript through the <see cref="UIManagerModule"/>.
         /// </summary>
-        /// <param name="root">
+        /// <param name="view">
         /// The view instance that should receive the command.
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
