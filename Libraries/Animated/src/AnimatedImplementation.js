@@ -846,8 +846,8 @@ class AnimatedAddition extends AnimatedWithChildren {
 
   constructor(a: Animated, b: Animated) {
     super();
-    this._a = a;
-    this._b = b;
+    this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
+    this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
   __getValue(): number {
@@ -875,8 +875,8 @@ class AnimatedMultiplication extends AnimatedWithChildren {
 
   constructor(a: Animated, b: Animated) {
     super();
-    this._a = a;
-    this._b = b;
+    this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
+    this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
   __getValue(): number {
