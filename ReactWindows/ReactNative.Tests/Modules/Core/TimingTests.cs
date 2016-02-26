@@ -2,7 +2,6 @@
 using ReactNative.Bridge;
 using ReactNative.Modules.Core;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

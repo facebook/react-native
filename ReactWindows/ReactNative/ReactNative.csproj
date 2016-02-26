@@ -182,6 +182,12 @@
     <Compile Include="Modules\Core\JavaScriptException.cs" />
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
     <Compile Include="Modules\Core\SourceCodeModule.cs" />
+    <Compile Include="Modules\Network\DefaultHttpClient.cs" />
+    <Compile Include="Modules\Network\HttpContentHeaderData.cs" />
+    <Compile Include="Modules\Network\IHttpClient.cs" />
+    <Compile Include="Modules\Network\NetworkingModule.cs" />
+    <Compile Include="Modules\Network\HttpContentHelpers.cs" />
+    <Compile Include="Modules\Network\TaskCancellationManager.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
@@ -235,7 +241,7 @@
     <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\IViewParentManager.cs" />
     <Compile Include="UIManager\LayoutAnimation\BaseLayoutAnimation.cs" />
-    <Compile Include="UIManager\LayoutAnimation\JObjectExtensions.cs" />
+    <Compile Include="Collections\JObjectExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutAnimation.cs" />
     <Compile Include="UIManager\MeasureAssertions.cs" />
     <Compile Include="UIManager\ReactStylesDiffMap.cs" />

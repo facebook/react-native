@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace ReactNative.UIManager.LayoutAnimation
+namespace ReactNative.Collections
 {
     static class JObjectExtensions
     {
