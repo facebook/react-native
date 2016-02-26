@@ -49,7 +49,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private boolean mBackingViewIsCreated;
   private @Nullable DrawView mDrawView;
   private @Nullable DrawBackgroundColor mDrawBackground;
-  private int mMoveToIndexInParent;
   private boolean mClipToBounds = false;
   private boolean mIsUpdated = true;
   private float mClipLeft;
@@ -250,14 +249,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
   /* package */ final void setNodeRegions(NodeRegion[] nodeRegion) {
     mNodeRegions = nodeRegion;
-  }
-
-  /* package */ final void setMoveToIndexInParent(int moveToIndexInParent) {
-    mMoveToIndexInParent = moveToIndexInParent;
-  }
-
-  /* package */ final int getMoveToIndexInParent() {
-    return mMoveToIndexInParent;
   }
 
   /* package */ void updateNodeRegion(float left, float top, float right, float bottom) {

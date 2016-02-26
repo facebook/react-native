@@ -12,8 +12,6 @@ package com.facebook.react.flat;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.facebook.infer.annotation.Assertions;
@@ -34,14 +32,6 @@ import com.facebook.react.views.image.ReactImageManager;
  * for faster drawing and interactions.
  */
 public class FlatUIImplementation extends UIImplementation {
-  /**
-   * This Comparator allows sorting FlatShadowNode by order in which they should be added.
-   */
-  private static final Comparator<FlatShadowNode> COMPARATOR = new Comparator<FlatShadowNode>() {
-    public int compare(FlatShadowNode lhs, FlatShadowNode rhs) {
-      return lhs.getMoveToIndexInParent() - rhs.getMoveToIndexInParent();
-    }
-  };
 
   public static FlatUIImplementation createInstance(
       ReactApplicationContext reactContext,
@@ -77,10 +67,10 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   /**
-   * Temporary storage for elements that need to be moved within a parent.
-   * Only used inside #manageChildren() and always empty outside of it.
+   * Helper class that sorts moveTo/moveFrom arrays passed to #manageChildren().
+   * Not used outside of the said method.
    */ 
-  private final ArrayList<FlatShadowNode> mNodesToMove = new ArrayList<>();
+  private final MoveProxy mMoveProxy = new MoveProxy();
   private final StateBuilder mStateBuilder;
   private @Nullable ReactImageManager mReactImageManager;
 
@@ -224,15 +214,10 @@ public class FlatUIImplementation extends UIImplementation {
 
     int prevIndex = Integer.MAX_VALUE;
 
-    int moveFromIndex;
-    int moveFromChildIndex;
-    if (moveFrom == null) {
-      moveFromIndex = -1;
-      moveFromChildIndex = -1;
-    } else {
-      moveFromIndex = moveFrom.size() - 1;
-      moveFromChildIndex = moveFrom.getInt(moveFromIndex);
-    }
+    mMoveProxy.setup(moveFrom, moveTo);
+
+    int moveFromIndex = mMoveProxy.size() - 1;
+    int moveFromChildIndex = (moveFromIndex == -1) ? -1 : mMoveProxy.getMoveFrom(moveFromIndex);
 
     int removeFromIndex;
     int removeFromChildIndex;
@@ -249,12 +234,11 @@ public class FlatUIImplementation extends UIImplementation {
 
     while (true) {
       if (moveFromChildIndex > removeFromChildIndex) {
-        int indexInParent = moveTo.getInt(moveFromIndex);
-        moveChild(removeChildAt(parentNode, moveFromChildIndex, prevIndex), indexInParent);
+        moveChild(removeChildAt(parentNode, moveFromChildIndex, prevIndex), moveFromIndex);
         prevIndex = moveFromChildIndex;
 
         --moveFromIndex;
-        moveFromChildIndex = (moveFromIndex == -1) ? -1 : moveFrom.getInt(moveFromIndex);
+        moveFromChildIndex = (moveFromIndex == -1) ? -1 : mMoveProxy.getMoveFrom(moveFromIndex);
       } else if (removeFromChildIndex > moveFromChildIndex) {
         removeChild(removeChildAt(parentNode, removeFromChildIndex, prevIndex));
         prevIndex = removeFromChildIndex;
@@ -273,14 +257,19 @@ public class FlatUIImplementation extends UIImplementation {
    * Unregisters given element and all of its children from ShadowNodeRegistry,
    * and drops all Views used by it and its children.
    */
-  private void removeChild(FlatShadowNode child) {
-    if (child.mountsToView() && child.isBackingViewCreated()) {
-      // this will recursively drop all subviews
-      mStateBuilder.dropView(child);
-    } else {
-      for (int i = 0, childCount = child.getChildCount(); i != childCount; ++i) {
-        removeChild((FlatShadowNode) child.getChildAt(i));
+  private void removeChild(ReactShadowNode child) {
+    if (child instanceof FlatShadowNode) {
+      FlatShadowNode node = (FlatShadowNode) child;
+      if (node.mountsToView() && node.isBackingViewCreated()) {
+        // this will recursively drop all subviews
+        mStateBuilder.dropView(node);
+        removeShadowNode(node);
+        return;
       }
+    }
+
+    for (int i = 0, childCount = child.getChildCount(); i != childCount; ++i) {
+      removeChild(child.getChildAt(i));
     }
 
     removeShadowNode(child);
@@ -289,13 +278,12 @@ public class FlatUIImplementation extends UIImplementation {
   /**
    * Prepares a given element to be moved to a new position.
    */
-  private void moveChild(FlatShadowNode child, int indexInParent) {
-    child.setMoveToIndexInParent(indexInParent);
-    mNodesToMove.add(child);
+  private void moveChild(ReactShadowNode child, int moveFromIndex) {
+    mMoveProxy.setChildMoveFrom(moveFromIndex, child);
   }
 
   /**
-   * Adds all children from addChildTags and mNodesToMove, populated by removeChildren.
+   * Adds all children from addChildTags and moveFrom/moveTo.
    */
   private void addChildren(
       ReactShadowNode parentNode,
@@ -304,22 +292,14 @@ public class FlatUIImplementation extends UIImplementation {
 
     int prevIndex = -1;
 
-    int numNodesToMove = mNodesToMove.size();
     int moveToIndex;
     int moveToChildIndex;
-    FlatShadowNode moveToChild;
-    if (numNodesToMove == 0) {
+    if (mMoveProxy.size() == 0) {
       moveToIndex = Integer.MAX_VALUE;
-      moveToChild = null;
       moveToChildIndex = Integer.MAX_VALUE;
     } else {
-      if (numNodesToMove > 1) {
-        // mNodesToMove is not sorted, so do it now.
-        Collections.sort(mNodesToMove, COMPARATOR);
-      }
       moveToIndex = 0;
-      moveToChild = mNodesToMove.get(0);
-      moveToChildIndex = moveToChild.getMoveToIndexInParent();
+      moveToChildIndex = mMoveProxy.getMoveTo(0);
     }
 
     int numNodesToAdd;
@@ -335,7 +315,7 @@ public class FlatUIImplementation extends UIImplementation {
       addToChildIndex = addAtIndices.getInt(0);
     }
 
-    // both mNodesToMove and addChildTags are already sorted, but combined order is not sorted. Use
+    // both mMoveProxy and addChildTags are already sorted, but combined order is not sorted. Use
     // a merge step from mergesort to walk over both arrays and extract elements in sorted order.
 
     while (true) {
@@ -351,15 +331,15 @@ public class FlatUIImplementation extends UIImplementation {
           addToChildIndex = addAtIndices.getInt(addToIndex);
         }
       } else if (moveToChildIndex < addToChildIndex) {
+        ReactShadowNode moveToChild = mMoveProxy.getChildMoveTo(moveToIndex);
         addChildAt(parentNode, moveToChild, moveToChildIndex, prevIndex);
         prevIndex = moveToChildIndex;
 
         ++moveToIndex;
-        if (moveToIndex == numNodesToMove) {
+        if (moveToIndex == mMoveProxy.size()) {
           moveToChildIndex = Integer.MAX_VALUE;
         } else {
-          moveToChild = mNodesToMove.get(moveToIndex);
-          moveToChildIndex = moveToChild.getMoveToIndexInParent();
+          moveToChildIndex = mMoveProxy.getMoveTo(moveToIndex);
         }
       } else {
         // moveToChildIndex == addToChildIndex can only be if both are equal to Integer.MAX_VALUE
@@ -367,14 +347,12 @@ public class FlatUIImplementation extends UIImplementation {
         break;
       }
     }
-
-    mNodesToMove.clear();
   }
 
   /**
    * Removes a child from parent, verifying that we are removing in descending order.
    */
-  private static FlatShadowNode removeChildAt(
+  private static ReactShadowNode removeChildAt(
       ReactShadowNode parentNode,
       int index,
       int prevIndex) {
@@ -383,7 +361,7 @@ public class FlatUIImplementation extends UIImplementation {
           "Invariant failure, needs sorting! " + index + " >= " + prevIndex);
     }
 
-    return (FlatShadowNode) parentNode.removeChildAt(index);
+    return parentNode.removeChildAt(index);
   }
 
   /**
