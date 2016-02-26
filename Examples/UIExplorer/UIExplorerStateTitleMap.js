@@ -15,6 +15,7 @@
  */
 'use strict';
 
+// $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const UIExplorerList = require('./UIExplorerList');
 
 import type {NavigationState} from 'NavigationStateUtils';
