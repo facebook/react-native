@@ -26,9 +26,6 @@ class HMRBundle extends BundleBase {
       module,
       transformed.code,
     ).then(({name, code}) => {
-      // need to be in single line so that lines match on sourcemaps
-      code = `__accept(${JSON.stringify(name)}, function(global, require, module, exports) { ${code} });`;
-
       const moduleTransport = new ModuleTransport({
         code,
         name,
@@ -44,8 +41,13 @@ class HMRBundle extends BundleBase {
     });
   }
 
-  getModulesCode() {
-    return this._modules.map(module => module.code);
+  getModulesNamesAndCode() {
+    return this._modules.map(module => {
+      return {
+        name: JSON.stringify(module.name),
+        code: module.code,
+      };
+    });
   }
 
   getSourceURLs() {

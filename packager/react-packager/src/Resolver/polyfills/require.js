@@ -94,12 +94,12 @@ global.__d = define;
 global.require = require;
 
 if (__DEV__) { // HMR
-  function accept(id, factory) {
+  function accept(id, factory, inverseDependencies) {
     var mod = modules[id];
 
     if (!mod) {
       define(id, factory);
-      return; // new modules don't need to be accepted
+      return true; // new modules don't need to be accepted
     }
 
     if (!mod.module.hot) {
@@ -107,21 +107,50 @@ if (__DEV__) { // HMR
         'Cannot accept module because Hot Module Replacement ' +
         'API was not installed.'
       );
-      return;
+      return false;
     }
+
+    // replace and initialize factory
+    if (factory) {
+      mod.factory = factory;
+    }
+    mod.isInitialized = false;
+    require(id);
 
     if (mod.module.hot.acceptCallback) {
-      mod.factory = factory;
-      mod.isInitialized = false;
-      require(id);
-
       mod.module.hot.acceptCallback();
+      return true;
     } else {
-      console.warn(
-        '[HMR] Module `' + id + '` can\'t be hot reloaded because it\'s not a ' +
-        'React component. To get the changes reload the JS bundle.'
-      );
+      // need to have inverseDependencies to bubble up accept
+      if (!inverseDependencies) {
+        throw new Error('Undefined `inverseDependencies`');
+      }
+
+      // accept parent modules recursively up until all siblings are accepted
+      return acceptAll(inverseDependencies[id], inverseDependencies);
     }
+  }
+
+  function acceptAll(modules, inverseDependencies) {
+    if (modules.length === 0) {
+      return true;
+    }
+
+    var notAccepted = modules.filter(function(module) {
+      return !accept(module, /*factory*/ undefined, inverseDependencies);
+    });
+
+    var parents = [];
+    for (var i = 0; i < notAccepted.length; i++) {
+      // if this the module has no parents then the change cannot be hot loaded
+      if (inverseDependencies[notAccepted[i]].length === 0) {
+        return false;
+      }
+
+      parents.pushAll(inverseDependencies[notAccepted[i]]);
+    }
+
+    return acceptAll(parents, inverseDependencies);
   }
 
   global.__accept = accept;

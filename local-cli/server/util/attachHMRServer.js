@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const getInverseDependencies = require('node-haste').getInverseDependencies;
 const querystring = require('querystring');
 const url = require('url');
 
@@ -23,9 +24,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     packagerServer.setHMRFileChangeListener(null);
   }
 
-  // Returns a promise with the full list of dependencies and the shallow
-  // dependencies each file on the dependency list has for the give platform
-  // and entry file.
+  // For the give platform and entry file, returns a promise with:
+  //   - The full list of dependencies.
+  //   - The shallow dependencies each file on the dependency list has
+  //   - Inverse shallow dependencies map
   function getDependencies(platform, bundleEntry) {
     return packagerServer.getDependencies({
       platform: platform,
@@ -70,12 +72,16 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             dependenciesModulesCache[depName] = dep;
           });
         })).then(() => {
-          return {
-            dependenciesCache,
-            dependenciesModulesCache,
-            shallowDependencies,
-            resolutionResponse: response,
-          };
+          return getInverseDependencies(response)
+            .then(inverseDependenciesCache => {
+              return {
+                dependenciesCache,
+                dependenciesModulesCache,
+                shallowDependencies,
+                inverseDependenciesCache,
+                resolutionResponse: response,
+              };
+            });
         });
       });
     });
@@ -97,6 +103,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         dependenciesCache,
         dependenciesModulesCache,
         shallowDependencies,
+        inverseDependenciesCache,
       }) => {
         client = {
           ws,
@@ -105,6 +112,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           dependenciesCache,
           dependenciesModulesCache,
           shallowDependencies,
+          inverseDependenciesCache,
         };
 
         packagerServer.setHMRFileChangeListener((filename, stat) => {
@@ -151,6 +159,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     dependenciesCache,
                     dependenciesModulesCache,
                     shallowDependencies,
+                    inverseDependenciesCache,
                     resolutionResponse,
                   }) => {
                     if (!client) {
@@ -211,7 +220,8 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return JSON.stringify({
                   type: 'update',
                   body: {
-                    modules: bundle.getModulesCode(),
+                    modules: bundle.getModulesNamesAndCode(),
+                    inverseDependencies: inverseDependenciesCache,
                     sourceURLs: bundle.getSourceURLs(),
                     sourceMappingURLs: bundle.getSourceMappingURLs(),
                   },
