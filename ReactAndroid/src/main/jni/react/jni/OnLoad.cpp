@@ -865,6 +865,9 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         return std::unique_ptr<MessageQueueThread>(
             JMessageQueueThread::currentMessageQueueThread().release());
       };
+    Exceptions::handleUncaughtException = [] () {
+      translatePendingCppExceptionToJavaException();
+    };
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSLogging::nativeHook = nativeLoggingHook;
 

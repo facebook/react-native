@@ -126,13 +126,17 @@ JSCExecutor::JSCExecutor(
 }
 
 JSCExecutor::~JSCExecutor() {
-  *m_isDestroyed = true;
-  if (m_messageQueueThread->isOnThread()) {
-    terminateOnJSVMThread();
-  } else {
-    m_messageQueueThread->runOnQueueSync([this] () {
+  try {
+    *m_isDestroyed = true;
+    if (m_messageQueueThread->isOnThread()) {
       terminateOnJSVMThread();
-    });
+    } else {
+      m_messageQueueThread->runOnQueueSync([this] () {
+        terminateOnJSVMThread();
+      });
+    }
+  } catch (...) {
+    Exceptions::handleUncaughtException();
   }
 }
 
