@@ -22,11 +22,24 @@ def react_library(**kwargs):
     visibility = [
       react_native_target('jni/react/jni:jni'),
     ],
-    deps = DEPS + [
-      '//native/third-party/jsc:jsc',
-      '//native/third-party/jsc:jsc_legacy_profiler',
-    ],
+    deps = DEPS + JSC_DEPS,
     preprocessor_flags = PREPROCESSOR_FLAGS,
+    **kwargs
+  )
+
+  cxx_library(
+    name = 'react-internal',
+    visibility = [
+      react_native_target('jni/react/jni:jni-internal'),
+    ],
+    deps = DEPS + JSC_INTERNAL_DEPS,
+    preprocessor_flags = PREPROCESSOR_FLAGS + [
+      '-DWITH_FB_JSC_TUNING=1',
+      '-DWITH_JSC_MEMORY_PRESSURE=1',
+      '-DWITH_FBJSCEXTENSIONS=1',
+      '-DWITH_JSC_INTERNAL=1',
+      '-DWITH_FB_MEMORY_PROFILING=1',
+    ],
     **kwargs
   )
 
@@ -44,7 +57,6 @@ react_library(
     'JSCTracing.cpp',
     'JSCMemory.cpp',
     'JSCLegacyProfiler.cpp',
-    'JSCWebWorker.cpp',
     'Platform.cpp',
   ],
   headers = [
@@ -58,7 +70,6 @@ react_library(
     'Executor.h',
     'JSCExecutor.h',
     'JSCHelpers.h',
-    'JSCWebWorker.h',
     'MessageQueueThread.h',
     'MethodCall.h',
     'JSModulesUnbundle.h',
