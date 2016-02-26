@@ -22,6 +22,7 @@ import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.csslayout.Spacing;
 import com.facebook.fbui.widget.text.staticlayouthelper.StaticLayoutHelper;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
@@ -48,6 +49,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private float mSpacingMult = 1.0f;
   private float mSpacingAdd = 0.0f;
   private int mNumberOfLines = Integer.MAX_VALUE;
+  private Layout.Alignment mAlignment = Layout.Alignment.ALIGN_NORMAL;
 
   public RCTText() {
     setMeasureFunction(this);
@@ -120,7 +122,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
         text.length(),
         PAINT,
         maximumWidth,
-        Layout.Alignment.ALIGN_NORMAL,
+        mAlignment,
         mSpacingMult,
         mSpacingAdd,
         INCLUDE_PADDING,
@@ -173,7 +175,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
           mText,
           PAINT,
           Integer.MAX_VALUE, // fits one line so don't care about the width
-          Layout.Alignment.ALIGN_NORMAL,
+          mAlignment,
           mSpacingMult,
           mSpacingAdd,
           mBoringLayoutMetrics,
@@ -253,6 +255,24 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   protected void notifyChanged(boolean shouldRemeasure) {
     // Future patch: should only recreate Layout if shouldRemeasure is false
     dirty();
+  }
+
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(@Nullable String textAlign) {
+    if (textAlign == null || "auto".equals(textAlign)) {
+      mAlignment = Layout.Alignment.ALIGN_NORMAL;
+    } else if ("left".equals(textAlign)) {
+      // left and right may yield potentially different results (relative to non-nodes) in cases
+      // when supportsRTL="true" in the manifest.
+      mAlignment = Layout.Alignment.ALIGN_NORMAL;
+    } else if ("right".equals(textAlign)) {
+      mAlignment = Layout.Alignment.ALIGN_OPPOSITE;
+    } else if ("center".equals(textAlign)) {
+      mAlignment = Layout.Alignment.ALIGN_CENTER;
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
+    notifyChanged(false);
   }
 
   /**
