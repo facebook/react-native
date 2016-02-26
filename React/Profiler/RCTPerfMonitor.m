@@ -506,7 +506,7 @@ RCT_EXPORT_MODULE()
   NSUInteger i = 0;
   for (NSString *label in RCTPerformanceLoggerLabels()) {
     if([label isEqualToString:@"BundleSize"]){
-      [data addObject:[NSString stringWithFormat:@"%@: %lldByte", label,
+      [data addObject:[NSString stringWithFormat:@"%@: %lldb", label,
                        [times[i+1] longLongValue] - [times[i] longLongValue]]];
     }else{
       [data addObject:[NSString stringWithFormat:@"%@: %lldms", label,
