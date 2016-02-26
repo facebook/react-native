@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.react.views.text;
+package com.facebook.react.views.textfrescosupport;
 
 import javax.annotation.Nullable;
 
@@ -19,24 +19,24 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 
 /**
- * Manages Images embedded in Text nodes. Since they are used only as a virtual nodes any type of
- * native view operation will throw an {@link IllegalStateException}
+ * Manages Images embedded in Text nodes using Fresco. Since they are used only as a virtual nodes
+ * any type of native view operation will throw an {@link IllegalStateException}.
  */
-public class ReactTextInlineImageViewManager
-    extends ViewManager<View, ReactTextInlineImageShadowNode> {
+public class FrescoBasedReactTextInlineImageViewManager
+  extends ViewManager<View, FrescoBasedReactTextInlineImageShadowNode> {
 
   static final String REACT_CLASS = "RCTTextInlineImage";
 
   private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
-  public ReactTextInlineImageViewManager() {
+  public FrescoBasedReactTextInlineImageViewManager() {
     this(null, null);
   }
 
-  public ReactTextInlineImageViewManager(
-      @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
-      @Nullable Object callerContext) {
+  public FrescoBasedReactTextInlineImageViewManager(
+    @Nullable AbstractDraweeControllerBuilder draweeControllerBuilder,
+    @Nullable Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
   }
@@ -52,18 +52,18 @@ public class ReactTextInlineImageViewManager
   }
 
   @Override
-  public ReactTextInlineImageShadowNode createShadowNodeInstance() {
-    return new ReactTextInlineImageShadowNode(
-        (mDraweeControllerBuilder != null) ?
-            mDraweeControllerBuilder :
-            Fresco.newDraweeControllerBuilder(),
-        mCallerContext
+  public FrescoBasedReactTextInlineImageShadowNode createShadowNodeInstance() {
+    return new FrescoBasedReactTextInlineImageShadowNode(
+      (mDraweeControllerBuilder != null) ?
+        mDraweeControllerBuilder :
+        Fresco.newDraweeControllerBuilder(),
+      mCallerContext
     );
   }
 
   @Override
-  public Class<ReactTextInlineImageShadowNode> getShadowNodeClass() {
-    return ReactTextInlineImageShadowNode.class;
+  public Class<FrescoBasedReactTextInlineImageShadowNode> getShadowNodeClass() {
+    return FrescoBasedReactTextInlineImageShadowNode.class;
   }
 
   @Override
