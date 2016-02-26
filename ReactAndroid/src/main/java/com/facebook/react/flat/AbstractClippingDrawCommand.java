@@ -55,6 +55,13 @@ import android.graphics.Canvas;
   }
 
   protected final void applyClipping(Canvas canvas) {
-    canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
+    // We put this check here to not clip when we have the default [-infinity, infinity] bounds,
+    // since clipRect in those cases is essentially no-op anyway. This is needed to fix a bug that
+    // shows up during screenshot testing. Note that checking one side is enough, since if one side
+    // is infinite, all sides will be infinite, since we only set infinite for all sides at the
+    // same time - conversely, if one side is finite, all sides will be finite.
+    if (mClipLeft != Float.NEGATIVE_INFINITY) {
+      canvas.clipRect(mClipLeft, mClipTop, mClipRight, mClipBottom);
+    }
   }
 }
