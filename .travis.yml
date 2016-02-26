@@ -15,7 +15,7 @@ install:
   - nvm install 5
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
-  - npm set progress=false
+  - npm config set progress=false
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm install
 
