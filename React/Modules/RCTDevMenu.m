@@ -636,8 +636,6 @@ RCT_EXPORT_METHOD(reload)
   }
 
   if (_updateTask) {
-    [_updateTask cancel];
-    _updateTask = nil;
     return;
   }
 
@@ -652,8 +650,10 @@ RCT_EXPORT_METHOD(reload)
         if (!error && HTTPResponse.statusCode == 205) {
           [strongSelf reload];
         } else {
-          strongSelf->_updateTask = nil;
-          [strongSelf checkForUpdates];
+          if (!(error.code == NSURLErrorCancelled)) {
+            strongSelf->_updateTask = nil;
+            [strongSelf checkForUpdates];
+          }
         }
       }
     });
