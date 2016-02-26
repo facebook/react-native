@@ -26,7 +26,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
   };
 
   function addClient (client) {
-
     client.ws.on('error', e => {
       console.error('[Hot Module Replacement] Unexpected error', e);
       disconnect(client);
@@ -96,7 +95,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
 
   // Runs whenever a file changes
   function onHMRChange (filename, stat)  {
-
     if (clients.length === 0) {
       return;
     }
@@ -133,7 +131,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 return response.copy({dependencies: [module]});
               });
             }
-            console.log(bundleEntry, platform, "WASNT SAME")
 
             // if there're new dependencies compare the full list of
             // dependencies we used to have with the one we now have
@@ -171,7 +168,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           }
 
           return forEachBundleEntry((bundleEntry, platform) => {
-
             if (!resolutionResponses[platform] || !resolutionResponses[platform][bundleEntry]) {
               return;
             }
@@ -206,7 +202,6 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           }
 
           return forEachBundleEntry((bundleEntry, platform) => {
-
             if (!bundles[platform]) {
               return;
             }
