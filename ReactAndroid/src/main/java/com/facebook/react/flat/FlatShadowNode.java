@@ -52,6 +52,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   private int mMoveToIndexInParent;
   private boolean mClipToBounds = false;
   private boolean mIsUpdated = true;
+  private float mClipLeft;
+  private float mClipTop;
+  private float mClipRight;
+  private float mClipBottom;
 
   // last OnLayoutEvent info, only used when shouldNotifyOnLayout() is true.
   private int mLayoutX;
@@ -172,6 +176,26 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
   /* package */ final void resetUpdated() {
     mIsUpdated = false;
+  }
+
+  /* package */ final boolean clipBoundsChanged(
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    return mClipLeft != clipLeft || mClipTop != clipTop ||
+        mClipRight != clipRight || mClipBottom != clipBottom;
+  }
+
+  /* package */ final void setClipBounds(
+      float clipLeft,
+      float clipTop,
+      float clipRight,
+      float clipBottom) {
+    mClipLeft = clipLeft;
+    mClipTop = clipTop;
+    mClipRight = clipRight;
+    mClipBottom = clipBottom;
   }
 
   /**

@@ -27,6 +27,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  */
 /* package */ final class StateBuilder {
 
+  private static final boolean SKIP_UP_TO_DATE_NODES = true;
+
   private static final int[] EMPTY_INT_ARRAY = new int[0];
 
   private final FlatUIViewOperationQueue mOperationsQueue;
@@ -225,8 +227,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   /**
    * Collects state (DrawCommands) for a given node that will mount to a View.
+   * Returns true if this node or any of its descendants that mount to View generated any updates.
    */
-  private void collectStateForMountableNode(
+  private boolean collectStateForMountableNode(
       FlatShadowNode node,
       float left,
       float top,
@@ -236,6 +239,18 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float clipTop,
       float clipRight,
       float clipBottom) {
+    // Normally, this would be a node.hasNewLayout() check, but we also need to check if a node
+    // needs onCollectExtraUpdates() call.
+    boolean hasUpdates = node.hasUpdates();
+
+    boolean expectingUpdate = hasUpdates || node.isUpdated() ||
+        node.clipBoundsChanged(clipLeft, clipTop, clipRight, clipBottom);
+    if (SKIP_UP_TO_DATE_NODES && !expectingUpdate) {
+      return false;
+    }
+
+    node.setClipBounds(clipLeft, clipTop, clipRight, clipBottom);
+
     mDrawCommands.start(node.getDrawCommands());
     mAttachDetachListeners.start(node.getAttachDetachListeners());
     mNodeRegions.start(node.getNodeRegions());
@@ -259,7 +274,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       clipBottom = Float.POSITIVE_INFINITY;
     }
 
-    collectStateRecursively(
+    boolean descendantUpdated = collectStateRecursively(
         node,
         left,
         top,
@@ -308,7 +323,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           nodeRegions);
     }
 
-    if (node.hasUpdates()) {
+    if (hasUpdates) {
       node.onCollectExtraUpdates(mOperationsQueue);
       node.markUpdateSeen();
     }
@@ -317,6 +332,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     if (nativeChildren != null) {
       updateNativeChildren(node, node.getNativeChildren(), nativeChildren);
     }
+
+    boolean updated = shouldUpdateMountState || nativeChildren != null || descendantUpdated;
+
+    if (!expectingUpdate && updated) {
+      throw new RuntimeException("Node " + node.getReactTag() + " updated unexpectedly.");
+    }
+
+    return updated;
   }
 
   private void updateNativeChildren(
@@ -378,7 +401,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
   /**
    * Recursively walks node tree from a given node and collects DrawCommands.
    */
-  private void collectStateRecursively(
+  private boolean collectStateRecursively(
       FlatShadowNode node,
       float left,
       float top,
@@ -429,6 +452,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         roundToPixel(clipRight),
         clipBottom);
 
+    boolean updated = false;
     for (int i = 0, childCount = node.getChildCount(); i != childCount; ++i) {
       ReactShadowNode child = node.getChildAt(i);
       if (child.isVirtual()) {
@@ -436,7 +460,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         continue;
       }
 
-      processNodeAndCollectState(
+      updated |= processNodeAndCollectState(
           (FlatShadowNode) child,
           left,
           top,
@@ -449,6 +473,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     }
 
     node.resetUpdated();
+
+    return updated;
   }
 
   private void markLayoutSeenRecursively(ReactShadowNode node) {
@@ -463,8 +489,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 
   /**
    * Collects state and updates View boundaries for a given node tree.
+   * Returns true if this node or any of its descendants that mount to View generated any updates.
    */
-  private void processNodeAndCollectState(
+  private boolean processNodeAndCollectState(
       FlatShadowNode node,
       float parentLeft,
       float parentTop,
@@ -482,6 +509,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     float right = left + width;
     float bottom = top + height;
 
+    final boolean updated;
+
     if (node.mountsToView()) {
       ensureBackingViewIsCreated(node);
 
@@ -494,7 +523,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
             parentClipBottom));
       }
 
-      collectStateForMountableNode(
+      updated = collectStateForMountableNode(
           node,
           left - left,
           top - top,
@@ -509,7 +538,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         updateViewBounds(node, left, top, right, bottom);
       }
     } else {
-      collectStateRecursively(
+      updated = collectStateRecursively(
           node,
           left,
           top,
@@ -523,6 +552,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           false);
       addNodeRegion(node, left, top, right, bottom);
     }
+
+    return updated;
   }
 
   private void updateViewPadding(AndroidView androidView, int reactTag) {

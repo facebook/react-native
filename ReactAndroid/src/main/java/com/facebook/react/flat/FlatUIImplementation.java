@@ -403,22 +403,12 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
-  protected void calculateRootLayout(ReactShadowNode cssRoot) {
-  }
-
-  @Override
   protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
       float absoluteY,
       EventDispatcher eventDispatcher) {
-    FlatRootShadowNode rootNode = (FlatRootShadowNode) cssNode;
-    if (!rootNode.needsLayout() && !rootNode.isUpdated()) {
-      return;
-    }
-
-    super.calculateRootLayout(rootNode);
-    mStateBuilder.applyUpdates(eventDispatcher, rootNode);
+    mStateBuilder.applyUpdates(eventDispatcher, (FlatRootShadowNode) cssNode);
   }
 
   @Override
