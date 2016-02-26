@@ -898,6 +898,33 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   }
 }
 
+class AnimatedModulo extends AnimatedWithChildren {
+  _a: Animated;
+  _modulus: number;
+
+  constructor(a: Animated, modulus: number) {
+    super();
+    this._a = a;
+    this._modulus = modulus;
+  }
+
+  __getValue(): number {
+    return (this._a.__getValue() % this._modulus + this._modulus) % this._modulus;
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
+  }
+}
+
 class AnimatedTransform extends AnimatedWithChildren {
   _transforms: Array<Object>;
 
@@ -1232,6 +1259,14 @@ var multiply = function(
 ): AnimatedMultiplication {
   return new AnimatedMultiplication(a, b);
 };
+
+var modulo = function(
+  a: Animated,
+  modulus: number
+): AnimatedModulo {
+  return new AnimatedModulo(a, modulus);
+};
+
 
 var maybeVectorAnim = function(
   value: AnimatedValue | AnimatedValueXY,
@@ -1603,6 +1638,12 @@ module.exports = {
    * together.
    */
   multiply,
+
+  /**
+   * Creates a new Animated value that is the (non-negative) modulo of the
+   * provided Animated value
+   */
+  modulo,
 
   /**
    * Starts an animation after the given delay.
