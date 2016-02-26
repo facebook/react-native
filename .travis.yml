@@ -13,6 +13,7 @@ install:
   - export NVM_DIR="$PWD/.nvm"
   - source $(brew --prefix nvm)/nvm.sh
   - nvm install 5
+  - npm install -g npm@3.7.0
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
   - npm config set progress=false
