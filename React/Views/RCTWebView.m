@@ -118,6 +118,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                       updateOffset:NO];
 }
 
+- (void)setScalesPageToFit:(BOOL)scalesPageToFit
+{
+  if (_webView.scalesPageToFit != scalesPageToFit) {
+    _webView.scalesPageToFit = scalesPageToFit;
+    [_webView reload];
+  }
+}
+
+- (BOOL)scalesPageToFit
+{
+  return _webView.scalesPageToFit;
+}
+
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   CGFloat alpha = CGColorGetAlpha(backgroundColor.CGColor);
