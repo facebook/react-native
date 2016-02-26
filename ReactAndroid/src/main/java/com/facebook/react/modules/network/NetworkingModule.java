@@ -197,8 +197,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       requestBuilder.method(method, multipartBuilder.build());
     } else {
       // Nothing in data payload, at least nothing we could understand anyway.
-      // Ignore and treat it as if it were null.
-      requestBuilder.method(method, null);
+      requestBuilder.method(method, RequestBodyUtil.getEmptyBody(method));
     }
 
     client.newCall(requestBuilder.build()).enqueue(

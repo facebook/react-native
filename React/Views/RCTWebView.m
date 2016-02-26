@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTAutoInsetsProtocol.h"
+#import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -70,31 +71,34 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_webView reload];
 }
 
-- (NSURL *)URL
+- (void)setSource:(NSDictionary *)source
 {
-  return _webView.request.URL;
-}
+  if (![_source isEqualToDictionary:source]) {
+    _source = [source copy];
 
-- (void)setURL:(NSURL *)URL
-{
-  // Because of the way React works, as pages redirect, we actually end up
-  // passing the redirect urls back here, so we ignore them if trying to load
-  // the same url. We'll expose a call to 'reload' to allow a user to load
-  // the existing page.
-  if ([URL isEqual:_webView.request.URL]) {
-    return;
-  }
-  if (!URL) {
-    // Clear the webview
-    [_webView loadHTMLString:@"" baseURL:nil];
-    return;
-  }
-  [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
-}
+    // Check for a static html source first
+    NSString *html = [RCTConvert NSString:source[@"html"]];
+    if (html) {
+      NSURL *baseURL = [RCTConvert NSURL:source[@"baseUrl"]];
+      [_webView loadHTMLString:html baseURL:baseURL];
+      return;
+    }
 
-- (void)setHTML:(NSString *)HTML
-{
-  [_webView loadHTMLString:HTML baseURL:nil];
+    NSURLRequest *request = [RCTConvert NSURLRequest:source];
+    // Because of the way React works, as pages redirect, we actually end up
+    // passing the redirect urls back here, so we ignore them if trying to load
+    // the same url. We'll expose a call to 'reload' to allow a user to load
+    // the existing page.
+    if ([request.URL isEqual:_webView.request.URL]) {
+      return;
+    }
+    if (!request.URL) {
+      // Clear the webview
+      [_webView loadHTMLString:@"" baseURL:nil];
+      return;
+    }
+    [_webView loadRequest:request];
+  }
 }
 
 - (void)layoutSubviews

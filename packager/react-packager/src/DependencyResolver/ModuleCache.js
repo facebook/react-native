@@ -3,22 +3,29 @@
 const AssetModule = require('./AssetModule');
 const Package = require('./Package');
 const Module = require('./Module');
-const path = require('path');
+const path = require('fast-path');
 
 class ModuleCache {
 
-  constructor(fastfs, cache, extractRequires, depGraphHelpers) {
+  constructor({
+    fastfs,
+    cache,
+    extractRequires,
+    transformCode,
+    depGraphHelpers,
+  }) {
     this._moduleCache = Object.create(null);
     this._packageCache = Object.create(null);
     this._fastfs = fastfs;
     this._cache = cache;
     this._extractRequires = extractRequires;
+    this._transformCode = transformCode;
     this._depGraphHelpers = depGraphHelpers;
+
     fastfs.on('change', this._processFileChange.bind(this));
   }
 
   getModule(filePath) {
-    filePath = path.resolve(filePath);
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new Module({
         file: filePath,
@@ -26,14 +33,18 @@ class ModuleCache {
         moduleCache: this,
         cache: this._cache,
         extractor: this._extractRequires,
+        transformCode: this._transformCode,
         depGraphHelpers: this._depGraphHelpers,
       });
     }
     return this._moduleCache[filePath];
   }
 
+  getAllModules() {
+    return this._moduleCache;
+  }
+
   getAssetModule(filePath) {
-    filePath = path.resolve(filePath);
     if (!this._moduleCache[filePath]) {
       this._moduleCache[filePath] = new AssetModule({
         file: filePath,
@@ -46,7 +57,6 @@ class ModuleCache {
   }
 
   getPackage(filePath) {
-    filePath = path.resolve(filePath);
     if (!this._packageCache[filePath]) {
       this._packageCache[filePath] = new Package({
         file: filePath,

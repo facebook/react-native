@@ -89,7 +89,7 @@ var App = React.createClass({
           <p>
             See <a href="docs/debugging.html#content">Debugging</a>.
           </p>
-          <img src="/react-native/img/chrome_breakpoint.png" width="800" height="443" />
+          <img src="img/chrome_breakpoint.png" width="800" height="443" />
 
           <h2>Touch Handling</h2>
           <p>

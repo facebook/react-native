@@ -42,6 +42,11 @@ public class ReactScrollViewManager
     return new ReactScrollView(context);
   }
 
+  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
+  public void setScrollEnabled(ReactScrollView view, boolean value) {
+    view.setScrollEnabled(value);
+  }
+
   @ReactProp(name = "showsVerticalScrollIndicator")
   public void setShowsVerticalScrollIndicator(ReactScrollView view, boolean value) {
     view.setVerticalScrollBarEnabled(value);
@@ -82,14 +87,11 @@ public class ReactScrollViewManager
   public void scrollTo(
       ReactScrollView scrollView,
       ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.smoothScrollTo(data.mDestX, data.mDestY);
-  }
-
-  @Override
-  public void scrollWithoutAnimationTo(
-      ReactScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    scrollView.scrollTo(data.mDestX, data.mDestY);
+    if (data.mAnimated) {
+      scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+    } else {
+      scrollView.scrollTo(data.mDestX, data.mDestY);
+    }
   }
 
   @Override

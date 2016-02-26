@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const path = require('path');
+const path = require('fast-path');
 
 class DependencyGraphHelpers {
   constructor({ providesModuleNodeModules, assetExts }) {
@@ -17,17 +17,13 @@ class DependencyGraphHelpers {
   }
 
   isNodeModulesDir(file) {
-    let parts = path.normalize(file).split(path.sep);
-    const indexOfNodeModules = parts.lastIndexOf('node_modules');
-
-    if (indexOfNodeModules === -1) {
+    const index = file.lastIndexOf('/node_modules/');
+    if (index === -1) {
       return false;
     }
 
-    parts = parts.slice(indexOfNodeModules + 1);
-
+    const parts = file.substr(index + 14).split(path.sep);
     const dirs = this._providesModuleNodeModules;
-
     for (let i = 0; i < dirs.length; i++) {
       if (parts.indexOf(dirs[i]) > -1) {
         return false;
@@ -42,7 +38,7 @@ class DependencyGraphHelpers {
   }
 
   extname(name) {
-    return path.extname(name).replace(/^\./, '');
+    return path.extname(name).substr(1);
   }
 }
 

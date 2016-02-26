@@ -15,6 +15,7 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTTouchEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
 #import "UIView+React.h"
@@ -23,7 +24,7 @@
 // module if we were to assume that modules and RootViews had a 1:1 relationship
 @implementation RCTTouchHandler
 {
-  __weak RCTBridge *_bridge;
+  __weak RCTEventDispatcher *_eventDispatcher;
 
   /**
    * Arrays managed in parallel tracking native touch object along with the
@@ -46,7 +47,7 @@
 
   if ((self = [super initWithTarget:self action:@selector(handleGestureUpdate:)])) {
 
-    _bridge = bridge;
+    _eventDispatcher = [bridge moduleForClass:[RCTEventDispatcher class]];
     _dispatchedInitialTouches = NO;
     _nativeTouches = [NSMutableOrderedSet new];
     _reactTouches = [NSMutableArray new];
@@ -196,9 +197,10 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
     [reactTouches addObject:[touch copy]];
   }
 
-  eventName = RCTNormalizeInputEventName(eventName);
-  [_bridge enqueueJSCall:@"RCTEventEmitter.receiveTouches"
-                    args:@[eventName, reactTouches, changedIndexes]];
+  RCTTouchEvent *event = [[RCTTouchEvent alloc] initWithEventName:eventName
+                                                     reactTouches:reactTouches
+                                                   changedIndexes:changedIndexes];
+  [_eventDispatcher sendEvent:event];
 }
 
 #pragma mark - Gesture Recognizer Delegate Callbacks

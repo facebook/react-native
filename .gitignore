@@ -26,6 +26,10 @@ project.xcworkspace
 /Examples/**/android/app/build/
 /ReactAndroid/build/
 
+# Buck
+.buckd
+buck-out
+
 # Android
 .idea
 .gradle

@@ -324,11 +324,7 @@ class MessageQueue {
             method,
             args,
             (data) => {
-              // iOS always wraps the data in an Array regardless of what the
-              // shape of the data so we strip it out
-              // Android sends the data back properly
-              // TODO: Remove this once iOS has support for Promises natively (t9774697)
-              resolve(Platform.OS == 'ios' ? data[0] : data);
+              resolve(data);
             },
             (errorData) => {
               var error = createErrorFromErrorData(errorData);

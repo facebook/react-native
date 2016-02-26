@@ -92,6 +92,18 @@ public class SimpleSettableFuture<T> implements Future<T> {
   }
 
   /**
+   * Convenience wrapper for {@link #get()} that re-throws get()'s Exceptions as
+   * RuntimeExceptions.
+   */
+  public @Nullable T getOrThrow() {
+    try {
+      return get();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
    * Convenience wrapper for {@link #get(long, TimeUnit)} that re-throws get()'s Exceptions as
    * RuntimeExceptions.
    */
