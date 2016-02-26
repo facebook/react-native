@@ -11,6 +11,7 @@
  */
 'use strict';
 
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const PropTypes = require('ReactPropTypes');
 const React = require('React');
@@ -53,7 +54,7 @@ const AccessibilityComponentType = [
 
 const forceTouchAvailable = (UIManager.RCTView.Constants &&
   UIManager.RCTView.Constants.forceTouchAvailable) || false;
-  
+
 const statics = {
   AccessibilityTraits,
   AccessibilityComponentType,
@@ -200,6 +201,19 @@ const View = React.createClass({
     onStartShouldSetResponderCapture: PropTypes.func,
     onMoveShouldSetResponder: PropTypes.func,
     onMoveShouldSetResponderCapture: PropTypes.func,
+
+    /**
+     * This defines how far a touch event can start away from the view.
+     * Typical interface guidelines recommend touch targets that are at least
+     * 30 - 40 points/density-independent pixels. If a Touchable view has a
+     * height of 20 the touchable height can be extended to 40 with
+     * `hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}`
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
 
     /**
      * Invoked on mount and layout changes with

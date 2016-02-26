@@ -137,6 +137,7 @@ function componentsToMarkdown(type, json, filepath, i, styles) {
     'next: ' + next,
     'sidebar: ' + shouldDisplayInSidebar(componentName),
     'runnable:' + isRunnable(componentName),
+    'path:' + json.filepath,
     '---',
     JSON.stringify(json, null, 2),
   ].filter(function(line) { return line; }).join('\n');
@@ -149,7 +150,10 @@ function renderComponent(filepath) {
   var json = docgen.parse(
     fs.readFileSync(filepath),
     docgenHelpers.findExportedOrFirst,
-    docgen.defaultHandlers.concat(docgenHelpers.stylePropTypeHandler)
+    docgen.defaultHandlers.concat([
+      docgenHelpers.stylePropTypeHandler,
+      docgenHelpers.deprecatedPropTypeHandler,
+    ])
   );
 
   return componentsToMarkdown('component', json, filepath, n++, styleDocs);
@@ -196,13 +200,14 @@ var components = [
   '../Libraries/CustomComponents/Navigator/Navigator.js',
   '../Libraries/Components/Navigation/NavigatorIOS.ios.js',
   '../Libraries/Picker/PickerIOS.ios.js',
+  '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
-  '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
   '../Libraries/Components/SliderIOS/SliderIOS.ios.js',
+  '../Libraries/Components/StatusBar/StatusBar.js',
   '../Libraries/Components/Switch/Switch.js',
   '../Libraries/Components/TabBarIOS/TabBarIOS.ios.js',
   '../Libraries/Components/TabBarIOS/TabBarItemIOS.ios.js',
@@ -229,10 +234,12 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
   '../Libraries/Interaction/InteractionManager.js',
   '../Libraries/LayoutAnimation/LayoutAnimation.js',
+  '../Libraries/Linking/Linking.js',
   '../Libraries/LinkingIOS/LinkingIOS.js',
   '../Libraries/ReactIOS/NativeMethodsMixin.js',
   '../Libraries/Network/NetInfo.js',
@@ -241,28 +248,33 @@ var apis = [
   '../Libraries/PushNotificationIOS/PushNotificationIOS.js',
   '../Libraries/Components/StatusBar/StatusBarIOS.ios.js',
   '../Libraries/StyleSheet/StyleSheet.js',
+  '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
 ];
 
-var styles = [
+var stylesWithPermalink = [
   '../Libraries/StyleSheet/LayoutPropTypes.js',
   '../Libraries/StyleSheet/TransformPropTypes.js',
+  '../Libraries/Components/View/ShadowPropTypesIOS.js',
+];
+
+var stylesForEmbed = [
   '../Libraries/Components/View/ViewStylePropTypes.js',
   '../Libraries/Text/TextStylePropTypes.js',
   '../Libraries/Image/ImageStylePropTypes.js',
 ];
 
 var polyfills = [
-  '../Libraries/GeoLocation/Geolocation.js',
+  '../Libraries/Geolocation/Geolocation.js',
 ];
 
 var all = components
   .concat(apis)
-  .concat(styles.slice(0, 2))
+  .concat(stylesWithPermalink)
   .concat(polyfills);
 
-var styleDocs = styles.slice(2).reduce(function(docs, filepath) {
+var styleDocs = stylesForEmbed.reduce(function(docs, filepath) {
   docs[path.basename(filepath).replace(path.extname(filepath), '')] =
     docgen.parse(
       fs.readFileSync(filepath),
@@ -282,7 +294,7 @@ module.exports = function() {
   return [].concat(
     components.map(renderComponent),
     apis.map(renderAPI('api')),
-    styles.slice(0, 2).map(renderStyle),
+    stylesWithPermalink.map(renderStyle),
     polyfills.map(renderAPI('Polyfill'))
   );
 };

@@ -23,7 +23,7 @@
 //
 //   var ReactNative = {...require('React'), /* additions */}
 //
-var ReactNative = Object.assign(Object.create(require('React')), {
+var ReactNative = Object.assign(Object.create(require('react')), {
   // Components
   ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   ART: require('ReactNativeART'),
@@ -37,7 +37,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   Modal: require('Modal'),
   Navigator: require('Navigator'),
   NavigatorIOS: require('NavigatorIOS'),
-  PickerAndroid: require('PickerAndroid'),
+  Picker: require('Picker'),
   PickerIOS: require('PickerIOS'),
   ProgressBarAndroid: require('ProgressBarAndroid'),
   ProgressViewIOS: require('ProgressViewIOS'),
@@ -45,6 +45,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   SegmentedControlIOS: require('SegmentedControlIOS'),
   SliderIOS: require('SliderIOS'),
   SnapshotViewIOS: require('SnapshotViewIOS'),
+  StatusBar: require('StatusBar'),
   Switch: require('Switch'),
   PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
   RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
@@ -87,6 +88,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   LayoutAnimation: require('LayoutAnimation'),
   Linking: require('Linking'),
   LinkingIOS: require('LinkingIOS'),
+  NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
   PixelRatio: require('PixelRatio'),

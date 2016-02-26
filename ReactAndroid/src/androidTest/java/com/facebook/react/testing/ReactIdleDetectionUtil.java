@@ -36,16 +36,16 @@ public class ReactIdleDetectionUtil {
       long timeoutMs) {
     UiThreadUtil.assertNotOnUiThread();
 
-    long startTime = SystemClock.elapsedRealtime();
+    long startTime = SystemClock.uptimeMillis();
     waitInner(idleSignaler, timeoutMs);
 
-    long timeToWait = Math.max(1, timeoutMs - (SystemClock.elapsedRealtime() - startTime));
+    long timeToWait = Math.max(1, timeoutMs - (SystemClock.uptimeMillis() - startTime));
     waitForChoreographer(timeToWait);
     waitForJSIdle(reactContext);
 
-    timeToWait = Math.max(1, timeoutMs - (SystemClock.elapsedRealtime() - startTime));
+    timeToWait = Math.max(1, timeoutMs - (SystemClock.uptimeMillis() - startTime));
     waitInner(idleSignaler, timeToWait);
-    timeToWait = Math.max(1, timeoutMs - (SystemClock.elapsedRealtime() - startTime));
+    timeToWait = Math.max(1, timeoutMs - (SystemClock.uptimeMillis() - startTime));
     waitForChoreographer(timeToWait);
   }
 
@@ -108,15 +108,15 @@ public class ReactIdleDetectionUtil {
   private static void waitInner(ReactBridgeIdleSignaler idleSignaler, long timeToWait) {
     // TODO gets broken in gradle, do we need it?
     Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-    long startTime = SystemClock.elapsedRealtime();
+    long startTime = SystemClock.uptimeMillis();
     boolean bridgeWasIdle = false;
-    while (SystemClock.elapsedRealtime() - startTime < timeToWait) {
+    while (SystemClock.uptimeMillis() - startTime < timeToWait) {
       boolean bridgeIsIdle = idleSignaler.isBridgeIdle();
       if (bridgeIsIdle && bridgeWasIdle) {
         return;
       }
       bridgeWasIdle = bridgeIsIdle;
-      long newTimeToWait = Math.max(1, timeToWait - (SystemClock.elapsedRealtime() - startTime));
+      long newTimeToWait = Math.max(1, timeToWait - (SystemClock.uptimeMillis() - startTime));
       idleSignaler.waitForIdle(newTimeToWait);
       instrumentation.waitForIdleSync();
     }

@@ -4,11 +4,10 @@ include_defs('//ReactAndroid/DEFS')
 SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
-  '//native/fb:fb',
-  '//native/jni:jni',
   '//native/third-party/android-ndk:android',
   '//xplat/fbsystrace:fbsystrace',
   '//xplat/folly:molly',
+  '//xplat/third-party/glog:glog',
 ]
 
 PREPROCESSOR_FLAGS = [
@@ -23,11 +22,24 @@ def react_library(**kwargs):
     visibility = [
       react_native_target('jni/react/jni:jni'),
     ],
-    deps = DEPS + [
-      '//native/third-party/jsc:jsc',
-      '//native/third-party/jsc:jsc_legacy_profiler',
-    ],
+    deps = DEPS + JSC_DEPS,
     preprocessor_flags = PREPROCESSOR_FLAGS,
+    **kwargs
+  )
+
+  cxx_library(
+    name = 'react-internal',
+    visibility = [
+      react_native_target('jni/react/jni:jni-internal'),
+    ],
+    deps = DEPS + JSC_INTERNAL_DEPS,
+    preprocessor_flags = PREPROCESSOR_FLAGS + [
+      '-DWITH_FB_JSC_TUNING=1',
+      '-DWITH_JSC_MEMORY_PRESSURE=1',
+      '-DWITH_FBJSCEXTENSIONS=1',
+      '-DWITH_JSC_INTERNAL=1',
+      '-DWITH_FB_MEMORY_PROFILING=1',
+    ],
     **kwargs
   )
 
@@ -38,37 +50,38 @@ react_library(
   force_static = True,
   srcs = [
     'Bridge.cpp',
-    'JSModulesUnbundle.cpp',
     'Value.cpp',
     'MethodCall.cpp',
     'JSCHelpers.cpp',
     'JSCExecutor.cpp',
     'JSCTracing.cpp',
     'JSCMemory.cpp',
-    'JSCPerfLogging.cpp',
     'JSCLegacyProfiler.cpp',
-    'JSCWebWorker.cpp',
+    'Platform.cpp',
   ],
   headers = [
     'JSCTracing.h',
-    'JSCPerfLogging.h',
     'JSCLegacyProfiler.h',
-    'JSCMemory.h'
+    'JSCMemory.h',
   ],
   exported_headers = [
+    'AlignStack.h',
     'Bridge.h',
     'Executor.h',
     'JSCExecutor.h',
     'JSCHelpers.h',
-    'JSCWebWorker.h',
+    'MessageQueueThread.h',
     'MethodCall.h',
     'JSModulesUnbundle.h',
     'Value.h',
+    'Platform.h',
+    'noncopyable.h',
   ],
   compiler_flags = [
     '-Wall',
     '-std=c++11',
     '-fexceptions',
     '-fvisibility=hidden',
+    '-frtti',
   ],
 )

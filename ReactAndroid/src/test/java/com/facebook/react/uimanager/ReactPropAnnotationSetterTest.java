@@ -14,8 +14,8 @@ import android.view.View;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
@@ -201,7 +201,7 @@ public class ReactPropAnnotationSetterTest {
   }
 
   public static ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   private ViewManagerUnderTest mViewManager;
@@ -356,7 +356,7 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testArraySetter() {
-    ReadableArray array = new SimpleArray();
+    ReadableArray array = new JavaOnlyArray();
     mViewManager.updateProperties(null, buildStyles("arrayProp", array));
     verify(mUpdatesReceiverMock).onArraySetterCalled(array);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
@@ -370,7 +370,7 @@ public class ReactPropAnnotationSetterTest {
 
   @Test
   public void testMapSetter() {
-    ReadableMap map = new SimpleMap();
+    ReadableMap map = new JavaOnlyMap();
     mViewManager.updateProperties(null, buildStyles("mapProp", map));
     verify(mUpdatesReceiverMock).onMapSetterCalled(map);
     verifyNoMoreInteractions(mUpdatesReceiverMock);
@@ -458,7 +458,7 @@ public class ReactPropAnnotationSetterTest {
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateBoolPropWithMap() {
-    mViewManager.updateProperties(null, buildStyles("boolProp", new SimpleMap()));
+    mViewManager.updateProperties(null, buildStyles("boolProp", new JavaOnlyMap()));
   }
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
@@ -483,7 +483,7 @@ public class ReactPropAnnotationSetterTest {
 
   @Test(expected = JSApplicationIllegalArgumentException.class)
   public void testFailToUpdateMapPropWithArray() {
-    mViewManager.updateProperties(null, buildStyles("mapProp", new SimpleArray()));
+    mViewManager.updateProperties(null, buildStyles("mapProp", new JavaOnlyArray()));
   }
 
   @Test(expected = JSApplicationIllegalArgumentException.class)

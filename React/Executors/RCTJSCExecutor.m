@@ -26,6 +26,10 @@
 #import "RCTRedBox.h"
 #import "RCTSourceCode.h"
 
+NSString *const RCTJSCThreadName = @"com.facebook.React.JavaScript";
+
+NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContextCreatedNotification";
+
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -172,7 +176,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[self class]
                                                        selector:@selector(runRunLoopThread)
                                                          object:nil];
-  javaScriptThread.name = @"com.facebook.React.JavaScript";
+  javaScriptThread.name = RCTJSCThreadName;
 
   if ([javaScriptThread respondsToSelector:@selector(setQualityOfService:)]) {
     [javaScriptThread setQualityOfService:NSOperationQualityOfServiceUserInteractive];
@@ -261,12 +265,11 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return nil;
     }
 
+    RCT_PROFILE_BEGIN_EVENT(0, @"nativeRequireModuleConfig", nil);
     NSArray *config = [strongSelf->_bridge configForModuleName:moduleName];
-    if (config) {
-      return RCTJSONStringify(config, NULL);
-    }
-
-    return nil;
+    NSString *result = config ? RCTJSONStringify(config, NULL) : nil;
+    RCT_PROFILE_END_EVENT(0, @"js_call,config", @{ @"moduleName": moduleName });
+    return result;
   }];
 
   [self addSynchronousHookWithName:@"nativeFlushQueueImmediate" usingBlock:^(NSArray<NSArray *> *calls){
@@ -275,7 +278,9 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       return;
     }
 
+    RCT_PROFILE_BEGIN_EVENT(0, @"nativeFlushQueueImmediate", nil);
     [strongSelf->_bridge handleBuffer:calls batchEnded:NO];
+    RCT_PROFILE_END_EVENT(0, @"js_call", nil);
   }];
 
   [self addSynchronousHookWithName:@"nativePerformanceNow" usingBlock:^{
@@ -296,7 +301,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   [self addSynchronousHookWithName:@"nativeTraceEndAsyncSection" usingBlock:^(uint64_t tag, NSString *name, NSUInteger cookie) {
     NSUInteger newCookie = (NSUInteger)CFDictionaryGetValue(cookieMap, (const void *)cookie);
-    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, nil);
+    RCTProfileEndAsyncEvent(tag, @"js,async", newCookie, name, @"JS async", nil);
     CFDictionaryRemoveValue(cookieMap, (const void *)cookie);
   }];
 
@@ -313,8 +318,32 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
     RCT_PROFILE_END_EVENT(tag.longLongValue, @"console", nil);
   }];
 
+  __weak RCTBridge *weakBridge = _bridge;
+#ifndef __clang_analyzer__
+  weakBridge.flowIDMap = CFDictionaryCreateMutable(NULL, 0, NULL, NULL);
+#endif
+  [self addSynchronousHookWithName:@"nativeTraceBeginAsyncFlow" usingBlock:^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
+    int64_t newCookie = [_RCTProfileBeginFlowEvent() longLongValue];
+    CFDictionarySetValue(weakBridge.flowIDMap, (const void *)cookie, (const void *)newCookie);
+  }];
+
+  [self addSynchronousHookWithName:@"nativeTraceEndAsyncFlow" usingBlock:^(__unused uint64_t tag, __unused NSString *name, int64_t cookie) {
+    int64_t newCookie = (int64_t)CFDictionaryGetValue(weakBridge.flowIDMap, (const void *)cookie);
+    _RCTProfileEndFlowEvent(@(newCookie));
+    CFDictionaryRemoveValue(weakBridge.flowIDMap, (const void *)cookie);
+  }];
+
   [self executeBlockOnJavaScriptQueue:^{
-    RCTInstallJSCProfiler(_bridge, self.context.ctx);
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid) {
+      return;
+    }
+
+    JSContext *context = strongSelf.context.context;
+    RCTInstallJSCProfiler(_bridge, context.JSGlobalContextRef);
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTJavaScriptContextCreatedNotification
+                                                        object:context];
   }];
 
   for (NSString *event in @[RCTProfileDidStartProfiling, RCTProfileDidEndProfiling]) {
@@ -323,6 +352,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                                                  name:event
                                                object:nil];
   }
+
+  // Inject handler used by HMR
+  [self addSynchronousHookWithName:@"nativeInjectHMRUpdate" usingBlock:^(NSString *sourceCode, NSString *sourceCodeURL) {
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf.valid) {
+      return;
+    }
+
+    JSStringRef execJSString = JSStringCreateWithUTF8CString(sourceCode.UTF8String);
+    JSStringRef jsURL = JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
+    JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
+    JSStringRelease(jsURL);
+    JSStringRelease(execJSString);
+  }];
 #endif
 }
 
@@ -495,21 +538,6 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
   RCTAssertParam(sourceURL);
 
   __weak RCTJSCExecutor *weakSelf = self;
-#if RCT_DEV
-  _context.context[@"__injectHMRUpdate"] = ^(NSString *sourceCode, NSString *sourceCodeURL) {
-    RCTJSCExecutor *strongSelf = weakSelf;
-
-    if (!strongSelf) {
-      return;
-    }
-
-    JSStringRef execJSString = JSStringCreateWithUTF8CString(sourceCode.UTF8String);
-    JSStringRef jsURL = JSStringCreateWithUTF8CString(sourceCodeURL.UTF8String);
-    JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, NULL);
-    JSStringRelease(jsURL);
-    JSStringRelease(execJSString);
-  };
-#endif
 
   [self executeBlockOnJavaScriptQueue:RCTProfileBlock((^{
     RCTJSCExecutor *strongSelf = weakSelf;

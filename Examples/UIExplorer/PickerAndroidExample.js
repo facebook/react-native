@@ -16,20 +16,21 @@
 'use strict';
 
 const React = require('react-native');
+const StyleSheet = require('StyleSheet');
 const UIExplorerBlock = require('UIExplorerBlock');
 const UIExplorerPage = require('UIExplorerPage');
 
 const {
-  PickerAndroid,
+  Picker,
   Text,
   TouchableWithoutFeedback,
 } = React;
-const Item = PickerAndroid.Item;
+const Item = Picker.Item;
 
-const PickerAndroidExample = React.createClass({
+const PickerExample = React.createClass({
 
   statics: {
-    title: '<PickerAndroid>',
+    title: '<Picker>',
     description: 'Provides multiple options to choose from, using either a dropdown menu or a dialog.',
   },
 
@@ -38,9 +39,8 @@ const PickerAndroidExample = React.createClass({
       selected1: 'key1',
       selected2: 'key1',
       selected3: 'key1',
-      selected4: 'key1',
       color: 'red',
-      mode: PickerAndroid.MODE_DIALOG,
+      mode: Picker.MODE_DIALOG,
     };
   },
 
@@ -48,93 +48,93 @@ const PickerAndroidExample = React.createClass({
 
   render: function() {
     return (
-      <UIExplorerPage title="<PickerAndroid>">
+      <UIExplorerPage title="<Picker>">
         <UIExplorerBlock title="Basic Picker">
-          <PickerAndroid
-            style={{width: 100, height: 56}}
-            onSelect={this.onSelect.bind(this, 'selected1')}>
-            <Item text="hello" value="key0" selected={this.state.selected1 === 'key0'} />
-            <Item text="world" value="key1" selected={this.state.selected1 === 'key1'} />
-          </PickerAndroid>
+          <Picker
+            style={styles.picker}
+            selectedValue={this.state.selected1}
+            onValueChange={this.onValueChange.bind(this, 'selected1')}>
+            <Item label="hello" value="key0" />
+            <Item label="world" value="key1" />
+          </Picker>
         </UIExplorerBlock>
         <UIExplorerBlock title="Disabled picker">
-          <PickerAndroid style={{width: 100, height: 56}} enabled={false}>
-            <Item text="hello" value="key0" selected={this.state.selected1 === 'key0'} />
-            <Item text="world" value="key1" selected={this.state.selected1 === 'key1'} />
-          </PickerAndroid>
+          <Picker style={styles.picker} enabled={false} selectedValue={this.state.selected1}>
+            <Item label="hello" value="key0" />
+            <Item label="world" value="key1" />
+          </Picker>
         </UIExplorerBlock>
         <UIExplorerBlock title="Dropdown Picker">
-          <PickerAndroid
-            style={{width: 100, height: 56}}
-            onSelect={this.onSelect.bind(this, 'selected2')}
+          <Picker
+            style={styles.picker}
+            selectedValue={this.state.selected2}
+            onValueChange={this.onValueChange.bind(this, 'selected2')}
             mode="dropdown">
-            <Item text="hello" value="key0" selected={this.state.selected2 === 'key0'} />
-            <Item text="world" value="key1" selected={this.state.selected2 === 'key1'} />
-          </PickerAndroid>
-        </UIExplorerBlock>
-        <UIExplorerBlock title="Alternating Picker">
-          <PickerAndroid
-            style={{width: 100, height: 56}}
-            onSelect={this.onSelect.bind(this, 'selected3')}
-            mode={this.state.mode}>
-            <Item text="hello" value="key0" selected={this.state.selected3 === 'key0'} />
-            <Item text="world" value="key1" selected={this.state.selected3 === 'key1'} />
-          </PickerAndroid>
-          <TouchableWithoutFeedback onPress={this.changeMode}>
-            <Text>Tap here to switch between dialog/dropdown.</Text>
-          </TouchableWithoutFeedback>
+            <Item label="hello" value="key0" />
+            <Item label="world" value="key1" />
+          </Picker>
         </UIExplorerBlock>
         <UIExplorerBlock title="Picker with prompt message">
-          <PickerAndroid
-            style={{width: 100, height: 56}}
-            onSelect={this.onSelect.bind(this, 'selected4')}
+          <Picker
+            style={styles.picker}
+            selectedValue={this.state.selected3}
+            onValueChange={this.onValueChange.bind(this, 'selected3')}
             prompt="Pick one, just one">
-            <Item text="hello" value="key0" selected={this.state.selected4 === 'key0'} />
-            <Item text="world" value="key1" selected={this.state.selected4 === 'key1'} />
-          </PickerAndroid>
+            <Item label="hello" value="key0" />
+            <Item label="world" value="key1" />
+          </Picker>
         </UIExplorerBlock>
         <UIExplorerBlock title="Picker with no listener">
-          <PickerAndroid style={{width: 100, height: 56}}>
-            <Item text="hello" value="key0" />
-            <Item text="world" value="key1" />
-          </PickerAndroid>
+          <Picker style={styles.picker}>
+            <Item label="hello" value="key0" />
+            <Item label="world" value="key1" />
+          </Picker>
           <Text>
-            You can not change the value of this picker because it doesn't set a selected prop on
-            its items.
+            Cannot change the value of this picker because it doesn't update selectedValue.
           </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="Colorful pickers">
-          <PickerAndroid style={{width: 100, height: 56, color: 'black'}}
-            onSelect={this.onSelect.bind(this, 'color')}
+          <Picker
+            style={[styles.picker, {color: 'white', backgroundColor: '#333'}]}
+            selectedValue={this.state.color}
+            onValueChange={this.onValueChange.bind(this, 'color')}
             mode="dropdown">
-            <Item text="red" color="red" value="red" selected={this.state.color === 'red'}/>
-            <Item text="green" color="green" value="green" selected={this.state.color === 'green'}/>
-            <Item text="blue" color="blue" value="blue" selected={this.state.color === 'blue'}/>
-          </PickerAndroid>
-          <PickerAndroid style={{width: 100, height: 56}}
-            onSelect={this.onSelect.bind(this, 'color')}
+            <Item label="red" color="red" value="red" />
+            <Item label="green" color="green" value="green" />
+            <Item label="blue" color="blue" value="blue" />
+          </Picker>
+          <Picker
+            style={styles.picker}
+            selectedValue={this.state.color}
+            onValueChange={this.onValueChange.bind(this, 'color')}
             mode="dialog">
-            <Item text="red" color="red" value="red" selected={this.state.color === 'red'}/>
-            <Item text="green" color="green" value="green" selected={this.state.color === 'green'}/>
-            <Item text="blue" color="blue" value="blue" selected={this.state.color === 'blue'} />
-          </PickerAndroid>
+            <Item label="red" color="red" value="red" />
+            <Item label="green" color="green" value="green" />
+            <Item label="blue" color="blue" value="blue" />
+          </Picker>
         </UIExplorerBlock>
       </UIExplorerPage>
     );
   },
 
   changeMode: function() {
-    const newMode = this.state.mode === PickerAndroid.MODE_DIALOG
-        ? PickerAndroid.MODE_DROPDOWN
-        : PickerAndroid.MODE_DIALOG;
+    const newMode = this.state.mode === Picker.MODE_DIALOG
+        ? Picker.MODE_DROPDOWN
+        : Picker.MODE_DIALOG;
     this.setState({mode: newMode});
   },
 
-  onSelect: function(key: string, value: string) {
+  onValueChange: function(key: string, value: string) {
     const newState = {};
     newState[key] = value;
     this.setState(newState);
   },
 });
 
-module.exports = PickerAndroidExample;
+var styles = StyleSheet.create({
+  picker: {
+    width: 100,
+  },
+});
+
+module.exports = PickerExample;

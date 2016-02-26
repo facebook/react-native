@@ -26,6 +26,12 @@ project.xcworkspace
 /Examples/**/android/app/build/
 /ReactAndroid/build/
 
+# Buck
+.buckd
+buck-out
+/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
+/ReactAndroid/src/main/jni/prebuilt/lib/x86/
+
 # Android
 .idea
 .gradle

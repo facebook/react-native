@@ -65,6 +65,7 @@ public class NativeModuleRegistry {
       for (ModuleDefinition moduleDef : mModuleTable) {
         jg.writeObjectFieldStart(moduleDef.name);
         jg.writeNumberField("moduleID", moduleDef.id);
+        jg.writeBooleanField("supportsWebWorkers", moduleDef.target.supportsWebWorkers());
         jg.writeObjectFieldStart("methods");
         for (int i = 0; i < moduleDef.methods.size(); i++) {
           MethodRegistration method = moduleDef.methods.get(i);
@@ -111,6 +112,19 @@ public class NativeModuleRegistry {
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker("NativeModule_end");
+    }
+  }
+
+  /* package */ void notifyReactBridgeInitialized(ReactBridge bridge) {
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "NativeModuleRegistry_notifyReactBridgeInitialized");
+    try {
+      for (NativeModule nativeModule : mModuleInstances.values()) {
+        nativeModule.onReactBridgeInitialized(bridge);
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
   }
 
