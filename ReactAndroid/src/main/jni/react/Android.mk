@@ -8,6 +8,7 @@ LOCAL_SRC_FILES := \
   Bridge.cpp \
   JSCExecutor.cpp \
   JSCHelpers.cpp \
+  JSCWebWorker.cpp \
   MethodCall.cpp \
   Platform.cpp \
   Value.cpp \

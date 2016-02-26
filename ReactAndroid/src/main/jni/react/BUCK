@@ -57,6 +57,7 @@ react_library(
     'JSCTracing.cpp',
     'JSCMemory.cpp',
     'JSCLegacyProfiler.cpp',
+    'JSCWebWorker.cpp',
     'Platform.cpp',
   ],
   headers = [
@@ -70,6 +71,7 @@ react_library(
     'Executor.h',
     'JSCExecutor.h',
     'JSCHelpers.h',
+    'JSCWebWorker.h',
     'MessageQueueThread.h',
     'MethodCall.h',
     'JSModulesUnbundle.h',
