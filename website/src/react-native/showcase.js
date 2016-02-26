@@ -638,6 +638,12 @@ var apps = [
       'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
     ],
   },
+  {
+    name: '中瑞财富',
+    icon: 'https://www.zrcaifu.com/public/images/app_icon_for_rn.png',
+    link: 'https://itunes.apple.com/us/app/zhong-rui-cai-fuapp/id1075720040?l=zh&ls=1&mt=8',
+    author: 'Zrcaifu'
+  }
 ];
 
 var AppList = React.createClass({
