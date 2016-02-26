@@ -1,0 +1,27 @@
+include_defs('//ReactAndroid/DEFS')
+
+
+android_instrumentation_test(
+  name = 'react-oss-tests',
+  apk = ':react-instrumentation-tests-binary',
+)
+
+# android_instrumentation_apk(
+#   name = 'react-oss-test-apk',
+#   manifest = 'AndroidManifest.xml',
+#   apk = ':react-instrumentation-tests-binary',
+#   deps = [
+#   ],
+# )
+
+
+android_binary(
+  name = 'react-instrumentation-tests-binary',
+  manifest = 'AndroidManifest.xml',
+  keystore = '//keystores:debug',
+  deps = [
+    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
+    react_native_integration_tests_target('assets:assets')
+  ],
+)
+
