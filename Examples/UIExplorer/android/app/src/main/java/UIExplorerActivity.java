@@ -17,10 +17,10 @@ package com.facebook.react.uiapp;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.uiapp.R;
 
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 public class UIExplorerActivity extends ReactActivity {
