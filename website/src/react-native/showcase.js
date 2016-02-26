@@ -239,6 +239,12 @@ var apps = [
     author: 'Rishabh Mehan',
   },
   {
+    name: 'Deskbookers',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
+    link: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
+    author: 'Emilio Rodriguez'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
@@ -482,6 +488,15 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
+  {
     name: 'RenovationFind',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
     link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
@@ -628,21 +643,6 @@ var apps = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
     author: 'Hongbeibang'
-  },
-  {
-    name: 'Reading',
-    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
-    link: 'http://www.wandoujia.com/apps/com.reading',
-    author: 'RichardCao',
-    blogs: [
-      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
-    ],
-  },
-  {
-    name: 'Deskbookers',
-    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
-    author: 'Emilio Rodriguez'
   },
 ];
 
