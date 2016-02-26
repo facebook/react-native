@@ -204,6 +204,11 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     into "$buildDir/react-ndk/exported"
 }
 
+task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
+  from "$buildDir/react-ndk/exported"
+  into "src/main/jni/prebuilt/lib"
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"

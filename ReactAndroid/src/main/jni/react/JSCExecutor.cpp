@@ -7,7 +7,7 @@
 #include <mutex>
 #include <sstream>
 #include <string>
-
+#include <glog/logging.h>
 #include <folly/json.h>
 #include <folly/String.h>
 #include <sys/time.h>
@@ -83,13 +83,14 @@ static std::string executeJSCallWithJSC(
 }
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(Bridge *bridge) {
-  return std::unique_ptr<JSExecutor>(new JSCExecutor(bridge, cacheDir_));
+  return std::unique_ptr<JSExecutor>(new JSCExecutor(bridge, cacheDir_, m_jscConfig));
 }
 
-JSCExecutor::JSCExecutor(Bridge *bridge, const std::string& cacheDir) :
+JSCExecutor::JSCExecutor(Bridge *bridge, const std::string& cacheDir, const folly::dynamic& jscConfig) :
     m_bridge(bridge),
     m_deviceCacheDir(cacheDir),
-    m_messageQueueThread(MessageQueues::getCurrentMessageQueueThread()) {
+    m_messageQueueThread(MessageQueues::getCurrentMessageQueueThread()),
+    m_jscConfig(jscConfig) {
   initOnJSVMThread();
 }
 
@@ -98,12 +99,14 @@ JSCExecutor::JSCExecutor(
     int workerId,
     JSCExecutor *owner,
     const std::string& script,
-    const std::unordered_map<std::string, std::string>& globalObjAsJSON) :
+    const std::unordered_map<std::string, std::string>& globalObjAsJSON,
+    const folly::dynamic& jscConfig) :
     m_bridge(bridge),
     m_workerId(workerId),
     m_owner(owner),
     m_deviceCacheDir(owner->m_deviceCacheDir),
-    m_messageQueueThread(MessageQueues::getCurrentMessageQueueThread()) {
+    m_messageQueueThread(MessageQueues::getCurrentMessageQueueThread()),
+    m_jscConfig(jscConfig) {
   // We post initOnJSVMThread here so that the owner doesn't have to wait for
   // initialization on its own thread
   m_messageQueueThread->runOnQueue([this, script, globalObjAsJSON] () {
@@ -144,6 +147,8 @@ void JSCExecutor::initOnJSVMThread() {
   installGlobalFunction(m_context, "nativeInjectHMRUpdate", nativeInjectHMRUpdate);
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
+
+  // TODO (t10136849): Pass the config options from map to JSC
 
   #ifdef WITH_FB_JSC_TUNING
   configureJSCForAndroid();
@@ -317,7 +322,7 @@ int JSCExecutor::addWebWorker(
   auto workerMQT = WebWorkerUtil::createWebWorkerThread(workerId, m_messageQueueThread.get());
   std::unique_ptr<JSCExecutor> worker;
   workerMQT->runOnQueueSync([this, &worker, &script, &globalObj, workerId] () {
-    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap()));
+    worker.reset(new JSCExecutor(m_bridge, workerId, this, script, globalObj.toJSONMap(), m_jscConfig));
   });
 
   Object workerObj = Value(m_context, workerRef).asObject();
