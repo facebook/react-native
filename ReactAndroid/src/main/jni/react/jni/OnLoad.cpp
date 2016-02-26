@@ -819,13 +819,21 @@ std::string getDeviceCacheDir() {
 }
 
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
+public:
+  CountableJSCExecutorFactory(folly::dynamic jscConfig) : m_jscConfig(jscConfig) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override {
-    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(bridge);
+    return JSCExecutorFactory(getDeviceCacheDir(), m_jscConfig).createJSExecutor(bridge);
   }
+
+private:
+  folly::dynamic m_jscConfig;
 };
 
-static void createJSCExecutor(JNIEnv *env, jobject obj) {
-  auto executor = createNew<CountableJSCExecutorFactory>();
+static void createJSCExecutor(JNIEnv *env, jobject obj, jobject jscConfig) {
+  auto nativeMap = extractRefPtr<NativeMap>(env, jscConfig);
+  exceptions::throwIfObjectAlreadyConsumed(nativeMap, "Map to push already consumed");
+  auto executor = createNew<CountableJSCExecutorFactory>(std::move(nativeMap->map));
+  nativeMap->isConsumed = true;
   setCountableForJava(env, obj, std::move(executor));
 }
 
@@ -920,7 +928,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     });
 
     registerNatives("com/facebook/react/bridge/JSCJavaScriptExecutor", {
-      makeNativeMethod("initialize", executors::createJSCExecutor),
+      makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/WritableNativeMap;)V",
+        executors::createJSCExecutor),
     });
 
     registerNatives("com/facebook/react/bridge/ProxyJavaScriptExecutor", {
