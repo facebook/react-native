@@ -43,6 +43,8 @@ class XMLHttpRequestBase {
   readyState: number;
   responseHeaders: ?Object;
   responseText: ?string;
+  response: ?Object;
+  responseType: ?string;
   status: number;
   timeout: number;
   responseURL: ?string;
@@ -83,6 +85,8 @@ class XMLHttpRequestBase {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
     this.responseText = '';
+    this.response = null;
+    this.responseType = '';
     this.status = 0;
     delete this.responseURL;
 
@@ -139,6 +143,15 @@ class XMLHttpRequestBase {
     }
   }
 
+  stringToArrayBuffer(str: string) : ArrayBuffer {
+    var buf = new ArrayBuffer(str.length);
+    var bufView = new Uint8Array(buf);
+    for (var i = 0; i < str.length; i++) {
+      bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+  }
+
   _didReceiveData(requestId: number, responseText: string): void {
     if (requestId === this._requestId) {
       if (!this.responseText) {
@@ -146,6 +159,11 @@ class XMLHttpRequestBase {
       } else {
         this.responseText += responseText;
       }
+      if(this.reponseType == '' || this.reponseType == 'text')
+          this.response = Object(this.responseText);
+      else if(this.reponseType == 'arraybuffer')
+        this.response = this.stringToArrayBuffer(this.responseText);
+      //TODO: Support the other response type as well (eg:- document, json, blob)
       this.setReadyState(this.LOADING);
     }
   }
@@ -214,6 +232,12 @@ class XMLHttpRequestBase {
     throw new Error('Subclass must define sendImpl method');
   }
 
+  uintToString(uintArray: any): string {
+    var encodedString = String.fromCharCode.apply(null, uintArray),
+        decodedString = decodeURIComponent(encodedString);
+    return decodedString;
+  }
+
   send(data: any): void {
     if (this.readyState !== this.OPENED) {
       throw new Error('Request has not been opened');
@@ -222,6 +246,8 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
+    if(data instanceof Int8Array)
+      data = this.uintToString(data);
     this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
 
