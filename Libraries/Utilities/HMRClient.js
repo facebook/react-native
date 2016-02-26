@@ -73,9 +73,12 @@ Error: ${e.message}`
           break;
         }
         case 'update': {
-          const modules = data.body.modules;
-          const sourceMappingURLs = data.body.sourceMappingURLs;
-          const sourceURLs = data.body.sourceURLs;
+          const {
+            modules,
+            sourceMappingURLs,
+            sourceURLs,
+            inverseDependencies,
+          } = data.body;
 
           if (Platform.OS === 'ios') {
             const RCTRedBox = require('NativeModules').RedBox;
@@ -85,7 +88,7 @@ Error: ${e.message}`
             RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
           }
 
-          modules.forEach((code, i) => {
+          modules.forEach(({name, code}, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
 
             require('SourceMapsCache').fetch({
@@ -100,6 +103,16 @@ Error: ${e.message}`
             const injectFunction = typeof global.nativeInjectHMRUpdate === 'function'
               ? global.nativeInjectHMRUpdate
               : eval;
+
+            // TODO: (martinb) yellow box if cannot accept module
+            code = `
+              __accept(
+                ${name},
+                function(global, require, module, exports) {
+                  ${code}
+                },
+                ${JSON.stringify(inverseDependencies)}
+              );`;
 
             injectFunction(code, sourceURLs[i]);
           });
