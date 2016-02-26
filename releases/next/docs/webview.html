@@ -160,7 +160,7 @@ or false from this method to continue loading the request.</p></div></div><div c
 
 <span class="token keyword">var</span> Button <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">createClass<span class="token punctuation">(</span></span><span class="token punctuation">{</span>
   _handlePress<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>enabled &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onPress<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>enabled <span class="token operator">!</span><span class="token operator">==</span> <span class="token boolean">false</span> &amp;&amp; <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>onPress<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onPress<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -179,19 +179,19 @@ or false from this method to continue loading the request.</p></div></div><div c
 
   getInitialState<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">{</span>
-      scalingEnabled<span class="token punctuation">:</span> <span class="token boolean">true</span>
+      scalingEnabled<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
   render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>height<span class="token punctuation">:</span><span class="token number">120</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+      &lt;View<span class="token operator">&gt;</span>
         &lt;WebView
           style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
             backgroundColor<span class="token punctuation">:</span> BGWASH<span class="token punctuation">,</span>
-            height<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+            height<span class="token punctuation">:</span> <span class="token number">200</span><span class="token punctuation">,</span>
           <span class="token punctuation">}</span><span class="token punctuation">}</span>
-          source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>html<span class="token punctuation">:</span> HTML<span class="token punctuation">}</span><span class="token punctuation">}</span>
+          source<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>uri<span class="token punctuation">:</span> <span class="token string">&#x27;https://facebook.github.io/react/&#x27;</span><span class="token punctuation">}</span><span class="token punctuation">}</span>
           scalesPageToFit<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>scalingEnabled<span class="token punctuation">}</span>
         <span class="token operator">/</span><span class="token operator">&gt;</span>
         &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>buttons<span class="token punctuation">}</span><span class="token operator">&gt;</span>
@@ -304,7 +304,7 @@ const HTML <span class="token operator">=</span> `
   &lt;head<span class="token operator">&gt;</span>
     &lt;title<span class="token operator">&gt;</span>Hello Static World&lt;<span class="token operator">/</span>title<span class="token operator">&gt;</span>
     &lt;meta http<span class="token operator">-</span>equiv<span class="token operator">=</span><span class="token string">&quot;content-type&quot;</span> content<span class="token operator">=</span><span class="token string">&quot;text/html; charset=utf-8&quot;</span><span class="token operator">&gt;</span>
-    &lt;meta name<span class="token operator">=</span><span class="token string">&quot;viewport&quot;</span> content<span class="token operator">=</span><span class="token string">&quot;width=640, user-scalable=no&quot;</span><span class="token operator">&gt;</span>
+    &lt;meta name<span class="token operator">=</span><span class="token string">&quot;viewport&quot;</span> content<span class="token operator">=</span><span class="token string">&quot;width=320, user-scalable=no&quot;</span><span class="token operator">&gt;</span>
     &lt;style type<span class="token operator">=</span><span class="token string">&quot;text/css&quot;</span><span class="token operator">&gt;</span>
       body <span class="token punctuation">{</span>
         margin<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">;</span>
@@ -335,6 +335,10 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
     <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span> <span class="token keyword">return</span> &lt;WebViewExample <span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">&#x27;Scale Page to Fit&#x27;</span><span class="token punctuation">,</span>
+    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span> <span class="token keyword">return</span> &lt;ScaledWebView<span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;Bundled HTML&#x27;</span><span class="token punctuation">,</span>
     <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -363,10 +367,6 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
         <span class="token operator">/</span><span class="token operator">&gt;</span>
       <span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">{</span>
-    title<span class="token punctuation">:</span> <span class="token string">&#x27;Scale Page to Fit&#x27;</span><span class="token punctuation">,</span>
-    <span class="token function">render<span class="token punctuation">(</span></span><span class="token punctuation">)</span><span class="token punctuation">:</span> ReactElement <span class="token punctuation">{</span> <span class="token keyword">return</span> &lt;ScaledWebView<span class="token operator">/</span><span class="token operator">&gt;</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">&#x27;POST Test&#x27;</span><span class="token punctuation">,</span>
