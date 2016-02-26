@@ -24,10 +24,10 @@
     "haste": {
       "defaultPlatform": "ios",
       "providesModuleNodeModules": [
-        { name: "fbjs" },
-        { name: "react" },
-        { name: "react-native" },
-        { name: "parse" }
+        { "name": "fbjs" },
+        { "name": "react" },
+        { "name": "react-native" },
+        { "name": "parse" }
       ],
       "platforms": ["ios", "android"]
     },
