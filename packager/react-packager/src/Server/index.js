@@ -240,8 +240,8 @@ class Server {
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(modules) {
-    return this._bundler.hmrBundle(modules);
+  buildBundleForHMR(modules, host, port) {
+    return this._bundler.hmrBundle(modules, host, port);
   }
 
   getShallowDependencies(entryFile) {
