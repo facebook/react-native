@@ -10,6 +10,7 @@
 package com.facebook.react.modules.intent;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -80,9 +81,20 @@ public class IntentModule extends ReactContextBaseJavaModule {
       Activity currentActivity = getCurrentActivity();
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 
+      String selfPackageName = getReactApplicationContext().getPackageName();
+      ComponentName componentName = intent.resolveActivity(
+        getReactApplicationContext().getPackageManager());
+      String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+
+      // Always add the FLAG_ACTIVITY_NEW_TASK if we are launching to a different package
+      if (!selfPackageName.equals(otherPackageName)) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
+
       if (currentActivity != null) {
         currentActivity.startActivity(intent);
       } else {
+        // If no currentActivity, we want to always start a new task regardless of logic above
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getReactApplicationContext().startActivity(intent);
       }
