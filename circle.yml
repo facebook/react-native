@@ -53,8 +53,8 @@ test:
     - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -PdisablePreDex -Pjobs=1:
         timeout: 360
     # build JS bundle for instrumentation tests
-    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/buck-runner/AndroidTestBundle.js
-    - buck/bin/buck build ReactAndroid/src/androidTest/java/com/facebook/react/tests
+    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    - buck/bin/buck test ReactAndroid/src/androidTest/java/com/facebook/react/tests
 
     # Deprecated: run tests with Gradle
     #- ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
