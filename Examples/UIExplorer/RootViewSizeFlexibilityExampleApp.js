@@ -24,6 +24,7 @@ const {
 } = React;
 
 class RootViewSizeFlexibilityExampleApp extends React.Component {
+  state: any;
 
   constructor(props: {toggled: boolean}) {
     super(props);

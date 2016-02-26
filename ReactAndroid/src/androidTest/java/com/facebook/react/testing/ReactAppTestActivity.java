@@ -28,7 +28,7 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.shell.MainReactPackage;
-
+import com.facebook.react.uimanager.UIImplementationProvider;
 
 public class ReactAppTestActivity extends FragmentActivity implements
     DefaultHardwareBackBtnHandler
@@ -112,6 +112,14 @@ public class ReactAppTestActivity extends FragmentActivity implements
     loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */);
   }
 
+  public void loadApp(
+    String appKey,
+    ReactInstanceSpecForTest spec,
+    String bundleName,
+    UIImplementationProvider uiImplementationProvider) {
+    loadApp(appKey, spec, null, bundleName, false /* = useDevSupport */, uiImplementationProvider);
+  }
+
   public void resetRootViewForScreenshotTests() {
     if (mReactInstanceManager != null) {
       mReactInstanceManager.destroy();
@@ -128,6 +136,16 @@ public class ReactAppTestActivity extends FragmentActivity implements
       @Nullable Bundle initialProps,
       String bundleName,
       boolean useDevSupport) {
+    loadApp(appKey, spec, initialProps, bundleName, useDevSupport, null);
+  }
+
+  public void loadApp(
+    String appKey,
+    ReactInstanceSpecForTest spec,
+    @Nullable Bundle initialProps,
+    String bundleName,
+    boolean useDevSupport,
+    UIImplementationProvider uiImplementationProvider) {
 
     final CountDownLatch currentLayoutEvent = mLayoutEvent = new CountDownLatch(1);
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
@@ -145,7 +163,8 @@ public class ReactAppTestActivity extends FragmentActivity implements
         .addPackage(new InstanceSpecForTestPackage(spec))
         .setUseDeveloperSupport(useDevSupport)
         .setBridgeIdleDebugListener(mBridgeIdleSignaler)
-        .setInitialLifecycleState(mLifecycleState);
+        .setInitialLifecycleState(mLifecycleState)
+        .setUIImplementationProvider(uiImplementationProvider);
 
     mReactInstanceManager = builder.build();
     mReactInstanceManager.onHostResume(this, this);

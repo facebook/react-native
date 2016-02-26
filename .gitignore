@@ -29,6 +29,8 @@ project.xcworkspace
 # Buck
 .buckd
 buck-out
+/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
+/ReactAndroid/src/main/jni/prebuilt/lib/x86/
 
 # Android
 .idea
