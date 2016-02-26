@@ -90,6 +90,7 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   LinkingIOS: require('LinkingIOS'),
   NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
+  NotificationAndroid: require('NotificationAndroid'),
   PanResponder: require('PanResponder'),
   PixelRatio: require('PixelRatio'),
   PushNotificationIOS: require('PushNotificationIOS'),

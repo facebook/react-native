@@ -141,6 +141,10 @@ const APIExamples = [
     module: require('./NetInfoExample'),
   },
   {
+    key: 'NotificationAndroidExample',
+    module: require('./NotificationAndroidExample'),
+  },
+  {
     key: 'PanResponderExample',
     module: require('./PanResponderExample'),
   },
