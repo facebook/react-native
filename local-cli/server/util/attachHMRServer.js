@@ -185,11 +185,23 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return;
                 }
 
+                const httpServerAddress = httpServer.address();
+
+                // Sanitize the value from the HTTP server
+                let packagerHost = 'localhost';
+                if (httpServer.address().address &&
+                    httpServer.address().address !== '::' &&
+                    httpServer.address().address !== '') {
+                  packagerHost = httpServerAddress.address;
+                }
+
+                let packagerPort = httpServerAddress.port;
+
                 return packagerServer.buildBundleForHMR({
                   entryFile: client.bundleEntry,
                   platform: client.platform,
                   resolutionResponse,
-                });
+                }, packagerHost, packagerPort);
               })
               .then(bundle => {
                 if (!client || !bundle || bundle.isEmpty()) {
