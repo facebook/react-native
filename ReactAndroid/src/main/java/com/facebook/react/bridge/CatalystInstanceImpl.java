@@ -226,24 +226,18 @@ public class CatalystInstanceImpl implements CatalystInstance {
         listener.onTransitionToBridgeIdle();
       }
     }
-
-    Systrace.unregisterListener(mTraceListener);
-
-    // We can access the Bridge from any thread now because we know either we are on the JS thread
-    // or the JS thread has finished via ReactQueueConfiguration#destroy()
-    mBridge.dispose();
   }
 
   private void synchronouslyDisposeBridgeOnJSThread() {
     final SimpleSettableFuture<Void> bridgeDisposeFuture = new SimpleSettableFuture<>();
     mReactQueueConfiguration.getJSQueueThread().runOnQueue(
-      new Runnable() {
-        @Override
-        public void run() {
-          mBridge.dispose();
-          bridgeDisposeFuture.set(null);
-        }
-      });
+        new Runnable() {
+          @Override
+          public void run() {
+            mBridge.dispose();
+            bridgeDisposeFuture.set(null);
+          }
+        });
     bridgeDisposeFuture.getOrThrow();
   }
 
