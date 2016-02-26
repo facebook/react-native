@@ -24,7 +24,7 @@ script:
   if [ "$TEST_TYPE" = objc ]
   then
 
-    ./scripts/objc-test.sh
+    travis_retry ./scripts/objc-test.sh
 
   elif [ "$TEST_TYPE" = js ]
   then
@@ -37,7 +37,7 @@ script:
   elif [ "$TEST_TYPE" = e2e-objc ]
   then
 
-    ./scripts/e2e-test.sh
+    travis_retry ./scripts/e2e-test.sh
 
   else
     echo "Unknown test type: $TEST_TYPE"
