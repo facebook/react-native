@@ -14,7 +14,6 @@
 #import "RCTBridge.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
-#import "RCTViewManager.h"
 #import "UIView+React.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
@@ -44,6 +43,7 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
   RCTShadowView *_defaultShadowView;
   NSMutableDictionary<NSString *, RCTPropBlock> *_viewPropBlocks;
   NSMutableDictionary<NSString *, RCTPropBlock> *_shadowPropBlocks;
+  BOOL _implementsUIBlockToAmendWithShadowViewRegistry;
   __weak RCTBridge *_bridge;
 }
 
@@ -62,6 +62,14 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
     RCTAssert(_name.length, @"Invalid moduleName '%@'", _name);
     if ([_name hasSuffix:@"Manager"]) {
       _name = [_name substringToIndex:_name.length - @"Manager".length];
+    }
+
+    _implementsUIBlockToAmendWithShadowViewRegistry = NO;
+    Class cls = _managerClass;
+    while (cls != [RCTViewManager class]) {
+      _implementsUIBlockToAmendWithShadowViewRegistry = _implementsUIBlockToAmendWithShadowViewRegistry ||
+      RCTClassOverridesInstanceMethod(cls, @selector(uiBlockToAmendWithShadowViewRegistry:));
+      cls = [cls superclass];
     }
   }
   return self;
@@ -410,6 +418,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
   };
+}
+
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *,RCTShadowView *> *)registry
+{
+  if (_implementsUIBlockToAmendWithShadowViewRegistry) {
+    return [[self manager] uiBlockToAmendWithShadowViewRegistry:registry];
+  }
+  return nil;
 }
 
 @end
