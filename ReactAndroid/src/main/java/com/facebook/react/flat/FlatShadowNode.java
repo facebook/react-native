@@ -311,6 +311,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     return mDrawView;
   }
 
+  @Nullable
   /* package */ final OnLayoutEvent obtainLayoutEvent(int x, int y, int width, int height) {
     if (mLayoutX == x && mLayoutY == y && mLayoutWidth == width && mLayoutHeight == height) {
       return null;
