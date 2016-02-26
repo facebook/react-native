@@ -30,19 +30,10 @@ script:
 
     npm install github@0.2.4
     cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
-    flow check && npm test -- '\/Libraries\/'
+    flow check
+    npm test
 
-  elif [ "$TEST_TYPE" = packager ]
-  then
-
-    npm test -- '\/packager\/'
-
-  elif [ "$TEST_TYPE" = cli ]
-  then
-
-    npm test -- '\/(local|private|react-native)-cli\/'
-
-  elif [ "$TEST_TYPE" = e2e ]
+  elif [ "$TEST_TYPE" = e2e-objc ]
   then
 
     ./scripts/e2e-test.sh
@@ -56,14 +47,7 @@ env:
   matrix:
     - TEST_TYPE=objc
     - TEST_TYPE=js
-    - TEST_TYPE=packager
-    - TEST_TYPE=cli
-    - TEST_TYPE=e2e
-  global:
-    # $APPETIZE_TOKEN
-    - secure: "egsvVSpszTzrNd6bN62DsVAzMiSZI/OHgdizfPryqvqWBf655ztE6XFQSEFNpuIAzSKDDF25ioT8iPfVsbC1iK6HDWHfmqYxML0L+OoU0gi+hV2oKUBFZDZ1fwSnFoWuBdNdMDpLlUxvJp6N1WyfNOB2dxuZUt8eTt48Hi3+Hpc="
-    # $S3_TOKEN
-    - secure: "lY8JZPA0A7zT7L5KF9BBg34XYWIeR/RJiEvE7l7oVr88KnEPtyd//79eHhhVKnUnav7zsk5QJwkcX0MxKTp/dp4G0Am+zOX+sfA8kQrJ+2/+FzFW7AEsW/kHByfaIEIly9DQvUFt4I4oMm8nQZysJLahDgNWglyI3RTuJp//hcY="
+    - TEST_TYPE=e2e-objc
 
 branches:
   only:
