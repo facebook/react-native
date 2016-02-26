@@ -638,6 +638,12 @@ var apps = [
       'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
     ],
   },
+  {
+    name: 'Deskbookers',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
+    author: 'Emilio Rodriguez'
+  },
 ];
 
 var AppList = React.createClass({
