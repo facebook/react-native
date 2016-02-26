@@ -650,7 +650,7 @@ RCT_EXPORT_METHOD(reload)
         if (!error && HTTPResponse.statusCode == 205) {
           [strongSelf reload];
         } else {
-          if (!(error.code == NSURLErrorCancelled)) {
+          if (error.code != NSURLErrorCancelled) {
             strongSelf->_updateTask = nil;
             [strongSelf checkForUpdates];
           }
