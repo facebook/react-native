@@ -505,8 +505,13 @@ RCT_EXPORT_MODULE()
   NSArray *times = RCTPerformanceLoggerOutput();
   NSUInteger i = 0;
   for (NSString *label in RCTPerformanceLoggerLabels()) {
-    [data addObject:[NSString stringWithFormat:@"%@: %lldus", label,
-                     [times[i+1] longLongValue] - [times[i] longLongValue]]];
+    if([label isEqualToString:@"BundleSize"]){
+      [data addObject:[NSString stringWithFormat:@"%@: %lldb", label,
+                       [times[i+1] longLongValue] - [times[i] longLongValue]]];
+    }else{
+      [data addObject:[NSString stringWithFormat:@"%@: %lldms", label,
+                       [times[i+1] longLongValue] - [times[i] longLongValue]]];
+    }
     i += 2;
   }
   _perfLoggerMarks = [data copy];
