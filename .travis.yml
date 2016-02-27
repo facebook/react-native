@@ -15,7 +15,6 @@ install:
   - nvm install 5
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
-  - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm install
 
 script:
@@ -29,8 +28,8 @@ script:
   then
 
     npm install github@0.2.4
-    cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
-    flow check && npm test -- '\/Libraries\/'
+    cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow -- --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
+    npm run flow -- check && npm test -- '\/Libraries\/'
 
   elif [ "$TEST_TYPE" = packager ]
   then

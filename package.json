@@ -113,7 +113,7 @@
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",
-    "flow": "flow check .",
+    "flow": "flow",
     "lint": "eslint Examples/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
   },
