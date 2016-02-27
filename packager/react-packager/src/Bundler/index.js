@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('promise');
 const ProgressBar = require('progress');
-const Cache = require('../DependencyResolver/Cache');
+const Cache = require('node-haste').Cache;
 const Transformer = require('../JSTransformer');
 const Resolver = require('../Resolver');
 const Bundle = require('./Bundle');
@@ -103,15 +103,24 @@ class Bundler {
       mtime = '';
     }
 
+    const cacheKeyParts =  [
+      'react-packager-cache',
+      version,
+      opts.cacheVersion,
+      opts.projectRoots.join(',').split(path.sep).join('-'),
+      mtime,
+    ];
+
+    if (opts.transformModulePath) {
+      const transformer = require(opts.transformModulePath);
+      if (typeof transformer.cacheKey !== 'undefined') {
+        cacheKeyParts.push(transformer.cacheKey);
+      }
+    }
+
     this._cache = new Cache({
       resetCache: opts.resetCache,
-      cacheKey: [
-        'react-packager-cache',
-        version,
-        opts.cacheVersion,
-        opts.projectRoots.join(',').split(path.sep).join('-'),
-        mtime
-      ].join('$'),
+      cacheKey: cacheKeyParts.join('$'),
     });
 
     this._resolver = new Resolver({
@@ -159,9 +168,9 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, path) {
+  _sourceHMRURL(platform, host, port, path) {
     return this._hmrURL(
-      'http://localhost:8081', // TODO: (martinb) avoid hardcoding
+      `http://${host}:${port}`,
       platform,
       'bundle',
       path,
@@ -202,10 +211,10 @@ class Bundler {
     );
   }
 
-  hmrBundle(options) {
+  hmrBundle(options, host, port) {
     return this._bundle({
       bundle: new HMRBundle({
-        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform, host, port),
         sourceMappingURLFn: this._sourceMappingHMRURL.bind(
           this,
           options.platform,

@@ -391,7 +391,7 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
     console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
-    this.scrollResponderScrollTo(offsetX, offsetY, false);
+    this.scrollResponderScrollTo({x: offsetX, y: offsetY, animated: false});
   },
 
   /**
@@ -461,7 +461,7 @@ var ScrollResponderMixin = {
     if (this.preventNegativeScrollOffset) {
       scrollOffsetY = Math.max(0, scrollOffsetY);
     }
-    this.scrollResponderScrollTo(0, scrollOffsetY);
+    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: true});
 
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;

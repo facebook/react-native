@@ -32,10 +32,11 @@ var EXAMPLES = {
   'Basic': require('./NavigationBasicExample'),
   'Animated Card Stack': require('./NavigationAnimatedExample'),
   'Composition': require('./NavigationCompositionExample'),
+  'Card Stack Example': require('./NavigationCardStackExample'),
   'Tic Tac Toe': require('./NavigationTicTacToeExample'),
 };
 
-var EXAMPLE_STORAGE_KEY = 'NavigationExampleExample';
+var EXAMPLE_STORAGE_KEY = 'xNavigationExperimentalExample';
 
 var NavigationExperimentalExample = React.createClass({
   statics: {
