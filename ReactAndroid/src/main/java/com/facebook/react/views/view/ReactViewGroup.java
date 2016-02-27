@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
@@ -39,6 +40,11 @@ public class ReactViewGroup extends ViewGroup implements
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
   private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
+  private static final String PROP_BACKFACE_VISIBILITY_HIDDEN = "hidden";  
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
+  private static final float FRONTFACE_VISIBILITY_MIN_ROTATION = -90.f;
+  private static final float FRONTFACE_VISIBILITY_MAX_ROTATION = 90.f;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
@@ -94,6 +100,9 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing = false;
+  private float mLastExplicitlySetOpacity = 1.f;
+  private String mLastExplicitlySetBackfaceVisibility;
+  private ReadableMap mLastExplicitlySetDecomposedMatrix;
 
   public ReactViewGroup(Context context) {
     super(context);
@@ -524,4 +533,41 @@ public class ReactViewGroup extends ViewGroup implements
     mHitSlopRect = rect;
   }
 
+  public void setOpacityIfPossible(float opacity) {    
+    mLastExplicitlySetOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+  
+  public void setBackfaceVisibility(String backfaceVisibility) {    
+    mLastExplicitlySetBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+  
+  public void rememberDecomposedMatrix(ReadableMap decomposedMatrix) {    
+    mLastExplicitlySetDecomposedMatrix = decomposedMatrix;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  private void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = !PROP_BACKFACE_VISIBILITY_HIDDEN.equals(mLastExplicitlySetBackfaceVisibility);
+    boolean isRotationInformationAvailable = mLastExplicitlySetDecomposedMatrix != null;
+
+    if (isBackfaceVisible || !isRotationInformationAvailable) {      
+      setAlpha(mLastExplicitlySetOpacity);
+      return;
+    }
+
+    float rotationX = (float) mLastExplicitlySetDecomposedMatrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_X);
+    float rotationY = (float) mLastExplicitlySetDecomposedMatrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_Y);
+
+    boolean isFrontfaceVisible = (rotationX >= FRONTFACE_VISIBILITY_MIN_ROTATION && rotationX < FRONTFACE_VISIBILITY_MAX_ROTATION) &&
+        (rotationY >= FRONTFACE_VISIBILITY_MIN_ROTATION && rotationY < FRONTFACE_VISIBILITY_MAX_ROTATION);    
+
+    if (isFrontfaceVisible) {
+      setAlpha(mLastExplicitlySetOpacity);
+      return;
+    }
+
+    setAlpha(0);
+  }
 }
