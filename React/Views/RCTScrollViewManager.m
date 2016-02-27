@@ -10,6 +10,7 @@
 #import "RCTScrollViewManager.h"
 
 #import "RCTBridge.h"
+#import "RCTPair.h"
 #import "RCTScrollView.h"
 #import "RCTUIManager.h"
 
@@ -88,9 +89,9 @@ RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTScrollView *, UIViewController *> *> *viewRegistry) {
 
-    RCTScrollView *view = viewRegistry[reactTag];
+    RCTScrollView *view = viewRegistry[reactTag].first;
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
       RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
       return;
@@ -108,9 +109,9 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTScrollView *, UIViewController *> *> *viewRegistry) {
 
-    RCTScrollView *view = viewRegistry[reactTag];
+    RCTScrollView *view = viewRegistry[reactTag].first;
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
       RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
       return;
@@ -126,9 +127,9 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
 RCT_EXPORT_METHOD(endRefreshing:(nonnull NSNumber *)reactTag)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTScrollView *> *viewRegistry) {
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTScrollView *, UIViewController *> *> *viewRegistry) {
 
-    RCTScrollView *view = viewRegistry[reactTag];
+    RCTScrollView *view = viewRegistry[reactTag].first;
     if (!view || ![view isKindOfClass:[RCTScrollView class]]) {
       RCTLogError(@"Cannot find RCTScrollView with tag #%@", reactTag);
       return;
@@ -144,8 +145,8 @@ RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    UIView *view = viewRegistry[reactTag];
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry){
+    UIView *view = viewRegistry[reactTag].view;
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view scrollToOffset:(CGPoint){x, y} animated:animated];
     } else {
@@ -160,8 +161,8 @@ RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    UIView *view = viewRegistry[reactTag];
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry){
+    UIView *view = viewRegistry[reactTag].view;
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:animated];
     } else {

@@ -12,6 +12,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTViewRegistryPair.h"
 #import "UIView+React.h"
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
@@ -180,8 +181,8 @@ static void RCTProcessMetaProps(const float metaProps[META_PROP_COUNT], float st
   if (!_backgroundColor) {
     UIColor *parentBackgroundColor = parentProperties[RCTBackgroundColorProp];
     if (parentBackgroundColor) {
-      [applierBlocks addObject:^(NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-        UIView *view = viewRegistry[_reactTag];
+      [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry) {
+        UIView *view = viewRegistry[_reactTag].view;
         [view reactSetInheritedBackgroundColor:parentBackgroundColor];
       }];
     }
@@ -594,6 +595,10 @@ RCT_STYLE_PROPERTY(FlexWrap, flexWrap, flex_wrap, css_wrap_type_t)
   _recomputeMargin = NO;
   _recomputePadding = NO;
   _recomputeBorder = NO;
+}
+
+- (id<RCTComponent>)component {
+  return self;
 }
 
 @end

@@ -11,9 +11,11 @@
 
 #import "Layout.h"
 #import "RCTComponent.h"
+#import "RCTComponentRetrievable.h"
 #import "RCTRootView.h"
 
 @class RCTSparseArray;
+@class RCTViewRegistryPair;
 
 typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
   RCTUpdateLifecycleUninitialized = 0,
@@ -21,7 +23,7 @@ typedef NS_ENUM(NSUInteger, RCTUpdateLifecycle) {
   RCTUpdateLifecycleDirtied,
 };
 
-typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry);
+typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry);
 
 /**
  * ShadowView tree mirrors RCT view tree. Every node is highly stateful.
@@ -33,7 +35,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * 3. If a node is "computed" and the constraint passed from above is identical to the constraint used to
  *    perform the last computation, we skip laying out the subtree entirely.
  */
-@interface RCTShadowView : NSObject <RCTComponent>
+@interface RCTShadowView : NSObject <RCTComponent, RCTComponentRetrievable>
 
 - (NSArray<RCTShadowView *> *)reactSubviews;
 - (RCTShadowView *)reactSuperview;

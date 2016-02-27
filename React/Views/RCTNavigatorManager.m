@@ -12,6 +12,7 @@
 #import "RCTBridge.h"
 #import "RCTConvert.h"
 #import "RCTNavigator.h"
+#import "RCTPair.h"
 #import "RCTUIManager.h"
 #import "UIView+React.h"
 
@@ -34,8 +35,8 @@ RCT_EXPORT_METHOD(requestSchedulingJavaScriptNavigation:(nonnull NSNumber *)reac
                   callback:(RCTResponseSenderBlock)callback)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTNavigator *> *viewRegistry){
-    RCTNavigator *navigator = viewRegistry[reactTag];
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTNavigator *, UIViewController *> *> *viewRegistry){
+    RCTNavigator *navigator = viewRegistry[reactTag].first;
     if ([navigator isKindOfClass:[RCTNavigator class]]) {
       BOOL wasAcquired = [navigator requestSchedulingJavaScriptNavigation];
       callback(@[@(wasAcquired)]);

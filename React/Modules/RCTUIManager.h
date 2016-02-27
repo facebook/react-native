@@ -45,9 +45,10 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 
 /**
- * Register a root view with the RCTUIManager.
+ * Register a root view and root view controller with the RCTUIManager. View controller argument is optional.
  */
-- (void)registerRootView:(UIView *)rootView;
+- (void)registerRootView:(UIView *)rootView
+      rootViewController:(UIViewController *)rootViewController;
 
 /**
  * Gets the view associated with a reactTag.
