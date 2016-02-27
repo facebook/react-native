@@ -776,7 +776,7 @@ var Navigator = React.createClass({
   },
 
   _matchGestureAction: function(eligibleGestures, gestures, gestureState) {
-    if (!gestures) {
+    if (!gestures || !eligibleGestures || !eligibleGestures.some) {
       return null;
     }
     var matchedGesture = null;
