@@ -53,9 +53,9 @@ class WebSocket extends WebSocketBase {
     RCTWebSocketModule.send(message, this._socketId);
   }
 
-  sendArrayBufferImpl(): void {
-    // TODO
-    console.warn('Sending ArrayBuffers is not yet supported');
+  sendArrayBufferImpl(data: ArrayBuffer): void {
+    var message = base64.fromByteArray(new Uint8Array(data));
+    RCTWebSocketModule.sendBinary(message, this._socketId);
   }
 
   _closeWebSocket(id: number, code?: number, reason?: string): void {

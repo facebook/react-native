@@ -136,7 +136,7 @@
     "babel-register": "^6.6.0",
     "babel-types": "^6.6.4",
     "babylon": "^6.6.4",
-    "base64-js": "^0.0.8",
+    "base64-js": "^1.0.4",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
     "connect": "^2.8.3",
