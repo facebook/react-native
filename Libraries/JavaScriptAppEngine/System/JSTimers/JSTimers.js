@@ -106,10 +106,12 @@ var JSTimers = {
 
   clearImmediate: function(timerID) {
     JSTimers._clearTimerID(timerID);
-    JSTimersExecution.immediates.splice(
-      JSTimersExecution.immediates.indexOf(timerID),
-      1
-    );
+    if (timerID != null) {
+      JSTimersExecution.immediates.splice(
+        JSTimersExecution.immediates.indexOf(timerID),
+        1
+      );
+    }
   },
 
   cancelAnimationFrame: function(timerID) {
