@@ -12,19 +12,22 @@
 
 'use strict';
 
-const ToastAndroid = require('ToastAndroid');
+var ToastAndroid = require('ToastAndroid');
+
 const TOAST_SHORT_DELAY = 2000;
 
 class HMRLoadingView {
-  static showing: boolean;
+  static _showing: boolean;
 
   static showMessage(message: string) {
-    if (HMRLoadingView.showing) {
+    if (HMRLoadingView._showing) {
       return;
     }
     ToastAndroid.show(message, ToastAndroid.SHORT);
-    HMRLoadingView.showing = true;
-    setTimeout(() => HMRLoadingView.showing = false, TOAST_SHORT_DELAY);
+    HMRLoadingView._showing = true;
+    setTimeout(() => {
+      HMRLoadingView._showing = false;
+    }, TOAST_SHORT_DELAY);
   }
 
   static hide() {

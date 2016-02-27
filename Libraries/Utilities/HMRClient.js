@@ -13,7 +13,6 @@
 
 const Platform = require('Platform');
 const invariant = require('invariant');
-const HMRLoadingView = require('HMRLoadingView');
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -55,6 +54,9 @@ Error: ${e.message}`
       );
     };
     activeWS.onmessage = ({data}) => {
+      // Moving to top gives errors due to NativeModules not being initialized
+      const HMRLoadingView = require('HMRLoadingView');
+
       data = JSON.parse(data);
 
       switch (data.type) {
