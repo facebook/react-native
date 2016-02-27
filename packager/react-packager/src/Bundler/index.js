@@ -38,6 +38,9 @@ const validateOpts = declareOpts({
   blacklistRE: {
     type: 'object', // typeof regex is object
   },
+  ignoreBabelRC: {
+    type: 'boolean',
+  },
   moduleFormat: {
     type: 'string',
     default: 'haste',
@@ -450,7 +453,10 @@ class Bundler {
           dev: dev,
           modulePath: module.path,
         },
-        {hot},
+        {
+          hot,
+          ignoreBabelRC: this._opts.ignoreBabelRC
+        },
       ).then(options => {
         return this._transformer.loadFileAndTransform(
           path.resolve(module.path),
