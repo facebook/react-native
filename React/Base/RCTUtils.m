@@ -372,7 +372,7 @@ NSDictionary<NSString *, id> *RCTMakeAndLogError(NSString *message,
 
 NSDictionary<NSString *, id> *RCTJSErrorFromNSError(NSError *error)
 {
-  return RCTJSErrorFromCodeMessageAndNSError(RCTErrorUnspecified,
+  return RCTJSErrorFromCodeMessageAndNSError([NSString stringWithFormat:@"%ld", (long)[error code]],
                                              error.localizedDescription,
                                              error);
 }
