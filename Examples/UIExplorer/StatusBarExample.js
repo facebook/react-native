@@ -17,11 +17,12 @@
 
 const React = require('react-native');
 const {
+  Platform,
+  StatusBar,
   StyleSheet,
-  View,
   Text,
   TouchableHighlight,
-  StatusBar,
+  View,
 } = React;
 
 type BarStyle = 'default' | 'light-content';
@@ -40,6 +41,9 @@ type State = {
 exports.framework = 'React';
 exports.title = '<StatusBar>';
 exports.description = 'Component for controlling the status bar';
+
+const ios = Platform.OS === 'ios';
+const android = Platform.OS === 'android';
 
 const colors = [
   '#ff0000',
@@ -104,78 +108,82 @@ const StatusBarExample = React.createClass({
             </View>
           </TouchableHighlight>
         </View>
-        <Text style={styles.title}>iOS</Text>
+        {ios &&
         <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              this._barStyleIndex++;
-              this.setState({barStyle: getValue(barStyles, this._barStyleIndex)});
-            }}>
-            <View style={styles.button}>
-              <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                this._barStyleIndex++;
+                this.setState({barStyle: getValue(barStyles, this._barStyleIndex)});
+              }}>
+              <View style={styles.button}>
+                <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => this.setState({
+                networkActivityIndicatorVisible: !this.state.networkActivityIndicatorVisible,
+              })}>
+              <View style={styles.button}>
+                <Text>
+                  networkActivityIndicatorVisible:
+                  {this.state.networkActivityIndicatorVisible ? 'true' : 'false'}
+                </Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                this._showHideTransitionIndex++;
+                this.setState({
+                  showHideTransition:
+                  getValue(showHideTransitions, this._showHideTransitionIndex),
+                });
+              }}>
+              <View style={styles.button}>
+                <Text>
+                  showHideTransition:
+                  '{getValue(showHideTransitions, this._showHideTransitionIndex)}'
+                </Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        </View>}
+        {android &&
         <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => this.setState({
-              networkActivityIndicatorVisible: !this.state.networkActivityIndicatorVisible,
-            })}>
-            <View style={styles.button}>
-              <Text>
-                networkActivityIndicatorVisible:
-                {this.state.networkActivityIndicatorVisible ? 'true' : 'false'}
-              </Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              this._showHideTransitionIndex++;
-              this.setState({
-                showHideTransition:
-                getValue(showHideTransitions, this._showHideTransitionIndex),
-              });
-            }}>
-            <View style={styles.button}>
-              <Text>
-                showHideTransition:
-                '{getValue(showHideTransitions, this._showHideTransitionIndex)}'
-              </Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <Text style={styles.title}>Android</Text>
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              this._colorIndex++;
-              this.setState({backgroundColor: getValue(colors, this._colorIndex)});
-            }}>
-            <View style={styles.button}>
-              <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              this.setState({
-                translucent: !this.state.translucent,
-                backgroundColor: !this.state.translucent ? 'rgba(0, 0, 0, 0.4)' : 'black',
-              });
-            }}>
-            <View style={styles.button}>
-              <Text>translucent: {this.state.translucent ? 'true' : 'false'}</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                this._colorIndex++;
+                this.setState({backgroundColor: getValue(colors, this._colorIndex)});
+              }}>
+              <View style={styles.button}>
+                <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                this.setState({
+                  translucent: !this.state.translucent,
+                  backgroundColor: !this.state.translucent ? 'rgba(0, 0, 0, 0.4)' : 'black',
+                });
+              }}>
+              <View style={styles.button}>
+                <Text>translucent: {this.state.translucent ? 'true' : 'false'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        </View>}
       </View>
     );
   },
@@ -212,76 +220,80 @@ const StatusBarStaticExample = React.createClass({
             </View>
           </TouchableHighlight>
         </View>
-        <Text style={styles.title}>iOS</Text>
+        {ios &&
         <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              this._barStyleIndex++;
-              const barStyle = getValue(barStyles, this._barStyleIndex);
-              StatusBar.setBarStyle(barStyle, true);
-              this.setState({barStyle});
-            }}>
-            <View style={styles.button}>
-              <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                this._barStyleIndex++;
+                const barStyle = getValue(barStyles, this._barStyleIndex);
+                StatusBar.setBarStyle(barStyle, true);
+                this.setState({barStyle});
+              }}>
+              <View style={styles.button}>
+                <Text>style: '{getValue(barStyles, this._barStyleIndex)}'</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                const networkActivityIndicatorVisible = !this.state.networkActivityIndicatorVisible;
+                StatusBar.setNetworkActivityIndicatorVisible(networkActivityIndicatorVisible);
+                this.setState({networkActivityIndicatorVisible});
+              }}>
+              <View style={styles.button}>
+                <Text>
+                  networkActivityIndicatorVisible:
+                  {this.state.networkActivityIndicatorVisible ? 'true' : 'false'}
+                </Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        </View>}
+        {android &&
         <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              const networkActivityIndicatorVisible = !this.state.networkActivityIndicatorVisible;
-              StatusBar.setNetworkActivityIndicatorVisible(networkActivityIndicatorVisible);
-              this.setState({networkActivityIndicatorVisible});
-            }}>
-            <View style={styles.button}>
-              <Text>
-                networkActivityIndicatorVisible:
-                {this.state.networkActivityIndicatorVisible ? 'true' : 'false'}
-              </Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <Text style={styles.title}>Android</Text>
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              this._colorIndex++;
-              const backgroundColor = getValue(colors, this._colorIndex);
-              StatusBar.setBackgroundColor(backgroundColor, true);
-              this.setState({backgroundColor});
-            }}>
-            <View style={styles.button}>
-              <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => {
-              const translucent = !this.state.translucent;
-              const backgroundColor = !this.state.translucent ? 'rgba(0, 0, 0, 0.4)' : 'black';
-              StatusBar.setTranslucent(translucent);
-              StatusBar.setBackgroundColor(backgroundColor, true);
-              this.setState({
-                translucent,
-                backgroundColor,
-              });
-            }}>
-            <View style={styles.button}>
-              <Text>translucent: {this.state.translucent ? 'true' : 'false'}</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                this._colorIndex++;
+                const backgroundColor = getValue(colors, this._colorIndex);
+                StatusBar.setBackgroundColor(backgroundColor, true);
+                this.setState({backgroundColor});
+              }}>
+              <View style={styles.button}>
+                <Text>backgroundColor: '{getValue(colors, this._colorIndex)}'</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <View>
+            <TouchableHighlight
+              style={styles.wrapper}
+              onPress={() => {
+                const translucent = !this.state.translucent;
+                const backgroundColor = !this.state.translucent ? 'rgba(0, 0, 0, 0.4)' : 'black';
+                StatusBar.setTranslucent(translucent);
+                StatusBar.setBackgroundColor(backgroundColor, true);
+                this.setState({
+                  translucent,
+                  backgroundColor,
+                });
+              }}>
+              <View style={styles.button}>
+                <Text>translucent: {this.state.translucent ? 'true' : 'false'}</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        </View>}
       </View>
     );
   },
 });
 
-exports.examples = [{
+const examples = [{
   title: 'StatusBar',
   render() {
     return <StatusBarExample />;
@@ -292,6 +304,21 @@ exports.examples = [{
     return <StatusBarStaticExample />;
   },
 }];
+
+if (android) {
+  examples.push({
+    title: 'StatusBar dimensions',
+    render() {
+      return (
+        <View>
+          <Text>Height: {StatusBar.HEIGHT} pts</Text>
+        </View>
+      );
+    },
+  });
+}
+
+exports.examples = examples;
 
 var styles = StyleSheet.create({
   wrapper: {
