@@ -118,7 +118,6 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
       for (String key : injectedObjects.keySet()) {
         jg.writeObjectField(key, injectedObjects.get(key));
       }
-      jg.writeEndObject();
       sendMessage(requestID, endMessageObject(jg));
     } catch (IOException e) {
       triggerRequestFailure(requestID, e);
