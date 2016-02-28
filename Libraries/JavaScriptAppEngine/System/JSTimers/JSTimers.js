@@ -106,11 +106,9 @@ var JSTimers = {
 
   clearImmediate: function(timerID) {
     JSTimers._clearTimerID(timerID);
-    if (timerID != null) {
-      JSTimersExecution.immediates.splice(
-        JSTimersExecution.immediates.indexOf(timerID),
-        1
-      );
+    var index = JSTimersExecution.immediates.indexOf(timerID);
+    if (timerID != null && index !== -1) {
+      JSTimersExecution.immediates.splice(index, 1);
     }
   },
 
