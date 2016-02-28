@@ -441,11 +441,11 @@ RCT_EXPORT_MODULE()
 
 - (void)updateStats
 {
-  NSDictionary<NSNumber *, UIView *> *views = [_bridge.uiManager valueForKey:@"viewRegistry"];
-  NSUInteger viewCount = views.count;
+  NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistryPairs = [_bridge.uiManager valueForKey:@"viewRegistry"];
+  NSUInteger viewCount = viewRegistryPairs.count;
   NSUInteger visibleViewCount = 0;
-  for (UIView *view in views.allValues) {
-    if (view.window || view.superview.window) {
+  for (RCTViewRegistryPair *viewRegistryPair in viewRegistryPairs.allValues) {
+    if (viewRegistryPair.view.window || viewRegistryPair.view.superview.window) {
       visibleViewCount++;
     }
   }

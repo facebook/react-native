@@ -64,8 +64,8 @@ RCT_REMAP_VIEW_PROPERTY(allowsInlineMediaPlayback, _webView.allowsInlineMediaPla
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
-    RCTWebView *view = viewRegistry[reactTag];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTWebView *, UIViewController *> *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag].first;
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     } else {
@@ -76,8 +76,8 @@ RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    id view = viewRegistry[reactTag];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry) {
+    id view = viewRegistry[reactTag].view;
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     } else {
@@ -88,8 +88,8 @@ RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
-    RCTWebView *view = viewRegistry[reactTag];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTWebView *, UIViewController *> *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag].first;
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     } else {

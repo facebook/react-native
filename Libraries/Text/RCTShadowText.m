@@ -15,6 +15,7 @@
 #import "RCTConvert.h"
 #import "RCTImageComponent.h"
 #import "RCTLog.h"
+#import "RCTPair.h"
 #import "RCTShadowRawText.h"
 #import "RCTText.h"
 #import "RCTUtils.h"
@@ -90,8 +91,8 @@ static css_dim_t RCTMeasure(void *context, float width, float height)
   CGFloat width = self.frame.size.width - (padding.left + padding.right);
 
   NSTextStorage *textStorage = [self buildTextStorageForWidth:width];
-  [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTText *> *viewRegistry) {
-    RCTText *view = viewRegistry[self.reactTag];
+  [applierBlocks addObject:^(NSDictionary<NSNumber *, RCTPair<RCTText *, UIViewController *> *> *viewRegistry) {
+    RCTText *view = viewRegistry[self.reactTag].first;
     view.textStorage = textStorage;
   }];
 

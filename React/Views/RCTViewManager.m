@@ -60,6 +60,11 @@ RCT_EXPORT_MODULE()
   return [RCTView new];
 }
 
+- (UIViewController *)viewController
+{
+  return nil;
+}
+
 - (RCTShadowView *)shadowView
 {
   return [RCTShadowView new];

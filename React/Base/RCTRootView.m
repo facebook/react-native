@@ -42,7 +42,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
-                     reactTag:(NSNumber *)reactTag NS_DESIGNATED_INITIALIZER;
+                     reactTag:(NSNumber *)reactTag
+           rootViewController:(UIViewController *)rootViewController NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -211,7 +212,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_contentView removeFromSuperview];
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
-                                                  reactTag:self.reactTag];
+                                                  reactTag:self.reactTag
+                                        rootViewController:self.reactViewController];
   [self runApplication:bridge];
 
   _contentView.backgroundColor = self.backgroundColor;
@@ -319,13 +321,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
+           rootViewController:(UIViewController *)rootViewController
 {
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
     self.reactTag = reactTag;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
     [self addGestureRecognizer:_touchHandler];
-    [_bridge.uiManager registerRootView:self];
+    [_bridge.uiManager registerRootView:self rootViewController:rootViewController];
     self.layer.backgroundColor = NULL;
   }
   return self;

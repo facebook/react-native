@@ -13,10 +13,12 @@
 #import "RCTAssert.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTPair.h"
 #import "RCTShadowRawText.h"
 #import "RCTShadowText.h"
 #import "RCTText.h"
 #import "RCTTextView.h"
+#import "RCTViewRegistryPair.h"
 #import "UIView+React.h"
 
 @interface RCTShadowText (Private)
@@ -136,8 +138,8 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
       CGFloat width = shadowText.frame.size.width - (padding.left + padding.right);
       NSTextStorage *textStorage = [shadowText buildTextStorageForWidth:width];
 
-      [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTTextView *> *viewRegistry) {
-        RCTTextView *textView = viewRegistry[reactTag];
+      [uiBlocks addObject:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPair<RCTTextView *, UIViewController *> *> *viewRegistry) {
+        RCTTextView *textView = viewRegistry[reactTag].first;
         RCTText *text;
         for (RCTText *subview in textView.reactSubviews) {
           if ([subview isKindOfClass:[RCTText class]]) {
@@ -151,7 +153,7 @@ RCT_EXPORT_SHADOW_PROPERTY(textShadowColor, UIColor)
       }];
     }
 
-    return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    return ^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry) {
       for (RCTViewManagerUIBlock uiBlock in uiBlocks) {
         uiBlock(uiManager, viewRegistry);
       }

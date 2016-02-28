@@ -15,13 +15,14 @@
 #import "RCTDefines.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTViewRegistryPair.h"
 
 @class RCTBridge;
 @class RCTShadowView;
 @class RCTSparseArray;
 @class RCTUIManager;
 
-typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry);
+typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTViewRegistryPair *> *viewRegistry);
 
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
@@ -40,6 +41,16 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * view and return the same instance for subsequent calls.
  */
 - (UIView *)view;
+
+/**
+ * This method returns nil by default. Override this intstead of -view to return a custom view controller
+ * instance, which may be preconfigured with default properties, subviews, etc. 
+ * This method will be called many times, and should  return a fresh instance each time.
+ * The view module MUST NOT cache the returned view controller and return the same instance for subsequent calls.
+ * This method is meant to be used to inject full featured view controllers among a react view hierarchy. These
+ * view controllers should behave like a black box.
+ */
+- (UIViewController *)viewController;
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,

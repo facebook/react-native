@@ -85,11 +85,21 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+- (UIViewController *)createViewControllerWithTag:(NSNumber *)tag
+{
+  UIViewController *viewController = [_manager viewController];
+  [self configuredView:viewController.view withReactTag:tag];
+  return viewController;
+}
+
 - (UIView *)createViewWithTag:(NSNumber *)tag
 {
   RCTAssertMainThread();
-
   UIView *view = [_manager view];
+  return [self configuredView:view withReactTag:tag];
+}
+
+- (UIView *)configuredView:(UIView *)view withReactTag:(NSNumber *)tag {
   view.reactTag = tag;
   view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
