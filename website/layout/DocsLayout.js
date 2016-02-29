@@ -30,7 +30,7 @@ var DocsLayout = React.createClass({
               level={1}
               path={'docs/' + metadata.filename}
             />
-            <Marked>{content}</Marked>
+            <Marked path={metadata.permalink}>{content}</Marked>
             <div className="docs-prevnext">
               {metadata.previous && <a className="docs-prev" href={'docs/' + metadata.previous + '.html#content'}>&larr; Prev</a>}
               {metadata.next && <a className="docs-next" href={'docs/' + metadata.next + '.html#content'}>Next &rarr;</a>}
