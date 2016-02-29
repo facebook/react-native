@@ -80,11 +80,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
     [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
                                                         object:_bridge
                                                       userInfo:@{@"module": _instance}];
-
-    if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
-      RCTAssertMainThread();
-      _constantsToExport = [_instance constantsToExport];
-    }
   }
 }
 
@@ -140,7 +135,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   [_instanceLock unlock];
 
   [self finishSetupForInstance];
-
   return _instance;
 }
 
@@ -185,10 +179,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   return _methods;
 }
 
+- (void)gatherConstants
+{
+  if (!_constantsToExport) {
+    if (RCTClassOverridesInstanceMethod(_moduleClass, @selector(constantsToExport))) {
+      RCTAssert(_instance, @"constantsToExport called before instance created.");
+      RCTExecuteOnMainThread(^{
+        _constantsToExport = [_instance constantsToExport] ?: @{};
+      }, YES);
+    } else {
+      _constantsToExport = @{};
+    }
+  }
+}
+
 - (NSArray *)config
 {
   __block NSDictionary<NSString *, id> *constants = _constantsToExport;
-  _constantsToExport = nil; // Not needed any more
 
   if (constants.count == 0 && self.methods.count == 0) {
     return (id)kCFNull; // Nothing to export
