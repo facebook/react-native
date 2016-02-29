@@ -17,7 +17,6 @@ namespace ReactNative.Modules.Core
         private readonly Timer _timer;
 
         private JSTimersExecution _jsTimersModule;
-        private TimerData? _next;
         private bool _suspended;
 
         /// <summary>
@@ -59,7 +58,6 @@ namespace ReactNative.Modules.Core
             lock (_gate)
             {
                 _suspended = true;
-                _next = null;
                 _timer.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
@@ -141,25 +139,18 @@ namespace ReactNative.Modules.Core
 
             if (_timers.Count == 0)
             {
-                _next = null;
                 _timer.Change(Timeout.Infinite, Timeout.Infinite);
             }
-
-            if (_timers.Count > 0)
+            else
             {
-                var next = _timers.Peek();
-                if (!_next.HasValue || !next.Equals(_next))
+                var diff = _timers.Peek().TargetTime - DateTimeOffset.Now;
+                if (diff < TimeSpan.Zero)
                 {
-                    _next = next;
-
-                    var diff = next.TargetTime - DateTimeOffset.Now;
-                    if (diff < TimeSpan.Zero)
-                    {
-                        diff = TimeSpan.Zero;
-                    }
-
-                    _timer.Change((int)Math.Ceiling(diff.TotalMilliseconds), Timeout.Infinite);
+                    diff = TimeSpan.Zero;
                 }
+
+                var dueTime = (int)Math.Ceiling(diff.TotalMilliseconds);
+                _timer.Change(dueTime, Timeout.Infinite);
             }
         }
 
@@ -176,11 +167,11 @@ namespace ReactNative.Modules.Core
                     {
                         _timers.Dequeue();
                         ready.Add(next.CallbackId);
-                        next.Increment();
+                        var nextInterval = next.Increment();
 
-                        if (next.CanExecute)
+                        if (nextInterval.CanExecute)
                         {
-                            _timers.Enqueue(next);
+                            _timers.Enqueue(nextInterval);
                         }
                     }
                     else
@@ -232,10 +223,9 @@ namespace ReactNative.Modules.Core
 
             public bool CanExecute { get; private set; }
 
-            public void Increment()
+            public TimerData Increment()
             {
-                CanExecute = _repeat;
-                TargetTime += Period;
+                return new TimerData(CallbackId, TargetTime + Period, Period, _repeat);
             }
 
             public bool Equals(TimerData other)
