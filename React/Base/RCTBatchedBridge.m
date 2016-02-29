@@ -342,6 +342,12 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     }
   }
 
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    if (moduleData.hasInstance) {
+      [moduleData gatherConstants];
+    }
+  }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
