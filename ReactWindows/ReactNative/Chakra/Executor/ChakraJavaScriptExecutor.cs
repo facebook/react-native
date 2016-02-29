@@ -51,9 +51,7 @@ namespace ReactNative.Chakra.Executor
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            JavaScriptContext.Current = _context;
-
-            try
+            using (CreateContextScope(_context))
             {
                 // Try get global property
                 var globalObject = EnsureGlobalObject();
@@ -89,10 +87,6 @@ namespace ReactNative.Chakra.Executor
                 // Convert the result
                 return ConvertJson(result);
             }
-            finally
-            {
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
-            }
         }
 
         /// <summary>
@@ -104,15 +98,9 @@ namespace ReactNative.Chakra.Executor
             if (script == null)
                 throw new ArgumentNullException(nameof(script));
 
-            JavaScriptContext.Current = _context;
-
-            try
+            using (CreateContextScope(_context))
             {
                 JavaScriptContext.RunScript(script);
-            }
-            finally
-            {
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
             }
         }
 
@@ -128,17 +116,11 @@ namespace ReactNative.Chakra.Executor
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            JavaScriptContext.Current = _context;
-
-            try
+            using (CreateContextScope(_context))
             {
                 var javaScriptValue = ConvertJson(value);
                 var propertyId = JavaScriptPropertyId.FromString(propertyName);
                 EnsureGlobalObject().SetProperty(propertyId, javaScriptValue, true);
-            }
-            finally
-            {
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
             }
         }
 
@@ -152,16 +134,10 @@ namespace ReactNative.Chakra.Executor
             if (propertyName == null)
                 throw new ArgumentNullException(nameof(propertyName));
 
-            JavaScriptContext.Current = _context;
-
-            try
+            using (CreateContextScope(_context))
             {
                 var propertyId = JavaScriptPropertyId.FromString(propertyName);
                 return ConvertJson(EnsureGlobalObject().GetProperty(propertyId));
-            }
-            finally
-            {
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
             }
         }
 
@@ -175,9 +151,7 @@ namespace ReactNative.Chakra.Executor
 
         private void InitializeChakra()
         {
-            JavaScriptContext.Current = _context;
-
-            try
+            using (CreateContextScope(_context))
             {
 #if DEBUG
                 // Start debugging.
@@ -199,10 +173,6 @@ namespace ReactNative.Chakra.Executor
                 DefineHostCallback(consoleObject, "error", ConsoleError, IntPtr.Zero);
 
                 Debug.WriteLine("Chakra initialization successful.");
-            }
-            finally
-            {
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
             }
         }
 
@@ -381,6 +351,28 @@ namespace ReactNative.Chakra.Executor
             }
 
             return _stringifyFunction;
+        }
+
+        #endregion
+
+        #region Context Helpers
+
+        private static ContextScopeDisposable CreateContextScope(JavaScriptContext context)
+        {
+            return new ContextScopeDisposable(context);
+        }
+
+        struct ContextScopeDisposable : IDisposable
+        {
+            public ContextScopeDisposable(JavaScriptContext context)
+            {
+                JavaScriptContext.Current = context;
+            }
+
+            public void Dispose()
+            {
+                JavaScriptContext.Current = JavaScriptContext.Invalid;
+            }
         }
 
         #endregion

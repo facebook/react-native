@@ -37,31 +37,27 @@ namespace ReactNative.Tests.Modules.Core
         [TestMethod]
         public void Timing_ManyTimers()
         {
-            // TODO: investigate non-determinism
-            var ids = new List<int>();
-            var waitHandle = new AutoResetEvent(false);
+            var count = 1000;
+            var ids = new List<int>(count);
+            var countdown = new CountdownEvent(count);
             var timing = CreateTimingModule(new MockInvocationHandler((name, args) =>
             {
                 Assert.AreEqual(name, nameof(JSTimersExecution.callTimers));
-                ids.AddRange((IList<int>)args[0]);
-                waitHandle.Set();
+                var currentIds = (IList<int>)args[0];
+                ids.AddRange(currentIds);
+                for (var i = 0; i < currentIds.Count; ++i)
+                {
+                    countdown.Signal();
+                }
             }));
 
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            var count = 1000;
             for (var i = 0; i < count; ++i)
             {
                 timing.createTimer(i, i, now, false);
             }
 
-            while (true)
-            {
-                Assert.IsTrue(waitHandle.WaitOne(2000));
-                if (ids.Count == count)
-                {
-                    break;
-                }
-            }
+            Assert.IsTrue(countdown.Wait(count * 2));
 
             timing.OnDestroy();
         }
@@ -228,11 +224,10 @@ namespace ReactNative.Tests.Modules.Core
         private static Timing CreateTimingModule(IInvocationHandler handler)
         {
             var context = new ReactContext();
-            var jsTimers = new JSTimersExecution();
-
-            var waitHandle = new AutoResetEvent(false);
-            var ids = new List<int>();
-            jsTimers.InvocationHandler = handler;
+            var jsTimers = new JSTimersExecution
+            {
+                InvocationHandler = handler,
+            };
 
             var reactInstance = new TestReactInstance(jsTimers);
             context.InitializeWithInstance(reactInstance);

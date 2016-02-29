@@ -57,7 +57,7 @@ namespace ReactNative.Tests
             }
         }
 
-        public T GetNativeModule<T>() where T : INativeModule
+        public virtual T GetNativeModule<T>() where T : INativeModule
         {
             throw new NotImplementedException();
         }
