@@ -25,22 +25,22 @@ Examples: [#6056](https://github.com/facebook/react-native/issues/6056), [#6008]
 Comment mentioning the author asking if they plan to provide the additional information. If they don't come back close the issue using `@facebook-github-bot no-reply`.
 Example: [#6056](https://github.com/facebook/react-native/issues/6056)
 
-### Want to add a label
+### An issue is a valid bug report
+Valid bug reports with good repro steps are some of the best issues! Thank the author for finding it, explain that React Native is a community project and ask them if they would be up for sending a fix.
+
+### An issue is a feature request and you're pretty sure React Native should have that feature
+Tell the author something like: "Pull requests are welcome. In case you're not up for sending a PR, you should post to [Product Pains](https://productpains.com/product/react-native/?tab=top). It has a voting system and if the feature gets upvoted enough it might get implemented."
+
+### An issue is a feature request for a feature we don't want
+This especially includes **new modules** Facebook doesn't use in production. Explain that those modules should be released to npm separately and that everyone will still be able to use the module super easily that way.
+
+### How to add a label
 Add any relevant labels, for example 'Android', 'iOS'.
 Comment e.g. `@facebook-github-bot label Android`
 
-### Want to reopen a closed issue
+### How to reopen a closed issue
 For example an issue was closed waiting for the author, the author replied and it turns out this is indeed a bug.
 Comment `@facebook-github-bot reopen`
 
-### An issue is a valid bug report
-Yes, there are issues that have good repro information and describe an actual bug :) These are some of the highest quality issues! Thank the author for finding it, politely explain that React Native is a community project and ask them if they would be up for sending a fix.
-
-### An issue is a feature request and you're pretty sure React Native should have that feature
-Tell the author that: Pull requests are welcome. If they're not up for sending a PR, they should post to [Product Pains](https://productpains.com/product/react-native/?tab=top). It has a voting system and if the feature gets upvoted enough it might get implemented.
-
-### An issue is a feature request for feature we don't want
-This especially includes **new modules** Facebook doesn't use in production. Explain that those modules should be released to npm separately and that everyone will still be able to use the module super easily that way.
-
-### Commands for the bot
+### What are all the available commands for the bot?
 When you mention the bot, it follows the commands defined in [IssueCommands.txt](https://github.com/facebook/react-native/blob/master/bots/IssueCommands.txt).
