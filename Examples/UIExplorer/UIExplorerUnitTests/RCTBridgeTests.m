@@ -24,8 +24,12 @@
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
   NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+  while ((CONDITION)) { \
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
+    if ([timeout timeIntervalSinceNow] <= 0) { \
+      XCTFail(@"Runloop timed out before condition was met"); \
+      break; \
+    } \
   } \
 }
 
@@ -140,9 +144,6 @@ RCT_EXPORT_MODULE(TestModule)
 
   [_bridge invalidate];
   _bridge = nil;
-
-  RUN_RUNLOOP_WHILE(_jsExecutor != nil);
-  XCTAssertNotNil(_jsExecutor);
 }
 
 - (void)testHookRegistration
