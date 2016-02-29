@@ -239,7 +239,7 @@ RCT_EXPORT_MODULE()
 
   NSString *scheme = [_bridge.bundleURL scheme];
   NSNumber *port = [_bridge.bundleURL port];
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/packager-proxy?role=client", scheme, host, port]];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
