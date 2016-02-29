@@ -71,6 +71,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModulesConfig jsModulesConfig,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+    FLog.d(ReactConstants.TAG, "Initializing React Bridge.");
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
         ReactQueueConfigurationSpec,
         new NativeExceptionHandler());
