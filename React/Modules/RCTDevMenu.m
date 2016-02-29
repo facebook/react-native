@@ -239,7 +239,7 @@ RCT_EXPORT_MODULE()
 
   NSString *scheme = [_bridge.bundleURL scheme];
   NSNumber *port = [_bridge.bundleURL port];
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/packager-proxy?role=client", scheme, host, port]];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module
@@ -581,9 +581,7 @@ RCT_EXPORT_METHOD(reload)
 
 - (BOOL)hotLoadingAvailable
 {
-  return !_bridge.bundleURL.fileURL // Only works when running from server
-  && [_bridge.delegate respondsToSelector:@selector(bridgeSupportsHotLoading:)]
-  && [_bridge.delegate bridgeSupportsHotLoading:_bridge];
+  return !_bridge.bundleURL.fileURL; // Only works when running from server
 }
 
 - (void)setHotLoadingEnabled:(BOOL)enabled

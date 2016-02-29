@@ -34,7 +34,7 @@ extern LoadScriptFromAssets loadScriptFromAssets;
 namespace PerfLogging {
 using InstallNativeHooks = std::function<void(JSGlobalContextRef)>;
 extern InstallNativeHooks installNativeHooks;
-}
+};
 
 namespace JSLogging {
   using JSCNativeHook = JSValueRef (*) (
@@ -44,6 +44,11 @@ namespace JSLogging {
       size_t argumentCount,
       const JSValueRef arguments[], JSValueRef *exception);
   extern JSCNativeHook nativeHook;
-}
+};
+
+namespace Exceptions {
+  using HandleUncaughtException = std::function<void()>;
+  extern HandleUncaughtException handleUncaughtException;
+};
 
 } }
