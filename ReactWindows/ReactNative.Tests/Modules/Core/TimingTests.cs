@@ -144,8 +144,8 @@ namespace ReactNative.Tests.Modules.Core
         public async Task Timing_ManOrBoy()
         {
             var r = new Random();
-            var batchCount = 30;
-            var maxDuration = 1000;
+            var batchCount = 15;
+            var maxDuration = 500;
             var maxBatch = 10000;
             var id = 0;
 
@@ -174,7 +174,7 @@ namespace ReactNative.Tests.Modules.Core
             }
 
             countdown.Signal();
-            Assert.IsTrue(countdown.Wait(Timeout.Infinite));
+            Assert.IsTrue(countdown.Wait(batchCount * maxDuration / 4 * 2));
 
             timing.OnDestroy();
         }
