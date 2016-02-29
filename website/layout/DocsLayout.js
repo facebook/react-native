@@ -16,6 +16,14 @@ var React = require('React');
 var Site = require('Site');
 
 var DocsLayout = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {permalink: this.props.metadata.permalink};
+  },
+
   render: function() {
     var metadata = this.props.metadata;
     var content = this.props.children;
