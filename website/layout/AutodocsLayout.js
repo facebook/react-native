@@ -110,7 +110,7 @@ var ComponentDoc = React.createClass({
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
-        <Header level={4} className="propTitle" toSlug={name} permalink={this.props.permalink}>
+        <Header level={4} className="propTitle" toSlug={name}>
           {prop.platforms && prop.platforms.map(platform =>
             <span className="platform">{platform}</span>
           )}
@@ -448,6 +448,14 @@ var Modal = React.createClass({
 });
 
 var Autodocs = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {permalink: this.props.metadata.permalink};
+  },
+
   renderFullDescription: function(docs) {
     if (!docs.fullDescription) {
       return;
@@ -488,7 +496,7 @@ var Autodocs = React.createClass({
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
     var content  = docs.type === 'component' || docs.type === 'style' ?
-      <ComponentDoc content={docs} permalink={metadata.permalink}/> :
+      <ComponentDoc content={docs} /> :
       <APIDoc content={docs} apiName={metadata.title} />;
 
     return (
