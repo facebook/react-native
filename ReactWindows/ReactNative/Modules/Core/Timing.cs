@@ -225,7 +225,10 @@ namespace ReactNative.Modules.Core
 
             public TimerData Increment()
             {
-                return new TimerData(CallbackId, TargetTime + Period, Period, _repeat);
+                return new TimerData(CallbackId, TargetTime + Period, Period, _repeat)
+                {
+                    CanExecute = _repeat,
+                };
             }
 
             public bool Equals(TimerData other)
