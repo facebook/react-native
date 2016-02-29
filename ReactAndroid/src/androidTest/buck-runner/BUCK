@@ -3,25 +3,30 @@ include_defs('//ReactAndroid/DEFS')
 
 android_instrumentation_test(
   name = 'react-oss-tests',
-  apk = ':react-instrumentation-tests-binary',
+  apk = ':react-oss-test-apk',
 )
 
-# android_instrumentation_apk(
-#   name = 'react-oss-test-apk',
-#   manifest = 'AndroidManifest.xml',
-#   apk = ':react-instrumentation-tests-binary',
-#   deps = [
-#   ],
-# )
+android_instrumentation_apk(
+  name = 'react-oss-test-apk',
+  manifest = 'AndroidManifest.xml',
+  apk = ':react-instrumentation-tests-binary',
+  deps = [
+    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
+  ],
+)
 
 
 android_binary(
   name = 'react-instrumentation-tests-binary',
-  manifest = 'AndroidManifest.xml',
+  manifest = 'AndroidAppManifest.xml',
   keystore = '//keystores:debug',
   deps = [
-    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
-    react_native_integration_tests_target('assets:assets')
+    react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
+    react_native_integration_tests_target('assets:assets'),
+    react_native_target('jni/prebuilt:reactnative-libs'),
+    react_native_target('jni/prebuilt:android-jsc'),
+    react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
+    react_native_target('java/com/facebook/react/devsupport:devsupport'),
   ],
 )
 
