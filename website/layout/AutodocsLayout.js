@@ -448,6 +448,14 @@ var Modal = React.createClass({
 });
 
 var Autodocs = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {permalink: this.props.metadata.permalink};
+  },
+
   renderFullDescription: function(docs) {
     if (!docs.fullDescription) {
       return;

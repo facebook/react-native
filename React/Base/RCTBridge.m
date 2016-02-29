@@ -268,6 +268,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
+  [self createBatchedBridge];
+}
+
+- (void)createBatchedBridge
+{
   self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
@@ -288,7 +293,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)invalidate
 {
-  RCTBatchedBridge *batchedBridge = (RCTBatchedBridge *)self.batchedBridge;
+  RCTBridge *batchedBridge = self.batchedBridge;
   self.batchedBridge = nil;
 
   if (batchedBridge) {

@@ -181,6 +181,7 @@ public abstract class ReactInstanceManager {
     protected @Nullable LifecycleState mInitialLifecycleState;
     protected @Nullable UIImplementationProvider mUIImplementationProvider;
     protected @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+    protected @Nullable JSCConfig mJSCConfig;
 
     protected Builder() {
     }
@@ -274,6 +275,11 @@ public abstract class ReactInstanceManager {
       return this;
     }
 
+    public Builder setJSCConfig(JSCConfig jscConfig) {
+      mJSCConfig = jscConfig;
+      return this;
+    }
+
     /**
      * Instantiates a new {@link ReactInstanceManagerImpl}.
      * Before calling {@code build}, the following must be called:
@@ -307,7 +313,8 @@ public abstract class ReactInstanceManager {
           mBridgeIdleDebugListener,
           Assertions.assertNotNull(mInitialLifecycleState, "Initial lifecycle state was not set"),
           mUIImplementationProvider,
-          mNativeModuleCallExceptionHandler);
+          mNativeModuleCallExceptionHandler,
+          mJSCConfig);
     }
   }
 }

@@ -74,31 +74,34 @@ class NavigationAnimatedExample extends React.Component {
       <NavigationAnimatedView
         navigationState={navigationState}
         style={styles.animatedView}
-        renderOverlay={(position, layout) => (
+        renderOverlay={(props) => (
           <NavigationHeader
-            navigationState={navigationState}
-            position={position}
+            navigationState={props.navigationParentState}
+            position={props.position}
             getTitle={state => state.key}
           />
         )}
         setTiming={(pos, navState) => {
           Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
         }}
-        renderScene={(state, index, position, layout) => (
+        renderScene={(props) => (
           <NavigationCard
-            key={state.key}
-            index={index}
-            navigationState={navigationState}
-            position={position}
-            layout={layout}>
+            key={props.navigationState.key}
+            index={props.index}
+            navigationState={props.navigationParentState}
+            position={props.position}
+            layout={props.layout}>
             <ScrollView style={styles.scrollView}>
               <NavigationExampleRow
-                text={navigationState.children[navigationState.index].key}
+                text={props.navigationState.key}
               />
               <NavigationExampleRow
                 text="Push!"
                 onPress={() => {
-                  onNavigate({ type: 'push', key: 'Route #' + navigationState.children.length });
+                  onNavigate({
+                    type: 'push',
+                    key: 'Route #' + props.navigationParentState.children.length
+                  });
                 }}
               />
               <NavigationExampleRow

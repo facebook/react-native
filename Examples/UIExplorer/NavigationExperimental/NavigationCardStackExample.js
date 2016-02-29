@@ -79,11 +79,11 @@ class NavigationCardStackExample extends React.Component {
     });
   }
 
-  _renderScene(navigationState, index, position, layout) {
+  _renderScene(props) {
     return (
       <ScrollView style={styles.scrollView}>
         <NavigationExampleRow
-          text={JSON.stringify(navigationState)}
+          text={JSON.stringify(props.navigationState)}
         />
         <NavigationExampleRow
           text="Push Route"

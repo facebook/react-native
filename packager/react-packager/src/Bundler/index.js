@@ -168,9 +168,9 @@ class Bundler {
     });
   }
 
-  _sourceHMRURL(platform, path) {
+  _sourceHMRURL(platform, host, port, path) {
     return this._hmrURL(
-      'http://localhost:8081', // TODO: (martinb) avoid hardcoding
+      `http://${host}:${port}`,
       platform,
       'bundle',
       path,
@@ -211,10 +211,10 @@ class Bundler {
     );
   }
 
-  hmrBundle(options) {
+  hmrBundle(options, host, port) {
     return this._bundle({
       bundle: new HMRBundle({
-        sourceURLFn: this._sourceHMRURL.bind(this, options.platform),
+        sourceURLFn: this._sourceHMRURL.bind(this, options.platform, host, port),
         sourceMappingURLFn: this._sourceMappingHMRURL.bind(
           this,
           options.platform,
