@@ -110,7 +110,7 @@ var ComponentDoc = React.createClass({
   renderProp: function(name, prop) {
     return (
       <div className="prop" key={name}>
-        <Header level={4} className="propTitle" toSlug={name}>
+        <Header level={4} className="propTitle" toSlug={name} permalink={this.props.permalink}>
           {prop.platforms && prop.platforms.map(platform =>
             <span className="platform">{platform}</span>
           )}
@@ -488,7 +488,7 @@ var Autodocs = React.createClass({
     var metadata = this.props.metadata;
     var docs = JSON.parse(this.props.children);
     var content  = docs.type === 'component' || docs.type === 'style' ?
-      <ComponentDoc content={docs} /> :
+      <ComponentDoc content={docs} permalink={metadata.permalink}/> :
       <APIDoc content={docs} apiName={metadata.title} />;
 
     return (
