@@ -162,7 +162,7 @@ class XMLHttpRequestBase {
       if (this.reponseType === '' || this.reponseType === 'text') {
         this.response = Object(this.responseText);
       } else if(this.reponseType === 'arraybuffer') {
-        this.response = this.stringToArrayBuffer(this.responseText);
+        this.response = this._stringToArrayBuffer(this.responseText);
       }
       //TODO: Support the other response type as well (eg:- document, json, blob)
       this.setReadyState(this.LOADING);
@@ -247,7 +247,7 @@ class XMLHttpRequestBase {
     }
     this._sent = true;
     if (data instanceof Int8Array) {
-      data = this.uintToString(data);
+      data = this._uintToString(data);
     }
     this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
