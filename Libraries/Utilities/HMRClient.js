@@ -7,19 +7,19 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule HMRClient
+ * @flow
  */
 'use strict';
 
 const Platform = require('Platform');
 const invariant = require('invariant');
-const processColor = require('processColor');
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
 const HMRClient = {
-  enable(platform, bundleEntry, host, port) {
+  enable(platform: string, bundleEntry: string, host: string, port: number) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
     invariant(host, 'Missing required paramenter `host`');
@@ -54,28 +54,23 @@ Error: ${e.message}`
       );
     };
     activeWS.onmessage = ({data}) => {
-      let DevLoadingView = require('NativeModules').DevLoadingView;
-      if (!DevLoadingView) {
-        DevLoadingView = {
-          showMessage() {},
-          hide() {},
-        };
-      }
+      // Moving to top gives errors due to NativeModules not being initialized
+      const HMRLoadingView = require('HMRLoadingView');
+
       data = JSON.parse(data);
 
       switch (data.type) {
         case 'update-start': {
-          DevLoadingView.showMessage(
-            'Hot Loading...',
-            processColor('#000000'),
-            processColor('#aaaaaa'),
-          );
+          HMRLoadingView.showMessage('Hot Loading...');
           break;
         }
         case 'update': {
-          const modules = data.body.modules;
-          const sourceMappingURLs = data.body.sourceMappingURLs;
-          const sourceURLs = data.body.sourceURLs;
+          const {
+            modules,
+            sourceMappingURLs,
+            sourceURLs,
+            inverseDependencies,
+          } = data.body;
 
           if (Platform.OS === 'ios') {
             const RCTRedBox = require('NativeModules').RedBox;
@@ -85,7 +80,7 @@ Error: ${e.message}`
             RCTExceptionsManager && RCTExceptionsManager.dismissRedbox && RCTExceptionsManager.dismissRedbox();
           }
 
-          modules.forEach((code, i) => {
+          modules.forEach(({name, code}, i) => {
             code = code + '\n\n' + sourceMappingURLs[i];
 
             require('SourceMapsCache').fetch({
@@ -101,18 +96,28 @@ Error: ${e.message}`
               ? global.nativeInjectHMRUpdate
               : eval;
 
+            // TODO: (martinb) yellow box if cannot accept module
+            code = `
+              __accept(
+                ${name},
+                function(global, require, module, exports) {
+                  ${code}
+                },
+                ${JSON.stringify(inverseDependencies)}
+              );`;
+
             injectFunction(code, sourceURLs[i]);
           });
 
-          DevLoadingView.hide();
+          HMRLoadingView.hide();
           break;
         }
         case 'update-done': {
-          DevLoadingView.hide();
+          HMRLoadingView.hide();
           break;
         }
         case 'error': {
-          DevLoadingView.hide();
+          HMRLoadingView.hide();
           throw new Error(data.body.type + ' ' + data.body.description);
         }
         default: {

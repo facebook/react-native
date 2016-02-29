@@ -163,7 +163,7 @@ var WebViewExample = React.createClass({
 
 var Button = React.createClass({
   _handlePress: function() {
-    if (this.props.enabled && this.props.onPress) {
+    if (this.props.enabled !== false && this.props.onPress) {
       this.props.onPress();
     }
   },
@@ -182,19 +182,19 @@ var ScaledWebView = React.createClass({
 
   getInitialState: function() {
     return {
-      scalingEnabled: true
+      scalingEnabled: true,
     }
   },
 
   render: function() {
     return (
-      <View style={{height:120}}>
+      <View>
         <WebView
           style={{
             backgroundColor: BGWASH,
-            height: 100,
+            height: 200,
           }}
-          source={{html: HTML}}
+          source={{uri: 'https://facebook.github.io/react/'}}
           scalesPageToFit={this.state.scalingEnabled}
         />
         <View style={styles.buttons}>
@@ -307,7 +307,7 @@ const HTML = `
   <head>
     <title>Hello Static World</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=640, user-scalable=no">
+    <meta name="viewport" content="width=320, user-scalable=no">
     <style type="text/css">
       body {
         margin: 0;
@@ -338,6 +338,10 @@ exports.examples = [
     render(): ReactElement { return <WebViewExample />; }
   },
   {
+    title: 'Scale Page to Fit',
+    render(): ReactElement { return <ScaledWebView/>; }
+  },
+  {
     title: 'Bundled HTML',
     render(): ReactElement {
       return (
@@ -366,10 +370,6 @@ exports.examples = [
         />
       );
     }
-  },
-  {
-    title: 'Scale Page to Fit',
-    render(): ReactElement { return <ScaledWebView/>; }
   },
   {
     title: 'POST Test',
