@@ -197,6 +197,10 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },

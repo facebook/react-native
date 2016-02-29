@@ -121,12 +121,12 @@ const APIExamples = [
     module: require('./ImageEditingExample'),
   },
   {
-    key: 'IntentAndroidExample',
-    module: require('./IntentAndroidExample'),
-  },
-  {
     key: 'LayoutEventsExample',
     module: require('./LayoutEventsExample'),
+  },
+  {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
   },
   {
     key: 'LayoutExample',
