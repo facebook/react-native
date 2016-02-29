@@ -34,6 +34,7 @@ const {
   TouchableHighlight,
   View,
 } = React;
+
 const {
   AnimatedView: NavigationAnimatedView,
   Card: NavigationCard,
@@ -41,19 +42,14 @@ const {
   Reducer: NavigationReducer,
   RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
-const StackReducer = NavigationReducer.StackReducer;
-
-import type {
-  NavigationState,
-} from 'NavigationStateUtils'
 
 import type { Value } from 'Animated';
-import type { Layout } from 'NavigationAnimatedView';
+
+import type { NavigationStateRendererProps } from 'NavigationAnimatedView';
+
 import type { UIExplorerNavigationState } from './UIExplorerNavigationReducer';
 
-import type {
-  UIExplorerExample,
-} from './UIExplorerList.ios'
+import type { UIExplorerExample } from './UIExplorerList.ios';
 
 function PathActionMap(path: string): ?Object {
   // Warning! Hacky parsing for example code. Use a library for this!
@@ -86,8 +82,12 @@ function URIActionMap(uri: ?string): ?Object {
 class UIExplorerApp extends React.Component {
   _navigationRootRef: ?NavigationRootContainer;
   _renderNavigation: Function;
+  _renderOverlay: Function;
+  _renderScene: Function;
   componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
+    this._renderOverlay = this._renderOverlay.bind(this);
+    this._renderScene = this._renderScene.bind(this);
   }
   render() {
     return (
@@ -119,41 +119,31 @@ class UIExplorerApp extends React.Component {
       <NavigationAnimatedView
         navigationState={stack}
         style={styles.container}
-        renderOverlay={this._renderOverlay.bind(this, stack)}
-        renderScene={this._renderSceneContainer.bind(this, stack)}
+        renderOverlay={this._renderOverlay}
+        renderScene={this._renderScene}
       />
     );
   }
 
-  _renderOverlay(
-    navigationState: NavigationState,
-    position: Value,
-    layout: Layout
-  ): ReactElement {
+  _renderOverlay(props: NavigationStateRendererProps): ReactElement {
     return (
       <NavigationHeader
-        navigationState={navigationState}
-        position={position}
+        navigationState={props.navigationParentState}
+        position={props.position}
         getTitle={UIExplorerStateTitleMap}
       />
-    );    
+    );
   }
 
-  _renderSceneContainer(
-    navigationState: NavigationState,
-    scene: NavigationState,
-    index: number,
-    position: Value,
-    layout: Layout
-  ): ReactElement {
+  _renderOverlay(props: NavigationStateRendererProps): ReactElement {
     return (
       <NavigationCard
-        key={scene.key}
-        index={index}
-        navigationState={navigationState}
-        position={position}
-        layout={layout}>
-        {this._renderScene(scene)}
+        index={props.index}
+        key={props.navigationState.key}
+        layout={props.layout}
+        navigationState={props.navigationParentState}
+        position={props.position}>
+        {this._renderScene(props.navigationState)}
       </NavigationCard>
     );
   }

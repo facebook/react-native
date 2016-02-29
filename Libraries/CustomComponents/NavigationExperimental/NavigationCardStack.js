@@ -44,22 +44,22 @@ import type {
 
 import type {
   Layout,
-  OverlayRenderer,
+  NavigationStateRenderer,
+  NavigationStateRendererProps,
   Position,
-  SceneRenderer,
 } from 'NavigationAnimatedView';
 
 type Props = {
   navigationState: NavigationParentState,
-  renderOverlay: OverlayRenderer,
-  renderScene: SceneRenderer,
+  renderOverlay: NavigationStateRenderer,
+  renderScene: NavigationStateRenderer,
 };
 
 /**
  * A controlled navigation view that renders a list of cards.
  */
 class NavigationCardStack extends React.Component {
-  _renderScene : SceneRenderer;
+  _renderScene : NavigationStateRenderer;
 
   constructor(props: Props, context: any) {
     super(props, context);
@@ -77,20 +77,22 @@ class NavigationCardStack extends React.Component {
     );
   }
 
-  _renderScene(
-    navigationState: NavigationState,
-    index: number,
-    position: Position,
-    layout: Layout,
-  ): ReactElement {
+  _renderScene(props: NavigationStateRendererProps): ReactElement {
+    const {
+      index,
+      layout,
+      navigationParentState,
+      navigationState,
+      position,
+    } = props;
     return (
       <NavigationCard
         key={navigationState.key}
         index={index}
-        navigationState={navigationState}
+        navigationState={navigationParentState}
         position={position}
         layout={layout}>
-        {this.props.renderScene(navigationState, index, position, layout)}
+        {this.props.renderScene(props)}
       </NavigationCard>
     );
   }
