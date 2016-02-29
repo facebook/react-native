@@ -44,7 +44,7 @@ class XMLHttpRequestBase {
   responseHeaders: ?Object;
   responseText: ?string;
   response: ?Object;
-  responseType: ?string;
+  responseType: '' | 'arraybuffer' | 'text';
   status: number;
   timeout: number;
   responseURL: ?string;
