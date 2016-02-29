@@ -34,7 +34,6 @@ next: style
 <iframe width="650" height="315" src="//www.youtube.com/embed/Zoerbz5Mu5U" frameborder="0" allowfullscreen></iframe>
 
 
-
 ### React.js Conf 2015 
 
 <iframe width="650" height="315" src="//www.youtube.com/embed/KVZ-P-ZI6W4" frameborder="0" allowfullscreen></iframe>
