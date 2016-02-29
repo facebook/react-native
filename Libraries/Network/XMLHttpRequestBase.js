@@ -143,13 +143,13 @@ class XMLHttpRequestBase {
     }
   }
 
-  stringToArrayBuffer(str: string) : ArrayBuffer {
-    var buf = new ArrayBuffer(str.length);
-    var bufView = new Uint8Array(buf);
+  _stringToArrayBuffer(str: string): ArrayBuffer {
+    var buffer = new ArrayBuffer(str.length);
+    var bufferView = new Uint8Array(buffer);
     for (var i = 0; i < str.length; i++) {
-      bufView[i] = str.charCodeAt(i);
+      bufferView[i] = str.charCodeAt(i);
     }
-    return buf;
+    return buffer;
   }
 
   _didReceiveData(requestId: number, responseText: string): void {
@@ -159,10 +159,11 @@ class XMLHttpRequestBase {
       } else {
         this.responseText += responseText;
       }
-      if(this.reponseType == '' || this.reponseType == 'text')
-          this.response = Object(this.responseText);
-      else if(this.reponseType == 'arraybuffer')
+      if (this.reponseType === '' || this.reponseType === 'text') {
+        this.response = Object(this.responseText);
+      } else if(this.reponseType === 'arraybuffer') {
         this.response = this.stringToArrayBuffer(this.responseText);
+      }
       //TODO: Support the other response type as well (eg:- document, json, blob)
       this.setReadyState(this.LOADING);
     }
@@ -232,10 +233,9 @@ class XMLHttpRequestBase {
     throw new Error('Subclass must define sendImpl method');
   }
 
-  uintToString(uintArray: any): string {
-    var encodedString = String.fromCharCode.apply(null, uintArray),
-        decodedString = decodeURIComponent(encodedString);
-    return decodedString;
+  _uintToString(uintArray: any): string {
+    var encodedString = String.fromCharCode.apply(null, uintArray);
+    return decodeURIComponent(encodedString);
   }
 
   send(data: any): void {
@@ -246,8 +246,9 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    if(data instanceof Int8Array)
+    if (data instanceof Int8Array) {
       data = this.uintToString(data);
+    }
     this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
 
