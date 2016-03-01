@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := reactnativejni
 
 LOCAL_SRC_FILES := \
+	JExecutorToken.cpp \
   JMessageQueueThread.cpp \
   JSCPerfLogging.cpp \
   JSLoader.cpp \

@@ -26,8 +26,4 @@ namespace JSLogging {
 JSCNativeHook nativeHook = nullptr;
 };
 
-namespace Exceptions {
-HandleUncaughtException handleUncaughtException;
-};
-
 } }

@@ -8,6 +8,7 @@
 #include <folly/json.h>
 #include <JavaScriptCore/JSContextRef.h>
 
+#include "ExecutorToken.h"
 #include "Executor.h"
 #include "JSCHelpers.h"
 #include "Value.h"
@@ -31,17 +32,14 @@ private:
 class JSCExecutor;
 class WorkerRegistration : public noncopyable {
 public:
-  explicit WorkerRegistration(std::unique_ptr<JSCExecutor> executor, Object jsObj) :
-      jsObj(std::move(jsObj)),
-      executor(std::move(executor)) {}
+  explicit WorkerRegistration(JSCExecutor* executor, ExecutorToken executorToken, Object jsObj) :
+      executor(executor),
+      executorToken(executorToken),
+      jsObj(std::move(jsObj)) {}
 
-  JSCExecutor* getExecutor() {
-    return executor.get();
-  }
-
+  JSCExecutor *executor;
+  ExecutorToken executorToken;
   Object jsObj;
-private:
-  std::unique_ptr<JSCExecutor> executor;
 };
 
 class JSCExecutor : public JSExecutor {
@@ -75,6 +73,7 @@ public:
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
+  virtual void destroy() override;
 
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
 

@@ -1076,6 +1076,29 @@ RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag
   }];
 }
 
+RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view) {
+      // this view was probably collapsed out
+      RCTLogWarn(@"measure cannot find view with tag #%@", reactTag);
+      callback(@[]);
+      return;
+    }
+
+    // Return frame coordinates in window
+    CGRect windowFrame = [view.window convertRect:view.frame fromView:view.superview];
+    callback(@[
+      @(windowFrame.origin.x),
+      @(windowFrame.origin.y),
+      @(windowFrame.size.width),
+      @(windowFrame.size.height),
+    ]);
+  }];
+}
+
 static void RCTMeasureLayout(RCTShadowView *view,
                              RCTShadowView *ancestor,
                              RCTResponseSenderBlock callback)

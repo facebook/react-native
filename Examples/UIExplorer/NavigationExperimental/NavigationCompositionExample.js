@@ -154,25 +154,24 @@ class ExampleTabScreen extends React.Component {
       />
     );
   }
-  _renderHeader(position, layout) {
+  _renderHeader(props) {
     return (
       <NavigationHeader
-        navigationState={this.props.navigationState}
-        position={position}
-        layout={layout}
+        navigationState={props.navigationParentState}
+        position={props.position}
+        layout={props.layout}
         getTitle={state => stateTypeTitleMap(state)}
       />
     );
   }
-  _renderScene(child, index, position, layout) {
+  _renderScene(props) {
     return (
       <NavigationCard
-        key={child.key}
-        index={index}
-        childState={child}
-        navigationState={this.props.navigationState}
-        position={position}
-        layout={layout}>
+        key={props.navigationState.key}
+        index={props.index}
+        navigationState={props.navigationParentState}
+        position={props.position}
+        layout={props.layout}>
         <ScrollView style={styles.scrollView}>
           <NavigationExampleRow
             text="Open page"
