@@ -68,7 +68,8 @@ void RCTRegisterModule(Class moduleClass)
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
 #if RCT_DEV
-  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)], @"Bridge module classes must conform to RCTBridgeModule");
+  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
+            @"Bridge module `%@` does not conform to RCTBridgeModule", cls);
 #endif
 
   NSString *name = [cls moduleName];
@@ -104,34 +105,33 @@ dispatch_queue_t RCTJSThread;
     // Set up JS thread
     RCTJSThread = (id)kCFNull;
 
-#if RCT_DEBUG
+    if (RCT_DEBUG && !RCTRunningInTestEnvironment()) {
 
-    // Set up module classes
-    static unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
+      // Set up module classes
+      static unsigned int classCount;
+      Class *classes = objc_copyClassList(&classCount);
 
-    for (unsigned int i = 0; i < classCount; i++)
-    {
-      Class cls = classes[i];
-      Class superclass = cls;
-      while (superclass)
+      for (unsigned int i = 0; i < classCount; i++)
       {
-        if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
+        Class cls = classes[i];
+        Class superclass = cls;
+        while (superclass)
         {
-          if (![RCTModuleClasses containsObject:cls]) {
-            RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
-                       "RCT_EXPORT_MODULE()?", cls);
+          if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
+          {
+            if (![RCTModuleClasses containsObject:cls]) {
+              RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
+                         "RCT_EXPORT_MODULE()?", cls);
+            }
+            break;
           }
-          break;
+          superclass = class_getSuperclass(superclass);
         }
-        superclass = class_getSuperclass(superclass);
       }
+
+      free(classes);
+
     }
-
-    free(classes);
-
-#endif
-
   });
 }
 

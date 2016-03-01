@@ -369,7 +369,7 @@ RCT_EXPORT_MODULE()
   if (!sourceCodeModule.scriptURL) {
     if (!sourceCodeModule) {
       RCTLogWarn(@"RCTSourceCode module not found");
-    } else {
+    } else if (!RCTRunningInTestEnvironment()) {
       RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
     }
   } else if (!sourceCodeModule.scriptURL.fileURL) {
