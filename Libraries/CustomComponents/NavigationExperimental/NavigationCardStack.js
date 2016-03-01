@@ -27,19 +27,21 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const NavigationAnimatedView = require('NavigationAnimatedView');
-const NavigationCard = require('NavigationCard');
+const NavigationCardStackItem = require('NavigationCardStackItem');
 const NavigationContainer = require('NavigationContainer');
 const React = require('React');
+const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 
 const emptyFunction = require('emptyFunction');
 
 const {PropTypes} = React;
+const {Directions} = NavigationCardStackItem;
 
 import type {
   NavigationParentState,
-  NavigationState,
 } from 'NavigationStateUtils';
 
 import type {
@@ -47,9 +49,11 @@ import type {
   NavigationStateRenderer,
   NavigationStateRendererProps,
   Position,
+  TimingSetter,
 } from 'NavigationAnimatedView';
 
 type Props = {
+  direction: string,
   navigationState: NavigationParentState,
   renderOverlay: NavigationStateRenderer,
   renderScene: NavigationStateRenderer,
@@ -60,19 +64,30 @@ type Props = {
  */
 class NavigationCardStack extends React.Component {
   _renderScene : NavigationStateRenderer;
+  _setTiming: TimingSetter;
 
   constructor(props: Props, context: any) {
     super(props, context);
     this._renderScene = this._renderScene.bind(this);
+    this._setTiming = this._setTiming.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
+    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
+      this,
+      nextProps,
+      nextState
+    );
   }
 
   render(): ReactElement {
     return (
       <NavigationAnimatedView
         navigationState={this.props.navigationState}
-        style={[styles.animatedView, this.props.style]}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
+        setTiming={this._setTiming}
+        style={[styles.animatedView, this.props.style]}
       />
     );
   }
@@ -81,32 +96,47 @@ class NavigationCardStack extends React.Component {
     const {
       index,
       layout,
-      navigationParentState,
       navigationState,
       position,
     } = props;
+
     return (
-      <NavigationCard
-        key={navigationState.key}
+      <NavigationCardStackItem
+        direction={this.props.direction}
         index={index}
-        navigationState={navigationParentState}
+        key={navigationState.key}
+        layout={layout}
+        navigationState={navigationState}
         position={position}
-        layout={layout}>
-        {this.props.renderScene(props)}
-      </NavigationCard>
+        renderScene={this.props.renderScene}
+      />
     );
+  }
+
+  _setTiming(position: Position, navigationState: NavigationParentState): void {
+    Animated.timing(
+      position,
+      {
+        duration: 500,
+        toValue: navigationState.index,
+      }
+    ).start();
   }
 }
 
 NavigationCardStack.propTypes = {
+  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
   navigationState: PropTypes.object.isRequired,
   renderOverlay: PropTypes.func,
   renderScene: PropTypes.func.isRequired,
 };
 
 NavigationCardStack.defaultProps = {
+  direction: Directions.HORIZONTAL,
   renderOverlay: emptyFunction.thatReturnsNull,
 };
+
+NavigationCardStack.Directions = Directions;
 
 const styles = StyleSheet.create({
   animatedView: {
