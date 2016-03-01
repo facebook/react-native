@@ -116,6 +116,15 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mOperationsQueue.enqueueProcessLayoutRequests();
   }
 
+  /* package */ void removeRootView(int rootViewTag) {
+    // Don't remove Views that are connected to a View that we are about to remove.
+    for (int i = mViewsToDrop.size() - 1; i >= 0; --i) {
+      if (mViewsToDrop.get(i).getRootNode().getReactTag() == rootViewTag) {
+        mViewsToDrop.remove(i);
+      }
+    }
+  }
+
   /**
    * Adds a DrawCommand for current mountable node.
    */

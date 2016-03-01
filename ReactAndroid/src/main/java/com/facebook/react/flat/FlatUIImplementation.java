@@ -390,6 +390,12 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
+  public void removeRootView(int rootViewTag) {
+    mStateBuilder.removeRootView(rootViewTag);
+    super.removeRootView(rootViewTag);
+  }
+
+  @Override
   public void setJSResponder(int possiblyVirtualReactTag, boolean blockNativeResponder) {
     ReactShadowNode node = resolveShadowNode(possiblyVirtualReactTag);
     while (node.isVirtual()) {
