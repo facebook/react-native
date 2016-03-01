@@ -42,11 +42,11 @@ test:
 
   override:
     # build app
-    #- buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
-    #- buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
+    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
+    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
     # unit tests
-    # - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
+     - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
 
     # instrumentation tests
     # compile native libs with Gradle script
@@ -54,22 +54,22 @@ test:
         timeout: 360
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    # build test APK
     - buck/bin/buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
+    # run installed apk with tests
     - ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 
-    # Deprecated: run tests with Gradle
-    #- ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
-    # run tests on the emulator
-    #- ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
-    #    timeout: 360
+    # Deprecated: run tests with Gradle, we keep them for a while to compare performance
+    - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
+    - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
+        timeout: 360
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
   post:
     # copy test report for Circle CI to display
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-    # TODO move BUCK test results
-    - find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/__java_test_views_output__/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 
 deployment:
