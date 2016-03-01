@@ -66,7 +66,6 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void connect(final String url, @Nullable final ReadableArray protocols, @Nullable final ReadableMap headers, final int id) {
-    // ignoring protocols, since OKHttp overrides them.
     OkHttpClient client = new OkHttpClient();
 
     client.setConnectTimeout(10, TimeUnit.SECONDS);
@@ -97,6 +96,21 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
       }
     } else {
       builder.addHeader("origin", setDefaultOrigin(url));
+    }
+
+    if (protocols != null && protocols.size() > 0) {
+      StringBuilder protocolsValue = new StringBuilder("");
+      for (int i = 0; i < protocols.size(); i++) {
+        String v = protocols.getString(i).trim();
+        if (!v.isEmpty() && !v.contains(",")) {
+          protocolsValue.append(v);
+          protocolsValue.append(",");
+        }
+      }
+      if (protocolsValue.length() > 0) {
+        protocolsValue.replace(protocolsValue.length() - 1, protocolsValue.length(), "");
+        builder.addHeader("Sec-WebSocket-Protocol", protocolsValue.toString());
+      }
     }
 
     WebSocketCall.create(client, builder.build()).enqueue(new WebSocketListener() {
