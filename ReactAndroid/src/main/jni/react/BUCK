@@ -67,6 +67,8 @@ react_library(
   exported_headers = [
     'AlignStack.h',
     'Bridge.h',
+    'ExecutorToken.h',
+    'ExecutorTokenFactory.h',
     'Executor.h',
     'JSCExecutor.h',
     'JSCHelpers.h',

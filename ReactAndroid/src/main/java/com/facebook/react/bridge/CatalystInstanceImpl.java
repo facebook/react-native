@@ -54,6 +54,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
   private final Object mTeardownLock = new Object();
+  private @Nullable ExecutorToken mMainExecutorToken;
 
   // Access from native modules thread
   private final NativeModuleRegistry mJavaRegistry;
@@ -113,6 +114,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
           jsExecutor,
           new NativeModulesReactCallback(),
           mReactQueueConfiguration.getNativeModulesQueueThread());
+      mMainExecutorToken = bridge.getMainExecutorToken();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
@@ -165,10 +167,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   /* package */ void callFunction(
-      final int moduleId,
-      final int methodId,
-      final NativeArray arguments,
-      final String tracingName) {
+      ExecutorToken executorToken,
+      int moduleId,
+      int methodId,
+      NativeArray arguments,
+      String tracingName) {
     synchronized (mTeardownLock) {
       if (mDestroyed) {
         FLog.w(ReactConstants.TAG, "Calling JS function after bridge has been destroyed.");
@@ -177,7 +180,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
       incrementPendingJSCalls();
 
-      Assertions.assertNotNull(mBridge).callFunction(moduleId, methodId, arguments, tracingName);
+      Assertions.assertNotNull(mBridge).callFunction(executorToken, moduleId, methodId, arguments, tracingName);
     }
   }
 
@@ -185,7 +188,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   // which this prevents.
   @DoNotStrip
   @Override
-  public void invokeCallback(final int callbackID, final NativeArray arguments) {
+  public void invokeCallback(ExecutorToken executorToken, int callbackID, NativeArray arguments) {
     synchronized (mTeardownLock) {
       if (mDestroyed) {
         FLog.w(ReactConstants.TAG, "Invoking JS callback after bridge has been destroyed.");
@@ -194,7 +197,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
       incrementPendingJSCalls();
 
-      Assertions.assertNotNull(mBridge).invokeCallback(callbackID, arguments);
+      Assertions.assertNotNull(mBridge).invokeCallback(executorToken, callbackID, arguments);
     }
   }
 
@@ -269,7 +272,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface) {
-    return Assertions.assertNotNull(mJSModuleRegistry).getJavaScriptModule(jsInterface);
+    return getJSModule(Assertions.assertNotNull(mMainExecutorToken), jsInterface);
+  }
+
+  @Override
+  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
+    return Assertions.assertNotNull(mJSModuleRegistry).getJavaScriptModule(executorToken, jsInterface);
   }
 
   @Override
@@ -388,7 +396,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private class NativeModulesReactCallback implements ReactCallback {
 
     @Override
-    public void call(int moduleId, int methodId, ReadableNativeArray parameters) {
+    public void call(ExecutorToken executorToken, int moduleId, int methodId, ReadableNativeArray parameters) {
       mReactQueueConfiguration.getNativeModulesQueueThread().assertIsOnThread();
 
       // Suppress any callbacks if destroyed - will only lead to sadness.
@@ -396,7 +404,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         return;
       }
 
-      mJavaRegistry.call(CatalystInstanceImpl.this, moduleId, methodId, parameters);
+      mJavaRegistry.call(CatalystInstanceImpl.this, executorToken, moduleId, methodId, parameters);
     }
 
     @Override
@@ -441,12 +449,13 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private class JSProfilerTraceListener implements TraceListener {
     @Override
     public void onTraceStarted() {
-      getJSModule(com.facebook.react.bridge.Systrace.class).setEnabled(true);
+      getJSModule(Assertions.assertNotNull(mMainExecutorToken), com.facebook.react.bridge.Systrace.class).setEnabled(
+          true);
     }
 
     @Override
     public void onTraceStopped() {
-      getJSModule(com.facebook.react.bridge.Systrace.class).setEnabled(false);
+      getJSModule(Assertions.assertNotNull(mMainExecutorToken), com.facebook.react.bridge.Systrace.class).setEnabled(false);
     }
   }
 
