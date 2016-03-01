@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.facebook.react.tests">
-
+          package="com.facebook.react.tests.gradle"
+          android:versionCode="1"
+          android:versionName="1.0" >
+  <uses-sdk android:targetSdkVersion="7" />
   <supports-screens android:anyDensity="true" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,16 +11,9 @@
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application>
-    <uses-library android:name="android.test.runner" />
     <activity
       android:name="com.facebook.react.testing.ReactAppTestActivity"
-      android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen">
-    </activity>
+      android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"
+    />
   </application>
-
-  <instrumentation
-    android:name="android.support.test.runner.AndroidJUnitRunner"
-    android:targetPackage="com.facebook.react.tests"
-    android:label="Buck runs instrumentation tests"/>
-
 </manifest>
