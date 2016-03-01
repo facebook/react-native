@@ -33,7 +33,7 @@ namespace ReactNative.Views.Image
         /// Creates a blended color effect on a <see cref="Border"/> background image.
         /// </summary>
         /// <param name="border">The <see cref="Border"/> component to extend.</param>
-        /// <param name="image">The image <see cref="Uri"/> to reference as the background.</param>
+        /// <param name="imagePath">The image <see cref="Uri"/> to reference as the background.</param>
         /// <param name="blendColor">The color blend to add as a image tint.</param>
         public static async void CreateColorBlendedImageSource(this Border border, Uri imagePath, Color blendColor)
         {

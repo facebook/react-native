@@ -129,7 +129,7 @@ namespace ReactNative.Views.Scroll
 
         /// <summary>
         /// Called when view is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ViewManager"/>
+        /// additional cleanup by the <see cref="IViewManager"/>
         /// subclass.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
@@ -143,7 +143,7 @@ namespace ReactNative.Views.Scroll
         /// Receive events/commands directly from JavaScript through the 
         /// <see cref="UIManagerModule"/>.
         /// </summary>
-        /// <param name="root">
+        /// <param name="view">
         /// The view instance that should receive the command.
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>

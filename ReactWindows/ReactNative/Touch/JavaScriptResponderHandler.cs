@@ -1,7 +1,6 @@
 ﻿using System;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 
 namespace ReactNative.Touch
 {
@@ -47,7 +46,7 @@ namespace ReactNative.Touch
         /// Called to evaluate touch interception occurs on a view parent.
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
-        /// <param name="event">
+        /// <param name="e">
         /// The motion event being dispatched down the hierarchy.
         /// </param>
         /// <returns>
@@ -55,7 +54,7 @@ namespace ReactNative.Touch
         /// dispatch to this view, or <code>false</code> to allow the motion 
         /// event to be delivered to the child view.
         /// </returns>
-        public bool OnInterceptTouchEvent(object sender, PointerRoutedEventArgs ev)
+        public bool OnInterceptTouchEvent(object sender, PointerRoutedEventArgs e)
         {
             throw new NotImplementedException();
         }

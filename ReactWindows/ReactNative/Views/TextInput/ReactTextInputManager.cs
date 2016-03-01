@@ -102,7 +102,7 @@ namespace ReactNative.Views.TextInput
         /// Sets the text alignment property on the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="view">The text input box control.</param>
-        /// <param name="degrees">The text alignment.</param>
+        /// <param name="alignment">The text alignment.</param>
         [ReactProperty(PROP_TEXT_ALIGN)]
         public void SetTextAlign(TextBox view, string alignment)
         {
@@ -156,10 +156,8 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Sets the foreground color property on the <see cref="TextBox"/>.
         /// </summary>
+        /// <param name="view">The text input box control.</param>
         /// <param name="color">The masked color value.</param>
-        /// <remarks>
-        /// TODO: test and get working.
-        /// </remarks>
         [ReactProperty(ViewProperties.Color, CustomType = "Color")]
         public void SetColor(TextBox view, uint? color)
         {
@@ -195,7 +193,7 @@ namespace ReactNative.Views.TextInput
         /// The <see cref="TextBox"/> event interceptor for text change events for the native control.
         /// </summary>
         /// <param name="sender">The source sender view.</param>
-        /// <param name="event">The received event args</param>
+        /// <param name="e">The received event args</param>
         public void OnInterceptTextChangeEvent(object sender, TextChangedEventArgs e)
         {
             var senderTextInput = (TextBox)sender;
@@ -204,7 +202,7 @@ namespace ReactNative.Views.TextInput
 
         /// <summary>
         /// Called when view is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ViewManager{TextBox}"/>
+        /// additional cleanup by the <see cref="ReactTextInputManager"/>.
         /// subclass. Unregister all event handlers for the <see cref="TextBox"/>.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
@@ -241,11 +239,12 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Sets the border width for a <see cref="TextBox"/>.
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="root">The text box instance.</param>
+        /// <param name="width">The border width.</param>
         [ReactProperty(ViewProperties.BorderWidth)]
-        public void SetBorderWidth(TextBox root, int border)
+        public void SetBorderWidth(TextBox root, int width)
         {
-            root.BorderThickness = new Thickness(border);
+            root.BorderThickness = new Thickness(width);
         }
 
         public override void UpdateExtraData(TextBox root, object extraData)
@@ -269,7 +268,7 @@ namespace ReactNative.Views.TextInput
         /// Implement this method to receive events/commands directly from
         /// JavaScript through the <see cref="TextBox"/>.
         /// </summary>
-        /// <param name="root">
+        /// <param name="view">
         /// The view instance that should receive the command.
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>

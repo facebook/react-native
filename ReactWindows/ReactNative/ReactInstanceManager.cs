@@ -29,7 +29,7 @@ namespace ReactNative
     /// <see cref="ReactRootView"/> that is used to render the react 
     /// application using this instance manager. It is required to pass
     /// lifecycle events to the instance manager (i.e., <see cref="OnSuspend"/>,
-    /// <see cref="OnDestroy"/>, and <see cref="OnResume(IDefaultHardwareBackButtonHandler)"/>).
+    /// <see cref="OnDestroy"/>, and <see cref="OnResume(Action)"/>).
     /// </summary>
     public class ReactInstanceManager : IReactInstanceManager
     {
@@ -325,7 +325,7 @@ namespace ReactNative
 
         /// <summary>
         /// Uses the configured <see cref="IReactPackage"/> instances to create
-        /// all <see cref="UIManager.ViewManager"/>s.
+        /// all <see cref="IViewManager"/> instances.
         /// </summary>
         /// <param name="reactContext">
         /// The application context.

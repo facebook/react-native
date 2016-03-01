@@ -5,8 +5,8 @@ using System;
 namespace ReactNative.Views.TextInput
 {
     /// <summary>
-    /// Emits events to <see cref="RCTEventEmitter"/> for focus changes to 
-    /// <see cref="Windows.UI.Xaml.TextBox"/>.
+    /// Event emitted by <see cref="ReactTextInputManager"/> native view when 
+    /// focus changes.
     /// </summary>
     class ReactTextInputFocusEvent : Event
     {

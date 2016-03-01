@@ -16,10 +16,18 @@ namespace ReactNative.Views.TextInput
     /// </summary>
     public class ReactTextInputShadowNode : LayoutShadowNode
     {
-        public const int UNSET = -1;
+        private const int UNSET = -1;
+
         private readonly bool _isVirtual;
+
         private ReactTextBoxProperties _textBoxStyle;
         
+        /// <summary>
+        /// Instantiates the <see cref="ReactTextInputShadowNode"/>.
+        /// </summary>
+        /// <param name="isVirtual">
+        /// Indicates whether the shadow node is virtual or not.
+        /// </param>
         public ReactTextInputShadowNode(bool isVirtual)
         {
             _textBoxStyle = new ReactTextBoxProperties();
@@ -31,6 +39,11 @@ namespace ReactNative.Views.TextInput
             }
         }
 
+        /// <summary>
+        /// Nodes that return <code>true</code> will be treated as "virtual"
+        /// nodes. That is, nodes that are not mapped into native views (e.g.,
+        /// nested text node).
+        /// </summary>
         public override bool IsVirtual
         {
             get
@@ -75,7 +88,7 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Sets the font size for the <see cref="TextBox"/>.
         /// </summary>
-        /// <param name="fontSize">font size value</param>
+        /// <param name="fontSize">The font size.</param>
         [ReactProperty(ViewProperties.FontSize, DefaultDouble = UNSET)]
         public void SetFontSize(double fontSize)
         {
@@ -129,7 +142,7 @@ namespace ReactNative.Views.TextInput
         /// <summary>
         /// Sets the text value for the <see cref="TextBox"/>.
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">The text.</param>
         [ReactProperty("text")]
         public void SetText(string text)
         {
@@ -138,9 +151,9 @@ namespace ReactNative.Views.TextInput
         }
 
         /// <summary>
-        /// Sets the the backgrund border color for a <see cref="TextBox"/>.
+        /// Sets the the border color for a <see cref="TextBox"/>.
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="color">The masked color value.</param>
         [ReactProperty("borderColor")]
         public void SetBorderColor(uint? color)
         {
@@ -165,13 +178,7 @@ namespace ReactNative.Views.TextInput
             }
         }
 
-        private static Thickness PaddingThickness(ReactTextInputShadowNode node)
-        {
-            return new Thickness(node.GetPaddingSpace(CSSSpacingType.Left), node.GetPaddingSpace(CSSSpacingType.Top),
-                                 node.GetPaddingSpace(CSSSpacingType.Right), node.GetPaddingSpace(CSSSpacingType.Bottom));
-        }
-
-        protected virtual MeasureOutput MeasureText(CSSNode node, float width, float height)
+        private MeasureOutput MeasureText(CSSNode node, float width, float height)
         {
             var shadowNode = (ReactTextInputShadowNode)node;
             var textBox = new TextBox();

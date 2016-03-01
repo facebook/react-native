@@ -193,10 +193,10 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Replaces the view specified by the <paramref name="oldtag"/> with
+        /// Replaces the view specified by the <paramref name="oldTag"/> with
         /// the view specified by <paramref name="newTag"/> within
         /// <paramref name="oldTag"/>'s parent. This resolves to a simple 
-        /// <see cref="manageChildren(int, JArray, JArray, JArray, JArray, JArray)"/>
+        /// <see cref="manageChildren(int, int[], int[], int[], int[], int[])"/>
         /// call, but React does not have enough information in JavaScript to
         /// formulate it itself.
         /// </summary>
@@ -408,9 +408,11 @@ namespace ReactNative.UIManager
 
         #region NativeModuleBase
 
+        /// <summary>
+        /// Called before a <see cref="IReactInstance"/> is disposed.
+        /// </summary>
         public override void OnReactInstanceDispose()
         {
-            base.OnReactInstanceDispose();
             _eventDispatcher.OnReactInstanceDispose();
         }
 

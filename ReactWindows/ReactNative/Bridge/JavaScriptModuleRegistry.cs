@@ -10,7 +10,7 @@ namespace ReactNative.Bridge
     /// registered to a <see cref="IReactInstance"/>. Requires that
     /// JavaScript modules use the <see cref="JavaScriptModuleBase"/> base
     /// class, and implement each of it's methods to dispatch through the
-    /// <see cref="JavaScriptModuleBase.Invoke(string, object[])"/> method.
+    /// <see cref="JavaScriptModuleBase.Invoke(object[], string)"/> method.
     /// </summary>
     public class JavaScriptModuleRegistry
     {

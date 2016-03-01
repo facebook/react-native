@@ -49,6 +49,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Sets the border width.
         /// </summary>
+        /// <param name="kind">The border kind.</param>
         /// <param name="width">The width.</param>
         public void SetBorderWidth(CSSSpacingType kind, double width)
         {

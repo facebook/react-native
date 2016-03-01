@@ -18,8 +18,8 @@ namespace ReactNative.UIManager
     /// In cases when the property has been removed from the corresponding 
     /// react component, the annotated setter will be called and a default
     /// value will be provided as a value parameter. Default values can be
-    /// customized using, e.g., <see cref="DefaultInteger"/>. In all other
-    /// case, <code>null</code> will be provided as a default.
+    /// customized using, e.g., <see cref="ReactPropertyBaseAttribute.DefaultInteger"/>.
+    /// In all other cases, <code>null</code> will be provided as a default.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method)]
     public class ReactPropertyGroupAttribute : ReactPropertyBaseAttribute

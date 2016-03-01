@@ -12,8 +12,8 @@ namespace ReactNative.UIManager
         private const string CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
         private const string CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
 
-        public const string ACTION_DISMISSED = "dismissed";
-        public const string ACTION_ITEM_SELECTED = "itemSelected";
+        private const string ACTION_DISMISSED = "dismissed";
+        private const string ACTION_ITEM_SELECTED = "itemSelected";
 
         /// <summary>
         /// Create the declared constants for the module.

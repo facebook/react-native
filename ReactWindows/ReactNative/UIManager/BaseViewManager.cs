@@ -1,14 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
-using ReactNative.Views.View;
 using System;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Media3D;
 
 namespace ReactNative.UIManager
 {
     /// <summary>
-    /// Base class that should be suitable for the majority of subclasses of <see cref="ViewManager"/>.
+    /// Base class that should be suitable for the majority of subclasses of <see cref="IViewManager"/>.
     /// It provides support for base view properties such as backgroundColor, opacity, etc.
     /// </summary>
     /// <typeparam name="TFrameworkElement">Type of framework element.</typeparam>
@@ -71,7 +69,7 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Sets the scaleX property of the <typeparamref name="TFrameworkElement"/>.
+        /// Sets the scale factor for the X-dimension of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
         /// <param name="view">The framework element instance.</param>
         /// <param name="factor">The scaling factor.</param>
@@ -83,7 +81,7 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Sets the scaleY property of the <typeparamref name="TFrameworkElement"/>.
+        /// Sets the scale factor for the Y-dimension of the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
         /// <param name="view">The framework element instance.</param>
         /// <param name="factor">The scaling factor.</param>
@@ -95,10 +93,10 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Sets the translateX property of the <typeparamref name="TFrameworkElement"/>.
+        /// Sets the X-coordinate translation for the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The WPF view panel.</param>
-        /// <param name="factor">The scaling factor.</param>
+        /// <param name="view">The view panel.</param>
+        /// <param name="distance">The translation distance.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_X, DefaultDouble = 1.0)]
         public void SetTranslationX(TFrameworkElement view, double distance)
         {
@@ -107,10 +105,10 @@ namespace ReactNative.UIManager
         }
 
         /// <summary>
-        /// Sets the translateY property of the <typeparamref name="TFrameworkElement"/>.
+        /// Sets the Y-coordinate translation for the <typeparamref name="TFrameworkElement"/>.
         /// </summary>
-        /// <param name="view">The WPF view panel.</param>
-        /// <param name="factor">The scaling factor.</param>
+        /// <param name="view">The view panel.</param>
+        /// <param name="distance">The translation distance.</param>
         [ReactProperty(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y, DefaultDouble = 1.0)]
         public void SetTranslationY(TFrameworkElement view, double distance)
         {

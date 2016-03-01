@@ -14,7 +14,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Set the width of the shadow node.
         /// </summary>
-        /// <param name="height">The width.</param>
+        /// <param name="width">The width.</param>
         [ReactProperty(ViewProperties.Width, DefaultFloat = Undefined)]
         public void SetWidth(float? width)
         {
