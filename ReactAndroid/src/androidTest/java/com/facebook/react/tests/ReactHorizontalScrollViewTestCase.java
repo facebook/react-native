@@ -46,7 +46,7 @@ public class ReactHorizontalScrollViewTestCase extends AbstractScrollViewTestCas
 
     dragLeft();
 
-    assertTrue("Expected to scroll by at least 50 pixels", scrollView.getScrollX() < 50);
+    assertTrue("Expected to scroll by at least 50 pixels", scrollView.getScrollX() >= 50);
   }
 
   public void testScrollEvents() {
