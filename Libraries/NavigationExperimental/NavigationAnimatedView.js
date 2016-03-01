@@ -115,8 +115,11 @@ class NavigationAnimatedView extends React.Component {
   props: Props;
   constructor(props) {
     super(props);
-    this._animatedHeight = new Animated.Value(0);
-    this._animatedWidth = new Animated.Value(0);
+    this._lastWidth = 0;
+    this._lastHeight = 0;
+    this._animatedHeight = new Animated.Value(this._lastHeight);
+    this._animatedWidth = new Animated.Value(this._lastWidth);
+
     this.state = {
       position: new Animated.Value(this.props.navigationState.index),
       scenes: new Map(),
