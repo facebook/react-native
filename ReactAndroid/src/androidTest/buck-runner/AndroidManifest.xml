@@ -6,11 +6,17 @@
 
   <application>
     <uses-library android:name="android.test.runner" />
+    <activity android:name='com.facebook.react.testing.ReactAppTestActivity'>
+      <intent-filter>
+        <action android:name='android.intent.action.MAIN' />
+      </intent-filter>
+    </activity>
   </application>
+
 
   <instrumentation
     android:name="android.support.test.runner.AndroidJUnitRunner"
-    android:targetPackage="com.facebook.react"
+    android:targetPackage="com.facebook.react.tests"
     android:label="Minimal Buck test project"/>
 
 </manifest>
