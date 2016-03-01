@@ -22,8 +22,7 @@ Bridge::Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback) :
 
 // This must be called on the same thread on which the constructor was called.
 Bridge::~Bridge() {
-  *m_destroyed = true;
-  m_mainExecutor.reset();
+  CHECK(*m_destroyed) << "Bridge::destroy() must be called before deallocating the Bridge!";
 }
 
 void Bridge::loadApplicationScript(const std::string& script, const std::string& sourceURL) {
@@ -130,6 +129,12 @@ void Bridge::callNativeModules(const std::string& callJSON, bool isEndOfBatch) {
     return;
   }
   m_callback(parseMethodCalls(callJSON), isEndOfBatch);
+}
+
+void Bridge::destroy() {
+  *m_destroyed = true;
+  m_mainExecutor->destroy();
+  m_mainExecutor.reset();
 }
 
 } }

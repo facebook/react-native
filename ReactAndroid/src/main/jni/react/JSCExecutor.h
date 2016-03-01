@@ -75,6 +75,7 @@ public:
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
+  virtual void destroy() override;
 
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
 

@@ -651,6 +651,15 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   setCountableForJava(env, obj, std::move(bridge));
 }
 
+static void destroy(JNIEnv* env, jobject jbridge) {
+  auto bridge = extractRefPtr<CountableBridge>(env, jbridge);
+  try {
+    bridge->destroy();
+  } catch (...) {
+    translatePendingCppExceptionToJavaException();
+  }
+}
+
 static void loadApplicationScript(
     const RefPtr<CountableBridge>& bridge,
     const std::string& script,
@@ -865,9 +874,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         return std::unique_ptr<MessageQueueThread>(
             JMessageQueueThread::currentMessageQueueThread().release());
       };
-    Exceptions::handleUncaughtException = [] () {
-      translatePendingCppExceptionToJavaException();
-    };
     PerfLogging::installNativeHooks = addNativePerfLoggingHooks;
     JSLogging::nativeHook = nativeLoggingHook;
 
@@ -950,6 +956,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     registerNatives("com/facebook/react/bridge/ReactBridge", {
         makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/JavaScriptExecutor;Lcom/facebook/react/bridge/ReactCallback;Lcom/facebook/react/bridge/queue/MessageQueueThread;)V", bridge::create),
+        makeNativeMethod("destroy", bridge::destroy),
         makeNativeMethod(
           "loadScriptFromAssets", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
           bridge::loadScriptFromAssets),
