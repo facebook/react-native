@@ -239,9 +239,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float clipTop,
       float clipRight,
       float clipBottom) {
-    // Normally, this would be a node.hasNewLayout() check, but we also need to check if a node
-    // needs onCollectExtraUpdates() call.
-    boolean hasUpdates = node.hasUpdates();
+    boolean hasUpdates = node.hasNewLayout();
 
     boolean expectingUpdate = hasUpdates || node.isUpdated() ||
         node.clipBoundsChanged(clipLeft, clipTop, clipRight, clipBottom);
@@ -323,7 +321,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           nodeRegions);
     }
 
-    if (hasUpdates) {
+    if (node.hasUnseenUpdates()) {
       node.onCollectExtraUpdates(mOperationsQueue);
       node.markUpdateSeen();
     }

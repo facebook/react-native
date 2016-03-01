@@ -45,6 +45,13 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   }
 
   @Override
+  protected void notifyChanged(boolean shouldRemeasure) {
+    super.notifyChanged(shouldRemeasure);
+    // needed to trigger onCollectExtraUpdates
+    markUpdated();
+  }
+
+  @Override
   public void setThemedContext(ThemedReactContext themedContext) {
     super.setThemedContext(themedContext);
 
@@ -107,8 +114,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   public void onCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue) {
     super.onCollectExtraUpdates(uiViewOperationQueue);
     if (mJsEventCount != UNSET) {
-      ReactTextUpdate reactTextUpdate =
-          new ReactTextUpdate(getText(), mJsEventCount, false);
+      ReactTextUpdate reactTextUpdate = new ReactTextUpdate(getText(), mJsEventCount, false);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }
@@ -127,7 +133,7 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
-    markUpdated();
+    notifyChanged(true);
   }
 
   @Override
@@ -153,21 +159,12 @@ public class RCTTextInput extends RCTVirtualText implements AndroidView, CSSNode
     return true;
   }
 
+  @Override
   protected void performCollectText(SpannableStringBuilder builder) {
     if (mText != null) {
       builder.append(mText);
     }
     super.performCollectText(builder);
-  }
-
-  /**
-   * Returns a new CharSequence that includes all the text and styling information to create Layout.
-   */
-  SpannableStringBuilder getText() {
-    SpannableStringBuilder sb = new SpannableStringBuilder();
-    collectText(sb);
-    applySpans(sb);
-    return sb;
   }
 
   @Override

@@ -238,6 +238,17 @@ import com.facebook.react.uimanager.ViewProps;
     return mFontStylingSpan;
   }
 
+  /**
+   * Returns a new SpannableStringBuilder that includes all the text and styling information to
+   * create the Layout.
+   */
+  /* package */ final SpannableStringBuilder getText() {
+    SpannableStringBuilder sb = new SpannableStringBuilder();
+    collectText(sb);
+    applySpans(sb);
+    return sb;
+  }
+
   private final ShadowStyleSpan getShadowSpan() {
     if (mShadowStyleSpan.isFrozen()) {
       mShadowStyleSpan = mShadowStyleSpan.mutableCopy();

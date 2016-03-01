@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import android.text.BoringLayout;
 import android.text.Layout;
-import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -273,16 +272,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
     }
     notifyChanged(false);
-  }
-
-  /**
-   * Returns a new CharSequence that includes all the text and styling information to create Layout.
-   */
-  private CharSequence getText() {
-    SpannableStringBuilder sb = new SpannableStringBuilder();
-    collectText(sb);
-    applySpans(sb);
-    return sb;
   }
 
   /**

@@ -30,11 +30,6 @@ import com.facebook.react.uimanager.ReactShadowNode;
     if (parent instanceof FlatTextShadowNode) {
       ((FlatTextShadowNode) parent).notifyChanged(shouldRemeasure);
     }
-
-    if (this instanceof RCTTextInput) {
-      // needed to trigger onCollectExtraUpdates
-      markUpdated();
-    }
   }
 
   @Override
