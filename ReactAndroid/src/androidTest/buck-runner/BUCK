@@ -15,13 +15,16 @@ android_instrumentation_apk(
   ],
 )
 
-
+# node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+# gradle :ReactAndroid:packageReactNdkLibsForBuck
+# buck install ReactAndroid/src/androidTest/buck-runner:react-instrumentation-tests-binary
+# adb shell am instrument -w com.facebook.react.tests/android.support.test.runner.AndroidJUnitRunner
 android_binary(
   name = 'react-instrumentation-tests-binary',
-  manifest = 'AndroidAppManifest.xml',
+  manifest = 'AndroidManifest.xml',
   keystore = '//keystores:debug',
   deps = [
-    react_native_integration_tests_target('java/com/facebook/react/testing:testing'),
+    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
     react_native_integration_tests_target('assets:assets'),
     react_native_target('jni/prebuilt:reactnative-libs'),
     react_native_target('jni/prebuilt:android-jsc'),

@@ -14,14 +14,26 @@
             <!--android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"-->
     <!--/>-->
   <!--</application>-->
-  <application
-    android:debuggable="true">
-    <uses-library
-      android:name="android.test.runner" />
+  <!--<application-->
+    <!--android:debuggable="true">-->
+    <!--<uses-library-->
+      <!--android:name="android.test.runner" />-->
+  <!--</application>-->
+  <!--<instrumentation-->
+    <!--android:name="android.support.test.runner.AndroidJUnitRunner"-->
+    <!--android:targetPackage="com.facebook.react.tests"-->
+    <!--android:label="Integration tests for react."-->
+  <!--/>-->
+
+  <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+
+  <application>
+    <uses-library android:name="android.test.runner" />
   </application>
+
   <instrumentation
-    android:name="android.support.test.runner.AndroidJUnitRunner"
-    android:targetPackage="com.facebook.react.tests"
-    android:label="Integration tests for react."
-  />
+    android:name="android.test.InstrumentationTestRunner"
+    android:targetPackage="com.facebook.react"
+    android:label="Minimal Buck test project"/>
+
 </manifest>
