@@ -65,7 +65,7 @@ void ProxyExecutor::callFunction(const double moduleId, const double methodId, c
     std::move(arguments),
   };
   std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(result, true);
+  m_bridge->callNativeModules(*this, result, true);
 }
 
 void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
@@ -74,7 +74,7 @@ void ProxyExecutor::invokeCallback(const double callbackId, const folly::dynamic
     std::move(arguments)
   };
   std::string result = executeJSCallWithProxy(m_executor.get(), "invokeCallbackAndReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(result, true);
+  m_bridge->callNativeModules(*this, result, true);
 }
 
 void ProxyExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
