@@ -235,6 +235,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         new Runnable() {
           @Override
           public void run() {
+            mBridge.destroy();
             mBridge.dispose();
             bridgeDisposeFuture.set(null);
           }
