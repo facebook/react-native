@@ -6,10 +6,9 @@
 
   <application>
     <uses-library android:name="android.test.runner" />
-    <activity android:name='com.facebook.react.testing.ReactAppTestActivity'>
-      <intent-filter>
-        <action android:name='android.intent.action.MAIN' />
-      </intent-filter>
+    <activity
+      android:name="com.facebook.react.testing.ReactAppTestActivity"
+      android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
     </activity>
   </application>
 

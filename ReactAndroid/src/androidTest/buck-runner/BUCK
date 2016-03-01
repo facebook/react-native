@@ -5,10 +5,10 @@ include_defs('//ReactAndroid/DEFS')
 #
 # node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 # gradle :ReactAndroid:packageReactNdkLibsForBuck
-# buck install ReactAndroid/src/androidTest/buck-runner:react-instrumentation-tests-binary
+# buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests
 # adb shell am instrument -w com.facebook.react.tests/android.support.test.runner.AndroidJUnitRunner
 android_binary(
-  name = 'test',
+  name = 'instrumentation-tests',
   manifest = 'AndroidManifest.xml',
   keystore = '//keystores:debug',
   deps = [
