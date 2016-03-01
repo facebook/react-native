@@ -100,9 +100,9 @@ namespace ReactNative.Views.View
 
         /// <summary>
         /// Implement this method to receive events/commands directly from
-        /// JavaScript through the <see cref="UIManager"/>.
+        /// JavaScript through the <see cref="UIManagerModule"/>.
         /// </summary>
-        /// <param name="root">
+        /// <param name="view">
         /// The view instance that should receive the command.
         /// </param>
         /// <param name="commandId">Identifer for the command.</param>
@@ -124,7 +124,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Sets the border radius of the <see cref="ReactPanel"/>.
+        /// Sets the border radius of the view.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="radius">The border radius value.</param>
@@ -135,7 +135,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Sets the background color of the <see cref="ReactCanvas"/>.
+        /// Sets the background color of the view.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="color">The masked color value.</param>
@@ -149,7 +149,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Set the border color of the <see cref="ReactCanvas"/>.
+        /// Set the border color of the view.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="color">The color hex code.</param>
@@ -164,7 +164,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Sets the border thickness of the <see cref="ReactCanvas"/>.
+        /// Sets the border thickness of the view.
         /// </summary>
         /// <param name="view">The view panel.</param>
         /// <param name="index">The property index.</param>
@@ -182,7 +182,7 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
-        /// Creates a new view instance of type <typeparamref name="TFrameworkElement"/>.
+        /// Creates a new view instance.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>

@@ -9,6 +9,7 @@ namespace ReactNative.UIManager
     /// </summary>
     public static class ViewProperties
     {
+#pragma warning disable CS1591
         public const string ViewClassName = "RCTView";
 
         // Layout only (only affect positions of children, causes no drawing)
@@ -65,9 +66,10 @@ namespace ReactNative.UIManager
         public const string BorderTopWidth = "borderTopWidth";
         public const string BorderRightWidth = "borderRightWidth";
         public const string BorderBottomWidth = "borderBottomWidth";
+#pragma warning restore CS1591
 
         /// <summary>
-        /// Orders list of CSS spacing types.
+        /// Ordered list of margin spacing types.
         /// </summary>
         public static readonly IReadOnlyList<CSSSpacingType> PaddingMarginSpacingTypes = 
             new List<CSSSpacingType>
@@ -81,6 +83,9 @@ namespace ReactNative.UIManager
                 CSSSpacingType.Bottom,
             };
 
+        /// <summary>
+        /// Ordered list of border spacing types.
+        /// </summary>
         public static readonly IReadOnlyList<CSSSpacingType> BorderSpacingTypes =
             new List<CSSSpacingType>
             {

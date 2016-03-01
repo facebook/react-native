@@ -5,7 +5,8 @@ using System;
 namespace ReactNative.Views.TextInput
 {
     /// <summary>
-    /// Event emitted by <see cref="TextBox"/> native view when text changes.
+    /// Event emitted by <see cref="ReactTextInputManager"/> native view when
+    /// text changes.
     /// </summary>
     class ReactTextChangedEvent : Event
     {

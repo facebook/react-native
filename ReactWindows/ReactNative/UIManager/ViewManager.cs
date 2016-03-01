@@ -114,7 +114,7 @@ namespace ReactNative.UIManager
 
         /// <summary>
         /// Called when view is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ViewManager"/>
+        /// additional cleanup by the <see cref="IViewManager"/>
         /// subclass.
         /// </summary>
         /// <param name="reactContext">The react context.</param>

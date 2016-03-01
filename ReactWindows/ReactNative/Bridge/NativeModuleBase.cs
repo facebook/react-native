@@ -15,7 +15,7 @@ namespace ReactNative.Bridge
     /// 
     /// Native methods are exposed to JavaScript with the
     /// <see cref="ReactMethodAttribute"/> annotation. These methods may only
-    /// use arguments that can be parsed by <see cref="JToken.ToObject{T}"/> or
+    /// use arguments that can be parsed by <see cref="JToken.ToObject{T}()"/> or
     /// <see cref="ICallback"/>, which maps from a JavaScript function and can
     /// be used only as a last parameter, or in the case of success and error
     /// callback pairs, the last two arguments respectively.

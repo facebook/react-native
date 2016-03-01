@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
-using ReactNative.Animation;
 using ReactNative.Bridge;
 using ReactNative.Touch;
 using ReactNative.Tracing;
 using ReactNative.UIManager.LayoutAnimation;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Windows.Foundation;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -17,10 +15,10 @@ namespace ReactNative.UIManager
     /// <summary>
     /// Delegate of <see cref="UIManagerModule"/> that owns the native view
     /// hierarchy and mapping between native view names used in JavaScript and
-    /// corresponding instances of <see cref="ViewManager"/>. The 
+    /// corresponding instances of <see cref="IViewManager"/>. The 
     /// <see cref="UIManagerModule"/> communicates with this class by it's
     /// public interface methods:
-    /// - <see cref="UpdateProperties(int, string, ReactStylesDiffMap)"/>
+    /// - <see cref="UpdateProperties(int, ReactStylesDiffMap)"/>
     /// - <see cref="UpdateLayout(int, int, int, int, int, int)"/>
     /// - <see cref="CreateView(ThemedReactContext, int, string, ReactStylesDiffMap)"/>
     /// - <see cref="ManageChildren(int, int[], ViewAtIndex[], int[])"/>
@@ -30,7 +28,7 @@ namespace ReactNative.UIManager
     /// All native view management methods listed above must be called from the
     /// dispatcher thread.
     /// 
-    /// The <see cref="ReactContext"/> instnace that is passed to views that
+    /// The <see cref="ReactContext"/> instance that is passed to views that
     /// this manager creates differs from the one that we pass to the
     /// constructor. Instead we wrap the provided instance of 
     /// <see cref="ReactContext"/> in an instance of <see cref="ThemedReactContext"/>
@@ -335,7 +333,7 @@ namespace ReactNative.UIManager
         /// </summary>
         /// <param name="reactTag">The view tag.</param>
         /// <param name="touchX">The x-coordinate of the touch event.</param>
-        /// <param name="touchX">The y-coordinate of the touch event.</param>
+        /// <param name="touchY">The y-coordinate of the touch event.</param>
         /// <returns>The view target.</returns>
         public int FindTargetForTouch(int reactTag, double touchX, double touchY)
         {

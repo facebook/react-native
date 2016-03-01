@@ -18,7 +18,7 @@ namespace ReactNative.Modules.Toast
 
         static async Task<XmlDocument> MakeDoc(string content, Durations duration = Durations.@short)
         {
-            /// TODO: alt templates: https://msdn.microsoft.com/en-us/library/windows/apps/hh761494.aspx
+            // TODO: alt templates: https://msdn.microsoft.com/en-us/library/windows/apps/hh761494.aspx
             using (var stream = new MemoryStream())
             using (var reader = new StreamReader(stream))
             {

@@ -6,7 +6,7 @@ namespace ReactNative.UIManager
 {
     /// <summary>
     /// Class that stores the mapping between the native view name used in
-    /// JavaScript and the instance of <see cref="ViewManager"/>.
+    /// JavaScript and the instance of <see cref="IViewManager"/>.
     /// </summary>
     public class ViewManagerRegistry
     {

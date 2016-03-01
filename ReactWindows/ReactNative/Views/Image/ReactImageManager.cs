@@ -10,9 +10,11 @@ using Windows.UI.Xaml.Media.Imaging;
 namespace ReactNative.Views.Image
 {
     /// <summary>
-    /// The view manager responsible for rendering native <see cref="ImageControl"/>.
-    /// TODO: fadeDuration animation support?
+    /// The view manager responsible for rendering native images.
     /// </summary>
+    /// <remarks>
+    /// TODO: fadeDuration animation support?
+    /// </remarks>
     public class ReactImageManager : SimpleViewManager<Border>
     {
         private const string ReactClass = "RCTImageView";
@@ -51,8 +53,8 @@ namespace ReactNative.Views.Image
         /// <summary>
         /// Sets the <see cref="ImageBrush"/> source for the background of a <see cref="Border"/>.
         /// </summary>
-        /// <param name="view">The text input box control.</param>
-        /// <param name="degrees">The text alignment.</param>
+        /// <param name="view">The image view instance.</param>
+        /// <param name="sourceMap">The source map.</param>
         [ReactProperty(PROP_SOURCE)]
         public void SetSource(Border view, Dictionary<string, string> sourceMap)
         {
@@ -70,7 +72,7 @@ namespace ReactNative.Views.Image
         /// <summary>
         /// The border radius of the <see cref="ReactRootView"/>.
         /// </summary>
-        /// <param name="view">The view panel.</param>
+        /// <param name="view">The image view instance.</param>
         /// <param name="radius">The border radius value.</param>
         [ReactProperty("borderRadius")]
         public void SetBorderRadius(Border view, double radius)
@@ -79,10 +81,10 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
-        /// Set the border color of the <see cref="ReactPanel"/>.
+        /// Set the border color of the image view.
         /// </summary>
-        /// <param name="view">The border panel.</param>
-        /// <param name="color">The color hex code.</param>
+        /// <param name="view">The image view instance.</param>
+        /// <param name="color">The masked color value.</param>
         [ReactProperty("borderColor", CustomType = "Color")]
         public void SetBorderColor(Border view, uint? color)
         {
@@ -97,8 +99,8 @@ namespace ReactNative.Views.Image
         /// <summary>
         /// Set the alpha tint color of the <see cref="Border"/> background.
         /// </summary>
-        /// <param name="view">The border panel.</param>
-        /// <param name="color">The color hex code.</param>
+        /// <param name="view">The image view instance.</param>
+        /// <param name="color">The masked color value.</param>
         [ReactProperty("tintColor", CustomType = "Color")]
         public void SetTintColor(Border view, uint? color)
         {
@@ -111,7 +113,7 @@ namespace ReactNative.Views.Image
         /// <summary>
         /// Sets the background image effect of the border depending on any tinting requirements.
         /// </summary>
-        /// <param name="view">The native <see cref="Border"/> that requires any background effects.</param>
+        /// <param name="view">The image view instance.</param>
         protected override void OnAfterUpdateTransaction(Border view)
         {
             var element = view.Background as ImageBrush;
@@ -126,9 +128,9 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
-        /// Sets the border thickness of the <see cref="ReactPanel"/>.
+        /// Sets the border thickness of the image view.
         /// </summary>
-        /// <param name="view">The view panel.</param>
+        /// <param name="view">The image view instance.</param>
         /// <param name="index">The property index.</param>
         /// <param name="width">The border width in pixels.</param>
         [ReactPropertyGroup(
@@ -144,12 +146,12 @@ namespace ReactNative.Views.Image
         }
 
         /// <summary>
-        /// Called when the <see cref="Border"/> is detached from view hierarchy and allows for 
-        /// additional cleanup by the <see cref="ViewManager{Border}"/>
-        /// subclass. Unregister all event handlers for the <see cref="Border"/>.
+        /// Called when the image view. is detached from view hierarchy and allows for 
+        /// additional cleanup by the <see cref="ReactImageManager"/>.
+        /// subclass.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The <see cref="Border"/>.</param>
+        /// <param name="view">The image view instance.</param>
         public override void OnDropViewInstance(ThemedReactContext reactContext, Border view)
         {
             view.Loaded -= OnInterceptImageLoadedEvent;
@@ -170,7 +172,7 @@ namespace ReactNative.Views.Image
         /// Installing the textchanged event emitter on the <see cref="TextInput"/> Control.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
-        /// <param name="view">The <see cref="TextBox"/> view instance.</param>
+        /// <param name="view">The image view instance.</param>
         protected override void AddEventEmitters(ThemedReactContext reactContext, Border view)
         {
             view.Loading += OnInterceptImageLoadingEvent;
@@ -181,7 +183,7 @@ namespace ReactNative.Views.Image
         /// The <see cref="Border"/> event interceptor for image load start events for the native control.
         /// </summary>
         /// <param name="sender">The source sender view.</param>
-        /// <param name="event">The received event arguments.</param>
+        /// <param name="e">The received event arguments.</param>
         protected void OnInterceptImageLoadingEvent(FrameworkElement sender, object e)
         {
             var border = (Border)sender;
@@ -202,7 +204,7 @@ namespace ReactNative.Views.Image
         /// The <see cref="Border"/> event interceptor for image load completed events for the native control.
         /// </summary>
         /// <param name="sender">The source sender view.</param>
-        /// <param name="event">The received event arguments.</param>
+        /// <param name="e">The received event arguments.</param>
         protected void OnInterceptImageLoadedEvent(object sender, RoutedEventArgs e)
         {
             var senderImage = (Border)sender;

@@ -68,7 +68,8 @@ namespace ReactNative.UIManager.LayoutAnimation
         }
 
         /// <summary>
-        /// Create the animation <see cref="GetAnimator"/> and kick off the binded <see cref="Timeline"/>(s). 
+        /// Applies a layout animation for the given view on the transition to
+        /// the given coordinates and dimensions.
         /// </summary>
         /// <param name="view">The native view to animate.</param>
         /// <param name="x">The new X position to animate to.</param>

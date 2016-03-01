@@ -17,9 +17,8 @@ namespace ReactNative.UIManager.Events
     /// dispatch.
     /// 
     /// This class differs from the Android implementation of React as there is
-    /// no analogy to the choreographer in UWP. Instead, it is anticipated that
-    /// some other component will periodically call <see cref="OnBatchComplete"/>
-    /// to actually send the events to JavaScript.
+    /// no analogy to the choreographer in UWP. Instead, there is a self-managed
+    /// callback that coalesces events on the JavaScript thread.
     /// 
     /// If JavaScript is taking a long time processing events, then the UI
     /// events generated on the dispatcher thread can be coalesced into fewer

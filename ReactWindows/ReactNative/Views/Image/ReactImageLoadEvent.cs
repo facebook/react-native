@@ -9,10 +9,29 @@ namespace ReactNative.Views.Image
     /// </summary>
     public class ReactImageLoadEvent : Event
     {
+        /// <summary>
+        /// The event identifier for image load errors.
+        /// </summary>
         public const int OnError = 1;
+
+        /// <summary>
+        /// The event identifier for image load.
+        /// </summary>
         public const int OnLoad = 2;
+
+        /// <summary>
+        /// The event identifier for image load end.
+        /// </summary>
         public const int OnLoadEnd = 3;
+
+        /// <summary>
+        /// The event identifier for image load start.
+        /// </summary>
         public const int OnLoadStart = 4;
+
+        /// <summary>
+        /// The event identifier for image load progress.
+        /// </summary>
         public const int OnProgress = 5;
 
         private readonly int _eventType;

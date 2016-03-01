@@ -83,6 +83,9 @@ namespace ReactNative.Modules.Core
             }
         }
 
+        /// <summary>
+        /// Dismisses any active exception dialogs.
+        /// </summary>
         [ReactMethod]
         public void dismissRedbox()
         {

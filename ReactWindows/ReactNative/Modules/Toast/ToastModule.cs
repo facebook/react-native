@@ -6,14 +6,15 @@ namespace ReactNative.Modules.Toast
 {
     enum Durations : int { @short, @long }
 
-    public sealed class ToastModule : ReactContextNativeModuleBase
+    sealed class ToastModule : ReactContextNativeModuleBase
     {
         const string DURATION_SHORT_KEY = "SHORT";
         const string DURATION_LONG_KEY = "LONG";
 
         public ToastModule(ReactContext reactContext)
             : base(reactContext)
-        { }
+        {
+        }
 
         public override string Name
         {

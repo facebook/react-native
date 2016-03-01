@@ -1,8 +1,7 @@
 ﻿namespace ReactNative.UIManager.LayoutAnimation
 {
     /// <summary>
-    /// Base Layout animation manager responsible for establishing the basic
-    /// animation <see cref="Storyboard"/>.
+    /// Layout animation manager for newly created views.
     /// </summary>
     class LayoutCreateAnimation : BaseLayoutAnimation
     {

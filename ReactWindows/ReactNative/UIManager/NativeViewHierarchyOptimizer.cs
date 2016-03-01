@@ -53,6 +53,11 @@ namespace ReactNative.UIManager
         private readonly ShadowNodeRegistry _shadowNodeRegistry;
         private readonly IDictionary<int, bool> _tagsWithLayoutVisited;
 
+        /// <summary>
+        /// Instantiates a <see cref="NativeViewHierarchyOptimizer"/>.
+        /// </summary>
+        /// <param name="uiViewOperationQueue">The UI view operation queue.</param>
+        /// <param name="shadowNodeRegistry">The shadow node registry.</param>
         public NativeViewHierarchyOptimizer(
             UIViewOperationQueue uiViewOperationQueue,
             ShadowNodeRegistry shadowNodeRegistry)

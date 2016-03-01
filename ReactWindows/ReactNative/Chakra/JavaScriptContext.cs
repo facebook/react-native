@@ -357,7 +357,6 @@
         /// <summary>
         ///     Starts debugging in the context.
         /// </summary>
-        /// <param name="debugApplication">The debug application to use for debugging.</param>
         public static void StartDebugging()
         {
             Native.ThrowIfError(Native.JsStartDebugging());

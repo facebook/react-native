@@ -1,10 +1,21 @@
 ﻿using Facebook.CSSLayout;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace ReactNative.UIManager
 {
+    /// <summary>
+    /// Base node class for representing the virtual tree of React nodes.
+    /// Shadow nodes are used primarily for layout, therefore it extends
+    /// <see cref="CSSNode"/> to allow that. Instances of this class receive 
+    /// property updates from JavaScript via the <see cref="UIManagerModule"/>.
+    /// 
+    /// This class allows for the native view hierarchy not to be an exact copy
+    /// of the hierarchy received from JavaScript by keeping track of both
+    /// JavaScript children (e.g., <see cref="CSSNode.ChildCount"/>) and
+    /// separately native children (e.g., <see cref="NativeChildCount"/>). See
+    /// <see cref="NativeViewHierarchyOptimizer"/> for more information.
+    /// </summary>
     public class ReactShadowNode : CSSNode
     {
         private ReactShadowNode _rootNode;
