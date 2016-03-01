@@ -136,24 +136,17 @@ function startServerInNewWindow() {
   );
 
   if (process.platform === 'darwin') {
-    if (!yargV.open) {
-      return child_process.spawnSync('open', [launchPackagerScript]);
+    if (yargV.open) {
+      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript]);
     }
-    return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript]);
+    return child_process.spawnSync('open', [launchPackagerScript]);
 
   } else if (process.platform === 'linux') {
-    if (!yargV.open){
-      return child_process.spawn(
-        'xterm',
-        ['-e', 'sh', launchPackagerScript],
-        {detached: true}
-      );
+    if (yargV.open){
+      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
     }
-    return child_process.spawn(
-      yargV.open,
-      ['-e', 'sh', launchPackagerScript],
-      {detached: true}
-    );
+    return child_process.spawn('xterm',['-e', 'sh', launchPackagerScript],{detached: true});
+
   } else if (/^win/.test(process.platform)) {
     console.log(chalk.yellow('Starting the packager in a new window ' +
       'is not supported on Windows yet.\nPlease start it manually using ' +
