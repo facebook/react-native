@@ -238,4 +238,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   _methodQueue = nil;
 }
 
+- (NSString *)description
+{
+  return [NSString stringWithFormat:@"<%@: %p; name=\"%@\">", [self class], self, self.name];
+}
+
 @end
