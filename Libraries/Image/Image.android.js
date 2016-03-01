@@ -161,6 +161,10 @@ var Image = React.createClass({
       console.warn('source.uri should not be an empty string');
     }
 
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
+    }
+
     if (source && source.uri) {
       var {width, height} = source;
       var style = flattenStyle([{width, height}, styles.base, this.props.style]);
