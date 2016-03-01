@@ -72,6 +72,7 @@ public:
   virtual void handleMemoryPressureCritical() {
     handleMemoryPressureModerate();
   };
+  virtual void destroy() {};
   virtual ~JSExecutor() {};
 };
 

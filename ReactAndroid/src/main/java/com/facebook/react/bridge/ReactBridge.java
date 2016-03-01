@@ -87,6 +87,7 @@ public class ReactBridge extends Countable {
   public native void stopProfiler(String title, String filename);
   private native void handleMemoryPressureModerate();
   private native void handleMemoryPressureCritical();
+  public native void destroy();
 
   /**
    * This method will return a long representing the underlying JSGlobalContextRef pointer or

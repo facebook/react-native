@@ -74,6 +74,11 @@ public:
    * TODO: get rid of isEndOfBatch
    */
   void callNativeModules(const std::string& callJSON, bool isEndOfBatch);
+
+  /**
+   * Synchronously tears down the bridge and the main executor.
+   */
+  void destroy();
 private:
   Callback m_callback;
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),

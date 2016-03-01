@@ -46,9 +46,4 @@ namespace JSLogging {
   extern JSCNativeHook nativeHook;
 };
 
-namespace Exceptions {
-  using HandleUncaughtException = std::function<void()>;
-  extern HandleUncaughtException handleUncaughtException;
-};
-
 } }

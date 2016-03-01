@@ -126,17 +126,17 @@ JSCExecutor::JSCExecutor(
 }
 
 JSCExecutor::~JSCExecutor() {
-  try {
-    *m_isDestroyed = true;
-    if (m_messageQueueThread->isOnThread()) {
+  CHECK(*m_isDestroyed) << "JSCExecutor::destroy() must be called before its destructor!";
+}
+
+void JSCExecutor::destroy() {
+  *m_isDestroyed = true;
+  if (m_messageQueueThread->isOnThread()) {
+    terminateOnJSVMThread();
+  } else {
+    m_messageQueueThread->runOnQueueSync([this] () {
       terminateOnJSVMThread();
-    } else {
-      m_messageQueueThread->runOnQueueSync([this] () {
-        terminateOnJSVMThread();
-      });
-    }
-  } catch (...) {
-    Exceptions::handleUncaughtException();
+    });
   }
 }
 
@@ -392,6 +392,7 @@ void JSCExecutor::receiveMessageFromOwner(const std::string& msgString) {
 void JSCExecutor::terminateOwnedWebWorker(int workerId) {
   auto worker = m_ownedWorkers.at(workerId).getExecutor();
   std::shared_ptr<MessageQueueThread> workerMQT = worker->m_messageQueueThread;
+  worker->destroy();
   m_ownedWorkers.erase(workerId);
   workerMQT->quitSynchronous();
 }
