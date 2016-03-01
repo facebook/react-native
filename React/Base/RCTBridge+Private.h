@@ -55,6 +55,11 @@
 @interface RCTBridge (RCTBatchedBridge)
 
 /**
+ * Used for unit testing, to detect when executor has been invalidated.
+ */
+@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+
+/**
  * Used by RCTModuleData to register the module for frame updates after it is
  * lazily initialized.
  */

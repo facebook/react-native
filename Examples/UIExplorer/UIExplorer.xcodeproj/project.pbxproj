@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1300627E1B59179B0043FE5A /* RCTGzipTests.m */; };
+		13129DD41C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */; };
 		1323F1891C04AB9F0091BED0 /* bunny.png in Resources */ = {isa = PBXBuildFile; fileRef = 1323F1851C04AB9F0091BED0 /* bunny.png */; };
 		1323F18A1C04AB9F0091BED0 /* flux@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1323F1861C04AB9F0091BED0 /* flux@3x.png */; };
 		1323F18B1C04AB9F0091BED0 /* hawk.png in Resources */ = {isa = PBXBuildFile; fileRef = 1323F1871C04AB9F0091BED0 /* hawk.png */; };
@@ -18,6 +19,7 @@
 		1341802C1AA9178B003F314A /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341802B1AA91779003F314A /* libRCTNetwork.a */; };
 		134454601AAFCABD003F0779 /* libRCTAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1344545A1AAFCAAE003F0779 /* libRCTAdSupport.a */; };
 		134A8A2A1AACED7A00945AAE /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 134A8A251AACED6A00945AAE /* libRCTGeolocation.a */; };
+		134CB92A1C85A38800265FA6 /* RCTModuleInitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */; };
 		138D6A181B53CD440074A87E /* RCTShadowViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 138D6A161B53CD440074A87E /* RCTShadowViewTests.m */; };
 		138DEE241B9EDFB6007F4EA5 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 138DEE091B9EDDDB007F4EA5 /* libRCTCameraRoll.a */; };
 		1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */; };
@@ -178,6 +180,7 @@
 /* Begin PBXFileReference section */
 		004D289E1AAF61C70097A701 /* UIExplorerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UIExplorerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1300627E1B59179B0043FE5A /* RCTGzipTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGzipTests.m; sourceTree = "<group>"; };
+		13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitNotificationRaceTests.m; sourceTree = "<group>"; };
 		1323F1851C04AB9F0091BED0 /* bunny.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bunny.png; sourceTree = "<group>"; };
 		1323F1861C04AB9F0091BED0 /* flux@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flux@3x.png"; sourceTree = "<group>"; };
 		1323F1871C04AB9F0091BED0 /* hawk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hawk.png; sourceTree = "<group>"; };
@@ -188,6 +191,7 @@
 		134180261AA91779003F314A /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = ../../Libraries/Network/RCTNetwork.xcodeproj; sourceTree = "<group>"; };
 		134454551AAFCAAE003F0779 /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = ../../Libraries/AdSupport/RCTAdSupport.xcodeproj; sourceTree = "<group>"; };
 		134A8A201AACED6A00945AAE /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = ../../Libraries/Geolocation/RCTGeolocation.xcodeproj; sourceTree = "<group>"; };
+		134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitTests.m; sourceTree = "<group>"; };
 		138D6A161B53CD440074A87E /* RCTShadowViewTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTShadowViewTests.m; sourceTree = "<group>"; };
 		138DEE021B9EDDDB007F4EA5 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = ../../Libraries/CameraRoll/RCTCameraRoll.xcodeproj; sourceTree = "<group>"; };
 		1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleMethodTests.m; sourceTree = "<group>"; };
@@ -422,6 +426,8 @@
 				144D21231B2204C5006DB32B /* RCTImageUtilTests.m */,
 				13DB03471B5D2ED500C27245 /* RCTJSONTests.m */,
 				13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */,
+				134CB9291C85A38800265FA6 /* RCTModuleInitTests.m */,
+				13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */,
 				1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */,
 				138D6A161B53CD440074A87E /* RCTShadowViewTests.m */,
 				1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */,
@@ -882,7 +888,9 @@
 				1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */,
 				1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */,
 				1497CFAE1B21F5E400C1F8F2 /* RCTJSCExecutorTests.m in Sources */,
+				13129DD41C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m in Sources */,
 				1497CFAD1B21F5E400C1F8F2 /* RCTBridgeTests.m in Sources */,
+				134CB92A1C85A38800265FA6 /* RCTModuleInitTests.m in Sources */,
 				1497CFB11B21F5E400C1F8F2 /* RCTEventDispatcherTests.m in Sources */,
 				1497CFB31B21F5E400C1F8F2 /* RCTUIManagerTests.m in Sources */,
 				13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */,
