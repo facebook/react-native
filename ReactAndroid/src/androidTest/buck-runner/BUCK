@@ -1,20 +1,8 @@
 include_defs('//ReactAndroid/DEFS')
 
-
-android_instrumentation_test(
-  name = 'react-oss-tests',
-  apk = ':react-oss-test-apk',
-)
-
-android_instrumentation_apk(
-  name = 'react-oss-test-apk',
-  manifest = 'AndroidManifest.xml',
-  apk = ':react-instrumentation-tests-binary',
-  deps = [
-    react_native_integration_tests_target('java/com/facebook/react/tests:tests'),
-  ],
-)
-
+# We are running instrumentation tests in simple mode: app code and instrumentation are in the samle APK
+# Currently you need to run thesse commands to make them run:
+# 
 # node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 # gradle :ReactAndroid:packageReactNdkLibsForBuck
 # buck install ReactAndroid/src/androidTest/buck-runner:react-instrumentation-tests-binary
