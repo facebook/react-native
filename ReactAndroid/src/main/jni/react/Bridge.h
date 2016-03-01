@@ -7,6 +7,8 @@
 #include <map>
 #include <vector>
 
+#include "ExecutorToken.h"
+#include "ExecutorTokenFactory.h"
 #include "Executor.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
@@ -22,14 +24,30 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
+class Bridge;
+class ExecutorRegistration {
+public:
+  ExecutorRegistration(
+      std::unique_ptr<JSExecutor> executor,
+      std::shared_ptr<MessageQueueThread> executorMessageQueueThread) :
+    executor_(std::move(executor)),
+    messageQueueThread_(executorMessageQueueThread) {}
+
+  std::unique_ptr<JSExecutor> executor_;
+  std::shared_ptr<MessageQueueThread> messageQueueThread_;
+};
+
 class Bridge {
 public:
-  typedef std::function<void(std::vector<MethodCall>, bool isEndOfBatch)> Callback;
+  typedef std::function<void(ExecutorToken executorToken, std::vector<MethodCall>, bool isEndOfBatch)> Callback;
 
   /**
    * This must be called on the main JS thread.
    */
-  Bridge(JSExecutorFactory* jsExecutorFactory, Callback callback);
+  Bridge(
+      JSExecutorFactory* jsExecutorFactory,
+      std::unique_ptr<ExecutorTokenFactory> executorTokenFactory,
+      Callback callback);
   virtual ~Bridge();
 
   /**
@@ -37,6 +55,7 @@ public:
    * arguments in JS.
    */
   void callFunction(
+    ExecutorToken executorToken,
     const double moduleId,
     const double methodId,
     const folly::dynamic& args,
@@ -45,7 +64,7 @@ public:
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(const double callbackId, const folly::dynamic& args);
+  void invokeCallback(ExecutorToken executorToken, const double callbackId, const folly::dynamic& args);
 
   /**
    * Starts the JS application from an "bundle", i.e. a JavaScript file that
@@ -71,9 +90,38 @@ public:
   void handleMemoryPressureCritical();
 
   /**
+   * Invokes a set of native module calls on behalf of the given executor.
+   *
    * TODO: get rid of isEndOfBatch
    */
-  void callNativeModules(const std::string& callJSON, bool isEndOfBatch);
+  void callNativeModules(JSExecutor& executor, const std::string& callJSON, bool isEndOfBatch);
+
+  /**
+   * Returns the ExecutorToken corresponding to the main JSExecutor.
+   */
+  ExecutorToken getMainExecutorToken() const;
+
+  /**
+   * Registers the given JSExecutor which runs on the given MessageQueueThread
+   * with the Bridge. Part of this registration is transfering ownership of this
+   * JSExecutor to the Bridge for the duration of the registration.
+   *
+   * Returns a ExecutorToken which can be used to refer to this JSExecutor
+   * in the Bridge.
+   */
+  ExecutorToken registerExecutor(
+      std::unique_ptr<JSExecutor> executor,
+      std::shared_ptr<MessageQueueThread> executorMessageQueueThread);
+
+  /**
+   * Unregisters a JSExecutor that was previously registered with this Bridge
+   * using registerExecutor. Use the ExecutorToken returned from this
+   * registerExecutor call. This method will return ownership of the unregistered
+   * executor to the caller for it to retain or tear down.
+   *
+   * Returns ownership of the unregistered executor.
+   */
+  std::unique_ptr<JSExecutor> unregisterExecutor(ExecutorToken executorToken);
 
   /**
    * Synchronously tears down the bridge and the main executor.
@@ -85,11 +133,19 @@ private:
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
-  std::unique_ptr<JSExecutor> m_mainExecutor;
-  std::shared_ptr<MessageQueueThread> m_mainJSMessageQueueThread;
+  JSExecutor* m_mainExecutor;
+  std::unique_ptr<ExecutorToken> m_mainExecutorToken;
+  std::unique_ptr<ExecutorTokenFactory> m_executorTokenFactory;
+  std::unordered_map<JSExecutor*, ExecutorToken> m_executorTokenMap;
+  std::unordered_map<ExecutorToken, std::unique_ptr<ExecutorRegistration>> m_executorMap;
+  std::mutex m_registrationMutex;
   #ifdef WITH_FBSYSTRACE
   std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT();
   #endif
+
+  MessageQueueThread* getMessageQueueThread(const ExecutorToken& executorToken);
+  JSExecutor* getExecutor(const ExecutorToken& executorToken);
+  inline ExecutorToken getTokenForExecutor(JSExecutor& executor);
 };
 
 } }
