@@ -549,6 +549,13 @@ var apps = [
     author: 'Alexey Ledak',
   },
   {
+    name: 'TeamWarden',
+    icon: 'http://a1.mzstatic.com/eu/r30/Purple69/v4/09/37/61/0937613a-46e3-3278-5457-5de49a4ee9ab/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/gb/app/teamwarden/id1052570507?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.teamwarden',
+    author: 'nittygritty.net',
+  },
+  {
     name: 'Text Blast',
     icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/4f/29/58/4f2958a1-7f35-9260-6340-c67ac29d7740/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/text-blast-2016/id1023852862?mt=8',
