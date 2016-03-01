@@ -55,7 +55,7 @@ test:
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     - buck/bin/buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
-    - adb shell am instrument -w com.facebook.react.tests/android.support.test.runner.AndroidJUnitRunner
+    - ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 
     # Deprecated: run tests with Gradle
     #- ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
