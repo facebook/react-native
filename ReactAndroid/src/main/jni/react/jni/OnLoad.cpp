@@ -3,7 +3,6 @@
 #include <android/asset_manager_jni.h>
 #include <android/input.h>
 #include <fb/log.h>
-#include <fb/glog_init.h>
 #include <folly/json.h>
 #include <jni/Countable.h>
 #include <jni/Environment.h>
@@ -652,6 +651,15 @@ static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
   setCountableForJava(env, obj, std::move(bridge));
 }
 
+static void destroy(JNIEnv* env, jobject jbridge) {
+  auto bridge = extractRefPtr<CountableBridge>(env, jbridge);
+  try {
+    bridge->destroy();
+  } catch (...) {
+    translatePendingCppExceptionToJavaException();
+  }
+}
+
 static void loadApplicationScript(
     const RefPtr<CountableBridge>& bridge,
     const std::string& script,
@@ -820,13 +828,21 @@ std::string getDeviceCacheDir() {
 }
 
 struct CountableJSCExecutorFactory : CountableJSExecutorFactory  {
+public:
+  CountableJSCExecutorFactory(folly::dynamic jscConfig) : m_jscConfig(jscConfig) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override {
-    return JSCExecutorFactory(getDeviceCacheDir()).createJSExecutor(bridge);
+    return JSCExecutorFactory(getDeviceCacheDir(), m_jscConfig).createJSExecutor(bridge);
   }
+
+private:
+  folly::dynamic m_jscConfig;
 };
 
-static void createJSCExecutor(JNIEnv *env, jobject obj) {
-  auto executor = createNew<CountableJSCExecutorFactory>();
+static void createJSCExecutor(JNIEnv *env, jobject obj, jobject jscConfig) {
+  auto nativeMap = extractRefPtr<NativeMap>(env, jscConfig);
+  exceptions::throwIfObjectAlreadyConsumed(nativeMap, "Map to push already consumed");
+  auto executor = createNew<CountableJSCExecutorFactory>(std::move(nativeMap->map));
+  nativeMap->isConsumed = true;
   setCountableForJava(env, obj, std::move(executor));
 }
 
@@ -846,7 +862,6 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
-    facebook::gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logMarker = bridge::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;
@@ -922,7 +937,8 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     });
 
     registerNatives("com/facebook/react/bridge/JSCJavaScriptExecutor", {
-      makeNativeMethod("initialize", executors::createJSCExecutor),
+      makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/WritableNativeMap;)V",
+        executors::createJSCExecutor),
     });
 
     registerNatives("com/facebook/react/bridge/ProxyJavaScriptExecutor", {
@@ -940,6 +956,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     registerNatives("com/facebook/react/bridge/ReactBridge", {
         makeNativeMethod("initialize", "(Lcom/facebook/react/bridge/JavaScriptExecutor;Lcom/facebook/react/bridge/ReactCallback;Lcom/facebook/react/bridge/queue/MessageQueueThread;)V", bridge::create),
+        makeNativeMethod("destroy", bridge::destroy),
         makeNativeMethod(
           "loadScriptFromAssets", "(Landroid/content/res/AssetManager;Ljava/lang/String;)V",
           bridge::loadScriptFromAssets),

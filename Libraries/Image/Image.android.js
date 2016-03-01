@@ -121,14 +121,14 @@ var Image = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactNativeViewAttributes.RKView
+    validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
   _updateViewConfig: function(props) {
     if (props.children) {
       this.viewConfig = {
         uiViewClassName: 'RCTView',
-        validAttributes: ReactNativeViewAttributes.RKView,
+        validAttributes: ReactNativeViewAttributes.RCTView,
       };
     } else {
       this.viewConfig = {

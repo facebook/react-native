@@ -24,6 +24,8 @@ var {
   TouchableHighlight,
   TouchableOpacity,
   UIManager,
+  Platform,
+  TouchableNativeFeedback,
   View,
 } = React;
 
@@ -55,7 +57,7 @@ exports.examples = [
             activeOpacity={1}
             animationVelocity={0}
             underlayColor="rgb(210, 230, 255)"
-            onPress={() => console.log('custom THW text - hightlight')}>
+            onPress={() => console.log('custom THW text - highlight')}>
             <View style={styles.wrapperCustom}>
               <Text style={styles.text}>
                 Tap Here For Custom Highlight!
@@ -317,7 +319,7 @@ var TouchableDisabled = React.createClass({
           animationVelocity={0}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
-          onPress={() => console.log('custom THW text - hightlight')}>
+          onPress={() => console.log('custom THW text - highlight')}>
           <Text style={styles.disabledButton}>
             Disabled TouchableHighlight
           </Text>
@@ -328,11 +330,38 @@ var TouchableDisabled = React.createClass({
           animationVelocity={0}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
-          onPress={() => console.log('custom THW text - hightlight')}>
+          onPress={() => console.log('custom THW text - highlight')}>
           <Text style={styles.button}>
             Disabled TouchableHighlight
           </Text>
         </TouchableHighlight>
+
+        {Platform.OS === 'android' &&
+          <TouchableNativeFeedback
+            style={[styles.row, styles.block]}
+            onPress={() => console.log('custom TNF has been clicked')}
+            background={TouchableNativeFeedback.SelectableBackground()}>
+            <View>
+              <Text style={[styles.button, styles.nativeFeedbackButton]}>
+                Enabled TouchableNativeFeedback
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
+        }
+
+        {Platform.OS === 'android' &&
+          <TouchableNativeFeedback
+            disabled={true}
+            style={[styles.row, styles.block]}
+            onPress={() => console.log('custom TNF has been clicked')}
+            background={TouchableNativeFeedback.SelectableBackground()}>
+            <View>
+              <Text style={[styles.disabledButton, styles.nativeFeedbackButton]}>
+                Disabled TouchableNativeFeedback
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
+        }
       </View>
     );
   }
@@ -365,6 +394,10 @@ var styles = StyleSheet.create({
   disabledButton: {
     color: '#007AFF',
     opacity: 0.5,
+  },
+  nativeFeedbackButton: {
+    textAlign: 'center',
+    margin: 10,
   },
   hitSlopButton: {
     color: 'white',

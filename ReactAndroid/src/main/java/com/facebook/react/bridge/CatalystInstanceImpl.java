@@ -71,6 +71,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptModulesConfig jsModulesConfig,
       final JSBundleLoader jsBundleLoader,
       NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+    FLog.d(ReactConstants.TAG, "Initializing React Bridge.");
     mReactQueueConfiguration = ReactQueueConfigurationImpl.create(
         ReactQueueConfigurationSpec,
         new NativeExceptionHandler());
@@ -234,6 +235,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         new Runnable() {
           @Override
           public void run() {
+            mBridge.destroy();
             mBridge.dispose();
             bridgeDisposeFuture.set(null);
           }

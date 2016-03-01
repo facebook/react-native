@@ -4,7 +4,6 @@ include_defs('//ReactAndroid/DEFS')
 SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
-  FBGLOGINIT_TARGET,
   '//native/jni:jni',
   '//native/third-party/android-ndk:android',
   '//xplat/folly:molly',
@@ -16,10 +15,17 @@ def jni_library(**kwargs):
     visibility = [
       'PUBLIC',
     ],
-    deps = DEPS + [
+    deps = DEPS + JSC_DEPS + [
       react_native_target('jni/react:react'),
-      '//native/third-party/jsc:jsc',
-      '//native/third-party/jsc:jsc_legacy_profiler',
+    ],
+    **kwargs
+  )
+
+  cxx_library(
+    name='jni-internal',
+    visibility = [INTERNAL_APP],
+    deps = DEPS + JSC_INTERNAL_DEPS + [
+      react_native_target('jni/react:react-internal'),
     ],
     **kwargs
   )

@@ -197,8 +197,16 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
+  },
+  {
+    key: 'NavigationExperimentalLegacyNavigatorExample',
+    module: require('./NavigationExperimental/LegacyNavigator/LegacyNavigatorExample'),
   },
   {
     key: 'NetInfoExample',
