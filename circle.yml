@@ -46,7 +46,7 @@ test:
     #- buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
     # unit tests
-    - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
+    # - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
 
     # instrumentation tests
     # compile native libs with Gradle script
@@ -54,7 +54,8 @@ test:
         timeout: 360
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-    - buck/bin/buck test ReactAndroid/src/androidTest/java/com/facebook/react/tests
+    - buck install ReactAndroid/src/androidTest/buck-runner:react-instrumentation-tests-binary
+    - adb shell am instrument -w com.facebook.react.tests/android.support.test.runner.AndroidJUnitRunner
 
     # Deprecated: run tests with Gradle
     #- ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
