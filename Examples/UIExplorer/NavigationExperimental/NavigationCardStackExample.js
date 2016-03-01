@@ -33,35 +33,36 @@ class NavigationCardStackExample extends React.Component {
     this._renderScene = this._renderScene.bind(this);
     this._push = this._push.bind(this);
     this._pop = this._pop.bind(this);
+    this._toggleDirection = this._toggleDirection.bind(this);
   }
 
   render() {
     return (
       <NavigationCardStack
-        style={styles.main}
-        renderScene={this._renderScene}
+        direction={this.state.isHorizontal ? 'horizontal' : 'vertical'}
         navigationState={this.state.navigationState}
+        renderScene={this._renderScene}
+        style={styles.main}
       />
     );
   }
 
   _getInitialState() {
-    const route = {key: 'First Route'};
     const navigationState = {
       index: 0,
-      children: [route],
+      children: [{key: 'First Route'}],
     };
     return {
+      isHorizontal: true,
       navigationState,
     };
   }
 
   _push() {
     const state = this.state.navigationState;
-    const nextRoute = {key: 'Route ' + (state.index + 1)};
     const nextState = NavigationStateUtils.push(
       state,
-      nextRoute,
+      {key: 'Route ' + (state.index + 1)},
     );
     this.setState({
       navigationState: nextState,
@@ -83,7 +84,15 @@ class NavigationCardStackExample extends React.Component {
     return (
       <ScrollView style={styles.scrollView}>
         <NavigationExampleRow
-          text={JSON.stringify(props.navigationState)}
+          text={
+            this.state.isHorizontal ?
+            'direction = "horizontal"' :
+            'direction = "vertical"'
+          }
+          onPress={this._toggleDirection}
+        />
+        <NavigationExampleRow
+          text={'route = ' + props.navigationState.key}
         />
         <NavigationExampleRow
           text="Push Route"
@@ -99,6 +108,12 @@ class NavigationCardStackExample extends React.Component {
         />
       </ScrollView>
     );
+  }
+
+  _toggleDirection() {
+    this.setState({
+      isHorizontal: !this.state.isHorizontal,
+    });
   }
 }
 
