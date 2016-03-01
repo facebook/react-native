@@ -27,6 +27,13 @@ type MeasureOnSuccessCallback = (
   pageY: number
 ) => void
 
+type MeasureInWindowOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) => void
+
 type MeasureLayoutOnSuccessCallback = (
   left: number,
   top: number,
@@ -78,6 +85,28 @@ var NativeMethodsMixin = {
    */
   measure: function(callback: MeasureOnSuccessCallback) {
     UIManager.measure(
+      findNodeHandle(this),
+      mountSafeCallback(this, callback)
+    );
+  },
+
+  /**
+   * Determines the location of the given view in the window and returns the
+   * values via an async callback. If the React root view is embedded in
+   * another native view, this will give you the absolute coordinates. If
+   * successful, the callback will be called be called with the following
+   * arguments:
+   *
+   *  - x
+   *  - y
+   *  - width
+   *  - height
+   *
+   * Note that these measurements are not available until after the rendering
+   * has been completed in native.
+   */
+  measureInWindow: function(callback: MeasureInWindowOnSuccessCallback) {
+    UIManager.measureInWindow(
       findNodeHandle(this),
       mountSafeCallback(this, callback)
     );

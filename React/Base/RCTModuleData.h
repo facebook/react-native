@@ -37,6 +37,14 @@
  */
 - (void)finishSetupForInstance;
 
+/**
+ * Calls `constantsToExport` on the module and stores the result. Note that
+ * this will init the module if it has not already been created. This method
+ * can be called on any thread, but may block the main thread briefly if the
+ * module implements `constantsToExport`.
+ */
+- (void)gatherConstants;
+
 @property (nonatomic, strong, readonly) Class moduleClass;
 @property (nonatomic, copy, readonly) NSString *name;
 

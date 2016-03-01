@@ -15,7 +15,7 @@
 
 var React = require('react-native');
 var {
-  IntentAndroid,
+  Linking,
   StyleSheet,
   Text,
   TouchableNativeFeedback,
@@ -30,9 +30,9 @@ var OpenURLButton = React.createClass({
   },
 
   handleClick: function() {
-    IntentAndroid.canOpenURL(this.props.url, (supported) => {
+    Linking.canOpenURL(this.props.url).then(supported => {
       if (supported) {
-        IntentAndroid.openURL(this.props.url);
+        Linking.openURL(this.props.url);
       } else {
         console.log('Don\'t know how to open URI: ' + this.props.url);
       }
@@ -54,8 +54,8 @@ var OpenURLButton = React.createClass({
 var IntentAndroidExample = React.createClass({
 
   statics: {
-    title: 'IntentAndroid',
-    description: 'Shows how to use Android Intents to open URLs.',
+    title: 'Linking',
+    description: 'Shows how to use Linking to open URLs.',
   },
 
   render: function() {
@@ -64,7 +64,9 @@ var IntentAndroidExample = React.createClass({
         <OpenURLButton url={'https://www.facebook.com'} />
         <OpenURLButton url={'http://www.facebook.com'} />
         <OpenURLButton url={'http://facebook.com'} />
+        <OpenURLButton url={'fb://notifications'} />
         <OpenURLButton url={'geo:37.484847,-122.148386'} />
+        <OpenURLButton url={'tel:9876543210'} />
       </UIExplorerBlock>
     );
   },
