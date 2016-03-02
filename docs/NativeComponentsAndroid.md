@@ -86,7 +86,7 @@ Setter declaration requirements for methods annotated with `@ReactPropGroup` are
 
 ## 4. Register the `ViewManager`
 
-The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](native-modules-android.html), via the applications package member function `createViewManagers.`
+The final Java step is to register the ViewManager to the application, this happens in a similar way to [Native Modules](docs/native-modules-android.html), via the applications package member function `createViewManagers.`
 
 ```java
   @Override
