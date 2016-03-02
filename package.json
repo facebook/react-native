@@ -34,6 +34,7 @@
     },
     "modulePathIgnorePatterns": [
       "/node_modules/(?!react|fbjs|react-native|parse|react-transform-hmr|core-js|promise)/",
+      "node_modules/react/node_modules/fbjs/",
       "node_modules/react/lib/React.js",
       "node_modules/react/lib/ReactDOM.js",
       "node_modules/fbjs/lib/Map.js",
@@ -79,7 +80,8 @@
       "downstream/core/nativeRequestAnimationFrame.js",
       "downstream/core/toArray.js",
       "node_modules/jest-cli",
-      "node_modules/react/dist"
+      "node_modules/react/dist",
+      "/node_modules/fbjs/.*/__mocks__/"
     ],
     "testFileExtensions": [
       "js"
@@ -87,7 +89,8 @@
     "unmockedModulePathPatterns": [
       "promise",
       "source-map",
-      "fast-path"
+      "fast-path",
+      "fbjs"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
@@ -136,7 +139,7 @@
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
     "fast-path": "^1.1.0",
-    "fbjs": "^0.6.0",
+    "fbjs": "^0.7.2",
     "fbjs-scripts": "^0.4.0",
     "graceful-fs": "^4.1.2",
     "image-size": "^0.3.5",
