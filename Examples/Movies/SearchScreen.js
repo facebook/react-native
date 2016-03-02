@@ -15,32 +15,31 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
   ActivityIndicatorIOS,
+  Component,
   ListView,
   Platform,
   ProgressBarAndroid,
   StyleSheet,
   Text,
   View,
-} = React;
-var TimerMixin = require('react-timer-mixin');
+} from 'react-native';
 
-var invariant = require('invariant');
-var dismissKeyboard = require('dismissKeyboard');
+import invariant from 'invariant';
+import dismissKeyboard from 'dismissKeyboard';
 
-var MovieCell = require('./MovieCell');
-var MovieScreen = require('./MovieScreen');
-var SearchBar = require('SearchBar');
+import MovieCell from './MovieCell';
+import MovieScreen from './MovieScreen';
+import SearchBar from 'SearchBar';
 
 /**
  * This is for demo purposes only, and rate limited.
  * In case you want to use the Rotten Tomatoes' API on a real app you should
  * create an account at http://developer.rottentomatoes.com/
  */
-var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/';
-var API_KEYS = [
+const API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/';
+const API_KEYS = [
   '7waqfqbprs7pajbz28mqf6vz',
   // 'y4vwv8m33hed9ety83jmv52f', Fallback api_key
 ];
@@ -57,13 +56,21 @@ var resultsCache = {
 
 var LOADING = {};
 
-var SearchScreen = React.createClass({
-  mixins: [TimerMixin],
+export default class SearchScreen extends Component {
+  constructor(props: any) {
+    super(props);
 
-  timeoutID: (null: any),
+    this.timeoutID = null;
 
-  getInitialState: function() {
-    return {
+    // There is no autobind in ES6.
+    // You need to bind functions manually.
+    this.onSearchChange = this.onSearchChange.bind(this);
+    this.onEndReached = this.onEndReached.bind(this);
+    this.renderFooter = this.renderFooter.bind(this);
+    this.renderRow = this.renderRow.bind(this);
+    this.renderSeparator = this.renderSeparator.bind(this);
+
+    this.state = {
       isLoading: false,
       isLoadingTail: false,
       dataSource: new ListView.DataSource({
@@ -72,13 +79,17 @@ var SearchScreen = React.createClass({
       filter: '',
       queryNumber: 0,
     };
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this.searchMovies('');
-  },
+  }
 
-  _urlForQueryAndPage: function(query: string, pageNumber: number): string {
+  componentWillUnMount() {
+    this.timeoutID && clearTimeout(this.timeoutID);
+  }
+
+  _urlForQueryAndPage(query: string, pageNumber: number): string {
     var apiKey = API_KEYS[this.state.queryNumber % API_KEYS.length];
     if (query) {
       return (
@@ -92,9 +103,9 @@ var SearchScreen = React.createClass({
         '&page_limit=20&page=' + pageNumber
       );
     }
-  },
+  }
 
-  searchMovies: function(query: string) {
+  searchMovies(query: string) {
     this.timeoutID = null;
 
     this.setState({filter: query});
@@ -148,9 +159,9 @@ var SearchScreen = React.createClass({
         });
       })
       .done();
-  },
+  }
 
-  hasMore: function(): boolean {
+  hasMore(): boolean {
     var query = this.state.filter;
     if (!resultsCache.dataForQuery[query]) {
       return true;
@@ -159,9 +170,9 @@ var SearchScreen = React.createClass({
       resultsCache.totalForQuery[query] !==
       resultsCache.dataForQuery[query].length
     );
-  },
+  }
 
-  onEndReached: function() {
+  onEndReached() {
     var query = this.state.filter;
     if (!this.hasMore() || this.state.isLoadingTail) {
       // We're already fetching or have all the elements so noop
@@ -215,37 +226,38 @@ var SearchScreen = React.createClass({
         });
       })
       .done();
-  },
+  }
 
-  getDataSource: function(movies: Array<any>): ListView.DataSource {
+  getDataSource(movies: Array<any>): ListView.DataSource {
     return this.state.dataSource.cloneWithRows(movies);
-  },
+  }
 
-  selectMovie: function(movie: Object) {
+  selectMovie(movie: Object) {
+    const { navigator } = this.props;
     if (Platform.OS === 'ios') {
-      this.props.navigator.push({
+      navigator.push({
         title: movie.title,
         component: MovieScreen,
         passProps: {movie},
       });
     } else {
       dismissKeyboard();
-      this.props.navigator.push({
+      navigator.push({
         title: movie.title,
         name: 'movie',
         movie: movie,
       });
     }
-  },
+  }
 
-  onSearchChange: function(event: Object) {
+  onSearchChange(event: Object) {
     var filter = event.nativeEvent.text.toLowerCase();
 
-    this.clearTimeout(this.timeoutID);
-    this.timeoutID = this.setTimeout(() => this.searchMovies(filter), 100);
-  },
+    clearTimeout(this.timeoutID);
+    this.timeoutID = setTimeout(() => this.searchMovies(filter), 100);
+  }
 
-  renderFooter: function() {
+  renderFooter() {
     if (!this.hasMore() || !this.state.isLoadingTail) {
       return <View style={styles.scrollSpinner} />;
     }
@@ -258,9 +270,9 @@ var SearchScreen = React.createClass({
         </View>
       );
     }
-  },
+  }
 
-  renderSeparator: function(
+  renderSeparator(
     sectionID: number | string,
     rowID: number | string,
     adjacentRowHighlighted: boolean
@@ -272,9 +284,9 @@ var SearchScreen = React.createClass({
     return (
       <View key={'SEP_' + sectionID + '_' + rowID}  style={style}/>
     );
-  },
+  }
 
-  renderRow: function(
+  renderRow(
     movie: Object,
     sectionID: number | string,
     rowID: number | string,
@@ -289,9 +301,9 @@ var SearchScreen = React.createClass({
         movie={movie}
       />
     );
-  },
+  };
 
-  render: function() {
+  render() {
     var content = this.state.dataSource.getRowCount() === 0 ?
       <NoMovies
         filter={this.state.filter}
@@ -322,15 +334,16 @@ var SearchScreen = React.createClass({
         {content}
       </View>
     );
-  },
-});
+  }
+}
 
-var NoMovies = React.createClass({
-  render: function() {
+class NoMovies extends Component {
+  render() {
     var text = '';
-    if (this.props.filter) {
-      text = `No results for "${this.props.filter}"`;
-    } else if (!this.props.isLoading) {
+    const { filter, isLoading } = this.props;
+    if (filter) {
+      text = `No results for "${filter}"`;
+    } else if (!isLoading) {
       // If we're looking at the latest movies, aren't currently loading, and
       // still have no results, show a message
       text = 'No movies found';
@@ -342,7 +355,7 @@ var NoMovies = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {
@@ -372,5 +385,3 @@ var styles = StyleSheet.create({
     opacity: 0.0,
   },
 });
-
-module.exports = SearchScreen;

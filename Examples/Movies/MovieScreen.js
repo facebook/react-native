@@ -15,21 +15,21 @@
  */
 'use strict';
 
-var React = require('react-native');
-var {
+import React, {
+  Component,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   View,
-} = React;
+} from 'react-native';
 
-var getImageSource = require('./getImageSource');
-var getStyleFromScore = require('./getStyleFromScore');
-var getTextFromScore = require('./getTextFromScore');
+import getImageSource from './getImageSource';
+import getStyleFromScore from './getStyleFromScore';
+import getTextFromScore from './getTextFromScore';
 
-var MovieScreen = React.createClass({
-  render: function() {
+export default class MovieScreen extends Component {
+  render() {
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.mainSection}>
@@ -59,11 +59,11 @@ var MovieScreen = React.createClass({
         <Cast actors={this.props.movie.abridged_cast} />
       </ScrollView>
     );
-  },
-});
+  }
+}
 
-var Ratings = React.createClass({
-  render: function() {
+class Ratings extends Component {
+  render() {
     var criticsScore = this.props.ratings.critics_score;
     var audienceScore = this.props.ratings.audience_score;
 
@@ -83,27 +83,28 @@ var Ratings = React.createClass({
         </View>
       </View>
     );
-  },
-});
+  }
+}
 
-var Cast = React.createClass({
-  render: function() {
-    if (!this.props.actors) {
+class Cast extends Component {
+  render() {
+    const { actors } = this.props;
+    if (!actors) {
       return null;
     }
 
     return (
       <View>
         <Text style={styles.castTitle}>Actors</Text>
-        {this.props.actors.map(actor =>
+        {actors.map(actor =>
           <Text key={actor.name} style={styles.castActor}>
             &bull; {actor.name}
           </Text>
         )}
       </View>
     );
-  },
-});
+  }
+}
 
 var styles = StyleSheet.create({
   contentContainer: {
@@ -162,5 +163,3 @@ var styles = StyleSheet.create({
     marginLeft: 2,
   },
 });
-
-module.exports = MovieScreen;
