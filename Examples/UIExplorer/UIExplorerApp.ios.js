@@ -84,10 +84,12 @@ class UIExplorerApp extends React.Component {
   _renderNavigation: Function;
   _renderOverlay: Function;
   _renderScene: Function;
+  _renderCard: Function;
   componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
     this._renderOverlay = this._renderOverlay.bind(this);
     this._renderScene = this._renderScene.bind(this);
+    this._renderCard = this._renderCard.bind(this);
   }
   render() {
     return (
@@ -120,7 +122,7 @@ class UIExplorerApp extends React.Component {
         navigationState={stack}
         style={styles.container}
         renderOverlay={this._renderOverlay}
-        renderScene={this._renderScene}
+        renderScene={this._renderCard}
       />
     );
   }
@@ -135,7 +137,7 @@ class UIExplorerApp extends React.Component {
     );
   }
 
-  _renderOverlay(props: NavigationStateRendererProps): ReactElement {
+  _renderCard(props: NavigationStateRendererProps): ReactElement {
     return (
       <NavigationCard
         index={props.index}
