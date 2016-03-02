@@ -29,7 +29,7 @@
 'use strict';
 
 var invariant = require('fbjs/lib/invariant');
-var isEmpty = require('fbjs/lib/isEmpty');
+var isEmpty = require('isEmpty');
 var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
