@@ -23,6 +23,12 @@ export type NavigationParentState = {
   children: Array<NavigationState>;
 };
 
+export type NavigationScene = {
+  index: number;
+  state: NavigationState;
+  isStale: boolean;
+};
+
 export type NavigationAction = {
   type: string;
 };
