@@ -16,7 +16,9 @@ git clone https://github.com/CatalystCode/react-native.git
 cd react-native
 git checkout ReactWindows
 git pull origin ReactWindows
-cd ReactWindows
+cd ReactWindows/Playground
+npm install
+react-native start
 ```
 
 Build your environment :
