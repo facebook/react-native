@@ -27,8 +27,8 @@ var UIManager = require('UIManager');
 var View = require('View');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var emptyFunction = require('emptyFunction');
-var invariant = require('invariant');
+var emptyFunction = require('fbjs/lib/emptyFunction');
+var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
@@ -283,7 +283,6 @@ var TextInput = React.createClass({
      * multiline fields. Note that for multiline fields, setting blurOnSubmit
      * to true means that pressing return will blur the field and trigger the
      * onSubmitEditing event instead of inserting a newline into the field.
-     * @platform ios
      */
     blurOnSubmit: PropTypes.bool,
     /**
@@ -505,6 +504,7 @@ var TextInput = React.createClass({
         onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
+        blurOnSubmit={this.props.blurOnSubmit}
         onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}

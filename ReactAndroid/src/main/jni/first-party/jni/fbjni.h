@@ -19,5 +19,6 @@
 #include "fbjni/References.h"
 #include "fbjni/Meta.h"
 #include "fbjni/CoreClasses.h"
+#include "fbjni/Iterator.h"
 #include "fbjni/Hybrid.h"
 #include "fbjni/Registration.h"

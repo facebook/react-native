@@ -247,7 +247,7 @@ var ListView = React.createClass({
   },
 
   setNativeProps: function(props) {
-    this.refs[SCROLLVIEW_REF] && 
+    this.refs[SCROLLVIEW_REF] &&
       this.refs[SCROLLVIEW_REF].setNativeProps(props);
   },
 

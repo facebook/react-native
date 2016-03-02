@@ -35,6 +35,7 @@ jni_library(
   header_namespace = 'react/jni',
   supported_platforms_regex = SUPPORTED_PLATFORMS,
   srcs = [
+    'JExecutorToken.cpp',
     'JMessageQueueThread.cpp',
     'JSCPerfLogging.cpp',
     'JSLoader.cpp',
@@ -46,12 +47,14 @@ jni_library(
   ],
   headers = [
     'JSLoader.h',
-    'ProxyExecutor.h',
+    'JExecutorToken.h',
+    'JExecutorTokenFactory.h',
     'JMessageQueueThread.h',
     'JNativeRunnable.h',
     'JniJSModulesUnbundle.h',
     'JSCPerfLogging.h',
     'JSLogging.h',
+    'ProxyExecutor.h',
     'WebWorkers.h',
   ],
   exported_headers = [

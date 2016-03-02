@@ -87,6 +87,8 @@ type NavigationStateRendererProps = {
   layout: Layout,
   // The state of the the containing navigation view.
   navigationParentState: NavigationParentState,
+
+  onNavigate: (action: any) => void,
 };
 
 type NavigationStateRenderer = (
@@ -100,11 +102,12 @@ type TimingSetter = (
 ) => void;
 
 type Props = {
-  navigationState: NavigationParentState;
-  renderScene: NavigationStateRenderer;
-  renderOverlay: ?NavigationStateRenderer;
-  style: any;
-  setTiming: ?TimingSetter;
+  navigationState: NavigationParentState,
+  onNavigate: (action: any) => void,
+  renderScene: NavigationStateRenderer,
+  renderOverlay: ?NavigationStateRenderer,
+  style: any,
+  setTiming: ?TimingSetter,
 };
 
 class NavigationAnimatedView extends React.Component {
@@ -115,8 +118,11 @@ class NavigationAnimatedView extends React.Component {
   props: Props;
   constructor(props) {
     super(props);
-    this._animatedHeight = new Animated.Value(0);
-    this._animatedWidth = new Animated.Value(0);
+    this._lastWidth = 0;
+    this._lastHeight = 0;
+    this._animatedHeight = new Animated.Value(this._lastHeight);
+    this._animatedWidth = new Animated.Value(this._lastWidth);
+
     this.state = {
       position: new Animated.Value(this.props.navigationState.index),
       scenes: new Map(),
@@ -221,18 +227,23 @@ class NavigationAnimatedView extends React.Component {
       layout: this._getLayout(),
       navigationParentState: this.props.navigationState,
       navigationState: scene.state,
+      onNavigate: this.props.onNavigate,
       position: this.state.position,
     });
   }
   _renderOverlay() {
-    const {renderOverlay} = this.props;
+    const {
+      onNavigate,
+      renderOverlay,
+      navigationState,
+    } = this.props;
     if (renderOverlay) {
-      const parentState = this.props.navigationState;
       return renderOverlay({
-        index: parentState.index,
+        index: navigationState.index,
         layout: this._getLayout(),
-        navigationParentState: parentState,
-        navigationState: parentState.children[parentState.index],
+        navigationParentState: navigationState,
+        navigationState: navigationState.children[navigationState.index],
+        onNavigate: onNavigate,
         position: this.state.position,
       });
     }
