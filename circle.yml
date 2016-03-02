@@ -30,6 +30,8 @@ dependencies:
     - "buck-out/bin"
     - "website/node_modules"
   override:
+    - npm config set spin=false
+    - npm config set progress=false
     - npm install
     - cd website && npm install
 
