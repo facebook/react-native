@@ -43,8 +43,8 @@ class XMLHttpRequestBase {
   readyState: number;
   responseHeaders: ?Object;
   responseText: ?string;
-  response: string | ArrayBuffer | null;
-  responseType: '' | 'arraybuffer' | 'text';
+  response: ?string;
+  responseType: '' | 'text';
   status: number;
   timeout: number;
   responseURL: ?string;
@@ -143,15 +143,6 @@ class XMLHttpRequestBase {
     }
   }
 
-  _stringToArrayBuffer(str: string): ArrayBuffer {
-    var buffer = new ArrayBuffer(str.length);
-    var bufferView = new Uint8Array(buffer);
-    for (var i = 0, l = str.length; i < l; i++) {
-      bufferView[i] = str.charCodeAt(i);
-    }
-    return buffer;
-  }
-
   _didReceiveData(requestId: number, responseText: string): void {
     if (requestId === this._requestId) {
       if (!this.responseText) {
@@ -164,10 +155,7 @@ class XMLHttpRequestBase {
       case 'text':
         this.response = this.responseText;
         break;
-      case 'arraybuffer': // NOTE: not supported by fetch
-        this.response = this._stringToArrayBuffer(this.responseText);
-        break;
-      default: //TODO: Support the other response type as well (eg:- document, json, blob)
+      default: //TODO: Support other types, eg: document, arraybuffer, json, blob
         this.response = null;
       }
       this.setReadyState(this.LOADING);
@@ -238,12 +226,6 @@ class XMLHttpRequestBase {
     throw new Error('Subclass must define sendImpl method');
   }
 
-  _uintToString(uintArray: Int8Array): string {
-    // $FlowFixMe - Function.apply accepts Int8Array, but Flow thinks it doesn't
-    var encodedString = String.fromCharCode.apply(null, uintArray);
-    return decodeURIComponent(encodedString);
-  }
-
   send(data: any): void {
     if (this.readyState !== this.OPENED) {
       throw new Error('Request has not been opened');
@@ -252,9 +234,6 @@ class XMLHttpRequestBase {
       throw new Error('Request has already been sent');
     }
     this._sent = true;
-    if (data instanceof Int8Array) {
-      data = this._uintToString(data);
-    }
     this.sendImpl(this._method, this._url, this._headers, data, this.timeout);
   }
 
