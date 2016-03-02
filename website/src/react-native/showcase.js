@@ -163,7 +163,7 @@ var featured = [
     name: 'Zhopout',
     icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zhopout',
-    author: 'Jarvis Software',
+    author: 'Jarvis Software Private Limited ',
     blogs: [
       "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
     ],
