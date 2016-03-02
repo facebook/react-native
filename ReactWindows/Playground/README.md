@@ -17,6 +17,9 @@ cd react-native
 git checkout -b ReactWindows
 git pull origin ReactWindows
 cd ReactWindows/Playground
+```
+Install the react native live-reload bundle server for UWP. The initial bundling can take up to one minute to package. 
+```
 npm install
 react-native start
 ```
@@ -32,5 +35,5 @@ Run the Playground App:
 - Set the Playground Project as your starter project in Visual Studio.
 - Run the app on your targeted device.
 
-Change Applicatoin view
+Change Application view
 - To manage your playground applications native view, edit the index.ios.js file within the playground VS project. 
