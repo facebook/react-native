@@ -28,6 +28,7 @@ const {
   Container: NavigationContainer,
   RootContainer: NavigationRootContainer,
   Header: NavigationHeader,
+  HeaderTitle: NavigationHeaderTitle,
   Reducer: NavigationReducer,
   View: NavigationView,
 } = NavigationExperimental;
@@ -154,13 +155,15 @@ class ExampleTabScreen extends React.Component {
       />
     );
   }
-  _renderHeader(props) {
+
+  _renderHeader(scenes, index, position, layout) {
     return (
       <NavigationHeader
-        navigationState={props.navigationParentState}
-        position={props.position}
-        layout={props.layout}
-        getTitle={state => stateTypeTitleMap(state)}
+        scenes={scenes}
+        index={index}
+        position={position}
+        layout={layout}
+        renderTitleComponent={pageState => <NavigationHeaderTitle>{stateTypeTitleMap(pageState)}</NavigationHeaderTitle>}
       />
     );
   }
@@ -270,7 +273,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.APPBAR_HEIGHT + NavigationHeader.STATUSBAR_HEIGHT,
   },
   tabContent: {
     flex: 1,

@@ -16,7 +16,6 @@
 var React = require('react-native');
 var {
   Text,
-  PixelRatio,
   StyleSheet,
   View,
   TouchableHighlight,
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
   row: {
     padding: 15,
     backgroundColor: 'white',
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   rowText: {
