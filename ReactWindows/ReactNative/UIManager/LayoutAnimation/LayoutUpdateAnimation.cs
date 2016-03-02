@@ -62,14 +62,14 @@ namespace ReactNative.UIManager.LayoutAnimation
                     CreateTimeline(view, "(Canvas.Top)", currentY, y));
             }
 
-            if (currentWidth != width && currentWidth > width)
+            if (currentWidth != width)
             {
                 var timeline = CreateTimeline(view, "Width", currentWidth, width);
                 timeline.EnableDependentAnimation = true;
                 storyboard.Children.Add(timeline);
             }
 
-            if (currentHeight != height && currentHeight > height)
+            if (currentHeight != height)
             {
                 var timeline = CreateTimeline(view, "Height", currentHeight, height);
                 timeline.EnableDependentAnimation = true;
