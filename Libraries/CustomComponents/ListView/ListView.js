@@ -34,7 +34,7 @@ var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
-var isEmpty = require('fbjs/lib/isEmpty');
+var isEmpty = require('isEmpty');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;

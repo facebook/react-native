@@ -19,6 +19,7 @@ var sharedBlacklist = [
 
   // fbjs forks:
   'node_modules/fbjs/lib/Map.js',
+  'node_modules/fbjs/lib/isEmpty.js',
 
   /website\/node_modules\/.*/,
 
