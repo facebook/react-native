@@ -91,10 +91,6 @@ namespace ReactNative.Views.Text
         /// </summary>
         public override void OnBeforeLayout()
         {
-            // We need to perform this operation on the dispatcher in UWP as 
-            // WinRT lacks the tools needed to "predict" the height of text.
-            // Instead, we simply instantiate the Inline object, insert it into
-            // a text block, and extract how tall the element will be.
             if (_isVirtual)
             {
                 return;
@@ -255,6 +251,11 @@ namespace ReactNative.Views.Text
             {
                 dirty();
             }
+        }
+
+        protected override void dirty()
+        {
+            base.dirty();
         }
 
         private static MeasureOutput MeasureText(CSSNode node, float width, float height)

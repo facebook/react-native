@@ -266,7 +266,7 @@ namespace ReactNative.UIManager
         /// </summary>
         public void MarkUpdateSeen()
         {
-            _nodeUpdated = true;
+            _nodeUpdated = false;
 
             if (HasNewLayout)
             {
@@ -551,7 +551,7 @@ namespace ReactNative.UIManager
         /// <summary>
         /// Marks that the node is dirty.
         /// </summary>
-        protected sealed override void dirty()
+        protected override void dirty()
         {
             if (!IsVirtual)
             {
