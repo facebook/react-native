@@ -144,14 +144,15 @@ namespace ReactNative.Touch
 
         private void UpdatePointerForEvent(ReactPointer pointer, PointerRoutedEventArgs e)
         {
-            var positionInRoot = e.GetCurrentPoint(_view).Position;
+            var viewPoint = e.GetCurrentPoint(_view);
+            var positionInRoot = viewPoint.Position;
             var positionInView = e.GetCurrentPoint(pointer.ReactView).Position;
 
             pointer.PageX = (float)positionInRoot.X;
             pointer.PageY = (float)positionInRoot.Y;
             pointer.LocationX = (float)positionInView.X;
             pointer.LocationY = (float)positionInView.Y;
-            pointer.Timestamp = e.GetCurrentPoint(_view).Timestamp / 1000; // Convert microseconds to milliseconds;
+            pointer.Timestamp = viewPoint.Timestamp / 1000; // Convert microseconds to milliseconds;
         }
 
         private void DispatchTouchEvent(TouchEventType touchEventType, List<ReactPointer> activePointers, int pointerIndex)

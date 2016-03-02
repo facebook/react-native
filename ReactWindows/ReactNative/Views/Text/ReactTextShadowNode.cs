@@ -2,7 +2,6 @@
 using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System;
-using System.Globalization;
 using Windows.Foundation;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -251,11 +250,6 @@ namespace ReactNative.Views.Text
             {
                 dirty();
             }
-        }
-
-        protected override void dirty()
-        {
-            base.dirty();
         }
 
         private static MeasureOutput MeasureText(CSSNode node, float width, float height)
