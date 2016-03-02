@@ -29,17 +29,18 @@
 
 const Animated = require('Animated');
 const NavigationContainer = require('NavigationContainer');
+const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
 const React = require('React');
+const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
 const {PropTypes} = React;
+const {Directions} = NavigationLinearPanResponder;
 
 import type {
   NavigationParentState,
 } from 'NavigationStateUtils';
-
 
 import type {
   Layout,
@@ -47,15 +48,22 @@ import type {
   NavigationStateRenderer,
 } from 'NavigationAnimatedView';
 
+import type {
+  Direction,
+  OnNavigateHandler,
+} from 'NavigationLinearPanResponder';
+
 type AnimatedValue = Animated.Value;
 
 type Props = {
-  direction: string,
+  direction: Direction,
   index: number;
   layout: Layout;
-  navigationState: NavigationParentState;
-  position: Position;
-  renderScene: NavigationStateRenderer;
+  navigationParentState: NavigationParentState,
+  navigationState: NavigationParentState,
+  position: Position,
+  onNavigate: ?OnNavigateHandler,
+  renderScene: NavigationStateRenderer,
 };
 
 type State = {
@@ -75,6 +83,39 @@ class AmimatedValueSubscription {
 
   remove() {
     this._value.removeListener(this._token);
+  }
+}
+
+/**
+ * Class that provides the required information for the
+ * `NavigationLinearPanResponder`. This class must implement
+ * the interface `NavigationLinearPanResponderDelegate`.
+ */
+class PanResponderDelegate {
+  _props : Props;
+
+  constructor(props: Props) {
+    this._props = props;
+  }
+
+  getDirection(): Direction {
+    return this._props.direction;
+  }
+
+  getIndex(): number {
+    return this._props.navigationParentState.index;
+  }
+
+  getLayout(): Layout {
+    return this._props.layout;
+  }
+
+  getPosition(): Position {
+    return this._props.position;
+  }
+
+  onNavigate(action: {type: string}): void {
+    this._props.onNavigate && this._props.onNavigate(action);
   }
 }
 
@@ -119,9 +160,8 @@ class NavigationCardStackItem extends React.Component {
     const {
       direction,
       index,
-      navigationState,
+      navigationParentState,
       position,
-      layout,
     } = this.props;
     const {
       height,
@@ -161,8 +201,16 @@ class NavigationCardStackItem extends React.Component {
       ],
     };
 
+    let panHandlers = null;
+    if (navigationParentState.index === index) {
+      const delegate = new PanResponderDelegate(this.props);
+      const panResponder = new NavigationLinearPanResponder(delegate);
+      panHandlers = panResponder.panHandlers;
+    }
+
     return (
       <Animated.View
+        {...panHandlers}
         style={[styles.main, animatedStyle]}>
         {this.props.renderScene(this.props)}
       </Animated.View>
@@ -200,16 +248,12 @@ class NavigationCardStackItem extends React.Component {
   }
 }
 
-const Directions = {
-  HORIZONTAL: 'horizontal',
-  VERTICAL: 'vertical',
-};
-
 NavigationCardStackItem.propTypes = {
   direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
   index: PropTypes.number.isRequired,
   layout: PropTypes.object.isRequired,
   navigationState: PropTypes.object.isRequired,
+  navigationParentState: PropTypes.object.isRequired,
   position: PropTypes.object.isRequired,
   renderScene: PropTypes.func.isRequired,
 };
@@ -217,10 +261,6 @@ NavigationCardStackItem.propTypes = {
 NavigationCardStackItem.defaultProps = {
   direction: Directions.HORIZONTAL,
 };
-
-NavigationCardStackItem = NavigationContainer.create(NavigationCardStackItem);
-
-NavigationCardStackItem.Directions = Directions;
 
 const styles = StyleSheet.create({
   main: {
@@ -237,6 +277,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
-module.exports = NavigationCardStackItem;
+module.exports = NavigationContainer.create(NavigationCardStackItem);
