@@ -23,6 +23,7 @@ const NavigationExampleRow = require('./NavigationExampleRow');
 const {
   RootContainer: NavigationRootContainer,
   Reducer: NavigationReducer,
+  Header: NavigationHeader,
 } = NavigationExperimental;
 const StackReducer = NavigationReducer.StackReducer;
 
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   topView: {
     backgroundColor: '#E9E9EF',
     flex: 1,
-    paddingTop: 30,
+    paddingTop: NavigationHeader.STATUSBAR_HEIGHT,
   },
 });
 
