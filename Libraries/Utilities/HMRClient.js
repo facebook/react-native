@@ -12,7 +12,7 @@
 'use strict';
 
 const Platform = require('Platform');
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them

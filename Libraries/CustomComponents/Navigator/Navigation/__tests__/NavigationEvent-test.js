@@ -27,7 +27,7 @@
 
 jest
   .dontMock('NavigationEvent')
-  .dontMock('invariant');
+  .dontMock('fbjs/lib/invariant');
 
 var NavigationEvent = require('NavigationEvent');
 
