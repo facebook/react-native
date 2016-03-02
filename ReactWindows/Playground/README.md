@@ -30,8 +30,7 @@ Build your environment :
 Run the Playground App:
 
 - Set the Playground Project as your starter project in Visual Studio.
-- Set the target in VS to Bundle. 
 - Run the app on your targeted device.
 
 Change Applicatoin view
-- To manage your playground applications native view, edit the index.ios.js file within the playground VS project.
+- To manage your playground applications native view, edit the index.ios.js file within the playground VS project. 
