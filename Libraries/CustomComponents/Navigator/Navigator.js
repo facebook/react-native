@@ -44,7 +44,7 @@ var View = require('View');
 var clamp = require('clamp');
 var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;

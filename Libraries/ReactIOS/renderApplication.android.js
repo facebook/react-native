@@ -19,7 +19,7 @@ var StyleSheet = require('StyleSheet');
 var Subscribable = require('Subscribable');
 var View = require('View');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var YellowBox = __DEV__ ? require('YellowBox') : null;
 

@@ -24,7 +24,7 @@ var ReactNative = require('ReactNative');
 var UIExplorerBlock = require('./UIExplorerBlock');
 var UIExplorerPage = require('./UIExplorerPage');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 import type { Example, ExampleModule } from 'ExampleTypes';
 

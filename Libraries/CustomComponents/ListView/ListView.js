@@ -34,7 +34,7 @@ var ScrollResponder = require('ScrollResponder');
 var StaticRenderer = require('StaticRenderer');
 var TimerMixin = require('react-timer-mixin');
 
-var isEmpty = require('isEmpty');
+var isEmpty = require('fbjs/lib/isEmpty');
 var merge = require('merge');
 
 var PropTypes = React.PropTypes;
@@ -247,7 +247,7 @@ var ListView = React.createClass({
   },
 
   setNativeProps: function(props) {
-    this.refs[SCROLLVIEW_REF] && 
+    this.refs[SCROLLVIEW_REF] &&
       this.refs[SCROLLVIEW_REF].setNativeProps(props);
   },
 

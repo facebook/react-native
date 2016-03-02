@@ -26,6 +26,7 @@
 
 jest
   .dontMock('EmitterSubscription')
+  .dontMock('EventSubscription')
   .dontMock('EventEmitter')
   .dontMock('EventSubscriptionVendor')
   .dontMock('NavigationEvent')

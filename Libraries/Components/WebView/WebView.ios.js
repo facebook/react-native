@@ -21,8 +21,8 @@ var View = require('View');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
 var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');

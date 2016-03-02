@@ -9,7 +9,7 @@
 'use strict';
 
 jest.dontMock('MessageQueue')
-  .dontMock('keyMirror');
+  .dontMock('fbjs/lib/keyMirror');
 var MessageQueue = require('MessageQueue');
 
 let MODULE_IDS = 0;

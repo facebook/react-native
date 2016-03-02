@@ -9,7 +9,7 @@
  */
 /* eslint-disable global-strict */
 
-var keyOf = require('keyOf');
+var keyOf = require('fbjs/lib/keyOf');
 
 var X_DIM = keyOf({x: null});
 var Y_DIM = keyOf({y: null});
