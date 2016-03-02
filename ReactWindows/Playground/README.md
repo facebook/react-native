@@ -14,7 +14,7 @@ Clone this repo onto your local machine.
 ```
 git clone https://github.com/CatalystCode/react-native.git
 cd react-native
-git checkout ReactWindows
+git checkout -b ReactWindows
 git pull origin ReactWindows
 cd ReactWindows/Playground
 npm install
