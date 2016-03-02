@@ -42,12 +42,11 @@ print stdout
 if success.search(stderr + stdout):
   sys.exit(0)
 else:
+  # dump the logs
+  sp.Popen(['adb', 'logcat', '-d']).communicate()
   sys.exit(1) # make sure we fail if the test failed
 END
 
 RETVAL=$?
-
-# dump the logs
-adb logcat -d
 
 exit $RETVAL
