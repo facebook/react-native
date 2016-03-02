@@ -181,6 +181,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "blurOnSubmit", defaultBoolean = true)
+  public void setBlurOnSubmit(ReactEditText view, boolean blurOnSubmit) {
+    view.setBlurOnSubmit(blurOnSubmit);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -493,7 +498,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                       SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
-            return false;
+            return !editText.getBlurOnSubmit();
           }
         });
   }
