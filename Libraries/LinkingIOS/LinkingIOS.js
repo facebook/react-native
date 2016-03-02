@@ -13,7 +13,7 @@
 
 var Linking = require('Linking');
 var RCTLinkingManager = require('NativeModules').LinkingManager;
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var _initialURL = RCTLinkingManager && RCTLinkingManager.initialURL;
 

@@ -16,7 +16,7 @@ var TextInputState = require('TextInputState');
 var UIManager = require('UIManager');
 
 var findNodeHandle = require('findNodeHandle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 type MeasureOnSuccessCallback = (
   x: number,

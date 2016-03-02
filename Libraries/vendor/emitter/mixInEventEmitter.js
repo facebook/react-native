@@ -21,8 +21,8 @@ var EventHolder = require('EventHolder');
 var EventValidator = require('EventValidator');
 
 var copyProperties = require('copyProperties');
-var invariant = require('invariant');
-var keyOf = require('keyOf');
+var invariant = require('fbjs/lib/invariant');
+var keyOf = require('fbjs/lib/keyOf');
 
 var TYPES_KEY = keyOf({__types: true});
 

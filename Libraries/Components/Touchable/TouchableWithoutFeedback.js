@@ -18,7 +18,7 @@ var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var View = require('View');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var onlyChild = require('onlyChild');
 
 type Event = Object;

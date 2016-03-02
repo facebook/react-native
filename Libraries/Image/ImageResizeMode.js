@@ -11,7 +11,7 @@
  */
 'use strict';
 
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 /**
  * ImageResizeMode - Enum for different image resizing modes, set via

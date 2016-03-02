@@ -14,7 +14,7 @@
 var Platform = require('Platform');
 var UIManager = require('UIManager');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var dimensions = UIManager.Dimensions;
 

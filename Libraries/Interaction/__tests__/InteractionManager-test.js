@@ -6,6 +6,7 @@
 
 jest
   .autoMockOff()
+  .mock('ErrorUtils')
   .mock('BatchedBridge');
 
 function expectToBeCalledOnce(fn) {

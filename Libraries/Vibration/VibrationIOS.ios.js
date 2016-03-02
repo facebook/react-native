@@ -13,7 +13,7 @@
 
 var RCTVibration = require('NativeModules').Vibration;
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 /**
  * The Vibration API is exposed at `VibrationIOS.vibrate()`. On iOS, calling this
