@@ -38,25 +38,29 @@ test:
     # starting emulator in advance because it takes very long to boot
     - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
             background: true
-    # assemble done separately because it requires quite a lot of memory and also gives time for emulator to load
-    - ./gradlew :ReactAndroid:assembleDebug -PdisablePreDex -Pjobs=1:
-            timeout: 360
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
-    # buck tests
-    - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
+    # build app
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
-    # temp, we can't run instrumentation tests yet
-    - buck/bin/buck build ReactAndroid/src/androidTest/java/com/facebook/react/tests
 
     # unit tests
-    - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
+    - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
 
+    # instrumentation tests
+    # compile native libs with Gradle script
+    - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -PdisablePreDex -Pjobs=1:
+        timeout: 360
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-    # run tests on the emulator
+    # build test APK
+    - buck/bin/buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
+    # run installed apk with tests
+    - ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
+
+    # Deprecated: run tests with Gradle, we keep them for a while to compare performance
+    - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
     - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
         timeout: 360
 
@@ -67,6 +71,8 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    # TODO circle does not understand Buck's report, maybe need to transform xml slightly
+    #- find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 
 deployment:
   website:
