@@ -409,6 +409,7 @@ namespace ReactNative
                 _pendingJsBundleLoader = jsBundleLoader;
             }
         }
+
         private async Task InitializeReactContextAsync(
             Func<IJavaScriptExecutor> jsExecutorFactory,
             JavaScriptBundleLoader jsBundleLoader)
@@ -459,8 +460,6 @@ namespace ReactNative
 
             _currentReactContext = reactContext;
             var reactInstance = reactContext.ReactInstance;
-
-            reactInstance.Initialize();
             
             // TODO: set up dev support and memory pressure hooks
 
@@ -587,6 +586,8 @@ namespace ReactNative
             // TODO: add bridge idle debug listener
 
             reactContext.InitializeWithInstance(reactInstance);
+
+            reactInstance.Initialize();
 
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "RunJavaScriptBundle"))
             {

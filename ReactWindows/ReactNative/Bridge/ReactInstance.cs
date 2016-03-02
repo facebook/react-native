@@ -171,7 +171,7 @@ namespace ReactNative.Bridge
             });
         }
 
-        public void Dispose()
+        public async void Dispose()
         {
             DispatcherHelpers.AssertOnDispatcher();
 
@@ -183,7 +183,11 @@ namespace ReactNative.Bridge
             IsDisposed = true;
             _registry.NotifyReactInstanceDispose();
 
-            using (_bridge) { }
+            await QueueConfiguration.JavaScriptQueueThread.CallOnQueue(() =>
+            {
+                using (_bridge) { }
+                return true;
+            });
 
             QueueConfiguration.Dispose();
 

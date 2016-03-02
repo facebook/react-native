@@ -1,12 +1,14 @@
 ﻿using ReactNative.Common;
 using ReactNative.Tracing;
 using System;
-using System.Globalization;
+using System.Collections.Concurrent;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.System.Threading;
 using Windows.UI.Core;
 
 namespace ReactNative.Bridge.Queue
@@ -124,7 +126,7 @@ namespace ReactNative.Bridge.Queue
                 case MessageQueueThreadKind.DispatcherThread:
                     return new DispatcherMessageQueueThread(spec.Name, handler);
                 case MessageQueueThreadKind.BackgroundSingleThread:
-                    return new AnyBackgroundMessageQueueThread(spec.Name, handler);
+                    return new SingleBackgroundMessageQueueThread(spec.Name, handler);
                 case MessageQueueThreadKind.BackgroundAnyThread:
                     return new AnyBackgroundMessageQueueThread(spec.Name, handler);
                 default:
@@ -178,6 +180,73 @@ namespace ReactNative.Bridge.Queue
                 Interlocked.Exchange(ref _actionObserver, s_nop);
                 _actionSubject.Dispose();
                 _subscription.Dispose();
+            }
+        }
+
+        class SingleBackgroundMessageQueueThread : MessageQueueThread
+        {
+            private static readonly Action s_canary = new Action(() => { });
+
+            private readonly Action<Exception> _handler;
+            private readonly BlockingCollection<Action> _queue;
+            private readonly ThreadLocal<bool> _indicator;
+            private readonly ManualResetEvent _doneHandle;
+            private readonly IAsyncAction _asyncAction;
+
+            public SingleBackgroundMessageQueueThread(string name, Action<Exception> handler)
+                : base(name)
+            {
+                _handler = handler;
+                _queue = new BlockingCollection<Action>();
+                _indicator = new ThreadLocal<bool>();
+                _doneHandle = new ManualResetEvent(false);
+                _asyncAction = ThreadPool.RunAsync(_ =>
+                {
+                    _indicator.Value = true;
+                    Run();
+                    _doneHandle.Set();
+                },
+                WorkItemPriority.Normal);
+            }
+
+            protected override bool IsOnThreadCore()
+            {
+                return _indicator.Value;
+            }
+
+            protected override void Enqueue(Action action)
+            {
+                _queue.Add(action);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                base.Dispose(disposing);
+
+                // Unblock the background thread.
+                Enqueue(s_canary);
+                _doneHandle.WaitOne();
+            }
+
+            private void Run()
+            {
+                while (true)
+                {
+                    var action = _queue.Take();
+                    if (IsDisposed)
+                    {
+                        break;
+                    }
+
+                    try
+                    {
+                        action();
+                    }
+                    catch (Exception ex)
+                    {
+                        _handler(ex);
+                    }
+                }
             }
         }
 

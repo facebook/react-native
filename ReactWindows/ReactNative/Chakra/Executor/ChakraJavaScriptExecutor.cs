@@ -15,7 +15,6 @@ namespace ReactNative.Chakra.Executor
     public class ChakraJavaScriptExecutor : IJavaScriptExecutor
     {
         private readonly JavaScriptRuntime _runtime;
-        private readonly JavaScriptContext _context;
 
         private JavaScriptValue _globalObject;
         private JavaScriptValue _requireFunction;
@@ -31,7 +30,6 @@ namespace ReactNative.Chakra.Executor
         public ChakraJavaScriptExecutor()
         {
             _runtime = JavaScriptRuntime.Create();
-            _context = _runtime.CreateContext();
             InitializeChakra();
         }
 
@@ -51,42 +49,39 @@ namespace ReactNative.Chakra.Executor
             if (arguments == null)
                 throw new ArgumentNullException(nameof(arguments));
 
-            using (CreateContextScope(_context))
+            // Try get global property
+            var globalObject = EnsureGlobalObject();
+            var modulePropertyId = JavaScriptPropertyId.FromString(moduleName);
+            var module = globalObject.GetProperty(modulePropertyId);
+
+            if (module.ValueType != JavaScriptValueType.Object)
             {
-                // Try get global property
-                var globalObject = EnsureGlobalObject();
-                var modulePropertyId = JavaScriptPropertyId.FromString(moduleName);
-                var module = globalObject.GetProperty(modulePropertyId);
+                var requireFunction = EnsureRequireFunction();
 
-                if (module.ValueType != JavaScriptValueType.Object)
-                {
-                    var requireFunction = EnsureRequireFunction();
-
-                    // Get the module
-                    var moduleString = JavaScriptValue.FromString(moduleName);
-                    var requireArguments = new[] { globalObject, moduleString };
-                    module = requireFunction.CallFunction(requireArguments);
-                }
-
-                // Get the method
-                var methodPropertyId = JavaScriptPropertyId.FromString(methodName);
-                var method = module.GetProperty(methodPropertyId);
-
-                // Set up the arguments to pass in
-                var callArguments = new JavaScriptValue[arguments.Count + 1];
-                callArguments[0] = EnsureGlobalObject(); // TODO: What is first argument?
-
-                for (var i = 0; i < arguments.Count; ++i)
-                {
-                    callArguments[i + 1] = ConvertJson(arguments[i]);
-                }
-
-                // Invoke the function
-                var result = method.CallFunction(callArguments);
-
-                // Convert the result
-                return ConvertJson(result);
+                // Get the module
+                var moduleString = JavaScriptValue.FromString(moduleName);
+                var requireArguments = new[] { globalObject, moduleString };
+                module = requireFunction.CallFunction(requireArguments);
             }
+
+            // Get the method
+            var methodPropertyId = JavaScriptPropertyId.FromString(methodName);
+            var method = module.GetProperty(methodPropertyId);
+
+            // Set up the arguments to pass in
+            var callArguments = new JavaScriptValue[arguments.Count + 1];
+            callArguments[0] = EnsureGlobalObject(); // TODO: What is first argument?
+
+            for (var i = 0; i < arguments.Count; ++i)
+            {
+                callArguments[i + 1] = ConvertJson(arguments[i]);
+            }
+
+            // Invoke the function
+            var result = method.CallFunction(callArguments);
+
+            // Convert the result
+            return ConvertJson(result);
         }
 
         /// <summary>
@@ -98,10 +93,7 @@ namespace ReactNative.Chakra.Executor
             if (script == null)
                 throw new ArgumentNullException(nameof(script));
 
-            using (CreateContextScope(_context))
-            {
-                JavaScriptContext.RunScript(script);
-            }
+            JavaScriptContext.RunScript(script);
         }
 
         /// <summary>
@@ -116,12 +108,9 @@ namespace ReactNative.Chakra.Executor
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            using (CreateContextScope(_context))
-            {
-                var javaScriptValue = ConvertJson(value);
-                var propertyId = JavaScriptPropertyId.FromString(propertyName);
-                EnsureGlobalObject().SetProperty(propertyId, javaScriptValue, true);
-            }
+            var javaScriptValue = ConvertJson(value);
+            var propertyId = JavaScriptPropertyId.FromString(propertyName);
+            EnsureGlobalObject().SetProperty(propertyId, javaScriptValue, true);
         }
 
         /// <summary>
@@ -134,11 +123,8 @@ namespace ReactNative.Chakra.Executor
             if (propertyName == null)
                 throw new ArgumentNullException(nameof(propertyName));
 
-            using (CreateContextScope(_context))
-            {
-                var propertyId = JavaScriptPropertyId.FromString(propertyName);
-                return ConvertJson(EnsureGlobalObject().GetProperty(propertyId));
-            }
+            var propertyId = JavaScriptPropertyId.FromString(propertyName);
+            return ConvertJson(EnsureGlobalObject().GetProperty(propertyId));
         }
 
         /// <summary>
@@ -146,34 +132,34 @@ namespace ReactNative.Chakra.Executor
         /// </summary>
         public void Dispose()
         {
+            JavaScriptContext.Current = JavaScriptContext.Invalid;
             _runtime.Dispose();
         }
 
         private void InitializeChakra()
         {
-            using (CreateContextScope(_context))
-            {
+            JavaScriptContext.Current = _runtime.CreateContext();
+
 #if DEBUG
-                // Start debugging.
-                if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
-                {
-                    JavaScriptContext.StartDebugging();
-                }
+            // Start debugging.
+            if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
+            {
+                JavaScriptContext.StartDebugging();
+            }
 #endif
 
-                var consolePropertyId = default(JavaScriptPropertyId);
-                Native.ThrowIfError(
-                    Native.JsGetPropertyIdFromName("console", out consolePropertyId));
+            var consolePropertyId = default(JavaScriptPropertyId);
+            Native.ThrowIfError(
+                Native.JsGetPropertyIdFromName("console", out consolePropertyId));
 
-                var consoleObject = JavaScriptValue.CreateObject();
-                EnsureGlobalObject().SetProperty(consolePropertyId, consoleObject, true);
+            var consoleObject = JavaScriptValue.CreateObject();
+            EnsureGlobalObject().SetProperty(consolePropertyId, consoleObject, true);
 
-                DefineHostCallback(consoleObject, "log", ConsoleLog, IntPtr.Zero);
-                DefineHostCallback(consoleObject, "warn", ConsoleWarn, IntPtr.Zero);
-                DefineHostCallback(consoleObject, "error", ConsoleError, IntPtr.Zero);
+            DefineHostCallback(consoleObject, "log", ConsoleLog, IntPtr.Zero);
+            DefineHostCallback(consoleObject, "warn", ConsoleWarn, IntPtr.Zero);
+            DefineHostCallback(consoleObject, "error", ConsoleError, IntPtr.Zero);
 
-                Debug.WriteLine("Chakra initialization successful.");
-            }
+            Debug.WriteLine("Chakra initialization successful.");
         }
 
 
@@ -282,7 +268,7 @@ namespace ReactNative.Chakra.Executor
                     "Error in ChakraExecutor.ConsoleCallback: " + ex.Message);
             }
 
-            return JavaScriptValue.Invalid;
+            return JavaScriptValue.Undefined;
         }
 
         private string Stringify(JavaScriptValue value)
@@ -351,28 +337,6 @@ namespace ReactNative.Chakra.Executor
             }
 
             return _stringifyFunction;
-        }
-
-        #endregion
-
-        #region Context Helpers
-
-        private static ContextScopeDisposable CreateContextScope(JavaScriptContext context)
-        {
-            return new ContextScopeDisposable(context);
-        }
-
-        struct ContextScopeDisposable : IDisposable
-        {
-            public ContextScopeDisposable(JavaScriptContext context)
-            {
-                JavaScriptContext.Current = context;
-            }
-
-            public void Dispose()
-            {
-                JavaScriptContext.Current = JavaScriptContext.Invalid;
-            }
         }
 
         #endregion
