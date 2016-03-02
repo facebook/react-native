@@ -369,7 +369,7 @@ RCT_EXPORT_MODULE()
   if (!sourceCodeModule.scriptURL) {
     if (!sourceCodeModule) {
       RCTLogWarn(@"RCTSourceCode module not found");
-    } else {
+    } else if (!RCTRunningInTestEnvironment()) {
       RCTLogWarn(@"RCTSourceCode module scriptURL has not been set");
     }
   } else if (!sourceCodeModule.scriptURL.fileURL) {
@@ -581,7 +581,7 @@ RCT_EXPORT_METHOD(reload)
 
 - (BOOL)hotLoadingAvailable
 {
-  return !_bridge.bundleURL.fileURL; // Only works when running from server
+  return _bridge.bundleURL && !_bridge.bundleURL.fileURL; // Only works when running from server
 }
 
 - (void)setHotLoadingEnabled:(BOOL)enabled
