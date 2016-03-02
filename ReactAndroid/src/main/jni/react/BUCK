@@ -65,7 +65,6 @@ react_library(
     'JSCMemory.h',
   ],
   exported_headers = [
-    'AlignStack.h',
     'Bridge.h',
     'ExecutorToken.h',
     'ExecutorTokenFactory.h',
