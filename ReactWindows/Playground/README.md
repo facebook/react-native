@@ -1,4 +1,4 @@
-# Running the Playground App for React Native For UWP
+# Running the React Native UWP Playground App 
 
 This guide contains instructions for building the UWP code for React Native
 
@@ -13,9 +13,10 @@ Assuming you have [Visual Studio 2015 Enterprise](\\products\PUBLIC\Products\Dev
 Clone this repo onto your local machine.
 ```
 git clone https://github.com/CatalystCode/react-native.git
+cd react-native
 git checkout ReactWindows
 git pull origin ReactWindows
-cd react-native/ReactWindows/Playground
+cd ReactWindows
 ```
 
 Build your environment :
@@ -28,4 +29,7 @@ Run the Playground App:
 
 - Set the Playground Project as your starter project in Visual Studio.
 - Set the target in VS to Bundle. 
+- Run the app on your targeted device.
 
+Change Applicatoin view
+- To manage your playground applications native view, edit the index.ios.js file within the playground VS project.
