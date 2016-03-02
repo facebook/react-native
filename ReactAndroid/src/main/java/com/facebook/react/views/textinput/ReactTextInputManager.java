@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import android.graphics.PorterDuff;
-import android.os.SystemClock;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -33,6 +32,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
@@ -43,8 +43,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
-import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.ReactTextUpdate;
 
 /**
  * Manages instances of TextInput.
@@ -179,6 +179,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else {
       view.setSelectionWatcher(null);
     }
+  }
+
+  @ReactProp(name = "blurOnSubmit", defaultBoolean = true)
+  public void setBlurOnSubmit(ReactEditText view, boolean blurOnSubmit) {
+    view.setBlurOnSubmit(blurOnSubmit);
   }
 
   @ReactProp(name = "placeholder")
@@ -427,7 +432,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextChangedEvent(
               mEditText.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               s.toString(),
               (int) PixelUtil.toDIPFromPixel(contentWidth),
               (int) PixelUtil.toDIPFromPixel(contentHeight),
@@ -436,7 +441,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mEventDispatcher.dispatchEvent(
           new ReactTextInputEvent(
               mEditText.getId(),
-              SystemClock.uptimeMillis(),
+              SystemClock.nanoTime(),
               newText,
               oldText,
               start,
@@ -462,17 +467,17 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis()));
+                      SystemClock.nanoTime()));
             } else {
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis()));
+                      SystemClock.nanoTime()));
 
               eventDispatcher.dispatchEvent(
                   new ReactTextInputEndEditingEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis(),
+                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
           }
@@ -490,10 +495,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputSubmitEditingEvent(
                       editText.getId(),
-                      SystemClock.uptimeMillis(),
+                      SystemClock.nanoTime(),
                       editText.getText().toString()));
             }
-            return false;
+            return !editText.getBlurOnSubmit();
           }
         });
   }
@@ -520,7 +525,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                SystemClock.uptimeMillis(),
+                SystemClock.nanoTime(),
                 start,
                 end
             )

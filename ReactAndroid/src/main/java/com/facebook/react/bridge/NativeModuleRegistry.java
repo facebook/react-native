@@ -48,6 +48,7 @@ public class NativeModuleRegistry {
 
   /* package */ void call(
       CatalystInstance catalystInstance,
+      ExecutorToken executorToken,
       int moduleId,
       int methodId,
       ReadableNativeArray parameters) {
@@ -55,7 +56,7 @@ public class NativeModuleRegistry {
     if (definition == null) {
       throw new RuntimeException("Call to unknown module: " + moduleId);
     }
-    definition.call(catalystInstance, methodId, parameters);
+    definition.call(catalystInstance, executorToken, methodId, parameters);
   }
 
   /* package */ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
@@ -65,6 +66,7 @@ public class NativeModuleRegistry {
       for (ModuleDefinition moduleDef : mModuleTable) {
         jg.writeObjectFieldStart(moduleDef.name);
         jg.writeNumberField("moduleID", moduleDef.id);
+        jg.writeBooleanField("supportsWebWorkers", moduleDef.target.supportsWebWorkers());
         jg.writeObjectFieldStart("methods");
         for (int i = 0; i < moduleDef.methods.size(); i++) {
           MethodRegistration method = moduleDef.methods.get(i);
@@ -163,12 +165,13 @@ public class NativeModuleRegistry {
 
     public void call(
         CatalystInstance catalystInstance,
+        ExecutorToken executorToken,
         int methodId,
         ReadableNativeArray parameters) {
       MethodRegistration method = this.methods.get(methodId);
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, method.tracingName);
       try {
-        this.methods.get(methodId).method.invoke(catalystInstance, parameters);
+        this.methods.get(methodId).method.invoke(catalystInstance, executorToken, parameters);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }

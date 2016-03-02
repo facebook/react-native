@@ -80,6 +80,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     NSString *html = [RCTConvert NSString:source[@"html"]];
     if (html) {
       NSURL *baseURL = [RCTConvert NSURL:source[@"baseUrl"]];
+      if (!baseURL) {
+        baseURL = [NSURL URLWithString:@"about:blank"];
+      }
       [_webView loadHTMLString:html baseURL:baseURL];
       return;
     }
@@ -113,6 +116,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [RCTView autoAdjustInsetsForView:self
                     withScrollView:_webView.scrollView
                       updateOffset:NO];
+}
+
+- (void)setScalesPageToFit:(BOOL)scalesPageToFit
+{
+  if (_webView.scalesPageToFit != scalesPageToFit) {
+    _webView.scalesPageToFit = scalesPageToFit;
+    [_webView reload];
+  }
+}
+
+- (BOOL)scalesPageToFit
+{
+  return _webView.scalesPageToFit;
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor

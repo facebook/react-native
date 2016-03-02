@@ -44,6 +44,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 @interface RCTBatchedBridge : RCTBridge
 
 @property (nonatomic, weak) RCTBridge *parentBridge;
+@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
 
 @end
 
@@ -52,7 +53,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   BOOL _loading;
   BOOL _valid;
   BOOL _wasBatchActive;
-  __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
   NSMutableArray<dispatch_block_t> *_pendingCalls;
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
@@ -339,6 +339,12 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   for (RCTModuleData *moduleData in _moduleDataByID) {
     if (moduleData.hasInstance) {
       [moduleData finishSetupForInstance];
+    }
+  }
+
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    if (moduleData.hasInstance) {
+      [moduleData gatherConstants];
     }
   }
 

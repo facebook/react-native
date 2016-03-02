@@ -11,9 +11,8 @@
 
 const path = require('path');
 const Activity = require('../Activity');
-const DependencyGraph = require('../DependencyResolver/DependencyGraph');
-const replacePatterns = require('../DependencyResolver/lib/replacePatterns');
-const Polyfill = require('../DependencyResolver/Polyfill');
+const DependencyGraph = require('node-haste');
+const replacePatterns = require('node-haste').replacePatterns;
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
 
@@ -85,7 +84,6 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'fbjs',
         'react',
         'react-native',
         // Parse requires AsyncStorage. They will
@@ -121,14 +119,13 @@ class Resolver {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(main, options) {
-    const opts = getDependenciesValidateOpts(options);
-
-    return this._depGraph.getDependencies(
-      main,
-      opts.platform,
-      opts.recursive,
-    ).then(resolutionResponse => {
+  getDependencies(entryPath, options) {
+    const {platform, recursive} = getDependenciesValidateOpts(options);
+    return this._depGraph.getDependencies({
+      entryPath,
+      platform,
+      recursive,
+    }).then(resolutionResponse => {
       this._getPolyfillDependencies().reverse().forEach(
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
@@ -151,11 +148,10 @@ class Resolver {
     return [
       prelude,
       moduleSystem
-    ].map(moduleName => new Polyfill({
-      path: moduleName,
+    ].map(moduleName => this._depGraph.createPolyfill({
+      file: moduleName,
       id: moduleName,
       dependencies: [],
-      isPolyfill: true,
     }));
   }
 
@@ -172,11 +168,10 @@ class Resolver {
     ].concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
-      (polyfillModuleName, idx) => new Polyfill({
-        path: polyfillModuleName,
+      (polyfillModuleName, idx) => this._depGraph.createPolyfill({
+        file: polyfillModuleName,
         id: polyfillModuleName,
         dependencies: polyfillModuleNames.slice(0, idx),
-        isPolyfill: true,
       })
     );
   }

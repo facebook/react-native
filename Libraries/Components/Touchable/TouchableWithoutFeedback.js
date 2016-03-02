@@ -18,7 +18,7 @@ var TimerMixin = require('react-timer-mixin');
 var Touchable = require('Touchable');
 var View = require('View');
 var ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var onlyChild = require('onlyChild');
 
 type Event = Object;
@@ -44,6 +44,10 @@ var TouchableWithoutFeedback = React.createClass({
       React.PropTypes.oneOf(View.AccessibilityTraits),
       React.PropTypes.arrayOf(React.PropTypes.oneOf(View.AccessibilityTraits)),
     ]),
+    /**
+     * If true, disable all interactions for this component.
+     */
+    disabled: React.PropTypes.bool,
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).

@@ -145,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, assign) BOOL centerContent;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) RCTRefreshControl *refreshControl;
 
 @end
 
@@ -287,10 +287,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   __block UIView *nextHeader = nil;
   NSUInteger subviewCount = contentView.reactSubviews.count;
   [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:
-   ^(NSUInteger idx, __unused BOOL *stop) {
+   ^(NSUInteger idx, BOOL *stop) {
 
+    // If the subviews are out of sync with the sticky header indices don't
+    // do anything.
     if (idx >= subviewCount) {
-      RCTLogError(@"Sticky header index %zd was outside the range {0, %zd}", idx, subviewCount);
+      *stop = YES;
       return;
     }
 
@@ -365,7 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return hitView ?: [super hitTest:point withEvent:event];
 }
 
-- (void)setRefreshControl:(UIRefreshControl *)refreshControl
+- (void)setRefreshControl:(RCTRefreshControl *)refreshControl
 {
   if (_refreshControl) {
     [_refreshControl removeFromSuperview];
@@ -826,6 +828,17 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
     _scrollView.contentSize = contentSize;
     _scrollView.contentOffset = newOffset;
   }
+
+  if (RCT_DEBUG) {
+    // Validate that sticky headers are not out of range.
+    NSUInteger subviewCount = _scrollView.contentView.reactSubviews.count;
+    NSUInteger lastIndex = _scrollView.stickyHeaderIndices.lastIndex;
+    if (lastIndex != NSNotFound && lastIndex >= subviewCount) {
+      RCTLogWarn(@"Sticky header index %zd was outside the range {0, %zd}",
+                 lastIndex, subviewCount);
+    }
+  }
+
   [_scrollView dockClosestSectionHeader];
 }
 
@@ -888,7 +901,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
   _onRefreshStart = [onRefreshStart copy];
 
   if (!_scrollView.refreshControl) {
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    RCTRefreshControl *refreshControl = [[RCTRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _scrollView.refreshControl = refreshControl;
   }
