@@ -12,6 +12,7 @@ const ModuleTransport = require('../lib/ModuleTransport');
 const Promise = require('promise');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
+const os = require('os');
 const temp = require('temp');
 const util = require('util');
 const workerFarm = require('worker-farm');
@@ -60,6 +61,23 @@ const validateOpts = declareOpts({
   },
 });
 
+const maxConcurrentWorkers = ((cores, override) => {
+  if (override) {
+    return Math.min(cores, override);
+  }
+
+  if (cores < 3) {
+    return cores;
+  }
+  if (cores < 8) {
+    return Math.floor(cores * 0.75);
+  }
+  if (cores < 24) {
+    return Math.floor(3/8 * cores + 3); // between cores *.75 and cores / 2
+  }
+  return cores / 2;
+})(os.cpus().length, process.env.REACT_NATIVE_MAX_WORKERS);
+
 class Transformer {
   constructor(options) {
     const opts = this._opts = validateOpts(options);
@@ -87,6 +105,7 @@ class Transformer {
       this._workers = workerFarm({
         autoStart: true,
         maxConcurrentCallsPerWorker: 1,
+        maxConcurrentWorkers: maxConcurrentWorkers,
         maxCallsPerWorker: MAX_CALLS_PER_WORKER,
         maxCallTime: opts.transformTimeoutInterval,
         maxRetries: MAX_RETRIES,
