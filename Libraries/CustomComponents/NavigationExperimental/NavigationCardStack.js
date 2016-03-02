@@ -31,6 +31,7 @@ const Animated = require('Animated');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCardStackItem = require('NavigationCardStackItem');
 const NavigationContainer = require('NavigationContainer');
+const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
 const React = require('React');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
@@ -38,14 +39,13 @@ const StyleSheet = require('StyleSheet');
 const emptyFunction = require('emptyFunction');
 
 const {PropTypes} = React;
-const {Directions} = NavigationCardStackItem;
+const {Directions} = NavigationLinearPanResponder;
 
 import type {
   NavigationParentState,
 } from 'NavigationStateUtils';
 
 import type {
-  Layout,
   NavigationStateRenderer,
   NavigationStateRendererProps,
   Position,
@@ -55,7 +55,7 @@ import type {
 type Props = {
   direction: string,
   navigationState: NavigationParentState,
-  renderOverlay: NavigationStateRenderer,
+  renderOverlay: ?NavigationStateRenderer,
   renderScene: NavigationStateRenderer,
 };
 
@@ -98,6 +98,7 @@ class NavigationCardStack extends React.Component {
       layout,
       navigationState,
       position,
+      navigationParentState,
     } = props;
 
     return (
@@ -106,6 +107,7 @@ class NavigationCardStack extends React.Component {
         index={index}
         key={navigationState.key}
         layout={layout}
+        navigationParentState={navigationParentState}
         navigationState={navigationState}
         position={position}
         renderScene={this.props.renderScene}
@@ -135,8 +137,6 @@ NavigationCardStack.defaultProps = {
   direction: Directions.HORIZONTAL,
   renderOverlay: emptyFunction.thatReturnsNull,
 };
-
-NavigationCardStack.Directions = Directions;
 
 const styles = StyleSheet.create({
   animatedView: {
