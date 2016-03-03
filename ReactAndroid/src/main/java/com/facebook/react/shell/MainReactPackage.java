@@ -33,6 +33,7 @@ import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
+import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
@@ -81,6 +82,7 @@ public class MainReactPackage implements ReactPackage {
       new StatusBarModule(reactContext),
       new TimePickerDialogModule(reactContext),
       new ToastModule(reactContext),
+      new VibrationModule(reactContext),
       new WebSocketModule(reactContext)
     );
   }
