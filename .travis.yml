@@ -35,7 +35,7 @@ script:
   elif [ "$TEST_TYPE" = e2e-objc ]
   then
 
-    travis_retry ./scripts/e2e-test.sh
+    travis_retry ./scripts/e2e-test.sh --ios
 
   else
     echo "Unknown test type: $TEST_TYPE"
