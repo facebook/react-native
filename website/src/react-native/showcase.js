@@ -651,6 +651,12 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
     author: 'Emilio Rodriguez'
   },
+  {
+    name: 'ArcChat.com',
+    icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.arcchat',
+    author: 'Lukas Liesis',
+  },
 ];
 
 var AppList = React.createClass({
