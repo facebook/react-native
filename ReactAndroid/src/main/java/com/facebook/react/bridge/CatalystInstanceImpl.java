@@ -222,8 +222,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
       Systrace.unregisterListener(mTraceListener);
 
       synchronouslyDisposeBridgeOnJSThread();
-      mReactQueueConfiguration.destroy();
     }
+
+    mReactQueueConfiguration.destroy();
+
     boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
     if (!wasIdle && !mBridgeIdleListeners.isEmpty()) {
       for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
@@ -293,12 +295,12 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public void handleMemoryPressure(final MemoryPressure level) {
     mReactQueueConfiguration.getJSQueueThread().runOnQueue(
-        new Runnable() {
-          @Override
-          public void run() {
-            Assertions.assertNotNull(mBridge).handleMemoryPressure(level);
-          }
-        });
+      new Runnable() {
+        @Override
+        public void run() {
+          Assertions.assertNotNull(mBridge).handleMemoryPressure(level);
+        }
+      });
   }
 
   /**
@@ -399,12 +401,14 @@ public class CatalystInstanceImpl implements CatalystInstance {
     public void call(ExecutorToken executorToken, int moduleId, int methodId, ReadableNativeArray parameters) {
       mReactQueueConfiguration.getNativeModulesQueueThread().assertIsOnThread();
 
-      // Suppress any callbacks if destroyed - will only lead to sadness.
-      if (mDestroyed) {
-        return;
-      }
+      synchronized (mTeardownLock) {
+        // Suppress any callbacks if destroyed - will only lead to sadness.
+        if (mDestroyed) {
+          return;
+        }
 
-      mJavaRegistry.call(CatalystInstanceImpl.this, executorToken, moduleId, methodId, parameters);
+        mJavaRegistry.call(CatalystInstanceImpl.this, executorToken, moduleId, methodId, parameters);
+      }
     }
 
     @Override
@@ -415,16 +419,37 @@ public class CatalystInstanceImpl implements CatalystInstance {
       // native modules could be in a bad state so we don't want to call anything on them. We
       // still want to trigger the debug listener since it allows instrumentation tests to end and
       // check their assertions without waiting for a timeout.
-      if (!mDestroyed) {
-        Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchComplete");
-        try {
-          mJavaRegistry.onBatchComplete();
-        } finally {
-          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      synchronized (mTeardownLock) {
+        if (!mDestroyed) {
+          Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onBatchComplete");
+          try {
+            mJavaRegistry.onBatchComplete();
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
         }
       }
 
       decrementPendingJSCalls();
+    }
+
+    @Override
+    public void onExecutorUnregistered(ExecutorToken executorToken) {
+      mReactQueueConfiguration.getNativeModulesQueueThread().assertIsOnThread();
+
+      // Since onCatalystInstanceDestroy happens on the UI thread, we don't want to also execute
+      // this callback on the native modules thread at the same time. Longer term, onCatalystInstanceDestroy
+      // should probably be executed on the native modules thread as well instead.
+      synchronized (mTeardownLock) {
+        if (!mDestroyed) {
+          Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "onExecutorUnregistered");
+          try {
+            mJavaRegistry.onExecutorUnregistered(executorToken);
+          } finally {
+            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+          }
+        }
+      }
     }
   }
 
