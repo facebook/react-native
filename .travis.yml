@@ -52,3 +52,10 @@ branches:
   only:
     - master
     - /^.*-stable$/
+
+notifications:
+  email:
+    recipients:
+      - bestander@gmail.com
+    on_failure: change
+    on_success: change

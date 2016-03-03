@@ -62,6 +62,8 @@ public abstract class ReactInstanceManager {
 
   public abstract DevSupportManager getDevSupportManager();
 
+  public abstract MemoryPressureRouter getMemoryPressureRouter();
+
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
@@ -158,6 +160,8 @@ public abstract class ReactInstanceManager {
 
   @VisibleForTesting
   public abstract @Nullable ReactContext getCurrentReactContext();
+
+  public abstract LifecycleState getLifecycleState();
 
   /**
    * Creates a builder that is capable of creating an instance of {@link ReactInstanceManagerImpl}.
