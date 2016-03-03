@@ -77,7 +77,7 @@ var Switch = React.createClass({
     // and so want to ensure it represents our value.
     // We want to change this before we propagate the value to the props
     // because we might be called in a situation where the switch is removed
-    // replaced with a loadings pinner
+    // say, we replace it with a loading spinner
     if (Platform.OS === 'android') {
       this._rctSwitch.setNativeProps({on: this.props.value});
     } else {
