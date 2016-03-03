@@ -15,6 +15,7 @@ install:
   - nvm install 5
   - rm -Rf "${TMPDIR}/jest_preprocess_cache"
   - npm config set spin=false
+  - npm config set progress=false
   - npm install -g flow-bin@`node -p "require('fs').readFileSync('.flowconfig', 'utf8').split('[version]')[1].trim()"`
   - npm install
 
@@ -23,29 +24,20 @@ script:
   if [ "$TEST_TYPE" = objc ]
   then
 
-    ./scripts/objc-test.sh
+    travis_retry ./scripts/objc-test.sh
 
   elif [ "$TEST_TYPE" = js ]
   then
 
     npm install github@0.2.4
     cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; flow --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
-    flow check && npm test -- '\/Libraries\/'
+    flow check
+    npm test
 
-  elif [ "$TEST_TYPE" = packager ]
+  elif [ "$TEST_TYPE" = e2e-objc ]
   then
 
-    npm test -- '\/packager\/'
-
-  elif [ "$TEST_TYPE" = cli ]
-  then
-
-    npm test -- '\/(local|private|react-native)-cli\/'
-
-  elif [ "$TEST_TYPE" = e2e ]
-  then
-
-    ./scripts/e2e-test.sh
+    travis_retry ./scripts/e2e-test.sh
 
   else
     echo "Unknown test type: $TEST_TYPE"
@@ -56,14 +48,7 @@ env:
   matrix:
     - TEST_TYPE=objc
     - TEST_TYPE=js
-    - TEST_TYPE=packager
-    - TEST_TYPE=cli
-    - TEST_TYPE=e2e
-  global:
-    # $APPETIZE_TOKEN
-    - secure: "egsvVSpszTzrNd6bN62DsVAzMiSZI/OHgdizfPryqvqWBf655ztE6XFQSEFNpuIAzSKDDF25ioT8iPfVsbC1iK6HDWHfmqYxML0L+OoU0gi+hV2oKUBFZDZ1fwSnFoWuBdNdMDpLlUxvJp6N1WyfNOB2dxuZUt8eTt48Hi3+Hpc="
-    # $S3_TOKEN
-    - secure: "lY8JZPA0A7zT7L5KF9BBg34XYWIeR/RJiEvE7l7oVr88KnEPtyd//79eHhhVKnUnav7zsk5QJwkcX0MxKTp/dp4G0Am+zOX+sfA8kQrJ+2/+FzFW7AEsW/kHByfaIEIly9DQvUFt4I4oMm8nQZysJLahDgNWglyI3RTuJp//hcY="
+    - TEST_TYPE=e2e-objc
 
 branches:
   only:
