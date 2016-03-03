@@ -202,10 +202,11 @@ RCT_EXPORT_MODULE()
 
 - (void)testInjectedModulesInitializedDuringBridgeInit
 {
-  XCTAssertTrue(_injectedModuleInitNotificationSent);
   XCTAssertEqual(_injectedModule, [_bridge moduleForClass:[RCTTestInjectedModule class]]);
   XCTAssertEqual(_injectedModule.bridge, _bridge.batchedBridge);
   XCTAssertNotNil(_injectedModule.methodQueue);
+  RUN_RUNLOOP_WHILE(!_injectedModuleInitNotificationSent);
+  XCTAssertTrue(_injectedModuleInitNotificationSent);
 }
 
 - (void)testCustomInitModuleInitializedAtBridgeStartup
@@ -214,6 +215,8 @@ RCT_EXPORT_MODULE()
   XCTAssertTrue(_customInitModuleNotificationSent);
   RCTTestCustomInitModule *module = [_bridge moduleForClass:[RCTTestCustomInitModule class]];
   XCTAssertTrue(module.initializedOnMainThread);
+  XCTAssertEqual(module.bridge, _bridge.batchedBridge);
+  XCTAssertNotNil(module.methodQueue);
 }
 
 - (void)testCustomSetBridgeModuleInitializedAtBridgeStartup
@@ -222,6 +225,8 @@ RCT_EXPORT_MODULE()
   XCTAssertTrue(_customSetBridgeModuleNotificationSent);
   RCTTestCustomSetBridgeModule *module = [_bridge moduleForClass:[RCTTestCustomSetBridgeModule class]];
   XCTAssertTrue(module.setBridgeOnMainThread);
+  XCTAssertEqual(module.bridge, _bridge.batchedBridge);
+  XCTAssertNotNil(module.methodQueue);
 }
 
 - (void)testExportConstantsModuleInitializedAtBridgeStartup
@@ -232,6 +237,8 @@ RCT_EXPORT_MODULE()
   RUN_RUNLOOP_WHILE(!module.exportedConstants);
   XCTAssertTrue(module.exportedConstants);
   XCTAssertTrue(module.exportedConstantsOnMainThread);
+  XCTAssertEqual(module.bridge, _bridge.batchedBridge);
+  XCTAssertNotNil(module.methodQueue);
 }
 
 - (void)testLazyInitModuleNotInitializedDuringBridgeInit

@@ -34,25 +34,12 @@
   } \
 }
 
-// Must be declared before RCTTestCustomSetBridgeModule in order to trigger the
-// race condition that we are testing for - namely that the
-// RCTDidInitializeModuleNotification for RCTTestViewManager gets sent before
-// setBridge: is called on RCTTestCustomSetBridgeModule
 @interface RCTTestViewManager : RCTViewManager
 @end
 
 @implementation RCTTestViewManager
 
-@synthesize bridge = _bridge;
-@synthesize methodQueue = _methodQueue;
-
 RCT_EXPORT_MODULE()
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-  (void)[_bridge uiManager]; // Needed to trigger a race condition
-}
 
 - (NSArray<NSString *> *)customDirectEventTypes
 {
@@ -112,7 +99,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)extraModulesForBridge:(__unused RCTBridge *)bridge
 {
-  return @[_notificationObserver];
+  return @[[RCTTestViewManager new], _notificationObserver];
 }
 
 - (void)setUp

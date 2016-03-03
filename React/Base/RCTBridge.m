@@ -104,34 +104,6 @@ dispatch_queue_t RCTJSThread;
 
     // Set up JS thread
     RCTJSThread = (id)kCFNull;
-
-    if (RCT_DEBUG && !RCTRunningInTestEnvironment()) {
-
-      // Set up module classes
-      static unsigned int classCount;
-      Class *classes = objc_copyClassList(&classCount);
-
-      for (unsigned int i = 0; i < classCount; i++)
-      {
-        Class cls = classes[i];
-        Class superclass = cls;
-        while (superclass)
-        {
-          if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
-          {
-            if (![RCTModuleClasses containsObject:cls]) {
-              RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
-                         "RCT_EXPORT_MODULE()?", cls);
-            }
-            break;
-          }
-          superclass = class_getSuperclass(superclass);
-        }
-      }
-
-      free(classes);
-
-    }
   });
 }
 
@@ -238,6 +210,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
 }
 
+- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
+{
+  NSMutableArray *modules = [NSMutableArray new];
+  for (Class moduleClass in self.moduleClasses) {
+    if ([moduleClass conformsToProtocol:protocol]) {
+      id module = [self moduleForClass:moduleClass];
+      if (module) {
+        [modules addObject:module];
+      }
+    }
+  }
+  return [modules copy];
+}
+
 - (RCTEventDispatcher *)eventDispatcher
 {
   return [self moduleForClass:[RCTEventDispatcher class]];
@@ -311,17 +297,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
   [self.batchedBridge enqueueCallback:cbID args:args];
-}
-
-@end
-
-@implementation RCTBridge(Deprecated)
-
-NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
-
-- (NSDictionary *)modules
-{
-  return self.batchedBridge.modules;
 }
 
 @end
