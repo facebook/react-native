@@ -308,6 +308,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     return mDevSupportManager;
   }
 
+  @Override
+  public MemoryPressureRouter getMemoryPressureRouter() {
+    return mMemoryPressureRouter;
+  }
+
   private static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
@@ -580,6 +585,10 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
       }
     }
     mLifecycleState = LifecycleState.BEFORE_CREATE;
+  }
+
+  public LifecycleState getLifecycleState() {
+    return mLifecycleState;
   }
 
   @Override
