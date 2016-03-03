@@ -68,6 +68,7 @@ cd EndToEndTest/ios
 # Make sure we installed local version of react-native
 ls EndToEndTest/`basename $MARKER` > /dev/null
 
+npm install --g flow-bin@0.21.0
 flow --retries 10
 
 ../node_modules/react-native/packager/packager.sh --nonPersistent &
