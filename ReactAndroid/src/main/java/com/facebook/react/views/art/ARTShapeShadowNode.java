@@ -171,11 +171,12 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   }
 
   /*
-   * clculate stops count from array
+   * calculate stops count from array
+   * from array minus first 5 elements because it 1 - LinearGradient key, 2,3,4,5 - LinearGradient position
+   * and after devide on 5 because 1,2,3,4 - colors A,R,G,B and 5 - stop per 4 colors.
    */
   private static int getStopsCount(float[] value) {
-    int values = (value.length - 5) / 4;
-    int count =  values - (values/5);
+    int count = (value.length - 5)/5;
     return count;
   }
 
@@ -186,7 +187,12 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
     int startStops = value.length - stopsCount;
     int startColorsPosition = 5;
     for (int i = 0; i < stopsCount; i++) {
-      stops[i] = i == 0 ? value[startStops + i] : i == (stopsCount - 1) ? value[startStops + 1] : value[startStops + i + 1];
+      stops[i] = i == 0 ?
+        value[startStops + i] :
+        (
+          i == (stopsCount - 1) ? value[startStops + 1] :
+          value[startStops + i + 1]
+        );
       stopsColors[i] = i == 0 ?
         Color.argb(
           (int) (value[startColorsPosition + 3] * 255),
