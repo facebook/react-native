@@ -21,8 +21,13 @@ var View = require('View');
 import type {
   NavigationState,
   NavigationParentState,
-  NavigationScene,
 } from 'NavigationStateUtils';
+
+type NavigationScene = {
+  index: number,
+  state: NavigationState,
+  isStale: boolean,
+};
 
 /**
  * Helper function to compare route keys (e.g. "9", "11").
@@ -64,13 +69,6 @@ type Layout = {
   width: Animated.Value;
   height: Animated.Value;
 };
-
-type OverlayRenderer = (
-  scenes: Array<NavigationScene>,
-  index: number,
-  position: Animated.Value,
-  layout: Layout
-) => ReactElement;
 
 type Position = Animated.Value;
 
@@ -252,11 +250,6 @@ class NavigationAnimatedView extends React.Component {
     return null;
   }
 }
-
-NavigationAnimatedView.propTypes = {
-  navigationState: React.PropTypes.instanceOf(NavigationStateUtils),
-  style: View.propTypes.style,
-};
 
 function setDefaultTiming(position, navigationState) {
   Animated.spring(

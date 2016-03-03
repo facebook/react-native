@@ -16,8 +16,6 @@ const NavigationCard = require('NavigationCard');
 const NavigationCardStack = require('NavigationCardStack');
 const NavigationContainer = require('NavigationContainer');
 const NavigationHeader = require('NavigationHeader');
-const NavigationHeaderTitle = require('NavigationHeaderTitle');
-const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
 const NavigationLegacyNavigator = require('NavigationLegacyNavigator');
 const NavigationReducer = require('NavigationReducer');
 const NavigationRootContainer = require('NavigationRootContainer');
@@ -41,8 +39,6 @@ const NavigationExperimental = {
   Card: NavigationCard,
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
-  HeaderBackButton: NavigationHeaderBackButton,
   LegacyNavigator: NavigationLegacyNavigator,
 };
 
