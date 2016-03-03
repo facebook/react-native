@@ -68,8 +68,8 @@ cd EndToEndTest/ios
 # Make sure we installed local version of react-native
 ls EndToEndTest/`basename $MARKER` > /dev/null
 
-# disabling temporarily, flow is not isntalled globally anymore
-# npm run flow --retries 10
+npm install --g flow-bin@0.21.0
+flow --retries 10
 
 ../node_modules/react-native/packager/packager.sh --nonPersistent &
 SERVER_PID=$!
