@@ -161,6 +161,10 @@ const APIExamples = [
     module: require('./ToastAndroidExample'),
   },
   {
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
+  },
+  {
     key: 'XHRExample',
     module: require('./XHRExample'),
   },

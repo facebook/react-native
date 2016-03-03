@@ -26,6 +26,7 @@ android_library(
     react_native_target('java/com/facebook/react/views/viewpager:viewpager'),
     react_native_target('java/com/facebook/react/views/webview:webview'),
     react_native_target('java/com/facebook/react/modules/appstate:appstate'),
+    react_native_target('java/com/facebook/react/modules/vibration:vibration'),
     react_native_target('java/com/facebook/react/modules/camera:camera'),
     react_native_target('java/com/facebook/react/modules/clipboard:clipboard'),
     react_native_target('java/com/facebook/react/modules/core:core'),

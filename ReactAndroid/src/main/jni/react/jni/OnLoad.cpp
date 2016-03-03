@@ -567,6 +567,7 @@ namespace bridge {
 
 static jmethodID gCallbackMethod;
 static jmethodID gOnBatchCompleteMethod;
+static jmethodID gOnExecutorUnregisteredMethod;
 static jmethodID gLogMarkerMethod;
 
 struct CountableBridge : Bridge, Countable {
@@ -582,7 +583,7 @@ static void logMarker(const std::string& marker) {
   env->DeleteLocalRef(jmarker);
 }
 
-static void makeJavaCall(JNIEnv* env, ExecutorToken executorToken, jobject callback, MethodCall&& call) {
+static void makeJavaCall(JNIEnv* env, ExecutorToken executorToken, jobject callback, const MethodCall& call) {
   if (call.arguments.isNull()) {
     return;
   }
@@ -607,33 +608,51 @@ static void signalBatchComplete(JNIEnv* env, jobject callback) {
   env->CallVoidMethod(callback, gOnBatchCompleteMethod);
 }
 
-static void dispatchCallbacksToJava(ExecutorToken executorToken,
-                                    const RefPtr<WeakReference>& weakCallback,
-                                    const RefPtr<WeakReference>& weakCallbackQueueThread,
-                                    std::vector<MethodCall>&& calls,
-                                    bool isEndOfBatch) {
-  auto env = Environment::current();
-  if (env->ExceptionCheck()) {
-    FBLOGW("Dropped calls because of pending exception");
-    return;
-  }
+class PlatformBridgeCallback : public BridgeCallback {
+public:
+  PlatformBridgeCallback(
+      RefPtr<WeakReference> weakCallback_,
+      RefPtr<WeakReference> weakCallbackQueueThread_) :
+    weakCallback_(std::move(weakCallback_)),
+    weakCallbackQueueThread_(std::move(weakCallbackQueueThread_)) {}
 
-  ResolvedWeakReference callbackQueueThread(weakCallbackQueueThread);
-  if (!callbackQueueThread) {
-    FBLOGW("Dropped calls because of callback queue thread went away");
-    return;
-  }
-
-  auto runnableFunction = std::bind([executorToken, weakCallback, isEndOfBatch] (std::vector<MethodCall>& calls) {
+  void executeCallbackOnCallbackQueueThread(std::function<void(ResolvedWeakReference&)>&& runnable) {
     auto env = Environment::current();
     if (env->ExceptionCheck()) {
-      FBLOGW("Dropped calls because of pending exception");
+      FBLOGW("Dropped callback because of pending exception");
       return;
     }
-    ResolvedWeakReference callback(weakCallback);
-    if (callback) {
-      for (auto&& call : calls) {
-        makeJavaCall(env, executorToken, callback, std::move(call));
+
+    ResolvedWeakReference callbackQueueThread(weakCallbackQueueThread_);
+    if (!callbackQueueThread) {
+      FBLOGW("Dropped callback because callback queue thread went away");
+      return;
+    }
+
+    auto runnableWrapper = std::bind([this] (std::function<void(ResolvedWeakReference&)>& runnable) {
+      auto env = Environment::current();
+      if (env->ExceptionCheck()) {
+        FBLOGW("Dropped calls because of pending exception");
+        return;
+      }
+      ResolvedWeakReference callback(weakCallback_);
+      if (callback) {
+        runnable(callback);
+      }
+    }, std::move(runnable));
+
+    auto jNativeRunnable = runnable::createNativeRunnable(env, std::move(runnableWrapper));
+    queue::enqueueNativeRunnableOnQueue(env, callbackQueueThread, jNativeRunnable.get());
+  }
+
+  virtual void onCallNativeModules(
+      ExecutorToken executorToken,
+      std::vector<MethodCall>&& calls,
+      bool isEndOfBatch) override {
+    executeCallbackOnCallbackQueueThread([executorToken, calls, isEndOfBatch] (ResolvedWeakReference& callback) {
+      JNIEnv* env = Environment::current();
+      for (auto& call : calls) {
+        makeJavaCall(env, executorToken, callback, call);
         if (env->ExceptionCheck()) {
           return;
         }
@@ -641,23 +660,31 @@ static void dispatchCallbacksToJava(ExecutorToken executorToken,
       if (isEndOfBatch) {
         signalBatchComplete(env, callback);
       }
-    }
-  }, std::move(calls));
+    });
+  }
 
-  auto jNativeRunnable = runnable::createNativeRunnable(env, std::move(runnableFunction));
-  queue::enqueueNativeRunnableOnQueue(env, callbackQueueThread, jNativeRunnable.get());
-}
+  virtual void onExecutorUnregistered(ExecutorToken executorToken) override {
+    executeCallbackOnCallbackQueueThread([executorToken] (ResolvedWeakReference& callback) {
+      JNIEnv *env = Environment::current();
+      env->CallVoidMethod(
+          callback,
+          gOnExecutorUnregisteredMethod,
+          static_cast<JExecutorTokenHolder*>(executorToken.getPlatformExecutorToken().get())->getJobj());
+    });
+  }
+private:
+  RefPtr<WeakReference> weakCallback_;
+  RefPtr<WeakReference> weakCallbackQueueThread_;
+};
 
 static void create(JNIEnv* env, jobject obj, jobject executor, jobject callback,
                    jobject callbackQueueThread) {
   auto weakCallback = createNew<WeakReference>(callback);
   auto weakCallbackQueueThread = createNew<WeakReference>(callbackQueueThread);
-  auto bridgeCallback = [weakCallback, weakCallbackQueueThread] (ExecutorToken executorToken, std::vector<MethodCall> calls, bool isEndOfBatch) {
-    dispatchCallbacksToJava(executorToken, weakCallback, weakCallbackQueueThread, std::move(calls), isEndOfBatch);
-  };
+  auto bridgeCallback = folly::make_unique<PlatformBridgeCallback>(weakCallback, weakCallbackQueueThread);
   auto nativeExecutorFactory = extractRefPtr<CountableJSExecutorFactory>(env, executor);
   auto executorTokenFactory = folly::make_unique<JExecutorTokenFactory>();
-  auto bridge = createNew<CountableBridge>(nativeExecutorFactory.get(), std::move(executorTokenFactory), bridgeCallback);
+  auto bridge = createNew<CountableBridge>(nativeExecutorFactory.get(), std::move(executorTokenFactory), std::move(bridgeCallback));
   setCountableForJava(env, obj, std::move(bridge));
 }
 
@@ -968,6 +995,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     jclass callbackClass = env->FindClass("com/facebook/react/bridge/ReactCallback");
     bridge::gCallbackMethod = env->GetMethodID(callbackClass, "call", "(Lcom/facebook/react/bridge/ExecutorToken;IILcom/facebook/react/bridge/ReadableNativeArray;)V");
     bridge::gOnBatchCompleteMethod = env->GetMethodID(callbackClass, "onBatchComplete", "()V");
+    bridge::gOnExecutorUnregisteredMethod = env->GetMethodID(callbackClass, "onExecutorUnregistered", "(Lcom/facebook/react/bridge/ExecutorToken;)V");
 
     jclass markerClass = env->FindClass("com/facebook/react/bridge/ReactMarker");
     bridge::gLogMarkerMethod = env->GetStaticMethodID(markerClass, "logMarker", "(Ljava/lang/String;)V");
