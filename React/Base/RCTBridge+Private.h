@@ -60,6 +60,11 @@
 @property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
 
 /**
+ * Used by RCTModuleData
+ */
+@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
+
+/**
  * Used by RCTModuleData to register the module for frame updates after it is
  * lazily initialized.
  */
