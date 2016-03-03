@@ -169,44 +169,46 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
     }
     return true;
   }
+
+  /*
+   * clculate stops count from array
+   */
   private static int getStopsCount(float[] value) {
-    float values = (value.length - 4) / 4;
-    int count = (int) Math.ceil((double) values - (values/4));
+    int values = (value.length - 5) / 4;
+    int count =  values - (values/5);
     return count;
   }
 
-  private static Float[][] gradientStopsSorting(Float[][] array) {
-    Arrays.sort(array, new Comparator<Float[]>() {
-      @Override
-      public int compare(Float[] stop, Float[] color) {
-        Float stopsNumOfKeys = stop[0];
-        Float colorsNumOfKeys = color[0];
-        return stopsNumOfKeys.compareTo(colorsNumOfKeys);
-      }
-    });
-    return array;
-  }
-
+  /*
+   * sorting stops and stopsColors from array
+   */
   private static int gradientStopsParsing(float[] value, int stopsCount, float[] stops, int[] stopsColors) {
     int startStops = value.length - stopsCount;
     int startColorsPosition = 5;
-    Float[][] sortingArray = new Float[stopsCount][2];
     for (int i = 0; i < stopsCount; i++) {
-      sortingArray[i][0] = value[(startStops + i)];
-      sortingArray[i][1] = (float) Color.argb(
-        (int) (value[startColorsPosition+3] * 255),
-        (int) (value[startColorsPosition] * 255),
-        (int) (value[startColorsPosition+1] * 255),
-        (int) (value[startColorsPosition+2] * 255));
+      stops[i] = i == 0 ? value[startStops + i] : i == (stopsCount - 1) ? value[startStops + 1] : value[startStops + i + 1];
+      stopsColors[i] = i == 0 ?
+        Color.argb(
+          (int) (value[startColorsPosition + 3] * 255),
+          (int) (value[startColorsPosition] * 255),
+          (int) (value[startColorsPosition + 1] * 255),
+          (int) (value[startColorsPosition + 2] * 255)) :
+        i == (stopsCount - 1) ?
+          Color.argb(
+            (int) (value[12] * 255),
+            (int) (value[9] * 255),
+            (int) (value[10] * 255),
+            (int) (value[11] * 255)) :
+          Color.argb(
+            (int) (value[startColorsPosition + 7] * 255),
+            (int) (value[startColorsPosition + 4] * 255),
+            (int) (value[startColorsPosition + 5] * 255),
+            (int) (value[startColorsPosition + 6] * 255));
       startColorsPosition = startColorsPosition + 4;
     }
-    sortingArray = gradientStopsSorting(sortingArray);
-    for (int i = 0; i < stopsCount; i++) {
-      stops[i] = sortingArray[i][0].floatValue();
-      stopsColors[i] = sortingArray[i][1].intValue();
-    }
-    return sortingArray.length;
+    return value.length;
   }
+
 
   /**
    * Sets up {@link #mPaint} according to the props set on a shadow view. Returns {@code true}
