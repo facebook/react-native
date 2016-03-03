@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.app.Application;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -17,6 +17,7 @@ import com.facebook.react.bridge.MemoryPressure;
 import com.facebook.react.bridge.MemoryPressureListener;
 
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND;
+import static android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE;
 import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL;
 
@@ -25,8 +26,11 @@ import static android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL;
  */
 public class MemoryPressureRouter {
   // Trigger this by sending an intent to your activity with adb shell:
-  // am start -a "com.facebook.catalyst.ACTION_TRIM_MEMORY" --activity-single-top -n <activity>
-  private static final String ACTION_TRIM_MEMORY ="com.facebook.catalyst.ACTION_TRIM_MEMORY";
+  // am broadcast -a com.facebook.catalyst.ACTION_TRIM_MEMORY_MODERATE
+  private static final String ACTION_TRIM_MEMORY_MODERATE =
+    "com.facebook.rnfeed.ACTION_TRIM_MEMORY_MODERATE";
+  private static final String ACTION_TRIM_MEMORY_CRITICAL =
+    "com.facebook.rnfeed.ACTION_TRIM_MEMORY_CRITICAL";
 
   private final Set<MemoryPressureListener> mListeners =
     Collections.synchronizedSet(new LinkedHashSet<MemoryPressureListener>());
@@ -46,11 +50,13 @@ public class MemoryPressureRouter {
   };
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-  public static boolean handleDebugIntent(Activity activity, String action) {
+  public static boolean handleDebugIntent(Application application, String action) {
     switch (action) {
-      case ACTION_TRIM_MEMORY:
-        simulateTrimMemory(activity, TRIM_MEMORY_MODERATE);
+      case ACTION_TRIM_MEMORY_MODERATE:
+        simulateTrimMemory(application, TRIM_MEMORY_MODERATE);
         break;
+      case ACTION_TRIM_MEMORY_CRITICAL:
+        simulateTrimMemory(application, TRIM_MEMORY_COMPLETE);
       default:
         return false;
     }
@@ -98,8 +104,7 @@ public class MemoryPressureRouter {
     }
   }
 
-  private static void simulateTrimMemory(Activity activity, int level) {
-    activity.getApplication().onTrimMemory(level);
-    activity.onTrimMemory(level);
+  private static void simulateTrimMemory(Application application, int level) {
+    application.onTrimMemory(level);
   }
 }
