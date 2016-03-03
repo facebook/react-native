@@ -399,6 +399,21 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
   });
 }
 
+- (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view
+{
+  RCTAssertMainThread();
+
+  NSNumber *reactTag = view.reactTag;
+  dispatch_async(_shadowQueue, ^{
+    RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+    RCTAssert(shadowView != nil, @"Could not locate root view with tag #%@", reactTag);
+
+    shadowView.intrinsicContentSize = size;
+
+    [self batchDidComplete];
+  });
+}
+
 - (void)setBackgroundColor:(UIColor *)color forRootView:(UIView *)rootView
 {
   RCTAssertMainThread();
@@ -1072,6 +1087,29 @@ RCT_EXPORT_METHOD(measure:(nonnull NSNumber *)reactTag
       @(frame.size.height),
       @(pagePoint.x),
       @(pagePoint.y)
+    ]);
+  }];
+}
+
+RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[reactTag];
+    if (!view) {
+      // this view was probably collapsed out
+      RCTLogWarn(@"measure cannot find view with tag #%@", reactTag);
+      callback(@[]);
+      return;
+    }
+
+    // Return frame coordinates in window
+    CGRect windowFrame = [view.window convertRect:view.frame fromView:view.superview];
+    callback(@[
+      @(windowFrame.origin.x),
+      @(windowFrame.origin.y),
+      @(windowFrame.size.width),
+      @(windowFrame.size.height),
     ]);
   }];
 }

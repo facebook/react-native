@@ -16,7 +16,7 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTAppState = NativeModules.AppState;
 
 var logError = require('logError');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var _eventHandlers = {
   change: new Map(),

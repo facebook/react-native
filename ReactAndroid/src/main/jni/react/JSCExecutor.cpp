@@ -126,21 +126,25 @@ JSCExecutor::JSCExecutor(
 }
 
 JSCExecutor::~JSCExecutor() {
-  try {
-    *m_isDestroyed = true;
-    if (m_messageQueueThread->isOnThread()) {
+  CHECK(*m_isDestroyed) << "JSCExecutor::destroy() must be called before its destructor!";
+}
+
+void JSCExecutor::destroy() {
+  *m_isDestroyed = true;
+  if (m_messageQueueThread->isOnThread()) {
+    terminateOnJSVMThread();
+  } else {
+    m_messageQueueThread->runOnQueueSync([this] () {
       terminateOnJSVMThread();
-    } else {
-      m_messageQueueThread->runOnQueueSync([this] () {
-        terminateOnJSVMThread();
-      });
-    }
-  } catch (...) {
-    Exceptions::handleUncaughtException();
+    });
   }
 }
 
 void JSCExecutor::initOnJSVMThread() {
+  #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
+  // TODO: Find a way to pass m_jscConfig to configureJSCForAndroid()
+  configureJSCForAndroid(m_jscConfig.getDefault("GCTimers", false).asBool());
+  #endif
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
@@ -152,9 +156,7 @@ void JSCExecutor::initOnJSVMThread() {
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
 
-  // TODO (t10136849): Pass the config options from map to JSC
-
-  #ifdef WITH_FB_JSC_TUNING
+  #if defined(WITH_JSC_INTERNAL) && defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid();
   #endif
 
@@ -225,7 +227,7 @@ void JSCExecutor::flush() {
   }
   // TODO: Make this a first class function instead of evaling. #9317773
   std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
-  m_bridge->callNativeModules(calls, true);
+  m_bridge->callNativeModules(*this, calls, true);
 }
 
 void JSCExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
@@ -236,7 +238,7 @@ void JSCExecutor::callFunction(const double moduleId, const double methodId, con
     std::move(arguments),
   };
   std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(calls, true);
+  m_bridge->callNativeModules(*this, calls, true);
 }
 
 void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& arguments) {
@@ -246,7 +248,7 @@ void JSCExecutor::invokeCallback(const double callbackId, const folly::dynamic& 
     std::move(arguments)
   };
   std::string calls = executeJSCallWithJSC(m_context, "invokeCallbackAndReturnFlushedQueue", std::move(call));
-  m_bridge->callNativeModules(calls, true);
+  m_bridge->callNativeModules(*this, calls, true);
 }
 
 void JSCExecutor::setGlobalVariable(const std::string& propName, const std::string& jsonValue) {
@@ -304,7 +306,7 @@ void JSCExecutor::handleMemoryPressureCritical() {
 }
 
 void JSCExecutor::flushQueueImmediate(std::string queueJSON) {
-  m_bridge->callNativeModules(queueJSON, false);
+  m_bridge->callNativeModules(*this, queueJSON, false);
 }
 
 void JSCExecutor::loadModule(uint32_t moduleId) {
@@ -332,13 +334,22 @@ int JSCExecutor::addWebWorker(
   Object workerObj = Value(m_context, workerRef).asObject();
   workerObj.makeProtected();
 
-  m_ownedWorkers.emplace(std::piecewise_construct, std::forward_as_tuple(workerId), std::forward_as_tuple(std::move(worker), std::move(workerObj)));
+  JSCExecutor *workerPtr = worker.get();
+  std::shared_ptr<MessageQueueThread> sharedMessageQueueThread = worker->m_messageQueueThread;
+  ExecutorToken token = m_bridge->registerExecutor(
+      std::move(worker),
+      std::move(sharedMessageQueueThread));
+
+  m_ownedWorkers.emplace(
+      std::piecewise_construct,
+      std::forward_as_tuple(workerId),
+      std::forward_as_tuple(workerPtr, token, std::move(workerObj)));
 
   return workerId;
 }
 
 void JSCExecutor::postMessageToOwnedWebWorker(int workerId, JSValueRef message, JSValueRef *exn) {
-  auto worker = m_ownedWorkers.at(workerId).getExecutor();
+  auto worker = m_ownedWorkers.at(workerId).executor;
   std::string msgString = Value(m_context, message).toJSONString();
 
   std::shared_ptr<bool> isWorkerDestroyed = worker->m_isDestroyed;
@@ -390,9 +401,14 @@ void JSCExecutor::receiveMessageFromOwner(const std::string& msgString) {
 }
 
 void JSCExecutor::terminateOwnedWebWorker(int workerId) {
-  auto worker = m_ownedWorkers.at(workerId).getExecutor();
-  std::shared_ptr<MessageQueueThread> workerMQT = worker->m_messageQueueThread;
+  auto& workerRegistration = m_ownedWorkers.at(workerId);
+  std::shared_ptr<MessageQueueThread> workerMQT = workerRegistration.executor->m_messageQueueThread;
+  ExecutorToken workerExecutorToken = workerRegistration.executorToken;
   m_ownedWorkers.erase(workerId);
+
+  std::unique_ptr<JSExecutor> worker = m_bridge->unregisterExecutor(workerExecutorToken);
+  worker->destroy();
+  worker.reset();
   workerMQT->quitSynchronous();
 }
 

@@ -13,6 +13,13 @@ var center = require('center');
 var H2 = require('H2');
 
 var support = React.createClass({
+  childContextTypes: {
+    permalink: React.PropTypes.string
+  },
+
+  getChildContext: function() {
+    return {permalink: 'support.html'};
+  },
   render: function() {
     return (
       <Site section="support" title="Support">
