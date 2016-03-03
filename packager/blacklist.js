@@ -21,6 +21,8 @@ var sharedBlacklist = [
   'node_modules/fbjs/lib/Map.js',
   'node_modules/fbjs/lib/isEmpty.js',
 
+  'downstream/core/invariant.js',
+
   /website\/node_modules\/.*/,
 
   // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
