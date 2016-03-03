@@ -98,6 +98,7 @@ var ReactNative = Object.assign(Object.create(require('react')), {
   StyleSheet: require('StyleSheet'),
   TimePickerAndroid: require('TimePickerAndroid'),
   UIManager: require('UIManager'),
+  Vibration: require('Vibration'),
   VibrationIOS: require('VibrationIOS'),
 
   // Plugins

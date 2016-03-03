@@ -245,8 +245,8 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./TransformExample'),
   },
   {
-    key: 'VibrationIOSExample',
-    module: require('./VibrationIOSExample'),
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
   },
   {
     key: 'XHRExample',
