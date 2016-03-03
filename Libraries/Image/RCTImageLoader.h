@@ -92,6 +92,15 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
                                    completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
 
 /**
+ * Decodes an image without clipping the result to fit.
+ */
+- (RCTImageLoaderCancellationBlock)decodeImageDataWithoutClipping:(NSData *)data
+                                                             size:(CGSize)size
+                                                            scale:(CGFloat)scale
+                                                       resizeMode:(RCTResizeMode)resizeMode
+                                                  completionBlock:(RCTImageLoaderCompletionBlock)completionBlock;
+
+/**
  * Get image size, in pixels. This method will do the least work possible to get
  * the information, and won't decode the image if it doesn't have to.
  */
