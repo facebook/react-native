@@ -147,7 +147,8 @@ public class ReactPropConstantsTest {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ViewManagerUnderTest());
     ReactApplicationContext reactContext = new ReactApplicationContext(RuntimeEnvironment.application);
     DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
     UIManagerModule uiManagerModule = new UIManagerModule(
         reactContext,
         viewManagers,

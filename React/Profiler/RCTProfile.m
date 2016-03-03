@@ -27,6 +27,7 @@
 #import "RCTModuleData.h"
 #import "RCTUtils.h"
 #import "RCTUIManager.h"
+#import "RCTJSCExecutor.h"
 
 NSString *const RCTProfileDidStartProfiling = @"RCTProfileDidStartProfiling";
 NSString *const RCTProfileDidEndProfiling = @"RCTProfileDidEndProfiling";
@@ -372,7 +373,6 @@ BOOL RCTProfileIsProfiling(void)
 void RCTProfileInit(RCTBridge *bridge)
 {
   // TODO: enable assert JS thread from any file (and assert here)
-
   if (RCTProfileIsProfiling()) {
     return;
   }
@@ -394,6 +394,20 @@ void RCTProfileInit(RCTBridge *bridge)
       };
     });
   }
+
+  // Set up thread ordering
+  dispatch_async(RCTProfileGetQueue(), ^{
+    NSString *shadowQueue = @(dispatch_queue_get_label([[bridge uiManager] methodQueue]));
+    NSArray *orderedThreads = @[@"JS async", RCTJSCThreadName, shadowQueue, @"main"];
+    [orderedThreads enumerateObjectsUsingBlock:^(NSString *thread, NSUInteger idx, __unused BOOL *stop) {
+      RCTProfileAddEvent(RCTProfileTraceEvents,
+        @"ph": @"M", // metadata event
+        @"name": @"thread_sort_index",
+        @"tid": thread,
+        @"args": @{ @"sort_index": @(-1000 + (NSInteger)idx) }
+      );
+    }];
+  });
 
   RCTProfileHookModules(bridge);
 

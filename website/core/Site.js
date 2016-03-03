@@ -11,9 +11,13 @@
 
 var React = require('React');
 var HeaderLinks = require('HeaderLinks');
+var Metadata = require('Metadata');
 
 var Site = React.createClass({
   render: function() {
+    const path = Metadata.config.RN_DEPLOYMENT_PATH;
+    const version = Metadata.config.RN_VERSION;
+    var basePath = '/react-native/' + (path ? path + '/' : '');
     var title = this.props.title ? this.props.title + ' – ' : '';
     var currentYear = (new Date()).getFullYear();
     title += 'React Native | A framework for building native apps using React';
@@ -30,10 +34,12 @@ var Site = React.createClass({
           <meta property="og:image" content="http://facebook.github.io/react-native/img/opengraph.png?2" />
           <meta property="og:description" content="A framework for building native apps using React" />
 
+          <base href={basePath} />
+
           <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css" />
 
-          <link rel="shortcut icon" href="/react-native/img/favicon.png?2" />
-          <link rel="stylesheet" href="/react-native/css/react-native.css" />
+          <link rel="shortcut icon" href="img/favicon.png?2" />
+          <link rel="stylesheet" href="css/react-native.css" />
 
           <script type="text/javascript" src="//use.typekit.net/vqa1hcx.js"></script>
           <script type="text/javascript">{'try{Typekit.load();}catch(e){}'}</script>
@@ -43,9 +49,12 @@ var Site = React.createClass({
           <div className="container">
             <div className="nav-main">
               <div className="wrap">
-                <a className="nav-home" href="/react-native/">
-                  <img src="/react-native/img/header_logo.png" />
+                <a className="nav-home" href="">
+                  <img src="img/header_logo.png" />
                   React Native
+                </a>
+                <a className="nav-version" href="/react-native/versions.html">
+                  {version}
                 </a>
                 <HeaderLinks section={this.props.section} />
               </div>
@@ -72,7 +81,7 @@ var Site = React.createClass({
             fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
           `}} />
           <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
-          <script src="/react-native/js/scripts.js" />
+          <script src="js/scripts.js" />
         </body>
       </html>
     );

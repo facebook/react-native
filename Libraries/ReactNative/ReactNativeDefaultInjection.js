@@ -38,7 +38,7 @@ var ReactUpdates = require('ReactUpdates');
 var ResponderEventPlugin = require('ResponderEventPlugin');
 var UniversalWorkerNodeHandle = require('UniversalWorkerNodeHandle');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 // Just to ensure this gets packaged, since its only caller is from Native.
 require('RCTEventEmitter');

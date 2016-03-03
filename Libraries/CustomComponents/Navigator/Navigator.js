@@ -44,7 +44,7 @@ var View = require('View');
 var clamp = require('clamp');
 var deprecatedPropType = require('deprecatedPropType');
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var rebound = require('rebound');
 
 var PropTypes = React.PropTypes;
@@ -227,19 +227,13 @@ var Navigator = React.createClass({
     /**
      * Will emit the target route upon mounting and before each nav transition
      */
-    onWillFocus: deprecatedPropType(
-      PropTypes.func,
-      "Use `navigationContext.addListener('willfocus', callback)` instead."
-    ),
+    onWillFocus: PropTypes.func,
 
     /**
      * Will be called with the new route of each scene after the transition is
      * complete or after the initial mounting
      */
-    onDidFocus: deprecatedPropType(
-      PropTypes.func,
-      "Use `navigationContext.addListener('didfocus', callback)` instead."
-    ),
+    onDidFocus: PropTypes.func,
 
     /**
      * Optionally provide a navigation bar that persists across scene
@@ -782,7 +776,7 @@ var Navigator = React.createClass({
   },
 
   _matchGestureAction: function(eligibleGestures, gestures, gestureState) {
-    if (!gestures) {
+    if (!gestures || !eligibleGestures || !eligibleGestures.some) {
       return null;
     }
     var matchedGesture = null;

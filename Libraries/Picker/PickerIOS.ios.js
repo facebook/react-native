@@ -54,7 +54,7 @@ var PickerIOS = React.createClass({
     });
     return {selectedIndex, items};
   },
-  
+
   render: function() {
     return (
       <View style={this.props.style}>
@@ -74,7 +74,7 @@ var PickerIOS = React.createClass({
       this.props.onChange(event);
     }
     if (this.props.onValueChange) {
-      this.props.onValueChange(event.nativeEvent.newValue);
+      this.props.onValueChange(event.nativeEvent.newValue, event.nativeEvent.newIndex);
     }
 
     // The picker is a controlled component. This means we expect the

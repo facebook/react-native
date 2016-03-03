@@ -13,7 +13,7 @@
 
 const ErrorUtils = require('ErrorUtils');
 
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 
 type SimpleTask = {
   name: string;

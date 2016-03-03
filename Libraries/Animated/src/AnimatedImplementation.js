@@ -20,8 +20,8 @@ var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
-var requestAnimationFrame = require('requestAnimationFrame');
+var invariant = require('fbjs/lib/invariant');
+var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 import type { InterpolationConfigType } from 'Interpolation';
 
@@ -844,10 +844,10 @@ class AnimatedAddition extends AnimatedWithChildren {
   _a: Animated;
   _b: Animated;
 
-  constructor(a: Animated, b: Animated) {
+  constructor(a: Animated | number, b: Animated | number) {
     super();
-    this._a = a;
-    this._b = b;
+    this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
+    this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
   __getValue(): number {
@@ -873,10 +873,10 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   _a: Animated;
   _b: Animated;
 
-  constructor(a: Animated, b: Animated) {
+  constructor(a: Animated | number, b: Animated | number) {
     super();
-    this._a = a;
-    this._b = b;
+    this._a = typeof a === 'number' ? new AnimatedValue(a) : a;
+    this._b = typeof b === 'number' ? new AnimatedValue(b) : b;
   }
 
   __getValue(): number {
@@ -895,6 +895,33 @@ class AnimatedMultiplication extends AnimatedWithChildren {
   __detach(): void {
     this._a.__removeChild(this);
     this._b.__removeChild(this);
+  }
+}
+
+class AnimatedModulo extends AnimatedWithChildren {
+  _a: Animated;
+  _modulus: number;
+
+  constructor(a: Animated, modulus: number) {
+    super();
+    this._a = a;
+    this._modulus = modulus;
+  }
+
+  __getValue(): number {
+    return (this._a.__getValue() % this._modulus + this._modulus) % this._modulus;
+  }
+
+  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+    return new AnimatedInterpolation(this, Interpolation.create(config));
+  }
+
+  __attach(): void {
+    this._a.__addChild(this);
+  }
+
+  __detach(): void {
+    this._a.__removeChild(this);
   }
 }
 
@@ -1233,6 +1260,14 @@ var multiply = function(
   return new AnimatedMultiplication(a, b);
 };
 
+var modulo = function(
+  a: Animated,
+  modulus: number
+): AnimatedModulo {
+  return new AnimatedModulo(a, modulus);
+};
+
+
 var maybeVectorAnim = function(
   value: AnimatedValue | AnimatedValueXY,
   config: Object,
@@ -1556,7 +1591,7 @@ var event = function(
  * interaction patterns, like drag-and-drop.
  *
  * You can see more example usage in `AnimationExample.js`, the Gratuitous
- * Animation App, and [Animations documentation guide](http://facebook.github.io/react-native/docs/animations.html).
+ * Animation App, and [Animations documentation guide](docs/animations.html).
  *
  * Note that `Animated` is designed to be fully serializable so that animations
  * can be run in a high performance way, independent of the normal JavaScript
@@ -1603,6 +1638,12 @@ module.exports = {
    * together.
    */
   multiply,
+
+  /**
+   * Creates a new Animated value that is the (non-negative) modulo of the
+   * provided Animated value
+   */
+  modulo,
 
   /**
    * Starts an animation after the given delay.

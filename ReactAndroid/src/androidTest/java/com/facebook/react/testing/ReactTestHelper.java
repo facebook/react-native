@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 
 import android.app.Instrumentation;
 import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,9 +25,9 @@ import com.facebook.react.bridge.JavaScriptModulesConfig;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 
-import android.support.test.InstrumentationRegistry;
 import com.android.internal.util.Predicate;
 
 public class ReactTestHelper {
@@ -60,7 +61,7 @@ public class ReactTestHelper {
       public CatalystInstance build() {
         return new CatalystInstanceImpl.Builder()
           .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-          .setJSExecutor(new JSCJavaScriptExecutor())
+          .setJSExecutor(new JSCJavaScriptExecutor(new WritableNativeMap()))
           .setRegistry(mNativeModuleRegistryBuilder.build())
           .setJSModulesConfig(mJSModulesConfigBuilder.build())
           .setJSBundleLoader(JSBundleLoader.createFileLoader(

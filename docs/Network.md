@@ -41,29 +41,34 @@ fetch('https://mywebsite.com/endpoint/', {
 
 1.  Using `then` and `catch` in synchronous code:
 
-```js
-fetch('https://mywebsite.com/endpoint.php')
-  .then((response) => response.text())
-  .then((responseText) => {
-    console.log(responseText);
-  })
-  .catch((error) => {
-    console.warn(error);
-  });
-```
-
+  ```js
+  fetch('https://mywebsite.com/endpoint.php')
+    .then((response) => response.text())
+    .then((responseText) => {
+      console.log(responseText);
+    })
+    .catch((error) => {
+      console.warn(error);
+    });
+  ```
 2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
-
-```js
-async getUsersFromApi() {
-  try {
-    let response = await fetch('https://mywebsite.com/endpoint/');
-    return response.users;
-  } catch(error) {
-    throw error;
+  
+  ```js
+  class MyComponent extends React.Component {
+    ...
+    async getUsersFromApi() {
+      try {
+        let response = await fetch('https://mywebsite.com/endpoint/');
+        let responseJson = await response.json();
+        return responseJson.users;
+      } catch(error) {
+        // Handle error
+        console.error(error);
+      }
+    }
+    ...
   }
-}
-```
+  ```
 
 - Note: Errors thrown by rejected Promises need to be caught, or they will be swallowed silently
 

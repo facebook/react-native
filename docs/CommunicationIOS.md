@@ -7,7 +7,7 @@ permalink: docs/communication-ios.html
 next: native-modules-android
 ---
 
-In [Integrating with Existing Apps guide](http://facebook.github.io/react-native/docs/embedded-app-ios.html) and [Native UI Components guide](https://facebook.github.io/react-native/docs/native-components-ios.html) we learn how to embed React Native in a native component and vice versa. When we mix native and React Native components, we'll eventually find a need to communicate between these two worlds. Some ways to achieve that have been already mentioned in other guides. This article summarizes available techniques.
+In [Integrating with Existing Apps guide](docs/embedded-app-ios.html) and [Native UI Components guide](docs/native-components-ios.html) we learn how to embed React Native in a native component and vice versa. When we mix native and React Native components, we'll eventually find a need to communicate between these two worlds. Some ways to achieve that have been already mentioned in other guides. This article summarizes available techniques.
 
 ## Introduction
 
@@ -39,18 +39,17 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
 ```
 'use strict';
 
-var React = require('react-native');
-  var {
+import React, {
   View,
   Image
-} = React;
+} from 'react-native';
 
 class ImageBrowserApp extends React.Component {
-  renderImage: function(imgURI) {
+  renderImage(imgURI) {
     return (
       <Image source={{uri: imgURI}} />
     );
-  },
+  }
   render() {
     return (
       <View>
@@ -80,13 +79,13 @@ There is no way to update only a few properties at a time. We suggest that you b
 > Currently, JS functions `componentWillReceiveProps` and `componentWillUpdateProps` of the top level RN component will not be called after a prop update. However, you can access the new props in `componentWillMount` function.
 
 ### Passing properties from React Native to native
-The problem exposing properties of native components is covered in detail in [this article](https://facebook.github.io/react-native/docs/native-components-ios.html#properties). In short, export properties with `RCT_CUSTOM_VIEW_PROPERTY` macro in your custom native component, then just use them in React Native as if the component was an ordinary React Native component.
+The problem exposing properties of native components is covered in detail in [this article](docs/native-components-ios.html#properties). In short, export properties with `RCT_CUSTOM_VIEW_PROPERTY` macro in your custom native component, then just use them in React Native as if the component was an ordinary React Native component.
 
 ### Limits of properties
 
 The main drawback of cross-language properties is that they do not support callbacks, which would allow us to handle bottom-up data bindings. Imagine you have a small RN view that you want to be removed from the native parent view as a result of a JS action. There is no way to do that with props, as the information would need to go bottom-up.
 
-Although we have a flavor of cross-language callbacks ([described here](https://facebook.github.io/react-native/docs/native-modules-ios.html#callbacks)), these callbacks are not always the thing we need. The main problem is that they are not intended to be passed as properties. Rather, this mechanism allows us to trigger a native action from JS, and handle the result of that action in JS.
+Although we have a flavor of cross-language callbacks ([described here](docs/native-modules-ios.html#callbacks)), these callbacks are not always the thing we need. The main problem is that they are not intended to be passed as properties. Rather, this mechanism allows us to trigger a native action from JS, and handle the result of that action in JS.
 
 ## Other ways of cross-language interaction (events and native modules)
 
@@ -96,19 +95,19 @@ React Native enables you to perform cross-language function calls. You can execu
 
 ### Calling React Native functions from native (events)
 
-Events are described in detail in [this article](http://facebook.github.io/react-native/docs/native-components-ios.html#events). Note that using events gives us no guarantees about execution time, as the event is handled on a separate thread.
+Events are described in detail in [this article](docs/native-components-ios.html#events). Note that using events gives us no guarantees about execution time, as the event is handled on a separate thread.
 
 Events are powerful, because they allow us to change React Native components without needing a reference to them. However, there are some pitfalls that you can fall into while using them:
 
-* As events can be sent from anywhere, they can introduce spaghetti-style dependencies into your project. 
-* Events share namespace, which means that you may encounter some name collisions. Collisions will not be detected statically, what makes them hard to debug. 
+* As events can be sent from anywhere, they can introduce spaghetti-style dependencies into your project.
+* Events share namespace, which means that you may encounter some name collisions. Collisions will not be detected statically, what makes them hard to debug.
 * If you use several instances of the same React Native component and you want to distinguish them from the perspective of your event, you'll likely need to introduce some kind of identifiers and pass them along with events (you can use the native view's `reactTag` as an identifier).
 
 The common pattern we use when embedding native in React Native is to make the native component's RCTViewManager a delegate for the views, sending events back to JavaScript via the bridge. This keeps related event calls in one place.
 
 ### Calling native functions from React Native (native modules)
 
-Native modules are Objective-C classes that are available in JS. Typically one instance of each module is created per JS bridge. They can export arbitrary functions and constants to React Native. They have been covered in detail in [this article](https://facebook.github.io/react-native/docs/native-modules-ios.html#content).
+Native modules are Objective-C classes that are available in JS. Typically one instance of each module is created per JS bridge. They can export arbitrary functions and constants to React Native. They have been covered in detail in [this article](docs/native-modules-ios.html#content).
 
 The fact that native modules are singletons limits the mechanism in context of embedding. Let's say we have a React Native component embedded in a native view and we want to update the native, parent view. Using the native module mechanism, we would export a function that not only takes expected arguments, but also an identifier of the parent native view. The identifier would be used to retrieve a reference to the parent view to update. That said, we would need to keep a mapping from identifiers to native views in the module.
 
@@ -125,7 +124,7 @@ When integrating native and React Native, we also need a way to consolidate two 
 
 ### Layout of a native component embedded in React Native
 
-This case is covered in [this article](https://facebook.github.io/react-native/docs/native-components-ios.html#styles). Basically, as all our native react views are subclasses of `UIView`, most style and size attributes will work like you would expect out of the box.
+This case is covered in [this article](docs/native-components-ios.html#styles). Basically, as all our native react views are subclasses of `UIView`, most style and size attributes will work like you would expect out of the box.
 
 ### Layout of a React Native component embedded in native
 

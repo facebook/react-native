@@ -44,6 +44,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 @interface RCTBatchedBridge : RCTBridge
 
 @property (nonatomic, weak) RCTBridge *parentBridge;
+@property (nonatomic, weak) id<RCTJavaScriptExecutor> javaScriptExecutor;
 
 @end
 
@@ -52,7 +53,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   BOOL _loading;
   BOOL _valid;
   BOOL _wasBatchActive;
-  __weak id<RCTJavaScriptExecutor> _javaScriptExecutor;
   NSMutableArray<dispatch_block_t> *_pendingCalls;
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSArray<RCTModuleData *> *_moduleDataByID;
@@ -342,6 +342,12 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
     }
   }
 
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    if (moduleData.hasInstance) {
+      [moduleData gatherConstants];
+    }
+  }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
@@ -461,7 +467,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   if (RCTGetURLQueryParam(self.bundleURL, @"hot")) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
-    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path]];
+    NSString *host = self.bundleURL.host;
+    NSNumber *port = self.bundleURL.port;
+    [self enqueueJSCall:@"HMRClient.enable" args:@[@"ios", path, host, RCTNullIfNil(port)]];
   }
 
 #endif

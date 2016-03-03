@@ -23,15 +23,25 @@ const NavigationExampleRow = require('./NavigationExampleRow');
 const {
   RootContainer: NavigationRootContainer,
   Reducer: NavigationReducer,
+  Header: NavigationHeader,
 } = NavigationExperimental;
 const StackReducer = NavigationReducer.StackReducer;
 
-const NavigationBasicReducer = StackReducer({
-  initialStates: [
-    {key: 'first_page'}
-  ],
-  matchAction: action => true,
-  actionStateMap: action => ({key: action}),
+const NavigationBasicReducer = NavigationReducer.StackReducer({
+  getPushedReducerForAction: (action) => {
+    if (action.type === 'push') {
+      return (state) => state || {key: action.key};
+    }
+    return null;
+  },
+  getReducerForState: (initialState) => (state) => state || initialState,
+  initialState: {
+    key: 'BasicExampleStackKey',
+    index: 0,
+    children: [
+      {key: 'First Route'},
+    ],
+  },
 });
 
 const NavigationBasicExample = React.createClass({
@@ -51,13 +61,13 @@ const NavigationBasicExample = React.createClass({
               <NavigationExampleRow
                 text={`Push page #${navState.children.length}`}
                 onPress={() => {
-                  onNavigate('page #' + navState.children.length);
+                  onNavigate({ type: 'push', key: 'page #' + navState.children.length });
                 }}
               />
               <NavigationExampleRow
                 text="pop"
                 onPress={() => {
-                  onNavigate(StackReducer.PopAction());
+                  onNavigate(NavigationRootContainer.getBackAction());
                 }}
               />
               <NavigationExampleRow
@@ -84,7 +94,7 @@ const styles = StyleSheet.create({
   topView: {
     backgroundColor: '#E9E9EF',
     flex: 1,
-    paddingTop: 30,
+    paddingTop: NavigationHeader.STATUSBAR_HEIGHT,
   },
 });
 

@@ -18,7 +18,7 @@ const {
   LinkingManager: LinkingManagerIOS
 } = require('NativeModules');
 const LinkingManager = Platform.OS === 'android' ? IntentAndroid : LinkingManagerIOS;
-const invariant = require('invariant');
+const invariant = require('fbjs/lib/invariant');
 const Map = require('Map');
 
 const _notifHandlers = new Map();
@@ -38,7 +38,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  *
  * ```
  * componentDidMount() {
- *   var url = Linking.getInitialURL().then(url) => {
+ *   var url = Linking.getInitialURL().then((url) => {
  *     if (url) {
  *       console.log('Initial url is: ' + url);
  *     }
@@ -53,7 +53,7 @@ const DEVICE_NOTIF_EVENT = 'openURL';
  * execution you'll need to add the following lines to you `*AppDelegate.m`:
  *
  * ```
- *#import "RCTLinkingManager.h" 
+ *#import "RCTLinkingManager.h"
  *
  * - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
  *   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation

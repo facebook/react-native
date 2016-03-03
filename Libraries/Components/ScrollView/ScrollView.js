@@ -29,7 +29,7 @@ var deprecatedPropType = require('deprecatedPropType');
 var dismissKeyboard = require('dismissKeyboard');
 var flattenStyle = require('flattenStyle');
 var insetsDiffer = require('insetsDiffer');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var pointsDiffer = require('pointsDiffer');
 var requireNativeComponent = require('requireNativeComponent');
 var processDecelerationRate = require('processDecelerationRate');
@@ -315,7 +315,7 @@ var ScrollView = React.createClass({
      * A RefreshControl component, used to provide pull-to-refresh
      * functionality for the ScrollView.
      *
-     * See [RefreshControl](http://facebook.github.io/react-native/docs/refreshcontrol.html).
+     * See [RefreshControl](docs/refreshcontrol.html).
      */
     refreshControl: PropTypes.element,
 

@@ -15,6 +15,7 @@
 
 var React = require('react-native');
 var {
+  Animated,
   NavigationExperimental,
   StyleSheet,
   ScrollView,
@@ -26,14 +27,24 @@ var {
   RootContainer: NavigationRootContainer,
   Reducer: NavigationReducer,
   Header: NavigationHeader,
+  HeaderTitle: NavigationHeaderTitle,
 } = NavigationExperimental;
 
 const NavigationBasicReducer = NavigationReducer.StackReducer({
-  initialStates: [
-    {key: 'First Route'}
-  ],
-  matchAction: action => true,
-  actionStateMap: actionString => ({key: actionString}),
+  getPushedReducerForAction: (action) => {
+    if (action.type === 'push') {
+      return (state) => state || {key: action.key};
+    }
+    return null;
+  },
+  getReducerForState: (initialState) => (state) => state || initialState,
+  initialState: {
+    key: 'AnimatedExampleStackKey',
+    index: 0,
+    children: [
+      {key: 'First Route'},
+    ],
+  },
 });
 
 class NavigationAnimatedExample extends React.Component {
@@ -45,15 +56,9 @@ class NavigationAnimatedExample extends React.Component {
       <NavigationRootContainer
         reducer={NavigationBasicReducer}
         ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
-        persistenceKey="NavigationAnimatedExampleState"
+        persistenceKey="NavigationAnimExampleState"
         renderNavigation={this._renderNavigated}
       />
-    );
-  }
-  handleBackAction() {
-    return (
-      this.navRootContainer &&
-      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
     );
   }
   _renderNavigated(navigationState, onNavigate) {
@@ -64,28 +69,36 @@ class NavigationAnimatedExample extends React.Component {
       <NavigationAnimatedView
         navigationState={navigationState}
         style={styles.animatedView}
-        renderOverlay={(position, layout) => (
+        renderOverlay={(scenes, index, position, layout) => (
           <NavigationHeader
-            navigationState={navigationState}
+            scenes={scenes}
+            index={index}
             position={position}
-            getTitle={state => state.key}
+            layout={layout}
+            renderTitleComponent={pageState => <NavigationHeaderTitle>{pageState.key}</NavigationHeaderTitle>}
           />
         )}
-        renderScene={(state, index, position, layout) => (
+        setTiming={(pos, navState) => {
+          Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
+        }}
+        renderScene={(props) => (
           <NavigationCard
-            key={state.key}
-            index={index}
-            navigationState={navigationState}
-            position={position}
-            layout={layout}>
+            key={props.navigationState.key}
+            index={props.index}
+            navigationState={props.navigationParentState}
+            position={props.position}
+            layout={props.layout}>
             <ScrollView style={styles.scrollView}>
               <NavigationExampleRow
-                text={navigationState.children[navigationState.index].key}
+                text={props.navigationState.key}
               />
               <NavigationExampleRow
                 text="Push!"
                 onPress={() => {
-                  onNavigate('Route #' + navigationState.children.length);
+                  onNavigate({
+                    type: 'push',
+                    key: 'Route #' + props.navigationParentState.children.length
+                  });
                 }}
               />
               <NavigationExampleRow
@@ -105,7 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: 64
+    marginTop: NavigationHeader.APPBAR_HEIGHT + NavigationHeader.STATUSBAR_HEIGHT,
   },
 });
 

@@ -15,8 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Activity;
 import android.app.Application;
@@ -58,8 +59,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.devsupport.DevServerHelper;
 import com.facebook.react.devsupport.DevSupportManager;
-import com.facebook.react.devsupport.DevSupportManagerImpl;
-import com.facebook.react.devsupport.DisabledDevSupportManager;
+import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevCommandsHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -71,7 +71,18 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.*;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_JS_MODULE_CONFIG_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.BUILD_NATIVE_MODULE_REGISTRY_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INSTANCE_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It expose a way to configure
@@ -85,8 +96,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
  * The lifecycle of the instance of {@link ReactInstanceManagerImpl} should be bound to the activity
  * that owns the {@link ReactRootView} that is used to render react application using this
  * instance manager (see {@link ReactRootView#startReactApplication}). It's required to pass
- * owning activity's lifecycle events to the instance manager (see {@link #onPause},
- * {@link #onDestroy} and {@link #onResume}).
+ * owning activity's lifecycle events to the instance manager (see {@link #onHostPause},
+ * {@link #onHostDestroy} and {@link #onHostResume}).
  *
  * To instantiate an instance of this class use {@link #builder}.
  */
@@ -111,11 +122,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   private String mSourceUrl;
   private @Nullable Activity mCurrentActivity;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      new ConcurrentLinkedQueue<>();
+      Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
   private volatile boolean mHasStartedCreatingInitialContext = false;
   private final UIImplementationProvider mUIImplementationProvider;
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private final @Nullable JSCConfig mJSCConfig;
 
   private final ReactInstanceDevCommandsHandler mDevInterface =
       new ReactInstanceDevCommandsHandler() {
@@ -182,7 +194,9 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     protected Result<ReactApplicationContext> doInBackground(ReactContextInitParams... params) {
       Assertions.assertCondition(params != null && params.length > 0 && params[0] != null);
       try {
-        JavaScriptExecutor jsExecutor = params[0].getJsExecutorFactory().create();
+        JavaScriptExecutor jsExecutor =
+            params[0].getJsExecutorFactory().create(
+              mJSCConfig == null ? new WritableNativeMap() : mJSCConfig.getConfigMap());
         return Result.of(createReactContext(jsExecutor, params[0].getJsBundleLoader()));
       } catch (Exception e) {
         // Pass exception to onPostExecute() so it can be handled on the main thread
@@ -263,7 +277,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
       @Nullable NotThreadSafeBridgeIdleDebugListener bridgeIdleDebugListener,
       LifecycleState initialLifecycleState,
       UIImplementationProvider uiImplementationProvider,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+      @Nullable JSCConfig jscConfig) {
     initializeSoLoaderIfNecessary(applicationContext);
 
     // TODO(9577825): remove this
@@ -275,20 +290,17 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     mJSMainModuleName = jsMainModuleName;
     mPackages = packages;
     mUseDeveloperSupport = useDeveloperSupport;
-    if (mUseDeveloperSupport) {
-      mDevSupportManager = new DevSupportManagerImpl(
-          applicationContext,
-          mDevInterface,
-          mJSMainModuleName,
-          useDeveloperSupport);
-    } else {
-      mDevSupportManager = new DisabledDevSupportManager();
-    }
+    mDevSupportManager = DevSupportManagerFactory.create(
+        applicationContext,
+        mDevInterface,
+        mJSMainModuleName,
+        useDeveloperSupport);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mUIImplementationProvider = uiImplementationProvider;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mJSCConfig = jscConfig;
   }
 
   @Override
@@ -308,8 +320,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   }
 
   private static void setDisplayMetrics(Context context) {
-    DisplayMetrics displayMetrics = new DisplayMetrics();
-    displayMetrics.setTo(context.getResources().getDisplayMetrics());
+    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+
+    DisplayMetrics screenDisplayMetrics = new DisplayMetrics();
+    screenDisplayMetrics.setTo(displayMetrics);
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
 
@@ -317,9 +332,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     // The real metrics include system decor elements (e.g. soft menu bar).
     //
     // See: http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= 17){
-      display.getRealMetrics(displayMetrics);
-
+    if (Build.VERSION.SDK_INT >= 17) {
+      display.getRealMetrics(screenDisplayMetrics);
     } else {
       // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real dimensions.
       // Since react-native only supports API level 16+ we don't have to worry about other cases.
@@ -330,13 +344,13 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
       try {
         Method mGetRawH = Display.class.getMethod("getRawHeight");
         Method mGetRawW = Display.class.getMethod("getRawWidth");
-        displayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
-        displayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
+        screenDisplayMetrics.widthPixels = (Integer) mGetRawW.invoke(display);
+        screenDisplayMetrics.heightPixels = (Integer) mGetRawH.invoke(display);
       } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
         throw new RuntimeException("Error getting real dimensions for API level < 17", e);
       }
     }
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);
   }
 
   /**
@@ -458,20 +472,16 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   }
 
   @Override
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
-
-    mLifecycleState = LifecycleState.BEFORE_RESUME;
 
     mDefaultBackButtonImpl = null;
     if (mUseDeveloperSupport) {
       mDevSupportManager.setDevSupportEnabled(false);
     }
 
+    moveToBeforeResumeLifecycleState();
     mCurrentActivity = null;
-    if (mCurrentReactContext != null) {
-      mCurrentReactContext.onPause();
-    }
   }
 
   /**
@@ -479,17 +489,16 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
    *
    * This method retains an instance to provided mDefaultBackButtonImpl. Thus it's
    * important to pass from the activity instance that owns this particular instance of {@link
-   * ReactInstanceManagerImpl}, so that once this instance receive {@link #onDestroy} event it will
+   * ReactInstanceManagerImpl}, so that once this instance receive {@link #onHostDestroy} event it will
    * clear the reference to that defaultBackButtonImpl.
    *
    * @param defaultBackButtonImpl a {@link DefaultHardwareBackBtnHandler} from an Activity that owns
    * this instance of {@link ReactInstanceManagerImpl}.
    */
   @Override
-  public void onResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+  public void onHostResume(Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     UiThreadUtil.assertOnUiThread();
 
-    mLifecycleState = LifecycleState.RESUMED;
 
     mDefaultBackButtonImpl = defaultBackButtonImpl;
     if (mUseDeveloperSupport) {
@@ -497,30 +506,80 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     }
 
     mCurrentActivity = activity;
-    if (mCurrentReactContext != null) {
-      mCurrentReactContext.onResume(activity);
-    }
+    moveToResumedLifecycleState(false);
   }
 
   @Override
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
+
+    if (mUseDeveloperSupport) {
+      mDevSupportManager.setDevSupportEnabled(false);
+    }
+
+    moveToBeforeCreateLifecycleState();
+    mCurrentActivity = null;
+  }
+
+  @Override
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
+    if (mUseDeveloperSupport) {
+      mDevSupportManager.setDevSupportEnabled(false);
+    }
+
+    moveToBeforeCreateLifecycleState();
 
     if (mReactContextInitAsyncTask != null) {
       mReactContextInitAsyncTask.cancel(true);
     }
 
     mMemoryPressureRouter.destroy(mApplicationContext);
-    if (mUseDeveloperSupport) {
-      mDevSupportManager.setDevSupportEnabled(false);
-    }
 
     if (mCurrentReactContext != null) {
-      mCurrentReactContext.onDestroy();
+      mCurrentReactContext.destroy();
       mCurrentReactContext = null;
       mHasStartedCreatingInitialContext = false;
     }
     mCurrentActivity = null;
+  }
+
+  private void moveToResumedLifecycleState(boolean force) {
+    if (mCurrentReactContext != null) {
+      // we currently don't have an onCreate callback so we call onResume for both transitions
+      if (force ||
+          mLifecycleState == LifecycleState.BEFORE_RESUME ||
+          mLifecycleState == LifecycleState.BEFORE_CREATE) {
+        mCurrentReactContext.onHostResume(mCurrentActivity);
+      }
+    }
+    mLifecycleState = LifecycleState.RESUMED;
+  }
+
+  private void moveToBeforeResumeLifecycleState() {
+    if (mCurrentReactContext != null) {
+      if (mLifecycleState == LifecycleState.BEFORE_CREATE) {
+        mCurrentReactContext.onHostResume(mCurrentActivity);
+        mCurrentReactContext.onHostPause();
+      } else if (mLifecycleState == LifecycleState.RESUMED) {
+        mCurrentReactContext.onHostPause();
+      }
+    }
+    mLifecycleState = LifecycleState.BEFORE_RESUME;
+  }
+
+  private void moveToBeforeCreateLifecycleState() {
+    if (mCurrentReactContext != null) {
+      if (mLifecycleState == LifecycleState.RESUMED) {
+        mCurrentReactContext.onHostPause();
+        mLifecycleState = LifecycleState.BEFORE_RESUME;
+      }
+      if (mLifecycleState == LifecycleState.BEFORE_RESUME) {
+        mCurrentReactContext.onHostDestroy();
+      }
+    }
+    mLifecycleState = LifecycleState.BEFORE_CREATE;
   }
 
   @Override
@@ -602,6 +661,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     mReactInstanceEventListeners.add(listener);
   }
 
+  @Override
+  public void removeReactInstanceEventListener(ReactInstanceEventListener listener) {
+    mReactInstanceEventListeners.remove(listener);
+  }
+
   @VisibleForTesting
   @Override
   public @Nullable ReactContext getCurrentReactContext() {
@@ -652,13 +716,17 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
     mMemoryPressureRouter.onNewReactContextCreated(reactContext);
-    moveReactContextToCurrentLifecycleState(reactContext);
+    moveReactContextToCurrentLifecycleState();
 
     for (ReactRootView rootView : mAttachedRootViews) {
       attachMeasuredRootViewToInstance(rootView, catalystInstance);
     }
 
-    for (ReactInstanceEventListener listener : mReactInstanceEventListeners) {
+    ReactInstanceEventListener[] listeners =
+      new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
+    listeners = mReactInstanceEventListeners.toArray(listeners);
+
+    for (ReactInstanceEventListener listener : listeners) {
       listener.onReactContextInitialized(reactContext);
     }
   }
@@ -697,12 +765,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
   private void tearDownReactContext(ReactContext reactContext) {
     UiThreadUtil.assertOnUiThread();
     if (mLifecycleState == LifecycleState.RESUMED) {
-      reactContext.onPause();
+      reactContext.onHostPause();
     }
     for (ReactRootView rootView : mAttachedRootViews) {
       detachViewFromInstance(rootView, reactContext.getCatalystInstance());
     }
-    reactContext.onDestroy();
+    reactContext.destroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
     mMemoryPressureRouter.onReactInstanceDestroyed();
   }
@@ -822,9 +890,9 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
     }
   }
 
-  private void moveReactContextToCurrentLifecycleState(ReactApplicationContext reactContext) {
+  private void moveReactContextToCurrentLifecycleState() {
     if (mLifecycleState == LifecycleState.RESUMED) {
-      reactContext.onResume(mCurrentActivity);
+      moveToResumedLifecycleState(true);
     }
   }
 }

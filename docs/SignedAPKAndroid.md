@@ -66,29 +66,15 @@ android {
 
 ### Generating the release APK
 
-#### If you have a `react.gradle` file in `android/app`
-
 Simply run the following in a terminal:
 
 ```sh
 $ cd android && ./gradlew assembleRelease
 ```
 
-If you need to change the way the JavaScript bundle and/or drawable resources are bundled (e.g. if you changed the default file/folder names or the general structure of the project), have a look at `android/app/build.gradle` to see how you can update it to reflect these changes.
+Gradle's `assembleRelease` will bundle all the JavaScript needed to run your app into the APK. If you need to change the way the JavaScript bundle and/or drawable resources are bundled (e.g. if you changed the default file/folder names or the general structure of the project), have a look at `android/app/build.gradle` to see how you can update it to reflect these changes.
 
-#### If you *don't* have a `react.gradle` file:
-
-You can [upgrade](/react-native/docs/upgrading.html) to the latest version of React Native to get this file. Alternatively, you can bundle the JavaScript package and drawable resources manually by doing the following in a terminal:
-
-```sh
-$ mkdir -p android/app/src/main/assets
-$ react-native bundle --platform android --dev false --entry-file index.android.js \
-  --bundle-output android/app/src/main/assets/index.android.bundle \
-  --assets-dest android/app/src/main/res/
-$ cd android && ./gradlew assembleRelease
-```
-
-In both cases the generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
+The generated APK can be found under `android/app/build/outputs/apk/app-release.apk`, and is ready to be distributed.
 
 ### Testing the release build of your app
 
@@ -108,18 +94,11 @@ Proguard is a tool that can slightly reduce the size of the APK. It does this by
 
 _**IMPORTANT**: Make sure to thoroughly test your app if you've enabled Proguard. Proguard often requires configuration specific to each native library you're using. See `app/proguard-rules.pro`._
 
-To enable Proguard, set `minifyEnabled` to `true`:
+To enable Proguard, edit `android/app/build.gradle`:
 
 ```gradle
-...
-android {
-    ...
-    buildTypes {
-        release {
-            ...
-            minifyEnabled true
-        }
-    }
-}
-...
+/**
+ * Run Proguard to shrink the Java bytecode in release builds.
+ */
+def enableProguardInReleaseBuilds = true
 ```

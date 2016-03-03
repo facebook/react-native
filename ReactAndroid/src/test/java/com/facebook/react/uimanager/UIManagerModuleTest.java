@@ -109,7 +109,8 @@ public class UIManagerModuleTest {
     mReactContext.initializeWithInstance(mCatalystInstanceMock);
 
     DisplayMetrics displayMetrics = mReactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setScreenDisplayMetrics(displayMetrics);
 
     UIManagerModule uiManagerModuleMock = mock(UIManagerModule.class);
     when(mCatalystInstanceMock.getNativeModule(UIManagerModule.class))

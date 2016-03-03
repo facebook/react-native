@@ -109,6 +109,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderBottomLeftRadius = -1;
     _borderBottomRightRadius = -1;
     _borderStyle = RCTBorderStyleSolid;
+    _hitTestEdgeInsets = UIEdgeInsetsZero;
 
     _backgroundColor = super.backgroundColor;
   }
@@ -178,6 +179,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       RCTLogError(@"Invalid pointer-events specified %zd on %@", _pointerEvents, self);
       return hitSubview ?: hitView;
   }
+}
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (UIEdgeInsetsEqualToEdgeInsets(self.hitTestEdgeInsets, UIEdgeInsetsZero)) {
+    return [super pointInside:point withEvent:event];
+  }
+  CGRect hitFrame = UIEdgeInsetsInsetRect(self.bounds, self.hitTestEdgeInsets);
+  return CGRectContainsPoint(hitFrame, point);
 }
 
 - (BOOL)accessibilityActivate

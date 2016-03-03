@@ -20,10 +20,10 @@ LoadScriptFromAssets loadScriptFromAssets;
 
 namespace PerfLogging {
 InstallNativeHooks installNativeHooks;
-}
+};
 
 namespace JSLogging {
 JSCNativeHook nativeHook = nullptr;
-}
+};
 
 } }

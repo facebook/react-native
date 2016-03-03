@@ -18,7 +18,7 @@ var UIManager = require('UIManager');
 var View = require('View');
 
 var deprecatedPropType = require('deprecatedPropType');
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -123,6 +123,11 @@ var WebView = React.createClass({
     injectedJavaScript: PropTypes.string,
 
     /**
+     * Sets whether the webpage scales to fit the view and the user can change the scale.
+     */
+    scalesPageToFit: PropTypes.bool,
+
+    /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
      * WebViewConfig. This prop will overwrite that config.
      */
@@ -139,6 +144,13 @@ var WebView = React.createClass({
       viewState: WebViewState.IDLE,
       lastErrorEvent: null,
       startInLoadingState: true,
+    };
+  },
+
+  getDefaultProps: function() {
+    return {
+      javaScriptEnabled : true,
+      scalesPageToFit: true,
     };
   },
 
@@ -170,23 +182,13 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
-    var {javaScriptEnabled, domStorageEnabled} = this.props;
-    if (this.props.javaScriptEnabledAndroid) {
-      console.warn('javaScriptEnabledAndroid is deprecated. Use javaScriptEnabled instead');
-      javaScriptEnabled = this.props.javaScriptEnabledAndroid;
-    }
-    if (this.props.domStorageEnabledAndroid) {
-      console.warn('domStorageEnabledAndroid is deprecated. Use domStorageEnabled instead');
-      domStorageEnabled = this.props.domStorageEnabledAndroid;
-    }
-
     var source = this.props.source || {};
     if (this.props.html) {
       source.html = this.props.html;
     } else if (this.props.url) {
       source.uri = this.props.url;
     }
-    
+
     if (source.method === 'POST' && source.headers) {
       console.warn('WebView: `source.headers` is not supported when using POST.');
     } else if (source.method === 'GET' && source.body) {
@@ -199,10 +201,11 @@ var WebView = React.createClass({
         key="webViewKey"
         style={webViewStyles}
         source={resolveAssetSource(source)}
+        scalesPageToFit={this.props.scalesPageToFit}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
-        javaScriptEnabled={javaScriptEnabled}
-        domStorageEnabled={domStorageEnabled}
+        javaScriptEnabled={this.props.javaScriptEnabled}
+        domStorageEnabled={this.props.domStorageEnabled}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}

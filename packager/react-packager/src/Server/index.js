@@ -10,8 +10,8 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../DependencyResolver/FileWatcher');
-const getPlatformExtension = require('../DependencyResolver/lib/getPlatformExtension');
+const FileWatcher = require('node-haste').FileWatcher;
+const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
@@ -182,7 +182,7 @@ class Server {
 
     this._fileWatcher = options.nonPersistent
       ? FileWatcher.createDummyWatcher()
-      : new FileWatcher(watchRootConfigs);
+      : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
       projectRoots: opts.projectRoots,
@@ -240,8 +240,8 @@ class Server {
     return this.buildBundle(options);
   }
 
-  buildBundleForHMR(modules) {
-    return this._bundler.hmrBundle(modules);
+  buildBundleForHMR(modules, host, port) {
+    return this._bundler.hmrBundle(modules, host, port);
   }
 
   getShallowDependencies(entryFile) {

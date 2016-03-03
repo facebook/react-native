@@ -28,6 +28,31 @@ typedef void (^RCTImageLoaderCancellationBlock)(void);
 @interface RCTImageLoader : NSObject <RCTBridgeModule, RCTURLRequestHandler>
 
 /**
+ * The maximum number of concurrent image loading tasks. Loading and decoding
+ * images can consume a lot of memory, so setting this to a higher value may
+ * cause memory to spike. If you are seeing out-of-memory crashes, try reducing
+ * this value.
+ */
+@property (nonatomic, assign) NSUInteger maxConcurrentLoadingTasks;
+
+/**
+ * The maximum number of concurrent image decoding tasks. Decoding large
+ * images can be especially CPU and memory intensive, so if your are decoding a
+ * lot of large images in your app, you may wish to adjust this value.
+ */
+@property (nonatomic, assign) NSUInteger maxConcurrentDecodingTasks;
+
+/**
+ * Decoding large images can use a lot of memory, and potentially cause the app
+ * to crash. This value allows you to throttle the amount of memory used by the
+ * decoder independently of the number of concurrent threads. This means you can
+ * still decode a lot of small images in parallel, without allowing the decoder
+ * to try to decompress multiple huge images at once. Note that this value is
+ * only a hint, and not an indicator of the total memory used by the app.
+ */
+@property (nonatomic, assign) NSUInteger maxConcurrentDecodingBytes;
+
+/**
  * Loads the specified image at the highest available resolution.
  * Can be called from any thread, will call back on an unspecified thread.
  */
