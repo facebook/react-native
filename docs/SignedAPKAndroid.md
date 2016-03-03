@@ -35,7 +35,7 @@ MYAPP_RELEASE_KEY_PASSWORD=*****
 
 These are going to be global gradle variables, which we can later use in our gradle config to sign our app.
 
-_Note: Once you publish the app on the Play Store, you will need to republish your app under a different package name (loosing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords._
+_Note: Once you publish the app on the Play Store, you will need to republish your app under a different package name (losing all downloads and ratings) if you want to change the signing key at any point. So backup your keystore and don't forget the passwords._
 
 ### Adding signing config to your app's gradle config
 
