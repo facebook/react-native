@@ -334,6 +334,12 @@ var apps = [
     link: 'https://itunes.apple.com/us/app/yazboz-batak-esli-batak-okey/id1048620855?ls=1&mt=8',
     author: 'Melih Mucuk',
   },
+  {
+    name: 'ArcChat.com',
+    icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.arcchat',
+    author: 'Lukas Liesis',
+  },
 ];
 
 var showcase = React.createClass({
