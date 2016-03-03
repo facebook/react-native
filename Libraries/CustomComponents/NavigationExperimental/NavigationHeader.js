@@ -27,227 +27,123 @@
  */
 'use strict';
 
-const React = require('react-native');
+const Animated = require('Animated');
+const Image = require('Image');
 const NavigationContainer = require('NavigationContainer');
-const NavigationHeaderTitle = require('NavigationHeaderTitle');
-const NavigationHeaderBackButton = require('NavigationHeaderBackButton');
-
-const {
-  Animated,
-  Platform,
-  StyleSheet,
-  View,
-} = React;
-
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
-const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : 0;
+const NavigationRootContainer = require('NavigationRootContainer');
+const React = require('react-native');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableOpacity = require('TouchableOpacity');
+const View = require('View');
 
 import type {
-  NavigationScene,
+  NavigationState,
+  NavigationParentState
 } from 'NavigationStateUtils';
 
-type Renderer = (scene: NavigationScene) => ReactElement;
-
-type DefaultProps = {
-  renderTitleComponent: Renderer;
-  renderLeftComponent: Renderer;
-};
-
 type Props = {
+  navigationState: NavigationParentState,
+  onNavigate: Function,
   position: Animated.Value,
-  scenes: Array<NavigationScene>;
-  index: number;
-  renderTitleComponent: Renderer;
-  renderLeftComponent: Renderer;
-  renderRightComponent: Renderer;
-  style: any,
+  getTitle: (navState: NavigationState) => string,
 };
 
-class NavigationHeader extends React.Component<DefaultProps, Props, void> {
-  _renderLeftComponent(scene) {
-    const {
-      renderLeftComponent,
-      position,
-    } = this.props;
-
-    if (renderLeftComponent) {
-      const {
-        index,
-        state,
-      } = scene;
-
-      return (
-        <Animated.View
-          pointerEvents={this.props.index === index ? 'auto' : 'none'}
-          key={state.key}
-          style={[
-            styles.left,
-            {
-              opacity: position.interpolate({
-                inputRange: [ index - 1, index, index + 1 ],
-                outputRange: [ 0, 1, 0 ],
-              })
-            }
-          ]}
-        >
-          {renderLeftComponent(state, index)}
-        </Animated.View>
-      );
-    }
-
-    return null;
+class NavigationHeader extends React.Component {
+  _handleBackPress: Function;
+  props: Props;
+  componentWillMount() {
+    this._handleBackPress = this._handleBackPress.bind(this);
   }
-
-  _renderRightComponent(scene) {
-    const {
-      renderRightComponent,
-      position,
-    } = this.props;
-
-    if (renderRightComponent) {
-      const {
-        index,
-        state,
-      } = scene;
-
-      return (
-        <Animated.View
-          pointerEvents={this.props.index === index ? 'auto' : 'none'}
-          key={state.key}
-          style={[
-            styles.right,
-            {
-              opacity: position.interpolate({
-                inputRange: [ index - 1, index, index + 1 ],
-                outputRange: [ 0, 1, 0 ],
-              })
-            }
-          ]}
-        >
-          {renderRightComponent(state, index)}
-        </Animated.View>
-      );
-    }
-
-    return null;
-  }
-
-  _renderTitleComponent(scene) {
-    const {
-      renderTitleComponent,
-      position,
-    } = this.props;
-
-    if (renderTitleComponent) {
-      const {
-        index,
-        state,
-      } = scene;
-
-      return (
-        <Animated.View
-          pointerEvents={this.props.index === index ? 'auto' : 'none'}
-          key={state.key}
-          style={[
-            styles.title,
-            {
-              opacity: position.interpolate({
-                inputRange: [ index - 1, index, index + 1 ],
-                outputRange: [ 0, 1, 0 ],
-              }),
-              transform: [
-                {
-                  translateX: position.interpolate({
-                    inputRange: [ index - 1, index + 1 ],
-                    outputRange: [ 200, -200 ],
-                  }),
-                }
-              ],
-            }
-          ]}
-        >
-          {renderTitleComponent(state, index)}
-        </Animated.View>
-      );
-    }
-
-    return null;
-  }
-
   render() {
-    const { scenes } = this.props;
-
+    var state = this.props.navigationState;
     return (
-      <View style={[ styles.appbar, this.props.style ]}>
-        {scenes.map(this._renderLeftComponent, this)}
-        {scenes.map(this._renderTitleComponent, this)}
-        {scenes.map(this._renderRightComponent, this)}
-      </View>
+      <Animated.View
+        style={[
+          styles.header,
+        ]}>
+        {state.children.map(this._renderTitle, this)}
+        {this._renderBackButton()}
+      </Animated.View>
     );
+  }
+  _renderBackButton() {
+    if (this.props.navigationState.index === 0) {
+      return null;
+    }
+    return (
+      <TouchableOpacity style={styles.backButton} onPress={this._handleBackPress}>
+        <Image source={require('./back_chevron.png')} style={styles.backButtonImage} />
+      </TouchableOpacity>
+    );
+  }
+  _renderTitle(childState, index) {
+    return (
+      <Animated.Text
+        key={childState.key}
+        style={[
+          styles.title,
+          {
+            opacity: this.props.position.interpolate({
+              inputRange: [index - 1, index, index + 1],
+              outputRange: [0, 1, 0],
+            }),
+            left: this.props.position.interpolate({
+              inputRange: [index - 1, index + 1],
+              outputRange: [200, -200],
+            }),
+            right: this.props.position.interpolate({
+              inputRange: [index - 1, index + 1],
+              outputRange: [-200, 200],
+            }),
+          },
+        ]}>
+        {this.props.getTitle(childState)}
+      </Animated.Text>
+    );
+  }
+  _handleBackPress() {
+    this.props.onNavigate(NavigationRootContainer.getBackAction());
   }
 }
 
-const renderTitleComponent = pageState => <NavigationHeaderTitle>{pageState.title}</NavigationHeaderTitle>;
-const renderLeftComponent = (pageState, index) => index !== 0 ? <NavigationHeaderBackButton /> : null;
-
-NavigationHeader.defaultProps = {
-  renderTitleComponent,
-  renderLeftComponent,
-};
-
-NavigationHeader.propTypes = {
-  position: React.PropTypes.object.isRequired,
-  scenes: React.PropTypes.arrayOf(React.PropTypes.shape({
-    index: React.PropTypes.number,
-    state: React.PropTypes.any,
-  })).isRequired,
-  index: React.PropTypes.number.isRequired,
-  renderTitleComponent: React.PropTypes.func,
-  renderLeftComponent: React.PropTypes.func,
-  renderRightComponent: React.PropTypes.func,
-  style: View.propTypes.style,
-};
-
-NavigationHeader.APPBAR_HEIGHT = APPBAR_HEIGHT;
-NavigationHeader.STATUSBAR_HEIGHT = STATUSBAR_HEIGHT;
+NavigationHeader = NavigationContainer.create(NavigationHeader);
 
 const styles = StyleSheet.create({
-  appbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    backgroundColor: Platform.OS === 'ios' ? 'rgba(255, 255, 255, .9)' : 'rgba(255, 255, 255, 1)',
-    borderBottomWidth: Platform.OS === 'ios' ? StyleSheet.hairlineWidth : 0,
-    borderBottomColor: 'rgba(0, 0, 0, .15)',
-    height: APPBAR_HEIGHT + STATUSBAR_HEIGHT,
-    marginBottom: 16, // This is needed for elevation shadow
-    elevation: 2,
-  },
-
   title: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#0A0A0A',
     position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: APPBAR_HEIGHT,
-    right: APPBAR_HEIGHT,
-    marginTop: STATUSBAR_HEIGHT,
-  },
-
-  left: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
+    top: 20,
     left: 0,
-    marginTop: STATUSBAR_HEIGHT,
-  },
-
-  right: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
     right: 0,
-    marginTop: STATUSBAR_HEIGHT,
-  }
+  },
+  header: {
+    backgroundColor: '#EFEFF2',
+    paddingTop: 20,
+    top: 0,
+    height: 64,
+    right: 0,
+    left: 0,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#828287',
+    position: 'absolute',
+  },
+  backButton: {
+    width: 29,
+    height: 37,
+    position: 'absolute',
+    bottom: 4,
+    left: 2,
+    padding: 8,
+  },
+  backButtonImage: {
+    width: 13,
+    height: 21,
+  },
 });
 
-module.exports = NavigationContainer.create(NavigationHeader);
+module.exports = NavigationHeader;
