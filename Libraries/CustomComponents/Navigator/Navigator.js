@@ -1042,11 +1042,11 @@ var Navigator = React.createClass({
     // Clone before returning to avoid caller mutating the stack
     return this.state.routeStack.slice();
   },
-  
+
   getCurrentRouteIndex: function() {
     return this.state.presentedIndex;
   },
-  
+
   getCurrentRoute: function() {
     return {...this.state.routeStack[this.getCurrentRouteIndex()]};
   },
