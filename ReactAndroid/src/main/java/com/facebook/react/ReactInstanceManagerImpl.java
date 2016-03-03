@@ -715,7 +715,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
-    mMemoryPressureRouter.onNewReactContextCreated(reactContext);
+    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
     moveReactContextToCurrentLifecycleState();
 
     for (ReactRootView rootView : mAttachedRootViews) {
@@ -772,7 +772,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     }
     reactContext.destroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
-    mMemoryPressureRouter.onReactInstanceDestroyed();
+    mMemoryPressureRouter.removeMemoryPressureListener(reactContext.getCatalystInstance());
   }
 
   /**
