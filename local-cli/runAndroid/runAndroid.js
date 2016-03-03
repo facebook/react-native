@@ -109,7 +109,7 @@ function buildAndRun(args, reject) {
 
     const devices = adb.getDevices();
     
-    if(devices && devices.length > 0) {
+    if (devices && devices.length > 0) {
       devices.forEach((device) => {
 
         const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
@@ -121,6 +121,8 @@ function buildAndRun(args, reject) {
         child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});  
       }); 
     } else {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
       const fallbackAdbArgs = [
         'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
       ];
