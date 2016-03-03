@@ -15,8 +15,6 @@
  */
 'use strict';
 
-const React = require('react');
-
 export type UIExplorerExample = {
   key: string;
   module: React.Component;
