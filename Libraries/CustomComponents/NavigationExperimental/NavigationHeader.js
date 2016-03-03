@@ -63,7 +63,11 @@ type Props = {
   style: any,
 };
 
-class NavigationHeader extends React.Component<DefaultProps, Props, void> {
+class NavigationHeader extends React.Component {
+  static APPBAR_HEIGHT = APPBAR_HEIGHT;
+  static STATUSBAR_HEIGHT = STATUSBAR_HEIGHT;
+  static defaultProps: Object;
+
   _renderLeftComponent(scene) {
     const {
       renderLeftComponent,
@@ -207,9 +211,6 @@ NavigationHeader.propTypes = {
   renderRightComponent: React.PropTypes.func,
   style: View.propTypes.style,
 };
-
-NavigationHeader.APPBAR_HEIGHT = APPBAR_HEIGHT;
-NavigationHeader.STATUSBAR_HEIGHT = STATUSBAR_HEIGHT;
 
 const styles = StyleSheet.create({
   appbar: {
