@@ -221,10 +221,6 @@ void JSCExecutor::loadApplicationUnbundle(
 }
 
 void JSCExecutor::flush() {
-  if (m_owner != nullptr) {
-    // Web workers don't support native modules yet
-    return;
-  }
   // TODO: Make this a first class function instead of evaling. #9317773
   std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
   m_bridge->callNativeModules(*this, calls, true);
