@@ -30,6 +30,7 @@ public class NativeModuleRegistry {
   private final List<ModuleDefinition> mModuleTable;
   private final Map<Class<? extends NativeModule>, NativeModule> mModuleInstances;
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
+  private final ArrayList<OnExecutorUnregisteredListener> mOnExecutorUnregisteredListenerModules;
 
   private NativeModuleRegistry(
       List<ModuleDefinition> moduleTable,
@@ -37,11 +38,15 @@ public class NativeModuleRegistry {
     mModuleTable = moduleTable;
     mModuleInstances = moduleInstances;
 
-    mBatchCompleteListenerModules = new ArrayList<OnBatchCompleteListener>(mModuleTable.size());
+    mBatchCompleteListenerModules = new ArrayList<>(mModuleTable.size());
+    mOnExecutorUnregisteredListenerModules = new ArrayList<>(mModuleTable.size());
     for (int i = 0; i < mModuleTable.size(); i++) {
       ModuleDefinition definition = mModuleTable.get(i);
       if (definition.target instanceof OnBatchCompleteListener) {
         mBatchCompleteListenerModules.add((OnBatchCompleteListener) definition.target);
+      }
+      if (definition.target instanceof OnExecutorUnregisteredListener) {
+        mOnExecutorUnregisteredListenerModules.add((OnExecutorUnregisteredListener) definition.target);
       }
     }
   }
@@ -132,6 +137,12 @@ public class NativeModuleRegistry {
   public void onBatchComplete() {
     for (int i = 0; i < mBatchCompleteListenerModules.size(); i++) {
       mBatchCompleteListenerModules.get(i).onBatchComplete();
+    }
+  }
+
+  public void onExecutorUnregistered(ExecutorToken executorToken) {
+    for (int i = 0; i < mOnExecutorUnregisteredListenerModules.size(); i++) {
+      mOnExecutorUnregisteredListenerModules.get(i).onExecutorDestroyed(executorToken);
     }
   }
 
