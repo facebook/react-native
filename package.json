@@ -129,13 +129,13 @@
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
-    "babel-core": "~6.4.5",
-    "babel-plugin-external-helpers": "~6.4.0",
-    "babel-polyfill": "~6.3.14",
-    "babel-preset-react-native": "^1.2.4",
-    "babel-register": "~6.4.3",
-    "babel-types": "~6.4.5",
-    "babylon": "~6.4.5",
+    "babel-core": "^6.6.4",
+    "babel-plugin-external-helpers": "^6.5.0",
+    "babel-polyfill": "^6.6.1",
+    "babel-preset-react-native": "^1.5.1",
+    "babel-register": "^6.6.0",
+    "babel-types": "^6.6.4",
+    "babylon": "^6.6.4",
     "base64-js": "^0.0.8",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
@@ -184,6 +184,7 @@
     "eslint-plugin-react": "^4.1.0",
     "flow-bin": "^0.21.0",
     "jest-cli": "0.9.0-fb2",
-    "portfinder": "0.4.0"
+    "portfinder": "0.4.0",
+    "react": "^0.14.5"
   }
 }
