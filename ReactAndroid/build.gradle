@@ -224,7 +224,7 @@ android {
         }
 
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
-        testApplicationId "com.facebook.react.tests"
+        testApplicationId "com.facebook.react.tests.gradle"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

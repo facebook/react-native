@@ -30,10 +30,14 @@
         "parse",
         "react-transform-hmr"
       ],
-      "platforms": ["ios", "android"]
+      "platforms": [
+        "ios",
+        "android"
+      ]
     },
     "modulePathIgnorePatterns": [
       "/node_modules/(?!react|fbjs|react-native|parse|react-transform-hmr|core-js|promise)/",
+      "node_modules/react/node_modules/fbjs/",
       "node_modules/react/lib/React.js",
       "node_modules/react/lib/ReactDOM.js",
       "node_modules/fbjs/lib/Map.js",
@@ -79,7 +83,8 @@
       "downstream/core/nativeRequestAnimationFrame.js",
       "downstream/core/toArray.js",
       "node_modules/jest-cli",
-      "node_modules/react/dist"
+      "node_modules/react/dist",
+      "/node_modules/fbjs/.*/__mocks__/"
     ],
     "testFileExtensions": [
       "js"
@@ -87,7 +92,8 @@
     "unmockedModulePathPatterns": [
       "promise",
       "source-map",
-      "fast-path"
+      "fast-path",
+      "fbjs"
     ]
   },
   "main": "Libraries/react-native/react-native.js",
@@ -110,6 +116,7 @@
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",
+    "flow": "flow",
     "lint": "eslint Examples/ Libraries/",
     "start": "/usr/bin/env bash -c './packager/packager.sh \"$@\" || true' --"
   },
@@ -122,13 +129,13 @@
   "dependencies": {
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
-    "babel-core": "~6.4.5",
-    "babel-plugin-external-helpers": "~6.4.0",
-    "babel-polyfill": "~6.3.14",
-    "babel-preset-react-native": "^1.2.4",
-    "babel-register": "~6.4.3",
-    "babel-types": "~6.4.5",
-    "babylon": "~6.4.5",
+    "babel-core": "^6.6.4",
+    "babel-plugin-external-helpers": "^6.5.0",
+    "babel-polyfill": "^6.6.1",
+    "babel-preset-react-native": "^1.5.1",
+    "babel-register": "^6.6.0",
+    "babel-types": "^6.6.4",
+    "babylon": "^6.6.4",
     "base64-js": "^0.0.8",
     "bser": "^1.0.2",
     "chalk": "^1.1.1",
@@ -136,7 +143,7 @@
     "debug": "^2.2.0",
     "event-target-shim": "^1.0.5",
     "fast-path": "^1.1.0",
-    "fbjs": "^0.6.0",
+    "fbjs": "^0.7.2",
     "fbjs-scripts": "^0.4.0",
     "graceful-fs": "^4.1.2",
     "image-size": "^0.3.5",
@@ -172,10 +179,12 @@
     "yeoman-generator": "^0.20.3"
   },
   "devDependencies": {
+    "babel-eslint": "^5.0.0",
+    "eslint": "^2.2.0",
+    "eslint-plugin-react": "^4.1.0",
+    "flow-bin": "^0.21.0",
     "jest-cli": "0.9.0-fb2",
-    "babel-eslint": "4.1.4",
-    "eslint": "1.3.1",
-    "eslint-plugin-react": "3.3.1",
-    "portfinder": "0.4.0"
+    "portfinder": "0.4.0",
+    "react": "^0.14.5"
   }
 }

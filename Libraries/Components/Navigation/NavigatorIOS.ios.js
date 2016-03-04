@@ -20,7 +20,7 @@ var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');

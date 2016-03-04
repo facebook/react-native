@@ -29,6 +29,9 @@ extern WebWorkerQueueFactory createWebWorkerThread;
 
 using LoadScriptFromAssets = std::function<std::string(const std::string& assetName)>;
 extern LoadScriptFromAssets loadScriptFromAssets;
+
+using LoadScriptFromNetworkSync = std::function<std::string(const std::string& url, const std::string& tempfileName)>;
+extern LoadScriptFromNetworkSync loadScriptFromNetworkSync;
 };
 
 namespace PerfLogging {
@@ -44,11 +47,6 @@ namespace JSLogging {
       size_t argumentCount,
       const JSValueRef arguments[], JSValueRef *exception);
   extern JSCNativeHook nativeHook;
-};
-
-namespace Exceptions {
-  using HandleUncaughtException = std::function<void()>;
-  extern HandleUncaughtException handleUncaughtException;
 };
 
 } }

@@ -96,6 +96,13 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJSModule(jsInterface);
   }
 
+  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.getJSModule(executorToken, jsInterface);
+  }
+
   /**
    * @return the instance of the specified module interface associated with this ReactContext.
    */

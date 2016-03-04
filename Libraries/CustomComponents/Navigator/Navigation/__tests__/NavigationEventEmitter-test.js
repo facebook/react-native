@@ -26,6 +26,7 @@
 
 jest
   .dontMock('EmitterSubscription')
+  .dontMock('EventSubscription')
   .dontMock('EventEmitter')
   .dontMock('EventSubscriptionVendor')
   .dontMock('NavigationEvent')
@@ -87,6 +88,32 @@ describe('NavigationEventEmitter', () => {
     emitter.addListener('two', () => {
       logs.push(3);
       emitter.emit('three');
+      logs.push(4);
+    });
+
+    emitter.addListener('three', () => {
+      logs.push(5);
+    });
+
+    emitter.emit('one');
+
+    expect(logs).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('puts nested emit call in a queue should be in sequence order', () => {
+    var context = {};
+    var emitter = new NavigationEventEmitter(context);
+    var logs = [];
+
+    emitter.addListener('one', () => {
+      logs.push(1);
+      emitter.emit('two');
+      emitter.emit('three');
+      logs.push(2);
+    });
+
+    emitter.addListener('two', () => {
+      logs.push(3);
       logs.push(4);
     });
 
