@@ -236,7 +236,7 @@ var WebView = React.createClass({
 
     /**
      * Determines whether HTML5 audio & videos require the user to tap before they can
-     * start playing. The default value is `false`
+     * start playing. The default value is `false`.
      */
     mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
