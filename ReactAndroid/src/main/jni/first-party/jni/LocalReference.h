@@ -27,7 +27,7 @@ struct LocalReferenceDeleter {
     if (localReference != nullptr) {
       Environment::current()->DeleteLocalRef(localReference);
     }
-  }
+  } 
  };
 
 template<class T>

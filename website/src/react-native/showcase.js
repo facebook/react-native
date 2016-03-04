@@ -169,6 +169,12 @@ var apps = [
     author: 'Accio Delivery Inc.',
   },
   {
+    name: 'ArcChat.com',
+    icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.arcchat',
+    author: 'Lukas Liesis',
+  },
+  {
     name: 'Beetroot',
     icon: 'http://is1.mzstatic.com/image/pf/us/r30/Purple5/v4/66/fd/dd/66fddd70-f848-4fc5-43ee-4d52197ccab8/pr_source.png',
     link: 'https://itunes.apple.com/us/app/beetroot/id1016159001?ls=1&mt=8',
@@ -239,6 +245,12 @@ var apps = [
     author: 'Rishabh Mehan',
   },
   {
+    name: 'Deskbookers',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
+    author: 'Emilio Rodriguez'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
@@ -247,13 +259,6 @@ var apps = [
       'http://www.s21g.com/DockMan.html',
     ],
     author: 'Genki Takiuchi (s21g Inc.)',
-  },
-  {
-    name: 'Fixt',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
-    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
-    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
-    author: 'Fixt',
   },
   {
     name: 'Due',
@@ -285,6 +290,13 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/MCoiCCwUan0dxzqRR_Mrr7kO308roYdI2aTsIpUGYWzUmpJT1-R2_J04weQKFEd3Mg=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.arjunkomath.product_hunt&hl=en',
     author: 'Arjun Komath',
+  },
+  {
+    name: 'Fixt',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
+    author: 'Fixt',
   },
   {
     name: 'Foodstand',
@@ -321,6 +333,13 @@ var apps = [
     icon: 'http://honestreviews.techulus.com/icon.png',
     link: 'https://play.google.com/store/apps/details?id=com.techulus.honestreviews&hl=en',
     author: 'Arjun Komath',
+  },
+  {
+    name: 'Hover',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/ba/55/e6/ba55e6ee-71cf-b843-f592-0917c9b6c645/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/hover-1-drone-uav-pilot-app!/id947641516?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.analyticadevelopment.android.hover',
+    author: 'KevinEJohn',
   },
   {
     name: 'HSK Level 1 Chinese Flashcards',
@@ -475,6 +494,15 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
+  {
     name: 'RenovationFind',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
     link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
@@ -536,16 +564,23 @@ var apps = [
     author: 'PrazAs Learning Inc.',
   },
   {
-    name: 'Thai Tone',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
-    author: 'Alexey Ledak',
+    name: 'TeamWarden',
+    icon: 'http://a1.mzstatic.com/eu/r30/Purple69/v4/09/37/61/0937613a-46e3-3278-5457-5de49a4ee9ab/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/gb/app/teamwarden/id1052570507?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.teamwarden',
+    author: 'nittygritty.net',
   },
   {
     name: 'Text Blast',
     icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/4f/29/58/4f2958a1-7f35-9260-6340-c67ac29d7740/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/text-blast-2016/id1023852862?mt=8',
     author: 'Sesh',
+  },
+  {
+    name: 'Thai Tone',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
+    author: 'Alexey Ledak',
   },
   {
     name: 'Tong Xing Wang',

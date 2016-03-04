@@ -11,7 +11,7 @@ Can you see anything in the logs? Can you debug why this happens? **Send a pull 
 
 Have a question or not sure you've found a bug?
 -----------------------------------------------------------------
-Please ask your question [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) with the tag `react-native`. StackOverflow is amazing for Q&A. Because of the reputation system it is likely the community will see and answer your question there.
+Please ask your question on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native) with the tag `react-native`. StackOverflow is amazing for Q&A. Because of the reputation system it is likely the community will see and answer your question there.
 
 Make sure you **include a short code snippet to demonstrate the problem**.
 

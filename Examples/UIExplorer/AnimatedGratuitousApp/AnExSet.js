@@ -31,6 +31,8 @@ var AnExScroll = require('./AnExScroll');
 var AnExTilt = require('./AnExTilt');
 
 class AnExSet extends React.Component {
+  state: any;
+
   constructor(props: Object) {
     super(props);
     function randColor() {

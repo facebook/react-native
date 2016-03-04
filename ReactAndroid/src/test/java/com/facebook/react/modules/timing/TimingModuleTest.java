@@ -12,6 +12,7 @@ package com.facebook.react.modules.timing;
 import android.view.Choreographer;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ExecutorToken;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -54,6 +55,7 @@ public class TimingModuleTest {
   private PostFrameCallbackHandler mPostFrameCallbackHandler;
   private long mCurrentTimeNs;
   private JSTimersExecution mJSTimersMock;
+  private ExecutorToken mExecutorTokenMock;
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
@@ -92,7 +94,8 @@ public class TimingModuleTest {
 
     mTiming = new Timing(reactContext);
     mJSTimersMock = mock(JSTimersExecution.class);
-    when(reactInstance.getJSModule(JSTimersExecution.class)).thenReturn(mJSTimersMock);
+    mExecutorTokenMock = mock(ExecutorToken.class);
+    when(reactContext.getJSModule(mExecutorTokenMock, JSTimersExecution.class)).thenReturn(mJSTimersMock);
     mTiming.initialize();
   }
 
@@ -107,7 +110,7 @@ public class TimingModuleTest {
   @Test
   public void testSimpleTimer() {
     mTiming.onHostResume();
-    mTiming.createTimer(1, 0, 0, false);
+    mTiming.createTimer(mExecutorTokenMock, 1, 0, 0, false);
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1));
     reset(mJSTimersMock);
@@ -117,7 +120,7 @@ public class TimingModuleTest {
 
   @Test
   public void testSimpleRecurringTimer() {
-    mTiming.createTimer(100, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 100, 0, 0, true);
     mTiming.onHostResume();
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
@@ -130,13 +133,13 @@ public class TimingModuleTest {
   @Test
   public void testCancelRecurringTimer() {
     mTiming.onHostResume();
-    mTiming.createTimer(105, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 105, 0, 0, true);
 
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105));
 
     reset(mJSTimersMock);
-    mTiming.deleteTimer(105);
+    mTiming.deleteTimer(mExecutorTokenMock, 105);
     stepChoreographerFrame();
     verifyNoMoreInteractions(mJSTimersMock);
   }
@@ -144,7 +147,7 @@ public class TimingModuleTest {
   @Test
   public void testPausingAndResuming() {
     mTiming.onHostResume();
-    mTiming.createTimer(41, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 41, 0, 0, true);
 
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));

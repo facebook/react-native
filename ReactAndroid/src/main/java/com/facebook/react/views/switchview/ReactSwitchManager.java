@@ -10,7 +10,6 @@
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -18,12 +17,13 @@ import android.widget.CompoundButton;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -71,7 +71,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
                   buttonView.getId(),
-                  SystemClock.uptimeMillis(),
+                  SystemClock.nanoTime(),
                   isChecked));
         }
       };
