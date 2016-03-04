@@ -1097,17 +1097,16 @@ var Navigator = React.createClass({
 
   render: function() {
     var newRenderedSceneMap = new Map();
-    var scenes = this.state.routeStack.map((route, index) => {
+    var scenes = this.state.routeStack.map(((route, index) => {
       var renderedScene;
-      if (this._renderedSceneMap.has(route) &&
-          index !== this.state.presentedIndex) {
+      if (this._renderedSceneMap.has(route)) {
         renderedScene = this._renderedSceneMap.get(route);
       } else {
         renderedScene = this._renderScene(route, index);
       }
       newRenderedSceneMap.set(route, renderedScene);
       return renderedScene;
-    });
+    }).bind(this));
     this._renderedSceneMap = newRenderedSceneMap;
     return (
       <View style={[styles.container, this.props.style]}>
