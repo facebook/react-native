@@ -173,7 +173,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       mDrawCommand = new DrawTextLayout(new BoringLayout(
           mText,
           PAINT,
-          (int) getLayoutWidth(),
+          (int) (right - left),
           mAlignment,
           mSpacingMult,
           mSpacingAdd,
