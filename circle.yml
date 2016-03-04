@@ -66,6 +66,9 @@ test:
     - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
         timeout: 360
 
+    # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
+    - ./scripts/e2e-test.sh --packager
+
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
   post:
