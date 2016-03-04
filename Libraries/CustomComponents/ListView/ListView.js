@@ -53,7 +53,8 @@ var SCROLLVIEW_REF = 'listviewscroll';
  * `ListView.DataSource`, populate it with a simple array of data blobs, and
  * instantiate a `ListView` component with that data source and a `renderRow`
  * callback which takes a blob from the data array and returns a renderable
- * component.
+ * component. The ListView will only be able to scroll if the parent's style
+ * has 'flex: '.
  *
  * Minimal example:
  *
@@ -67,10 +68,12 @@ var SCROLLVIEW_REF = 'listviewscroll';
  *
  * render: function() {
  *   return (
- *     <ListView
- *       dataSource={this.state.dataSource}
- *       renderRow={(rowData) => <Text>{rowData}</Text>}
- *     />
+ *     <View style={{flex: 1}}>
+ *       <ListView
+ *         dataSource={this.state.dataSource}
+ *         renderRow={(rowData) => <Text>{rowData}</Text>}
+ *       />
+ *     </View>
  *   );
  * },
  * ```
