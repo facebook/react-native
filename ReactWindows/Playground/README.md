@@ -41,9 +41,13 @@ Change Application view
 
 ### The local-cli bundle server is returning an error response.
 
-If you use Git on Windows and your default settings checkout files with Windows line endings, the node-haste dependency will mistakenly pick up dependencies in the comments sections of JavaScript files. There is an active pull request on the node haste repository (https://github.com/facebook/node-haste/pull/48) that addresses this issue. Until this pull request is merged, and the dependency is updated in the upstream repository, you'll have to make the same changes in .\react-native\node_modules\node-haste\lib\lib\extractRequires.js.
+If you use Git on Windows and your default settings checkout files with Windows line endings, the `node-haste` dependency will mistakenly pick up dependencies in the comments sections of JavaScript files. There is an active pull request on the node haste repository (https://github.com/facebook/node-haste/pull/48) that addresses this issue. Until this pull request is merged, and the dependency is updated in the upstream repository, you'll have to make the same changes in .\react-native\node_modules\node-haste\lib\lib\extractRequires.js.
 
-After you make the edits to the node-haste module, you'll need to re-run the local-cli bundle server with an option to reset the cache.
+After you make the edits to the `node-haste` module, you may need to re-run the local-cli bundle server with an option to reset the cache.
 ```
 node local-cli\cli.js start --reset-cache
 ```
+
+### The local-cli bundle server takes a long time to crawl the file system and eventually throws a timeout error.
+
+The `node-haste` module depends on the `graceful-fs` module for crawling the file system when (https://facebook.github.io/watchman/)[Watchman] is not available on the system. This is particularly slow on older versions of Node.js, however Node.js v5.7.1 seems to be fast enough. If you are unable to upgrade, or are still encountering the timeout error even after upgrading, you can adjust the timeout value `MAX_WAIT_TIME` in .\react-native\node_modules\node-haste\lib\FileWatcher\index.js.
