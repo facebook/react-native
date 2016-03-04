@@ -16,6 +16,10 @@ namespace ReactNative.Chakra.Executor
     {
         private readonly JavaScriptRuntime _runtime;
 
+        private JavaScriptNativeFunction _consoleLog;
+        private JavaScriptNativeFunction _consoleWarn;
+        private JavaScriptNativeFunction _consoleError;
+
         private JavaScriptValue _globalObject;
         private JavaScriptValue _requireFunction;
 
@@ -155,9 +159,13 @@ namespace ReactNative.Chakra.Executor
             var consoleObject = JavaScriptValue.CreateObject();
             EnsureGlobalObject().SetProperty(consolePropertyId, consoleObject, true);
 
-            DefineHostCallback(consoleObject, "log", ConsoleLog, IntPtr.Zero);
-            DefineHostCallback(consoleObject, "warn", ConsoleWarn, IntPtr.Zero);
-            DefineHostCallback(consoleObject, "error", ConsoleError, IntPtr.Zero);
+            _consoleLog = ConsoleLog;
+            _consoleWarn = ConsoleWarn;
+            _consoleError = ConsoleError;
+
+            DefineHostCallback(consoleObject, "log", _consoleLog, IntPtr.Zero);
+            DefineHostCallback(consoleObject, "warn", _consoleWarn, IntPtr.Zero);
+            DefineHostCallback(consoleObject, "error", _consoleError, IntPtr.Zero);
 
             Debug.WriteLine("Chakra initialization successful.");
         }
