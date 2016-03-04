@@ -589,6 +589,12 @@ var apps = [
     author: 'Ho Yin Tsun Eugene',
   },
   {
+    name: 'Veggies in Season',
+    icon: 'https://s3.amazonaws.com/veggies-assets/icon175x175.png',
+    link: 'https://itunes.apple.com/es/app/veggies-in-season/id1088215278?mt=8',
+    author: 'Victor Delgado',
+  },
+  {
     name: 'WEARVR',
     icon: 'http://a2.mzstatic.com/eu/r30/Purple69/v4/4f/5a/28/4f5a2876-9530-ef83-e399-c5ef5b2dab80/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/wearvr/id1066288171?mt=8',
