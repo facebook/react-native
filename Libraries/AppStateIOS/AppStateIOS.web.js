@@ -18,13 +18,15 @@ class AppStateIOS {
   static currentState = null;
 
   static addEventListener(type, handler) {
-    warning(false, 'Cannot listen to AppStateIOS events on Android.');
+    warning(false, 'Cannot listen to AppStateIOS events on web.');
   }
 
   static removeEventListener(type, handler) {
-    warning(false, 'Cannot remove AppStateIOS listener on Android.');
+    warning(false, 'Cannot remove AppStateIOS listener on web.');
   }
 
 }
+
+AppStateIOS.currentState = null;
 
 module.exports = AppStateIOS;

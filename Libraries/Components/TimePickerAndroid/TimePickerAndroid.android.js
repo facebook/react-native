@@ -56,10 +56,12 @@ class TimePickerAndroid {
 
   /**
    * A time has been selected.
+   * $FlowFixMe
    */
   static get timeSetAction() { return 'timeSetAction'; }
   /**
    * The dialog has been dismissed.
+   * $FlowFixMe
    */
   static get dismissedAction() { return 'dismissedAction'; }
 }

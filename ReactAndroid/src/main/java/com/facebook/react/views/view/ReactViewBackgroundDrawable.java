@@ -91,7 +91,6 @@ import com.facebook.csslayout.Spacing;
   /* Value at Spacing.ALL index used for rounded borders, whole array used by rectangular borders */
   private @Nullable Spacing mBorderWidth;
   private @Nullable Spacing mBorderColor;
-  private @Nullable BorderRadius mBorderRadius;
   private @Nullable BorderStyle mBorderStyle;
 
   /* Used for rounded border and rounded background */
@@ -102,6 +101,7 @@ import com.facebook.csslayout.Spacing;
   private @Nullable RectF mTempRectForBorderRadius;
   private @Nullable RectF mTempRectForBorderRadiusOutline;
   private boolean mNeedUpdatePathForBorderRadius = false;
+  private float mBorderRadius = CSSConstants.UNDEFINED;
 
   /* Used by all types of background and for drawing borders */
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

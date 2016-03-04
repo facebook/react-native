@@ -93,7 +93,6 @@ class Resolver {
         'parse',
       ],
       platforms: ['ios', 'android', 'web'],
-      platforms: ['ios', 'android', 'web'],
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,

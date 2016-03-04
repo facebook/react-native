@@ -6,7 +6,7 @@
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var webifyStyle = require('webifyStyle');
-var keyMirror = require('keyMirror');
+var keyMirror = require('keymirror');
 
 var WebViewState = keyMirror({
     IDLE: null,

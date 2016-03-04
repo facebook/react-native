@@ -6,25 +6,22 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule AppStateIOS
- * @flow
+ * @providesModule RCTNetworking
  */
 'use strict';
 
 var warning = require('fbjs/lib/warning');
 
-class AppStateIOS {
+class RCTNetworking {
 
-  static currentState = null;
-
-  static addEventListener(type, handler) {
-    warning(false, 'Cannot listen to AppStateIOS events on Android.');
+  static sendRequest(query, callback) {
+    warning(false, 'RCTNetworking not implemented for web.');
   }
 
-  static removeEventListener(type, handler) {
-    warning(false, 'Cannot remove AppStateIOS listener on Android.');
+  static abortRequest(requestId) {
+    warning(false, 'RCTNetworking not implemented for web.');
   }
 
 }
 
-module.exports = AppStateIOS;
+module.exports = RCTNetworking;

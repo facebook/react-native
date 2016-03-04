@@ -42,12 +42,10 @@
 # Ignore Website
 .*/website/.*
 
-# Ignore Examples (Even)
+# Even
 .*/Examples/.*
-
-# Ignore until react-haste is updated (Even)
-.*/node_modules/fbjs-haste/core/PromiseMap.js
-.*/node_modules/fbjs-haste/fetch/__mocks__/fetch.js
+.*/Libraries/NavigationExperimental/.*
+.*/Libraries/CustomComponents/NavigationExperimental/.*
 
 [include]
 

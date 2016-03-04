@@ -224,11 +224,8 @@ var TouchableHighlight = React.createClass({
     this.clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     if (this._hasPressHandler() && this.refs[UNDERLAY_REF]) {
-      this.refs[CHILD_REF].setNativeProps(INACTIVE_CHILD_PROPS);
-      this.refs[UNDERLAY_REF].setNativeProps({
-        ...INACTIVE_UNDERLAY_PROPS,
-        style: this.state.underlayStyle,
-      });
+      this.refs[CHILD_REF].setNativeProps({style: INACTIVE_CHILD_STYLE});
+      this.refs[UNDERLAY_REF].setNativeProps({style: this.state.underlayStyle});
       this.props.onHideUnderlay && this.props.onHideUnderlay();
     }
   },

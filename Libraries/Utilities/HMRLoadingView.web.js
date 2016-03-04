@@ -6,17 +6,24 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Platform
+ * @providesModule HMRLoadingView
  * @flow
  */
 
 'use strict';
 
-var Platform = {
-  OS: 'android',
-  // $FlowFixMe
-  get Version() { return require('NativeModules').AndroidConstants.Version; },
-  isFast: true, // [Even]
-};
+var warning = require('fbjs/lib/warning');
 
-module.exports = Platform;
+class HMRLoadingView {
+
+  static showMessage(message: string) {
+    warning(false, 'HMRLoadingView not implemented for web.');
+  }
+
+  static hide() {
+    warning(false, 'HMRLoadingView not implemented for web.');
+  }
+
+}
+
+module.exports = HMRLoadingView;

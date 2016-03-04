@@ -6,17 +6,8 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  *
- * @providesModule Platform
- * @flow
+ * @providesModule PickerIOS
  */
-
 'use strict';
 
-var Platform = {
-  OS: 'android',
-  // $FlowFixMe
-  get Version() { return require('NativeModules').AndroidConstants.Version; },
-  isFast: true, // [Even]
-};
-
-module.exports = Platform;
+module.exports = require('UnimplementedView');

@@ -238,8 +238,8 @@ RCT_EXPORT_MODULE()
   }
 
   NSString *scheme = [_bridge.bundleURL scheme];
-  NSNumber *port = [_bridge.bundleURL port];
-  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/message?role=shell", scheme, host, port]];
+//  NSNumber *port = [_bridge.bundleURL port];
+  return [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/message?role=shell", scheme, host]]; // [Even] HACK
 }
 
 // TODO: Move non-UI logic into separate RCTDevSettings module

@@ -69,7 +69,7 @@ class FormData {
         value = '' + value;
       }
 
-      /* $FlowIssue(>=0.20.1) #9463928 */
+      /* $FlowIssue #9463928 */
       var headers: Headers = {'content-disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means

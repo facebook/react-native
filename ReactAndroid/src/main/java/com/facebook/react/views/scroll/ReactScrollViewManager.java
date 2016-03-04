@@ -42,11 +42,6 @@ public class ReactScrollViewManager
     return new ReactScrollView(context);
   }
 
-  @ReactProp(name = "scrollEnabled", defaultBoolean = true)
-  public void setScrollEnabled(ReactScrollView view, boolean value) {
-    view.setScrollEnabled(value);
-  }
-
   @ReactProp(name = "showsVerticalScrollIndicator")
   public void setShowsVerticalScrollIndicator(ReactScrollView view, boolean value) {
     view.setVerticalScrollBarEnabled(value);

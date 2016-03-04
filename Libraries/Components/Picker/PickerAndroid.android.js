@@ -55,18 +55,18 @@ var PickerAndroid = React.createClass({
     return this._stateFromProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: Object) {
     this.setState(this._stateFromProps(nextProps));
   },
 
   // Translate prop and children into stuff that the native picker understands.
-  _stateFromProps: function(props) {
+  _stateFromProps: function(props: Object): Object {
     var selectedIndex = 0;
     let items = ReactChildren.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
-      let childProps = {
+      let childProps: Object = {
         value: child.props.value,
         label: child.props.label,
       };

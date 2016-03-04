@@ -73,10 +73,12 @@ class DatePickerAndroid {
 
   /**
    * A date has been selected.
+   * $FlowFixMe
    */
   static get dateSetAction() { return 'dateSetAction'; }
   /**
    * The dialog has been dismissed.
+   * $FlowFixMe
    */
   static get dismissedAction() { return 'dismissedAction'; }
 }

@@ -26,11 +26,10 @@ import com.facebook.react.views.view.ReactClippingViewGroupHelper;
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
-public class ReactHorizontalScrollView extends HorizontalScrollView implements
+public class ReactHorizontalScrollView extends PagingHorizontalScrollView implements
     ReactClippingViewGroup {
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
-  private boolean mScrollEnabled = true;
 
   private @Nullable Rect mClippingRect;
   private boolean mDoneFlinging;
@@ -42,10 +41,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   public ReactHorizontalScrollView(Context context) {
     super(context);
-  }
-
-  public void setScrollEnabled(boolean scrollEnabled) {
-    mScrollEnabled = scrollEnabled;
   }
 
   @Override

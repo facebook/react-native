@@ -4,13 +4,10 @@
  */
 'use strict';
 
-let React = require('react-native');
-let {
-  PropTypes,
-  ScrollView,
-  StyleSheet,
-  View,
-} = React;
+var React = require('React');
+var ScrollView = require('ScrollView');
+var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 function cloneReferencedElement(element, config, ...children) {
   let cloneRef = config.ref;
@@ -64,8 +61,8 @@ let InvertibleScrollView = React.createClass({
 
   propTypes: {
     ...ScrollView.propTypes,
-    inverted: PropTypes.bool,
-    renderScrollComponent: PropTypes.func.isRequired,
+    inverted: React.PropTypes.bool,
+    renderScrollComponent: React.PropTypes.func.isRequired,
   },
 
   getDefaultProps(): DefaultProps {

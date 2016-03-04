@@ -63,10 +63,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         MeasureSpec.getSize(heightMeasureSpec));
   }
 
-  public void setScrollEnabled(boolean scrollEnabled) {
-    mScrollEnabled = scrollEnabled;
-  }
-
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
