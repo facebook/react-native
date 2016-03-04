@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.SystemClock;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -55,12 +55,12 @@ import com.facebook.react.uimanager.events.TouchEventType;
  */
 public class ReactRootView extends SizeMonitoringFrameLayout implements RootView {
 
-  private final KeyboardListener mKeyboardListener = new KeyboardListener();
-
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mLaunchOptions;
+  private @Nullable KeyboardListener mKeyboardListener;
   private int mTargetTag = -1;
+  private final float[] mTargetCoordinates = new float[2];
   private boolean mChildIsHandlingNativeGesture = false;
   private boolean mWasMeasured = false;
   private boolean mAttachScheduled = false;
@@ -106,7 +106,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
           Assertions.assertNotNull(mReactInstanceManager)
               .attachMeasuredRootView(ReactRootView.this);
           mIsAttachedToInstance = true;
-          getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+          getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
         }
       });
     }
@@ -143,9 +143,19 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // {@link #findTargetTagForTouch} to find react view ID that will be responsible for handling
       // this gesture
       mChildIsHandlingNativeGesture = false;
-      mTargetTag = TouchTargetHelper.findTargetTagForTouch(ev.getY(), ev.getX(), this);
+      mTargetTag = TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
+          ev.getX(),
+          ev.getY(),
+          this,
+          mTargetCoordinates);
       eventDispatcher.dispatchEvent(
-          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.START, ev));
+          TouchEvent.obtain(
+              mTargetTag,
+              SystemClock.nanoTime(),
+              TouchEventType.START,
+              ev,
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (mChildIsHandlingNativeGesture) {
       // If the touch was intercepted by a child, we've already sent a cancel event to JS for this
       // gesture, so we shouldn't send any more touches related to it.
@@ -161,20 +171,44 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
       // End of the gesture. We reset target tag to -1 and expect no further event associated with
       // this gesture.
       eventDispatcher.dispatchEvent(
-          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.END, ev));
+          TouchEvent.obtain(
+              mTargetTag,
+              SystemClock.nanoTime(),
+              TouchEventType.END,
+              ev,
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
       mTargetTag = -1;
     } else if (action == MotionEvent.ACTION_MOVE) {
       // Update pointer position for current gesture
       eventDispatcher.dispatchEvent(
-          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.MOVE, ev));
+          TouchEvent.obtain(
+              mTargetTag,
+              SystemClock.nanoTime(),
+              TouchEventType.MOVE,
+              ev,
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
       // New pointer goes down, this can only happen after ACTION_DOWN is sent for the first pointer
       eventDispatcher.dispatchEvent(
-          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.START, ev));
+          TouchEvent.obtain(
+              mTargetTag,
+              SystemClock.nanoTime(),
+              TouchEventType.START,
+              ev,
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_POINTER_UP) {
       // Exactly onw of the pointers goes up
       eventDispatcher.dispatchEvent(
-          TouchEvent.obtain(mTargetTag, SystemClock.uptimeMillis(), TouchEventType.END, ev));
+          TouchEvent.obtain(
+              mTargetTag,
+              SystemClock.nanoTime(),
+              TouchEventType.END,
+              ev,
+              mTargetCoordinates[0],
+              mTargetCoordinates[1]));
     } else if (action == MotionEvent.ACTION_CANCEL) {
       dispatchCancelEvent(ev);
       mTargetTag = -1;
@@ -221,9 +255,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     Assertions.assertNotNull(eventDispatcher).dispatchEvent(
         TouchEvent.obtain(
             mTargetTag,
-            SystemClock.uptimeMillis(),
+            SystemClock.nanoTime(),
             TouchEventType.CANCEL,
-            androidEvent));
+            androidEvent,
+            mTargetCoordinates[0],
+            mTargetCoordinates[1]));
   }
 
   @Override
@@ -261,7 +297,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mReactInstanceManager != null && !mAttachScheduled) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
-      getViewTreeObserver().removeOnGlobalLayoutListener(mKeyboardListener);
+      getViewTreeObserver().removeOnGlobalLayoutListener(getKeyboardListener());
     }
   }
 
@@ -319,7 +355,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     if (mWasMeasured && mIsAttachedToWindow) {
       mReactInstanceManager.attachMeasuredRootView(this);
       mIsAttachedToInstance = true;
-      getViewTreeObserver().addOnGlobalLayoutListener(mKeyboardListener);
+      getViewTreeObserver().addOnGlobalLayoutListener(getKeyboardListener());
     } else {
       mAttachScheduled = true;
     }
@@ -344,9 +380,23 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
     mWasMeasured = true;
   }
 
+  private KeyboardListener getKeyboardListener() {
+    if (mKeyboardListener == null) {
+      mKeyboardListener = new KeyboardListener();
+    }
+    return mKeyboardListener;
+  }
+
   private class KeyboardListener implements ViewTreeObserver.OnGlobalLayoutListener {
+    private final Rect mVisibleViewArea;
+    private final int mMinKeyboardHeightDetected;
+
     private int mKeyboardHeight = 0;
-    private final Rect mVisibleViewArea = new Rect();
+
+    /* package */ KeyboardListener() {
+      mVisibleViewArea = new Rect();
+      mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
+    }
 
     @Override
     public void onGlobalLayout() {
@@ -360,8 +410,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
 
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       final int heightDiff =
-          DisplayMetricsHolder.getDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
-      if (mKeyboardHeight != heightDiff && heightDiff > 0) {
+          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
+      if (mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected) {
         // keyboard is now showing, or the keyboard height has changed
         mKeyboardHeight = heightDiff;
         WritableMap params = Arguments.createMap();
@@ -372,9 +422,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout implements RootView
         coordinates.putDouble("height", PixelUtil.toDIPFromPixel(mKeyboardHeight));
         params.putMap("endCoordinates", coordinates);
         sendEvent("keyboardDidShow", params);
-      } else if (mKeyboardHeight != 0 && heightDiff == 0) {
+      } else if (mKeyboardHeight != 0 && heightDiff <= mMinKeyboardHeightDetected) {
         // keyboard is now hidden
-        mKeyboardHeight = heightDiff;
+        mKeyboardHeight = 0;
         sendEvent("keyboardDidHide", null);
       }
     }

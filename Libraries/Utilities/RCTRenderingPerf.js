@@ -13,7 +13,7 @@
 
 var ReactDefaultPerf = require('ReactDefaultPerf');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 type perfModule = {
   start: () => void;

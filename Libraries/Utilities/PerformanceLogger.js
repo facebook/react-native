@@ -10,8 +10,9 @@
  */
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
 
-var performanceNow = require('performanceNow');
+var performanceNow = require('fbjs/lib/performanceNow');
 
 var timespans = {};
 var extras = {};
@@ -61,6 +62,15 @@ var PerformanceLogger = {
         console.log(
           'PerformanceLogger: Attempting to end a timespan that has not started ',
           key,
+        );
+      }
+      return;
+    }
+    if (timespans[key].endTime) {
+      if (__DEV__) {
+        console.log(
+          'PerformanceLogger: Attempting to end a timespan that has already ended ',
+          key
         );
       }
       return;
@@ -130,5 +140,10 @@ var PerformanceLogger = {
     return extras;
   }
 };
+
+BatchedBridge.registerCallableModule(
+  'PerformanceLogger',
+  PerformanceLogger
+);
 
 module.exports = PerformanceLogger;

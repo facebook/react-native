@@ -10,12 +10,10 @@
 package com.facebook.react.bridge;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
@@ -33,23 +31,14 @@ public class JavaScriptModulesConfig {
     return mModules;
   }
 
-  /*package*/ String moduleDescriptions() {
-    JsonFactory jsonFactory = new JsonFactory();
-    StringWriter writer = new StringWriter();
-    try {
-      JsonGenerator jg = jsonFactory.createGenerator(writer);
-      jg.writeStartObject();
-      for (JavaScriptModuleRegistration registration : mModules) {
-        jg.writeObjectFieldStart(registration.getName());
-        appendJSModuleToJSONObject(jg, registration);
-        jg.writeEndObject();
-      }
+  /*package*/ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
+    jg.writeStartObject();
+    for (JavaScriptModuleRegistration registration : mModules) {
+      jg.writeObjectFieldStart(registration.getName());
+      appendJSModuleToJSONObject(jg, registration);
       jg.writeEndObject();
-      jg.close();
-    } catch (IOException ioe) {
-      throw new RuntimeException("Unable to serialize JavaScript module declaration", ioe);
     }
-    return writer.getBuffer().toString();
+    jg.writeEndObject();
   }
 
   private void appendJSModuleToJSONObject(
@@ -63,6 +52,9 @@ public class JavaScriptModulesConfig {
       jg.writeEndObject();
     }
     jg.writeEndObject();
+    if (registration.getModuleInterface().isAnnotationPresent(SupportsWebWorkers.class)) {
+      jg.writeBooleanField("supportsWebWorkers", true);
+    }
   }
 
   public static class Builder {

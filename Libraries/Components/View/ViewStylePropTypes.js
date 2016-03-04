@@ -13,6 +13,8 @@
 
 var LayoutPropTypes = require('LayoutPropTypes');
 var ReactPropTypes = require('ReactPropTypes');
+var ColorPropType = require('ColorPropType');
+var ShadowPropTypesIOS = require('ShadowPropTypesIOS');
 var TransformPropTypes = require('TransformPropTypes');
 
 /**
@@ -20,14 +22,15 @@ var TransformPropTypes = require('TransformPropTypes');
  */
 var ViewStylePropTypes = {
   ...LayoutPropTypes,
+  ...ShadowPropTypesIOS,
   ...TransformPropTypes,
   backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
-  backgroundColor: ReactPropTypes.string,
-  borderColor: ReactPropTypes.string,
-  borderTopColor: ReactPropTypes.string,
-  borderRightColor: ReactPropTypes.string,
-  borderBottomColor: ReactPropTypes.string,
-  borderLeftColor: ReactPropTypes.string,
+  backgroundColor: ColorPropType,
+  borderColor: ColorPropType,
+  borderTopColor: ColorPropType,
+  borderRightColor: ColorPropType,
+  borderBottomColor: ColorPropType,
+  borderLeftColor: ColorPropType,
   borderRadius: ReactPropTypes.number,
   borderTopLeftRadius: ReactPropTypes.number,
   borderTopRightRadius: ReactPropTypes.number,
@@ -41,12 +44,14 @@ var ViewStylePropTypes = {
   borderLeftWidth: ReactPropTypes.number,
   opacity: ReactPropTypes.number,
   overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
-  shadowColor: ReactPropTypes.string,
-  shadowOffset: ReactPropTypes.shape(
-    {width: ReactPropTypes.number, height: ReactPropTypes.number}
-  ),
-  shadowOpacity: ReactPropTypes.number,
-  shadowRadius: ReactPropTypes.number,
+  /**
+   * (Android-only) Sets the elevation of a view, using Android's underlying
+   * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).
+   * This adds a drop shadow to the item and affects z-order for overlapping views.
+   * Only supported on Android 5.0+, has no effect on earlier versions.
+   * @platform android
+   */
+  elevation: ReactPropTypes.number,
 };
 
 module.exports = ViewStylePropTypes;

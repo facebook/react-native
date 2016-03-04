@@ -11,10 +11,10 @@
  */
 'use strict';
 
-var Platform = require('Platform');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
-var { TestModule, UIManager } = require('NativeModules');
+var { TestModule } = require('NativeModules');
+var UIManager = require('UIManager');
 var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');

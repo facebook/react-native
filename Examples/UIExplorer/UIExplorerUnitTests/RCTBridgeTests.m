@@ -16,18 +16,22 @@
 #import <XCTest/XCTest.h>
 
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTJavaScriptExecutor.h"
 #import "RCTUtils.h"
 
-@interface RCTBridge (Testing)
-
-@property (nonatomic, strong, readonly) RCTBridge *batchedBridge;
-
-- (void)handleBuffer:(id)buffer;
-- (void)setUp;
-
-@end
+#define RUN_RUNLOOP_WHILE(CONDITION) \
+{ \
+  NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
+  while ((CONDITION)) { \
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
+    if ([timeout timeIntervalSinceNow] <= 0) { \
+      XCTFail(@"Runloop timed out before condition was met"); \
+      break; \
+    } \
+  } \
+}
 
 @interface TestExecutor : NSObject <RCTJavaScriptExecutor>
 
@@ -36,6 +40,8 @@
 @end
 
 @implementation TestExecutor
+
+@synthesize valid = _valid;
 
 RCT_EXPORT_MODULE()
 
@@ -51,13 +57,25 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isValid
 {
-  return YES;
+  return _valid;
 }
 
-- (void)executeJSCall:(__unused NSString *)name
-               method:(__unused NSString *)method
-            arguments:(__unused NSArray *)arguments
-             callback:(RCTJavaScriptCallback)onComplete
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+{
+  onComplete(nil, nil);
+}
+
+- (void)callFunctionOnModule:(__unused NSString *)module
+                      method:(__unused NSString *)method
+                   arguments:(__unused NSArray *)args
+                    callback:(RCTJavaScriptCallback)onComplete
+{
+  onComplete(nil, nil);
+}
+
+- (void)invokeCallbackID:(__unused NSNumber *)cbID
+               arguments:(__unused NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
 {
   onComplete(nil, nil);
 }
@@ -82,13 +100,18 @@ RCT_EXPORT_MODULE()
   onComplete(nil);
 }
 
-- (void)invalidate {}
+- (void)invalidate
+{
+  _valid = NO;
+}
 
 @end
 
 @interface RCTBridgeTests : XCTestCase <RCTBridgeModule>
 {
   RCTBridge *_bridge;
+  __weak TestExecutor *_jsExecutor;
+
   BOOL _testMethodCalled;
 }
 @end
@@ -108,33 +131,32 @@ RCT_EXPORT_MODULE(TestModule)
                                    launchOptions:nil];
 
   _bridge.executorClass = [TestExecutor class];
+
   // Force to recreate the executor with the new class
   // - reload: doesn't work here since bridge hasn't loaded yet.
   [_bridge invalidate];
   [_bridge setUp];
+
+  _jsExecutor = _bridge.batchedBridge.javaScriptExecutor;
+  XCTAssertNotNil(_jsExecutor);
 }
 
 - (void)tearDown
 {
   [super tearDown];
-  [_bridge invalidate];
-}
 
-#define RUN_RUNLOOP_WHILE(CONDITION) \
-_Pragma("clang diagnostic push") \
-_Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSDate *timeout = [[NSDate date] dateByAddingTimeInterval:0.1]; \
-while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
-  [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:timeout]; \
-} \
-_Pragma("clang diagnostic pop")
+  _testMethodCalled = NO;
+
+  [_bridge invalidate];
+  RUN_RUNLOOP_WHILE(_jsExecutor.isValid);
+  _bridge = nil;
+}
 
 - (void)testHookRegistration
 {
-  TestExecutor *executor =  [_bridge.batchedBridge valueForKey:@"_javaScriptExecutor"];
-
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;
   __block NSDictionary<NSString *, id> *testConstants = nil;
@@ -159,27 +181,27 @@ _Pragma("clang diagnostic pop")
 
 - (void)testCallNativeMethod
 {
-  TestExecutor *executor =  [_bridge.batchedBridge valueForKey:@"_javaScriptExecutor"];
-
   NSString *injectedStuff;
-  RUN_RUNLOOP_WHILE(!(injectedStuff = executor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  RUN_RUNLOOP_WHILE(!(injectedStuff = _jsExecutor.injectedStuff[@"__fbBatchedBridgeConfig"]));
+  XCTAssertNotNil(injectedStuff);
 
   __block NSNumber *testModuleID = nil;
-  __block NSDictionary<NSString *, id> *testConstants = nil;
   __block NSNumber *testMethodID = nil;
 
   NSArray *remoteModuleConfig = RCTJSONParse(injectedStuff, NULL)[@"remoteModuleConfig"];
   [remoteModuleConfig enumerateObjectsUsingBlock:^(id moduleConfig, NSUInteger i, __unused BOOL *stop) {
     if ([moduleConfig isKindOfClass:[NSArray class]] && [moduleConfig[0] isEqualToString:@"TestModule"]) {
       testModuleID = @(i);
-      testConstants = moduleConfig[1];
       testMethodID = @([moduleConfig[2] indexOfObject:@"testMethod"]);
       *stop = YES;
     }
   }];
 
+  XCTAssertNotNil(testModuleID);
+  XCTAssertNotNil(testMethodID);
+
   NSArray *args = @[@1234, @5678, @"stringy", @{@"a": @1}, @42];
-  NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args], @[], @1234567];
+  NSArray *buffer = @[@[testModuleID], @[testMethodID], @[args]];
 
   [_bridge.batchedBridge handleBuffer:buffer];
 

@@ -16,9 +16,8 @@ import android.os.AsyncTask;
  * handled by the {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler} registered if
  * the app is in dev mode.
  *
- * This class doesn't allow doInBackground to return a results. This is mostly because when this
- * class was written that functionality wasn't used and it would require some extra code to make
- * work correctly with caught exceptions. Don't let that stop you from adding it if you need it :)
+ * This class doesn't allow doInBackground to return a results. If you need this
+ * use GuardedResultAsyncTask instead.
  */
 public abstract class GuardedAsyncTask<Params, Progress>
     extends AsyncTask<Params, Progress, Void> {

@@ -10,10 +10,11 @@
  */
 'use strict';
 
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
-var performanceNow = require('performanceNow');
-var warning = require('warning');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
+var performanceNow = require('fbjs/lib/performanceNow');
+var warning = require('fbjs/lib/warning');
+var Systrace = require('Systrace');
 
 /**
  * JS implementation of timer functions. Must be completely driven by an
@@ -108,14 +109,37 @@ var JSTimersExecution = {
   },
 
   /**
+   * Performs a single pass over the enqueued immediates. Returns whether
+   * more immediates are queued up (can be used as a condition a while loop).
+   */
+  callImmediatesPass: function() {
+    Systrace.beginEvent('JSTimersExecution.callImmediatesPass()');
+
+    // The main reason to extract a single pass is so that we can track
+    // in the system trace
+    if (JSTimersExecution.immediates.length > 0) {
+      var passImmediates = JSTimersExecution.immediates.slice();
+      JSTimersExecution.immediates = [];
+
+      // Use for loop rather than forEach as per @vjeux's advice
+      // https://github.com/facebook/react-native/commit/c8fd9f7588ad02d2293cac7224715f4af7b0f352#commitcomment-14570051
+      for (var i = 0; i < passImmediates.length; ++i) {
+        JSTimersExecution.callTimer(passImmediates[i]);
+      }
+    }
+
+    Systrace.endEvent();
+
+    return JSTimersExecution.immediates.length > 0;
+  },
+
+  /**
    * This is called after we execute any command we receive from native but
    * before we hand control back to native.
    */
   callImmediates: function() {
     JSTimersExecution.errors = null;
-    while (JSTimersExecution.immediates.length !== 0) {
-      JSTimersExecution.callTimer(JSTimersExecution.immediates.shift());
-    }
+    while (JSTimersExecution.callImmediatesPass()) {}
     if (JSTimersExecution.errors) {
       JSTimersExecution.errors.forEach((error) =>
         require('JSTimers').setTimeout(() => { throw error; }, 0)

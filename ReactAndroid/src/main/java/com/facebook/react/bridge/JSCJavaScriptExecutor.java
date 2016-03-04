@@ -14,15 +14,21 @@ import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class JSCJavaScriptExecutor extends JavaScriptExecutor {
+  public static class Factory implements JavaScriptExecutor.Factory {
+    @Override
+    public JavaScriptExecutor create(WritableNativeMap jscConfig) throws Exception {
+      return new JSCJavaScriptExecutor(jscConfig);
+    }
+  }
 
   static {
     SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
   }
 
-  public JSCJavaScriptExecutor() {
-    initialize();
+  public JSCJavaScriptExecutor(WritableNativeMap jscConfig) {
+    initialize(jscConfig);
   }
 
-  private native void initialize();
+  private native void initialize(WritableNativeMap jscConfig);
 
 }

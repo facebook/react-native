@@ -2,7 +2,7 @@
  * @providesModule BoundingDimensions
  */
 
-"use strict";
+'use strict';
 
 var PooledClass = require('PooledClass');
 

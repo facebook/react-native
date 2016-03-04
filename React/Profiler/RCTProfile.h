@@ -16,8 +16,8 @@
  *
  * This file provides a set of functions and macros for performance profiling
  *
- * NOTE: This API is a work in a work in progress, please consider carefully
- * before before using it.
+ * NOTE: This API is a work in progress, please consider carefully before
+ * using it.
  */
 
 RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
@@ -66,13 +66,16 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
                                       uint64_t tag,
                                       NSString *name,
                                       NSDictionary *args);
-#define RCT_PROFILE_BEGIN_EVENT(...) { \
-  NSThread *calleeThread = [NSThread currentThread]; \
-  NSTimeInterval time = CACurrentMediaTime(); \
-  dispatch_async(RCTProfileGetQueue(), ^{ \
-    _RCTProfileBeginEvent(calleeThread, time, __VA_ARGS__); \
-  }); \
-}
+#define RCT_PROFILE_BEGIN_EVENT(...) \
+  do { \
+    if (RCTProfileIsProfiling()) { \
+      NSThread *__calleeThread = [NSThread currentThread]; \
+      NSTimeInterval __time = CACurrentMediaTime(); \
+      dispatch_async(RCTProfileGetQueue(), ^{ \
+        _RCTProfileBeginEvent(__calleeThread, __time, __VA_ARGS__); \
+      }); \
+    } \
+  } while(0)
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
@@ -86,14 +89,17 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
                                     NSString *category,
                                     NSDictionary *args);
 
-#define RCT_PROFILE_END_EVENT(...) { \
-  NSThread *calleeThread = [NSThread currentThread]; \
-  NSString *threadName = RCTCurrentThreadName(); \
-  NSTimeInterval time = CACurrentMediaTime(); \
-  dispatch_async(RCTProfileGetQueue(), ^{ \
-    _RCTProfileEndEvent(calleeThread, threadName, time, __VA_ARGS__); \
-  }); \
-}
+#define RCT_PROFILE_END_EVENT(...) \
+  do { \
+    if (RCTProfileIsProfiling()) { \
+      NSThread *__calleeThread = [NSThread currentThread]; \
+      NSString *__threadName = RCTCurrentThreadName(); \
+      NSTimeInterval __time = CACurrentMediaTime(); \
+      dispatch_async(RCTProfileGetQueue(), ^{ \
+        _RCTProfileEndEvent(__calleeThread, __threadName, __time, __VA_ARGS__); \
+      }); \
+    } \
+  } while(0)
 
 /**
  * Collects the initial event information for the event and returns a reference ID
@@ -111,6 +117,7 @@ RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
                                         NSString *category,
                                         NSUInteger cookie,
                                         NSString *name,
+                                        NSString *threadName,
                                         NSDictionary *args);
 
 /**
@@ -118,6 +125,7 @@ RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
  */
 RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
                                          NSString *name,
+                                         NSTimeInterval time,
                                          char scope);
 
 /**
@@ -183,7 +191,7 @@ RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 #define _RCTProfileBeginFlowEvent() @0
 
 #define RCTProfileEndFlowEvent()
-#define _RCTProfileEndFlowEvent()
+#define _RCTProfileEndFlowEvent(...)
 
 #define RCTProfileIsProfiling(...) NO
 #define RCTProfileInit(...)

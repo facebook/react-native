@@ -1,26 +1,21 @@
 /**
- * @generated SignedSource<<494e66dea72a3e90b763a5ec50b1e0ca>>
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule EventEmitter
+ * @noflow
  * @typechecks
  */
 
 var EmitterSubscription = require('EmitterSubscription');
 var ErrorUtils = require('ErrorUtils');
 var EventSubscriptionVendor = require('EventSubscriptionVendor');
-var emptyFunction = require('emptyFunction');
-var invariant = require('invariant');
+var emptyFunction = require('fbjs/lib/emptyFunction');
+var invariant = require('fbjs/lib/invariant');
 
 /**
  * @class EventEmitter
@@ -164,13 +159,9 @@ class EventEmitter {
         // The subscription may have been removed during this event loop.
         if (subscription) {
           this._currentSubscription = subscription;
-
-          ErrorUtils.applyWithGuard(
-            subscription.listener,
+          subscription.listener.apply(
             subscription.context,
-            Array.prototype.slice.call(arguments, 1),
-            null,
-            'EventEmitter:' + eventType
+            Array.prototype.slice.call(arguments, 1)
           );
         }
       }

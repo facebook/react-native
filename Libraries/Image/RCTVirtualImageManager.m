@@ -19,6 +19,7 @@ RCT_EXPORT_MODULE()
   return [[RCTShadowVirtualImage alloc] initWithBridge:self.bridge];
 }
 
-RCT_EXPORT_SHADOW_PROPERTY(source, NSDictionary)
+RCT_EXPORT_SHADOW_PROPERTY(source, RCTImageSource)
+RCT_EXPORT_SHADOW_PROPERTY(resizeMode, UIViewContentMode)
 
 @end

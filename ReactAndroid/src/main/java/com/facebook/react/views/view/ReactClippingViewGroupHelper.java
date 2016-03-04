@@ -15,7 +15,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Provides implementation of common tasks for view and it's view manager supporting property

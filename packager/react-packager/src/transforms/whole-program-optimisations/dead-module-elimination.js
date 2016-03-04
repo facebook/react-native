@@ -60,7 +60,12 @@ module.exports = function () {
     AssignmentExpression(path) {
       const { node } = path;
 
-      if (node.left.type === 'Identifier' && node.left.name === '__DEV__') {
+      if (
+        node.left.type === 'MemberExpression' &&
+        node.left.object.name === 'global' &&
+        node.left.property.type === 'Identifier' &&
+        node.left.property.name === '__DEV__'
+      ) {
         var value;
         if (node.right.type === 'BooleanLiteral') {
           value = node.right.value;
@@ -73,7 +78,7 @@ module.exports = function () {
         } else {
           return;
         }
-        globals[node.left.name] = value;
+        globals[node.left.property.name] = value;
 
         // workaround babel/source map bug - the minifier should strip it
         path.replaceWith(t.booleanLiteral(value));
@@ -130,10 +135,12 @@ module.exports = function () {
     visitor: {
       Program(path) {
         path.traverse(firstPass);
-        while (hasDeadModules(requires)) {
+        var counter = 0;
+        while (hasDeadModules(requires) && counter < 3) {
           _requires = requires;
           requires = {};
           path.traverse(secondPass);
+          counter++;
         }
       }
     }

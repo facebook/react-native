@@ -11,13 +11,12 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
-var RCTUIManager = NativeModules.UIManager;
 var ReactNativeAttributePayload = require('ReactNativeAttributePayload');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
 var findNodeHandle = require('findNodeHandle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 type MeasureOnSuccessCallback = (
   x: number,
@@ -26,6 +25,13 @@ type MeasureOnSuccessCallback = (
   height: number,
   pageX: number,
   pageY: number
+) => void
+
+type MeasureInWindowOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
 ) => void
 
 type MeasureLayoutOnSuccessCallback = (
@@ -57,7 +63,7 @@ function warnForStyleProps(props, validAttributes) {
  * composite components that aren't directly backed by a native view. This will
  * generally include most components that you define in your own app. For more
  * information, see [Direct
- * Manipulation](/react-native/docs/direct-manipulation.html).
+ * Manipulation](docs/direct-manipulation.html).
  */
 var NativeMethodsMixin = {
   /**
@@ -75,10 +81,32 @@ var NativeMethodsMixin = {
    * Note that these measurements are not available until after the rendering
    * has been completed in native. If you need the measurements as soon as
    * possible, consider using the [`onLayout`
-   * prop](/react-native/docs/view.html#onlayout) instead.
+   * prop](docs/view.html#onlayout) instead.
    */
   measure: function(callback: MeasureOnSuccessCallback) {
-    RCTUIManager.measure(
+    UIManager.measure(
+      findNodeHandle(this),
+      mountSafeCallback(this, callback)
+    );
+  },
+
+  /**
+   * Determines the location of the given view in the window and returns the
+   * values via an async callback. If the React root view is embedded in
+   * another native view, this will give you the absolute coordinates. If
+   * successful, the callback will be called be called with the following
+   * arguments:
+   *
+   *  - x
+   *  - y
+   *  - width
+   *  - height
+   *
+   * Note that these measurements are not available until after the rendering
+   * has been completed in native.
+   */
+  measureInWindow: function(callback: MeasureInWindowOnSuccessCallback) {
+    UIManager.measureInWindow(
       findNodeHandle(this),
       mountSafeCallback(this, callback)
     );
@@ -97,7 +125,7 @@ var NativeMethodsMixin = {
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail: () => void /* currently unused */
   ) {
-    RCTUIManager.measureLayout(
+    UIManager.measureLayout(
       findNodeHandle(this),
       relativeToNativeNode,
       mountSafeCallback(this, onFail),
@@ -109,7 +137,7 @@ var NativeMethodsMixin = {
    * This function sends props straight to native. They will not participate in
    * future diff process - this means that if you do not include them in the
    * next render, they will remain active (see [Direct
-   * Manipulation](/react-native/docs/direct-manipulation.html)).
+   * Manipulation](docs/direct-manipulation.html)).
    */
   setNativeProps: function(nativeProps: Object) {
     if (__DEV__) {
@@ -121,7 +149,7 @@ var NativeMethodsMixin = {
       this.viewConfig.validAttributes
     );
 
-    RCTUIManager.updateView(
+    UIManager.updateView(
       findNodeHandle(this),
       this.viewConfig.uiViewClassName,
       updatePayload

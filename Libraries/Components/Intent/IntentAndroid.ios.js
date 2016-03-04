@@ -11,7 +11,7 @@
 'use strict';
 
 module.exports = {
-  openURI: function(url) {
+  openURL: function(url) {
     console.error('IntentAndroid is not supported on iOS');
   },
 };

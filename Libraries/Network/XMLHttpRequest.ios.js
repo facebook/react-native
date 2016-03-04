@@ -13,7 +13,6 @@
 
 var FormData = require('FormData');
 var RCTNetworking = require('RCTNetworking');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var XMLHttpRequestBase = require('XMLHttpRequestBase');
 
@@ -24,7 +23,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
     this.upload = {};
   }
 
-  sendImpl(method: ?string, url: ?string, headers: Object, data: any): void {
+  sendImpl(method: ?string, url: ?string, headers: Object, data: any, timeout: number): void {
     if (typeof data === 'string') {
       data = {string: data};
     } else if (data instanceof FormData) {
@@ -37,6 +36,7 @@ class XMLHttpRequest extends XMLHttpRequestBase {
         data,
         headers,
         incrementalUpdates: this.onreadystatechange ? true : false,
+        timeout
       },
       this.didCreateRequest.bind(this)
     );

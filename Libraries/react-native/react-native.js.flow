@@ -1,0 +1,136 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * This file exists because react-native.js started using getters and setters
+ * and Flow doesn't have a good way to enable getters and setters for
+ * react-native without forcing all react-native users to also enable getters
+ * and setters. Until we solve that issue, we can use this .flow file to
+ * pretend like react-native doesn't use getters and setters
+ *
+ * @flow
+ */
+'use strict';
+
+// Export React, plus some native additions.
+//
+// The use of Object.create/assign is to work around a Flow bug (#6560135).
+// Once that is fixed, change this back to
+//
+//   var ReactNative = {...require('React'), /* additions */}
+//
+var ReactNative = Object.assign(Object.create(require('react')), {
+  // Components
+  ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
+  ART: require('ReactNativeART'),
+  DatePickerIOS: require('DatePickerIOS'),
+  DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
+  Image: require('Image'),
+  ImageEditor: require('ImageEditor'),
+  ImageStore: require('ImageStore'),
+  ListView: require('ListView'),
+  MapView: require('MapView'),
+  Modal: require('Modal'),
+  Navigator: require('Navigator'),
+  NavigatorIOS: require('NavigatorIOS'),
+  Picker: require('Picker'),
+  PickerIOS: require('PickerIOS'),
+  ProgressBarAndroid: require('ProgressBarAndroid'),
+  ProgressViewIOS: require('ProgressViewIOS'),
+  ScrollView: require('ScrollView'),
+  SegmentedControlIOS: require('SegmentedControlIOS'),
+  SliderIOS: require('SliderIOS'),
+  SnapshotViewIOS: require('SnapshotViewIOS'),
+  StatusBar: require('StatusBar'),
+  Switch: require('Switch'),
+  PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
+  RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
+  RefreshControl: require('RefreshControl'),
+  SwitchAndroid: require('SwitchAndroid'),
+  SwitchIOS: require('SwitchIOS'),
+  TabBarIOS: require('TabBarIOS'),
+  Text: require('Text'),
+  TextInput: require('TextInput'),
+  ToastAndroid: require('ToastAndroid'),
+  ToolbarAndroid: require('ToolbarAndroid'),
+  Touchable: require('Touchable'),
+  TouchableHighlight: require('TouchableHighlight'),
+  TouchableNativeFeedback: require('TouchableNativeFeedback'),
+  TouchableOpacity: require('TouchableOpacity'),
+  TouchableWithoutFeedback: require('TouchableWithoutFeedback'),
+  View: require('View'),
+  ViewPagerAndroid: require('ViewPagerAndroid'),
+  WebView: require('WebView'),
+
+  // APIs
+  ActionSheetIOS: require('ActionSheetIOS'),
+  AdSupportIOS: require('AdSupportIOS'),
+  Alert: require('Alert'),
+  AlertIOS: require('AlertIOS'),
+  Animated: require('Animated'),
+  AppRegistry: require('AppRegistry'),
+  AppState: require('AppState'),
+  AppStateIOS: require('AppStateIOS'),
+  AsyncStorage: require('AsyncStorage'),
+  BackAndroid: require('BackAndroid'),
+  CameraRoll: require('CameraRoll'),
+  Clipboard: require('Clipboard'),
+  DatePickerAndroid: require('DatePickerAndroid'),
+  Dimensions: require('Dimensions'),
+  Easing: require('Easing'),
+  ImagePickerIOS: require('ImagePickerIOS'),
+  IntentAndroid: require('IntentAndroid'),
+  InteractionManager: require('InteractionManager'),
+  LayoutAnimation: require('LayoutAnimation'),
+  Linking: require('Linking'),
+  LinkingIOS: require('LinkingIOS'),
+  NavigationExperimental: require('NavigationExperimental'),
+  NetInfo: require('NetInfo'),
+  PanResponder: require('PanResponder'),
+  PixelRatio: require('PixelRatio'),
+  PushNotificationIOS: require('PushNotificationIOS'),
+  Settings: require('Settings'),
+  StatusBarIOS: require('StatusBarIOS'),
+  StyleSheet: require('StyleSheet'),
+  TimePickerAndroid: require('TimePickerAndroid'),
+  UIManager: require('UIManager'),
+  Vibration: require('Vibration'),
+  VibrationIOS: require('VibrationIOS'),
+
+  // Plugins
+  DeviceEventEmitter: require('RCTDeviceEventEmitter'),
+  NativeAppEventEmitter: require('RCTNativeAppEventEmitter'),
+  NativeModules: require('NativeModules'),
+  Platform: require('Platform'),
+  processColor: require('processColor'),
+  requireNativeComponent: require('requireNativeComponent'),
+
+  // Prop Types
+  ColorPropType: require('ColorPropType'),
+  EdgeInsetsPropType: require('EdgeInsetsPropType'),
+  PointPropType: require('PointPropType'),
+
+  // See http://facebook.github.io/react/docs/addons.html
+  addons: {
+    LinkedStateMixin: require('LinkedStateMixin'),
+    Perf: undefined,
+    PureRenderMixin: require('ReactComponentWithPureRenderMixin'),
+    TestModule: require('NativeModules').TestModule,
+    TestUtils: undefined,
+    batchedUpdates: require('ReactUpdates').batchedUpdates,
+    cloneWithProps: require('cloneWithProps'),
+    createFragment: require('ReactFragment').create,
+    update: require('update'),
+  },
+});
+
+if (__DEV__) {
+  ReactNative.addons.Perf = require('ReactDefaultPerf');
+  ReactNative.addons.TestUtils = require('ReactTestUtils');
+}
+
+module.exports = ReactNative;

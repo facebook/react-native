@@ -30,9 +30,10 @@ var React = require('React');
 var NavigatorNavigationBarStylesAndroid = require('NavigatorNavigationBarStylesAndroid');
 var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
 var Platform = require('Platform');
-var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
+
+var guid = require('guid');
 
 var { Map } = require('immutable');
 
@@ -79,6 +80,21 @@ var NavigatorNavigationBar = React.createClass({
   },
 
   componentWillMount: function() {
+    this._reset();
+  },
+
+  /**
+   * Stop transtion, immediately resets the cached state and re-render the
+   * whole view.
+   */
+  immediatelyRefresh() {
+    this._reset();
+    this.forceUpdate();
+  },
+
+  _reset() {
+    this._key = guid();
+    this._reusableProps = {};
     this._components = {};
     this._descriptors = {};
 
@@ -92,9 +108,6 @@ var NavigatorNavigationBar = React.createClass({
     /*string*/componentName,
     /*number*/index
   ) /*object*/ {
-    if (!this._reusableProps) {
-      this._reusableProps = {};
-    }
     var propStack = this._reusableProps[componentName];
     if (!propStack) {
       propStack = this._reusableProps[componentName] = [];
@@ -154,14 +167,16 @@ var NavigatorNavigationBar = React.createClass({
       height: this.props.navigationStyles.General.TotalNavHeight,
     };
     var navState = this.props.navState;
-    var components = COMPONENT_NAMES.map(function (componentName) {
-      return navState.routeStack.map(
-        this._getComponent.bind(this, componentName)
-      );
-    }, this);
+    var components = navState.routeStack.map((route, index) =>
+      COMPONENT_NAMES.map(componentName =>
+        this._getComponent(componentName, route, index)
+      )
+    );
 
     return (
-      <View style={[styles.navBarContainer, navBarStyle, this.props.style]}>
+      <View
+        key={this._key}
+        style={[styles.navBarContainer, navBarStyle, this.props.style]}>
         {components}
       </View>
     );
@@ -196,6 +211,7 @@ var NavigatorNavigationBar = React.createClass({
         ref={(ref) => {
           this._components[componentName] = this._components[componentName].set(route, ref);
         }}
+        pointerEvents="box-none"
         style={initialStage[componentName]}>
         {content}
       </View>

@@ -11,7 +11,10 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+var BatchedBridge = require('BatchedBridge');
+var ReactNative = require('ReactNative');
+
+var invariant = require('fbjs/lib/invariant');
 var renderApplication = require('renderApplication');
 
 if (__DEV__) {
@@ -36,6 +39,10 @@ type AppConfig = {
  * `AppRegistry.registerComponent`, then the native system can load the bundle
  * for the app and then actually run the app when it's ready by invoking
  * `AppRegistry.runApplication`.
+ *
+ * To "stop" an application when a view should be destroyed, call
+ * `AppRegistry.unmountApplicationComponentAtRootTag` with the tag that was
+ * pass into `runApplication`. These should always be used as a pair.
  *
  * `AppRegistry` should be `require`d early in the `require` sequence to make
  * sure the JS execution environment is setup before other modules are
@@ -87,6 +94,16 @@ var AppRegistry = {
     );
     runnables[appKey].run(appParameters);
   },
+
+  unmountApplicationComponentAtRootTag: function(rootTag : number) {
+    ReactNative.unmountComponentAtNodeAndRemoveContainer(rootTag);
+  },
+
 };
+
+BatchedBridge.registerCallableModule(
+  'AppRegistry',
+  AppRegistry
+);
 
 module.exports = AppRegistry;

@@ -4,7 +4,6 @@ android_library(
   name = 'react',
   srcs = glob(['*.java']),
   deps = [
-    '//libraries/fbcore/src/main/java/com/facebook/common/logging:logging',
     react_native_target('java/com/facebook/react/bridge:bridge'),
     react_native_target('java/com/facebook/react/common:common'),
     react_native_target('java/com/facebook/react/devsupport:devsupport'),
@@ -13,6 +12,8 @@ android_library(
     react_native_target('java/com/facebook/react/modules/systeminfo:systeminfo'),
     react_native_target('java/com/facebook/react/modules/toast:toast'),
     react_native_target('java/com/facebook/react/uimanager:uimanager'),
+    react_native_dep('java/com/facebook/systrace:systrace'),
+    react_native_dep('libraries/fbcore/src/main/java/com/facebook/common/logging:logging'),
     react_native_dep('libraries/soloader/java/com/facebook/soloader:soloader'),
     react_native_dep('third-party/java/infer-annotations:infer-annotations'),
     react_native_dep('third-party/java/jsr-305:jsr-305'),

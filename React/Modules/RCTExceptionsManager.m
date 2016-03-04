@@ -27,20 +27,14 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
 {
-  if ((self = [super init])) {
+  if ((self = [self init])) {
     _delegate = delegate;
-    _maxReloadAttempts = 0;
   }
   return self;
 }
 
-- (instancetype)init
-{
-  return [self initWithDelegate:nil];
-}
-
 RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
-                  stack:(NSDictionaryArray *)stack
+                  stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(nonnull NSNumber *)exceptionId)
 {
   [_bridge.redBox showErrorMessage:message withStack:stack];
@@ -51,7 +45,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
-                  stack:(NSDictionaryArray *)stack
+                  stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(nonnull NSNumber *)exceptionId)
 {
   [_bridge.redBox showErrorMessage:message withStack:stack];
@@ -72,7 +66,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
-                  stack:(NSDictionaryArray *)stack
+                  stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(nonnull NSNumber *)exceptionId)
 {
   [_bridge.redBox updateErrorMessage:message withStack:stack];
@@ -84,7 +78,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
 
 // Deprecated.  Use reportFatalException directly instead.
 RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
-                  stack:(NSDictionaryArray *)stack)
+                  stack:(NSArray<NSDictionary *> *)stack)
 {
   [self reportFatalException:message stack:stack exceptionId:@-1];
 }

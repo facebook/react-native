@@ -12,10 +12,10 @@
 'use strict';
 
 var ReactNativeTagHandles = require('ReactNativeTagHandles');
-var RCTUIManager = require('NativeModules').UIManager;
+var UIManager = require('UIManager');
 
 var assign = require('Object.assign');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var ReactNativeTextComponent = function(props) {
   // This constructor and its argument is currently used by mocks.
@@ -39,7 +39,7 @@ assign(ReactNativeTextComponent.prototype, {
     this._rootNodeID = rootID;
     var tag = ReactNativeTagHandles.allocateTag();
     var nativeTopRootID = ReactNativeTagHandles.getNativeTopRootIDFromNodeID(rootID);
-    RCTUIManager.createView(
+    UIManager.createView(
       tag,
       'RCTRawText',
       nativeTopRootID ? ReactNativeTagHandles.rootNodeIDToTag[nativeTopRootID] : null,
@@ -57,7 +57,7 @@ assign(ReactNativeTextComponent.prototype, {
       var nextStringText = '' + nextText;
       if (nextStringText !== this._stringText) {
         this._stringText = nextStringText;
-        RCTUIManager.updateView(
+        UIManager.updateView(
           ReactNativeTagHandles.mostRecentMountedNodeHandleForRootNodeID(
             this._rootNodeID
           ),

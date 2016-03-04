@@ -7,6 +7,7 @@ import android.os.Build;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
@@ -18,11 +19,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_DECOMPOSED_MATRIX = "decomposedMatrix";
   private static final String PROP_DECOMPOSED_MATRIX_ROTATE = "rotate";
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_X = "rotateX";
+  private static final String PROP_DECOMPOSED_MATRIX_ROTATE_Y = "rotateY";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_X = "scaleX";
   private static final String PROP_DECOMPOSED_MATRIX_SCALE_Y = "scaleY";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_X = "translateX";
   private static final String PROP_DECOMPOSED_MATRIX_TRANSLATE_Y = "translateY";
   private static final String PROP_OPACITY = "opacity";
+  private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
@@ -59,6 +63,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_OPACITY, defaultFloat = 1.f)
   public void setOpacity(T view, float opacity) {
     view.setAlpha(opacity);
+  }
+  
+  @ReactProp(name = PROP_ELEVATION)
+  public void setElevation(T view, float elevation) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      view.setElevation(PixelUtil.toPixelFromDIP(elevation));
+    }
+    // Do nothing on API < 21
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
@@ -144,6 +156,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
             (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_TRANSLATE_Y)));
     view.setRotation(
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE));
+    view.setRotationX(
+        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_X));
+    view.setRotationY(
+        (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_ROTATE_Y));
     view.setScaleX(
         (float) matrix.getDouble(PROP_DECOMPOSED_MATRIX_SCALE_X));
     view.setScaleY(
@@ -154,6 +170,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTranslationX(PixelUtil.toPixelFromDIP(0));
     view.setTranslationY(PixelUtil.toPixelFromDIP(0));
     view.setRotation(0);
+    view.setRotationX(0);
+    view.setRotationY(0);
     view.setScaleX(1);
     view.setScaleY(1);
   }

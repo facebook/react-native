@@ -7,7 +7,7 @@
 'use strict';
 
 var immutable = require('immutable');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 type IterationCallback = (route: any, index: number, key: string) => void;
 

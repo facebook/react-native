@@ -30,15 +30,6 @@ static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _store = [NSMutableDictionary new];
-    _id = 0;
-  }
-  return self;
-}
-
 - (void)removeImageForTag:(NSString *)imageTag withBlock:(void (^)())block
 {
   dispatch_async(_methodQueue, ^{
@@ -52,6 +43,12 @@ RCT_EXPORT_MODULE()
 - (NSString *)_storeImageData:(NSData *)imageData
 {
   RCTAssertThread(_methodQueue, @"Must be called on RCTImageStoreManager thread");
+
+  if (!_store) {
+    _store = [NSMutableDictionary new];
+    _id = 0;
+  }
+
   NSString *imageTag = [NSString stringWithFormat:@"%@://%tu", RCTImageStoreURLScheme, _id++];
   _store[imageTag] = imageData;
   return imageTag;
@@ -87,6 +84,12 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(removeImageForTag:(NSString *)imageTag)
 {
   [_store removeObjectForKey:imageTag];
+}
+
+RCT_EXPORT_METHOD(hasImageForTag:(NSString *)imageTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  callback(@[@(_store[imageTag] != nil)]);
 }
 
 // TODO (#5906496): Name could be more explicit - something like getBase64EncodedDataForTag:?
@@ -213,9 +216,9 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   RCTAssertParam(block);
   dispatch_async(_methodQueue, ^{
     NSData *imageData = _store[imageTag];
-    UIImage *image = [UIImage imageWithData:imageData];
     dispatch_async(dispatch_get_main_queue(), ^{
-      block(image);
+      // imageWithData: is not thread-safe, so we can't do this on methodQueue
+      block([UIImage imageWithData:imageData]);
     });
   });
 }
@@ -226,7 +229,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (RCTImageStoreManager *)imageStoreManager
 {
-  return self.modules[RCTBridgeModuleNameForClass([RCTImageStoreManager class])];
+  return [self moduleForClass:[RCTImageStoreManager class]];
 }
 
 @end
