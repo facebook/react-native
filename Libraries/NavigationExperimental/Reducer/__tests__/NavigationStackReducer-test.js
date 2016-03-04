@@ -11,7 +11,6 @@
 'use strict';
 
 jest
- .dontMock('NavigationRootContainer')
  .dontMock('NavigationStackReducer')
  .dontMock('NavigationStateUtils');
 

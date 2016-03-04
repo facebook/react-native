@@ -13,24 +13,10 @@
 
 const invariant = require('fbjs/lib/invariant');
 
-export type NavigationState = {
-  key: string;
-};
-
-export type NavigationParentState = {
-  key: string;
-  index: number;
-  children: Array<NavigationState>;
-};
-
-export type NavigationAction = {
-  type: string;
-};
-
-export type NavigationReducer = (
-  state: ?NavigationState,
-  action: ?NavigationAction
-) => NavigationState;
+import type {
+  NavigationState,
+  NavigationParentState,
+} from 'NavigationTypeDefinition';
 
 function getParent(state: NavigationState): ?NavigationParentState {
   if (

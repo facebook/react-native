@@ -17,7 +17,7 @@ import type {
   NavigationState,
   NavigationParentState,
   NavigationReducer,
-} from 'NavigationStateUtils';
+} from 'NavigationTypeDefinition';
 
 import type {
   BackAction,

@@ -20,9 +20,12 @@
 import type {
   NavigationState,
   NavigationReducer
-} from 'NavigationStateUtils';
+} from 'NavigationTypeDefinition';
 
-function NavigationFindReducer(reducers: Array<NavigationReducer>, defaultState: NavigationState): NavigationReducer {
+function NavigationFindReducer(
+  reducers: Array<NavigationReducer>,
+  defaultState: NavigationState,
+): NavigationReducer {
   return function(lastState: ?NavigationState, action: ?any): NavigationState {
     for (let i = 0; i < reducers.length; i++) {
       let reducer = reducers[i];

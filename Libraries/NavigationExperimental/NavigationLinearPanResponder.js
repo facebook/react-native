@@ -12,6 +12,12 @@ const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder')
 
 const clamp = require('clamp');
 
+import {
+  NavigationActionCaller,
+  NavigationLayout,
+  NavigationPosition,
+} from 'NavigationTypeDefinition';
+
 /**
  * The duration of the card animation in milliseconds.
  */
@@ -42,6 +48,8 @@ const Directions = {
   'VERTICAL': 'vertical',
 };
 
+export type NavigationGestureDirection =  $Enum<typeof Directions>;
+
 /**
  * Primitive gesture actions.
  */
@@ -52,25 +60,16 @@ const Actions = {
   BACK: {type: 'back'},
 };
 
-import type {
-  Layout,
-  Position,
-} from 'NavigationAnimatedView';
-
-export type OnNavigateHandler = (action: {type: string}) => void;
-
-export type Direction = $Enum<typeof Directions>;
-
 /**
  * The type interface of the object that provides the information required by
  * NavigationLinearPanResponder.
  */
 export type NavigationLinearPanResponderDelegate = {
-  getDirection: () => Direction;
+  getDirection: () => NavigationGestureDirection;
   getIndex: () => number,
-  getLayout: () => Layout,
-  getPosition: () => Position,
-  onNavigate: OnNavigateHandler,
+  getLayout: () => NavigationLayout,
+  getPosition: () => NavigationPosition,
+  onNavigate: NavigationActionCaller,
 };
 
 /**

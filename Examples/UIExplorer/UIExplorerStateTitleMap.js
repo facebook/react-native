@@ -18,7 +18,7 @@
 // $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const UIExplorerList = require('./UIExplorerList');
 
-import type {NavigationState} from 'NavigationStateUtils';
+import type {NavigationState} from 'NavigationTypeDefinition';
 
 function StateTitleMap(state: NavigationState): string {
   if (UIExplorerList.Modules[state.key]) {
