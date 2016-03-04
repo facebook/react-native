@@ -30,7 +30,14 @@ var config = {
    */
   getBlacklistRE(platform) {
     return blacklist(platform);
-  }
+  },
+
+  /**
+   * Returns a an object which is passed to the transformer
+   */
+  getTransformerOptions() {
+    return null;
+  },
 };
 
 function getRoots() {

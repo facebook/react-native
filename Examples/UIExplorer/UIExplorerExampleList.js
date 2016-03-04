@@ -25,8 +25,8 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = React;
-const createExamplePage = require('./createExamplePage');
+} = React
+const createExamplePage = require('./createExamplePage')
 const {
   Container: NavigationContainer,
 } = NavigationExperimental;
@@ -200,6 +200,7 @@ var styles = StyleSheet.create({
     fontSize: 15,
     color: '#888888',
     lineHeight: 20,
+    lineHeight: 25,
   },
   searchRow: {
     backgroundColor: '#eeeeee',
