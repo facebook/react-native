@@ -118,8 +118,18 @@ JSCExecutor::JSCExecutor(
       setGlobalVariable(it.first, it.second);
     }
 
-    // TODO(9604438): Protect against script does not exist
-    std::string scriptSrc = WebWorkerUtil::loadScriptFromAssets(script);
+    // Try to load the script from the network if script is a URL
+    // NB: For security, this will only work in debug builds
+    std::string scriptSrc;
+    if (script.find("http://") == 0 || script.find("https://") == 0) {
+      std::stringstream outfileBuilder;
+      outfileBuilder << m_deviceCacheDir << "/workerScript" << m_workerId << ".js";
+      scriptSrc = WebWorkerUtil::loadScriptFromNetworkSync(script, outfileBuilder.str());
+    } else {
+      // TODO(9604438): Protect against script does not exist
+      scriptSrc = WebWorkerUtil::loadScriptFromAssets(script);
+    }
+
     // TODO(9994180): Throw on error
     loadApplicationScript(scriptSrc, script);
   });
