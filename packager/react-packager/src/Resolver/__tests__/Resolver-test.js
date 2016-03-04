@@ -8,7 +8,7 @@
  */
 'use strict';
 
-jest.dontMock('../')
+jest.dontMock('../');
 jest.mock('path');
 
 const Promise = require('promise');
@@ -95,9 +95,9 @@ describe('Resolver', function() {
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
-          expect(Polyfill.mock.calls.map((call) => call[0])).toEqual([
-            { path: 'polyfills/polyfills.js',
-              id: 'polyfills/polyfills.js',
+          expect(DependencyGraph.prototype.createPolyfill.mock.calls.map((call) => call[0])).toEqual([
+            { id: 'polyfills/polyfills.js',
+              file: 'polyfills/polyfills.js',
               dependencies: []
             },
             { id: 'polyfills/console.js',
