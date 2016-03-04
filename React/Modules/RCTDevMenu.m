@@ -185,7 +185,7 @@ RCT_EXPORT_MODULE()
       [weakSelf.bridge.eventDispatcher sendDeviceEventWithName:@"toggleElementInspector" body:nil];
     }]];
 
-    _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"JavaScript";
+    _webSocketExecutorName = [_defaults objectForKey:@"websocket-executor-name"] ?: @"JS Remotely";
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
