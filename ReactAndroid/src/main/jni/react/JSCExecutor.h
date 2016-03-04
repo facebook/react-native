@@ -5,8 +5,10 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <folly/json.h>
 #include <JavaScriptCore/JSContextRef.h>
 
+#include "ExecutorToken.h"
 #include "Executor.h"
 #include "JSCHelpers.h"
 #include "Value.h"
@@ -18,26 +20,26 @@ class MessageQueueThread;
 
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
-  JSCExecutorFactory(const std::string& cacheDir) : cacheDir_(cacheDir) {}
+  JSCExecutorFactory(const std::string& cacheDir, const folly::dynamic& jscConfig) :
+  cacheDir_(cacheDir),
+  m_jscConfig(jscConfig) {}
   virtual std::unique_ptr<JSExecutor> createJSExecutor(Bridge *bridge) override;
 private:
   std::string cacheDir_;
+  folly::dynamic m_jscConfig;
 };
 
 class JSCExecutor;
 class WorkerRegistration : public noncopyable {
 public:
-  explicit WorkerRegistration(std::unique_ptr<JSCExecutor> executor, Object jsObj) :
-      jsObj(std::move(jsObj)),
-      executor(std::move(executor)) {}
+  explicit WorkerRegistration(JSCExecutor* executor, ExecutorToken executorToken, Object jsObj) :
+      executor(executor),
+      executorToken(executorToken),
+      jsObj(std::move(jsObj)) {}
 
-  JSCExecutor* getExecutor() {
-    return executor.get();
-  }
-
+  JSCExecutor *executor;
+  ExecutorToken executorToken;
   Object jsObj;
-private:
-  std::unique_ptr<JSCExecutor> executor;
 };
 
 class JSCExecutor : public JSExecutor {
@@ -45,7 +47,7 @@ public:
   /**
    * Must be invoked from thread this Executor will run on.
    */
-  explicit JSCExecutor(Bridge *bridge, const std::string& cacheDir);
+  explicit JSCExecutor(Bridge *bridge, const std::string& cacheDir, const folly::dynamic& jscConfig);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
@@ -71,6 +73,7 @@ public:
   virtual void stopProfiler(const std::string &titleString, const std::string &filename) override;
   virtual void handleMemoryPressureModerate() override;
   virtual void handleMemoryPressureCritical() override;
+  virtual void destroy() override;
 
   void installNativeHook(const char *name, JSObjectCallAsFunctionCallback callback);
 
@@ -84,6 +87,7 @@ private:
   std::string m_deviceCacheDir;
   std::shared_ptr<MessageQueueThread> m_messageQueueThread;
   std::unique_ptr<JSModulesUnbundle> m_unbundle;
+  folly::dynamic m_jscConfig;
 
   /**
    * WebWorker constructor. Must be invoked from thread this Executor will run on.
@@ -93,7 +97,8 @@ private:
       int workerId,
       JSCExecutor *owner,
       const std::string& script,
-      const std::unordered_map<std::string, std::string>& globalObjAsJSON);
+      const std::unordered_map<std::string, std::string>& globalObjAsJSON,
+      const folly::dynamic& jscConfig);
 
   void initOnJSVMThread();
   void terminateOnJSVMThread();

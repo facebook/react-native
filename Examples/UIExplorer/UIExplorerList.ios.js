@@ -197,6 +197,10 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
   },
@@ -241,8 +245,8 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./TransformExample'),
   },
   {
-    key: 'VibrationIOSExample',
-    module: require('./VibrationIOSExample'),
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
   },
   {
     key: 'XHRExample',

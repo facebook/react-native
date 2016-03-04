@@ -14,9 +14,9 @@
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTLocationObserver = require('NativeModules').LocationObserver;
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var subscriptions = [];
 

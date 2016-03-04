@@ -23,7 +23,7 @@ var StyleSheetPropType = require('StyleSheetPropType');
 var View = require('View');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var merge = require('merge');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -121,14 +121,14 @@ var Image = React.createClass({
    */
   viewConfig: {
     uiViewClassName: 'RCTView',
-    validAttributes: ReactNativeViewAttributes.RKView
+    validAttributes: ReactNativeViewAttributes.RCTView,
   },
 
   _updateViewConfig: function(props) {
     if (props.children) {
       this.viewConfig = {
         uiViewClassName: 'RCTView',
-        validAttributes: ReactNativeViewAttributes.RKView,
+        validAttributes: ReactNativeViewAttributes.RCTView,
       };
     } else {
       this.viewConfig = {
