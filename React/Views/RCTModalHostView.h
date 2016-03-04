@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTInvalidating.h"
+#import "RCTView.h"
 
 @class RCTBridge;
 
@@ -17,6 +18,8 @@
 
 @property (nonatomic, assign, getter=isAnimated) BOOL animated;
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
+
+@property (nonatomic, copy) RCTDirectEventBlock onShow;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
