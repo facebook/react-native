@@ -30,6 +30,7 @@
 const Animated = require('Animated');
 const Image = require('Image');
 const NavigationContainer = require('NavigationContainer');
+const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationRootContainer = require('NavigationRootContainer');
 const React = require('react-native');
 const StyleSheet = require('StyleSheet');
@@ -37,25 +38,32 @@ const Text = require('Text');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
 
-import type {
+import type  {
   NavigationState,
-  NavigationParentState
-} from 'NavigationStateUtils';
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
-type Props = {
-  navigationState: NavigationParentState,
-  onNavigate: Function,
-  position: Animated.Value,
+type Props = NavigationSceneRendererProps & {
   getTitle: (navState: NavigationState) => string,
+};
+
+const {PropTypes} = React;
+
+const NavigationHeaderPropTypes = {
+  ...NavigationPropTypes.SceneRenderer,
+  getTitle: PropTypes.func.isRequired,
 };
 
 class NavigationHeader extends React.Component {
   _handleBackPress: Function;
+
   props: Props;
-  componentWillMount() {
+
+  componentWillMount(): void {
     this._handleBackPress = this._handleBackPress.bind(this);
   }
-  render() {
+
+  render(): ReactElement {
     var state = this.props.navigationState;
     return (
       <Animated.View
@@ -67,7 +75,8 @@ class NavigationHeader extends React.Component {
       </Animated.View>
     );
   }
-  _renderBackButton() {
+
+  _renderBackButton(): ?ReactElement {
     if (this.props.navigationState.index === 0) {
       return null;
     }
@@ -77,7 +86,8 @@ class NavigationHeader extends React.Component {
       </TouchableOpacity>
     );
   }
-  _renderTitle(childState, index) {
+
+  _renderTitle(childState: NavigationState, index:number): ?ReactElement {
     return (
       <Animated.Text
         key={childState.key}
@@ -102,10 +112,13 @@ class NavigationHeader extends React.Component {
       </Animated.Text>
     );
   }
-  _handleBackPress() {
+
+  _handleBackPress(): void {
     this.props.onNavigate(NavigationRootContainer.getBackAction());
   }
 }
+
+NavigationHeader.propTypes = NavigationHeaderPropTypes;
 
 NavigationHeader = NavigationContainer.create(NavigationHeader);
 

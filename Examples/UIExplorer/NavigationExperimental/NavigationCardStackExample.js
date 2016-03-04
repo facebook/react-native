@@ -49,6 +49,7 @@ function reduceNavigationState(initialState) {
 
 const ExampleReducer = reduceNavigationState({
   index: 0,
+  key: 'exmaple',
   children: [{key: 'First Route'}],
 });
 
@@ -56,12 +57,13 @@ class NavigationCardStackExample extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    this.state = {isHorizontal: true};
+  }
 
+  componentWillMount() {
     this._renderNavigation = this._renderNavigation.bind(this);
     this._renderScene = this._renderScene.bind(this);
     this._toggleDirection = this._toggleDirection.bind(this);
-
-    this.state = {isHorizontal: true};
   }
 
   render() {
@@ -86,8 +88,7 @@ class NavigationCardStackExample extends React.Component {
     );
   }
 
-  _renderScene(props) {
-    const {navigationParentState, onNavigate} = props;
+  _renderScene(/*NavigationSceneRendererProps*/ props) {
     return (
       <ScrollView style={styles.scrollView}>
         <NavigationExampleRow
@@ -99,21 +100,21 @@ class NavigationCardStackExample extends React.Component {
           onPress={this._toggleDirection}
         />
         <NavigationExampleRow
-          text={'route = ' + props.navigationState.key}
+          text={'route = ' + props.scene.navigationState.key}
         />
         <NavigationExampleRow
           text="Push Route"
           onPress={() => {
-            onNavigate({
+            props.onNavigate({
               type: 'push',
-              key: 'Route ' + navigationParentState.children.length,
+              key: 'Route ' + props.scenes.length,
             });
           }}
         />
         <NavigationExampleRow
           text="Pop Route"
           onPress={() => {
-            onNavigate({
+            props.onNavigate({
               type: 'pop',
             });
           }}

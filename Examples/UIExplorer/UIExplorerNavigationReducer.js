@@ -26,7 +26,7 @@ const {
 } = NavigationExperimental;
 const StackReducer = NavigationReducer.StackReducer;
 
-import type {NavigationState} from 'NavigationStateUtils';
+import type {NavigationState} from 'NavigationTypeDefinition';
 
 import type {UIExplorerAction} from './UIExplorerActions';
 
@@ -93,7 +93,7 @@ function UIExplorerNavigationReducer(lastState: ?UIExplorerNavigationState, acti
   if (newStack !== lastState.stack) {
     return {
       externalExample: null,
-      stack: newStack,      
+      stack: newStack,
     }
   }
   return lastState;
