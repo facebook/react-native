@@ -52,6 +52,9 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
+  RCTAssert(_bridge, @"Bridge not set");
+  RCTAssert(_bridge.uiManager, @"UIManager not initialized");
+  RCTAssert(_bridge.uiManager.methodQueue, @"UIManager.methodQueue not initialized");
   return _bridge.uiManager.methodQueue;
 }
 

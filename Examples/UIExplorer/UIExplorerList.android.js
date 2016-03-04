@@ -15,8 +15,6 @@
  */
 'use strict';
 
-const React = require('react');
-
 export type UIExplorerExample = {
   key: string;
   module: React.Component;
@@ -161,6 +159,10 @@ const APIExamples = [
   {
     key: 'ToastAndroidExample',
     module: require('./ToastAndroidExample'),
+  },
+  {
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
   },
   {
     key: 'XHRExample',

@@ -27,7 +27,6 @@ var {
   RootContainer: NavigationRootContainer,
   Reducer: NavigationReducer,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
 } = NavigationExperimental;
 
 const NavigationBasicReducer = NavigationReducer.StackReducer({
@@ -61,6 +60,12 @@ class NavigationAnimatedExample extends React.Component {
       />
     );
   }
+  handleBackAction() {
+    return (
+      this.navRootContainer &&
+      this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
+    );
+  }
   _renderNavigated(navigationState, onNavigate) {
     if (!navigationState) {
       return null;
@@ -69,13 +74,11 @@ class NavigationAnimatedExample extends React.Component {
       <NavigationAnimatedView
         navigationState={navigationState}
         style={styles.animatedView}
-        renderOverlay={(scenes, index, position, layout) => (
+        renderOverlay={(props) => (
           <NavigationHeader
-            scenes={scenes}
-            index={index}
-            position={position}
-            layout={layout}
-            renderTitleComponent={pageState => <NavigationHeaderTitle>{pageState.key}</NavigationHeaderTitle>}
+            navigationState={props.navigationParentState}
+            position={props.position}
+            getTitle={state => state.key}
           />
         )}
         setTiming={(pos, navState) => {
@@ -118,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: NavigationHeader.APPBAR_HEIGHT + NavigationHeader.STATUSBAR_HEIGHT,
+    marginTop: 64
   },
 });
 

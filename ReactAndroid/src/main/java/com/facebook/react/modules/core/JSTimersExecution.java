@@ -10,8 +10,10 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.SupportsWebWorkers;
 import com.facebook.react.bridge.WritableArray;
 
+@SupportsWebWorkers
 public interface JSTimersExecution extends JavaScriptModule {
 
   public void callTimers(WritableArray timerIDs);

@@ -308,6 +308,11 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     return mDevSupportManager;
   }
 
+  @Override
+  public MemoryPressureRouter getMemoryPressureRouter() {
+    return mMemoryPressureRouter;
+  }
+
   private static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
@@ -582,6 +587,10 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     mLifecycleState = LifecycleState.BEFORE_CREATE;
   }
 
+  public LifecycleState getLifecycleState() {
+    return mLifecycleState;
+  }
+
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (mCurrentReactContext != null) {
@@ -715,7 +724,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
 
     catalystInstance.initialize();
     mDevSupportManager.onNewReactContextCreated(reactContext);
-    mMemoryPressureRouter.onNewReactContextCreated(reactContext);
+    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
     moveReactContextToCurrentLifecycleState();
 
     for (ReactRootView rootView : mAttachedRootViews) {
@@ -772,7 +781,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.RUN_JS_BUNDLE_START
     }
     reactContext.destroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
-    mMemoryPressureRouter.onReactInstanceDestroyed();
+    mMemoryPressureRouter.removeMemoryPressureListener(reactContext.getCatalystInstance());
   }
 
   /**

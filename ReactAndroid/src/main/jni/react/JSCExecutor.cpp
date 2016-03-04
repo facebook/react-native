@@ -141,6 +141,10 @@ void JSCExecutor::destroy() {
 }
 
 void JSCExecutor::initOnJSVMThread() {
+  #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
+  // TODO: Find a way to pass m_jscConfig to configureJSCForAndroid()
+  configureJSCForAndroid(m_jscConfig.getDefault("GCTimers", false).asBool());
+  #endif
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
@@ -152,9 +156,7 @@ void JSCExecutor::initOnJSVMThread() {
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
 
-  // TODO (t10136849): Pass the config options from map to JSC
-
-  #ifdef WITH_FB_JSC_TUNING
+  #if defined(WITH_JSC_INTERNAL) && defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid();
   #endif
 
@@ -219,10 +221,6 @@ void JSCExecutor::loadApplicationUnbundle(
 }
 
 void JSCExecutor::flush() {
-  if (m_owner != nullptr) {
-    // Web workers don't support native modules yet
-    return;
-  }
   // TODO: Make this a first class function instead of evaling. #9317773
   std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
   m_bridge->callNativeModules(*this, calls, true);

@@ -17,7 +17,7 @@ namespace react {
 Bridge::Bridge(
     JSExecutorFactory* jsExecutorFactory,
     std::unique_ptr<ExecutorTokenFactory> executorTokenFactory,
-    Callback callback) :
+    std::unique_ptr<BridgeCallback> callback) :
   m_callback(std::move(callback)),
   m_destroyed(std::make_shared<bool>(false)),
   m_executorTokenFactory(std::move(executorTokenFactory)) {
@@ -174,7 +174,7 @@ void Bridge::callNativeModules(JSExecutor& executor, const std::string& callJSON
   if (*m_destroyed) {
     return;
   }
-  m_callback(getTokenForExecutor(executor), parseMethodCalls(callJSON), isEndOfBatch);
+  m_callback->onCallNativeModules(getTokenForExecutor(executor), parseMethodCalls(callJSON), isEndOfBatch);
 }
 
 ExecutorToken Bridge::getMainExecutorToken() const {
@@ -214,7 +214,7 @@ std::unique_ptr<JSExecutor> Bridge::unregisterExecutor(ExecutorToken executorTok
     m_executorTokenMap.erase(executor.get());
   }
 
-  // TODO: Notify native modules that ExecutorToken destroyed
+  m_callback->onExecutorUnregistered(executorToken);
 
   return executor;
 }
