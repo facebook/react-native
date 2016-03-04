@@ -14,6 +14,7 @@ var CustomLayoutAnimation = {
     create: {
         type: LayoutAnimation.Types.linear,
         property: LayoutAnimation.Properties.opacity,
+        delay: 200,
     },
     update: {
         type: LayoutAnimation.Types.easeInEaseOut,

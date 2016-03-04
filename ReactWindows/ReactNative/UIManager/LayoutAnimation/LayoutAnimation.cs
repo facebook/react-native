@@ -2,6 +2,7 @@
 using ReactNative.Collections;
 using ReactNative.Reflection;
 using System;
+using System.Reactive;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Animation;
 
@@ -14,8 +15,6 @@ namespace ReactNative.UIManager.LayoutAnimation
     /// </summary>
     abstract class LayoutAnimation
     {
-        private TimeSpan? _delay;
-
         /// <summary>
         /// Signals if the animation configuration is valid.
         /// </summary>
@@ -49,6 +48,15 @@ namespace ReactNative.UIManager.LayoutAnimation
         }
 
         /// <summary>
+        /// The layout animation delay.
+        /// </summary>
+        protected TimeSpan? Delay
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Create a <see cref="Storyboard"/> to be used to animate the view, 
         /// based on the animation configuration supplied at initialization
         /// time and the new view position and size.
@@ -59,7 +67,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <param name="width">The new width for the view.</param>
         /// <param name="height">The new height for the view.</param>
         /// <returns>The storyboard.</returns>
-        public Storyboard CreateAnimation(
+        public IObservable<Unit> CreateAnimation(
             FrameworkElement view,
             int x,
             int y,
@@ -71,16 +79,7 @@ namespace ReactNative.UIManager.LayoutAnimation
                 return null;
             }
 
-            var animation = CreateAnimationCore(view, x, y, width, height);
-            if (animation != null)
-            {
-#if SLOWDOWN_ANIMATION_MODE
-                animation.SpeedRatio = 0.1;
-#endif
-                animation.BeginTime = _delay;
-            }
-
-            return animation;
+            return CreateAnimationCore(view, x, y, width, height);
         }
 
         /// <summary>
@@ -97,7 +96,7 @@ namespace ReactNative.UIManager.LayoutAnimation
                 ? TimeSpan.FromMilliseconds(data.Value<int>("duration"))
                 : TimeSpan.FromMilliseconds(globalDuration);
 
-            _delay = !data.ContainsKey("delay")
+            Delay = !data.ContainsKey("delay")
                 ? default(TimeSpan?)
                 : TimeSpan.FromMilliseconds(data.Value<int>("delay"));
 
@@ -118,7 +117,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         {
             AnimatedProperty = default(AnimatedPropertyType?);
             Duration = default(TimeSpan);
-            _delay = default(TimeSpan?);
+            Delay = default(TimeSpan?);
             Interpolator = default(EasingFunctionBase);
         }
 
@@ -133,6 +132,6 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <param name="width">The new width for the view.</param>
         /// <param name="height">The new height for the view.</param>
         /// <returns>The storyboard.</returns>
-        protected abstract Storyboard CreateAnimationCore(FrameworkElement view, int x, int y, int width, int height);
+        protected abstract IObservable<Unit> CreateAnimationCore(FrameworkElement view, int x, int y, int width, int height);
     }
 }

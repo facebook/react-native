@@ -12,9 +12,6 @@ namespace ReactNative.Views.Image
     /// <summary>
     /// The view manager responsible for rendering native images.
     /// </summary>
-    /// <remarks>
-    /// TODO: fadeDuration animation support?
-    /// </remarks>
     public class ReactImageManager : SimpleViewManager<Border>
     {
         private const string ReactClass = "RCTImageView";

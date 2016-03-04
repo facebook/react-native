@@ -1,5 +1,8 @@
-﻿using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media.Animation;
+﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.UIManager.LayoutAnimation
 {
@@ -9,7 +12,7 @@ namespace ReactNative.UIManager.LayoutAnimation
     class LayoutCreateAnimation : BaseLayoutAnimation
     {
         /// <summary>
-        /// Create a <see cref="Storyboard"/> to be used to animate the view, 
+        /// Create an observable animation to be used to animate the view, 
         /// based on the animation configuration supplied at initialization
         /// time and the new view position and size.
         /// </summary>
@@ -18,11 +21,19 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <param name="y">The new Y-coordinate for the view.</param>
         /// <param name="width">The new width for the view.</param>
         /// <param name="height">The new height for the view.</param>
-        /// <returns>The storyboard.</returns>
-        protected override Storyboard CreateAnimationCore(FrameworkElement view, int x, int y, int width, int height)
+        /// <returns>
+        /// An observable sequence that starts an animation when subscribed to,
+        /// stops the animation when disposed, and that completes 
+        /// simultaneously with the underlying animation.
+        /// </returns>
+        protected override IObservable<Unit> CreateAnimationCore(FrameworkElement view, int x, int y, int width, int height)
         {
-            // TODO: create animations are temporarily disabled.
-            return null;
+            Canvas.SetLeft(view, x);
+            Canvas.SetTop(view, y);
+            view.Width = width;
+            view.Height = height;
+
+            return base.CreateAnimationCore(view, x, y, width, height);
         }
 
         /// <summary>

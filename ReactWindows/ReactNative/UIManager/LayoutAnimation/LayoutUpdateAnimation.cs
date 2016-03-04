@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Reactive;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
 namespace ReactNative.UIManager.LayoutAnimation
@@ -34,7 +34,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// <param name="width">The new width for the view.</param>
         /// <param name="height">The new height for the view.</param>
         /// <returns>The storyboard.</returns>
-        protected override Storyboard CreateAnimationCore(FrameworkElement view, int x, int y, int width, int height)
+        protected override IObservable<Unit> CreateAnimationCore(FrameworkElement view, int x, int y, int width, int height)
         {
             var currentX = Canvas.GetLeft(view);
             var currentY = Canvas.GetTop(view);
@@ -76,7 +76,13 @@ namespace ReactNative.UIManager.LayoutAnimation
                 storyboard.Children.Add(timeline);
             }
 
-            return storyboard;
+            return new StoryboardObservable(storyboard, () =>
+            {
+                Canvas.SetLeft(view, x);
+                Canvas.SetTop(view, y);
+                view.Width = width;
+                view.Height = height;
+            });
         }
 
         private DoubleAnimation CreateTimeline(FrameworkElement view, string path, double from, double to)
@@ -87,6 +93,7 @@ namespace ReactNative.UIManager.LayoutAnimation
                 To = to,
                 EasingFunction = Interpolator,
                 Duration = Duration,
+                BeginTime = Delay,
             };
 
             Storyboard.SetTarget(timeline, view);
