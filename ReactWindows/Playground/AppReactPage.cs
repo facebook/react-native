@@ -15,6 +15,14 @@ namespace Playground
             }
         }
 
+        public override string JavaScriptMainModuleName
+        {
+            get
+            {
+                return "ReactWindows/Playground/index.ios";
+            }
+        }
+
         public override List<IReactPackage> Packages
         {
             get
@@ -30,11 +38,7 @@ namespace Playground
         {
             get
             {
-#if DEBUG
                 return true;
-#else
-                return false;
-#endif
             }
         }
     }

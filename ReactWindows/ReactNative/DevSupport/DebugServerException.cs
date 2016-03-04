@@ -37,31 +37,36 @@ namespace ReactNative.DevSupport
         /// <returns>The exception instance.</returns>
         public static DebugServerException Parse(string content)
         {
-            if (string.IsNullOrEmpty(content))
+            if (!string.IsNullOrEmpty(content))
             {
-                return null;
+                try
+                {
+                    var jsonObject = JObject.Parse(content);
+                    var fileName = jsonObject.Value<string>("filename");
+                    var description = jsonObject.Value<string>("description");
+                    if (description != null)
+                    {
+                        return new DebugServerException(
+                            jsonObject.Value<string>("description"),
+                            ShortenFileName(fileName),
+                            jsonObject.Value<int>("lineNumber"),
+                            jsonObject.Value<int>("column"));
+                    }
+                }
+                catch (JsonException)
+                {
+                    // TODO: log exception
+                }
             }
 
-            try
-            {
-                var jsonObject = JObject.Parse(content);
-                var fileName = jsonObject.Value<string>("filename");
-                return new DebugServerException(
-                    jsonObject.Value<string>("description"),
-                    ShortenFileName(fileName),
-                    jsonObject.Value<int>("lineNumber"),
-                    jsonObject.Value<int>("column"));
-            }
-            catch (JsonException)
-            {
-                // TODO: trace the exception
-                return null;
-            }
+            return null;
         }
 
         private static string ShortenFileName(string fileName)
         {
-            return fileName.Split('/').Last();
+            return fileName != null
+                ? fileName.Split('/').Last()
+                : null;
         }
     }
 }

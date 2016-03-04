@@ -14,26 +14,24 @@ Clone this repo onto your local machine.
 ```
 git clone https://github.com/CatalystCode/react-native.git
 cd react-native
-git checkout -b ReactWindows
-git pull origin ReactWindows
-cd ReactWindows/Playground
+git fetch
+git checkout ReactWindows
 ```
-Install the react native live-reload bundle server for UWP. The initial bundling can take up to one minute to package. 
+Start the local-cli bundle server. The initial bundling can take up to one minute to package.
 ```
-npm install
-react-native start
+node local-cli\cli.js start
 ```
 
 Build your environment :
 
-- Open up the ReactNative solution file in Visual Studio Enterprise. The solution file can be found in {CWD}/ReactWindows/ReactNative.sln.
-- If this is your first time using UWP, you will have to install the SDK. Right click on the solution file in the solution explorer and select the option labeled "Install Missing Components". You'll likely have to shutdown visual studio to continue the installation.
-- You can start building the solution once all the packges are installed Build->Rebuild Solution. 
+- Open up ReactNative.sln solution file in Visual Studio 2015. The solution file can be found in .\react-native\ReactWindows\ReactNative.sln.
+- If this is your first time using UWP, you will have to install the SDK. Right click on the solution file in the solution explorer and select the option labeled "Install Missing Components". You'll likely have to shutdown Visual Studio to continue the installation.
+- You can start building the solution once all the packages are installed Build->Rebuild Solution. 
 
 Run the Playground App:
 
-- Set the Playground Project as your starter project in Visual Studio.
+- Set the Playground project as your StartUp project in Visual Studio.
 - Run the app on your targeted device.
 
 Change Application view
-- To manage your playground applications native view, edit the index.ios.js file within the playground VS project. 
+- You can edit the file .\react-native\ReactWindows\Playground\index.ios.js while the local-cli bundle server is running to get live changes to your app. 
