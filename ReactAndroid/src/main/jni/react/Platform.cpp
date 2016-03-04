@@ -16,6 +16,7 @@ GetCurrentMessageQueueThread getCurrentMessageQueueThread;
 namespace WebWorkerUtil {
 WebWorkerQueueFactory createWebWorkerThread;
 LoadScriptFromAssets loadScriptFromAssets;
+LoadScriptFromNetworkSync loadScriptFromNetworkSync;
 };
 
 namespace PerfLogging {

@@ -29,6 +29,9 @@ extern WebWorkerQueueFactory createWebWorkerThread;
 
 using LoadScriptFromAssets = std::function<std::string(const std::string& assetName)>;
 extern LoadScriptFromAssets loadScriptFromAssets;
+
+using LoadScriptFromNetworkSync = std::function<std::string(const std::string& url, const std::string& tempfileName)>;
+extern LoadScriptFromNetworkSync loadScriptFromNetworkSync;
 };
 
 namespace PerfLogging {

@@ -914,6 +914,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
       [] (const std::string& assetName) {
         return loadScriptFromAssets(assetName);
       };
+    WebWorkerUtil::loadScriptFromNetworkSync = WebWorkers::loadScriptFromNetworkSync;
     MessageQueues::getCurrentMessageQueueThread =
       [] {
         return std::unique_ptr<MessageQueueThread>(
