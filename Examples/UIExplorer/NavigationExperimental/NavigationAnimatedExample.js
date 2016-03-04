@@ -81,7 +81,7 @@ class NavigationAnimatedExample extends React.Component {
             getTitle={state => state.key}
           />
         )}
-        setTiming={(pos, navState) => {
+        applyAnimation={(pos, navState) => {
           Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
         }}
         renderScene={(props) => (

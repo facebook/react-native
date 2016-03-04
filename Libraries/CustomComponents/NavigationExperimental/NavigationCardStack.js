@@ -49,7 +49,7 @@ import type {
   NavigationStateRenderer,
   NavigationStateRendererProps,
   Position,
-  TimingSetter,
+  AnimationSetter,
 } from 'NavigationAnimatedView';
 
 type Props = {
@@ -64,12 +64,12 @@ type Props = {
  */
 class NavigationCardStack extends React.Component {
   _renderScene : NavigationStateRenderer;
-  _setTiming: TimingSetter;
+  _applyAnimation: AnimationSetter;
 
   constructor(props: Props, context: any) {
     super(props, context);
     this._renderScene = this._renderScene.bind(this);
-    this._setTiming = this._setTiming.bind(this);
+    this._applyAnimation = this._applyAnimation.bind(this);
   }
 
   shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
@@ -86,7 +86,7 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
-        setTiming={this._setTiming}
+        applyAnimation={this._applyAnimation}
         style={[styles.animatedView, this.props.style]}
       />
     );
@@ -115,7 +115,7 @@ class NavigationCardStack extends React.Component {
     );
   }
 
-  _setTiming(position: Position, navigationState: NavigationParentState): void {
+  _applyAnimation(position: Position, navigationState: NavigationParentState): void {
     Animated.timing(
       position,
       {
