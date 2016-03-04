@@ -16,7 +16,7 @@ const child_process = require('child_process');
  */
 function parseDevicesResult(result: string) {
   if (!result) {
-    return;
+    return [];
   }
   
   const devices = [];
