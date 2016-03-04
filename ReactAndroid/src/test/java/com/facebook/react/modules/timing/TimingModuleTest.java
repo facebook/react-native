@@ -110,7 +110,7 @@ public class TimingModuleTest {
   @Test
   public void testSimpleTimer() {
     mTiming.onHostResume();
-    mTiming.createTimer(mExecutorTokenMock, 1, 0, 0, false);
+    mTiming.createTimer(mExecutorTokenMock, 1, 1, 0, false);
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1));
     reset(mJSTimersMock);
@@ -120,7 +120,7 @@ public class TimingModuleTest {
 
   @Test
   public void testSimpleRecurringTimer() {
-    mTiming.createTimer(mExecutorTokenMock, 100, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 100, 1, 0, true);
     mTiming.onHostResume();
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
@@ -133,7 +133,7 @@ public class TimingModuleTest {
   @Test
   public void testCancelRecurringTimer() {
     mTiming.onHostResume();
-    mTiming.createTimer(mExecutorTokenMock, 105, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 105, 1, 0, true);
 
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105));
@@ -147,7 +147,7 @@ public class TimingModuleTest {
   @Test
   public void testPausingAndResuming() {
     mTiming.onHostResume();
-    mTiming.createTimer(mExecutorTokenMock, 41, 0, 0, true);
+    mTiming.createTimer(mExecutorTokenMock, 41, 1, 0, true);
 
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
@@ -161,6 +161,12 @@ public class TimingModuleTest {
     mTiming.onHostResume();
     stepChoreographerFrame();
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+  }
+
+  @Test
+  public void testSetTimeoutZero() {
+    mTiming.createTimer(mExecutorTokenMock, 100, 0, 0, false);
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
   }
 
   private static class PostFrameCallbackHandler implements Answer<Void> {
