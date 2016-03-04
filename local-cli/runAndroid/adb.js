@@ -14,7 +14,7 @@ const child_process = require('child_process');
 /**
  * Parses the output of the 'adb devices' command
  */
-function parseDevicesResult(result: string) {
+function parseDevicesResult(result: string): Array<string> {
   if (!result) {
     return [];
   }
