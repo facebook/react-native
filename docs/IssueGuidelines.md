@@ -1,4 +1,4 @@
-Use the following tips when responding to GitHub issues.
+Here are some tips on how to manage GitHub issues efficiently:
 
 ### An issue is a duplicate of another issue
 Comment e.g. `@facebook-github-bot duplicate #123`. This will add a comment and close the issue.
