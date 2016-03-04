@@ -9,15 +9,12 @@
 'use strict';
 
 jest.dontMock('../')
-  .dontMock('underscore');
-
 jest.mock('path');
 
 const Promise = require('promise');
 const Resolver = require('../');
 
 const path = require('path');
-const _ = require('underscore');
 
 let DependencyGraph = jest.genMockFn();
 jest.setMock('node-haste', DependencyGraph);
@@ -98,8 +95,8 @@ describe('Resolver', function() {
         .then(function(result) {
           expect(result.mainModuleId).toEqual('index');
           expect(result.dependencies[result.dependencies.length - 1]).toBe(module);
-          expect(_.pluck(DependencyGraph.prototype.createPolyfill.mock.calls, 0)).toEqual([
-            { file: 'polyfills/polyfills.js',
+          expect(Polyfill.mock.calls.map((call) => call[0])).toEqual([
+            { path: 'polyfills/polyfills.js',
               id: 'polyfills/polyfills.js',
               dependencies: []
             },
