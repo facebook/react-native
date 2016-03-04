@@ -23,23 +23,19 @@ task createNativeDepsDirectories {
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     // Use ZIP version as it's faster this way to selectively extract some parts of the archive
-    src 'https://s3-us-west-1.amazonaws.com/evenco/tools/boost/boost_1_57_0.zip'
+    src 'https://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.zip'
+    // alternative
+    // src 'http://mirror.nienbo.com/boost/boost_1_57_0.zip'
     onlyIfNewer true
     overwrite false
     dest new File(downloadsDir, 'boost_1_57_0.zip')
 }
 
-task prepareBoost(dependsOn: downloadBoost) {
-    inputs.files downloadBoost.dest, 'src/main/jni/third-party/boost/Android.mk'
-    outputs.dir "$thirdPartyNdkDir/boost"
-    doLast {
-        copy {
-            from { zipTree(downloadBoost.dest) }
-            from 'src/main/jni/third-party/boost/Android.mk'
-            include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
-            into "$thirdPartyNdkDir/boost"
-        }
-    }
+task prepareBoost(dependsOn: downloadBoost, type: Copy) {
+    from zipTree(downloadBoost.dest)
+    from 'src/main/jni/third-party/boost/Android.mk'
+    include 'boost_1_57_0/boost/**/*.hpp', 'Android.mk'
+    into "$thirdPartyNdkDir/boost"
 }
 
 task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
@@ -199,7 +195,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', jobs
+            '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
 }
 
 task cleanReactNdkLib(type: Exec) {
@@ -212,6 +208,11 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from "$buildDir/react-ndk/all"
     exclude '**/libjsc.so'
     into "$buildDir/react-ndk/exported"
+}
+
+task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
+  from "$buildDir/react-ndk/exported"
+  into "src/main/jni/prebuilt/lib"
 }
 
 android {
@@ -229,12 +230,18 @@ android {
         }
 
         buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+        testApplicationId "com.facebook.react.tests.gradle"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "$buildDir/react-ndk/exported"
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell']
+        java {
+          srcDirs = ['src/main/java', 'src/main/libraries/soloader']
+          exclude 'com/facebook/react/processing'
+        }
     }
 
     tasks.withType(JavaCompile) {
@@ -249,7 +256,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'src/main/third-party/java/infer-annotations/', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.facebook.fresco:fresco:0.8.1'
@@ -265,11 +272,14 @@ dependencies {
 
     testCompile "junit:junit:${JUNIT_VERSION}"
     testCompile "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
     testCompile "org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}"
     testCompile "org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}"
     testCompile "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
     testCompile "org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}"
-    testCompile("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
+    testCompile "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
+
+    androidTestCompile "com.android.support.test:testing-support-lib:0.1"
 }
 
 apply from: 'release.gradle'

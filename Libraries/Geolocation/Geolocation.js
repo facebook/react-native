@@ -14,9 +14,9 @@
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTLocationObserver = require('NativeModules').LocationObserver;
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var subscriptions = [];
 
@@ -26,6 +26,7 @@ type GeoOptions = {
   timeout: number;
   maximumAge: number;
   enableHighAccuracy: bool;
+  distanceFilter: number;
 }
 
 /**
@@ -42,9 +43,6 @@ type GeoOptions = {
  * app's `AndroidManifest.xml`:
  *
  * `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />`
- *
- * Geolocation support for Android is planned but not yet open sourced. See
- * [Known Issues](http://facebook.github.io/react-native/docs/known-issues.html#missing-modules-and-native-views).
  *
  */
 var Geolocation = {
@@ -71,7 +69,7 @@ var Geolocation = {
 
   /*
    * Invokes the success callback whenever the location changes.  Supported
-   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool)
+   * options: timeout (ms), maximumAge (ms), enableHighAccuracy (bool), distanceFilter(m)
    */
   watchPosition: function(success: Function, error?: Function, options?: GeoOptions): number {
     if (!updatesEnabled) {

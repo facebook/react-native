@@ -14,7 +14,6 @@
 #import "RCTBridge.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
-#import "RCTViewManager.h"
 #import "UIView+React.h"
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
@@ -44,7 +43,8 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
   RCTShadowView *_defaultShadowView;
   NSMutableDictionary<NSString *, RCTPropBlock> *_viewPropBlocks;
   NSMutableDictionary<NSString *, RCTPropBlock> *_shadowPropBlocks;
-  RCTBridge *_bridge;
+  BOOL _implementsUIBlockToAmendWithShadowViewRegistry;
+  __weak RCTBridge *_bridge;
 }
 
 @synthesize manager = _manager;
@@ -63,6 +63,14 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
     if ([_name hasSuffix:@"Manager"]) {
       _name = [_name substringToIndex:_name.length - @"Manager".length];
     }
+
+    _implementsUIBlockToAmendWithShadowViewRegistry = NO;
+    Class cls = _managerClass;
+    while (cls != [RCTViewManager class]) {
+      _implementsUIBlockToAmendWithShadowViewRegistry = _implementsUIBlockToAmendWithShadowViewRegistry ||
+      RCTClassOverridesInstanceMethod(cls, @selector(uiBlockToAmendWithShadowViewRegistry:));
+      cls = [cls superclass];
+    }
   }
   return self;
 }
@@ -77,11 +85,11 @@ typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (UIView *)createViewWithTag:(NSNumber *)tag props:(NSDictionary<NSString *, id> *)props
+- (UIView *)createViewWithTag:(NSNumber *)tag
 {
   RCTAssertMainThread();
 
-  UIView *view = (UIView *)(props ? [self.manager viewWithProps:props] : [_manager view]);
+  UIView *view = [_manager view];
   view.reactTag = tag;
   view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
@@ -114,7 +122,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     if ([managerClass respondsToSelector:selector]) {
       NSArray<NSString *> *typeAndKeyPath =
         ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(managerClass, selector);
-      type = NSSelectorFromString([typeAndKeyPath[0] stringByAppendingString:@":"]);
+      type = RCTConvertSelectorForType(typeAndKeyPath[0]);
       keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
     } else {
       propBlock = ^(__unused id view, __unused id json) {};
@@ -172,6 +180,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
         // Ordinary property handlers
         NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];
+        if (!typeSignature) {
+          RCTLogError(@"No +[RCTConvert %@] function found.", NSStringFromSelector(type));
+          return ^(__unused id<RCTComponent> view, __unused id json){};
+        }
         switch (typeSignature.methodReturnType[0]) {
 
   #define RCT_CASE(_value, _type) \
@@ -296,7 +308,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   if (!_defaultView) {
-    _defaultView = [self createViewWithTag:nil props:nil];
+    _defaultView = [self createViewWithTag:nil];
   }
 
   [props enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, __unused BOOL *stop) {
@@ -406,6 +418,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
   };
+}
+
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *,RCTShadowView *> *)registry
+{
+  if (_implementsUIBlockToAmendWithShadowViewRegistry) {
+    return [[self manager] uiBlockToAmendWithShadowViewRegistry:registry];
+  }
+  return nil;
 }
 
 @end

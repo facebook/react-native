@@ -19,7 +19,7 @@ var Subscribable = require('Subscribable');
 var View = require('View');
 
 var findNodeHandle = require('findNodeHandle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var Inspector = __DEV__ ? require('Inspector') : null;
 var YellowBox = __DEV__ ? require('YellowBox') : null;

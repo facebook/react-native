@@ -32,21 +32,20 @@ var {
   UIManager,
 } = NativeModules;
 
-var PAGE_SIZE = 4;
 var THUMB_URLS = [
-  'Thumbnails/like.png',
-  'Thumbnails/dislike.png',
-  'Thumbnails/call.png',
-  'Thumbnails/fist.png',
-  'Thumbnails/bandaged.png',
-  'Thumbnails/flowers.png',
-  'Thumbnails/heart.png',
-  'Thumbnails/liking.png',
-  'Thumbnails/party.png',
-  'Thumbnails/poke.png',
-  'Thumbnails/superlike.png',
-  'Thumbnails/victory.png',
-  ];
+  require('./Thumbnails/like.png'),
+  require('./Thumbnails/dislike.png'),
+  require('./Thumbnails/call.png'),
+  require('./Thumbnails/fist.png'),
+  require('./Thumbnails/bandaged.png'),
+  require('./Thumbnails/flowers.png'),
+  require('./Thumbnails/heart.png'),
+  require('./Thumbnails/liking.png'),
+  require('./Thumbnails/party.png'),
+  require('./Thumbnails/poke.png'),
+  require('./Thumbnails/superlike.png'),
+  require('./Thumbnails/victory.png'),
+];
 var NUM_SECTIONS = 100;
 var NUM_ROWS_PER_SECTION = 10;
 
@@ -74,9 +73,9 @@ var Thumb = React.createClass({
       <TouchableOpacity
         onPress={this._onPressThumb}
         style={[styles.buttonContents, {flexDirection: this.state.dir}]}>
-        <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
-        <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
-        <Image style={styles.img} source={{uri: THUMB_URLS[this.state.thumbIndex]}} />
+        <Image style={styles.img} source={THUMB_URLS[this.state.thumbIndex]} />
+        <Image style={styles.img} source={THUMB_URLS[this.state.thumbIndex]} />
+        <Image style={styles.img} source={THUMB_URLS[this.state.thumbIndex]} />
         {this.state.dir === 'column' ?
           <Text>
             Oooo, look at this new text!  So awesome it may just be crazy.
@@ -182,8 +181,8 @@ var ListViewPagingExample = React.createClass({
         renderSectionHeader={this.renderSectionHeader}
         renderRow={this.renderRow}
         initialListSize={10}
-        pageSize={PAGE_SIZE}
-        scrollRenderAheadDistance={2000}
+        pageSize={4}
+        scrollRenderAheadDistance={500}
       />
     );
   },

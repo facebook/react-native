@@ -60,8 +60,10 @@ function _dependencies(argv, config, resolve, reject) {
     projectRoots: config.getProjectRoots(),
     assetRoots: config.getAssetRoots(),
     blacklistRE: config.getBlacklistRE(args.platform),
+    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: args.transformer,
     verbose: config.verbose,
+    disableInternalTransforms: true,
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>

@@ -42,17 +42,23 @@ RCT_ENUM_CONVERTER(MKMapType, (@{
   json = [self NSDictionary:json];
   RCTMapAnnotation *annotation = [RCTMapAnnotation new];
   annotation.coordinate = [self CLLocationCoordinate2D:json];
-  annotation.title = [RCTConvert NSString:json[@"title"]];
-  annotation.subtitle = [RCTConvert NSString:json[@"subtitle"]];
-  annotation.identifier = [RCTConvert NSString:json[@"id"]];
-  annotation.hasLeftCallout = [RCTConvert BOOL:json[@"hasLeftCallout"]];
-  annotation.hasRightCallout = [RCTConvert BOOL:json[@"hasRightCallout"]];
-  annotation.animateDrop = [RCTConvert BOOL:json[@"animateDrop"]];
-  annotation.tintColor = [RCTConvert UIColor:json[@"tintColor"]];
-  annotation.image = [RCTConvert UIImage:json[@"image"]];
-  if (annotation.tintColor && annotation.image) {
-    annotation.image = [annotation.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  }
+  annotation.draggable = [self BOOL:json[@"draggable"]];
+  annotation.title = [self NSString:json[@"title"]];
+  annotation.subtitle = [self NSString:json[@"subtitle"]];
+  annotation.identifier = [self NSString:json[@"id"]];
+  annotation.hasLeftCallout = [self BOOL:json[@"hasLeftCallout"]];
+  annotation.hasRightCallout = [self BOOL:json[@"hasRightCallout"]];
+  annotation.animateDrop = [self BOOL:json[@"animateDrop"]];
+  annotation.tintColor = [self UIColor:json[@"tintColor"]];
+  annotation.image = [self UIImage:json[@"image"]];
+  annotation.viewIndex =
+    [self NSInteger:json[@"viewIndex"] ?: @(NSNotFound)];
+  annotation.leftCalloutViewIndex =
+    [self NSInteger:json[@"leftCalloutViewIndex"] ?: @(NSNotFound)];
+  annotation.rightCalloutViewIndex =
+    [self NSInteger:json[@"rightCalloutViewIndex"] ?: @(NSNotFound)];
+  annotation.detailCalloutViewIndex =
+    [self NSInteger:json[@"detailCalloutViewIndex"] ?: @(NSNotFound)];
   return annotation;
 }
 
@@ -61,19 +67,19 @@ RCT_ARRAY_CONVERTER(RCTMapAnnotation)
 + (RCTMapOverlay *)RCTMapOverlay:(id)json
 {
   json = [self NSDictionary:json];
-  NSArray<NSDictionary *> *locations = [RCTConvert NSDictionaryArray:json[@"coordinates"]];
+  NSArray<NSDictionary *> *locations = [self NSDictionaryArray:json[@"coordinates"]];
   CLLocationCoordinate2D coordinates[locations.count];
   NSUInteger index = 0;
   for (NSDictionary *location in locations) {
-    coordinates[index++] = [RCTConvert CLLocationCoordinate2D:location];
+    coordinates[index++] = [self CLLocationCoordinate2D:location];
   }
 
   RCTMapOverlay *overlay = [RCTMapOverlay polylineWithCoordinates:coordinates
                                                             count:locations.count];
 
-  overlay.strokeColor = [RCTConvert UIColor:json[@"strokeColor"]];
-  overlay.identifier = [RCTConvert NSString:json[@"id"]];
-  overlay.lineWidth = [RCTConvert CGFloat:json[@"lineWidth"] ?: @1];
+  overlay.strokeColor = [self UIColor:json[@"strokeColor"]];
+  overlay.identifier = [self NSString:json[@"id"]];
+  overlay.lineWidth = [self CGFloat:json[@"lineWidth"] ?: @1];
   return overlay;
 }
 

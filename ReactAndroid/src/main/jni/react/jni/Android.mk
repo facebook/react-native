@@ -5,10 +5,15 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := reactnativejni
 
 LOCAL_SRC_FILES := \
+	JExecutorToken.cpp \
+  JMessageQueueThread.cpp \
+  JSCPerfLogging.cpp \
+  JSLoader.cpp \
+  JSLogging.cpp \
+  JniJSModulesUnbundle.cpp \
+  NativeArray.cpp \
   OnLoad.cpp \
   ProxyExecutor.cpp \
-  NativeArray.cpp \
-  JSLoader.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 

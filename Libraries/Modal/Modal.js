@@ -49,6 +49,7 @@ class Modal extends React.Component {
         animated={this.props.animated}
         transparent={this.props.transparent}
         onDismiss={this.props.onDismiss}
+        onShow={this.props.onShow}
         style={styles.modal}>
         <View style={[styles.container, containerBackgroundColor]}>
           {this.props.children}
@@ -63,6 +64,7 @@ Modal.propTypes = {
   transparent: PropTypes.bool,
   visible: PropTypes.bool,
   onDismiss: PropTypes.func,
+  onShow: PropTypes.func,
 };
 
 Modal.defaultProps = {

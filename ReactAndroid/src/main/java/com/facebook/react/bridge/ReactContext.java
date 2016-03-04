@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.queue.CatalystQueueConfiguration;
+import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 
 /**
@@ -60,7 +60,7 @@ public class ReactContext extends ContextWrapper {
 
     mCatalystInstance = catalystInstance;
 
-    CatalystQueueConfiguration queueConfig = catalystInstance.getCatalystQueueConfiguration();
+    ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
@@ -94,6 +94,13 @@ public class ReactContext extends ContextWrapper {
       throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
     }
     return mCatalystInstance.getJSModule(jsInterface);
+  }
+
+  public <T extends JavaScriptModule> T getJSModule(ExecutorToken executorToken, Class<T> jsInterface) {
+    if (mCatalystInstance == null) {
+      throw new RuntimeException("Trying to invoke JS before CatalystInstance has been set!");
+    }
+    return mCatalystInstance.getJSModule(executorToken, jsInterface);
   }
 
   /**
@@ -133,7 +140,7 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
-  public void onResume(@Nullable Activity activity) {
+  public void onHostResume(@Nullable Activity activity) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = activity;
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
@@ -144,7 +151,7 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onPause}
    */
-  public void onPause() {
+  public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostPause();
@@ -154,15 +161,23 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onDestroy}
    */
-  public void onDestroy() {
+  public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     for (LifecycleEventListener listener : mLifecycleEventListeners) {
       listener.onHostDestroy();
     }
+    mCurrentActivity = null;
+  }
+
+  /**
+   * Destroy this instance, making it unusable.
+   */
+  public void destroy() {
+    UiThreadUtil.assertOnUiThread();
+
     if (mCatalystInstance != null) {
       mCatalystInstance.destroy();
     }
-    mCurrentActivity = null;
   }
 
   /**

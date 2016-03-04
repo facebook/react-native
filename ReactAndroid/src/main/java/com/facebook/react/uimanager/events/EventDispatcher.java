@@ -75,14 +75,7 @@ public class EventDispatcher implements LifecycleEventListener {
         return 1;
       }
 
-      long diff = lhs.getTimestampMs() - rhs.getTimestampMs();
-      if (diff == 0) {
-        return 0;
-      } else if (diff < 0) {
-        return -1;
-      } else {
-        return 1;
-      }
+      return lhs.getTimestampMs() < rhs.getTimestampMs() ? -1 : 1;
     }
   };
 
@@ -100,6 +93,7 @@ public class EventDispatcher implements LifecycleEventListener {
   private volatile @Nullable ScheduleDispatchFrameCallback mCurrentFrameCallback;
   private short mNextEventTypeId = 0;
   private volatile boolean mHasDispatchScheduled = false;
+  private volatile int mHasDispatchScheduledCount = 0;
 
   public EventDispatcher(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
@@ -113,6 +107,10 @@ public class EventDispatcher implements LifecycleEventListener {
     Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
+      Systrace.startAsyncFlow(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          event.getEventName(),
+          event.getUniqueID());
     }
   }
 
@@ -242,6 +240,10 @@ public class EventDispatcher implements LifecycleEventListener {
 
         if (!mHasDispatchScheduled) {
           mHasDispatchScheduled = true;
+          Systrace.startAsyncFlow(
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+              "ScheduleDispatchFrameCallback",
+              mHasDispatchScheduledCount);
           mReactContext.runOnJSQueueThread(mDispatchEventsRunnable);
         }
 
@@ -263,7 +265,12 @@ public class EventDispatcher implements LifecycleEventListener {
     public void run() {
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchEventsRunnable");
       try {
+        Systrace.endAsyncFlow(
+            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+            "ScheduleDispatchFrameCallback",
+            mHasDispatchScheduledCount);
         mHasDispatchScheduled = false;
+        mHasDispatchScheduledCount++;
         Assertions.assertNotNull(mRCTEventEmitter);
         synchronized (mEventsToDispatchLock) {
           // We avoid allocating an array and iterator, and "sorting" if we don't need to.
@@ -277,6 +284,10 @@ public class EventDispatcher implements LifecycleEventListener {
             if (event == null) {
               continue;
             }
+            Systrace.endAsyncFlow(
+                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+                event.getEventName(),
+                event.getUniqueID());
             event.dispatch(mRCTEventEmitter);
             event.dispose();
           }

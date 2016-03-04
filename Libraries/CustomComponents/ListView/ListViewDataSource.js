@@ -28,9 +28,9 @@
  */
 'use strict';
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var isEmpty = require('isEmpty');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 function defaultGetRowData(
   dataBlob: any,
@@ -141,7 +141,7 @@ class ListViewDataSource {
 
   /**
    * Clones this `ListViewDataSource` with the specified `dataBlob` and
-   * `rowIdentities`. The `dataBlob` is just an aribitrary blob of data. At
+   * `rowIdentities`. The `dataBlob` is just an arbitrary blob of data. At
    * construction an extractor to get the interesting information was defined
    * (or the default was used).
    *

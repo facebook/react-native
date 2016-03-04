@@ -68,7 +68,7 @@ var App = React.createClass({
 {`// Android
 
 var React = require('react-native');
-var { DrawerLayoutAndroid, ProgressBarAndroid } = React;
+var { DrawerLayoutAndroid, ProgressBarAndroid, Text } = React;
 
 var App = React.createClass({
   render: function() {
@@ -89,7 +89,7 @@ var App = React.createClass({
           <p>
             See <a href="docs/debugging.html#content">Debugging</a>.
           </p>
-          <img src="/react-native/img/chrome_breakpoint.png" width="800" height="443" />
+          <img src="img/chrome_breakpoint.png" width="800" height="443" />
 
           <h2>Touch Handling</h2>
           <p>
@@ -345,7 +345,7 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
   }
 
   @Override
-  public void updateView(MyCustomView view, CatalystStylesDiffMap props) {
+  public void updateView(MyCustomView view, ReactStylesDiffMap props) {
     super.updateView(view, props);
 
     if (props.hasKey(PROP_MY_CUSTOM_PROPERTY)) {

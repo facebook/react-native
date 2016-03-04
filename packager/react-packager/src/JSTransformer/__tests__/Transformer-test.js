@@ -13,17 +13,21 @@ jest
   .dontMock('../');
 
 jest.mock('fs');
+jest.setMock('temp', {path: () => '/arbitrary/path'});
 
-var Cache = require('../../Cache');
 var Transformer = require('../');
 var fs = require('fs');
 
+var Cache;
 var options;
 
 describe('Transformer', function() {
   var workers;
 
   beforeEach(function() {
+    Cache = jest.genMockFn();
+    Cache.prototype.get = jest.genMockFn().mockImpl((a, b, c) => c());
+
     workers = jest.genMockFn();
     jest.setMock('worker-farm', jest.genMockFn().mockImpl(function() {
       return workers;

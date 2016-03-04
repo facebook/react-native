@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.facebook.react.bridge.BridgeProfiling;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
+import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.modules.core.JSTimersExecution;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.core.Timing;
@@ -95,7 +95,8 @@ import com.facebook.systrace.Systrace;
         RCTEventEmitter.class,
         RCTNativeAppEventEmitter.class,
         AppRegistry.class,
-        BridgeProfiling.class,
+        com.facebook.react.bridge.Systrace.class,
+        HMRClient.class,
         DebugComponentOwnershipModule.RCTDebugComponentOwnership.class);
   }
 

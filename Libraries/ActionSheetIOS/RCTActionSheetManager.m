@@ -66,6 +66,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
 
   UIViewController *controller = RCTKeyWindow().rootViewController;
+  while (controller.presentedViewController) {
+    controller = controller.presentedViewController;
+  }
+    
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
     return;
@@ -152,14 +156,26 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     return;
   }
 
-  NSMutableArray<id /* NSString or NSURL */> *items = [NSMutableArray array];
+  NSMutableArray<id> *items = [NSMutableArray array];
   NSString *message = [RCTConvert NSString:options[@"message"]];
   if (message) {
     [items addObject:message];
   }
   NSURL *URL = [RCTConvert NSURL:options[@"url"]];
   if (URL) {
-    [items addObject:URL];
+    if (URL.fileURL || [URL.scheme.lowercaseString isEqualToString:@"data"]) {
+      NSError *error;
+      NSData *data = [NSData dataWithContentsOfURL:URL
+                                           options:(NSDataReadingOptions)0
+                                             error:&error];
+      if (!data) {
+        failureCallback(error);
+        return;
+      }
+      [items addObject:data];
+    } else {
+      [items addObject:URL];
+    }
   }
   if (items.count == 0) {
     RCTLogError(@"No `url` or `message` to share");

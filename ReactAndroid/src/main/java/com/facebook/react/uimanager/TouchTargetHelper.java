@@ -13,12 +13,14 @@ import javax.annotation.Nullable;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.touch.ReactHitSlopView;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}.
@@ -118,7 +120,7 @@ public class TouchTargetHelper {
       }
     }
     return viewGroup;
-}
+  }
 
   /**
    * Returns whether the touch point is within the child View
@@ -144,12 +146,24 @@ public class TouchTargetHelper {
       localX = localXY[0];
       localY = localXY[1];
     }
-    if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-        && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
-      outLocalPoint.set(localX, localY);
-      return true;
+    if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
+      Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
+      if ((localX >= -hitSlopRect.left && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
+          && (localY >= -hitSlopRect.top && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
+        outLocalPoint.set(localX, localY);
+        return true;
+      }
+
+      return false;
+    } else {
+      if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
+          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
+        outLocalPoint.set(localX, localY);
+        return true;
+      }
+
+      return false;
     }
-    return false;
   }
 
 
@@ -173,7 +187,23 @@ public class TouchTargetHelper {
       // This view can't be the target, but its children might
       if (view instanceof ViewGroup) {
         View targetView = findTouchTargetView(eventCoords, (ViewGroup) view);
-        return targetView != view ? targetView : null;
+        if (targetView != view) {
+          return targetView;
+        }
+
+        // PointerEvents.BOX_NONE means that this react element cannot receive pointer events.
+        // However, there might be virtual children that can receive pointer events, in which case
+        // we still want to return this View and dispatch a pointer event to the virtual element.
+        // Note that this currently only applies to Nodes/FlatViewGroup as it's the only class that
+        // is both a ViewGroup and ReactCompoundView (ReactTextView is a ReactCompoundView but not a
+        // ViewGroup).
+        if (view instanceof ReactCompoundView) {
+          int reactTag = ((ReactCompoundView)view).reactTagForTouch(eventCoords[0], eventCoords[1]);
+          if (reactTag != view.getId()) {
+            // make sure we exclude the View itself because of the PointerEvents.BOX_NONE
+            return view;
+          }
+        }
       }
       return null;
 

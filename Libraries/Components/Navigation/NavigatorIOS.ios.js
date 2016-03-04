@@ -21,7 +21,7 @@ var StyleSheet = require('StyleSheet');
 var View = require('View');
 
 var findNodeHandle = require('findNodeHandle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -120,7 +120,7 @@ type Event = Object;
  * },
  * ```
  *
- * Now MyView will be rendered by the navigator. It will recieve the route
+ * Now MyView will be rendered by the navigator. It will receive the route
  * object in the `route` prop, a navigator, and all of the props specified in
  * `passProps`.
  *
@@ -172,6 +172,11 @@ type Event = Object;
  *   ),
  * });
  * ```
+ *
+ * Props passed to the NavigatorIOS component will set the default configuration
+ * for the navigation bar. Props passed as properties to a route object will set
+ * the configuration for that route's navigation bar, overriding any props
+ * passed to the NavigatorIOS component.
  *
  */
 var NavigatorIOS = React.createClass({
@@ -249,15 +254,45 @@ var NavigatorIOS = React.createClass({
        */
       wrapperStyle: View.propTypes.style,
 
+      /**
+       * A Boolean value that indicates whether the navigation bar is hidden
+       */
+      navigationBarHidden: PropTypes.bool,
+
+      /**
+       * A Boolean value that indicates whether to hide the 1px hairline shadow
+       */
+      shadowHidden: PropTypes.bool,
+
+      /**
+       * The color used for buttons in the navigation bar
+       */
+      tintColor: PropTypes.string,
+
+      /**
+       * The background color of the navigation bar
+       */
+      barTintColor: PropTypes.string,
+
+       /**
+       * The text color of the navigation bar title
+       */
+      titleTextColor: PropTypes.string,
+
+       /**
+       * A Boolean value that indicates whether the navigation bar is translucent
+       */
+      translucent: PropTypes.bool,
+
     }).isRequired,
 
     /**
-     * A Boolean value that indicates whether the navigation bar is hidden
+     * A Boolean value that indicates whether the navigation bar is hidden by default
      */
     navigationBarHidden: PropTypes.bool,
 
     /**
-     * A Boolean value that indicates whether to hide the 1px hairline shadow
+     * A Boolean value that indicates whether to hide the 1px hairline shadow by default
      */
     shadowHidden: PropTypes.bool,
 
@@ -268,22 +303,22 @@ var NavigatorIOS = React.createClass({
     itemWrapperStyle: View.propTypes.style,
 
     /**
-     * The color used for buttons in the navigation bar
+     * The default color used for buttons in the navigation bar
      */
     tintColor: PropTypes.string,
 
     /**
-     * The background color of the navigation bar
+     * The default background color of the navigation bar
      */
     barTintColor: PropTypes.string,
 
     /**
-     * The text color of the navigation bar title
+     * The default text color of the navigation bar title
      */
     titleTextColor: PropTypes.string,
 
     /**
-     * A Boolean value that indicates whether the navigation bar is translucent
+     * A Boolean value that indicates whether the navigation bar is translucent by default
      */
     translucent: PropTypes.bool,
 
@@ -493,9 +528,7 @@ var NavigatorIOS = React.createClass({
           this.setState({
             requestedTopOfStack: newRequestedTopOfStack,
             makingNavigatorRequest: true,
-            // Not actually updating the indices yet until we get the native
-            // `onNavigationComplete`.
-            updatingAllIndicesAtOrBeyond: null,
+            updatingAllIndicesAtOrBeyond: this.state.requestedTopOfStack - n,
           });
         });
       }
@@ -603,18 +636,18 @@ var NavigatorIOS = React.createClass({
     this._handleNavigatorStackChanged(e);
   },
 
-  _routeToStackItem: function(route: Route, i: number) {
-    var {component, wrapperStyle, passProps, ...route} = route;
+  _routeToStackItem: function(routeArg: Route, i: number) {
+    var {component, wrapperStyle, passProps, ...route} = routeArg;
     var {itemWrapperStyle, ...props} = this.props;
     var shouldUpdateChild =
-      this.state.updatingAllIndicesAtOrBeyond &&
+      this.state.updatingAllIndicesAtOrBeyond != null &&
       this.state.updatingAllIndicesAtOrBeyond >= i;
     var Component = component;
     return (
       <StaticContainer key={'nav' + i} shouldUpdate={shouldUpdateChild}>
         <RCTNavigatorItem
-          {...route}
           {...props}
+          {...route}
           style={[
             styles.stackItem,
             itemWrapperStyle,

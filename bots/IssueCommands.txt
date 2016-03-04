@@ -1,0 +1,29 @@
+React Native GitHub Issue Task Force: brentvatne, chirag04, christopherdro, corbt, dsibiski, grabbou, ide, jsierles, kmagiera, Kureev, lelandrichardson, satya164, skevy
+
+@facebook-github-bot answered
+comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
+close
+
+@facebook-github-bot duplicate (#[0-9]+)
+comment {author} tells me this issue is a duplicate of {match0}. Let's discuss there, closing this one.
+close
+
+@facebook-github-bot expected
+comment The /expected comment above tells me this is expected behavior. Closing this as we'd like to use the GitHub issue tracker for bugs. If you'd like to change how this feature works please post a feature request on [Product Pains](https://productpains.com/product/react-native/) so that other people can vote on it.
+close
+
+@facebook-github-bot stack-overflow
+comment Hey {issue_author} and thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only. Will close this as this is really a question that should be asked on SO.
+add-label For Stack Overflow
+close
+
+@facebook-github-bot label (.*)
+add-label {match0}
+
+@facebook-github-bot no-reply
+comment Closing this issue as more information is needed to debug this and we haven't heard back from the author. Once there's more information we can reopen the issue.
+close
+
+@facebook-github-bot reopen
+comment Okay, reopening this issue.
+reopen
