@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -16,6 +19,9 @@ namespace ReactNative.UIManager.LayoutAnimation
     /// </remarks>
     public class LayoutAnimationController
     {
+        private readonly ConditionalWeakTable<FrameworkElement, SerialDisposable> _activeAnimations =
+            new ConditionalWeakTable<FrameworkElement, SerialDisposable>();
+
         private readonly LayoutAnimation _layoutCreateAnimation = new LayoutCreateAnimation();
         private readonly LayoutAnimation _layoutUpdateAnimation = new LayoutUpdateAnimation();
 
@@ -94,7 +100,14 @@ namespace ReactNative.UIManager.LayoutAnimation
             }
             else
             {
-                animation.Begin();
+                // Get the serial disposable for the view
+                var serialDisposable = _activeAnimations.GetOrCreateValue(view);
+
+                // Dispose any existing animations
+                serialDisposable.Disposable = Disposable.Empty;
+
+                // Start the next animation
+                serialDisposable.Disposable = animation.Subscribe();
             }
         }
 

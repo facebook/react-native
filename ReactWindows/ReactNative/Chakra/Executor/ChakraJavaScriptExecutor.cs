@@ -3,9 +3,6 @@ using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
 using System.Diagnostics;
-#if DEBUG
-using Windows.System.Profile;
-#endif
 
 namespace ReactNative.Chakra.Executor
 {
@@ -144,14 +141,6 @@ namespace ReactNative.Chakra.Executor
         {
             JavaScriptContext.Current = _runtime.CreateContext();
 
-#if DEBUG
-            // Start debugging.
-            if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Desktop")
-            {
-                JavaScriptContext.StartDebugging();
-            }
-#endif
-
             var consolePropertyId = default(JavaScriptPropertyId);
             Native.ThrowIfError(
                 Native.JsGetPropertyIdFromName("console", out consolePropertyId));
@@ -163,13 +152,12 @@ namespace ReactNative.Chakra.Executor
             _consoleWarn = ConsoleWarn;
             _consoleError = ConsoleError;
 
-            DefineHostCallback(consoleObject, "log", _consoleLog, IntPtr.Zero);
-            DefineHostCallback(consoleObject, "warn", _consoleWarn, IntPtr.Zero);
-            DefineHostCallback(consoleObject, "error", _consoleError, IntPtr.Zero);
+            DefineHostCallback(consoleObject, "log", _consoleLog);
+            DefineHostCallback(consoleObject, "warn", _consoleWarn);
+            DefineHostCallback(consoleObject, "error", _consoleError);
 
             Debug.WriteLine("Chakra initialization successful.");
         }
-
 
         #region JSON Marshaling
 
@@ -212,11 +200,10 @@ namespace ReactNative.Chakra.Executor
         private static void DefineHostCallback(
             JavaScriptValue obj,
             string callbackName,
-            JavaScriptNativeFunction callback,
-            IntPtr callbackData)
+            JavaScriptNativeFunction callback)
         {
             var propertyId = JavaScriptPropertyId.FromString(callbackName);
-            var function = JavaScriptValue.CreateFunction(callback, callbackData);
+            var function = JavaScriptValue.CreateFunction(callback);
             obj.SetProperty(propertyId, function, true);
         }
 

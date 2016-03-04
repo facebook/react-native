@@ -251,6 +251,7 @@
     <Compile Include="UIManager\LayoutAnimation\BaseLayoutAnimation.cs" />
     <Compile Include="Collections\JObjectExtensions.cs" />
     <Compile Include="UIManager\LayoutAnimation\LayoutAnimation.cs" />
+    <Compile Include="UIManager\LayoutAnimation\StoryboardObservable.cs" />
     <Compile Include="UIManager\MeasureAssertions.cs" />
     <Compile Include="UIManager\ReactStylesDiffMap.cs" />
     <Compile Include="UIManager\ReactStylesDiffMapExtensions.cs" />
