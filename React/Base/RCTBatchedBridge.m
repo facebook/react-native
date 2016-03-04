@@ -514,6 +514,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   }
 
   _loading = NO;
+  [_javaScriptExecutor invalidate];
 
   [[NSNotificationCenter defaultCenter]
    postNotificationName:RCTJavaScriptDidFailToLoadNotification
@@ -610,36 +611,42 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
       dispatch_group_enter(group);
-      [self dispatchBlock:^{
-        [(id<RCTInvalidating>)moduleData.instance invalidate];
-        dispatch_group_leave(group);
-      } queue:moduleData.methodQueue];
+      
+      if (moduleData.methodQueue == RCTJSThread) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [(id<RCTInvalidating>)moduleData.instance invalidate];
+          dispatch_group_leave(group);
+        });
+      }else{
+        dispatch_async(moduleData.methodQueue, ^{
+          [(id<RCTInvalidating>)moduleData.instance invalidate];
+          dispatch_group_leave(group);
+        });
+      }
     }
     [moduleData invalidate];
   }
-
+  
   dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    [_javaScriptExecutor executeBlockOnJavaScriptQueue:^{
-      [_jsDisplayLink invalidate];
-      _jsDisplayLink = nil;
-
-      [_javaScriptExecutor invalidate];
-      _javaScriptExecutor = nil;
-
-      if (RCTProfileIsProfiling()) {
-        RCTProfileUnhookModules(self);
-      }
-
-      _moduleDataByName = nil;
-      _moduleDataByID = nil;
-      _moduleClassesByID = nil;
-      _frameUpdateObservers = nil;
-      _pendingCalls = nil;
-
-      if (_flowIDMap != NULL) {
-        CFRelease(_flowIDMap);
-      }
-    }];
+    [_jsDisplayLink invalidate];
+    _jsDisplayLink = nil;
+    
+    [_javaScriptExecutor invalidate];
+    _javaScriptExecutor = nil;
+    
+    if (RCTProfileIsProfiling()) {
+      RCTProfileUnhookModules(self);
+    }
+    
+    _moduleDataByName = nil;
+    _moduleDataByID = nil;
+    _moduleClassesByID = nil;
+    _frameUpdateObservers = nil;
+    _pendingCalls = nil;
+    
+    if (_flowIDMap != NULL) {
+      CFRelease(_flowIDMap);
+    }
   });
 }
 
