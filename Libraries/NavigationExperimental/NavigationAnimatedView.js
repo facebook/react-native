@@ -106,7 +106,7 @@ class NavigationAnimatedView
   _animatedWidth: Animated.Value;
   _lastHeight: number;
   _lastWidth: number;
-  _postionListener: any;
+  _positionListener: any;
 
   props: Props;
   state: State;
@@ -129,7 +129,7 @@ class NavigationAnimatedView
     });
   }
   componentDidMount() {
-    this._postionListener = this.state.position.addListener(this._onProgressChange.bind(this));
+    this._positionListener = this.state.position.addListener(this._onProgressChange.bind(this));
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.navigationState !== this.props.navigationState) {
@@ -144,9 +144,9 @@ class NavigationAnimatedView
     }
   }
   componentWillUnmount() {
-    if (this.postionListener) {
-      this.state.position.removeListener(this._postionListener);
-      this._postionListener = null;
+    if (this._positionListener) {
+      this.state.position.removeListener(this._positionListener);
+      this._positionListener = null;
     }
   }
   _onProgressChange(data: Object): void {
