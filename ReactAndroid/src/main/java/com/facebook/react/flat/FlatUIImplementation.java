@@ -381,12 +381,19 @@ public class FlatUIImplementation extends UIImplementation {
   }
 
   @Override
+  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
+    mStateBuilder.beforeUpdateViewHierarchy();
+    super.updateViewHierarchy(eventDispatcher);
+    mStateBuilder.afterUpdateViewHierarchy(eventDispatcher);
+  }
+
+  @Override
   protected void applyUpdatesRecursive(
       ReactShadowNode cssNode,
       float absoluteX,
       float absoluteY,
       EventDispatcher eventDispatcher) {
-    mStateBuilder.applyUpdates(eventDispatcher, (FlatRootShadowNode) cssNode);
+    mStateBuilder.applyUpdates((FlatRootShadowNode) cssNode);
   }
 
   @Override

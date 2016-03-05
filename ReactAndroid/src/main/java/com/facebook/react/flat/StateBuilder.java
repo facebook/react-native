@@ -61,13 +61,15 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     return mOperationsQueue;
   }
 
+  void beforeUpdateViewHierarchy() {
+    commitViewUpdates();
+  }
+
   /**
    * Given a root of the laid-out shadow node hierarchy, walks the tree and generates an array of
    * DrawCommands that will then mount in UI thread to a root FlatViewGroup so that it can draw.
    */
-  /* package */ void applyUpdates(EventDispatcher eventDispatcher, FlatShadowNode node) {
-    commitViewUpdates();
-
+  /* package */ void applyUpdates(FlatShadowNode node) {
     float width = node.getLayoutWidth();
     float height = node.getLayoutHeight();
     float left = node.getLayoutX();
@@ -87,7 +89,9 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         Float.POSITIVE_INFINITY);
 
     updateViewBounds(node, left, top, right, bottom);
+  }
 
+  void afterUpdateViewHierarchy(EventDispatcher eventDispatcher) {
     if (mDetachAllChildrenFromViews != null) {
       int[] viewsToDetachAllChildrenFrom = collectViewTags(mViewsToDetachAllChildrenFrom);
       mViewsToDetachAllChildrenFrom.clear();
