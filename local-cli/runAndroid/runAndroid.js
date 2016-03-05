@@ -34,6 +34,10 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'root',
     type: 'string',
     description: 'Override the root directory for the android build (which contains the android directory)',
+  }, {
+    command: 'flavor',
+    type: 'string',
+    required: false,
   }], argv);
 
   args.root = args.root || '';
@@ -70,7 +74,15 @@ function buildAndRun(args, reject) {
       ? 'gradlew.bat'
       : './gradlew';
 
-    const gradleArgs = ['installDebug'];
+    const gradleArgs = [];
+    if (args['flavor']) {
+        gradleArgs.push('install' +
+          args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
+        );
+    } else {
+        gradleArgs.push('installDebug');
+    }
+
     if (args['install-debug']) {
       gradleArgs.push(args['install-debug']);
     }
