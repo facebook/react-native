@@ -190,12 +190,16 @@
     <Compile Include="Modules\Core\JavaScriptException.cs" />
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
     <Compile Include="Modules\Core\SourceCodeModule.cs" />
+    <Compile Include="Modules\NetInfo\DefaultNetworkInformation.cs" />
+    <Compile Include="Modules\NetInfo\IConnectionProfile.cs" />
+    <Compile Include="Modules\NetInfo\INetworkInformation.cs" />
     <Compile Include="Modules\Network\DefaultHttpClient.cs" />
     <Compile Include="Modules\Network\HttpContentHeaderData.cs" />
     <Compile Include="Modules\Network\IHttpClient.cs" />
     <Compile Include="Modules\Network\NetworkingModule.cs" />
     <Compile Include="Modules\Network\HttpContentHelpers.cs" />
     <Compile Include="Modules\Network\TaskCancellationManager.cs" />
+    <Compile Include="Modules\NetInfo\NetInfoModule.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
