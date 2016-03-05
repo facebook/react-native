@@ -113,13 +113,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     mOnLayoutEvents.clear();
 
     if (!mViewsToDrop.isEmpty()) {
-      for (int i = 0, mViewsToDropSize = mViewsToDrop.size(); i < mViewsToDropSize; i++) {
-        // set parent tag to -1 to avoid trying to detach this view
-        FlatShadowNode shadowNode = mViewsToDrop.get(i);
-        if (shadowNode.mountsToView()) {
-          shadowNode.setNativeParentTag(-1);
-        }
-      }
       mOperationsQueue.enqueueDropViews(collectViewTags(mViewsToDrop));
       mViewsToDrop.clear();
     }
