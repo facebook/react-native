@@ -63,7 +63,7 @@ When the browser is trying to render a text node, it's going to go all the way u
 In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**; you cannot have a text node directly under a `<View>`.
 
 ```javascript
-// BAD: will fatal, can't have a text node as child of a <View>
+// BAD: will raise exception, can't have a text node as child of a <View>
 <View>
   Some text
 </View>
