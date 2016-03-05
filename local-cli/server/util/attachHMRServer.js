@@ -174,6 +174,16 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                       }
                     });
 
+                    // Need to send modules to the client in an order it can
+                    // process them: if a new dependency graph was uncovered
+                    // because a new dependency was added, the file that was
+                    // changed, which is the root of the dependency tree that
+                    // will be sent, needs to be the last module that gets
+                    // processed. Reversing the new modules makes sense
+                    // because we get them through the resolver which returns
+                    // a BFS ordered list.
+                    modulesToUpdate.reverse();
+
                     // invalidate caches
                     client.dependenciesCache = dependenciesCache;
                     client.dependenciesModulesCache = dependenciesModulesCache;

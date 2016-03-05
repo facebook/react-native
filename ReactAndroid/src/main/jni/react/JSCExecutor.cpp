@@ -118,8 +118,18 @@ JSCExecutor::JSCExecutor(
       setGlobalVariable(it.first, it.second);
     }
 
-    // TODO(9604438): Protect against script does not exist
-    std::string scriptSrc = WebWorkerUtil::loadScriptFromAssets(script);
+    // Try to load the script from the network if script is a URL
+    // NB: For security, this will only work in debug builds
+    std::string scriptSrc;
+    if (script.find("http://") == 0 || script.find("https://") == 0) {
+      std::stringstream outfileBuilder;
+      outfileBuilder << m_deviceCacheDir << "/workerScript" << m_workerId << ".js";
+      scriptSrc = WebWorkerUtil::loadScriptFromNetworkSync(script, outfileBuilder.str());
+    } else {
+      // TODO(9604438): Protect against script does not exist
+      scriptSrc = WebWorkerUtil::loadScriptFromAssets(script);
+    }
+
     // TODO(9994180): Throw on error
     loadApplicationScript(scriptSrc, script);
   });
@@ -141,6 +151,10 @@ void JSCExecutor::destroy() {
 }
 
 void JSCExecutor::initOnJSVMThread() {
+  #if defined(WITH_FB_JSC_TUNING) && !defined(WITH_JSC_INTERNAL)
+  // TODO: Find a way to pass m_jscConfig to configureJSCForAndroid()
+  configureJSCForAndroid(m_jscConfig.getDefault("GCTimers", false).asBool());
+  #endif
   m_context = JSGlobalContextCreateInGroup(nullptr, nullptr);
   s_globalContextRefToJSCExecutor[m_context] = this;
   installGlobalFunction(m_context, "nativeFlushQueueImmediate", nativeFlushQueueImmediate);
@@ -152,9 +166,7 @@ void JSCExecutor::initOnJSVMThread() {
 
   installGlobalFunction(m_context, "nativeLoggingHook", JSLogging::nativeHook);
 
-  // TODO (t10136849): Pass the config options from map to JSC
-
-  #ifdef WITH_FB_JSC_TUNING
+  #if defined(WITH_JSC_INTERNAL) && defined(WITH_FB_JSC_TUNING)
   configureJSCForAndroid();
   #endif
 
@@ -219,10 +231,6 @@ void JSCExecutor::loadApplicationUnbundle(
 }
 
 void JSCExecutor::flush() {
-  if (m_owner != nullptr) {
-    // Web workers don't support native modules yet
-    return;
-  }
   // TODO: Make this a first class function instead of evaling. #9317773
   std::string calls = executeJSCallWithJSC(m_context, "flushedQueue", std::vector<folly::dynamic>());
   m_bridge->callNativeModules(*this, calls, true);

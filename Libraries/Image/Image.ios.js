@@ -210,6 +210,10 @@ var Image = React.createClass({
       RawImage = RCTImageView;
     }
 
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
+    }
+
     if (this.context.isInAParentText) {
       RawImage = RCTVirtualImage;
       if (!width || !height) {

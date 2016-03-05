@@ -252,6 +252,7 @@ var apis = [
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
+  '../Libraries/Vibration/Vibration.js',
 ];
 
 var stylesWithPermalink = [
