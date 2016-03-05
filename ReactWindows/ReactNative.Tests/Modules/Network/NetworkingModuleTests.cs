@@ -287,8 +287,6 @@ namespace ReactNative.Tests.Modules.Network
         {
             var context = new ReactContext();
 
-            var waitHandle = new AutoResetEvent(false);
-            var ids = new List<int>();
             var eventEmitter = new RCTDeviceEventEmitter();
             eventEmitter.InvocationHandler = handler;
 

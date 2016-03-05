@@ -146,9 +146,9 @@ namespace ReactNative
                 if (_reject != null)
                 {
                     _reject.Invoke(new Dictionary<string, string>
-                {
-                    { "message", reason },
-                });
+                    {
+                        { "message", reason },
+                    });
                 }
             }
 

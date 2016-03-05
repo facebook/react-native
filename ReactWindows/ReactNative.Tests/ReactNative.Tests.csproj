@@ -110,6 +110,7 @@
     <Compile Include="Internal\JavaScriptHelpers.cs" />
     <Compile Include="Internal\DispatcherHelpers.cs" />
     <Compile Include="Internal\MockCallback.cs" />
+    <Compile Include="Internal\MockPromise.cs" />
     <Compile Include="Internal\MockReactInstance.cs" />
     <Compile Include="Internal\MockInvocationHandler.cs" />
     <Compile Include="Internal\MockJavaScriptExecutor.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Modules\Core\RCTDeviceEventEmitterTests.cs" />
     <Compile Include="Modules\Core\RCTNativeAppEventEmitterTests.cs" />
     <Compile Include="Modules\Core\TimingTests.cs" />
+    <Compile Include="Modules\NetInfo\NetInfoModuleTests.cs" />
     <Compile Include="Modules\Network\NetworkingModuleTests.cs" />
     <Compile Include="Modules\Network\TaskCancellationManagerTests.cs" />
     <Compile Include="Modules\Toast\ToastNotificationTests.cs" />
