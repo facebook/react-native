@@ -141,18 +141,24 @@ function buildAndRun(args, reject) {
 }
 
 function startServerInNewWindow() {
+  var yargV = require('yargs').argv;
+
   const launchPackagerScript = path.resolve(
     __dirname, '..', '..', 'packager', 'launchPackager.command'
   );
 
   if (process.platform === 'darwin') {
-    child_process.spawnSync('open', [launchPackagerScript]);
+    if (yargV.open) {
+      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript]);
+    }
+    return child_process.spawnSync('open', [launchPackagerScript]);
+
   } else if (process.platform === 'linux') {
-    child_process.spawn(
-      'xterm',
-      ['-e', 'sh', launchPackagerScript],
-      {detached: true}
-    );
+    if (yargV.open){
+      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
+    }
+    return child_process.spawn('xterm',['-e', 'sh', launchPackagerScript],{detached: true});
+
   } else if (/^win/.test(process.platform)) {
     console.log(chalk.yellow('Starting the packager in a new window ' +
       'is not supported on Windows yet.\nPlease start it manually using ' +
