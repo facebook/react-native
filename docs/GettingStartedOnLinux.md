@@ -3,7 +3,7 @@ id: getting-started-linux
 title: Getting Started on Linux
 layout: docs
 category: Quick Start
-permalink: docs/getting-started-on-linux.html
+permalink: docs/getting-started-linux.html
 next: android-setup
 ---
 
