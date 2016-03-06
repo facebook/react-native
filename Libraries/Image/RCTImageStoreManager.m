@@ -86,6 +86,12 @@ RCT_EXPORT_METHOD(removeImageForTag:(NSString *)imageTag)
   [_store removeObjectForKey:imageTag];
 }
 
+RCT_EXPORT_METHOD(hasImageForTag:(NSString *)imageTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  callback(@[@(_store[imageTag] != nil)]);
+}
+
 // TODO (#5906496): Name could be more explicit - something like getBase64EncodedDataForTag:?
 RCT_EXPORT_METHOD(getBase64ForTag:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
@@ -211,6 +217,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   dispatch_async(_methodQueue, ^{
     NSData *imageData = _store[imageTag];
     dispatch_async(dispatch_get_main_queue(), ^{
+      // imageWithData: is not thread-safe, so we can't do this on methodQueue
       block([UIImage imageWithData:imageData]);
     });
   });

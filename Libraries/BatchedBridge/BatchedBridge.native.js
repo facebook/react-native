@@ -19,11 +19,15 @@ const BatchedBridge = new MessageQueue(
 
 // TODO: Move these around to solve the cycle in a cleaner way.
 
-const BridgeProfiling = require('BridgeProfiling');
+const Systrace = require('Systrace');
 const JSTimersExecution = require('JSTimersExecution');
 
-BatchedBridge.registerCallableModule('BridgeProfiling', BridgeProfiling);
+BatchedBridge.registerCallableModule('Systrace', Systrace);
 BatchedBridge.registerCallableModule('JSTimersExecution', JSTimersExecution);
+
+if (__DEV__) {
+  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+}
 
 // Wire up the batched bridge on the global object so that we can call into it.
 // Ideally, this would be the inverse relationship. I.e. the native environment

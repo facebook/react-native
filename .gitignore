@@ -21,8 +21,16 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
-# Xcode, Gradle
-build/
+# Gradle
+/build/
+/Examples/**/android/app/build/
+/ReactAndroid/build/
+
+# Buck
+.buckd
+buck-out
+/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
+/ReactAndroid/src/main/jni/prebuilt/lib/x86/
 
 # Android
 .idea

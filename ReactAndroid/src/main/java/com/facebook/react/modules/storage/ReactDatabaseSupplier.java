@@ -30,7 +30,6 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
   private static final int DATABASE_VERSION = 1;
   private static final int SLEEP_TIME_MS = 30;
-  private static final long DEFAULT_MAX_DB_SIZE = 6L * 1024L * 1024L; // 6 MB in bytes
 
   static final String TABLE_CATALYST = "catalystLocalStorage";
   static final String KEY_COLUMN = "key";
@@ -46,6 +45,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
   private Context mContext;
   private @Nullable SQLiteDatabase mDb;
+  private long mMaximumDatabaseSize =  6L * 1024L * 1024L; // 6 MB in bytes
 
   private ReactDatabaseSupplier(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -105,7 +105,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
     // This is a sane limit to protect the user from the app storing too much data in the database.
     // This also protects the database from filling up the disk cache and becoming malformed
     // (endTransaction() calls will throw an exception, not rollback, and leave the db malformed).
-    mDb.setMaximumSize(DEFAULT_MAX_DB_SIZE);
+    mDb.setMaximumSize(mMaximumDatabaseSize);
     return true;
   }
 
@@ -135,6 +135,17 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
   /* package */ synchronized void clear() {
     get().delete(TABLE_CATALYST, null, null);
+  }
+
+  /**
+   * Sets the maximum size the database will grow to. The maximum size cannot
+   * be set below the current size.
+   */
+  public synchronized void setMaximumSize(long size) {
+    mMaximumDatabaseSize = size;
+    if (mDb != null) {
+      mDb.setMaximumSize(mMaximumDatabaseSize);
+    }
   }
 
   private synchronized boolean deleteDatabase() {

@@ -10,7 +10,7 @@
  * and Flow doesn't have a good way to enable getters and setters for
  * react-native without forcing all react-native users to also enable getters
  * and setters. Until we solve that issue, we can use this .flow file to
- * pretend like react-native doesn't use getters and setters 
+ * pretend like react-native doesn't use getters and setters
  *
  * @flow
  */
@@ -23,18 +23,21 @@
 //
 //   var ReactNative = {...require('React'), /* additions */}
 //
-var ReactNative = Object.assign(Object.create(require('React')), {
+var ReactNative = Object.assign(Object.create(require('react')), {
   // Components
   // ActivityIndicatorIOS: require('ActivityIndicatorIOS'),
   // ART: require('ReactNativeART'),
   // DatePickerIOS: require('DatePickerIOS'),
   // DrawerLayoutAndroid: require('DrawerLayoutAndroid'),
   Image: require('Image'),
+  ImageEditor: require('ImageEditor'),
+  ImageStore: require('ImageStore'),
   ListView: require('ListView'),
   MapView: require('MapView'),
   Modal: require('Modal'),
   Navigator: require('Navigator'),
   // NavigatorIOS: require('NavigatorIOS'),
+  // Picker: require('Picker'),
   // PickerIOS: require('PickerIOS'),
   // ProgressBarAndroid: require('ProgressBarAndroid'),
   // ProgressViewIOS: require('ProgressViewIOS'),
@@ -42,8 +45,11 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   // SegmentedControlIOS: require('SegmentedControlIOS'),
   // SliderIOS: require('SliderIOS'),
   // SnapshotViewIOS: require('SnapshotViewIOS'),
+  // StatusBar: require('StatusBar'),
   Switch: require('Switch'),
   // PullToRefreshViewAndroid: require('PullToRefreshViewAndroid'),
+  // RecyclerViewBackedScrollView: require('RecyclerViewBackedScrollView'),
+  // RefreshControl: require('RefreshControl'),
   // SwitchAndroid: require('SwitchAndroid'),
   // SwitchIOS: require('SwitchIOS'),
   // TabBarIOS: require('TabBarIOS'),
@@ -63,21 +69,26 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   // APIs
   ActionSheetIOS: require('ActionSheetIOS'),
   AdSupportIOS: require('AdSupportIOS'),
+  Alert: require('Alert'),
   AlertIOS: require('AlertIOS'),
   Animated: require('Animated'),
   AppRegistry: require('AppRegistry'),
+  AppState: require('AppState'),
   AppStateIOS: require('AppStateIOS'),
   AsyncStorage: require('AsyncStorage'),
   BackAndroid: require('BackAndroid'),
   CameraRoll: require('CameraRoll'),
   Clipboard: require('Clipboard'),
+  // DatePickerAndroid: require('DatePickerAndroid'),
   Dimensions: require('Dimensions'),
   Easing: require('Easing'),
   ImagePickerIOS: require('ImagePickerIOS'),
   // IntentAndroid: require('IntentAndroid'),
   InteractionManager: require('InteractionManager'),
   LayoutAnimation: require('LayoutAnimation'),
+  Linking: require('Linking'),
   LinkingIOS: require('LinkingIOS'),
+  // NavigationExperimental: require('NavigationExperimental'),
   NetInfo: require('NetInfo'),
   PanResponder: require('PanResponder'),
   PixelRatio: require('PixelRatio'),
@@ -85,7 +96,9 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   // Settings: require('Settings'),
   StatusBarIOS: require('StatusBarIOS'),
   StyleSheet: require('StyleSheet'),
+  // TimePickerAndroid: require('TimePickerAndroid'),
   UIManager: require('UIManager'),
+  // Vibration: require('Vibration'),
   // VibrationIOS: require('VibrationIOS'),
 
   // Plugins
@@ -97,6 +110,7 @@ var ReactNative = Object.assign(Object.create(require('React')), {
   requireNativeComponent: require('requireNativeComponent'),
 
   // Prop Types
+  ColorPropType: require('ColorPropType'),
   EdgeInsetsPropType: require('EdgeInsetsPropType'),
   PointPropType: require('PointPropType'),
 

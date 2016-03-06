@@ -7,7 +7,7 @@
  */
 
 // NOTE: this file is auto-copied from https://github.com/facebook/css-layout
-// @generated SignedSource<<8276834951a75286a0b6d4a980bc43ce>>
+// @generated SignedSource<<e2f8139d4c50e4d2a9281a4587f8c095>>
 
 package com.facebook.csslayout;
 
@@ -21,4 +21,5 @@ public class CachedCSSLayout extends CSSLayout {
   public float requestedWidth = CSSConstants.UNDEFINED;
   public float requestedHeight = CSSConstants.UNDEFINED;
   public float parentMaxWidth = CSSConstants.UNDEFINED;
+  public float parentMaxHeight = CSSConstants.UNDEFINED;
 }

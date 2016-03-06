@@ -12,7 +12,7 @@ package com.facebook.react.views.view;
 import android.graphics.Rect;
 import android.view.View;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Interface that should be implemented by {@link View} subclasses that support
@@ -52,7 +52,7 @@ public interface ReactClippingViewGroup {
    *
    * Helper method {@link ReactClippingViewGroupHelper#applyRemoveClippedSubviewsProperty} may be
    * used by {@link ViewManager} subclass to apply this property based on property update map
-   * {@link CatalystStylesDiffMap}.
+   * {@link ReactStylesDiffMap}.
    */
   void setRemoveClippedSubviews(boolean removeClippedSubviews);
 

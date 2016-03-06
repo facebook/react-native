@@ -12,5 +12,5 @@
     <string name="catalyst_jsload_title">Bitte warten Sie ...</string>
     <string name="catalyst_jsload_message">Fetching JS bundle</string>
     <string name="catalyst_jsload_error">Unable to download JS bundle</string>
-    <string name="catalyst_inspect_element">Element untersuchen</string>
+    <string name="catalyst_element_inspector">Element untersuchen</string>
 </resources>

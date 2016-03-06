@@ -1,0 +1,13 @@
+android_prebuilt_aar(
+    name = 'recyclerview',
+    aar = ':recyclerview-binary-aar',
+    visibility = [
+        '//ReactAndroid/...',
+    ],
+)
+
+remote_file(
+    name = 'recyclerview-binary-aar',
+    url = 'mvn:com.android.support:recyclerview-v7:aar:23.0.1',
+    sha1 = '94d5f16be156521e135295e2ffa70d79ef8ad9d5',
+)

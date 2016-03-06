@@ -33,7 +33,7 @@ exports.examples = [{
     return (
       <View>
         {['default', 'light-content'].map((style) =>
-          <TouchableHighlight style={styles.wrapper}
+          <TouchableHighlight key={style} style={styles.wrapper}
             onPress={() => StatusBarIOS.setStyle(style)}>
             <View style={styles.button}>
               <Text>setStyle('{style}')</Text>
@@ -49,7 +49,7 @@ exports.examples = [{
     return (
       <View>
         {['default', 'light-content'].map((style) =>
-          <TouchableHighlight style={styles.wrapper}
+          <TouchableHighlight key={style} style={styles.wrapper}
             onPress={() => StatusBarIOS.setStyle(style, true)}>
             <View style={styles.button}>
               <Text>setStyle('{style}', true)</Text>
@@ -65,7 +65,7 @@ exports.examples = [{
     return (
       <View>
         {['none', 'fade', 'slide'].map((animation) =>
-          <View>
+          <View key={animation}>
             <TouchableHighlight style={styles.wrapper}
               onPress={() => StatusBarIOS.setHidden(true, animation)}>
               <View style={styles.button}>

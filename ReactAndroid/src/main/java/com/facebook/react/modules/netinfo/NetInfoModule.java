@@ -17,9 +17,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.net.ConnectivityManagerCompat;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -37,15 +36,14 @@ public class NetInfoModule extends ReactContextBaseJavaModule
 
   private static final String CONNECTION_TYPE_NONE = "NONE";
   private static final String CONNECTION_TYPE_UNKNOWN = "UNKNOWN";
-
   private static final String MISSING_PERMISSION_MESSAGE =
       "To use NetInfo on Android, add the following to your AndroidManifest.xml:\n" +
       "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />";
 
-  private final ConnectivityManager mConnectivityManager;
-  private final ConnectivityManagerCompat mConnectivityManagerCompat;
-  private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
+  private static final String ERROR_MISSING_PERMISSION = "E_MISSING_PERMISSION";
 
+  private final ConnectivityManager mConnectivityManager;
+  private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
   private boolean mNoNetworkPermission = false;
 
   private String mConnectivity = "";
@@ -54,7 +52,6 @@ public class NetInfoModule extends ReactContextBaseJavaModule
     super(reactContext);
     mConnectivityManager =
         (ConnectivityManager) reactContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-    mConnectivityManagerCompat = new ConnectivityManagerCompat();
     mConnectivityBroadcastReceiver = new ConnectivityBroadcastReceiver();
   }
 
@@ -83,35 +80,35 @@ public class NetInfoModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void getCurrentConnectivity(Callback successCallback, Callback errorCallback) {
+  public void getCurrentConnectivity(Promise promise) {
     if (mNoNetworkPermission) {
-      if (errorCallback == null) {
-        FLog.e(ReactConstants.TAG, MISSING_PERMISSION_MESSAGE);
-        return;
-      }
-      errorCallback.invoke(MISSING_PERMISSION_MESSAGE);
+      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE, null);
       return;
     }
-    successCallback.invoke(createConnectivityEventMap());
+    promise.resolve(createConnectivityEventMap());
   }
 
   @ReactMethod
-  public void isConnectionMetered(Callback successCallback) {
+  public void isConnectionMetered(Promise promise) {
     if (mNoNetworkPermission) {
-      FLog.e(ReactConstants.TAG, MISSING_PERMISSION_MESSAGE);
+      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE, null);
       return;
     }
-    successCallback.invoke(mConnectivityManagerCompat.isActiveNetworkMetered(mConnectivityManager));
+    promise.resolve(ConnectivityManagerCompat.isActiveNetworkMetered(mConnectivityManager));
   }
 
   private void registerReceiver() {
     IntentFilter filter = new IntentFilter();
     filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
     getReactApplicationContext().registerReceiver(mConnectivityBroadcastReceiver, filter);
+    mConnectivityBroadcastReceiver.setRegistered(true);
   }
 
   private void unregisterReceiver() {
-    getReactApplicationContext().unregisterReceiver(mConnectivityBroadcastReceiver);
+    if (mConnectivityBroadcastReceiver.isRegistered()) {
+      getReactApplicationContext().unregisterReceiver(mConnectivityBroadcastReceiver);
+      mConnectivityBroadcastReceiver.setRegistered(false);
+    }
   }
 
   private void updateAndSendConnectionType() {
@@ -156,6 +153,17 @@ public class NetInfoModule extends ReactContextBaseJavaModule
    * NB: It is possible on some devices to receive certain connection type changes multiple times.
    */
   private class ConnectivityBroadcastReceiver extends BroadcastReceiver {
+
+    //TODO: Remove registered check when source of crash is found. t9846865
+    private boolean isRegistered = false;
+
+    public void setRegistered(boolean registered) {
+      isRegistered = registered;
+    }
+
+    public boolean isRegistered() {
+      return isRegistered;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -10,6 +10,7 @@
 		1338BBE01B04ACC80064A9C9 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */; };
 		1338BBE11B04ACC80064A9C9 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */; };
 		3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
+		3DB9106F1C74B1ED00838BBE /* RCTWebSocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB9106E1C74B1ED00838BBE /* RCTWebSocketManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,8 @@
 		3C86DF461ADF2C930047B81A /* libRCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketModule.h; sourceTree = "<group>"; };
 		3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketModule.m; sourceTree = "<group>"; tabWidth = 2; };
+		3DB9106D1C74B1ED00838BBE /* RCTWebSocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketManager.h; sourceTree = "<group>"; };
+		3DB9106E1C74B1ED00838BBE /* RCTWebSocketManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +43,8 @@
 				1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */,
 				1338BBDE1B04ACC80064A9C9 /* RCTWebSocketExecutor.h */,
 				1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */,
+				3DB9106D1C74B1ED00838BBE /* RCTWebSocketManager.h */,
+				3DB9106E1C74B1ED00838BBE /* RCTWebSocketManager.m */,
 				3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */,
 				3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */,
 				3C86DF471ADF2C930047B81A /* Products */,
@@ -114,6 +119,7 @@
 				1338BBE01B04ACC80064A9C9 /* RCTSRWebSocket.m in Sources */,
 				3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */,
 				1338BBE11B04ACC80064A9C9 /* RCTWebSocketExecutor.m in Sources */,
+				3DB9106F1C74B1ED00838BBE /* RCTWebSocketManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

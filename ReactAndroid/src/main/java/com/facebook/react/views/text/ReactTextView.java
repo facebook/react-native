@@ -39,6 +39,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     int y = (int) touchY;
 
     Layout layout = getLayout();
+    if (layout == null) {
+      // If the layout is null, the view hasn't been properly laid out yet. Therefore, we can't find
+      // the exact text tag that has been touched, and the correct tag to return is the default one.
+      return target;
+    }
     int line = layout.getLineForVertical(y);
 
     int lineStartX = (int) layout.getLineLeft(line);
