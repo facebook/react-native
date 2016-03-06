@@ -113,8 +113,8 @@ class NavigationAnimatedView
 
   constructor(props) {
     super(props);
-    this._lastWidth = 0;
-    this._lastHeight = 0;
+    this._lastWidth = null;
+    this._lastHeight = '0';
     this._animatedHeight = new Animated.Value(this._lastHeight);
     this._animatedWidth = new Animated.Value(this._lastWidth);
 
@@ -125,7 +125,7 @@ class NavigationAnimatedView
   }
   componentWillMount() {
     this.setState({
-      scenes: this._reduceScenes(this.state.scenes, this.props.navigationState),
+      scenes: this._reduceScene(this.state.scenes, this.props.navigationState),
     });
   }
   componentDidMount() {
