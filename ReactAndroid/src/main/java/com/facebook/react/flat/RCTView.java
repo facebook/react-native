@@ -13,9 +13,9 @@ import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.react.uimanager.ViewProps;
 
 /* package */ final class RCTView extends FlatShadowNode {
 
@@ -59,6 +59,13 @@ import com.facebook.react.uimanager.ViewProps;
 
   @Override
   public void setBackgroundColor(int backgroundColor) {
+    // TODO t10316772 this if statement is a hack - we are mounting any transparent RCTView to an
+    // Android view, which is not necessary (and is inefficent). We're doing this to work around a
+    // bug where a non-Android view won't get touch because a View that is deeper in the hierarchy
+    // (i.e. will get onTouchEvent later) will handle it instead of the higher up view.
+    if (backgroundColor == 0) {
+      forceMountToView();
+    }
     getMutableBorder().setBackgroundColor(backgroundColor);
   }
 
