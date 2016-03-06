@@ -3,8 +3,8 @@
   <string name="catalyst_reloadjs" project="catalyst" translatable="false">Reload JS</string>
   <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug in Chrome</string>
   <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Chrome Debugging</string>
-  <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Module Replacement</string>
-  <string name="catalyst_hot_module_replacement_off" project="catalyst" translatable="false">Disable Hot Module Replacement</string>
+  <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Reloading</string>
+  <string name="catalyst_hot_module_replacement_off" project="catalyst" translatable="false">Disable Hot Reloading</string>
   <string name="catalyst_live_reload" project="catalyst" translatable="false">Enable Live Reload</string>
   <string name="catalyst_live_reload_off" project="catalyst" translatable="false">Disable Live Reload</string>
   <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Enable Perf Monitor</string>

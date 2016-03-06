@@ -472,7 +472,7 @@ RCT_EXPORT_MODULE()
   }
 
   if ([self hotLoadingAvailable]) {
-    NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Loading" : @"Enable Hot Loading";
+    NSString *hotLoadingTitle = _hotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:hotLoadingTitle handler:^{
       weakSelf.hotLoadingEnabled = !_hotLoadingEnabled;
     }]];
