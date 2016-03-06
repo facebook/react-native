@@ -24,19 +24,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.text.TextUtils;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -46,7 +40,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.ReactConstants;
 
 /**
  * Native module that provides image cropping functionality.
@@ -60,35 +53,6 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
 
   /** Compress quality of the output file. */
   private static final int COMPRESS_QUALITY = 90;
-
-  @SuppressLint("InlinedApi") private static final String[] EXIF_ATTRIBUTES = new String[] {
-    ExifInterface.TAG_APERTURE,
-    ExifInterface.TAG_DATETIME,
-    ExifInterface.TAG_DATETIME_DIGITIZED,
-    ExifInterface.TAG_EXPOSURE_TIME,
-    ExifInterface.TAG_FLASH,
-    ExifInterface.TAG_FOCAL_LENGTH,
-    ExifInterface.TAG_GPS_ALTITUDE,
-    ExifInterface.TAG_GPS_ALTITUDE_REF,
-    ExifInterface.TAG_GPS_DATESTAMP,
-    ExifInterface.TAG_GPS_LATITUDE,
-    ExifInterface.TAG_GPS_LATITUDE_REF,
-    ExifInterface.TAG_GPS_LONGITUDE,
-    ExifInterface.TAG_GPS_LONGITUDE_REF,
-    ExifInterface.TAG_GPS_PROCESSING_METHOD,
-    ExifInterface.TAG_GPS_TIMESTAMP,
-    ExifInterface.TAG_IMAGE_LENGTH,
-    ExifInterface.TAG_IMAGE_WIDTH,
-    ExifInterface.TAG_ISO,
-    ExifInterface.TAG_MAKE,
-    ExifInterface.TAG_MODEL,
-    ExifInterface.TAG_ORIENTATION,
-    ExifInterface.TAG_SUBSEC_TIME,
-    ExifInterface.TAG_SUBSEC_TIME_DIG,
-    ExifInterface.TAG_SUBSEC_TIME_ORIG,
-    ExifInterface.TAG_WHITE_BALANCE
-  };
-
 
   public ImageEditingManager(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -277,10 +241,6 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
         File tempFile = createTempFile(mContext, mimeType);
         writeCompressedBitmapToFile(cropped, mimeType, tempFile);
 
-        if (mimeType.equals("image/jpeg")) {
-          copyExif(mContext, Uri.parse(mUri), tempFile);
-        }
-
         mSuccess.invoke(Uri.fromFile(tempFile).toString());
 
       } catch (Exception e) {
@@ -391,47 +351,6 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
   }
 
   // Utils
-
-  private static void copyExif(Context context, Uri oldImage, File newFile) throws IOException {
-    File oldFile = getFileFromUri(context, oldImage);
-    if (oldFile == null) {
-      FLog.w(ReactConstants.TAG, "Couldn't get real path for uri: " + oldImage);
-      return;
-    }
-
-    ExifInterface oldExif = new ExifInterface(oldFile.getAbsolutePath());
-    ExifInterface newExif = new ExifInterface(newFile.getAbsolutePath());
-    for (String attribute : EXIF_ATTRIBUTES) {
-      String value = oldExif.getAttribute(attribute);
-      if (value != null) {
-        newExif.setAttribute(attribute, value);
-      }
-    }
-    newExif.saveAttributes();
-  }
-
-  private static @Nullable File getFileFromUri(Context context, Uri uri) {
-    if (uri.getScheme().equals("file")) {
-      return new File(uri.getPath());
-    } else if (uri.getScheme().equals("content")) {
-      Cursor cursor = context.getContentResolver()
-        .query(uri, new String[] { MediaStore.MediaColumns.DATA }, null, null, null);
-      if (cursor != null) {
-        try {
-          if (cursor.moveToFirst()) {
-            String path = cursor.getString(0);
-            if (!TextUtils.isEmpty(path)) {
-              return new File(path);
-            }
-          }
-        } finally {
-          cursor.close();
-        }
-      }
-    }
-
-    return null;
-  }
 
   private static boolean isLocalUri(String uri) {
     for (String localPrefix : LOCAL_URI_PREFIXES) {
