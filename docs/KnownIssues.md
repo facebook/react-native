@@ -15,26 +15,18 @@ However, you can still use the Console feature of the devtools, and debugging Ja
 
 ### Missing Modules and Native Views
 
-This is an initial release of React Native Android and therefore not all of the views present on iOS are released on Android. We are very much interested in the communities' feedback on the next set of modules and views for Open Source. Not all native views between iOS and Android have a 100% equivalent representation, here it will be necessary to use a counterpart eg using ProgressBar on Android in place of ActivityIndicator on iOS.
-
-Our provisional plan for common views and modules includes:
+The work on React Native for Android started later than React Native for iOS. Not all of the views present on iOS have been released on Android yet.
 
 #### Views
 
-```
-Maps
-Modal
-Spinner (http://developer.android.com/guide/topics/ui/controls/spinner.html)
-Slider (known as SeekBar)
-```
+- Maps - Please use Leland Richardson's [react-native-maps](https://github.com/lelandrichardson/react-native-maps) as it is more feature-complete than our internal implementation at fb.
+- Modal
+- Slider (also known as SeekBar)
 
 #### Modules
 
-```
-Camera Roll
-Media
-PushNotificationIOS
-```
+- Media
+- PushNotificationIOS
 
 ### Some props are only supported on one platform
 

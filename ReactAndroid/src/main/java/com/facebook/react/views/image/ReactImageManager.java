@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
@@ -120,7 +121,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     if (tintColor == null) {
       view.clearColorFilter();
     } else {
-      view.setColorFilter(tintColor);
+      view.setColorFilter(tintColor, Mode.SRC_IN);
     }
   }
 

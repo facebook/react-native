@@ -1,14 +1,16 @@
-Hey there and thanks for submitting a pull request! Please have a look at the following checklist so that others have enough information to review your pull request:
+Thanks for submitting a pull request! Please provide enough information so that others can review your pull request:
+
+(You can skip this if you're fixing a typo or adding an app to the Showcase.)
 
 Explain the **motivation** for making this change. What existing problem does the pull request solve?
 
-Example: When saying "Add a function to do X", explain why it is necessary to have a way to do X.
+Example: When "Adding a function to do X", explain why it is necessary to have a way to do X.
 
 **Test plan (required)**
 
-Describe exact steps you've done to test that the code works. This means exact commands you ran, screenshots / videos if the pull request changes UI.
+Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI.
 
-Make sure tests pass on Circle CI.
+Make sure tests pass on both Travis and Circle CI.
 
 **Code formatting**
 

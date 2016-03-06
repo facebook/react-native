@@ -24,8 +24,12 @@
 #define RUN_RUNLOOP_WHILE(CONDITION) \
 { \
   NSDate *timeout = [NSDate dateWithTimeIntervalSinceNow:5]; \
-  while ((CONDITION) && [timeout timeIntervalSinceNow] > 0) { \
+  while ((CONDITION)) { \
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; \
+    if ([timeout timeIntervalSinceNow] <= 0) { \
+      XCTFail(@"Runloop timed out before condition was met"); \
+      break; \
+    } \
   } \
 }
 
@@ -36,6 +40,8 @@
 @end
 
 @implementation TestExecutor
+
+@synthesize valid = _valid;
 
 RCT_EXPORT_MODULE()
 
@@ -51,7 +57,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isValid
 {
-  return YES;
+  return _valid;
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
@@ -94,7 +100,10 @@ RCT_EXPORT_MODULE()
   onComplete(nil);
 }
 
-- (void)invalidate {}
+- (void)invalidate
+{
+  _valid = NO;
+}
 
 @end
 
@@ -128,7 +137,7 @@ RCT_EXPORT_MODULE(TestModule)
   [_bridge invalidate];
   [_bridge setUp];
 
-  _jsExecutor = [_bridge.batchedBridge valueForKey:@"javaScriptExecutor"];
+  _jsExecutor = _bridge.batchedBridge.javaScriptExecutor;
   XCTAssertNotNil(_jsExecutor);
 }
 
@@ -139,10 +148,8 @@ RCT_EXPORT_MODULE(TestModule)
   _testMethodCalled = NO;
 
   [_bridge invalidate];
+  RUN_RUNLOOP_WHILE(_jsExecutor.isValid);
   _bridge = nil;
-
-  RUN_RUNLOOP_WHILE(_jsExecutor != nil);
-  XCTAssertNotNil(_jsExecutor);
 }
 
 - (void)testHookRegistration

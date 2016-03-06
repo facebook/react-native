@@ -30,8 +30,9 @@ var NavigationExampleRow = require('./NavigationExampleRow');
 var EXAMPLES = {
   'Tabs': require('./NavigationTabsExample'),
   'Basic': require('./NavigationBasicExample'),
-  'Animated Card Stack': require('./NavigationAnimatedExample'),
+  'Animated Example': require('./NavigationAnimatedExample'),
   'Composition': require('./NavigationCompositionExample'),
+  'Card Stack Example': require('./NavigationCardStackExample'),
   'Tic Tac Toe': require('./NavigationTicTacToeExample'),
 };
 
@@ -46,13 +47,13 @@ var NavigationExperimentalExample = React.createClass({
 
   getInitialState: function() {
     return {
-      exampe: null,
+      example: null,
     };
   },
 
   componentDidMount() {
     AsyncStorage.getItem(EXAMPLE_STORAGE_KEY, (err, example) => {
-      if (err || !example) {
+      if (err || !example || !EXAMPLES[example]) {
         this.setState({
           example: 'menu',
         });

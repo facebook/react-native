@@ -197,8 +197,16 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./LayoutExample'),
   },
   {
+    key: 'LinkingExample',
+    module: require('./LinkingExample'),
+  },
+  {
     key: 'NavigationExperimentalExample',
     module: require('./NavigationExperimental/NavigationExperimentalExample'),
+  },
+  {
+    key: 'NavigationExperimentalLegacyNavigatorExample',
+    module: require('./NavigationExperimental/LegacyNavigator/LegacyNavigatorExample'),
   },
   {
     key: 'NetInfoExample',
@@ -237,8 +245,8 @@ var APIExamples: Array<UIExplorerExample> = [
     module: require('./TransformExample'),
   },
   {
-    key: 'VibrationIOSExample',
-    module: require('./VibrationIOSExample'),
+    key: 'VibrationExample',
+    module: require('./VibrationExample'),
   },
   {
     key: 'XHRExample',
