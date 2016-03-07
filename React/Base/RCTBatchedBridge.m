@@ -67,7 +67,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
-  RCTAssertMainThread();
   RCTAssertParam(bridge);
 
   if ((self = [super initWithBundleURL:bridge.bundleURL
@@ -222,6 +221,11 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   return _moduleDataByName[moduleName].instance;
 }
 
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
+}
+
 - (NSArray *)configForModuleName:(NSString *)moduleName
 {
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
@@ -236,7 +240,6 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
 - (void)initModulesWithDispatchGroup:(dispatch_group_t)dispatchGroup
 {
-  RCTAssertMainThread();
   RCTPerformanceLoggerStart(RCTPLNativeModuleInit);
 
   NSArray<id<RCTBridgeModule>> *extraModules = nil;
@@ -356,25 +359,38 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       // trigger the lazy initialization process.
       (void)[moduleData instance];
     }
+  }
+
+  // From this point on, RCTDidInitializeModuleNotification notifications will
+  // be sent the first time a module is accessed.
+  _moduleSetupComplete = YES;
+
+  // Set up modules that require main thread init or constants export
+  for (RCTModuleData *moduleData in _moduleDataByID) {
+    __weak RCTBatchedBridge *weakSelf = self;
     if (moduleData.requiresMainThreadSetup) {
       // Modules that need to be set up on the main thread cannot be initialized
       // lazily when required without doing a dispatch_sync to the main thread,
       // which can result in deadlock. To avoid this, we initialize all of these
       // modules on the main thread in parallel with loading the JS code, so that
       // they will already be available before they are ever required.
-      __weak RCTBatchedBridge *weakSelf = self;
       dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
         if (weakSelf.valid) {
           (void)[moduleData instance];
           [moduleData gatherConstants];
         }
       });
+    } else if (moduleData.hasConstantsToExport) {
+      // Constants must be exported on the main thread, but module setup can
+      // be done on any queue
+      (void)[moduleData instance];
+      dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
+        if (weakSelf.valid) {
+          [moduleData gatherConstants];
+        }
+      });
     }
   }
-
-  // From this point on, RCTDidInitializeModuleNotification notifications will
-  // be sent the first time a module is accessed.
-  _moduleSetupComplete = YES;
 
   RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
 }
