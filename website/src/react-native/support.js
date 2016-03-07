@@ -40,9 +40,13 @@ var support = React.createClass({
             <ul>
               <li><a href="http://reactnative.cn">Chinese</a> (<a href="https://github.com/reactnativecn/react-native-docs-cn">source</a>)</li>
             </ul>
-            
+
             <H2>Stack Overflow</H2>
             <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with <strong>react-native</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
+
+            <H2>Feedback</H2>
+            <p>React Native uses <a href="https://productpains.com/product/react-native/">Product Pains</a> for feature requests. It has a voting system to surface which issues are most important to the community. GitHub issues should only be used for bugs.</p>
+            <p>You can search for existing requests to vote on, or write your own <a href="feedback.html">on this page</a>.</p>
 
             <H2>Chat</H2>
             <p>Join us in <strong><a href="irc://chat.freenode.net/reactnative">#reactnative on Reactiflux</a></strong>.</p>
