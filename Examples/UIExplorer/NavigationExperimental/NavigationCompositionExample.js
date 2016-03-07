@@ -16,26 +16,32 @@
 'use strict';
 
 const React = require('react-native');
+const NavigationExampleRow = require('./NavigationExampleRow');
+const NavigationExampleTabBar = require('./NavigationExampleTabBar');
+
 const {
   NavigationExperimental,
   ScrollView,
   StyleSheet,
   View,
 } = React;
+
 const {
   AnimatedView: NavigationAnimatedView,
-  Card: NavigationCard,
+  CardStack: NavigationCardStack,
   Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
   Header: NavigationHeader,
-  HeaderTitle: NavigationHeaderTitle,
   Reducer: NavigationReducer,
+  RootContainer: NavigationRootContainer,
   View: NavigationView,
 } = NavigationExperimental;
-const NavigationExampleRow = require('./NavigationExampleRow');
-const NavigationExampleTabBar = require('./NavigationExampleTabBar');
 
-import type {NavigationParentState} from 'NavigationStateUtils';
+
+import type {
+  NavigationParentState,
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
 type Action = {
   isExitAction?: boolean,
@@ -44,6 +50,7 @@ type Action = {
 const ExampleExitAction = () => ({
   isExitAction: true,
 });
+
 ExampleExitAction.match = (action: Action) => (
   action && action.isExitAction === true
 );
@@ -52,6 +59,7 @@ const PageAction = (type) => ({
   type,
   isPageAction: true,
 });
+
 PageAction.match = (action) => (
   action && action.isPageAction === true
 );
@@ -60,6 +68,7 @@ const ExampleProfilePageAction = (type) => ({
   ...PageAction(type),
   isProfilePageAction: true,
 });
+
 ExampleProfilePageAction.match = (action) => (
   action && action.isProfilePageAction === true
 );
@@ -69,7 +78,9 @@ const ExampleInfoAction = () => PageAction('InfoPage');
 const ExampleNotifProfileAction = () => ExampleProfilePageAction('NotifProfilePage');
 
 const _jsInstanceUniqueId = '' + Date.now();
+
 let _uniqueIdCount = 0;
+
 function pageStateActionMap(action) {
   return {
     key: 'page-' + _jsInstanceUniqueId + '-' + (_uniqueIdCount++),
@@ -145,57 +156,57 @@ function stateTypeTitleMap(pageState) {
 }
 
 class ExampleTabScreen extends React.Component {
+  _renderCard: NavigationSceneRenderer;
+  _renderHeader: NavigationSceneRenderer;
+  _renderScene: NavigationSceneRenderer;
+
+  componentWillMount() {
+    this._renderHeader = this._renderHeader.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   render() {
     return (
-      <NavigationAnimatedView
+      <NavigationCardStack
         style={styles.tabContent}
         navigationState={this.props.navigationState}
-        renderOverlay={this._renderHeader.bind(this)}
-        renderScene={this._renderScene.bind(this)}
+        renderOverlay={this._renderHeader}
+        renderScene={this._renderScene}
+      />
+    );
+  }
+  _renderHeader(props: NavigationSceneRendererProps) {
+    return (
+      <NavigationHeader
+        {...props}
+        getTitle={state => stateTypeTitleMap(state)}
       />
     );
   }
 
-  _renderHeader(scenes, index, position, layout) {
+  _renderScene(props: NavigationSceneRendererProps) {
+    const {onNavigate} = props;
     return (
-      <NavigationHeader
-        scenes={scenes}
-        index={index}
-        position={position}
-        layout={layout}
-        renderTitleComponent={pageState => <NavigationHeaderTitle>{stateTypeTitleMap(pageState)}</NavigationHeaderTitle>}
-      />
-    );
-  }
-  _renderScene(props) {
-    return (
-      <NavigationCard
-        key={props.navigationState.key}
-        index={props.index}
-        navigationState={props.navigationParentState}
-        position={props.position}
-        layout={props.layout}>
-        <ScrollView style={styles.scrollView}>
-          <NavigationExampleRow
-            text="Open page"
-            onPress={() => {
-              this.props.onNavigate(ExampleInfoAction());
-            }}
-          />
-          <NavigationExampleRow
-            text="Open a page in the profile tab"
-            onPress={() => {
-              this.props.onNavigate(ExampleNotifProfileAction());
-            }}
-          />
-          <NavigationExampleRow
-            text="Exit Composition Example"
-            onPress={() => {
-              this.props.onNavigate(ExampleExitAction());
-            }}
-          />
-        </ScrollView>
-      </NavigationCard>
+      <ScrollView style={styles.scrollView}>
+        <NavigationExampleRow
+          text="Open page"
+          onPress={() => {
+            onNavigate(ExampleInfoAction());
+          }}
+        />
+        <NavigationExampleRow
+          text="Open a page in the profile tab"
+          onPress={() => {
+            onNavigate(ExampleNotifProfileAction());
+          }}
+        />
+        <NavigationExampleRow
+          text="Exit Composition Example"
+          onPress={() => {
+            onNavigate(ExampleExitAction());
+          }}
+        />
+      </ScrollView>
     );
   }
 }
@@ -273,7 +284,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    marginTop: NavigationHeader.APPBAR_HEIGHT + NavigationHeader.STATUSBAR_HEIGHT,
+    marginTop: 64
   },
   tabContent: {
     flex: 1,

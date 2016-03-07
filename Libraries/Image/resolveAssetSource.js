@@ -47,12 +47,22 @@ function getDevServerURL() {
 
 function getOfflinePath() {
   if (_offlinePath === undefined) {
-    var scriptURL = SourceCode.scriptURL;
-    var match = scriptURL && scriptURL.match(/^file:\/\/(\/.*\/)/);
-    if (match) {
-      _offlinePath = match[1];
-    } else {
+    const scriptURL = SourceCode.scriptURL;
+    if (!scriptURL) {
+      // scriptURL is falsy, we have nothing to go on here
       _offlinePath = '';
+      return _offlinePath;
+    }
+    if (scriptURL.startsWith('assets://')) {
+      // running from within assets, no offline path to use
+      _offlinePath = '';
+      return _offlinePath;
+    }
+    if (scriptURL.startsWith('file://')) {
+      // cut off the protocol
+      _offlinePath = scriptURL.substring(7, scriptURL.lastIndexOf('/') + 1);
+    } else {
+      _offlinePath = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
     }
   }
 
