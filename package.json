@@ -24,11 +24,9 @@
     "haste": {
       "defaultPlatform": "ios",
       "providesModuleNodeModules": [
-        "fbjs",
-        "react",
-        "react-native",
-        "parse",
-        "react-transform-hmr"
+        { "name": "react" },
+        { "name": "react-native" },
+        { "name": "parse" }
       ],
       "platforms": [
         "ios",
