@@ -388,17 +388,17 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 #if RCT_DEV
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 #endif
+}
+
+- (void)dealloc
+{
+  [self invalidate];
 
   [_context performSelector:@selector(invalidate)
                    onThread:_javaScriptThread
                  withObject:nil
               waitUntilDone:NO];
   _context = nil;
-}
-
-- (void)dealloc
-{
-  [self invalidate];
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
