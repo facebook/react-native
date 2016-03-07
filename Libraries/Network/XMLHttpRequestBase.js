@@ -13,6 +13,7 @@
 
 var RCTNetworking = require('RCTNetworking');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var invariant = require('fbjs/lib/invariant');
 
 const UNSENT = 0;
 const OPENED = 1;
@@ -155,8 +156,16 @@ class XMLHttpRequestBase {
       case 'text':
         this.response = this.responseText;
         break;
-      default: //TODO: Support other types, eg: document, arraybuffer, json, blob
-        this.response = null;
+      case 'blob': // whatwg-fetch sets this in Chrome
+        /* global Blob: true */
+        invariant(
+          typeof Blob === 'function',
+          `responseType "blob" is only supported on platforms with native Blob support`
+        );
+        this.response = new Blob([this.responseText]);
+        break;
+      default: //TODO: Support other types, eg: document, arraybuffer, json
+        invariant(false, `responseType "${this.responseType}" is unsupported`);
       }
       this.setReadyState(this.LOADING);
     }
