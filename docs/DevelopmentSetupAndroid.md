@@ -52,7 +52,7 @@ React Native Android use [gradle](https://docs.gradle.org) as a build system. We
 1. Open the Android SDK Manager (**on Mac** start a new shell and run `android`); in the window that appears make sure you check:
   * Android SDK Build-tools version 23.0.**1**
   * Android 6.0 (API 23)
-  * Android Support Repository
+  * Local Maven repository for Support Libraries (this is called Android Support Repository in older versions)
 2. Click "Install Packages"
 
 ![SDK Manager window](img/AndroidSDK1.png) ![SDK Manager window](img/AndroidSDK2.png)
