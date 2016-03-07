@@ -105,8 +105,10 @@ class UIExplorerApp extends React.Component {
     }
     const {stack} = navigationState;
     const title = UIExplorerStateTitleMap(stack.children[stack.index]);
-    if (stack && stack.children[1]) {
-      const {key} = stack.children[1];
+    const index = stack.children.length <= 1 ?  1 : stack.index;
+
+    if (stack && stack.children[index]) {
+      const {key} = stack.children[index];
       const ExampleModule = UIExplorerList.Modules[key];
       const ExampleComponent = UIExplorerExampleList.makeRenderable(ExampleModule);
       return (
