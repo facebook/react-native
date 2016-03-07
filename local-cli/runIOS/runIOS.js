@@ -40,15 +40,15 @@ function _runIOS(argv, config, resolve, reject) {
       type: 'string',
       required: false,
     }, {
-      command: 'ios-project-path',
-      description: 'Set XCode project path',
+      command: 'project-path',
+      description: 'Path relative to project root where the Xcode project (.xcodeproj) lives. The default is \'ios\'.',
       type: 'string',
       required: false,
       default: 'ios',
     }
   ], argv);
 
-  process.chdir(args['ios-project-path']);
+  process.chdir(args['project-path']);
   const xcodeProject = findXcodeProject(fs.readdirSync('.'));
   if (!xcodeProject) {
     throw new Error(`Could not find Xcode project files in ios folder`);
