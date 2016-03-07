@@ -28,7 +28,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.stetho.okhttp.StethoInterceptor;
 
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
@@ -70,7 +69,6 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       OkHttpClient client) {
     super(reactContext);
     mClient = client;
-    mClient.networkInterceptors().add(new StethoInterceptor());
     mCookieHandler = new ForwardingCookieHandler(reactContext);
     mShuttingDown = false;
     mDefaultUserAgent = defaultUserAgent;
