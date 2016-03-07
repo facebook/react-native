@@ -47,10 +47,4 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, NSData *source);
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
 
-/**
- * Indicates whether Hot Loading is supported or not.
- * Note: this method will be removed soon, once Hot Loading is supported on OSS.
- */
-- (BOOL)bridgeSupportsHotLoading:(RCTBridge *)bridge;
-
 @end

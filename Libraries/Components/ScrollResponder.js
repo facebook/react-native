@@ -21,8 +21,8 @@ var UIManager = require('UIManager');
 
 var { ScrollViewManager } = require('NativeModules');
 
-var invariant = require('invariant');
-var warning = require('warning');
+var invariant = require('fbjs/lib/invariant');
+var warning = require('fbjs/lib/warning');
 
 import type ReactComponent from 'ReactComponent';
 

@@ -20,8 +20,8 @@ var SpringConfig = require('SpringConfig');
 var ViewStylePropTypes = require('ViewStylePropTypes');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
-var requestAnimationFrame = require('requestAnimationFrame');
+var invariant = require('fbjs/lib/invariant');
+var requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 import type { InterpolationConfigType } from 'Interpolation';
 

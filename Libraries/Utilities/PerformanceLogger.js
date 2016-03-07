@@ -12,7 +12,7 @@
 
 var BatchedBridge = require('BatchedBridge');
 
-var performanceNow = require('performanceNow');
+var performanceNow = require('fbjs/lib/performanceNow');
 
 var timespans = {};
 var extras = {};

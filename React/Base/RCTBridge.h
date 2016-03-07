@@ -110,10 +110,17 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
  * Retrieve a bridge module instance by name or class. Note that modules are
  * lazily instantiated, so calling these methods for the first time with a given
  * module name/class may cause the class to be sychronously instantiated,
- * blocking both the calling thread and main thread for a short time.
+ * potentially blocking both the calling thread and main thread for a short time.
  */
 - (id)moduleForName:(NSString *)moduleName;
 - (id)moduleForClass:(Class)moduleClass;
+
+/**
+ * Convenience method for retrieving all modules conforming to a given protocol.
+ * Modules will be sychronously instantiated if they haven't already been,
+ * potentially blocking both the calling thread and main thread for a short time.
+ */
+- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol;
 
 /**
  * All registered bridge module classes.
@@ -171,33 +178,5 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
  * Says whether bridge has started recieving calls from javascript.
  */
 - (BOOL)isBatchActive;
-
-@end
-
-/**
- * These features are deprecated and should not be used.
- */
-@interface RCTBridge (Deprecated)
-
-/**
- * This notification used to fire after all native modules has been initialized,
- * but now that native modules are instantiated lazily on demand, its original
- * purpose is meaningless.
- *
- * If you need to access a module, you can do so as soon as the bridge has been
- * initialized, by calling `[bridge moduleForClass:]`. If you need to know when
- * an individual module has been instantiated, add an observer for the
- * `RCTDidInitializeModuleNotification` instead.
- */
-RCT_EXTERN NSString *const RCTDidCreateNativeModules
-__deprecated_msg("Use RCTDidInitializeModuleNotification to observe init of individual modules");
-
-/**
- * Accessing the modules property causes all modules to be eagerly initialized,
- * which stalls the main thread. Use moduleClasses to enumerate through modules
- * without causing them to be instantiated.
- */
-@property (nonatomic, copy, readonly) NSDictionary *modules
-__deprecated_msg("Use moduleClasses and/or moduleForName: instead");
 
 @end

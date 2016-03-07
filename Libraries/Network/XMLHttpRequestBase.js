@@ -43,6 +43,8 @@ class XMLHttpRequestBase {
   readyState: number;
   responseHeaders: ?Object;
   responseText: ?string;
+  response: ?string;
+  responseType: '' | 'text';
   status: number;
   timeout: number;
   responseURL: ?string;
@@ -83,6 +85,8 @@ class XMLHttpRequestBase {
     this.readyState = this.UNSENT;
     this.responseHeaders = undefined;
     this.responseText = '';
+    this.response = null;
+    this.responseType = '';
     this.status = 0;
     delete this.responseURL;
 
@@ -145,6 +149,14 @@ class XMLHttpRequestBase {
         this.responseText = responseText;
       } else {
         this.responseText += responseText;
+      }
+      switch(this.responseType) {
+      case '':
+      case 'text':
+        this.response = this.responseText;
+        break;
+      default: //TODO: Support other types, eg: document, arraybuffer, json, blob
+        this.response = null;
       }
       this.setReadyState(this.LOADING);
     }

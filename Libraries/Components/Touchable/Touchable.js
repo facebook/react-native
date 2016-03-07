@@ -6,9 +6,9 @@
 
 var BoundingDimensions = require('BoundingDimensions');
 var Position = require('Position');
-var TouchEventUtils = require('TouchEventUtils');
+var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 var queryLayoutByID = require('queryLayoutByID');
 
 /**

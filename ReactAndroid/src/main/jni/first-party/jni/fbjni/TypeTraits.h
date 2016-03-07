@@ -11,6 +11,8 @@
 
 #include <type_traits>
 
+#include "References-forward.h"
+
 namespace facebook {
 namespace jni {
 
@@ -69,6 +71,25 @@ constexpr bool IsJniPrimitive() {
   return is_jni_primitive<T>::value;
 }
 
+/// Metafunction to determine whether a type is a JNI array of primitives or not
+template <typename T>
+struct is_jni_primitive_array :
+  std::integral_constant<bool,
+    std::is_same<jbooleanArray, T>::value ||
+    std::is_same<jbyteArray, T>::value ||
+    std::is_same<jcharArray, T>::value ||
+    std::is_same<jshortArray, T>::value ||
+    std::is_same<jintArray, T>::value ||
+    std::is_same<jlongArray, T>::value ||
+    std::is_same<jfloatArray, T>::value ||
+    std::is_same<jdoubleArray, T>::value> {};
+
+/// Helper to simplify use of is_jni_primitive_array
+template <typename T>
+constexpr bool IsJniPrimitiveArray() {
+  return is_jni_primitive_array<T>::value;
+}
+
 /// Metafunction to determine if a type is a scalar (primitive or reference) JNI type
 template<typename T>
 struct is_jni_scalar :
@@ -96,15 +117,6 @@ constexpr bool IsJniType() {
 }
 
 template<typename T>
-class weak_global_ref;
-
-template<typename T, typename Alloc>
-class basic_strong_ref;
-
-template<typename T>
-class alias_ref;
-
-template<typename T>
 struct is_non_weak_reference :
   std::integral_constant<bool,
     IsPlainJniReference<T>() ||
@@ -120,7 +132,7 @@ template<typename T>
 struct is_any_reference :
   std::integral_constant<bool,
     IsPlainJniReference<T>() ||
-    IsInstantiationOf<weak_global_ref, T>() ||
+    IsInstantiationOf<weak_ref, T>() ||
     IsInstantiationOf<basic_strong_ref, T>() ||
     IsInstantiationOf<alias_ref, T>()> {};
 
@@ -131,19 +143,18 @@ constexpr bool IsAnyReference() {
 
 template<typename T>
 struct reference_traits {
-  static_assert(IsPlainJniReference<T>(), "Need a plain JNI reference");
-  using plain_jni_reference_t = T;
+  using plain_jni_reference_t = JniType<T>;
+  static_assert(IsPlainJniReference<plain_jni_reference_t>(), "Need a plain JNI reference");
 };
 
 template<template <typename...> class R, typename T, typename... A>
 struct reference_traits<R<T, A...>> {
-  static_assert(IsAnyReference<T>(), "Need an fbjni reference");
-  using plain_jni_reference_t = T;
+  using plain_jni_reference_t = JniType<T>;
+  static_assert(IsPlainJniReference<plain_jni_reference_t>(), "Need a plain JNI reference");
 };
 
 template<typename T>
 using plain_jni_reference_t = typename reference_traits<T>::plain_jni_reference_t;
 
-}
-}
-
+} // namespace jni
+} // namespace facebook

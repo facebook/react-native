@@ -27,84 +27,115 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationContainer = require('NavigationContainer');
+const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
+const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
+const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 
-const emptyFunction = require('emptyFunction');
+const emptyFunction = require('fbjs/lib/emptyFunction');
 
 const {PropTypes} = React;
+const {Directions} = NavigationLinearPanResponder;
 
 import type {
+  NavigationAnimatedValue,
+  NavigationAnimationSetter,
   NavigationParentState,
-  NavigationState,
-} from 'NavigationStateUtils';
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
 import type {
-  Layout,
-  OverlayRenderer,
-  Position,
-  SceneRenderer,
-} from 'NavigationAnimatedView';
+  NavigationGestureDirection,
+} from 'NavigationLinearPanResponder';
 
 type Props = {
+  direction: NavigationGestureDirection,
   navigationState: NavigationParentState,
-  renderOverlay: OverlayRenderer,
-  renderScene: SceneRenderer,
+  renderOverlay: ?NavigationSceneRenderer,
+  renderScene: NavigationSceneRenderer,
+};
+
+const propTypes = {
+  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+  navigationState: NavigationPropTypes.navigationParentState.isRequired,
+  renderOverlay: PropTypes.func,
+  renderScene: PropTypes.func.isRequired,
+};
+
+const defaultProps = {
+  direction: Directions.HORIZONTAL,
+  renderOverlay: emptyFunction.thatReturnsNull,
 };
 
 /**
  * A controlled navigation view that renders a list of cards.
  */
 class NavigationCardStack extends React.Component {
-  _renderScene : SceneRenderer;
+  _renderScene : NavigationSceneRenderer;
+  _setTiming: NavigationAnimationSetter;
 
   constructor(props: Props, context: any) {
     super(props, context);
+  }
+
+  componentWillMount() {
     this._renderScene = this._renderScene.bind(this);
+    this._setTiming = this._setTiming.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
+    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
+      this,
+      nextProps,
+      nextState
+    );
   }
 
   render(): ReactElement {
     return (
       <NavigationAnimatedView
         navigationState={this.props.navigationState}
-        style={[styles.animatedView, this.props.style]}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
+        setTiming={this._setTiming}
+        style={[styles.animatedView, this.props.style]}
       />
     );
   }
 
-  _renderScene(
-    navigationState: NavigationState,
-    index: number,
-    position: Position,
-    layout: Layout,
-  ): ReactElement {
+  _renderScene(props: NavigationSceneRendererProps): ReactElement {
     return (
       <NavigationCard
-        key={navigationState.key}
-        index={index}
-        navigationState={navigationState}
-        position={position}
-        layout={layout}>
-        {this.props.renderScene(navigationState, index, position, layout)}
-      </NavigationCard>
+        {...props}
+        direction={this.props.direction}
+        key={'card_' + props.scene.navigationState.key}
+        renderScene={this.props.renderScene}
+      />
     );
+  }
+
+  _setTiming(
+    position: NavigationAnimatedValue,
+    navigationState: NavigationParentState,
+  ): void {
+    Animated.timing(
+      position,
+      {
+        duration: 500,
+        toValue: navigationState.index,
+      }
+    ).start();
   }
 }
 
-NavigationCardStack.propTypes = {
-  navigationState: PropTypes.object.isRequired,
-  renderOverlay: PropTypes.func,
-  renderScene: PropTypes.func.isRequired,
-};
-
-NavigationCardStack.defaultProps = {
-  renderOverlay: emptyFunction.thatReturnsNull,
-};
+NavigationCardStack.propTypes = propTypes;
+NavigationCardStack.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   animatedView: {
