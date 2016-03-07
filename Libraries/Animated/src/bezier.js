@@ -49,14 +49,7 @@ module.exports = function(x1, y1, x2, y2, epsilon){
 
     var x = t, t0, t1, t2, x2, d2, i;
 
-    // First try a few iterations of Newton's method -- normally very fast.
-    for (t2 = x, i = 0; i < 8; i++){
-      x2 = curveX(t2) - x;
-      if (Math.abs(x2) < epsilon) { return curveY(t2); }
-      d2 = derivativeCurveX(t2);
-      if (Math.abs(d2) < 1e-6) { break; }
-      t2 = t2 - x2 / d2;
-    }
+    // TODO: Newton's method could be used to speed this up.
 
     t0 = 0;
     t1 = 1;
