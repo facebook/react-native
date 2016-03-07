@@ -111,6 +111,12 @@ var featured = [
     ],
   },
   {
+    name: 'SoundCloud Pulse',
+    icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
+    link: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
+    author: 'SoundCloud',
+  },
+  {
     name: 'Spero for Cancer',
     icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
     link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
