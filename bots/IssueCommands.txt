@@ -1,4 +1,4 @@
-React Native GitHub Issue Task Force: brentvatne, chirag04, christopherdro, corbt, dsibiski, grabbou, ide, jsierles, kmagiera, Kureev, lelandrichardson, satya164, skevy
+React Native GitHub Issue Task Force: brentvatne, chirag04, christopherdro, corbt, dsibiski, grabbou, ide, jsierles, kmagiera, Kureev, lelandrichardson, satya164, skevy, janicduplessis
 
 @facebook-github-bot answered
 comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
@@ -22,6 +22,10 @@ add-label {match0}
 
 @facebook-github-bot no-reply
 comment Closing this issue as more information is needed to debug this and we haven't heard back from the author. Once there's more information we can reopen the issue.
+close
+
+@facebook-github-bot close
+comment {author} tells me to close this issue. If you think it should still be opened let us know why.
 close
 
 @facebook-github-bot reopen
