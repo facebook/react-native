@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using ReactNative.Modules.NetInfo;
-using Windows.Networking.Connectivity;
-using ReactNative.Modules.Core;
-using ReactNative.Bridge;
-using System.Collections.Generic;
-using System.Threading;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ReactNative.Bridge;
+using ReactNative.Modules.Core;
+using ReactNative.Modules.NetInfo;
+using System;
+using System.Threading;
+using Windows.Networking.Connectivity;
 
 namespace ReactNative.Tests.Modules.NetInfo
 {
