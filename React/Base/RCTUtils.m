@@ -773,3 +773,17 @@ NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *p
   components.percentEncodedQuery = [queryItems componentsJoinedByString:@"&"];
   return components.URL;
 }
+
+NSString *RCTGuessPackagerIP()
+{
+  // For development builds there is a script that saves current development
+  // machine's IP address
+  // See packager/react-native-xcode.sh
+  NSString *ipAddressFile = [[NSBundle mainBundle] pathForResource:@"packager-ip" ofType:@"txt"] ;
+  NSString *ip = [[NSString stringWithContentsOfFile:ipAddressFile encoding:NSUTF8StringEncoding error:nil]
+                  stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\n"]];
+  if (!ip) {
+    return @"127.0.0.1";
+  }
+  return ip;
+}

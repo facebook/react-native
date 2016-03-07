@@ -122,4 +122,7 @@ RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
 RCT_EXTERN NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param);
 RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *param, NSString *__nullable value);
 
+// Development mode
+RCT_EXTERN NSString *RCTGuessPackagerIP();
+
 NS_ASSUME_NONNULL_END

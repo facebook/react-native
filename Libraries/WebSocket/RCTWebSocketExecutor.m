@@ -17,6 +17,7 @@
 #import "RCTLog.h"
 #import "RCTUtils.h"
 #import "RCTSRWebSocket.h"
+#import "RCTBridge.h"
 
 typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id> *reply);
 
@@ -36,6 +37,8 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
 
 RCT_EXPORT_MODULE()
 
+@synthesize bridge;
+
 - (instancetype)initWithURL:(NSURL *)URL
 {
   RCTAssertParam(URL);
@@ -49,9 +52,25 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
+    NSString *host = @"localhost";
+    NSInteger port = 8081;
+
+    NSURL *bundleURL = self.bridge.bundleURL;
+    if ([bundleURL.scheme hasPrefix:@"http"]) {
+      host = bundleURL.host;
+      port = [bundleURL.port integerValue];
+    }
+
+    // Some external tools can launch React Native apps with -websocket-executor-port 9091 flag
+    // to force websocket debugger use different port. In the future we want to replace this
+    // ability by always proxying debugger connections via packager.
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy?role=client", port];
+    NSInteger forcePort = [standardDefaults integerForKey:@"websocket-executor-port"];
+    if (forcePort > 0) {
+      port = forcePort;
+    }
+
+    NSString *URLString = [NSString stringWithFormat:@"http://%@:%zd/debugger-proxy?role=client", host, port];
     _url = [RCTConvert NSURL:URLString];
   }
 
