@@ -51,6 +51,11 @@
 @property (nonatomic, assign, readonly) BOOL requiresMainThreadSetup;
 
 /**
+ * Returns YES if module has constants to export.
+ */
+@property (nonatomic, assign, readonly) BOOL hasConstantsToExport;
+
+/**
  * Returns the current module instance. Note that this will init the instance
  * if it has not already been created. To check if the module instance exists
  * without causing it to be created, use `hasInstance` instead.
