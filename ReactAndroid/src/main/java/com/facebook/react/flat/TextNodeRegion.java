@@ -15,8 +15,15 @@ import android.text.Spanned;
 /* package */ final class TextNodeRegion extends NodeRegion {
   private final Layout mLayout;
 
-  TextNodeRegion(float left, float top, float right, float bottom, int tag, Layout layout) {
-    super(left, top, right, bottom, tag);
+  /* package */ TextNodeRegion(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      int tag,
+      boolean isVirtual,
+      Layout layout) {
+    super(left, top, right, bottom, tag, isVirtual);
     mLayout = layout;
   }
 

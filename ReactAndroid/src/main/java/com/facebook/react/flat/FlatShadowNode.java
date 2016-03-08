@@ -251,10 +251,15 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     mNodeRegions = nodeRegion;
   }
 
-  /* package */ void updateNodeRegion(float left, float top, float right, float bottom) {
-    if (mNodeRegion.mLeft != left || mNodeRegion.mTop != top ||
-        mNodeRegion.mRight != right || mNodeRegion.mBottom != bottom) {
-      setNodeRegion(new NodeRegion(left, top, right, bottom, getReactTag()));
+  /* package */ void updateNodeRegion(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      boolean isVirtual) {
+    if (mNodeRegion.mLeft != left || mNodeRegion.mTop != top || mNodeRegion.mRight != right ||
+        mNodeRegion.mBottom != bottom || mNodeRegion.mIsVirtual != isVirtual) {
+      setNodeRegion(new NodeRegion(left, top, right, bottom, getReactTag(), isVirtual));
     }
   }
 

@@ -197,13 +197,14 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       float left,
       float top,
       float right,
-      float bottom) {
+      float bottom,
+      boolean isVirtual) {
     if (left == right || top == bottom) {
       // no point in adding an empty NodeRegion
       return;
     }
 
-    node.updateNodeRegion(left, top, right, bottom);
+    node.updateNodeRegion(left, top, right, bottom, isVirtual);
     mNodeRegions.add(node.getNodeRegion());
   }
 
@@ -291,7 +292,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
       // manually add nodeRegion so it will have exactly one NodeRegion, and virtual nodes will
       // be able to receive touch events.
-      addNodeRegion(node, left, top, right, bottom);
+      addNodeRegion(node, left, top, right, bottom, true);
     }
 
     boolean descendantUpdated = collectStateRecursively(
@@ -520,9 +521,15 @@ import com.facebook.react.uimanager.events.EventDispatcher;
     float right = left + width;
     float bottom = top + height;
 
+    boolean mountsToView = node.mountsToView();
+
     final boolean updated;
 
-    if (node.mountsToView()) {
+    if (!parentIsAndroidView) {
+      addNodeRegion(node, left, top, right, bottom, !mountsToView);
+    }
+
+    if (mountsToView) {
       ensureBackingViewIsCreated(node);
 
       addNativeChild(node);
@@ -549,8 +556,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         updateViewBounds(node, left, top, right, bottom);
       }
     } else {
-      addNodeRegion(node, left, top, right, bottom);
-
       updated = collectStateRecursively(
           node,
           left,

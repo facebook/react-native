@@ -11,20 +11,28 @@ package com.facebook.react.flat;
 
 /* package */ class NodeRegion {
   /* package */ static final NodeRegion[] EMPTY_ARRAY = new NodeRegion[0];
-  /* package */ static final NodeRegion EMPTY = new NodeRegion(0, 0, 0, 0, -1);
+  /* package */ static final NodeRegion EMPTY = new NodeRegion(0, 0, 0, 0, -1, false);
 
   /* package */ final float mLeft;
   /* package */ final float mTop;
   /* package */ final float mRight;
   /* package */ final float mBottom;
   /* package */ final int mTag;
+  /* package */ final boolean mIsVirtual;
 
-  /* package */ NodeRegion(float left, float top, float right, float bottom, int tag) {
+  /* package */ NodeRegion(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      int tag,
+      boolean isVirtual) {
     mLeft = left;
     mTop = top;
     mRight = right;
     mBottom = bottom;
     mTag = tag;
+    mIsVirtual = isVirtual;
   }
 
   /* package */ final boolean withinBounds(float touchX, float touchY) {

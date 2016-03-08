@@ -123,7 +123,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
         "TouchTargetHelper should not allow calling this method when pointer events are NONE");
 
     if (mPointerEvents != PointerEvents.BOX_ONLY) {
-      NodeRegion nodeRegion = nodeRegionWithinBounds(touchX, touchY);
+      NodeRegion nodeRegion = virtualNodeRegionWithinBounds(touchX, touchY);
       if (nodeRegion != null) {
         return nodeRegion.getReactTag(touchX, touchY);
       }
@@ -277,7 +277,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
     if (mPointerEvents == PointerEvents.BOX_NONE) {
       // We cannot always return false here because some child nodes could be flatten into this View
-      NodeRegion nodeRegion = nodeRegionWithinBounds(ev.getX(), ev.getY());
+      NodeRegion nodeRegion = virtualNodeRegionWithinBounds(ev.getX(), ev.getY());
       if (nodeRegion == null) {
         // no child to handle this touch event, bailing out.
         return false;
@@ -411,9 +411,13 @@ import com.facebook.react.views.image.ImageLoadEvent;
     LAYOUT_REQUESTS.clear();
   }
 
-  private NodeRegion nodeRegionWithinBounds(float touchX, float touchY) {
+  private NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
     for (int i = mNodeRegions.length - 1; i >= 0; --i) {
       NodeRegion nodeRegion = mNodeRegions[i];
+      if (!nodeRegion.mIsVirtual) {
+        // only interested in virtual nodes
+        continue;
+      }
       if (nodeRegion.withinBounds(touchX, touchY)) {
         return nodeRegion;
       }

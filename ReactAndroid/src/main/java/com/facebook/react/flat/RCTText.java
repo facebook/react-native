@@ -223,9 +223,14 @@ import com.facebook.react.uimanager.annotations.ReactProp;
   }
 
   @Override
-  /* package */ void updateNodeRegion(float left, float top, float right, float bottom) {
+  /* package */ void updateNodeRegion(
+      float left,
+      float top,
+      float right,
+      float bottom,
+      boolean isVirtual) {
     if (mDrawCommand == null) {
-      super.updateNodeRegion(left, top, right, bottom);
+      super.updateNodeRegion(left, top, right, bottom, isVirtual);
       return;
     }
 
@@ -239,8 +244,9 @@ import com.facebook.react.uimanager.annotations.ReactProp;
     Layout newLayout = mDrawCommand.getLayout();
     if (nodeRegion.mLeft != left || nodeRegion.mTop != top ||
         nodeRegion.mRight != right || nodeRegion.mBottom != bottom ||
-        layout != newLayout) {
-      setNodeRegion(new TextNodeRegion(left, top, right, bottom, getReactTag(), newLayout));
+        nodeRegion.mIsVirtual != isVirtual || layout != newLayout) {
+      setNodeRegion(
+          new TextNodeRegion(left, top, right, bottom, getReactTag(), isVirtual, newLayout));
     }
   }
 
