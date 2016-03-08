@@ -18,8 +18,8 @@ namespace ReactNative.DevSupport
     class DevServerHelper
     {
         private const string DeviceLocalhost = "localhost:8081";
-        private const string BundleUrlFormat = "http://{0}/{1}.bundle?platform=windows&dev={2}&hot={3}";
-        private const string SourceMapUrlFormat = "http://{0}/{1}.map?platform=windows&dev={2}&hot={3}";
+        private const string BundleUrlFormat = "http://{0}/{1}.bundle?platform=ios&dev={2}&hot={3}";
+        private const string SourceMapUrlFormat = "http://{0}/{1}.map?platform=ios&dev={2}&hot={3}";
         private const string OnChangeEndpointUrlFormat = "http://{0}/onchange";
         private const string WebsocketProxyUrlFormat = "ws://{0}/debugger-proxy?role=client";
         private const string PackagerStatusUrlFormat = "http://{0}/status";
