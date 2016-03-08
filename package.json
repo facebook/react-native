@@ -168,7 +168,7 @@
     "source-map": "^0.4.4",
     "stacktrace-parser": "^0.1.3",
     "temp": "0.8.3",
-    "uglify-js": "^2.4.24",
+    "uglify-js": "^2.6.2",
     "underscore": "^1.8.3",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
