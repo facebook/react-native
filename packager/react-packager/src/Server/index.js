@@ -28,6 +28,10 @@ const validateOpts = declareOpts({
   blacklistRE: {
     type: 'object', // typeof regex is object
   },
+  ignoreBabelRC: {
+    type: 'boolean',
+    required: false
+  },
   moduleFormat: {
     type: 'string',
     default: 'haste',
@@ -126,6 +130,10 @@ const bundleOpts = declareOpts({
   entryModuleOnly: {
     type: 'boolean',
     default: false,
+  },
+  ignoreBabelRC: {
+    type: 'boolean',
+    required: false
   },
 });
 

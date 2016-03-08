@@ -85,6 +85,7 @@ function getPackagerServer(args, config) {
       'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
       'html', // Document formats
     ],
+    ignoreBabelRC: args['ignore-babelrc'],
     resetCache: args.resetCache || args['reset-cache'],
     verbose: args.verbose,
   });

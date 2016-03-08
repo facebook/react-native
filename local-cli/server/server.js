@@ -66,6 +66,10 @@ function _server(argv, config, resolve, reject) {
     description: 'Removes cached files',
     default: false,
   }, {
+    command: 'ignore-babelrc',
+    description: 'Ignores the .babelrc in project root',
+    default: false,
+  }, {
     command: 'verbose',
     description: 'Enables logging',
     default: false,

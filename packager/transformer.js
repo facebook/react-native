@@ -27,7 +27,7 @@ const path = require('path');
 const getBabelRC = (function() {
   let babelRC = null;
 
-  return function _getBabelRC(projectRoots) {
+  return function _getBabelRC(projectRoots, ignoreBabelRC) {
     if (babelRC !== null) {
       return babelRC;
     }
@@ -43,7 +43,7 @@ const getBabelRC = (function() {
     // (which works because we pass in `filename` and `sourceFilename` to
     // Babel when we transform).
     let projectBabelRCPath;
-    if (projectRoots && projectRoots.length > 0) {
+    if (!ignoreBabelRC && projectRoots && projectRoots.length > 0) {
       projectBabelRCPath = path.resolve(projectRoots[0], '.babelrc');
     }
 
@@ -61,7 +61,7 @@ const getBabelRC = (function() {
     }
 
     return babelRC;
-  }
+  };
 })();
 
 /**
@@ -69,7 +69,7 @@ const getBabelRC = (function() {
  * config object with the appropriate plugins.
  */
 function buildBabelConfig(filename, options) {
-  const babelRC = getBabelRC(options.projectRoots);
+  const babelRC = getBabelRC(options.projectRoots, options.ignoreBabelRC);
 
   const extraConfig = {
     filename,
