@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -187,19 +187,16 @@
     <Compile Include="CoreModulesPackage.cs" />
     <Compile Include="DevSupport\IDevSupportManager.cs" />
     <Compile Include="Modules\AppState\AppStateModule.cs" />
+    <Compile Include="Modules\Clipboard\ClipboardModule.cs" />
     <Compile Include="Modules\Core\JavaScriptException.cs" />
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
     <Compile Include="Modules\Core\SourceCodeModule.cs" />
-    <Compile Include="Modules\NetInfo\DefaultNetworkInformation.cs" />
-    <Compile Include="Modules\NetInfo\IConnectionProfile.cs" />
-    <Compile Include="Modules\NetInfo\INetworkInformation.cs" />
     <Compile Include="Modules\Network\DefaultHttpClient.cs" />
     <Compile Include="Modules\Network\HttpContentHeaderData.cs" />
     <Compile Include="Modules\Network\IHttpClient.cs" />
     <Compile Include="Modules\Network\NetworkingModule.cs" />
     <Compile Include="Modules\Network\HttpContentHelpers.cs" />
     <Compile Include="Modules\Network\TaskCancellationManager.cs" />
-    <Compile Include="Modules\NetInfo\NetInfoModule.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />
