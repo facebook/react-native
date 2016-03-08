@@ -269,7 +269,7 @@ namespace ReactNative.Views.Text
                     TextWrapping = TextWrapping.Wrap,
                 };
 
-                textBlock.Inlines.Add(shadowNode._inline);
+                textBlock.Inlines.Add(FromTextCSSNode(shadowNode));
 
                 try
                 {
