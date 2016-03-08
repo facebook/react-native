@@ -41,7 +41,6 @@ var self = {};
  *
  * @preserve-header
  */
-
 (function() {
   'use strict';
 
@@ -152,7 +151,7 @@ var self = {};
   }
 
   var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
+    blob: typeof FileReader === 'function' && typeof Blob === 'function' && (function() {
       try {
         new Blob();
         return true
@@ -160,13 +159,12 @@ var self = {};
         return false
       }
     })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
+    formData: typeof FormData  === 'function',
+    arrayBuffer: typeof ArrayBuffer === 'function'
   }
 
   function Body() {
     this.bodyUsed = false
-
 
     this._initBody = function(body) {
       this._bodyInit = body
@@ -336,7 +334,6 @@ var self = {};
     this.url = options.url || ''
     this._initBody(bodyInit)
   }
-
   Body.call(Response.prototype)
 
   Response.prototype.clone = function() {
@@ -428,5 +425,4 @@ var self = {};
 })();
 
 /** End of the third-party code */
-
 module.exports = self;
