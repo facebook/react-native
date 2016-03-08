@@ -84,13 +84,18 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'react',
-        'react-native',
+        // Use the project's installed version of react-native
+        // as the "haste" version of `react-native`
+        // (and ignore any nested copies);
+        { name: 'react-native', parent: null },
+        // Use the react peerDep for the "haste"
+        // version of `react`.
+        { name: 'react', parent: null },
         // Parse requires AsyncStorage. They will
         // change that to require('react-native') which
         // should work after this release and we can
         // remove it from here.
-        'parse',
+        { name: 'parse', parent: null },
       ],
       platforms: ['ios', 'android'],
       preferNativePlatform: true,
