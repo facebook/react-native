@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
@@ -42,6 +41,7 @@ var self = {};
  *
  * @preserve-header
  */
+
 (function() {
   'use strict';
 
@@ -427,5 +427,6 @@ var self = {};
   self.fetch.polyfill = true
 })();
 
+/** End of the third-party code */
 
 module.exports = self;
