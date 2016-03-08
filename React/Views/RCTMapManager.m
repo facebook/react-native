@@ -106,6 +106,17 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
   [view setRegion:json ? [RCTConvert MKCoordinateRegion:json] : defaultView.region animated:YES];
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(tileOverlayURLTemplate, NSString, RCTMap)
+{
+  if (json != nil) {
+    MKTileOverlay *overlay = [[MKTileOverlay alloc] initWithURLTemplate:json];
+    overlay.canReplaceMapContent = YES;
+    [view addOverlay:overlay level:MKOverlayLevelAboveLabels];
+  } else {
+    view = defaultView;
+  }
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   NSString *red, *green, *purple;
@@ -313,10 +324,12 @@ RCT_CUSTOM_VIEW_PROPERTY(region, MKCoordinateRegion, RCTMap)
 {
   if ([overlay isKindOfClass:[RCTMapOverlay class]]) {
     MKPolylineRenderer *polylineRenderer =
-      [[MKPolylineRenderer alloc] initWithPolyline:overlay];
-    polylineRenderer.strokeColor = overlay.strokeColor;
-    polylineRenderer.lineWidth = overlay.lineWidth;
+    [[MKPolylineRenderer alloc] initWithPolyline:overlay];
+    polylineRenderer.strokeColor = ((RCTMapOverlay *)overlay).strokeColor;
+    polylineRenderer.lineWidth = ((RCTMapOverlay *)overlay).lineWidth;
     return polylineRenderer;
+  } else if ([overlay isKindOfClass:[MKTileOverlay class]]) {
+    return [[MKTileOverlayRenderer alloc] initWithTileOverlay:((MKTileOverlay *)overlay)];
   } else {
     return nil;
   }
