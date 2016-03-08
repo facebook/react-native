@@ -159,7 +159,7 @@ var self = {};
         return false
       }
     })(),
-    formData: typeof FormData  === 'function',
+    formData: typeof FormData === 'function',
     arrayBuffer: typeof ArrayBuffer === 'function'
   }
 
