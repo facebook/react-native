@@ -29,7 +29,7 @@ import com.facebook.react.common.SystemClock;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.PointerEvents;
-import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.image.ImageLoadEvent;
@@ -39,7 +39,7 @@ import com.facebook.react.views.image.ImageLoadEvent;
  * array of DrawCommands, executing them one by one.
  */
 /* package */ final class FlatViewGroup extends ViewGroup
-    implements ReactInterceptingViewGroup, ReactCompoundView, ReactPointerEventsView {
+    implements ReactInterceptingViewGroup, ReactCompoundViewGroup, ReactPointerEventsView {
   /**
    * Helper class that allows AttachDetachListener to invalidate the hosting View.
    */
@@ -131,6 +131,16 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
     // no children found
     return getId();
+  }
+
+  @Override
+  public boolean interceptsTouchEvent(float touchX, float touchY) {
+    NodeRegion nodeRegion = anyNodeRegionWithinBounds(touchX, touchY);
+    if (nodeRegion != null) {
+      return nodeRegion.mIsVirtual;
+    }
+
+    return false;
   }
 
   @Override
@@ -257,6 +267,10 @@ import com.facebook.react.views.image.ImageLoadEvent;
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (interceptsTouchEvent(ev.getX(), ev.getY())) {
+      return true;
+    }
+
     if (mOnInterceptTouchEventListener != null &&
         mOnInterceptTouchEventListener.onInterceptTouchEvent(this, ev)) {
       return true;
@@ -411,13 +425,24 @@ import com.facebook.react.views.image.ImageLoadEvent;
     LAYOUT_REQUESTS.clear();
   }
 
-  private NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
+  private @Nullable NodeRegion virtualNodeRegionWithinBounds(float touchX, float touchY) {
     for (int i = mNodeRegions.length - 1; i >= 0; --i) {
       NodeRegion nodeRegion = mNodeRegions[i];
       if (!nodeRegion.mIsVirtual) {
         // only interested in virtual nodes
         continue;
       }
+      if (nodeRegion.withinBounds(touchX, touchY)) {
+        return nodeRegion;
+      }
+    }
+
+    return null;
+  }
+
+  private @Nullable NodeRegion anyNodeRegionWithinBounds(float touchX, float touchY) {
+    for (int i = mNodeRegions.length - 1; i >= 0; --i) {
+      NodeRegion nodeRegion = mNodeRegions[i];
       if (nodeRegion.withinBounds(touchX, touchY)) {
         return nodeRegion;
       }
