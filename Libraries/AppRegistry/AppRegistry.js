@@ -25,7 +25,7 @@ if (__DEV__) {
 
 var runnables = {};
 
-type ComponentProvider = () => ReactClass<any, any, any>;
+type ComponentProvider = () => ReactClass<any>;
 
 type AppConfig = {
   appKey: string;
