@@ -311,7 +311,7 @@ if (android) {
     render() {
       return (
         <View>
-          <Text>Height: {StatusBar.HEIGHT} pts</Text>
+          <Text>Height: {StatusBar.currentHeight} pts</Text>
         </View>
       );
     },

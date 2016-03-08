@@ -124,15 +124,14 @@ const StatusBar = React.createClass({
     // The current merged values from the props stack.
     _currentValues: null,
 
-    // TODO(janic): Provide a real API to deal with status bar height. It should provide
-    // the 'normal' status bar height as well as the current height (0 if hidden, 40
-    // if in a call on iOS) and a way to subscribe to height changes.
+    // TODO(janic): Provide a real API to deal with status bar height. See the
+    // discussion in #6195.
     /**
-     * The default height of the status bar on the device.
+     * The current height of the status bar on the device.
      *
      * @platform android
      */
-    HEIGHT: StatusBarManager.HEIGHT,
+    currentHeight: StatusBarManager.HEIGHT,
 
     // Provide an imperative API as static functions of the component.
     // See the corresponding prop for more detail.
