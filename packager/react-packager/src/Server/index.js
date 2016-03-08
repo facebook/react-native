@@ -73,10 +73,6 @@ const validateOpts = declareOpts({
     type: 'string',
     required: false,
   },
-  disableInternalTransforms: {
-    type: 'boolean',
-    default: false,
-  },
 });
 
 const bundleOpts = declareOpts({
@@ -145,6 +141,10 @@ const dependencyOpts = declareOpts({
   recursive: {
     type: 'boolean',
     default: true,
+  },
+  hot: {
+    type: 'boolean',
+    default: false,
   },
 });
 
@@ -259,12 +259,7 @@ class Server {
       }
 
       const opts = dependencyOpts(options);
-      return this._bundler.getDependencies(
-        opts.entryFile,
-        opts.dev,
-        opts.platform,
-        opts.recursive,
-      );
+      return this._bundler.getDependencies(opts);
     });
   }
 

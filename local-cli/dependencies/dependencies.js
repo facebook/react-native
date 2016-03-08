@@ -63,7 +63,6 @@ function _dependencies(argv, config, resolve, reject) {
     getTransformOptionsModulePath: config.getTransformOptionsModulePath,
     transformModulePath: args.transformer,
     verbose: config.verbose,
-    disableInternalTransforms: true,
   };
 
   const relativePath = packageOpts.projectRoots.map(root =>

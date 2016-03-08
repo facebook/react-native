@@ -89,6 +89,8 @@ function inline(filename, transformResult, options) {
     filename,
     plugins: [[plugin, options]],
     inputSourceMap: transformResult.map,
+    sourceMaps: true,
+    sourceFileName: filename,
     code: false,
     babelrc: false,
     compact: true,

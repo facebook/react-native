@@ -28,7 +28,6 @@ function buildBundle(args, config, output = outputBundle) {
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
       transformModulePath: args.transformer,
       verbose: args.verbose,
-      disableInternalTransforms: true,
     };
 
     const requestOpts = {

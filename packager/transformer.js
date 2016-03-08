@@ -61,7 +61,7 @@ const getBabelRC = (function() {
     }
 
     return babelRC;
-  }
+  };
 })();
 
 /**
@@ -81,14 +81,16 @@ function buildBabelConfig(filename, options) {
   // Add extra plugins
   const extraPlugins = [externalHelpersPlugin];
 
-  if (options.inlineRequires) {
+  var inlineRequires = options.inlineRequires;
+  var blacklist = inlineRequires && inlineRequires.blacklist;
+  if (inlineRequires && !(blacklist && filename in blacklist)) {
     extraPlugins.push(inlineRequiresPlugin);
   }
 
   config.plugins = extraPlugins.concat(config.plugins);
 
   if (options.hot) {
-    const hmrConfig = makeHMRConfig(options);
+    const hmrConfig = makeHMRConfig(options, filename);
     config = Object.assign({}, config, hmrConfig);
   }
 
@@ -102,7 +104,9 @@ function transform(src, filename, options) {
   const result = babel.transform(src, babelConfig);
 
   return {
+    ast: result.ast,
     code: result.code,
+    map: result.map,
     filename: filename,
   };
 }

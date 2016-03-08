@@ -19,7 +19,6 @@ jest
 jest.mock('fs');
 
 var Bundler = require('../');
-var JSTransformer = require('../../JSTransformer');
 var Resolver = require('../../Resolver');
 var sizeOf = require('image-size');
 var fs = require('fs');
@@ -43,25 +42,29 @@ describe('Bundler', function() {
       isJSON() { return isJSON; },
       isAsset() { return isAsset; },
       isAsset_DEPRECATED() { return isAsset_DEPRECATED; },
+      read: () => ({
+        code: 'arbitrary',
+        source: 'arbitrary',
+      }),
     };
   }
 
   var getDependencies;
   var getModuleSystemDependencies;
-  var wrapModule;
   var bundler;
   var assetServer;
   var modules;
+  var projectRoots;
 
   beforeEach(function() {
     getDependencies = jest.genMockFn();
     getModuleSystemDependencies = jest.genMockFn();
-    wrapModule = jest.genMockFn();
+    projectRoots = ['/root'];
+
     Resolver.mockImpl(function() {
       return {
         getDependencies: getDependencies,
         getModuleSystemDependencies: getModuleSystemDependencies,
-        wrapModule: wrapModule,
       };
     });
 
@@ -80,7 +83,7 @@ describe('Bundler', function() {
     };
 
     bundler = new Bundler({
-      projectRoots: ['/root'],
+      projectRoots,
       assetServer: assetServer,
     });
 
@@ -109,32 +112,16 @@ describe('Bundler', function() {
       }),
     ];
 
-    getDependencies.mockImpl(function() {
-      return Promise.resolve({
+    getDependencies.mockImpl((main, options, transformOptions) =>
+      Promise.resolve({
         mainModuleId: 'foo',
-        dependencies: modules
-      });
-    });
+        dependencies: modules,
+        transformOptions,
+      })
+    );
 
     getModuleSystemDependencies.mockImpl(function() {
       return [];
-    });
-
-    JSTransformer.prototype.loadFileAndTransform
-      .mockImpl(function(path) {
-        return Promise.resolve({
-          code: 'transformed ' + path,
-          map: 'sourcemap ' + path,
-          sourceCode: 'source ' + path,
-          sourcePath: path
-        });
-      });
-
-    wrapModule.mockImpl(function(response, module, code) {
-      return module.getName().then(name => ({
-        name,
-        code: 'lol ' + code + ' lol'
-      }));
     });
 
     sizeOf.mockImpl(function(path, cb) {
@@ -207,10 +194,20 @@ describe('Bundler', function() {
   });
 
   pit('gets the list of dependencies from the resolver', function() {
-    return bundler.getDependencies('/root/foo.js', true).then(() =>
+    const entryFile = '/root/foo.js';
+    return bundler.getDependencies({entryFile, recursive: true}).then(() =>
       expect(getDependencies).toBeCalledWith(
         '/root/foo.js',
         { dev: true, recursive: true },
+        { minify: false,
+          dev: true,
+          transform: {
+            dev: true,
+            hot: false,
+            projectRoots,
+          }
+        },
+        undefined,
       )
     );
   });
