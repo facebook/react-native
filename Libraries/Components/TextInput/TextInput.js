@@ -528,6 +528,11 @@ const TextInput = React.createClass({
       };
     }
 
+    var onContentSizeChange;
+    if (this.props.onContentSizeChange) {
+      onContentSizeChange = this._onContentSizeChange;
+    }
+
     var props = Object.assign({}, this.props);
     props.style = [styles.input, this.props.style];
     if (!props.multiline) {
@@ -571,7 +576,7 @@ const TextInput = React.createClass({
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onContentSizeChange={this._onContentSizeChange}
+          onContentSizeChange={onContentSizeChange}
           onSelectionChange={onSelectionChange}
           onTextInput={this._onTextInput}
           onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
@@ -605,6 +610,11 @@ const TextInput = React.createClass({
       };
     }
 
+    var onContentSizeChange;
+    if (this.props.onContentSizeChange) {
+      onContentSizeChange = this._onContentSizeChange;
+    }
+
     var autoCapitalize =
       UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
     var children = this.props.children;
@@ -632,6 +642,7 @@ const TextInput = React.createClass({
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
+        onContentSizeChange={onContentSizeChange}
         onSelectionChange={onSelectionChange}
         onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}

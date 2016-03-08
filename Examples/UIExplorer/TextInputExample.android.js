@@ -76,18 +76,21 @@ var TextEventsExample = React.createClass({
 class AutoExpandingTextInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {text: '', height: 0};
+    this.state = {
+      text: 'React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about — learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native.',
+      height: 0,
+    };
   }
   render() {
     return (
       <TextInput
         {...this.props}
         multiline={true}
-        onChange={(event) => {
-          this.setState({
-            text: event.nativeEvent.text,
-            height: event.nativeEvent.contentSize.height,
-          });
+        onContentSizeChange={(contentSize) => {
+          this.setState({height: contentSize.height});
+        }}
+        onChangeText={(text) => {
+          this.setState({text});
         }}
         style={[styles.default, {height: Math.max(35, this.state.height)}]}
         value={this.state.text}
@@ -412,19 +415,19 @@ exports.examples = [
     render: function() {
       return (
         <View>
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
             placeholder="Custom fonts like Sans-Serif are supported"
           />
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'sans-serif', fontWeight: 'bold'}]}
             placeholder="Sans-Serif bold"
           />
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'sans-serif', fontStyle: 'italic'}]}
             placeholder="Sans-Serif italic"
           />
-          <TextInput 
+          <TextInput
             style={[styles.singleLine, {fontFamily: 'serif'}]}
             placeholder="Serif"
           />

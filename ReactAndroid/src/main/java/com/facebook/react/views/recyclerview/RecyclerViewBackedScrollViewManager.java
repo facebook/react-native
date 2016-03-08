@@ -85,9 +85,6 @@ public class RecyclerViewBackedScrollViewManager extends
   Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.builder()
         .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
-        .put(
-            ContentSizeChangeEvent.EVENT_NAME,
-            MapBuilder.of("registrationName", "onContentSizeChange"))
         .build();
   }
 }
