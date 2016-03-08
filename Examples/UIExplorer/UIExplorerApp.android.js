@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     height: 56,
   },
   drawerContentWrapper: {
-    paddingTop: StatusBar.HEIGHT,
+    paddingTop: StatusBar.currentHeight,
     backgroundColor: 'white',
   },
 });
