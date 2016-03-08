@@ -34,10 +34,6 @@ function setupDevtools() {
     setTimeout(setupDevtools, 200);
     closeListeners.forEach(fn => fn());
   };
-  ws.onerror = error => {
-    setTimeout(setupDevtools, 200);
-    closeListeners.forEach(fn => fn());
-  };
   ws.onopen = function () {
     tryToConnect();
   };
