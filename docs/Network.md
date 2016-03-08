@@ -52,7 +52,7 @@ fetch('https://mywebsite.com/endpoint/', {
     });
   ```
 2.  Called within an asynchronous function using ES7 `async`/`await` syntax:
-  
+
   ```js
   class MyComponent extends React.Component {
     ...
@@ -124,4 +124,4 @@ request.send();
 
 Please follow the [MDN Documentation](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) for a complete description of the API.
 
-As a developer, you're probably not going to use XMLHttpRequest directly as its API is very tedious to work with. But the fact that it is implemented and compatible with the browser API gives you the ability to use third-party libraries such as [Parse](https://parse.com/products/javascript), [frisbee](https://github.com/niftylettuce/frisbee), or [axios](https://github.com/mzabriskie/axios) directly from npm.
+As a developer, you're probably not going to use XMLHttpRequest directly as its API is very tedious to work with. But the fact that it is implemented and compatible with the browser API gives you the ability to use third-party libraries such as [frisbee](https://github.com/niftylettuce/frisbee) or [axios](https://github.com/mzabriskie/axios) directly from npm.
