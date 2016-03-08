@@ -21,21 +21,14 @@ class HMRBundle extends BundleBase {
     this._sourceMappingURLs = [];
   }
 
-  addModule(resolver, response, module, transformed) {
-    return resolver.resolveRequires(response,
+  addModule(resolver, response, module, moduleTransport) {
+    return resolver.resolveRequires(
+      response,
       module,
-      transformed.code,
-    ).then(({name, code}) => {
-      const moduleTransport = new ModuleTransport({
-        code,
-        name,
-        map: transformed.map,
-        sourceCode: transformed.sourceCode,
-        sourcePath: transformed.sourcePath,
-        virtual: transformed.virtual,
-      });
-
-      super.addModule(moduleTransport);
+      moduleTransport.code,
+      moduleTransport.meta.dependencyOffsets,
+    ).then(code => {
+      super.addModule(new ModuleTransport({...moduleTransport, code}));
       this._sourceMappingURLs.push(this._sourceMappingURLFn(moduleTransport.sourcePath));
       this._sourceURLs.push(this._sourceURLFn(moduleTransport.sourcePath));
     });

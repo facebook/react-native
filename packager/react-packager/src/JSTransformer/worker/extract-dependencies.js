@@ -8,48 +8,8 @@
  */
 'use strict';
 
-const SINGLE_QUOTE = "'".charCodeAt(0);
-const DOUBLE_QUOTE = '"'.charCodeAt(0);
-const BACKSLASH = '\\'.charCodeAt(0);
-const SLASH = '/'.charCodeAt(0);
-const NEWLINE = '\n'.charCodeAt(0);
-const ASTERISK = '*'.charCodeAt(0);
-
-// dollar is the only regex special character valid in identifiers
-const escapeRegExp = identifier => identifier.replace(/[$]/g, '\\$');
-
-function binarySearch(indexes, index) {
-  var low = 0;
-  var high = indexes.length - 1;
-  var i = 0;
-
-  if (indexes[low] === index) {
-    return low;
-  }
-  while (high - low > 1) {
-    var current = low + ((high - low) >>> 1); // right shift divides by 2 and floors
-    if (index === indexes[current]) {
-      return current;
-    }
-    if (index > indexes[current]) {
-      low = current;
-    } else {
-      high = current;
-    }
-  }
-  return low;
-}
-
-function indexOfCharCode(string, needle, i) {
-  for (var charCode; (charCode = string.charCodeAt(i)); i++) {
-    if (charCode === needle) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-const reRequire = /(?:^|[^.\s])\s*\brequire\s*\(\s*(['"])(.*?)\1/g;
+const babel = require('babel-core');
+const babylon = require('babylon');
 
 /**
  * Extracts dependencies (module IDs imported with the `require` function) from
@@ -66,61 +26,24 @@ const reRequire = /(?:^|[^.\s])\s*\brequire\s*\(\s*(['"])(.*?)\1/g;
  * The index points to the opening quote.
  */
 function extractDependencies(code) {
-  const ranges = [0];
-  // are we currently in a quoted string? -> SINGLE_QUOTE or DOUBLE_QUOTE, else undefined
-  var currentQuote;
-  // scan the code for string literals and comments.
-  for (var i = 0, charCode; (charCode = code.charCodeAt(i)); i++) {
-    if (charCode === BACKSLASH) {
-      i += 1;
-      continue;
-    }
-
-    if (charCode === SLASH && currentQuote === undefined) {
-      var next = code.charCodeAt(i + 1);
-      var end = undefined;
-      if (next === SLASH) {
-        end = indexOfCharCode(code, NEWLINE, i + 2);
-      } else if (next === ASTERISK) {
-        end = code.indexOf('*/', i + 2) + 1; // assume valid JS input here
-      }
-      if (end === -1) {
-        // if the comment does not end, it goes to the end of the file
-        end += code.length;
-      }
-      if (end !== undefined) {
-        ranges.push(i, end);
-        i = end;
-        continue;
-      }
-    }
-
-    var isQuoteStart = currentQuote === undefined &&
-                       (charCode === SINGLE_QUOTE || charCode === DOUBLE_QUOTE);
-    if (isQuoteStart || currentQuote === charCode) {
-      ranges.push(i);
-      currentQuote = currentQuote === charCode ? undefined : charCode;
-    }
-  }
-  ranges.push(i);
-
-  // extract dependencies
+  const ast = babylon.parse(code);
   const dependencies = new Set();
   const dependencyOffsets = [];
-  for (var match; (match = reRequire.exec(code)); ) {
-    // check whether the match is in a code range, and not inside of a string
-    // literal or a comment
-    if (binarySearch(ranges, match.index) % 2 === 0) {
-      dependencies.add(match[2]);
-      dependencyOffsets.push(
-        match[0].length - match[2].length - 2 + match.index);
-    }
-  }
 
-  return {
-    dependencyOffsets,
-    dependencies: Array.from(dependencies.values()),
-  };
+  babel.traverse(ast, {
+    CallExpression(path) {
+      const node = path.node;
+      const callee = node.callee;
+      const arg = node.arguments[0];
+      if (callee.type !== 'Identifier' || callee.name !== 'require' || !arg || arg.type !== 'StringLiteral') {
+        return;
+      }
+      dependencyOffsets.push(arg.start);
+      dependencies.add(arg.value);
+    }
+  });
+
+  return {dependencyOffsets, dependencies: Array.from(dependencies)};
 }
 
 module.exports = extractDependencies;
