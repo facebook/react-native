@@ -54,6 +54,7 @@ react_library(
     'MethodCall.cpp',
     'JSCHelpers.cpp',
     'JSCExecutor.cpp',
+    'JSCPerfStats.cpp',
     'JSCTracing.cpp',
     'JSCMemory.cpp',
     'JSCLegacyProfiler.cpp',
@@ -63,6 +64,7 @@ react_library(
     'JSCTracing.h',
     'JSCLegacyProfiler.h',
     'JSCMemory.h',
+    'JSCPerfStats.h',
   ],
   exported_headers = [
     'Bridge.h',
