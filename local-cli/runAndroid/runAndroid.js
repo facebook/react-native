@@ -15,6 +15,7 @@ const path = require('path');
 const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
+const adb = require('./adb');
 
 /**
  * Starts the app on a connected Android emulator or device.
@@ -49,12 +50,12 @@ function _runAndroid(argv, config, resolve, reject) {
 
   resolve(isPackagerRunning().then(result => {
     if (result === 'running') {
-      console.log(chalk.bold('JS server already running.'));
+      console.log(chalk.bold(`JS server already running.`));
     } else if (result === 'unrecognized') {
-      console.warn(chalk.yellow('JS server not recognized, continuing with build...'));
+      console.warn(chalk.yellow(`JS server not recognized, continuing with build...`));
     } else {
       // result == 'not_running'
-      console.log(chalk.bold('Starting JS server...'));
+      console.log(chalk.bold(`Starting JS server...`));
       startServerInNewWindow();
     }
     buildAndRun(args, reject);
@@ -88,8 +89,7 @@ function buildAndRun(args, reject) {
     }
 
     console.log(chalk.bold(
-      'Building and installing the app on the device (cd android && ' + cmd +
-      ' ' + gradleArgs.join(' ') + ')...'
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -119,18 +119,34 @@ function buildAndRun(args, reject) {
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
       : 'adb';
 
-    const adbArgs = [
-      'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-    ];
+    const devices = adb.getDevices();
+    
+    if (devices && devices.length > 0) {
+      devices.forEach((device) => {
 
-    console.log(chalk.bold(
-      'Starting the app (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
-    ));
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
 
-    child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+        console.log(chalk.bold(
+          `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
+        ));
+
+        child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});  
+      }); 
+    } else {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+      ];
+      console.log(chalk.bold(
+        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+      ));
+      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+    }
+
   } catch (e) {
     console.log(chalk.red(
-      'adb invocation failed. Do you have adb in your PATH?'
+      `adb invocation failed. Do you have adb in your PATH?`
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
@@ -168,8 +184,7 @@ function startServerInNewWindow() {
       'Windows on a daily basis.\n' +
       'Would you be up for sending a pull request?');
   } else {
-    console.log(chalk.red('Cannot start the packager. Unknown platform ' +
-      process.platform));
+    console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
 }
 
