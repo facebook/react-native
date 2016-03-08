@@ -94,7 +94,17 @@ namespace ReactNative.Chakra.Executor
             if (script == null)
                 throw new ArgumentNullException(nameof(script));
 
-            JavaScriptContext.RunScript(script);
+            try
+            {
+                JavaScriptContext.RunScript(script);
+            }
+            catch (JavaScriptScriptException ex)
+            {
+                var jsonError = JavaScriptValueToJTokenConverter.Convert(ex.Error);
+                var message = jsonError.Value<string>("message");
+                var stackTrace = jsonError.Value<string>("stack");
+                throw new Modules.Core.JavaScriptException(message ?? ex.Message, stackTrace, ex);
+            }
         }
 
         /// <summary>

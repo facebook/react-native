@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using ReactNative.Common;
+using ReactNative.Modules.Core;
 using ReactNative.Tracing;
 using System;
 using System.IO;
@@ -103,8 +104,17 @@ namespace ReactNative.DevSupport
 
             if (IsEnabled)
             {
-                Tracer.Write(ReactConstants.Tag, "Exception in native call from JavaScript. Error: " + exception);
-                ShowNewNativeError(exception.Message, exception);
+                var javaScriptException = exception as JavaScriptException;
+                if (javaScriptException != null)
+                {
+                    var stackTrace = StackTraceHelper.ConvertChakraStackTrace(javaScriptException.StackTrace);
+                    ShowNewError(exception.Message, stackTrace, NativeErrorCookie);
+                }
+                else
+                {
+                    Tracer.Write(ReactConstants.Tag, "Exception in native call from JavaScript. Error: " + exception);
+                    ShowNewNativeError(exception.Message, exception);
+                }
             }
             else
             {
