@@ -62,6 +62,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)endRefreshing
+{
+  // The contentOffset of the scrollview MUST be greater than 0 before calling
+  // endRefreshing otherwise the next pull to refresh will not work properly.
+  UIScrollView *scrollView = (UIScrollView *)self.superview;
+  if (scrollView.contentOffset.y < 0) {
+    CGPoint offset = {scrollView.contentOffset.x, 0};
+    [UIView animateWithDuration:0.25
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^(void) {
+                       [scrollView setContentOffset:offset];
+                     } completion:^(__unused BOOL finished) {
+                       [super endRefreshing];
+                     }];
+  } else {
+    [super endRefreshing];
+  }
+}
+
 - (NSString *)title
 {
   return self.attributedTitle.string;
