@@ -66,7 +66,7 @@ var AppContainer = React.createClass({
 });
 
 function renderApplication<D, P, S>(
-  RootComponent: ReactClass<D, P, S>,
+  RootComponent: ReactClass<P>,
   initialProps: P,
   rootTag: any
 ) {

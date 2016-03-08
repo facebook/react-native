@@ -12,7 +12,7 @@ const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder')
 
 const clamp = require('clamp');
 
-import {
+import type {
   NavigationActionCaller,
   NavigationLayout,
   NavigationPosition,

@@ -157,7 +157,7 @@ class UIExplorerExampleList extends React.Component {
   }
 }
 
-function makeRenderable(example: any): ReactClass<any, any, any> {
+function makeRenderable(example: any): ReactClass<any> {
   return example.examples ?
     createExamplePage(null, example) :
     example;
