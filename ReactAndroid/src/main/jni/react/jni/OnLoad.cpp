@@ -233,7 +233,7 @@ struct WritableNativeArray
   static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/WritableNativeArray;";
 
   WritableNativeArray()
-      : HybridBase(folly::dynamic::array) {}
+      : HybridBase(folly::dynamic({})) {}
 
   static local_ref<jhybriddata> initHybrid(alias_ref<jclass>) {
     return makeCxxInstance();

@@ -69,6 +69,7 @@ jni_library(
   compiler_flags = [
     '-Wall',
     '-Werror',
+    '-Wno-deprecated-declarations',
     '-fexceptions',
     '-std=c++11',
     '-fvisibility=hidden',
