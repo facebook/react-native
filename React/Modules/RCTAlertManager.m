@@ -75,7 +75,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   NSString *message = [RCTConvert NSString:args[@"message"]];
   UIAlertViewStyle type = [RCTConvert UIAlertViewStyle:args[@"type"]];
   NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
-  NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];
   NSString *cancelButtonKey = [RCTConvert NSString:args[@"cancelButtonKey"]];
   NSString *destructiveButtonKey = [RCTConvert NSString:args[@"destructiveButtonKey"]];
 
@@ -113,6 +112,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     alertView.message = message;
 
     if (type != UIAlertViewStyleDefault) {
+      NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];
       [alertView textFieldAtIndex:0].text = defaultValue;
     }
 
