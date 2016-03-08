@@ -285,6 +285,15 @@ import com.facebook.react.uimanager.events.EventDispatcher;
       clipBottom = Float.POSITIVE_INFINITY;
     }
 
+    if (!isAndroidView && node.isVirtualAnchor()) {
+      // If RCTText is mounted to View, virtual children will not receive any touch events
+      // because they don't get added to nodeRegions, so nodeRegions will be empty and
+      // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
+      // manually add nodeRegion so it will have exactly one NodeRegion, and virtual nodes will
+      // be able to receive touch events.
+      addNodeRegion(node, left, top, right, bottom);
+    }
+
     boolean descendantUpdated = collectStateRecursively(
         node,
         left,
@@ -297,15 +306,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         clipBottom,
         isAndroidView,
         needsCustomLayoutForChildren);
-
-    if (!isAndroidView && node.isVirtualAnchor()) {
-      // If RCTText is mounted to View, virtual children will not receive any touch events
-      // because they don't get added to nodeRegions, so nodeRegions will be empty and
-      // FlatViewGroup.reactTagForTouch() will always return RCTText's id. To fix the issue,
-      // manually add nodeRegion so it will have exactly one NodeRegion, and virtual nodes will
-      // be able to receive touch events.
-      addNodeRegion(node, left, top, right, bottom);
-    }
 
     boolean shouldUpdateMountState = false;
     final DrawCommand[] drawCommands = mDrawCommands.finish();
@@ -549,6 +549,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
         updateViewBounds(node, left, top, right, bottom);
       }
     } else {
+      addNodeRegion(node, left, top, right, bottom);
+
       updated = collectStateRecursively(
           node,
           left,
@@ -561,7 +563,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
           parentClipBottom,
           false,
           false);
-      addNodeRegion(node, left, top, right, bottom);
     }
 
     return updated;

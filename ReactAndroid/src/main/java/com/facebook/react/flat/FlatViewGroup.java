@@ -412,7 +412,8 @@ import com.facebook.react.views.image.ImageLoadEvent;
   }
 
   private NodeRegion nodeRegionWithinBounds(float touchX, float touchY) {
-    for (NodeRegion nodeRegion : mNodeRegions) {
+    for (int i = mNodeRegions.length - 1; i >= 0; --i) {
+      NodeRegion nodeRegion = mNodeRegions[i];
       if (nodeRegion.withinBounds(touchX, touchY)) {
         return nodeRegion;
       }
