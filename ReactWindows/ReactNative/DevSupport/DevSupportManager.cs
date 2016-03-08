@@ -30,6 +30,7 @@ namespace ReactNative.DevSupport
 
         private bool _isDevSupportEnabled = true;
         private bool _isShakeDetectorRegistered;
+        private bool _isUsingJsProxy;
 
         private RedBoxDialog _redBoxDialog;
         private Action _dismissRedBoxDialog;
@@ -96,6 +97,14 @@ namespace ReactNative.DevSupport
             }
         }
 
+        public string JavaScriptBundleUrlForRemoteDebugging
+        {
+            get
+            {
+                return _devServerHelper.GetJavaScriptBundleUrlForRemoteDebugging(_jsAppBundleName);
+            }
+        }
+
         public void HandleException(Exception exception)
         {
 #if DEBUG
@@ -131,7 +140,12 @@ namespace ReactNative.DevSupport
             var progressDialog = new ProgressDialog("Please wait...", "Fetching JavaScript bundle.");
             var dialogOperation = progressDialog.ShowAsync();
 
-            if (_jsBundleFile == null)
+            if (_isUsingJsProxy)
+            {
+                await ReloadJavaScriptInProxyMode(progressDialog.Token);
+                dialogOperation.Cancel();
+            }
+            else if (_jsBundleFile == null)
             {
                 await ReloadJavaScriptFromServerAsync(dialogOperation.Cancel, progressDialog.Token);
             }
@@ -189,16 +203,27 @@ namespace ReactNative.DevSupport
                     _devOptionDialog = null;
                 };
 
-                var liveReloadEnabled = _devSettings.IsReloadOnJavaScriptChangeEnabled;
-                var liveReloadSettingName = liveReloadEnabled
-                    ? "Disable Live Reload"
-                    : "Enable Live Reload";
-
                 var options = new[]
                 {
-                    new DevOptionHandler("Reload JavaScript", HandleReloadJavaScript),
-                    new DevOptionHandler(liveReloadSettingName, () => 
-                        _devSettings.IsReloadOnJavaScriptChangeEnabled = !liveReloadEnabled),
+                    new DevOptionHandler(
+                        "Reload JavaScript",
+                        HandleReloadJavaScript),
+                    new DevOptionHandler(
+                        _isUsingJsProxy
+                            ? "Stop Chrome Debugging"
+                            : "Debug in Chrome",
+                        () =>
+                        {
+                            _isUsingJsProxy = !_isUsingJsProxy;
+                            HandleReloadJavaScript();
+                        }),
+                    new DevOptionHandler(
+                        _devSettings.IsReloadOnJavaScriptChangeEnabled
+                            ? "Disable Live Reload"
+                            : "Enable Live Reload", 
+                        () => 
+                            _devSettings.IsReloadOnJavaScriptChangeEnabled = 
+                                !_devSettings.IsReloadOnJavaScriptChangeEnabled),
                 };
 
                 foreach (var option in options)
@@ -269,6 +294,15 @@ namespace ReactNative.DevSupport
                 var asyncInfo = _redBoxDialog.ShowAsync();
                 _dismissRedBoxDialog = asyncInfo.Cancel;
             });
+        }
+
+        private async Task ReloadJavaScriptInProxyMode(CancellationToken token)
+        {
+            _devServerHelper.LaunchDevTools();
+            var executor = new WebSocketJavaScriptExecutor();
+            await executor.ConnectAsync(_devServerHelper.WebsocketProxyUrl, token);
+            var factory = new Func<IJavaScriptExecutor>(() => executor);
+            _reactInstanceCommandsHandler.OnReloadWithJavaScriptDebugger(factory);
         }
 
         private async Task ReloadJavaScriptFromServerAsync(Action dismissProgress, CancellationToken token)

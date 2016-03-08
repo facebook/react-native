@@ -186,6 +186,7 @@
     <Compile Include="Common\ReactConstants.cs" />
     <Compile Include="CoreModulesPackage.cs" />
     <Compile Include="DevSupport\IDevSupportManager.cs" />
+    <Compile Include="Bridge\WebSocketJavaScriptExecutor.cs" />
     <Compile Include="Modules\AppState\AppStateModule.cs" />
     <Compile Include="Modules\Clipboard\ClipboardModule.cs" />
     <Compile Include="Modules\Core\JavaScriptException.cs" />

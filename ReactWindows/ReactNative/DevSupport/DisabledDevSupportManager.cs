@@ -36,6 +36,14 @@ namespace ReactNative.DevSupport
             }
         }
 
+        public string JavaScriptBundleUrlForRemoteDebugging
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public void HandleException(Exception exception)
         {
             ExceptionDispatchInfo.Capture(exception).Throw();

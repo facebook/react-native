@@ -386,6 +386,15 @@ namespace ReactNative
             }
         }
 
+        private void OnReloadWithJavaScriptDebugger(Func<IJavaScriptExecutor> javaScriptExecutorFactory)
+        {
+            RecreateReactContextInBackground(
+                javaScriptExecutorFactory,
+                JavaScriptBundleLoader.CreateRemoteDebuggerLoader(
+                    _devSupportManager.JavaScriptBundleUrlForRemoteDebugging,
+                    _devSupportManager.SourceUrl));
+        }
+
         private void OnJavaScriptBundleLoadedFromServer()
         {
             RecreateReactContextInBackground(
@@ -787,6 +796,11 @@ namespace ReactNative
             public void OnJavaScriptBundleLoadedFromServer()
             {
                 _parent.OnJavaScriptBundleLoadedFromServer();
+            }
+
+            public void OnReloadWithJavaScriptDebugger(Func<IJavaScriptExecutor> javaScriptExecutorFactory)
+            {
+                _parent.OnReloadWithJavaScriptDebugger(javaScriptExecutorFactory);
             }
         }
     }
