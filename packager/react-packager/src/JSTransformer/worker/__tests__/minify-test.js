@@ -39,7 +39,7 @@ describe('Minification:', () => {
     expect(uglify.minify).toBeCalledWith(code, objectContaining({
       fromString: true,
       inSourceMap: map,
-      outSourceMap: filename,
+      outSourceMap: true,
     }));
   });
 

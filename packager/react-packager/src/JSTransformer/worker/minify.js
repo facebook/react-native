@@ -14,7 +14,7 @@ function minify(filename, code, sourceMap) {
   const minifyResult = uglify.minify(code, {
     fromString: true,
     inSourceMap: sourceMap,
-    outSourceMap: filename,
+    outSourceMap: true,
     output: {
       ascii_only: true,
       screw_ie8: true,
