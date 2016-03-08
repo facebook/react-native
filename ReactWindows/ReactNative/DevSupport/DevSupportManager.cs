@@ -105,7 +105,7 @@ namespace ReactNative.DevSupport
             if (IsEnabled)
             {
                 var javaScriptException = exception as JavaScriptException;
-                if (javaScriptException != null)
+                if (javaScriptException != null && javaScriptException.StackTrace != null)
                 {
                     var stackTrace = StackTraceHelper.ConvertChakraStackTrace(javaScriptException.StackTrace);
                     ShowNewError(exception.Message, stackTrace, NativeErrorCookie);
