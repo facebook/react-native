@@ -1,5 +1,4 @@
-﻿#if NATIVE_JSON_MARSHALING
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 
 namespace ReactNative.Chakra.Executor
@@ -29,6 +28,8 @@ namespace ReactNative.Chakra.Executor
                     return VisitArray(value);
                 case JavaScriptValueType.Boolean:
                     return VisitBoolean(value);
+                case JavaScriptValueType.Error:
+                    return VisitError(value);
                 case JavaScriptValueType.Null:
                     return VisitNull(value);
                 case JavaScriptValueType.Number:
@@ -40,7 +41,6 @@ namespace ReactNative.Chakra.Executor
                 case JavaScriptValueType.Undefined:
                     return VisitUndefined(value);
                 case JavaScriptValueType.Function:
-                case JavaScriptValueType.Error:
                 default:
                     throw new NotSupportedException();
             }
@@ -64,6 +64,16 @@ namespace ReactNative.Chakra.Executor
         private JToken VisitBoolean(JavaScriptValue value)
         {
             return value.ToBoolean() ? s_true : s_false;
+        }
+
+        private JToken VisitError(JavaScriptValue value)
+        {
+            return new JObject
+            {
+                { "message", Visit(value.GetProperty(JavaScriptPropertyId.FromString("message"))) },
+                { "description", Visit(value.GetProperty(JavaScriptPropertyId.FromString("description"))) },
+                { "stack", Visit(value.GetProperty(JavaScriptPropertyId.FromString("stack"))) },
+            };
         }
 
         private JToken VisitNull(JavaScriptValue value)
@@ -105,4 +115,3 @@ namespace ReactNative.Chakra.Executor
         }
     }
 }
-#endif

@@ -1,11 +1,24 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace ReactNative.DevSupport
 {
     static class StackTraceHelper
     {
+        public static IStackFrame[] ConvertChakraStackTrace(string stackTrace)
+        {
+            var lines = stackTrace.Split('\n');
+            var frames = new IStackFrame[lines.Length - 1];
+            for (var i = 1; i < lines.Length; ++i)
+            {
+                frames[i - 1] = new ChakraStackFrame(lines[i]);
+            }
+
+            return frames;
+        }
+
         public static IStackFrame[] ConvertJavaScriptStackTrace(JArray stack)
         {
             var n = stack.Count;
@@ -34,6 +47,43 @@ namespace ReactNative.DevSupport
             }
 
             return results;
+        }
+
+        class ChakraStackFrame : IStackFrame
+        {
+            private static readonly Regex s_regex = new Regex(@"\s*at (.*) \((.*):(\d+):(\d+)\)");
+
+            public ChakraStackFrame(string line)
+            {
+                var match = s_regex.Match(line);
+                if (match.Success)
+                {
+                    Method = match.Groups[1].Value;
+                    FileName = match.Groups[2].Value;
+                    Line = int.Parse(match.Groups[3].Value);
+                    Column = int.Parse(match.Groups[4].Value);
+                }
+            }
+
+            public int Column
+            {
+                get;
+            }
+
+            public string FileName
+            {
+                get;
+            }
+
+            public int Line
+            {
+                get;
+            }
+
+            public string Method
+            {
+                get;
+            }
         }
 
         class JavaScriptStackFrame : IStackFrame

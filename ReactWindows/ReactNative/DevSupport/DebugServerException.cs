@@ -53,9 +53,9 @@ namespace ReactNative.DevSupport
                             jsonObject.Value<int>("column"));
                     }
                 }
-                catch (JsonException)
+                catch (JsonException ex)
                 {
-                    // TODO: log exception
+                    Tracer.Write(ReactConstants.Tag, "Failure deserializing debug server exception message: " + ex);
                 }
             }
 
