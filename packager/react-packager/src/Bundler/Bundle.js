@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const _ = require('underscore');
+const _ = require('lodash');
 const base64VLQ = require('./base64-vlq');
 const BundleBase = require('./BundleBase');
 const UglifyJS = require('uglify-js');
@@ -218,7 +218,7 @@ class Bundle extends BundleBase {
       }
 
       if (options.excludeSource) {
-        map = _.extend({}, map, {sourcesContent: []});
+        map = Object.assign({}, map, {sourcesContent: []});
       }
 
       result.sections.push({
@@ -247,12 +247,12 @@ class Bundle extends BundleBase {
     const mappings = this._getMappings();
     const map = {
       file: this._getSourceMapFile(),
-      sources: _.pluck(super.getModules(), 'sourcePath'),
+      sources: super.getModules().map((module) => module.sourcePath),
       version: 3,
       names: [],
       mappings: mappings,
       sourcesContent: options.excludeSource
-    ? [] : _.pluck(super.getModules(), 'sourceCode')
+    ? [] : super.getModules().map((module) => module.sourceCode)
     };
     return map;
   }
