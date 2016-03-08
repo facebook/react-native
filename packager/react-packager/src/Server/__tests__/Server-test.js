@@ -197,7 +197,7 @@ describe('processRequest', () => {
       });
     });
 
-    it('rebuilds the bundles that contain a file when that file is changed', () => {
+    it('does not rebuild the bundles that contain a file when that file is changed', () => {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
@@ -233,7 +233,7 @@ describe('processRequest', () => {
       jest.runAllTimers();
       jest.runAllTicks();
 
-      expect(bundleFunc.mock.calls.length).toBe(2);
+      expect(bundleFunc.mock.calls.length).toBe(1);
 
       makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .done(response =>
@@ -242,7 +242,7 @@ describe('processRequest', () => {
       jest.runAllTicks();
     });
 
-    it('rebuilds the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
+    it('does not rebuild the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
