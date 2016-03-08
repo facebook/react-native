@@ -52,6 +52,22 @@ namespace ReactNative.Bridge
             return new CachedJavaScriptBundleLoader(sourceUrl, cachedFileLocation);
         }
 
+        /// <summary>
+        /// This loader will trigger a remote debugger to load JavaScript from
+        /// the given <paramref name="proxySourceUrl"/>.
+        /// </summary>
+        /// <param name="proxySourceUrl">
+        /// The URL to load the JavaScript bundle from.
+        /// </param>
+        /// <param name="realSourceUrl">
+        /// The URL to report as the source URL, e.g., for asset loading.
+        /// </param>
+        /// <returns>The JavaScript bundle loader.</returns>
+        public static JavaScriptBundleLoader CreateRemoteDebuggerLoader(string proxySourceUrl, string realSourceUrl)
+        {
+            return new RemoteDebuggerJavaScriptBundleLoader(proxySourceUrl, realSourceUrl);
+        }
+
         class FileJavaScriptBundleLoader : JavaScriptBundleLoader
         {
             private string _script;
@@ -133,6 +149,32 @@ namespace ReactNative.Bridge
             public override void LoadScript(IReactBridge executor)
             {
                 executor.RunScript(_script);
+            }
+        }
+
+        class RemoteDebuggerJavaScriptBundleLoader : JavaScriptBundleLoader
+        {
+            private readonly string _proxySourceUrl;
+
+            public RemoteDebuggerJavaScriptBundleLoader(string proxySourceUrl, string realSourceUrl)
+            {
+                _proxySourceUrl = proxySourceUrl;
+                SourceUrl = realSourceUrl;
+            }
+
+            public override string SourceUrl
+            {
+                get;
+            }
+
+            public override Task InitializeAsync()
+            {
+                return Task.FromResult(false);
+            }
+
+            public override void LoadScript(IReactBridge executor)
+            {
+                executor.RunScript(_proxySourceUrl);
             }
         }
     }

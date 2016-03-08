@@ -20,6 +20,7 @@ namespace ReactNative.DevSupport
         private const string DeviceLocalhost = "localhost:8081";
         private const string BundleUrlFormat = "http://{0}/{1}.bundle?platform=ios&dev={2}&hot={3}";
         private const string SourceMapUrlFormat = "http://{0}/{1}.map?platform=ios&dev={2}&hot={3}";
+        private const string LaunchDevToolsCommandUrlFormat = "http://{0}/launch-chrome-devtools";
         private const string OnChangeEndpointUrlFormat = "http://{0}/onchange";
         private const string WebsocketProxyUrlFormat = "ws://{0}/debugger-proxy?role=client";
         private const string PackagerStatusUrlFormat = "http://{0}/status";
@@ -82,6 +83,25 @@ namespace ReactNative.DevSupport
             get
             {
                 return _settings.IsHotModuleReplacementEnabled;
+            }
+        }
+
+        /// <summary>
+        /// The Websocket proxy URL.
+        /// </summary>
+        public string WebsocketProxyUrl
+        {
+            get
+            {
+                return string.Format(CultureInfo.InvariantCulture, WebsocketProxyUrlFormat, DebugServerHost);
+            }
+        }
+
+        private string JavaScriptProxyHost
+        {
+            get
+            {
+                return DeviceLocalhost;
             }
         }
 
@@ -181,19 +201,13 @@ namespace ReactNative.DevSupport
         }
 
         /// <summary>
-        /// Get the source URL for the JavaScript bundle.
+        /// Launch the developer tools.
         /// </summary>
-        /// <param name="mainModuleName">The main module name.</param>
-        /// <returns>The source URL.</returns>
-        public string GetSourceUrl(string mainModuleName)
+        public async void LaunchDevTools()
         {
-            return string.Format(
-                CultureInfo.InvariantCulture, 
-                BundleUrlFormat, 
-                DebugServerHost, 
-                mainModuleName, 
-                IsJavaScriptDevModeEnabled, 
-                IsHotModuleReplacementEnabled);
+            var url = CreateLaunchDevToolsCommandUrl();
+            await _client.GetAsync(url);
+            // Ignore response, nothing to report here.
         }
 
         /// <summary>
@@ -212,6 +226,38 @@ namespace ReactNative.DevSupport
                 IsHotModuleReplacementEnabled);
         }
 
+        /// <summary>
+        /// Get the source URL for the JavaScript bundle.
+        /// </summary>
+        /// <param name="mainModuleName">The main module name.</param>
+        /// <returns>The source URL.</returns>
+        public string GetSourceUrl(string mainModuleName)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                BundleUrlFormat,
+                DebugServerHost,
+                mainModuleName,
+                IsJavaScriptDevModeEnabled,
+                IsHotModuleReplacementEnabled);
+        }
+
+        /// <summary>
+        /// Gets the bundle URL for remote debugging.
+        /// </summary>
+        /// <param name="mainModuleName">The main module name.</param>
+        /// <returns>The bundle URL.</returns>
+        public string GetJavaScriptBundleUrlForRemoteDebugging(string mainModuleName)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                BundleUrlFormat,
+                JavaScriptProxyHost,
+                mainModuleName,
+                IsJavaScriptDevModeEnabled,
+                IsHotModuleReplacementEnabled);
+        }
+
         private string CreatePackagerStatusUrl(string host)
         {
             return string.Format(CultureInfo.InvariantCulture, PackagerStatusUrlFormat, host);
@@ -220,6 +266,11 @@ namespace ReactNative.DevSupport
         private string CreateOnChangeEndpointUrl(string host)
         {
             return string.Format(CultureInfo.InvariantCulture, OnChangeEndpointUrlFormat, host);
+        }
+
+        private string CreateLaunchDevToolsCommandUrl()
+        {
+            return string.Format(CultureInfo.InvariantCulture, LaunchDevToolsCommandUrlFormat, DebugServerHost);
         }
     }
 }

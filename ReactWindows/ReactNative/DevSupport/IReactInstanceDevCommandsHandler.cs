@@ -21,5 +21,14 @@ namespace ReactNative.DevSupport
         /// reloaded from the initially specified bundle file.
         /// </summary>
         void OnBundleFileReloadRequest();
+
+        /// <summary>
+        /// Action triggered when the user requests that the application be
+        /// reloaded from the JavaScript debugger.
+        /// </summary>
+        /// <param name="javaScriptExecutorFactory">
+        /// The JavaScript executor factory.
+        /// </param>
+        void OnReloadWithJavaScriptDebugger(Func<IJavaScriptExecutor> javaScriptExecutorFactory);
     }
 }

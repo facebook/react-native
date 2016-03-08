@@ -31,6 +31,11 @@ namespace ReactNative.DevSupport
         string SourceUrl { get; }
 
         /// <summary>
+        /// The source URL used during remote debugging.
+        /// </summary>
+        string JavaScriptBundleUrlForRemoteDebugging { get; }
+
+        /// <summary>
         /// Handle a native exception.
         /// </summary>
         /// <param name="exception">The exception.</param>
