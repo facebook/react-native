@@ -25,7 +25,7 @@ public class ImageResizeMode {
    */
   public static ScalingUtils.ScaleType toScaleType(@Nullable String resizeModeValue) {
     if ("contain".equals(resizeModeValue)) {
-      return ScalingUtils.ScaleType.CENTER_INSIDE;
+      return ScalingUtils.ScaleType.FIT_CENTER;
     }
     if ("cover".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.CENTER_CROP;

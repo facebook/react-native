@@ -381,37 +381,41 @@ exports.examples = [
       'rendered within the frame.',
     render: function() {
       return (
-        <View style={styles.horizontal}>
-          <View>
-            <Text style={[styles.resizeModeText]}>
-              Contain
-            </Text>
-            <Image
-              style={styles.resizeMode}
-              resizeMode={Image.resizeMode.contain}
-              source={fullImage}
-            />
-          </View>
-          <View style={styles.leftMargin}>
-            <Text style={[styles.resizeModeText]}>
-              Cover
-            </Text>
-            <Image
-              style={styles.resizeMode}
-              resizeMode={Image.resizeMode.cover}
-              source={fullImage}
-            />
-          </View>
-          <View style={styles.leftMargin}>
-            <Text style={[styles.resizeModeText]}>
-              Stretch
-            </Text>
-            <Image
-              style={styles.resizeMode}
-              resizeMode={Image.resizeMode.stretch}
-              source={fullImage}
-            />
-          </View>
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return <View style={styles.horizontal} key={index}>
+              <View>
+                <Text style={[styles.resizeModeText]}>
+                  Contain
+                </Text>
+                <Image
+                  style={styles.resizeMode}
+                  resizeMode={Image.resizeMode.contain}
+                  source={image}
+                />
+              </View>
+              <View style={styles.leftMargin}>
+                <Text style={[styles.resizeModeText]}>
+                  Cover
+                </Text>
+                <Image
+                  style={styles.resizeMode}
+                  resizeMode={Image.resizeMode.cover}
+                  source={image}
+                />
+              </View>
+              <View style={styles.leftMargin}>
+                <Text style={[styles.resizeModeText]}>
+                  Stretch
+                </Text>
+                <Image
+                  style={styles.resizeMode}
+                  resizeMode={Image.resizeMode.stretch}
+                  source={image}
+                />
+            </View>
+          </View>;
+        })}
         </View>
       );
     },
