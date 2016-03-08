@@ -111,8 +111,7 @@
     "PATENTS",
     "README.md",
     "jestSupport",
-    ".flowconfig",
-    "npm-shrinkwrap.json"
+    ".flowconfig"
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",
