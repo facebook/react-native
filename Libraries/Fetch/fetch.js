@@ -395,7 +395,7 @@ var self = {};
           reject(new TypeError('Network request failed'))
           return
         }
-        debugger;
+
         var options = {
           status: status,
           statusText: xhr.statusText,
