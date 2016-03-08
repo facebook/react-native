@@ -22,7 +22,7 @@ describe('Dependency extraction:', () => {
         }
       });
       require
-      ('more');`
+      ('more');`;
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies)
       .toEqual(['foo/bar', 'React', 'Component', 'more']);
@@ -34,11 +34,11 @@ describe('Dependency extraction:', () => {
       require('a');
       foo.require('b');
       bar.
-      require ( 'c').require('d')require('e')`;
+      require ( 'c').require('d');require('e')`;
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual(['a', 'e']);
-    expect(dependencyOffsets).toEqual([15, 97]);
+    expect(dependencyOffsets).toEqual([15, 98]);
   });
 
   it('does not extract require calls from strings', () => {
@@ -51,7 +51,7 @@ describe('Dependency extraction:', () => {
           return require (  "Component" );
         }
       });
-      " \\" require('more')";`
+      " \\" require('more')";`;
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual(['foo', 'Component']);
@@ -85,12 +85,28 @@ describe('Dependency extraction:', () => {
     expect(dependencyOffsets).toEqual([]);
   });
 
+  it('does not extract calls to require with non-static arguments', () => {
+    const code = `require('foo/' + bar)`;
+
+    const {dependencies, dependencyOffsets} = extractDependencies(code);
+    expect(dependencies).toEqual([]);
+    expect(dependencyOffsets).toEqual([]);
+  });
+
   it('does not get confused by previous states', () => {
     // yes, this was a bug
-    const code = `require("a");/* a comment */ var a = /[a]/.test('a');`
+    const code = `require("a");/* a comment */ var a = /[a]/.test('a');`;
 
     const {dependencies, dependencyOffsets} = extractDependencies(code);
     expect(dependencies).toEqual(['a']);
     expect(dependencyOffsets).toEqual([8]);
+  });
+
+  it('can handle regular expressions', () => {
+    const code = `require('a'); /["']/.test('foo'); require("b");`;
+
+    const {dependencies, dependencyOffsets} = extractDependencies(code);
+    expect(dependencies).toEqual(['a', 'b']);
+    expect(dependencyOffsets).toEqual([8, 42]);
   });
 });

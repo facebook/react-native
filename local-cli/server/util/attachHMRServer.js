@@ -32,6 +32,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
     return packagerServer.getDependencies({
       platform: platform,
       dev: true,
+      hot: true,
       entryFile: bundleEntry,
     }).then(response => {
       // for each dependency builds the object:
@@ -143,6 +144,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                   return packagerServer.getDependencies({
                     platform: client.platform,
                     dev: true,
+                    hot: true,
                     entryFile: filename,
                     recursive: true,
                   }).then(response => {
