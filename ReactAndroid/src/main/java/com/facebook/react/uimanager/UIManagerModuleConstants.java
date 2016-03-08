@@ -87,7 +87,7 @@ import com.facebook.react.uimanager.events.TouchEventType;
             "ContentMode",
             MapBuilder.of(
                 "ScaleAspectFit",
-                ImageView.ScaleType.CENTER_INSIDE.ordinal(),
+                ImageView.ScaleType.FIT_CENTER.ordinal(),
                 "ScaleAspectFill",
                 ImageView.ScaleType.CENTER_CROP.ordinal())));
 
