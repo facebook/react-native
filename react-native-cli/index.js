@@ -121,6 +121,15 @@ function validatePackageName(name) {
     );
     process.exit(1);
   }
+
+  if (name.toUpperCase() === 'NATIVE') {
+      console.error(
+          '"%s" is not a valid name for a project. Please do not use the ' +
+          'reserved word "%s".',
+        name, name
+    );
+    process.exit(1);
+  }
 }
 
 function init(name, verbose) {
