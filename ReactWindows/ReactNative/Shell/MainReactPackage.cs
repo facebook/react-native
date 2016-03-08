@@ -1,5 +1,6 @@
 ﻿using ReactNative.Bridge;
 using ReactNative.Modules.AppState;
+using ReactNative.Modules.Clipboard;
 using ReactNative.Modules.Core;
 using ReactNative.Modules.Toast;
 using ReactNative.Modules.WebSocket;
@@ -33,7 +34,7 @@ namespace ReactNative.Shell
                 new AppStateModule(reactContext),
                 //new AsyncStorageModule(reactContext),
                 //new CameraRollManager(reactContext),
-                //new ClipboardModule(reactContext),
+                new ClipboardModule(reactContext),
                 //new DialogModule(reactContext),
                 //new LocationModule(reactContext),
                 //new NetworkingModule(reactContext),
