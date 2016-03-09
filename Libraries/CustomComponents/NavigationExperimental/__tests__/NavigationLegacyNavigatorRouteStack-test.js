@@ -386,11 +386,4 @@ describe('NavigationLegacyNavigatorRouteStack:', () => {
       ],
     });
   });
-
-  it('coverts from navigation state', () => {
-    const stack = new NavigationLegacyNavigatorRouteStack(0, ['a', 'b']);
-    const state = stack.toNavigationState().children[0];
-    const route = NavigationLegacyNavigatorRouteStack.getRouteByNavigationState(state);
-    expect(route).toBe('a');
-  });
 });
