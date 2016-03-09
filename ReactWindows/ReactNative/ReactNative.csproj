@@ -177,7 +177,6 @@
       <DependentUpon>RedBoxDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="DevSupport\ShakeAccelerometer.cs" />
-    <Compile Include="DevSupport\StackFrameConverter.cs" />
     <Compile Include="DevSupport\StackFrameExtensions.cs" />
     <Compile Include="DevSupport\StackTraceHelper.cs" />
     <Compile Include="Chakra\Executor\ChakraJavaScriptExecutor.cs" />

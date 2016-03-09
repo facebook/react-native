@@ -16,7 +16,7 @@ namespace ReactNative.DevSupport
         private readonly Action _onClick;
 
         private string _message;
-        private List<IStackFrame> _stackTrace;
+        private IList<IStackFrame> _stackTrace;
 
         /// <summary>
         /// Instantiates the <see cref="RedBoxDialog"/>.
@@ -64,7 +64,7 @@ namespace ReactNative.DevSupport
         /// <summary>
         /// The stack trace.
         /// </summary>
-        public List<IStackFrame> StackTrace
+        public IList<IStackFrame> StackTrace
         {
             get
             {
