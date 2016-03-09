@@ -46,6 +46,19 @@ let _nextRouteNodeID = 0;
 class RouteNode {
   key: string;
   route: any;
+
+  /**
+   * Cast `navigationState` as `RouteNode`.
+   * Also see `RouteNode#toNavigationState`.
+   */
+  static fromNavigationState(navigationState: NavigationState): RouteNode {
+    invariant(
+      navigationState instanceof RouteNode,
+      'navigationState should be an instacne of RouteNode'
+    );
+    return navigationState;
+  }
+
   constructor(route: any) {
     // Key value gets bigger incrementally. Developer can compare the
     // keys of two routes then know which route is added to the stack
@@ -84,10 +97,14 @@ let _nextRouteStackID = 0;
  * of the routes. This data structure is implemented as immutable data
  * and mutation (e.g. push, pop...etc) will yields a new instance.
  */
-class RouteStack  {
+class RouteStack {
   _index: number;
   _key: string;
   _routeNodes: Array<RouteNode>;
+
+  static getRouteByNavigationState(navigationState: NavigationState): any {
+    return RouteNode.fromNavigationState(navigationState).route;
+  }
 
   constructor(index: number, routes: Array<any>) {
     invariant(
