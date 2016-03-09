@@ -78,7 +78,7 @@ class NavigationAnimatedExample extends React.Component {
         navigationState={navigationState}
         style={styles.animatedView}
         renderOverlay={this._renderHeader}
-        setTiming={(pos, navState) => {
+        applyAnimation={(pos, navState) => {
           Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
         }}
         renderScene={this._renderCard}
