@@ -405,37 +405,41 @@ exports<span class="token punctuation">.</span>examples <span class="token opera
       <span class="token string">&#x27;rendered within the frame.&#x27;</span><span class="token punctuation">,</span>
     render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token keyword">return</span> <span class="token punctuation">(</span>
-        &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>horizontal<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-          &lt;View<span class="token operator">&gt;</span>
-            &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>resizeModeText<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-              Contain
-            &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-            &lt;Image
-              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>resizeMode<span class="token punctuation">}</span>
-              resizeMode<span class="token operator">=</span><span class="token punctuation">{</span>Image<span class="token punctuation">.</span>resizeMode<span class="token punctuation">.</span>contain<span class="token punctuation">}</span>
-              source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
-            <span class="token operator">/</span><span class="token operator">&gt;</span>
-          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-          &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-            &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>resizeModeText<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-              Cover
-            &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-            &lt;Image
-              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>resizeMode<span class="token punctuation">}</span>
-              resizeMode<span class="token operator">=</span><span class="token punctuation">{</span>Image<span class="token punctuation">.</span>resizeMode<span class="token punctuation">.</span>cover<span class="token punctuation">}</span>
-              source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
-            <span class="token operator">/</span><span class="token operator">&gt;</span>
-          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
-          &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">}</span><span class="token operator">&gt;</span>
-            &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>resizeModeText<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
-              Stretch
-            &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
-            &lt;Image
-              style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>resizeMode<span class="token punctuation">}</span>
-              resizeMode<span class="token operator">=</span><span class="token punctuation">{</span>Image<span class="token punctuation">.</span>resizeMode<span class="token punctuation">.</span>stretch<span class="token punctuation">}</span>
-              source<span class="token operator">=</span><span class="token punctuation">{</span>fullImage<span class="token punctuation">}</span>
-            <span class="token operator">/</span><span class="token operator">&gt;</span>
-          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+        &lt;View<span class="token operator">&gt;</span>
+          <span class="token punctuation">{</span><span class="token punctuation">[</span>smallImage<span class="token punctuation">,</span> fullImage<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">map<span class="token punctuation">(</span></span><span class="token punctuation">(</span>image<span class="token punctuation">,</span> index<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">&gt;</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>horizontal<span class="token punctuation">}</span> key<span class="token operator">=</span><span class="token punctuation">{</span>index<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+              &lt;View<span class="token operator">&gt;</span>
+                &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>resizeModeText<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+                  Contain
+                &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+                &lt;Image
+                  style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>resizeMode<span class="token punctuation">}</span>
+                  resizeMode<span class="token operator">=</span><span class="token punctuation">{</span>Image<span class="token punctuation">.</span>resizeMode<span class="token punctuation">.</span>contain<span class="token punctuation">}</span>
+                  source<span class="token operator">=</span><span class="token punctuation">{</span>image<span class="token punctuation">}</span>
+                <span class="token operator">/</span><span class="token operator">&gt;</span>
+              &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+              &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+                &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>resizeModeText<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+                  Cover
+                &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+                &lt;Image
+                  style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>resizeMode<span class="token punctuation">}</span>
+                  resizeMode<span class="token operator">=</span><span class="token punctuation">{</span>Image<span class="token punctuation">.</span>resizeMode<span class="token punctuation">.</span>cover<span class="token punctuation">}</span>
+                  source<span class="token operator">=</span><span class="token punctuation">{</span>image<span class="token punctuation">}</span>
+                <span class="token operator">/</span><span class="token operator">&gt;</span>
+              &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+              &lt;View style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>leftMargin<span class="token punctuation">}</span><span class="token operator">&gt;</span>
+                &lt;Text style<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span>styles<span class="token punctuation">.</span>resizeModeText<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token operator">&gt;</span>
+                  Stretch
+                &lt;<span class="token operator">/</span>Text<span class="token operator">&gt;</span>
+                &lt;Image
+                  style<span class="token operator">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>resizeMode<span class="token punctuation">}</span>
+                  resizeMode<span class="token operator">=</span><span class="token punctuation">{</span>Image<span class="token punctuation">.</span>resizeMode<span class="token punctuation">.</span>stretch<span class="token punctuation">}</span>
+                  source<span class="token operator">=</span><span class="token punctuation">{</span>image<span class="token punctuation">}</span>
+                <span class="token operator">/</span><span class="token operator">&gt;</span>
+            &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
+          &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
         &lt;<span class="token operator">/</span>View<span class="token operator">&gt;</span>
       <span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
