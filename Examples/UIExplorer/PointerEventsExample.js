@@ -182,7 +182,7 @@ var BoxOnlyExample = React.createClass({
 });
 
 type ExampleClass = {
-  Component: ReactClass<any, any, any>,
+  Component: ReactClass<any>,
   title: string,
   description: string,
 };
@@ -250,6 +250,6 @@ var styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Pointer Events';
-exports.description = '`pointerEvents` is a prop of View that gives control ' +
-  'of how touches should be handled.';
+exports.description = 'Demonstrates the use of the pointerEvents prop of a ' +
+  'View to control how touches should be handled.';
 exports.examples = exampleClasses.map(infoToExample);

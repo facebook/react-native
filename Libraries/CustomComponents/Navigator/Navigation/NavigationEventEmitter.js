@@ -30,14 +30,15 @@
 var EventEmitter = require('EventEmitter');
 var NavigationEvent = require('NavigationEvent');
 
-type EventParams = {
-  data: any;
-  didEmitCallback: ?Function;
-  eventType: string;
+type ExtraInfo = {
+  defaultPrevented: ?boolean,
+  eventPhase: ?number,
+  propagationStopped: ?boolean,
+  target: ?Object,
 };
 
 class NavigationEventEmitter extends EventEmitter {
-  _emitQueue: Array<EventParams>;
+  _emitQueue: Array<any>;
   _emitting: boolean;
   _target: Object;
 
@@ -51,18 +52,38 @@ class NavigationEventEmitter extends EventEmitter {
   emit(
     eventType: string,
     data: any,
-    didEmitCallback: ?Function
+    didEmitCallback: ?Function,
+    extraInfo: ?ExtraInfo
   ): void {
     if (this._emitting) {
       // An event cycle that was previously created hasn't finished yet.
       // Put this event cycle into the queue and will finish them later.
-      this._emitQueue.push({eventType, data, didEmitCallback});
+      var args: any = Array.prototype.slice.call(arguments);
+      this._emitQueue.push(args);
       return;
     }
 
     this._emitting = true;
 
-    var event = new NavigationEvent(eventType, this._target, data);
+    var event = NavigationEvent.pool(eventType, this._target, data);
+
+    if (extraInfo) {
+      if (extraInfo.target) {
+        event.target = extraInfo.target;
+      }
+
+      if (extraInfo.eventPhase) {
+        event.eventPhase = extraInfo.eventPhase;
+      }
+
+      if (extraInfo.defaultPrevented) {
+        event.preventDefault();
+      }
+
+      if (extraInfo.propagationStopped) {
+        event.stopPropagation();
+      }
+    }
 
     // EventEmitter#emit only takes `eventType` as `String`. Casting `eventType`
     // to `String` to make @flow happy.
@@ -76,8 +97,8 @@ class NavigationEventEmitter extends EventEmitter {
     this._emitting = false;
 
     while (this._emitQueue.length) {
-      var arg = this._emitQueue.shift();
-      this.emit(arg.eventType, arg.data, arg.didEmitCallback);
+      var args: any = this._emitQueue.shift();
+      this.emit.apply(this, args);
     }
   }
 }

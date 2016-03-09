@@ -186,7 +186,7 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
   dispatch_queue_t _delegateDispatchQueue;
 
   dispatch_queue_t _workQueue;
-  NSMutableArray *_consumers;
+  NSMutableArray<RCTSRIOConsumer *> *_consumers;
 
   NSInputStream *_inputStream;
   NSOutputStream *_outputStream;
@@ -228,12 +228,13 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
 
   BOOL _isPumping;
 
-  NSMutableSet *_scheduledRunloops;
+  NSMutableSet<NSArray *> *_scheduledRunloops;
 
   // We use this to retain ourselves.
   __strong RCTSRWebSocket *_selfRetain;
 
-  NSArray *_requestedProtocols;
+  NSArray<NSString *> *_requestedProtocols;
+  NSDictionary<NSString *, NSString *> *_requestedOptions;
   RCTSRIOConsumerPool *_consumerPool;
 }
 
@@ -244,7 +245,7 @@ static __strong NSData *CRLFCRLF;
   CRLFCRLF = [[NSData alloc] initWithBytes:"\r\n\r\n" length:4];
 }
 
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray *)protocols;
+- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, NSString *> *)options
 {
   RCTAssertParam(request);
 
@@ -253,6 +254,7 @@ static __strong NSData *CRLFCRLF;
     _urlRequest = request;
 
     _requestedProtocols = [protocols copy];
+    _requestedOptions = [options copy];
 
     [self _RCTSR_commonInit];
   }
@@ -263,18 +265,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 {
-  return [self initWithURLRequest:request protocols:nil];
+  return [self initWithURLRequest:request protocols:nil options: nil];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL;
 {
-  return [self initWithURL:URL protocols:nil];
+  return [self initWithURL:URL protocols:nil options:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray *)protocols;
+- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols;
 {
-  NSURLRequest *request = URL ? [NSURLRequest requestWithURL:URL] : nil;
-  return [self initWithURLRequest:request protocols:protocols];
+  return [self initWithURL:URL protocols:protocols options:nil];
+}
+
+- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, id> *)options
+{
+  NSMutableURLRequest *request;
+  if (URL) {
+    // Build a mutable request so we can fill the cookie header.
+    request = [NSMutableURLRequest requestWithURL:URL];
+
+    // We load cookies from sharedHTTPCookieStorage (shared with XHR and
+    // fetch). To get HTTPS-only cookies for wss URLs, replace wss with https
+    // in the URL.
+    NSURLComponents *components = [NSURLComponents componentsWithURL:URL resolvingAgainstBaseURL:true];
+    if ([components.scheme isEqualToString:@"wss"]) {
+      components.scheme = @"https";
+    }
+
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
+    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
+  }
+  return [self initWithURLRequest:request protocols:protocols options:options];
 }
 
 - (void)_RCTSR_commonInit;
@@ -465,11 +488,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Key"), (__bridge CFStringRef)_secKey);
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Version"), (__bridge CFStringRef)[NSString stringWithFormat:@"%ld", (long)_webSocketVersion]);
 
-  CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)_url.RCTSR_origin);
-
   if (_requestedProtocols) {
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
+
+  CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)(_requestedOptions[@"origin"] ?: _url.RCTSR_origin));
 
   [_urlRequest.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
@@ -506,7 +529,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 
   if (_secure) {
-    NSMutableDictionary *SSLOptions = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, id> *SSLOptions = [NSMutableDictionary new];
 
     [_outputStream setProperty:(__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL forKey:(__bridge id)kCFStreamPropertySocketSecurityLevel];
 
@@ -1381,20 +1404,22 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
         if (aStream.streamError) {
           [self _failWithError:aStream.streamError];
         } else {
-          if (self.readyState != RCTSR_CLOSED) {
-            self.readyState = RCTSR_CLOSED;
-            _selfRetain = nil;
-          }
+          dispatch_async(_workQueue, ^{
+            if (self.readyState != RCTSR_CLOSED) {
+              self.readyState = RCTSR_CLOSED;
+              _selfRetain = nil;
+            }
 
-          if (!_sentClose && !_failed) {
-            _sentClose = YES;
-            // If we get closed in this state it's probably not clean because we should be sending this when we send messages
-            [self _performDelegateBlock:^{
-              if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
-                [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
-              }
-            }];
-          }
+            if (!_sentClose && !_failed) {
+              _sentClose = YES;
+              // If we get closed in this state it's probably not clean because we should be sending this when we send messages
+              [self _performDelegateBlock:^{
+                if ([self.delegate respondsToSelector:@selector(webSocket:didCloseWithCode:reason:wasClean:)]) {
+                  [self.delegate webSocket:self didCloseWithCode:RCTSRStatusCodeGoingAway reason:@"Stream end encountered" wasClean:NO];
+                }
+              }];
+            }
+          });
         }
 
         break;
@@ -1454,7 +1479,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 @implementation RCTSRIOConsumerPool
 {
   NSUInteger _poolSize;
-  NSMutableArray *_bufferedConsumers;
+  NSMutableArray<RCTSRIOConsumer *> *_bufferedConsumers;
 }
 
 - (instancetype)initWithBufferCapacity:(NSUInteger)poolSize;

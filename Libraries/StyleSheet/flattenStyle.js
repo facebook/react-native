@@ -12,10 +12,9 @@
 'use strict';
 
 var StyleSheetRegistry = require('StyleSheetRegistry');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
-type Atom = number | bool | Object | Array<?Atom>
-type StyleObj = Atom | Array<?StyleObj>
+import type { StyleObj } from 'StyleSheetTypes';
 
 function getStyle(style) {
   if (typeof style === 'number') {

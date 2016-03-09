@@ -1,0 +1,81 @@
+html, h1, h2 {
+ font-family: 'Roboto', sans-serif;
+ font-weight: 300;
+}
+
+.container {
+  width: 800px;
+  margin: 0 auto;
+}
+
+.circle {
+  margin: 2px;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  display: inline-block;
+  box-shadow: 0px 1px 2px #999;
+  text-shadow: 0px 1px 2px #999;
+  background-image: url(pic1.jpg);
+  background-size: cover;
+  line-height: 80px;
+  vertical-align: bottom;
+  text-align: center;
+  color: white;
+  font-size: 10px;
+}
+
+.circle:nth-child(2) {
+  background-image: url(pic2.jpg);
+}
+
+.circle:nth-child(3) {
+  background-image: url(pic3.jpg);
+}
+
+div.code {
+  box-shadow: 0px 1px 2px #999;
+  width: 600px;
+  padding: 5px;
+  position: relative;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
+
+div.code .reset {
+  float: right;
+}
+
+div.code pre {
+  padding: 2px;
+}
+
+hr {
+  border: none;
+  border-bottom: 1px solid #D9D9D9;
+  margin: 0;
+}
+
+button {
+  vertical-align: top;
+}
+
+.example > span {
+  color: #333;
+  font-size: 13px;
+}
+
+.example {
+  position: relative;
+  height: 60px;
+}
+
+.code pre {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.highlight {
+  background: rgb(228, 254, 253);
+}

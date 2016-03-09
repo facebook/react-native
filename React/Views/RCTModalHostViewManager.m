@@ -20,18 +20,12 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _hostViews = [NSHashTable weakObjectsHashTable];
-  }
-
-  return self;
-}
-
 - (UIView *)view
 {
   UIView *view = [[RCTModalHostView alloc] initWithBridge:self.bridge];
+  if (_hostViews) {
+    _hostViews = [NSHashTable weakObjectsHashTable];
+  }
   [_hostViews addObject:view];
   return view;
 }
@@ -46,5 +40,6 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(animated, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(transparent, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(onShow, RCTDirectEventBlock)
 
 @end

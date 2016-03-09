@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebView
- * @flow
+ * @noflow
  */
 'use strict';
 
@@ -16,11 +16,16 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
 var Text = require('Text');
+var UIManager = require('UIManager');
 var View = require('View');
+var ScrollView = require('ScrollView');
 
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
+var deprecatedPropType = require('deprecatedPropType');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
+var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
+var resolveAssetSource = require('resolveAssetSource');
 
 var PropTypes = React.PropTypes;
 var RCTWebViewManager = require('NativeModules').WebViewManager;
@@ -75,6 +80,9 @@ var defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   </View>
 );
 
+/**
+ * Renders a native WebView.
+ */
 var WebView = React.createClass({
   statics: {
     JSNavigationScheme: JSNavigationScheme,
@@ -82,31 +90,149 @@ var WebView = React.createClass({
   },
 
   propTypes: {
-    url: PropTypes.string,
-    html: PropTypes.string,
+    ...View.propTypes,
+
+    html: deprecatedPropType(
+      PropTypes.string,
+      'Use the `source` prop instead.'
+    ),
+
+    url: deprecatedPropType(
+      PropTypes.string,
+      'Use the `source` prop instead.'
+    ),
+
+    /**
+     * Loads static html or a uri (with optional headers) in the WebView.
+     */
+    source: PropTypes.oneOfType([
+      PropTypes.shape({
+        /*
+         * The URI to load in the WebView. Can be a local or remote file.
+         */
+        uri: PropTypes.string,
+        /*
+         * The HTTP Method to use. Defaults to GET if not specified.
+         * NOTE: On Android, only GET and POST are supported.
+         */
+        method: PropTypes.string,
+        /*
+         * Additional HTTP headers to send with the request.
+         * NOTE: On Android, this can only be used with GET requests.
+         */
+        headers: PropTypes.object,
+        /*
+         * The HTTP body to send with the request. This must be a valid
+         * UTF-8 string, and will be sent exactly as specified, with no
+         * additional encoding (e.g. URL-escaping or base64) applied.
+         * NOTE: On Android, this can only be used with POST requests.
+         */
+        body: PropTypes.string,
+      }),
+      PropTypes.shape({
+        /*
+         * A static HTML page to display in the WebView.
+         */
+        html: PropTypes.string,
+        /*
+         * The base URL to be used for any relative links in the HTML.
+         */
+        baseUrl: PropTypes.string,
+      }),
+      /*
+       * Used internally by packager.
+       */
+      PropTypes.number,
+    ]),
+
+    /**
+     * Function that returns a view to show if there's an error.
+     */
     renderError: PropTypes.func, // view to show if there's an error
-    renderLoading: PropTypes.func, // loading indicator to show
+    /**
+     * Function that returns a loading indicator.
+     */
+    renderLoading: PropTypes.func,
+    /**
+     * Invoked when load finish
+     */
+    onLoad: PropTypes.func,
+    /**
+     * Invoked when load either succeeds or fails
+     */
+    onLoadEnd: PropTypes.func,
+    /**
+     * Invoked on load start
+     */
+    onLoadStart: PropTypes.func,
+    /**
+     * Invoked when load fails
+     */
+    onError: PropTypes.func,
+    /**
+     * @platform ios
+     */
     bounces: PropTypes.bool,
+    /**
+     * A floating-point number that determines how quickly the scroll view
+     * decelerates after the user lifts their finger. You may also use string
+     * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
+     * for `UIScrollViewDecelerationRateNormal` and
+     * `UIScrollViewDecelerationRateFast` respectively.
+     *   - Normal: 0.998
+     *   - Fast: 0.9 (the default for iOS WebView)
+     * @platform ios
+     */
+    decelerationRate: ScrollView.propTypes.decelerationRate,
+    /**
+     * @platform ios
+     */
     scrollEnabled: PropTypes.bool,
     automaticallyAdjustContentInsets: PropTypes.bool,
     contentInset: EdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
     style: View.propTypes.style,
+
     /**
-     * Used for android only, JS is enabled by default for WebView on iOS
+     * Used on Android only, JS is enabled by default for WebView on iOS
+     * @platform android
      */
-    javaScriptEnabledAndroid: PropTypes.bool,
+    javaScriptEnabled: PropTypes.bool,
+
+    /**
+     * Used on Android only, controls whether DOM Storage is enabled or not
+     * @platform android
+     */
+    domStorageEnabled: PropTypes.bool,
+
     /**
      * Sets the JS to be injected when the webpage loads.
      */
     injectedJavaScript: PropTypes.string,
 
     /**
-     * Used for iOS only, sets whether the webpage scales to fit the view and the
-     * user can change the scale
+     * Sets whether the webpage scales to fit the view and the user can change the scale.
      */
     scalesPageToFit: PropTypes.bool,
+
+    /**
+     * Allows custom handling of any webview requests by a JS handler. Return true
+     * or false from this method to continue loading the request.
+     * @platform ios
+     */
+    onShouldStartLoadWithRequest: PropTypes.func,
+
+    /**
+     * Determines whether HTML5 videos play inline or use the native full-screen
+     * controller.
+     * default value `false`
+     * **NOTE** : "In order for video to play inline, not only does this
+     * property need to be set to true, but the video element in the HTML
+     * document must also include the webkit-playsinline attribute."
+     * @platform ios
+     */
+    allowsInlineMediaPlayback: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -152,22 +278,39 @@ var WebView = React.createClass({
       webViewStyles.push(styles.hidden);
     }
 
+    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
+      var shouldStart = this.props.onShouldStartLoadWithRequest &&
+        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+      RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
+    });
+
+    var decelerationRate = processDecelerationRate(this.props.decelerationRate);
+
+    var source = this.props.source || {};
+    if (this.props.html) {
+      source.html = this.props.html;
+    } else if (this.props.url) {
+      source.uri = this.props.url;
+    }
+
     var webView =
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
         style={webViewStyles}
-        url={this.props.url}
-        html={this.props.html}
+        source={resolveAssetSource(source)}
         injectedJavaScript={this.props.injectedJavaScript}
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
+        decelerationRate={decelerationRate}
         contentInset={this.props.contentInset}
         automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
         onLoadingStart={this.onLoadingStart}
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
+        onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
+        allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
       />;
 
     return (
@@ -179,15 +322,27 @@ var WebView = React.createClass({
   },
 
   goForward: function() {
-    RCTWebViewManager.goForward(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.goForward,
+      null
+    );
   },
 
   goBack: function() {
-    RCTWebViewManager.goBack(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.goBack,
+      null
+    );
   },
 
   reload: function() {
-    RCTWebViewManager.reload(this.getWebViewHandle());
+    UIManager.dispatchViewManagerCommand(
+      this.getWebViewHandle(),
+      UIManager.RCTWebView.Commands.reload,
+      null
+    );
   },
 
   /**
@@ -205,11 +360,16 @@ var WebView = React.createClass({
   },
 
   onLoadingStart: function(event: Event) {
+    var onLoadStart = this.props.onLoadStart;
+    onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
   },
 
   onLoadingError: function(event: Event) {
     event.persist(); // persist this event because we need to store it
+    var {onError, onLoadEnd} = this.props;
+    onError && onError(event);
+    onLoadEnd && onLoadEnd(event);
     console.warn('Encountered an error loading page', event.nativeEvent);
 
     this.setState({
@@ -219,6 +379,9 @@ var WebView = React.createClass({
   },
 
   onLoadingFinish: function(event: Event) {
+    var {onLoad, onLoadEnd} = this.props;
+    onLoad && onLoad(event);
+    onLoadEnd && onLoadEnd(event);
     this.setState({
       viewState: WebViewState.IDLE,
     });
@@ -263,6 +426,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    height: 100,
   },
   webView: {
     backgroundColor: '#ffffff',

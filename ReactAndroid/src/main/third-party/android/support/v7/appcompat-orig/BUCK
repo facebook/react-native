@@ -1,0 +1,61 @@
+include_defs('//ReactAndroid/DEFS')
+
+# This is a bit messy and hopefully a temporary thing
+# The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
+# While BUCK behaves properly and extracts them into android.support.v7.appcompat package.
+# We want to support both Gradle and BUCK builds so we hack a bit how BUCK extracts resources.
+# Besides that we still need JAVA classes from appcompat-v7.aar, that is why android_library
+# extracts classes.jar but the trick is that we can't take full appcompat.aar because resources
+# extracted from it by BUCK would conflict with resources we use under Gradelified package
+# All this mumbo jumbo will go away after t10182713
+
+android_library(
+  name = 'appcompat',
+  deps = [
+    ':res-for-appcompat',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+  exported_deps = [
+    ':classes-for-react-native',
+  ],
+)
+
+# still used by appcompat library internally, so we need both during the build
+android_resource(
+  name = 'res-for-appcompat',
+  res = ':res-unpacker-cmd',
+  package = 'android.support.v7.appcompat',
+  visibility = ['//ReactAndroid/...',],
+)
+
+prebuilt_jar(
+    name = 'classes-for-react-native',
+    binary_jar = ':classes-unpacker-cmd',
+    visibility = ['//ReactAndroid/...',],
+)
+
+genrule(
+    name = 'classes-unpacker-cmd',
+    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) "classes.jar" $OUT',
+    out = 'classes.jar',
+)
+
+genrule(
+    name = 'res-unpacker-cmd',
+    cmd = '$(exe :aar-unpacker) $(location :appcompat-binary-aar) "res/" $OUT',
+    out = 'res',
+    visibility = ['//ReactAndroid/...',],
+)
+
+python_binary(
+    name = 'aar-unpacker',
+    main = 'aar-unpacker.py',
+)
+
+remote_file(
+    name = 'appcompat-binary-aar',
+    url = 'mvn:com.android.support:appcompat-v7:aar:23.0.1',
+    sha1 = '7d659f671541394a8bc2b9f909950aa2a5ec87ff',
+)

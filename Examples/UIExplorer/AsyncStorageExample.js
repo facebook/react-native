@@ -80,7 +80,7 @@ var BasicStorageExample = React.createClass({
         </Text>
         <Text>{' '}</Text>
         <Text>Messages:</Text>
-        {this.state.messages.map((m) => <Text>{m}</Text>)}
+        {this.state.messages.map((m) => <Text key={m}>{m}</Text>)}
       </View>
     );
   },

@@ -18,7 +18,7 @@ RCT_EXPORT_MODULE()
 
 - (ARTRenderable *)node
 {
-  return [[ARTShape alloc] init];
+  return [ARTShape new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(d, CGPath)

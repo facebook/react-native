@@ -1,0 +1,330 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule AsyncStorage
+ * @noflow
+ * @flow-weak
+ */
+'use strict';
+
+var NativeModules = require('NativeModules');
+var RCTAsyncSQLiteStorage = NativeModules.AsyncSQLiteDBStorage;
+var RCTAsyncRocksDBStorage = NativeModules.AsyncRocksDBStorage;
+var RCTAsyncFileStorage = NativeModules.AsyncLocalStorage;
+
+// Use RocksDB if available, then SQLite, then file storage.
+var RCTAsyncStorage = RCTAsyncRocksDBStorage || RCTAsyncSQLiteStorage || RCTAsyncFileStorage;
+
+/**
+ * AsyncStorage is a simple, asynchronous, persistent, key-value storage
+ * system that is global to the app.  It should be used instead of LocalStorage.
+ *
+ * It is recommended that you use an abstraction on top of AsyncStorage instead
+ * of AsyncStorage directly for anything more than light usage since it
+ * operates globally.
+ *
+ * This JS code is a simple facade over the native iOS implementation to provide
+ * a clear JS API, real Error objects, and simple non-multi functions. Each
+ * method returns a `Promise` object.
+ */
+var AsyncStorage = {
+  _getRequests: ([]: Array<any>),
+  _getKeys: ([]: Array<string>),
+  _immediate: (null: ?number),
+
+  /**
+   * Fetches `key` and passes the result to `callback`, along with an `Error` if
+   * there is any. Returns a `Promise` object.
+   */
+  getItem: function(
+    key: string,
+    callback?: ?(error: ?Error, result: ?string) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiGet([key], function(errors, result) {
+        // Unpack result to get value from [[key,value]]
+        var value = (result && result[0] && result[0][1]) ? result[0][1] : null;
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0], value);
+        if (errs) {
+          reject(errs[0]);
+        } else {
+          resolve(value);
+        }
+      });
+    });
+  },
+
+  /**
+   * Sets `value` for `key` and calls `callback` on completion, along with an
+   * `Error` if there is any. Returns a `Promise` object.
+   */
+  setItem: function(
+    key: string,
+    value: string,
+    callback?: ?(error: ?Error) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiSet([[key,value]], function(errors) {
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
+   * Returns a `Promise` object.
+   */
+  removeItem: function(
+    key: string,
+    callback?: ?(error: ?Error) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiRemove([key], function(errors) {
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
+   * Merges existing value with input value, assuming they are stringified json.
+   * Returns a `Promise` object. Not supported by all native implementations.
+   */
+  mergeItem: function(
+    key: string,
+    value: string,
+    callback?: ?(error: ?Error) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiMerge([[key,value]], function(errors) {
+        var errs = convertErrors(errors);
+        callback && callback(errs && errs[0]);
+        if (errs) {
+          reject(errs[0]);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
+   * Erases *all* AsyncStorage for all clients, libraries, etc.  You probably
+   * don't want to call this - use removeItem or multiRemove to clear only your
+   * own keys instead. Returns a `Promise` object.
+   */
+  clear: function(callback?: ?(error: ?Error) => void): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.clear(function(error) {
+        callback && callback(convertError(error));
+        if (error && convertError(error)){
+          reject(convertError(error));
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
+   * Gets *all* keys known to the app, for all callers, libraries, etc. Returns a `Promise` object.
+   */
+  getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.getAllKeys(function(error, keys) {
+        callback && callback(convertError(error), keys);
+        if (error) {
+          reject(convertError(error));
+        } else {
+          resolve(keys);
+        }
+      });
+    });
+  },
+
+  /**
+   * The following batched functions are useful for executing a lot of
+   * operations at once, allowing for native optimizations and provide the
+   * convenience of a single callback after all operations are complete.
+   *
+   * These functions return arrays of errors, potentially one for every key.
+   * For key-specific errors, the Error object will have a key property to
+   * indicate which key caused the error.
+   */
+
+  /** Flushes any pending requests using a single multiget */
+  flushGetRequests: function(): void {
+    const getRequests = this._getRequests;
+    const getKeys = this._getKeys;
+
+    this._getRequests = [];
+    this._getKeys = [];
+
+    RCTAsyncStorage.multiGet(getKeys, function(errors, result) {
+      // Even though the runtime complexity of this is theoretically worse vs if we used a map,
+      // it's much, much faster in practice for the data sets we deal with (we avoid
+      // allocating result pair arrays). This was heavily benchmarked.
+      //
+      // Is there a way to avoid using the map but fix the bug in this breaking test?
+      // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
+      let map = {};
+      result.forEach(([key, value]) => map[key] = value);
+      const reqLength = getRequests.length;
+      for (let i = 0; i < reqLength; i++) {
+        const request = getRequests[i];
+        const requestKeys = request.keys;
+        let requestResult = requestKeys.map(key => [key, map[key]]);
+        request.callback && request.callback(null, requestResult);
+        request.resolve && request.resolve(requestResult);
+      }
+    });
+  },
+
+  /**
+   * multiGet invokes callback with an array of key-value pair arrays that
+   * matches the input format of multiSet. Returns a `Promise` object.
+   *
+   *   multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
+   */
+  multiGet: function(
+    keys: Array<string>,
+    callback?: ?(errors: ?Array<Error>, result: ?Array<Array<string>>) => void
+  ): Promise {
+    if (!this._immediate) {
+      this._immediate = setImmediate(() => {
+        this._immediate = null;
+        this.flushGetRequests();
+      });
+    }
+
+    var getRequest = {
+      keys: keys,
+      callback: callback,
+      // do we need this?
+      keyIndex: this._getKeys.length,
+      resolve: null,
+      reject: null,
+    };
+
+    var promiseResult = new Promise((resolve, reject) => {
+      getRequest.resolve = resolve;
+      getRequest.reject = reject;
+    });
+
+    this._getRequests.push(getRequest);
+    // avoid fetching duplicates
+    keys.forEach(key => {
+      if (this._getKeys.indexOf(key) === -1) {
+        this._getKeys.push(key);
+      }
+    });
+
+    return promiseResult;
+  },
+
+  /**
+   * multiSet and multiMerge take arrays of key-value array pairs that match
+   * the output of multiGet, e.g. Returns a `Promise` object.
+   *
+   *   multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
+   */
+  multiSet: function(
+    keyValuePairs: Array<Array<string>>,
+    callback?: ?(errors: ?Array<Error>) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiSet(keyValuePairs, function(errors) {
+        var error = convertErrors(errors);
+        callback && callback(error);
+        if (error) {
+          reject(error);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
+   * Delete all the keys in the `keys` array. Returns a `Promise` object.
+   */
+  multiRemove: function(
+    keys: Array<string>,
+    callback?: ?(errors: ?Array<Error>) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiRemove(keys, function(errors) {
+        var error = convertErrors(errors);
+        callback && callback(error);
+        if (error) {
+          reject(error);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+
+  /**
+   * Merges existing values with input values, assuming they are stringified
+   * json. Returns a `Promise` object.
+   *
+   * Not supported by all native implementations.
+   */
+  multiMerge: function(
+    keyValuePairs: Array<Array<string>>,
+    callback?: ?(errors: ?Array<Error>) => void
+  ): Promise {
+    return new Promise((resolve, reject) => {
+      RCTAsyncStorage.multiMerge(keyValuePairs, function(errors) {
+        var error = convertErrors(errors);
+        callback && callback(error);
+        if (error) {
+          reject(error);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  },
+};
+
+// Not all native implementations support merge.
+if (!RCTAsyncStorage.multiMerge) {
+  delete AsyncStorage.mergeItem;
+  delete AsyncStorage.multiMerge;
+}
+
+function convertErrors(errs) {
+  if (!errs) {
+    return null;
+  }
+  return (Array.isArray(errs) ? errs : [errs]).map((e) => convertError(e));
+}
+
+function convertError(error) {
+  if (!error) {
+    return null;
+  }
+  var out = new Error(error.message);
+  out.key = error.key; // flow doesn't like this :(
+  return out;
+}
+
+module.exports = AsyncStorage;

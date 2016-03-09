@@ -11,17 +11,20 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var Dimensions = require('Dimensions');
 var Platform = require('Platform');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
-var RCTUIManager = NativeModules.UIManager;
-var RCTScrollViewConsts = RCTUIManager.RCTScrollView.Constants;
+var { ScrollViewManager } = require('NativeModules');
 
-var warning = require('warning');
+var invariant = require('fbjs/lib/invariant');
+var warning = require('fbjs/lib/warning');
+
+import type ReactComponent from 'ReactComponent';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -114,7 +117,6 @@ type Event = Object;
 
 var ScrollResponderMixin = {
   mixins: [Subscribable.Mixin],
-  statics: RCTScrollViewConsts,
   scrollResponderMixinGetInitialState: function(): State {
     return {
       isTouching: false,
@@ -181,7 +183,7 @@ var ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponderCapture: function(e: Event): boolean {
     // First see if we want to eat taps while the keyboard is up
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (this.props.keyboardShouldPersistTaps === false &&
+    if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput) {
       return true;
@@ -242,7 +244,7 @@ var ScrollResponderMixin = {
     // By default scroll views will unfocus a textField
     // if another touch occurs outside of it
     var currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
-    if (this.props.keyboardShouldPersistTaps === false &&
+    if (!this.props.keyboardShouldPersistTaps &&
       currentlyFocusedTextInput != null &&
       e.target !== currentlyFocusedTextInput  &&
       !this.state.observedScrollSinceBecomingResponder &&
@@ -346,32 +348,72 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * A helper function to scroll to a specific point  in the scrollview.
-   * This is currently used to help focus on child textview's, but this
-   * can also be used to quickly scroll to any element we want to focus
+   * Returns the node that represents native view that can be scrolled.
+   * Components can pass what node to use by defining a `getScrollableNode`
+   * function otherwise `this` is used.
    */
-  scrollResponderScrollTo: function(offsetX: number, offsetY: number) {
-    if (Platform.OS === 'android') {
-      RCTUIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        RCTUIManager.RCTScrollView.Commands.scrollTo,
-        [offsetX, offsetY],
-      );
-    } else {
-      RCTUIManager.scrollTo(
-        React.findNodeHandle(this),
-        offsetX,
-        offsetY
-      );
-    }
+  scrollResponderGetScrollableNode: function(): any {
+    return this.getScrollableNode ?
+      this.getScrollableNode() :
+      React.findNodeHandle(this);
   },
 
   /**
-   * A helper function to zoom to a specific rect in the scrollview.
-   * @param {object} rect Should have shape {x, y, width, height}
+   * A helper function to scroll to a specific point  in the scrollview.
+   * This is currently used to help focus on child textviews, but can also
+   * be used to quickly scroll to any element we want to focus. Syntax:
+   *
+   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }) {
-    RCTUIManager.zoomToRect(React.findNodeHandle(this), rect);
+  scrollResponderScrollTo: function(
+    x?: number | { x?: number; y?: number; animated?: boolean },
+    y?: number,
+    animated?: boolean
+  ) {
+    if (typeof x === 'number') {
+      console.warn('`scrollResponderScrollTo(x, y, animated)` is deprecated. Use `scrollResponderScrollTo({x: 5, y: 5, animated: true})` instead.');
+    } else {
+      ({x, y, animated} = x || {});
+    }
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.scrollTo,
+      [x || 0, y || 0, animated !== false],
+    );
+  },
+
+  /**
+   * Deprecated, do not use.
+   */
+  scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
+    console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
+    this.scrollResponderScrollTo({x: offsetX, y: offsetY, animated: false});
+  },
+
+  /**
+   * A helper function to zoom to a specific rect in the scrollview. The argument has the shape
+   * {x: number; y: number; width: number; height: number; animated: boolean = true}
+   *
+   * @platform ios
+   */
+  scrollResponderZoomTo: function(
+    rect: { x: number; y: number; width: number; height: number; animated?: boolean },
+    animated?: boolean // deprecated, put this inside the rect argument instead
+  ) {
+    if (Platform.OS === 'android') {
+      invariant('zoomToRect is not implemented');
+    } else {
+      if ('animated' in rect) {
+        var { animated, ...rect } = rect;
+      } else if (typeof animated !== 'undefined') {
+        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
+      }
+      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
+    }
   },
 
   /**
@@ -387,7 +429,7 @@ var ScrollResponderMixin = {
   scrollResponderScrollNativeHandleToKeyboard: function(nodeHandle: any, additionalOffset?: number, preventNegativeScrollOffset?: bool) {
     this.additionalScrollOffset = additionalOffset || 0;
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
-    RCTUIManager.measureLayout(
+    UIManager.measureLayout(
       nodeHandle,
       React.findNodeHandle(this.getInnerViewNode()),
       this.scrollResponderTextInputFocusError,
@@ -406,20 +448,21 @@ var ScrollResponderMixin = {
    * @param {number} height Height of the text input.
    */
   scrollResponderInputMeasureAndScrollToKeyboard: function(left: number, top: number, width: number, height: number) {
+    var keyboardScreenY = Dimensions.get('window').height;
     if (this.keyboardWillOpenTo) {
-      var scrollOffsetY =
-        top - this.keyboardWillOpenTo.endCoordinates.screenY + height +
-        this.additionalScrollOffset;
-
-      // By default, this can scroll with negative offset, pulling the content
-      // down so that the target component's bottom meets the keyboard's top.
-      // If requested otherwise, cap the offset at 0 minimum to avoid content
-      // shifting down.
-      if (this.preventNegativeScrollOffset) {
-        scrollOffsetY = Math.max(0, scrollOffsetY);
-      }
-      this.scrollResponderScrollTo(0, scrollOffsetY);
+      keyboardScreenY = this.keyboardWillOpenTo.endCoordinates.screenY;
     }
+    var scrollOffsetY = top - keyboardScreenY + height + this.additionalScrollOffset;
+
+    // By default, this can scroll with negative offset, pulling the content
+    // down so that the target component's bottom meets the keyboard's top.
+    // If requested otherwise, cap the offset at 0 minimum to avoid content
+    // shifting down.
+    if (this.preventNegativeScrollOffset) {
+      scrollOffsetY = Math.max(0, scrollOffsetY);
+    }
+    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: true});
+
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;
   },
@@ -441,10 +484,6 @@ var ScrollResponderMixin = {
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardWillHide', this.scrollResponderKeyboardWillHide);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidShow', this.scrollResponderKeyboardDidShow);
     this.addListenerOn(RCTDeviceEventEmitter, 'keyboardDidHide', this.scrollResponderKeyboardDidHide);
-    warning(this.getInnerViewNode, 'You need to implement getInnerViewNode in '
-       + this.constructor.displayName + ' to get full'
-       + 'functionality from ScrollResponder mixin. See example of ListView and'
-       + ' ScrollView.');
   },
 
   /**
@@ -494,9 +533,9 @@ var ScrollResponderMixin = {
     this.props.onKeyboardDidShow && this.props.onKeyboardDidShow(e);
   },
 
-  scrollResponderKeyboardDidHide: function() {
+  scrollResponderKeyboardDidHide: function(e: Event) {
     this.keyboardWillOpenTo = null;
-    this.props.onKeyboardDidHide && this.props.onKeyboardDidHide();
+    this.props.onKeyboardDidHide && this.props.onKeyboardDidHide(e);
   }
 
 };

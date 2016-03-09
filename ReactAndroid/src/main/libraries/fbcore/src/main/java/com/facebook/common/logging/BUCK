@@ -1,0 +1,10 @@
+include_defs('//ReactAndroid/DEFS')
+
+android_library(
+    name = 'logging',
+    exported_deps = [
+        react_native_dep('libraries/fresco/fresco-react-native:fbcore'),
+    ],
+    visibility = ['//ReactAndroid/...',],
+)
+

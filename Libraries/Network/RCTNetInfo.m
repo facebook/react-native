@@ -51,7 +51,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 
   if (![status isEqualToString:self->_status]) {
     self->_status = status;
-    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"networkDidChange"
+    [self->_bridge.eventDispatcher sendDeviceEventWithName:@"networkStatusDidChange"
                                                       body:@{@"network_info": status}];
   }
 }
@@ -87,10 +87,10 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 #pragma mark - Public API
 
 // TODO: remove error callback - not needed except by Subscribable interface
-RCT_EXPORT_METHOD(getCurrentReachability:(RCTResponseSenderBlock)getSuccess
-                  withErrorCallback:(__unused RCTResponseSenderBlock)getError)
+RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  getSuccess(@[@{@"network_info": _status}]);
+  resolve(@[@{@"network_info": _status}]);
 }
 
 @end

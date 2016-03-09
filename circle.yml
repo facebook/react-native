@@ -1,0 +1,90 @@
+general:
+  branches:
+    ignore:
+      - gh-pages # list of branches to ignore
+machine:
+  node:
+    version: 5.6.0
+  environment:
+    PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:$PATH"
+    TERM: "dumb"
+    ADB_INSTALL_TIMEOUT: 10
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
+
+dependencies:
+  pre:
+    # BUCK
+    - if [[ ! -e buck ]]; then git clone https://github.com/facebook/buck.git; fi
+    - cd buck && ant
+    - buck/bin/buck --version
+    - buck/bin/buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+    - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react
+    - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+    - buck/bin/buck fetch ReactAndroid/src/test/...
+    - buck/bin/buck fetch ReactAndroid/src/androidTest/...
+    - source scripts/circle-ci-android-setup.sh && getAndroidSDK
+    - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+  cache_directories:
+    - "ReactAndroid/build/downloads"
+    - "buck"
+    - "buck-out/bin"
+    - "website/node_modules"
+  override:
+    - npm config set spin=false
+    - npm config set progress=false
+    - npm install
+    - cd website && npm install
+
+test:
+  pre:
+    # starting emulator in advance because it takes very long to boot
+    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
+            background: true
+    - source scripts/circle-ci-android-setup.sh && waitForAVD
+
+  override:
+    # build app
+    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
+    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
+
+    # unit tests
+    - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
+
+    # instrumentation tests
+    # compile native libs with Gradle script
+    - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -PdisablePreDex -Pjobs=1:
+        timeout: 360
+    # build JS bundle for instrumentation tests
+    - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    # build test APK
+    - buck/bin/buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
+    # run installed apk with tests
+    - ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
+
+    # Deprecated: run tests with Gradle, we keep them for a while to compare performance
+    - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
+    - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
+        timeout: 360
+
+    # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
+    - ./scripts/e2e-test.sh --packager
+
+    # testing docs generation is not broken
+    - cd website && node ./server/generate.js
+  post:
+    # copy test report for Circle CI to display
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    # TODO circle does not understand Buck's report, maybe need to transform xml slightly
+    #- find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+
+deployment:
+  website:
+    branch: [/.*-stable/, /master/]
+    commands:
+      # generate docs website
+      - git config --global user.email "bestnader@fb.com"
+      - git config --global user.name "Website Deployment Script"
+      - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
+      - cd website && GIT_USER=reactjs-bot npm run gh-pages

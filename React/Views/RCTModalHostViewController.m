@@ -9,18 +9,28 @@
 
 #import "RCTModalHostViewController.h"
 
-@interface RCTModalHostViewController ()
-
-@end
-
 @implementation RCTModalHostViewController
+{
+  CGRect _lastViewFrame;
+}
 
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
 
-  if (self.boundsDidChangeBlock) {
+  if (self.boundsDidChangeBlock && !CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     self.boundsDidChangeBlock(self.view.bounds);
+    _lastViewFrame = self.view.frame;
+  }
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  // Picking some defaults here, we should probably make this configurable
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    return UIInterfaceOrientationMaskAll;
+  } else {
+    return UIInterfaceOrientationMaskPortrait;
   }
 }
 

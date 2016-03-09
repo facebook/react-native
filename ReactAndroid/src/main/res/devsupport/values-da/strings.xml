@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See https://www.facebook.com/groups/303159406399348/permalink/410968105618477/ -->
+<!-- @generated SignedSource<<82c5247e28c725bc3cbf96a7d4a28857>> -->
+<!-- @nolint -->
+<!-- @mobile export_name="fbandroid 2015-07-14 at 10:02:32 GMT" locale="da_DK" lib_name="java-com-facebook-catalyst-js-react-native-github-ReactAndroid-android_res-com-facebook-react-devsupport" -->
+
+<resources>
+    <string name="catalyst_reloadjs">Reload JS</string>
+    <string name="catalyst_debugjs">Debug JS</string>
+    <string name="catalyst_settings">Dev Settings</string>
+    <string name="catalyst_settings_title">Catalyst Dev Settings</string>
+    <string name="catalyst_jsload_title">Vent venligst...</string>
+    <string name="catalyst_jsload_message">Fetching JS bundle</string>
+    <string name="catalyst_jsload_error">Unable to download JS bundle</string>
+    <string name="catalyst_element_inspector">Inspicer element</string>
+</resources>

@@ -10,6 +10,7 @@
 #import "RCTViewManager.h"
 
 #import "RCTBridge.h"
+#import "RCTBorderStyle.h"
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
@@ -51,12 +52,10 @@ RCT_EXPORT_MODULE()
 
 - (dispatch_queue_t)methodQueue
 {
+  RCTAssert(_bridge, @"Bridge not set");
+  RCTAssert(_bridge.uiManager || !_bridge.valid, @"UIManager not initialized");
+  RCTAssert(_bridge.uiManager.methodQueue || !_bridge.valid, @"UIManager.methodQueue not initialized");
   return _bridge.uiManager.methodQueue;
-}
-
-- (UIView *)viewWithProps:(__unused NSDictionary *)props
-{
-  return [self view];
 }
 
 - (UIView *)view
@@ -69,7 +68,7 @@ RCT_EXPORT_MODULE()
   return [RCTShadowView new];
 }
 
-- (NSArray *)customBubblingEventTypes
+- (NSArray<NSString *> *)customBubblingEventTypes
 {
   return @[
 
@@ -80,6 +79,7 @@ RCT_EXPORT_MODULE()
     @"blur",
     @"submitEditing",
     @"endEditing",
+    @"keyPress",
 
     // Touch events
     @"touchStart",
@@ -89,14 +89,14 @@ RCT_EXPORT_MODULE()
   ];
 }
 
-- (NSArray *)customDirectEventTypes
+- (NSArray<NSString *> *)customDirectEventTypes
 {
   return @[];
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary<NSString *, id> *)constantsToExport
 {
-  return nil;
+  return @{@"forceTouchAvailable": @(RCTForceTouchAvailable())};
 }
 
 - (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(__unused RCTShadowView *)shadowView
@@ -104,7 +104,7 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused RCTSparseArray *)shadowViewRegistry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(__unused NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry
 {
   return nil;
 }
@@ -188,6 +188,23 @@ RCT_CUSTOM_VIEW_PROPERTY(borderWidth, CGFloat, RCTView)
     view.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.borderWidth;
   } else {
     view.layer.borderWidth = json ? [RCTConvert CGFloat:json] : defaultView.layer.borderWidth;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(borderStyle, RCTBorderStyle, RCTView)
+{
+  if ([view respondsToSelector:@selector(setBorderStyle:)]) {
+    view.borderStyle = json ? [RCTConvert RCTBorderStyle:json] : defaultView.borderStyle;
+  }
+}
+RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RCTView)
+{
+  if ([view respondsToSelector:@selector(setHitTestEdgeInsets:)]) {
+    if (json) {
+      UIEdgeInsets hitSlopInsets = [RCTConvert UIEdgeInsets:json];
+      view.hitTestEdgeInsets = UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
+    } else {
+      view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
+    }
   }
 }
 RCT_EXPORT_VIEW_PROPERTY(onAccessibilityTap, RCTDirectEventBlock)

@@ -12,6 +12,8 @@
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
 
+@class RCTDevMenuItem;
+
 /**
  * Developer menu, useful for exposing extra functionality when debugging.
  */
@@ -35,7 +37,12 @@
 @property (nonatomic, assign) BOOL liveReloadEnabled;
 
 /**
- * Shows the FPS monitor for the JS and Main threads
+ * Enables hot loading. Currently not supported in open source.
+ */
+@property (nonatomic, assign) BOOL hotLoadingEnabled;
+
+/**
+ * Shows the FPS monitor for the JS and Main threads.
  */
 @property (nonatomic, assign) BOOL showFPS;
 
@@ -51,11 +58,41 @@
 - (void)reload;
 
 /**
+ * Deprecated. Use the `-addItem:` method instead.
+ */
+- (void)addItem:(NSString *)title
+        handler:(void(^)(void))handler DEPRECATED_ATTRIBUTE;
+
+/**
  * Add custom item to the development menu. The handler will be called
  * when user selects the item.
  */
-- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler;
+- (void)addItem:(RCTDevMenuItem *)item;
 
+@end
+
+/**
+ * Developer menu item, used to expose additional functionality via the menu.
+ */
+@interface RCTDevMenuItem : NSObject
+
+/**
+ * This creates an item with a simple push-button interface, used to trigger an
+ * action.
+ */
++ (instancetype)buttonItemWithTitle:(NSString *)title
+                            handler:(void(^)(void))handler;
+
+/**
+ * This creates an item with a toggle behavior. The key is used to store the
+ * state of the toggle. For toggle items, the handler will be called immediately
+ * after the item is added if the item was already selected when the module was
+ * last loaded.
+ */
++ (instancetype)toggleItemWithKey:(NSString *)key
+                            title:(NSString *)title
+                    selectedTitle:(NSString *)selectedTitle
+                          handler:(void(^)(BOOL selected))handler;
 @end
 
 /**

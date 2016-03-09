@@ -35,6 +35,7 @@ var ImageCapInsetsExample = React.createClass({
           <Image
             source={require('image!story-background')}
             style={styles.storyBackground}
+            resizeMode={Image.resizeMode.stretch}
             capInsets={{left: 0, right: 0, bottom: 0, top: 0}}
           />
         </View>
@@ -45,6 +46,7 @@ var ImageCapInsetsExample = React.createClass({
           <Image
             source={require('image!story-background')}
             style={styles.storyBackground}
+            resizeMode={Image.resizeMode.stretch}
             capInsets={{left: 15, right: 15, bottom: 15, top: 15}}
           />
         </View>
@@ -66,7 +68,6 @@ var styles = StyleSheet.create({
     width: 250,
     height: 150,
     borderWidth: 1,
-    resizeMode: Image.resizeMode.stretch,
   },
   text: {
     fontSize: 13.5,

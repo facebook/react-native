@@ -11,13 +11,12 @@
  */
 'use strict';
 
-var Map = require('Map');
 var NativeModules = require('NativeModules');
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var RCTAppState = NativeModules.AppState;
 
 var logError = require('logError');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 var _eventHandlers = {
   change: new Map(),
@@ -122,7 +121,11 @@ var AppStateIOS = {
     _eventHandlers[type].delete(handler);
   },
 
-  currentState: (RCTAppState && RCTAppState.initialAppState : ?string),
+  // TODO: getCurrentAppState callback seems to be called at a really late stage
+  // after app launch. Trying to get currentState when mounting App component
+  // will likely to have the initial value here.
+  // Initialize to 'active' instead of null.
+  currentState: ('active' : ?string),
 
 };
 
