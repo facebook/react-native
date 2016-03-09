@@ -37,7 +37,7 @@ namespace ReactNative.DevSupport
 
         public static IStackFrame[] ConvertNativeStackTrace(Exception exception)
         {
-            var stackTrace = new StackTrace(exception, true);
+            var stackTrace = new StackTrace(exception, false);
             var frames = stackTrace.GetFrames();
             var n = frames.Length;
             var results = new IStackFrame[n];
@@ -49,7 +49,28 @@ namespace ReactNative.DevSupport
             return results;
         }
 
-        class ChakraStackFrame : IStackFrame
+        abstract class StackFrameBase : IStackFrame
+        {
+            private const string UnknownFileName = "<filename unknown>";
+
+            public abstract int Column { get; }
+
+            public abstract string FileName { get; }
+
+            public abstract int Line { get; }
+
+            public abstract string Method { get; }
+
+            public string SourceInfo
+            {
+                get
+                {
+                    return $"{FileName ?? UnknownFileName}:{Line}:{Column}";
+                }
+            }
+        }
+
+        class ChakraStackFrame : StackFrameBase
         {
             private static readonly Regex s_regex = new Regex(@"\s*at (.*) \((.*):(\d+):(\d+)\)");
 
@@ -65,28 +86,28 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public int Column
+            public override int Column
             {
                 get;
             }
 
-            public string FileName
+            public override string FileName
             {
                 get;
             }
 
-            public int Line
+            public override int Line
             {
                 get;
             }
 
-            public string Method
+            public override string Method
             {
                 get;
             }
         }
 
-        class JavaScriptStackFrame : IStackFrame
+        class JavaScriptStackFrame : StackFrameBase
         {
             private readonly JObject _map;
 
@@ -95,7 +116,7 @@ namespace ReactNative.DevSupport
                 _map = map;
             }
 
-            public int Column
+            public override int Column
             {
                 get
                 {
@@ -110,7 +131,7 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public string FileName
+            public override string FileName
             {
                 get
                 {
@@ -118,7 +139,7 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public int Line
+            public override int Line
             {
                 get
                 {
@@ -133,7 +154,7 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public string Method
+            public override string Method
             {
                 get
                 {
@@ -142,7 +163,7 @@ namespace ReactNative.DevSupport
             }
         }
 
-        class SystemStackFrame : IStackFrame
+        class SystemStackFrame : StackFrameBase
         {
             private readonly StackFrame _stackFrame;
 
@@ -151,7 +172,7 @@ namespace ReactNative.DevSupport
                 _stackFrame = stackFrame;
             }
 
-            public int Column
+            public override int Column
             {
                 get
                 {
@@ -159,7 +180,7 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public string FileName
+            public override string FileName
             {
                 get
                 {
@@ -167,7 +188,7 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public int Line
+            public override int Line
             {
                 get
                 {
@@ -175,7 +196,7 @@ namespace ReactNative.DevSupport
                 }
             }
 
-            public string Method
+            public override string Method
             {
                 get
                 {

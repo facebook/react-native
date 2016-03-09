@@ -5,6 +5,7 @@ using ReactNative.Modules.Core;
 using ReactNative.Tracing;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -114,9 +115,9 @@ namespace ReactNative.DevSupport
             if (IsEnabled)
             {
                 var javaScriptException = exception as JavaScriptException;
-                if (javaScriptException != null && javaScriptException.StackTrace != null)
+                if (javaScriptException != null && javaScriptException.JavaScriptStackTrace != null)
                 {
-                    var stackTrace = StackTraceHelper.ConvertChakraStackTrace(javaScriptException.StackTrace);
+                    var stackTrace = StackTraceHelper.ConvertChakraStackTrace(javaScriptException.JavaScriptStackTrace);
                     ShowNewError(exception.Message, stackTrace, NativeErrorCookie);
                 }
                 else
@@ -262,17 +263,17 @@ namespace ReactNative.DevSupport
                 }
 
                 _redBoxDialog.Title = title;
-                _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details);
+                _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details).ToList();
             });
         }
 
-        private void ShowNewError(string title, IStackFrame[] stack, int errorCookie)
+        private void ShowNewError(string message, IStackFrame[] stack, int errorCookie)
         {
             DispatcherHelpers.RunOnDispatcher(() =>
             {
                 if (_redBoxDialog == null)
                 {
-                    _redBoxDialog = new RedBoxDialog();
+                    _redBoxDialog = new RedBoxDialog(HandleReloadJavaScript);
                 }
 
                 if (_redBoxDialogOpen)
@@ -282,8 +283,8 @@ namespace ReactNative.DevSupport
 
                 _redBoxDialogOpen = true;
                 _redBoxDialog.ErrorCookie = errorCookie;
-                _redBoxDialog.Title = title;
-                _redBoxDialog.StackTrace = stack;
+                _redBoxDialog.Message = message;
+                _redBoxDialog.StackTrace = stack.ToList();
                 _redBoxDialog.Closed += (_, __) =>
                 {
                     _redBoxDialogOpen = false;

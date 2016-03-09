@@ -1,0 +1,49 @@
+﻿<ContentDialog
+    x:Class="ReactNative.DevSupport.RedBoxDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ReactNative.DevSupport"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:devsupport="using:ReactNative.DevSupport"
+    mc:Ignorable="d"
+    Background="Red"
+    PrimaryButtonText="Reload JavaScript"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick">
+    <ContentDialog.Resources>
+        <DataTemplate x:Key="StackFrameTemplate"
+                      x:DataType="devsupport:IStackFrame">
+            <StackPanel>
+                <TextBlock FontFamily="Monospace"
+                           FontSize="12"
+                           Foreground="White"
+                           Text="{x:Bind Path=Method}" />
+                <TextBlock FontSize="10"
+                           Foreground="LightGray"
+                           Text="{x:Bind Path=SourceInfo}" 
+                           Grid.Row="1" />
+            </StackPanel>
+        </DataTemplate>
+    </ContentDialog.Resources>
+    <StackPanel>
+        <TextBlock FontFamily="Monospace"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Foreground="White"
+                   Padding="0 16 0 16"
+                   Text="{x:Bind Path=Message}"
+                   TextWrapping="Wrap" />
+        <ListView ItemsSource="{x:Bind Path=StackTrace}"
+                  ItemTemplate="{StaticResource StackFrameTemplate}"
+                  SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="BorderBrush"
+                            Value="LightGray" />
+                    <Setter Property="BorderThickness"
+                            Value="0 0.5 0 0" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </StackPanel>
+</ContentDialog>

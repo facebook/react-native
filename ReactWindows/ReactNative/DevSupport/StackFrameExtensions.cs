@@ -10,19 +10,16 @@ namespace ReactNative.DevSupport
             foreach (var frame in stackTrace)
             {
                 stringBuilder
-                    .AppendLine(frame.Method)
-                    .Append("    ")
-                    .Append(frame.FileName)
-                    .Append(":")
-                    .Append(frame.Line);
+                    .AppendLine(frame.Method);
 
-                var column = frame.Column;
-                if (column > 0)
-                {
-                    stringBuilder
-                        .Append(":")
-                        .Append(column);
-                }
+                var fileName = frame.FileName ?? "<filename unknown>";
+                stringBuilder
+                    .Append("    ")
+                    .Append(fileName)
+                    .Append(":")
+                    .Append(frame.Line)
+                    .Append(":")
+                    .Append(frame.Column);
 
                 stringBuilder.AppendLine();
             }
