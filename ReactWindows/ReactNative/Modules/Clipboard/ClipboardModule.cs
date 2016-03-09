@@ -91,7 +91,7 @@ namespace ReactNative.Modules.Clipboard
         }
 
         /// <summary>
-        /// Run action in UI thread.
+        /// Run action on UI thread.
         /// </summary>
         /// <param name="action">The action.</param>
         private static async void RunOnDispatcher(DispatchedHandler action)
