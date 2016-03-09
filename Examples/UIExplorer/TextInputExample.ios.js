@@ -570,6 +570,22 @@ exports.examples = [
     }
   },
   {
+    title: 'Colored clear button',
+    render: function() {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            selectionColor={"green"}
+            clearButtonTintColor={"green"}
+            clearButtonMode="while-editing"
+            defaultValue="Edit me"
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Clear button mode',
     render: function () {
       return (
