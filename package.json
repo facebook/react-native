@@ -179,9 +179,9 @@
   },
   "devDependencies": {
     "babel-eslint": "^5.0.0",
-    "eslint": "^2.2.0",
+    "eslint": "~2.2.0",
     "eslint-plugin-flow-vars": "^0.2.1",
-    "eslint-plugin-react": "^4.1.0",
+    "eslint-plugin-react": "^4.2.1",
     "flow-bin": "0.22.0",
     "jest-cli": "0.9.0-fb2",
     "portfinder": "0.4.0",
