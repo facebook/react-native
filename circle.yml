@@ -43,6 +43,8 @@ test:
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
+    # flow check
+    npm run flow
     # build app
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
