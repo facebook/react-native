@@ -63,12 +63,12 @@ function compareScenes(
 }
 
 type Props = {
+  applyAnimation: NavigationAnimationSetter,
   navigationState: NavigationParentState,
   onNavigate: (action: any) => void,
-  renderScene: NavigationSceneRenderer,
   renderOverlay: ?NavigationSceneRenderer,
+  renderScene: NavigationSceneRenderer,
   style: any,
-  setTiming: NavigationAnimationSetter,
 };
 
 type State = {
@@ -79,15 +79,15 @@ type State = {
 const {PropTypes} = React;
 
 const propTypes = {
+  applyAnimation: PropTypes.func,
   navigationState: NavigationPropTypes.navigationState.isRequired,
   onNavigate: PropTypes.func.isRequired,
-  renderScene: PropTypes.func.isRequired,
   renderOverlay: PropTypes.func,
-  setTiming: PropTypes.func,
+  renderScene: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
-  setTiming: (
+  applyAnimation: (
     position: NavigationAnimatedValue,
     navigationState: NavigationParentState,
   ) => {
@@ -152,7 +152,7 @@ class NavigationAnimatedView
 
   componentDidUpdate(lastProps: Props): void {
     if (lastProps.navigationState.index !== this.props.navigationState.index) {
-      this.props.setTiming(
+      this.props.applyAnimation(
         this.state.position,
         this.props.navigationState,
         lastProps.navigationState
