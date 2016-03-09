@@ -15,7 +15,7 @@ const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
-const _ = require('underscore');
+const _ = require('lodash');
 const declareOpts = require('../lib/declareOpts');
 const path = require('path');
 const url = require('url');
@@ -492,7 +492,7 @@ class Server {
       return true;
     }).join('.') + '.js';
 
-    const sourceMapUrlObj = _.clone(urlObj);
+    const sourceMapUrlObj = Object.assign({}, urlObj);
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
     // try to get the platform from the url
