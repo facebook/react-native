@@ -165,7 +165,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
-  @ReactProp(name = ViewProps.COLOR, defaultInt = 0)
+  @ReactProp(name = ViewProps.COLOR, defaultInt = 0, customType="color")
   public void setColor(ReactEditText view, @Nullable Integer color) {
     view.setTextColor(color);
   }
