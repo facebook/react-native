@@ -40,6 +40,10 @@ using fbsystrace::FbSystraceSection;
 #include <jsc_config_android.h>
 #endif
 
+#ifdef JSC_HAS_PERF_STATS_API
+#include "JSCPerfStats.h"
+#endif
+
 static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
 static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
 
@@ -178,6 +182,10 @@ void JSCExecutor::initOnJSVMThread() {
 
   #ifdef WITH_FB_MEMORY_PROFILING
   addNativeMemoryHooks(m_context);
+  #endif
+
+  #ifdef JSC_HAS_PERF_STATS_API
+  addJSCPerfStatsHooks(m_context);
   #endif
 }
 

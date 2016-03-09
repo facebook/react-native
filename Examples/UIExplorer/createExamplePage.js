@@ -29,7 +29,7 @@ var invariant = require('fbjs/lib/invariant');
 import type { Example, ExampleModule } from 'ExampleTypes';
 
 var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
-  : ReactClass<any, any, any> {
+  : ReactClass<any> {
   invariant(!!exampleModule.examples, 'The module must have examples');
 
   var ExamplePage = React.createClass({
