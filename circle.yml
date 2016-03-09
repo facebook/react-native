@@ -44,7 +44,7 @@ test:
 
   override:
     # flow check
-    npm run flow
+    - npm run flow
     # build app
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
     - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
