@@ -40,7 +40,7 @@ Paste the following into your terminal to compile watchman from source and insta
 ```sh
 git clone https://github.com/facebook/watchman.git
 cd watchman
-git checkout v4.1.0  # the latest stable release
+git checkout v4.5.0  # the latest stable release
 ./autogen.sh
 ./configure
 make
