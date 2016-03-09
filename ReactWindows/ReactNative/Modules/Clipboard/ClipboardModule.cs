@@ -1,12 +1,12 @@
 ﻿using ReactNative.Bridge;
 using System;
-using DT = Windows.ApplicationModel.DataTransfer;
+using DataTransfer = Windows.ApplicationModel.DataTransfer;
 
 namespace ReactNative.Modules.Clipboard
 {
-    /**
-    * A module that allows JS to get/set clipboard contents.
-    */
+    /// <summary>
+    /// A module that allows JS to get/set clipboard contents.
+    /// </summary>
     class ClipboardModule : ReactContextNativeModuleBase
     {
         /// <summary>
@@ -29,6 +29,10 @@ namespace ReactNative.Modules.Clipboard
             }
         }
 
+        /// <summary>
+        /// Get the clipboard content through a promise.
+        /// </summary>
+        /// <param name="promise">The promise.</param>
         [ReactMethod]
         public void getString(IPromise promise)
         {
@@ -41,14 +45,14 @@ namespace ReactNative.Modules.Clipboard
             {
                 try
                 {
-                    var clip = DT.Clipboard.GetContent();
+                    var clip = DataTransfer.Clipboard.GetContent();
                     if (clip == null)
                     {
                         promise.Resolve("");
                     }
-                    else if (clip.Contains(DT.StandardDataFormats.Text))
+                    else if (clip.Contains(DataTransfer.StandardDataFormats.Text))
                     {
-                        string text = await clip.GetTextAsync();
+                        var text = await clip.GetTextAsync();
                         promise.Resolve(text);
                     }
                     else
@@ -63,25 +67,25 @@ namespace ReactNative.Modules.Clipboard
             });
         }
 
+        /// <summary>
+        /// Add text to the clipboard or clear the clipboard.
+        /// </summary>
+        /// <param name="text">The text. If null clear clipboard.</param>
         [ReactMethod]
         public void setString(string text)
         {
             DispatcherHelpers.RunOnDispatcher(() =>
             {
-                try
+                if (text == null)
                 {
-                    if (text == null)
-                    {
-                        DT.Clipboard.Clear();
-                    }
-                    else
-                    {
-                        DT.DataPackage package = new DT.DataPackage();
-                        package.SetData(DT.StandardDataFormats.Text, text);
-                        DT.Clipboard.SetContent(package);
-                    }
+                    DataTransfer.Clipboard.Clear();
                 }
-                catch (Exception) {}
+                else
+                {
+                    var package = new DataTransfer.DataPackage();
+                    package.SetData(DataTransfer.StandardDataFormats.Text, text);
+                    DataTransfer.Clipboard.SetContent(package);
+                }
             });
         }
     }
