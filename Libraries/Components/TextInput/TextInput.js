@@ -227,11 +227,8 @@ var TextInput = React.createClass({
      */
     placeholderTextColor: PropTypes.string,
     /**
-     * Color of the cursor and selection overlay
-     */
-    tintColor: PropTypes.string,
-    /**
      * Color of the clear button
+     * @platform ios
      */
     clearButtonTintColor: PropTypes.string,
     /**
