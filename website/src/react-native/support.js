@@ -40,12 +40,22 @@ var support = React.createClass({
             <ul>
               <li><a href="http://reactnative.cn">Chinese</a> (<a href="https://github.com/reactnativecn/react-native-docs-cn">source</a>)</li>
             </ul>
-            
+
             <H2>Stack Overflow</H2>
             <p>Many members of the community use Stack Overflow to ask questions. Read through the <a href="http://stackoverflow.com/questions/tagged/react-native">existing questions</a> tagged with <strong>react-native</strong> or <a href="http://stackoverflow.com/questions/ask">ask your own</a>!</p>
 
             <H2>Chat</H2>
-            <p>Join us in <strong><a href="irc://chat.freenode.net/reactnative">#reactnative on Reactiflux</a></strong>.</p>
+            <p>Join us in <strong><a href="https://discord.gg/0ZcbPKXt5bZjGY5n">#react-native on Reactiflux</a></strong>.</p>
+
+            <H2>Product Pains</H2>
+            <p>React Native uses <a href="https://productpains.com/product/react-native/">Product Pains</a> for feature requests. It has a voting system to surface which issues are most important to the community. GitHub issues should only be used for bugs.</p>
+
+            <iframe
+              width="100%"
+              height="600px"
+              scrolling="yes"
+              src="https://productpains.com/widget.html?token=3b929306-e0f7-5c94-7d7c-ecc05d059748"
+            />
 
             <H2>Twitter</H2>
             <p><a href="https://twitter.com/search?q=%23reactnative"><strong>#reactnative</strong> hash tag on Twitter</a> is used to keep up with the latest React Native news.</p>
