@@ -5,7 +5,6 @@ using ReactNative.Modules.Core;
 using ReactNative.Tracing;
 using System;
 using System.IO;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -263,7 +262,7 @@ namespace ReactNative.DevSupport
                 }
 
                 _redBoxDialog.Title = title;
-                _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details).ToList();
+                _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details);
             });
         }
 
@@ -284,7 +283,7 @@ namespace ReactNative.DevSupport
                 _redBoxDialogOpen = true;
                 _redBoxDialog.ErrorCookie = errorCookie;
                 _redBoxDialog.Message = message;
-                _redBoxDialog.StackTrace = stack.ToList();
+                _redBoxDialog.StackTrace = stack;
                 _redBoxDialog.Closed += (_, __) =>
                 {
                     _redBoxDialogOpen = false;
