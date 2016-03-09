@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const _ = require('underscore');
 const BundleBase = require('./BundleBase');
 const ModuleTransport = require('../lib/ModuleTransport');
 
