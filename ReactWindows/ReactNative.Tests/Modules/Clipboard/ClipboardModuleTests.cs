@@ -2,6 +2,7 @@
 using ReactNative.Bridge;
 using ReactNative.Modules.Clipboard;
 using System;
+using System.Threading;
 
 namespace ReactNative.Tests.Modules.Clipboard
 {
@@ -22,24 +23,36 @@ namespace ReactNative.Tests.Modules.Clipboard
         public void ClipboardModule_GetString_Method()
         {
             var module = new ClipboardModule(new ReactContext());
-            var str = "test string";
 
-            var promise = new MockPromise(resolve => Assert.AreEqual(str, resolve.ToString()), reject => str = reject);
+            var result = "";
+            var str = "test string";
+            var waitHandle = new AutoResetEvent(false);
+
+            var promise = new MockPromise(resolve => { result = resolve.ToString(); waitHandle.Set(); }, 
+                                          reject => { result = reject; waitHandle.Set(); });
 
             module.setString(str);
             module.getString(promise);
+
+            waitHandle.WaitOne();
+            Assert.AreEqual(str, result);
         }
 
         [TestMethod]
         public void ClipboardModule_SetString_Null_Method()
         {
             var module = new ClipboardModule(new ReactContext());
+            var result = "";
+            var waitHandle = new AutoResetEvent(false);
 
-            var str = "";
-            var promise = new MockPromise(resolve => Assert.AreEqual(str, resolve.ToString()), reject => str = reject);
+            var promise = new MockPromise(resolve => { result = resolve.ToString(); waitHandle.Set(); },
+                                          reject => { result = reject; waitHandle.Set(); });
 
             module.setString(null);
             module.getString(promise);
+
+            waitHandle.WaitOne();
+            Assert.AreEqual("", result);
         }
     }
 }
