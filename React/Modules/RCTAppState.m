@@ -84,15 +84,15 @@ RCT_EXPORT_MODULE()
 - (void)handleAppStateDidChange:(NSNotification *)notification
 {
   NSString *newState;
-  
-  if (notification.name == UIApplicationWillResignActiveNotification) {
+
+  if ([notification.name isEqualToString:UIApplicationWillResignActiveNotification]) {
     newState = @"inactive";
-  } else if (notification.name == UIApplicationWillEnterForegroundNotification) {
+  } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
     newState = @"active";
   } else {
     newState = RCTCurrentAppBackgroundState();
   }
-  
+
   if (![newState isEqualToString:_lastKnownState]) {
     _lastKnownState = newState;
     [_bridge.eventDispatcher sendDeviceEventWithName:@"appStateDidChange"
