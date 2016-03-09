@@ -181,7 +181,7 @@
     "babel-eslint": "^5.0.0",
     "eslint": "^2.2.0",
     "eslint-plugin-react": "^4.1.0",
-    "flow-bin": "^0.22.0",
+    "flow-bin": "0.22.0",
     "jest-cli": "0.9.0-fb2",
     "portfinder": "0.4.0",
     "react": "^0.14.5"
