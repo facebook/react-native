@@ -56,8 +56,11 @@
 .*/node_modules/binary-extensions/binary-extensions.json
 .*/node_modules/url-regex/tlds.json
 .*/node_modules/joi/.*\.json
+
+# CI related folders
 .*/build/.*\.json
 .*/\.buckd/.*
+.*/buck/.*
 
 [include]
 
