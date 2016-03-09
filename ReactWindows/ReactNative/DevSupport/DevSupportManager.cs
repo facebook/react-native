@@ -298,7 +298,7 @@ namespace ReactNative.DevSupport
 
         private async Task ReloadJavaScriptInProxyMode(CancellationToken token)
         {
-            _devServerHelper.LaunchDevTools();
+            await _devServerHelper.LaunchDevToolsAsync(token);
             var executor = new WebSocketJavaScriptExecutor();
             await executor.ConnectAsync(_devServerHelper.WebsocketProxyUrl, token);
             var factory = new Func<IJavaScriptExecutor>(() => executor);

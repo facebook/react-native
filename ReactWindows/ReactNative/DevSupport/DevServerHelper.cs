@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.System.Threading;
 using Windows.UI.Core;
 
@@ -203,10 +204,10 @@ namespace ReactNative.DevSupport
         /// <summary>
         /// Launch the developer tools.
         /// </summary>
-        public async void LaunchDevTools()
+        public async Task LaunchDevToolsAsync(CancellationToken token)
         {
             var url = CreateLaunchDevToolsCommandUrl();
-            await _client.GetAsync(url);
+            await _client.GetAsync(url, token);
             // Ignore response, nothing to report here.
         }
 
@@ -270,7 +271,10 @@ namespace ReactNative.DevSupport
 
         private string CreateLaunchDevToolsCommandUrl()
         {
-            return string.Format(CultureInfo.InvariantCulture, LaunchDevToolsCommandUrlFormat, DebugServerHost);
+            return string.Format(
+                CultureInfo.InvariantCulture, 
+                LaunchDevToolsCommandUrlFormat, 
+                DebugServerHost);
         }
     }
 }
