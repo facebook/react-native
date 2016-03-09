@@ -192,7 +192,7 @@ static UIImage* tintedImage(UIImage *image, UIColor* tintColor)
     return imageTinted;
 }
 
-(NSArray<UIView *> *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   // TODO: do we support subviews of textfield in React?
   // In any case, we should have a better approach than manually
