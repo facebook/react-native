@@ -21,8 +21,6 @@ namespace ReactNative.Tests.Modules.Clipboard
         [TestMethod]
         public void ClipboardModule_GetString_Method()
         {
-            if (!ReactNative.Bridge.DispatcherHelpers.IsInitialized) return;
-
             var module = new ClipboardModule(new ReactContext());
             var str = "test string";
 
@@ -35,8 +33,6 @@ namespace ReactNative.Tests.Modules.Clipboard
         [TestMethod]
         public void ClipboardModule_SetString_Null_Method()
         {
-            if (!ReactNative.Bridge.DispatcherHelpers.IsInitialized) return;
-
             var module = new ClipboardModule(new ReactContext());
 
             var str = "";
