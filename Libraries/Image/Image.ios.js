@@ -23,10 +23,10 @@ var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var {
   ImageViewManager,
@@ -210,10 +210,14 @@ var Image = React.createClass({
       RawImage = RCTImageView;
     }
 
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
+    }
+
     if (this.context.isInAParentText) {
       RawImage = RCTVirtualImage;
       if (!width || !height) {
-        console.warn('You must specify a width and height for the image %s', uri); 
+        console.warn('You must specify a width and height for the image %s', uri);
       }
     }
 

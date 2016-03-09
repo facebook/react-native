@@ -12,16 +12,8 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
+var invariant = require('fbjs/lib/invariant');
 var normalizeColor = require('normalizeColor');
-
-// TODO(#7644673): fix this hack once github jest actually checks invariants
-var invariant = function(condition, message) {
-  if (!condition) {
-    var error = new Error(message);
-    (error: any).framesToPop = 1; // $FlowIssue
-    throw error;
-  }
-};
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 
@@ -173,10 +165,10 @@ function colorToRgba(input: string): string {
 
   int32Color = int32Color || 0; // $FlowIssue
 
-  var a = ((int32Color & 0xff000000) >>> 24) / 255;
-  var r = (int32Color & 0x00ff0000) >>> 16;
-  var g = (int32Color & 0x0000ff00) >>> 8;
-  var b = int32Color & 0x000000ff;
+  var r = (int32Color & 0xff000000) >>> 24;
+  var g = (int32Color & 0x00ff0000) >>> 16;
+  var b = (int32Color & 0x0000ff00) >>> 8;
+  var a = (int32Color & 0x000000ff) / 255;
 
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }

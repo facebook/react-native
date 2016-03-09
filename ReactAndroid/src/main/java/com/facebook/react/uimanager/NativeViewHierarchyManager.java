@@ -482,6 +482,28 @@ public class NativeViewHierarchyManager {
     outputBuffer[3] = v.getHeight();
   }
 
+  /**
+   * Returns the coordinates of a view relative to the entire phone screen (not just the RootView
+   * which is what measure will return)
+   *
+   * @param tag - the tag for the view
+   * @param outputBuffer - output buffer that contains [x,y,width,height] of the view in coordinates
+   *  relative to the device window
+   */
+  public void measureInWindow(int tag, int[] outputBuffer) {
+    UiThreadUtil.assertOnUiThread();
+    View v = mTagsToViews.get(tag);
+    if (v == null) {
+      throw new NoSuchNativeViewException("No native view for " + tag + " currently exists");
+    }
+
+    v.getLocationOnScreen(outputBuffer);
+
+    // outputBuffer[0,1] already contain what we want
+    outputBuffer[2] = v.getWidth();
+    outputBuffer[3] = v.getHeight();
+  }
+
   public int findTargetTagForTouch(int reactTag, float touchX, float touchY) {
     View view = mTagsToViews.get(reactTag);
     if (view == null) {

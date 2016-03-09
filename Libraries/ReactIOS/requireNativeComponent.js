@@ -24,7 +24,7 @@ var processColor = require('processColor');
 var resolveAssetSource = require('resolveAssetSource');
 var sizesDiffer = require('sizesDiffer');
 var verifyPropTypes = require('verifyPropTypes');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 /**
  * Used to create React components that directly wrap native component
@@ -121,6 +121,7 @@ var TypeToProcessorMap = {
   RCTImageSource: resolveAssetSource,
   // Android Types
   Color: processColor,
+  ColorArray: processColorArray,
 };
 
 module.exports = requireNativeComponent;

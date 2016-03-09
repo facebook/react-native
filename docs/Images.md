@@ -35,6 +35,8 @@ And `button.js` code contains
 
 Packager will bundle and serve the image corresponding to device's screen density, e.g. on iPhone 5s `check@2x.png` will be used, on Nexus 5 – `check@3x.png`. If there is no image matching the screen density, the closest best option will be selected.
 
+On Windows, you might need to restart the packager if you add new images to your project.
+
 Here are some benefits that you get:
 
 1. Same system on iOS and Android.
@@ -90,7 +92,7 @@ Many of the images you will display in your app will not be available at compile
 
 ## Local Filesystem Images
 
-See [CameraRoll](/react-native/docs/cameraroll.html) for an example of
+See [CameraRoll](docs/cameraroll.html) for an example of
 using local resources that are outside of `Images.xcassets`.
 
 ### Best Camera Roll Image

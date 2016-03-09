@@ -59,11 +59,6 @@ CGFloat const ZINDEX_STICKY_HEADER = 50;
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (uint16_t)coalescingKey
-{
-  return 0;
-}
-
 - (NSDictionary *)body
 {
   NSDictionary *body = @{
@@ -134,6 +129,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return @"RCTEventEmitter.receiveEvent";
 }
 
+- (NSArray *)arguments
+{
+  return @[self.viewTag, RCTNormalizeInputEventName(self.eventName), [self body]];
+}
+
 @end
 
 /**
@@ -145,7 +145,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @property (nonatomic, copy) NSIndexSet *stickyHeaderIndices;
 @property (nonatomic, assign) BOOL centerContent;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) RCTRefreshControl *refreshControl;
 
 @end
 
@@ -275,6 +275,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   UIView *contentView = [self contentView];
   CGFloat scrollTop = self.bounds.origin.y + self.contentInset.top;
+  // If the RefreshControl is refreshing, remove it's height so sticky headers are
+  // positioned properly when scrolling down while refreshing.
+  if (self.refreshControl != nil && self.refreshControl.refreshing) {
+    scrollTop -= self.refreshControl.frame.size.height;
+  }
 
   // Find the section headers that need to be docked
   __block UIView *previousHeader = nil;
@@ -282,10 +287,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   __block UIView *nextHeader = nil;
   NSUInteger subviewCount = contentView.reactSubviews.count;
   [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:
-   ^(NSUInteger idx, __unused BOOL *stop) {
+   ^(NSUInteger idx, BOOL *stop) {
 
+    // If the subviews are out of sync with the sticky header indices don't
+    // do anything.
     if (idx >= subviewCount) {
-      RCTLogError(@"Sticky header index %zd was outside the range {0, %zd}", idx, subviewCount);
+      *stop = YES;
       return;
     }
 
@@ -344,8 +351,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   __block UIView *hitView;
 
+  NSArray *subviews = [self contentView].reactSubviews;
+  NSUInteger subviewCount = subviews.count;
   [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
-    UIView *stickyHeader = [self contentView].reactSubviews[idx];
+    if (idx >= subviewCount) {
+      *stop = YES;
+      return;
+    }
+    UIView *stickyHeader = subviews[idx];
     CGPoint convertedPoint = [stickyHeader convertPoint:point fromView:self];
     hitView = [stickyHeader hitTest:convertedPoint withEvent:event];
     *stop = (hitView != nil);
@@ -354,7 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return hitView ?: [super hitTest:point withEvent:event];
 }
 
-- (void)setRefreshControl:(UIRefreshControl *)refreshControl
+- (void)setRefreshControl:(RCTRefreshControl *)refreshControl
 {
   if (_refreshControl) {
     [_refreshControl removeFromSuperview];
@@ -481,6 +494,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   CGPoint originalOffset = _scrollView.contentOffset;
   _scrollView.frame = self.bounds;
   _scrollView.contentOffset = originalOffset;
+
+  // Adjust the refresh control frame if the scrollview layout changes.
+  RCTRefreshControl *refreshControl = _scrollView.refreshControl;
+  if (refreshControl && refreshControl.refreshing) {
+    refreshControl.frame = (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
+  }
 
   [self updateClippedSubviews];
 }
@@ -815,6 +834,17 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
     _scrollView.contentSize = contentSize;
     _scrollView.contentOffset = newOffset;
   }
+
+  if (RCT_DEBUG) {
+    // Validate that sticky headers are not out of range.
+    NSUInteger subviewCount = _scrollView.contentView.reactSubviews.count;
+    NSUInteger lastIndex = _scrollView.stickyHeaderIndices.lastIndex;
+    if (lastIndex != NSNotFound && lastIndex >= subviewCount) {
+      RCTLogWarn(@"Sticky header index %zd was outside the range {0, %zd}",
+                 lastIndex, subviewCount);
+    }
+  }
+
   [_scrollView dockClosestSectionHeader];
 }
 
@@ -877,7 +907,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
   _onRefreshStart = [onRefreshStart copy];
 
   if (!_scrollView.refreshControl) {
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    RCTRefreshControl *refreshControl = [[RCTRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _scrollView.refreshControl = refreshControl;
   }

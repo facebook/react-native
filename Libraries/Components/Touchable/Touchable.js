@@ -6,9 +6,9 @@
 
 var BoundingDimensions = require('BoundingDimensions');
 var Position = require('Position');
-var TouchEventUtils = require('TouchEventUtils');
+var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 var queryLayoutByID = require('queryLayoutByID');
 
 /**
@@ -337,7 +337,7 @@ var TouchableMixin = {
    * Must return true to start the process of `Touchable`.
    */
   touchableHandleStartShouldSetResponder: function() {
-    return true;
+    return !this.props.disabled;
   },
 
   /**
@@ -431,6 +431,16 @@ var TouchableMixin = {
     var pressExpandTop = pressRectOffset.top;
     var pressExpandRight = pressRectOffset.right;
     var pressExpandBottom = pressRectOffset.bottom;
+
+    var hitSlop = this.touchableGetHitSlop ?
+      this.touchableGetHitSlop() : null;
+
+    if (hitSlop) {
+      pressExpandLeft += hitSlop.left;
+      pressExpandTop += hitSlop.top;
+      pressExpandRight += hitSlop.right;
+      pressExpandBottom += hitSlop.bottom;
+    }
 
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;

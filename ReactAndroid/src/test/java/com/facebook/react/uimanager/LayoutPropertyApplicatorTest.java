@@ -17,7 +17,7 @@ import com.facebook.csslayout.CSSFlexDirection;
 import com.facebook.csslayout.CSSJustify;
 import com.facebook.csslayout.CSSPositionType;
 import com.facebook.csslayout.Spacing;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -54,16 +54,18 @@ public class LayoutPropertyApplicatorTest {
 
   @Before
   public void setup() {
-    DisplayMetricsHolder.setDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setWindowDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setScreenDisplayMetrics(new DisplayMetrics());
   }
 
   @After
   public void teardown() {
-    DisplayMetricsHolder.setDisplayMetrics(null);
+    DisplayMetricsHolder.setWindowDisplayMetrics(null);
+    DisplayMetricsHolder.setScreenDisplayMetrics(null);
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test
@@ -309,7 +311,7 @@ public class LayoutPropertyApplicatorTest {
   public void testPropertiesResetToDefault() {
     DisplayMetrics displayMetrics = new DisplayMetrics();
     displayMetrics.density = 1.0f;
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
+    DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
     ReactStylesDiffMap map = buildStyles(

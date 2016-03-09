@@ -23,7 +23,7 @@ RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSErr
 RCT_EXTERN id __nullable RCTJSONParse(NSString *__nullable jsonString, NSError **error);
 RCT_EXTERN id __nullable RCTJSONParseMutable(NSString *__nullable jsonString, NSError **error);
 
-// Santize a JSON string by stripping invalid objects and/or NaN values
+// Sanitize a JSON object by stripping invalid types and/or NaN values
 RCT_EXTERN id RCTJSONClean(id object);
 
 // Get MD5 hash of a string
@@ -108,6 +108,9 @@ RCT_EXTERN NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL);
 
 // Determines if a given image URL actually refers to an XCAsset
 RCT_EXTERN BOOL RCTIsXCAssetURL(NSURL *__nullable imageURL);
+
+// Creates a new, unique temporary file path with the specified extension
+RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);
 
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);

@@ -9,7 +9,9 @@
 'use strict';
 
 jest.setMock('worker-farm', function() { return () => {}; })
+    .dontMock('node-haste/node_modules/throat')
     .dontMock('os')
+    .dontMock('lodash')
     .dontMock('path')
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
@@ -20,10 +22,11 @@ jest.setMock('worker-farm', function() { return () => {}; })
 const Promise = require('promise');
 
 var Bundler = require('../../Bundler');
-var FileWatcher = require('../../DependencyResolver/FileWatcher');
 var Server = require('../');
 var Server = require('../../Server');
 var AssetServer = require('../../AssetServer');
+
+var FileWatcher;
 
 describe('processRequest', () => {
   var server;
@@ -57,6 +60,7 @@ describe('processRequest', () => {
   var triggerFileChange;
 
   beforeEach(() => {
+    FileWatcher = require('node-haste').FileWatcher;
     Bundler.prototype.bundle = jest.genMockFunction().mockImpl(() =>
       Promise.resolve({
         getSource: () => 'this is the source',
@@ -193,7 +197,7 @@ describe('processRequest', () => {
       });
     });
 
-    it('rebuilds the bundles that contain a file when that file is changed', () => {
+    it('does not rebuild the bundles that contain a file when that file is changed', () => {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(
@@ -229,7 +233,7 @@ describe('processRequest', () => {
       jest.runAllTimers();
       jest.runAllTicks();
 
-      expect(bundleFunc.mock.calls.length).toBe(2);
+      expect(bundleFunc.mock.calls.length).toBe(1);
 
       makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
         .done(response =>
@@ -238,7 +242,7 @@ describe('processRequest', () => {
       jest.runAllTicks();
     });
 
-    it('rebuilds the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
+    it('does not rebuild the bundles that contain a file when that file is changed, even when hot loading is enabled', () => {
       const bundleFunc = jest.genMockFunction();
       bundleFunc
         .mockReturnValueOnce(

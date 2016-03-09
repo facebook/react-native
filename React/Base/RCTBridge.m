@@ -15,6 +15,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 
@@ -68,7 +69,8 @@ void RCTRegisterModule(Class moduleClass)
 NSString *RCTBridgeModuleNameForClass(Class cls)
 {
 #if RCT_DEV
-  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)], @"Bridge module classes must conform to RCTBridgeModule");
+  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
+            @"Bridge module `%@` does not conform to RCTBridgeModule", cls);
 #endif
 
   NSString *name = [cls moduleName];
@@ -103,35 +105,6 @@ dispatch_queue_t RCTJSThread;
 
     // Set up JS thread
     RCTJSThread = (id)kCFNull;
-
-#if RCT_DEBUG
-
-    // Set up module classes
-    static unsigned int classCount;
-    Class *classes = objc_copyClassList(&classCount);
-
-    for (unsigned int i = 0; i < classCount; i++)
-    {
-      Class cls = classes[i];
-      Class superclass = cls;
-      while (superclass)
-      {
-        if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule)))
-        {
-          if (![RCTModuleClasses containsObject:cls]) {
-            RCTLogWarn(@"Class %@ was not exported. Did you forget to use "
-                       "RCT_EXPORT_MODULE()?", cls);
-          }
-          break;
-        }
-        superclass = class_getSuperclass(superclass);
-      }
-    }
-
-    free(classes);
-
-#endif
-
   });
 }
 
@@ -156,15 +129,13 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                    launchOptions:(NSDictionary *)launchOptions
 {
-  RCTAssertMainThread();
-
   if ((self = [super init])) {
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _delegate = delegate;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    [self bindKeys];
+    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
   }
   return self;
 }
@@ -173,8 +144,6 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
                     launchOptions:(NSDictionary *)launchOptions
 {
-  RCTAssertMainThread();
-
   if ((self = [super init])) {
     RCTPerformanceLoggerStart(RCTPLTTI);
 
@@ -182,7 +151,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    [self bindKeys];
+    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
   }
   return self;
 }
@@ -238,6 +207,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
 }
 
+- (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
+{
+  NSMutableArray *modules = [NSMutableArray new];
+  for (Class moduleClass in self.moduleClasses) {
+    if ([moduleClass conformsToProtocol:protocol]) {
+      id module = [self moduleForClass:moduleClass];
+      if (module) {
+        [modules addObject:module];
+      }
+    }
+  }
+  return [modules copy];
+}
+
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  return [self.batchedBridge moduleIsInitialized:moduleClass];
+}
+
 - (RCTEventDispatcher *)eventDispatcher
 {
   return [self moduleForClass:[RCTEventDispatcher class]];
@@ -246,7 +234,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reload
 {
   /**
-   * AnyThread
+   * Any thread
    */
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
@@ -256,8 +244,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)setUp
 {
-  RCTAssertMainThread();
-
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
   _delegateBundleURL = [self.delegate sourceURLForBridge:self];
@@ -268,6 +254,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // Sanitize the bundle URL
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
+  [self createBatchedBridge];
+}
+
+- (void)createBatchedBridge
+{
   self.batchedBridge = [[RCTBatchedBridge alloc] initWithParentBridge:self];
 }
 
@@ -288,7 +279,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)invalidate
 {
-  RCTBatchedBridge *batchedBridge = (RCTBatchedBridge *)self.batchedBridge;
+  RCTBridge *batchedBridge = self.batchedBridge;
   self.batchedBridge = nil;
 
   if (batchedBridge) {
@@ -306,17 +297,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)enqueueCallback:(NSNumber *)cbID args:(NSArray *)args
 {
   [self.batchedBridge enqueueCallback:cbID args:args];
-}
-
-@end
-
-@implementation RCTBridge(Deprecated)
-
-NSString *const RCTDidCreateNativeModules = @"RCTDidCreateNativeModules";
-
-- (NSDictionary *)modules
-{
-  return self.batchedBridge.modules;
 }
 
 @end

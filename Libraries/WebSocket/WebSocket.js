@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule WebSocket
+ * @flow
  */
 'use strict';
 
@@ -116,6 +117,7 @@ class WebSocket extends WebSocketBase {
         var event = new WebSocketEvent('error');
         event.message = ev.message;
         this.onerror && this.onerror(event);
+        this.onclose && this.onclose(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
         this.close();

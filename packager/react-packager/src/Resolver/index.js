@@ -11,9 +11,7 @@
 
 const path = require('path');
 const Activity = require('../Activity');
-const DependencyGraph = require('../DependencyResolver/DependencyGraph');
-const replacePatterns = require('../DependencyResolver/lib/replacePatterns');
-const Polyfill = require('../DependencyResolver/Polyfill');
+const DependencyGraph = require('node-haste');
 const declareOpts = require('../lib/declareOpts');
 const Promise = require('promise');
 
@@ -49,6 +47,12 @@ const validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  transformCode: {
+    type: 'function',
+  },
+  minifyCode: {
+    type: 'function',
+  },
 });
 
 const getDependenciesValidateOpts = declareOpts({
@@ -60,7 +64,7 @@ const getDependenciesValidateOpts = declareOpts({
     type: 'string',
     required: false,
   },
-  isUnbundle: {
+  unbundle: {
     type: 'boolean',
     default: false
   },
@@ -85,7 +89,6 @@ class Resolver {
           (opts.blacklistRE && opts.blacklistRE.test(filepath));
       },
       providesModuleNodeModules: [
-        'fbjs',
         'react',
         'react-native',
         // Parse requires AsyncStorage. They will
@@ -93,16 +96,22 @@ class Resolver {
         // should work after this release and we can
         // remove it from here.
         'parse',
-        'react-transform-hmr',
       ],
       platforms: ['ios', 'android'],
       preferNativePlatform: true,
       fileWatcher: opts.fileWatcher,
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
+      transformCode: opts.transformCode,
     });
 
+    this._minifyCode = opts.minifyCode;
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
+
+    this._depGraph.load().catch(err => {
+      console.error(err.message + '\n' + err.stack);
+      process.exit(1);
+    });
   }
 
   getShallowDependencies(entryFile) {
@@ -110,21 +119,22 @@ class Resolver {
   }
 
   stat(filePath) {
-    return this._depGraph.stat(filePath);
+    return this._depGraph.getFS().stat(filePath);
   }
 
   getModuleForPath(entryFile) {
     return this._depGraph.getModuleForPath(entryFile);
   }
 
-  getDependencies(main, options) {
-    const opts = getDependenciesValidateOpts(options);
-
-    return this._depGraph.getDependencies(
-      main,
-      opts.platform,
-      opts.recursive,
-    ).then(resolutionResponse => {
+  getDependencies(entryPath, options, transformOptions, onProgress) {
+    const {platform, recursive} = getDependenciesValidateOpts(options);
+    return this._depGraph.getDependencies({
+      entryPath,
+      platform,
+      transformOptions,
+      recursive,
+      onProgress,
+    }).then(resolutionResponse => {
       this._getPolyfillDependencies().reverse().forEach(
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
@@ -140,18 +150,17 @@ class Resolver {
         ? path.join(__dirname, 'polyfills/prelude_dev.js')
         : path.join(__dirname, 'polyfills/prelude.js');
 
-    const moduleSystem = opts.isUnbundle
+    const moduleSystem = opts.unbundle
         ? path.join(__dirname, 'polyfills/require-unbundle.js')
         : path.join(__dirname, 'polyfills/require.js');
 
     return [
       prelude,
       moduleSystem
-    ].map(moduleName => new Polyfill({
-      path: moduleName,
+    ].map(moduleName => this._depGraph.createPolyfill({
+      file: moduleName,
       id: moduleName,
       dependencies: [],
-      isPolyfill: true,
     }));
   }
 
@@ -168,25 +177,22 @@ class Resolver {
     ].concat(this._polyfillModuleNames);
 
     return polyfillModuleNames.map(
-      (polyfillModuleName, idx) => new Polyfill({
-        path: polyfillModuleName,
+      (polyfillModuleName, idx) => this._depGraph.createPolyfill({
+        file: polyfillModuleName,
         id: polyfillModuleName,
         dependencies: polyfillModuleNames.slice(0, idx),
-        isPolyfill: true,
       })
     );
   }
 
-  resolveRequires(resolutionResponse, module, code) {
+  resolveRequires(resolutionResponse, module, code, dependencyOffsets = []) {
     return Promise.resolve().then(() => {
-      if (module.isPolyfill()) {
-        return Promise.resolve({code});
-      }
-
       const resolvedDeps = Object.create(null);
       const resolvedDepsArr = [];
 
       return Promise.all(
+        // here, we build a map of all require strings (relative and absolute)
+        // to the canonical name of the module they reference
         resolutionResponse.getResolvedDependencyPairs(module).map(
           ([depName, depModule]) => {
             if (depModule) {
@@ -198,59 +204,81 @@ class Resolver {
           }
         )
       ).then(() => {
-        const relativizeCode = (codeMatch, pre, quot, depName, post) => {
+        const relativizeCode = (codeMatch, quot, depName) => {
+          // if we have a canonical name for the module imported here,
+          // we use it, so that require() is always called with the same
+          // id for every module.
+          // Example:
+          // -- in a/b.js:
+          //    require('./c') => require('a/c');
+          // -- in b/index.js:
+          //    require('../a/c') => require('a/c');
           const depId = resolvedDeps[depName];
           if (depId) {
-            return pre + quot + depId + post;
+            return quot + depId + quot;
           } else {
             return codeMatch;
           }
         };
 
-        code = code
-          .replace(replacePatterns.IMPORT_RE, relativizeCode)
-          .replace(replacePatterns.EXPORT_RE, relativizeCode)
-          .replace(replacePatterns.REQUIRE_RE, relativizeCode);
+        code = dependencyOffsets.reduceRight((codeBits, offset) => {
+          const first = codeBits.shift();
+          codeBits.unshift(
+            first.slice(0, offset),
+            first.slice(offset).replace(/(['"])([^'"']*)\1/, relativizeCode),
+          );
+          return codeBits;
+        }, [code]);
 
-        return module.getName().then(name => {
-          return {name, code};
-        });
+        return code.join('');
       });
     });
   }
 
-  wrapModule(resolutionResponse, module, code) {
-    if (module.isPolyfill()) {
-      return Promise.resolve({
-        code: definePolyfillCode(code),
-      });
+  wrapModule({
+    resolutionResponse,
+    module,
+    name,
+    map,
+    code,
+    meta = {},
+    minify = false
+  }) {
+    if (module.isJSON()) {
+      code = `module.exports = ${code}`;
     }
+    const result = module.isPolyfill()
+      ? Promise.resolve({code: definePolyfillCode(code)})
+      : this.resolveRequires(
+        resolutionResponse,
+        module,
+        code,
+        meta.dependencyOffsets
+      ).then(code => ({code: defineModuleCode(name, code), map}));
 
-    return this.resolveRequires(resolutionResponse, module, code).then(
-      ({name, code}) => {
-        return {name, code: defineModuleCode(name, code)};
-      });
+    return minify
+      ? result.then(({code, map}) => this._minifyCode(module.path, code, map))
+      : result;
   }
 
   getDebugInfo() {
     return this._depGraph.getDebugInfo();
   }
-
 }
 
 function defineModuleCode(moduleName, code) {
   return [
     `__d(`,
-    `'${moduleName}',`,
-    'function(global, require, module, exports) {',
-    `  ${code}`,
+    `${JSON.stringify(moduleName)}, `,
+    `function(global, require, module, exports) {`,
+      `${code}`,
     '\n});',
   ].join('');
 }
 
-function definePolyfillCode(code) {
+function definePolyfillCode(code,) {
   return [
-    '(function(global) {',
+    `(function(global) {`,
     code,
     `\n})(typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : this);`,
   ].join('');

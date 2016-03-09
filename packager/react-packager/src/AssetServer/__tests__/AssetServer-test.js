@@ -1,8 +1,8 @@
 'use strict';
 
 jest
-  .dontMock('../../DependencyResolver/lib/getPlatformExtension')
-  .dontMock('../../DependencyResolver/lib/getAssetDataFromName')
+  .dontMock('node-haste/lib/lib/getPlatformExtension')
+  .dontMock('node-haste/node_modules/throat')
   .dontMock('../');
 
 jest
@@ -16,6 +16,11 @@ var crypto = require('crypto');
 var fs = require('fs');
 
 describe('AssetServer', () => {
+  beforeEach(() => {
+    const NodeHaste = require('node-haste');
+    NodeHaste.getAssetDataFromName = require.requireActual('node-haste/lib/lib/getAssetDataFromName');
+  });
+
   describe('assetServer.get', () => {
     pit('should work for the simple case', () => {
       const server = new AssetServer({

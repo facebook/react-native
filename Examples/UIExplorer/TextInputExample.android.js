@@ -178,6 +178,60 @@ class TokenizedTextExample extends React.Component {
   }
 }
 
+var BlurOnSubmitExample = React.createClass({
+  focusNextField(nextField) {
+    this.refs[nextField].focus();
+  },
+
+  render: function() {
+    return (
+      <View>
+        <TextInput
+          ref="1"
+          style={styles.singleLine}
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('2')}
+        />
+        <TextInput
+          ref="2"
+          style={styles.singleLine}
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('3')}
+        />
+        <TextInput
+          ref="3"
+          style={styles.singleLine}
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('4')}
+        />
+        <TextInput
+          ref="4"
+          style={styles.singleLine}
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('5')}
+        />
+        <TextInput
+          ref="5"
+          style={styles.singleLine}
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
+        />
+      </View>
+    );
+  }
+});
+
 var styles = StyleSheet.create({
   multiline: {
     height: 60,
@@ -208,7 +262,13 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.singleLine} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.singleLine}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
@@ -281,6 +341,10 @@ exports.examples = [
     }
   },
   {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
+  },
+  {
     title: 'Event handling',
     render: function(): ReactElement { return <TextEventsExample />; },
   },
@@ -321,6 +385,11 @@ exports.examples = [
             <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
               Darker backgroundColor
             </Text>
+          </TextInput>
+          <TextInput
+            defaultValue="Highlight Color is red"
+            selectionColor={'red'}
+            style={styles.singleLine}>
           </TextInput>
         </View>
       );

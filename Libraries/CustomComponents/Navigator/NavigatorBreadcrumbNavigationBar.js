@@ -36,7 +36,8 @@ var View = require('View');
 
 var { Map } = require('immutable');
 
-var invariant = require('invariant');
+var guid = require('guid');
+var invariant = require('fbjs/lib/invariant');
 
 var Interpolators = NavigatorBreadcrumbNavigationBarStyles.Interpolators;
 var NavigatorNavigationBarStyles = Platform.OS === 'android' ?
@@ -179,11 +180,7 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
   },
 
   componentWillMount: function() {
-    this._descriptors = {
-      crumb: new Map(),
-      title: new Map(),
-      right: new Map(),
-    };
+    this._reset();
   },
 
   render: function() {
@@ -192,12 +189,28 @@ var NavigatorBreadcrumbNavigationBar = React.createClass({
     var titles = navState.routeStack.map(this._getTitle);
     var buttons = navState.routeStack.map(this._getRightButton);
     return (
-      <View style={[styles.breadCrumbContainer, this.props.style]}>
+      <View
+        key={this._key}
+        style={[styles.breadCrumbContainer, this.props.style]}>
         {titles}
         {icons}
         {buttons}
       </View>
     );
+  },
+
+  immediatelyRefresh: function() {
+    this._reset();
+    this.forceUpdate();
+  },
+
+  _reset() {
+    this._key = guid();
+    this._descriptors = {
+      crumb: new Map(),
+      title: new Map(),
+      right: new Map(),
+    };
   },
 
   _getBreadcrumb: function(route, index) {

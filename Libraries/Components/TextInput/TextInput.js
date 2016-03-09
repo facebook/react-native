@@ -27,8 +27,8 @@ var UIManager = require('UIManager');
 var View = require('View');
 
 var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var emptyFunction = require('emptyFunction');
-var invariant = require('invariant');
+var emptyFunction = require('fbjs/lib/emptyFunction');
+var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 
 var onlyMultiline = {
@@ -232,6 +232,10 @@ var TextInput = React.createClass({
      */
     secureTextEntry: PropTypes.bool,
     /**
+    * The highlight (and cursor on ios) color of the text input
+    */
+    selectionColor: PropTypes.string,
+    /**
      * See DocumentSelectionState.js, some state that is responsible for
      * maintaining selection information for a document
      * @platform ios
@@ -279,17 +283,12 @@ var TextInput = React.createClass({
      * multiline fields. Note that for multiline fields, setting blurOnSubmit
      * to true means that pressing return will blur the field and trigger the
      * onSubmitEditing event instead of inserting a newline into the field.
-     * @platform ios
      */
     blurOnSubmit: PropTypes.bool,
     /**
      * Styles
      */
     style: Text.propTypes.style,
-    /**
-     * Used to locate this view in end-to-end tests
-     */
-    testID: PropTypes.string,
     /**
      * The color of the textInput underline.
      * @platform android
@@ -453,6 +452,9 @@ var TextInput = React.createClass({
       <TouchableWithoutFeedback
         onPress={this._onPress}
         rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityTraits={props.accessibilityTraits}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -502,10 +504,12 @@ var TextInput = React.createClass({
         onTextInput={this._onTextInput}
         onEndEditing={this.props.onEndEditing}
         onSubmitEditing={this.props.onSubmitEditing}
+        blurOnSubmit={this.props.blurOnSubmit}
         onLayout={this.props.onLayout}
         password={this.props.password || this.props.secureTextEntry}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
+        selectionColor={this.props.selectionColor}
         text={this._getText()}
         underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
@@ -515,6 +519,9 @@ var TextInput = React.createClass({
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
+        accessible={this.props.accessible}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityComponentType={this.props.accessibilityComponentType}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -524,6 +531,10 @@ var TextInput = React.createClass({
   _onFocus: function(event: Event) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.focus();
     }
   },
 
@@ -564,6 +575,10 @@ var TextInput = React.createClass({
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
+    }
+
+    if (this.props.selectionState) {
+      this.props.selectionState.blur();
     }
   },
 

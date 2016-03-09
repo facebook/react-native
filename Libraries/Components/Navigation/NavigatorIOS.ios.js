@@ -20,7 +20,7 @@ var StaticContainer = require('StaticContainer.react');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var logError = require('logError');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -635,8 +635,8 @@ var NavigatorIOS = React.createClass({
     this._handleNavigatorStackChanged(e);
   },
 
-  _routeToStackItem: function(route: Route, i: number) {
-    var {component, wrapperStyle, passProps, ...route} = route;
+  _routeToStackItem: function(routeArg: Route, i: number) {
+    var {component, wrapperStyle, passProps, ...route} = routeArg;
     var {itemWrapperStyle, ...props} = this.props;
     var shouldUpdateChild =
       this.state.updatingAllIndicesAtOrBeyond != null &&
