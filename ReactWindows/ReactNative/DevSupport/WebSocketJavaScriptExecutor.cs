@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ReactNative.Bridge;
 using ReactNative.Collections;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using Windows.Foundation;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 
-namespace ReactNative.Bridge
+namespace ReactNative.DevSupport
 {
     class WebSocketJavaScriptExecutor : IJavaScriptExecutor
     {
@@ -21,6 +22,7 @@ namespace ReactNative.Bridge
         private readonly JObject _injectedObjects;
         private readonly IDictionary<int, TaskCompletionSource<JToken>> _callbacks;
 
+        private bool _connected;
         private DataWriter _messageWriter;
         private int _requestId;
          
@@ -45,21 +47,25 @@ namespace ReactNative.Bridge
             var retryCount = ConnectRetryCount;
             while (true)
             {
-                try
+                var timeoutSource = new CancellationTokenSource(ConnectTimeoutMilliseconds);
+                using (token.Register(timeoutSource.Cancel))
                 {
-                    await ConnectCoreAsync(uri, token);
-                    return;
-                }
-                catch (OperationCanceledException ex)
-                when (ex.CancellationToken == token)
-                {
-                    throw;
-                }
-                catch
-                {
-                    if (retryCount <= 0)
+                    try
                     {
-                        throw;
+                        await ConnectCoreAsync(uri, timeoutSource.Token);
+                        return;
+                    }
+                    catch (OperationCanceledException ex)
+                    when (ex.CancellationToken == timeoutSource.Token)
+                    {
+                        token.ThrowIfCancellationRequested();
+                    }
+                    catch
+                    {
+                        if (--retryCount <= 0)
+                        {
+                            throw;
+                        }
                     }
                 }
             }
@@ -132,6 +138,7 @@ namespace ReactNative.Bridge
 
         public void Dispose()
         {
+            _messageWriter.Dispose();
             _webSocket.Dispose();
         }
 
@@ -140,34 +147,44 @@ namespace ReactNative.Bridge
             var asyncAction = default(IAsyncAction);
             using (token.Register(() => asyncAction?.Cancel()))
             {
-                asyncAction = _webSocket.ConnectAsync(uri);
-                await asyncAction;
+                if (!_connected)
+                {
+                    asyncAction = _webSocket.ConnectAsync(uri);
+                    await asyncAction;
+                    _messageWriter = new DataWriter(_webSocket.OutputStream);
+                    _connected = true;
+                }
             }
 
-            _messageWriter = new DataWriter(_webSocket.OutputStream);
-            await PrepareJavaScriptRuntimeAsync();        
+            await PrepareJavaScriptRuntimeAsync(token);
         }
 
-        private async Task PrepareJavaScriptRuntimeAsync()
+        private async Task<JToken> PrepareJavaScriptRuntimeAsync(CancellationToken token)
         {
-            var requestId = Interlocked.Increment(ref _requestId);
-            var callback = new TaskCompletionSource<JToken>();
-            _callbacks.Add(requestId, callback);
-
-            try
+            var cancellationSource = new TaskCompletionSource<bool>();
+            using (token.Register(() => cancellationSource.SetResult(false)))
             {
-                var request = new JObject
+                var requestId = Interlocked.Increment(ref _requestId);
+                var callback = new TaskCompletionSource<JToken>();
+                _callbacks.Add(requestId, callback);
+
+                try
                 {
-                    { "id", requestId },
-                    { "method", "prepareJSRuntime" },
-                };
+                    var request = new JObject
+                    {
+                        { "id", requestId },
+                        { "method", "prepareJSRuntime" },
+                    };
 
-                await SendMessageAsync(requestId, request.ToString(Formatting.None));
-                await callback.Task;
-            }
-            finally
-            {
-                _callbacks.Remove(requestId);
+                    await SendMessageAsync(requestId, request.ToString(Formatting.None));
+                    await Task.WhenAny(callback.Task, cancellationSource.Task);
+                    token.ThrowIfCancellationRequested();
+                    return await callback.Task;
+                }
+                finally
+                {
+                    _callbacks.Remove(requestId);
+                }
             }
         }
 
