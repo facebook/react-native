@@ -31,11 +31,19 @@ class BundleBase {
   }
 
   addModule(module) {
-    if (!module instanceof ModuleTransport) {
+    if (!(module instanceof ModuleTransport)) {
       throw new Error('Expeceted a ModuleTransport object');
     }
 
-    this._modules.push(module);
+    return this._modules.push(module) - 1;
+  }
+
+  replaceModuleAt(index, module) {
+    if (!(module instanceof ModuleTransport)) {
+      throw new Error('Expeceted a ModuleTransport object');
+    }
+
+    this._modules[index] = module;
   }
 
   getModules() {
