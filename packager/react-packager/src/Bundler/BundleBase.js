@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const _ = require('underscore');
 const ModuleTransport = require('../lib/ModuleTransport');
 
 class BundleBase {
@@ -66,7 +65,7 @@ class BundleBase {
       return this._source;
     }
 
-    this._source = _.pluck(this._modules, 'code').join('\n');
+    this._source = this._modules.map((module) => module.code).join('\n');
     return this._source;
   }
 

@@ -11,7 +11,7 @@
 jest.setMock('worker-farm', function() { return () => {}; })
     .dontMock('node-haste/node_modules/throat')
     .dontMock('os')
-    .dontMock('underscore')
+    .dontMock('lodash')
     .dontMock('path')
     .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })

@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const _ = require('underscore');
+const _ = require('lodash');
 const base64VLQ = require('./base64-vlq');
 const BundleBase = require('./BundleBase');
 const ModuleTransport = require('../lib/ModuleTransport');
@@ -143,7 +143,7 @@ class Bundle extends BundleBase {
 
       if (options.excludeSource) {
         if (map.sourcesContent && map.sourcesContent.length) {
-          map = _.extend({}, map, {sourcesContent: []});
+          map = Object.assign({}, map, {sourcesContent: []});
         }
       }
 
