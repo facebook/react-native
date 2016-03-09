@@ -2,26 +2,8 @@
 
 require(`shelljs/global`);
 
-RELEASE="$1"
-JAVA_VERSION="1.7"
-
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-BLUE="\033[0;35m"
-ENDCOLOR="\033[0m"
-
-error() {
-  echo -e $RED"$@"$ENDCOLOR
-  exit 1
-}
-
-success() {
-  echo -e $GREEN"$@"$ENDCOLOR
-}
-
-info() {
-  echo -e $BLUE"$@"$ENDCOLOR
-}
+const RELEASE="$1";
+const JAVA_VERSION="1.7";
 
 [[ -z $RELEASE ]] && error "Please specify a version. Example usage: release.sh 0.18"
 
