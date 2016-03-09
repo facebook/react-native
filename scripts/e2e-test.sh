@@ -77,7 +77,7 @@ npm install -g react-native-cli
 react-native init EndToEndTest
 cd EndToEndTest
 
-npm install --g flow-bin@0.21.0
+npm install --g flow-bin@0.22.0
 flow --retries 10
 
 case $1 in
