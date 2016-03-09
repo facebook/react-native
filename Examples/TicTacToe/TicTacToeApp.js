@@ -89,7 +89,6 @@ class Board {
         }
       }
     }
-
     return this.winner() === null;
   }
 }
@@ -306,7 +305,7 @@ var styles = StyleSheet.create({
     textAlign: 'center',
   },
   newGame: {
-    backgroundColor: '#887766',
+    backgroundColor: '#887765',
     padding: 20,
     borderRadius: 5,
   },

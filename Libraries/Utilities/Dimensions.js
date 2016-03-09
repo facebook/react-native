@@ -11,11 +11,12 @@
  */
 'use strict';
 
-var NativeModules = require('NativeModules');
+var Platform = require('Platform');
+var UIManager = require('UIManager');
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
-var dimensions = NativeModules.UIManager.Dimensions;
+var dimensions = UIManager.Dimensions;
 
 // We calculate the window dimensions in JS so that we don't encounter loss of
 // precision in transferring the dimensions (which could be non-integers) over
@@ -31,7 +32,21 @@ if (dimensions && dimensions.windowPhysicalPixels) {
     scale: windowPhysicalPixels.scale,
     fontScale: windowPhysicalPixels.fontScale,
   };
+  if (Platform.OS === 'android') {
+    // Screen and window dimensions are different on android
+    var screenPhysicalPixels = dimensions.screenPhysicalPixels;
+    dimensions.screen = {
+      width: screenPhysicalPixels.width / screenPhysicalPixels.scale,
+      height: screenPhysicalPixels.height / screenPhysicalPixels.scale,
+      scale: screenPhysicalPixels.scale,
+      fontScale: screenPhysicalPixels.fontScale,
+    };
 
+    // delete so no callers rely on this existing
+    delete dimensions.screenPhysicalPixels;
+  } else {
+    dimensions.screen = dimensions.window;
+  }
   // delete so no callers rely on this existing
   delete dimensions.windowPhysicalPixels;
 }
@@ -56,6 +71,8 @@ class Dimensions {
    * these constants should try to call this function on every render, rather
    * than caching the value (for example, using inline styles rather than
    * setting a value in a `StyleSheet`).
+   *
+   * Example: `var {height, width} = Dimensions.get('window');`
    *
    * @param {string} dim Name of dimension as defined when calling `set`.
    * @returns {Object?} Value for the dimension.

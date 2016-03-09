@@ -11,20 +11,32 @@
 
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
+#import "RCTLog.h"
 
 static int64_t RCTPLData[RCTPLSize][2] = {};
 
 void RCTPerformanceLoggerStart(RCTPLTag tag)
 {
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
+  RCTPLData[tag][1] = 0;
 }
 
 void RCTPerformanceLoggerEnd(RCTPLTag tag)
 {
-  RCTPLData[tag][1] = CACurrentMediaTime() * 1000;
+  if (RCTPLData[tag][0] != 0 && RCTPLData[tag][1] == 0) {
+    RCTPLData[tag][1] = CACurrentMediaTime() * 1000;
+  } else {
+    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
+  }
 }
 
-NSArray *RCTPerformanceLoggerOutput(void)
+void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
+{
+  RCTPLData[tag][0] = 0;
+  RCTPLData[tag][1] = value;
+}
+
+NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
   return @[
     @(RCTPLData[RCTPLScriptDownload][0]),
@@ -33,8 +45,27 @@ NSArray *RCTPerformanceLoggerOutput(void)
     @(RCTPLData[RCTPLScriptExecution][1]),
     @(RCTPLData[RCTPLNativeModuleInit][0]),
     @(RCTPLData[RCTPLNativeModuleInit][1]),
+    @(RCTPLData[RCTPLNativeModulePrepareConfig][0]),
+    @(RCTPLData[RCTPLNativeModulePrepareConfig][1]),
+    @(RCTPLData[RCTPLNativeModuleInjectConfig][0]),
+    @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
     @(RCTPLData[RCTPLTTI][0]),
     @(RCTPLData[RCTPLTTI][1]),
+    @(RCTPLData[RCTPLBundleSize][0]),
+    @(RCTPLData[RCTPLBundleSize][1]),
+  ];
+}
+
+NSArray *RCTPerformanceLoggerLabels(void)
+{
+  return @[
+    @"ScriptDownload",
+    @"ScriptExecution",
+    @"NativeModuleInit",
+    @"NativeModulePrepareConfig",
+    @"NativeModuleInjectConfig",
+    @"TTI",
+    @"BundleSize",
   ];
 }
 
@@ -48,15 +79,14 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(sendTimespans)
-                                                 name:RCTContentDidAppearNotification
-                                               object:nil];
-  }
-  return self;
+  _bridge = bridge;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(sendTimespans)
+                                               name:RCTContentDidAppearNotification
+                                             object:nil];
 }
 
 - (void)dealloc
@@ -70,12 +100,7 @@ RCT_EXPORT_MODULE()
 
   [_bridge enqueueJSCall:@"PerformanceLogger.addTimespans" args:@[
     RCTPerformanceLoggerOutput(),
-    @[
-      @"ScriptDownload",
-      @"ScriptExecution",
-      @"NativeModuleInit",
-      @"TTI",
-    ],
+    RCTPerformanceLoggerLabels(),
   ]];
 }
 

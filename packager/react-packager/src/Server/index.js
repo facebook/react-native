@@ -10,14 +10,13 @@
 
 const Activity = require('../Activity');
 const AssetServer = require('../AssetServer');
-const FileWatcher = require('../FileWatcher');
+const FileWatcher = require('node-haste').FileWatcher;
+const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
 const Promise = require('promise');
 
 const _ = require('underscore');
 const declareOpts = require('../lib/declareOpts');
-const exec = require('child_process').exec;
-const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
@@ -59,10 +58,19 @@ const validateOpts = declareOpts({
   },
   assetExts: {
     type: 'array',
-    default: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
+    default: [
+      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
+      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
+      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
+      'html', // Document formats
+    ],
   },
   transformTimeoutInterval: {
     type: 'number',
+    required: false,
+  },
+  getTransformOptionsModulePath: {
+    type: 'string',
     required: false,
   },
 });
@@ -94,8 +102,50 @@ const bundleOpts = declareOpts({
   },
   platform: {
     type: 'string',
-    required: false,
-  }
+    required: true,
+  },
+  runBeforeMainModule: {
+    type: 'array',
+    default: [
+      // Ensures essential globals are available and are patched correctly.
+      'InitializeJavaScriptAppEngine'
+    ],
+  },
+  unbundle: {
+    type: 'boolean',
+    default: false,
+  },
+  hot: {
+    type: 'boolean',
+    default: false,
+  },
+  entryModuleOnly: {
+    type: 'boolean',
+    default: false,
+  },
+});
+
+const dependencyOpts = declareOpts({
+  platform: {
+    type: 'string',
+    required: true,
+  },
+  dev: {
+    type: 'boolean',
+    default: true,
+  },
+  entryFile: {
+    type: 'string',
+    required: true,
+  },
+  recursive: {
+    type: 'boolean',
+    default: true,
+  },
+  hot: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Server {
@@ -105,6 +155,7 @@ class Server {
     this._projectRoots = opts.projectRoots;
     this._bundles = Object.create(null);
     this._changeWatchers = [];
+    this._fileChangeListeners = [];
 
     const assetGlobs = opts.assetExts.map(ext => '**/*.' + ext);
 
@@ -131,7 +182,7 @@ class Server {
 
     this._fileWatcher = options.nonPersistent
       ? FileWatcher.createDummyWatcher()
-      : new FileWatcher(watchRootConfigs);
+      : new FileWatcher(watchRootConfigs, {useWatchman: true});
 
     this._assetServer = new AssetServer({
       projectRoots: opts.projectRoots,
@@ -146,7 +197,7 @@ class Server {
     this._fileWatcher.on('all', this._onFileChange.bind(this));
 
     this._debouncedFileChangeHandler = _.debounce(filePath => {
-      this._rebuildBundles(filePath);
+      this._clearBundles();
       this._informChangeWatchers();
     }, 50);
   }
@@ -158,15 +209,30 @@ class Server {
     ]);
   }
 
+  setHMRFileChangeListener(listener) {
+    this._hmrFileChangeListener = listener;
+  }
+
   buildBundle(options) {
-    const opts = bundleOpts(options);
-    return this._bundler.bundle(
-      opts.entryFile,
-      opts.runModule,
-      opts.sourceMapUrl,
-      opts.dev,
-      opts.platform
-    );
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = bundleOpts(options);
+      return this._bundler.bundle(opts);
+    });
+  }
+
+  buildPrepackBundle(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = bundleOpts(options);
+      return this._bundler.prepackBundle(opts);
+    });
   }
 
   buildBundleFromUrl(reqUrl) {
@@ -174,39 +240,57 @@ class Server {
     return this.buildBundle(options);
   }
 
-  getDependencies(main) {
-    return this._bundler.getDependencies(main);
+  buildBundleForHMR(modules, host, port) {
+    return this._bundler.hmrBundle(modules, host, port);
+  }
+
+  getShallowDependencies(entryFile) {
+    return this._bundler.getShallowDependencies(entryFile);
+  }
+
+  getModuleForPath(entryFile) {
+    return this._bundler.getModuleForPath(entryFile);
+  }
+
+  getDependencies(options) {
+    return Promise.resolve().then(() => {
+      if (!options.platform) {
+        options.platform = getPlatformExtension(options.entryFile);
+      }
+
+      const opts = dependencyOpts(options);
+      return this._bundler.getDependencies(opts);
+    });
+  }
+
+  getOrderedDependencyPaths(options) {
+    return Promise.resolve().then(() => {
+      const opts = dependencyOpts(options);
+      return this._bundler.getOrderedDependencyPaths(opts);
+    });
   }
 
   _onFileChange(type, filepath, root) {
     const absPath = path.join(root, filepath);
     this._bundler.invalidateFile(absPath);
+
+    // If Hot Loading is enabled avoid rebuilding bundles and sending live
+    // updates. Instead, send the HMR updates right away and clear the bundles
+    // cache so that if the user reloads we send them a fresh bundle
+    if (this._hmrFileChangeListener) {
+      // Clear cached bundles in case user reloads
+      this._clearBundles();
+      this._hmrFileChangeListener(absPath, this._bundler.stat(absPath));
+      return;
+    }
+
     // Make sure the file watcher event runs through the system before
     // we rebuild the bundles.
     this._debouncedFileChangeHandler(absPath);
   }
 
-  _rebuildBundles() {
-    const buildBundle = this.buildBundle.bind(this);
-    const bundles = this._bundles;
-
-    Object.keys(bundles).forEach(function(optionsJson) {
-      const options = JSON.parse(optionsJson);
-      // Wait for a previous build (if exists) to finish.
-      bundles[optionsJson] = (bundles[optionsJson] || Promise.resolve()).finally(function() {
-        // With finally promise callback we can't change the state of the promise
-        // so we need to reassign the promise.
-        bundles[optionsJson] = buildBundle(options).then(function(p) {
-          // Make a throwaway call to getSource to cache the source string.
-          p.getSource({
-            inlineSourceMap: options.inlineSourceMap,
-            minify: options.minify,
-          });
-          return p;
-        });
-      });
-      return bundles[optionsJson];
-    });
+  _clearBundles() {
+    this._bundles = Object.create(null);
   }
 
   _informChangeWatchers() {
@@ -278,7 +362,8 @@ class Server {
   _processAssetsRequest(req, res) {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
-    this._assetServer.get(assetPath[1])
+    const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
+    this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => res.end(data),
         error => {
@@ -286,43 +371,7 @@ class Server {
           res.writeHead('404');
           res.end('Asset not found');
         }
-      ).done();
-  }
-
-  _processProfile(req, res) {
-    console.log('Dumping profile information...');
-    const dumpName = '/tmp/dump_' + Date.now() + '.json';
-    const prefix = process.env.TRACE_VIEWER_PATH || '';
-    const cmd = path.join(prefix, 'trace2html') + ' ' + dumpName;
-    fs.writeFileSync(dumpName, req.rawBody);
-    exec(cmd, error => {
-      if (error) {
-        if (error.code === 127) {
-          console.error(
-            '\n** Failed executing `' + cmd + '` **\n\n' +
-            'Google trace-viewer is required to visualize the data, do you have it installled?\n\n' +
-            'You can get it at:\n\n' +
-            '  https://github.com/google/trace-viewer\n\n' +
-            'If it\'s not in your path,  you can set a custom path with:\n\n' +
-            '  TRACE_VIEWER_PATH=/path/to/trace-viewer\n\n' +
-            'NOTE: Your profile data was kept at:\n\n' +
-            '  ' + dumpName
-          );
-        } else {
-          console.error('Unknown error', error);
-        }
-        res.end();
-        return;
-      } else {
-        exec('rm ' + dumpName);
-        exec('open ' + dumpName.replace(/json$/, 'html'), err => {
-          if (err) {
-            console.error(err);
-          }
-          res.end();
-        });
-      }
-    });
+      ).done(() => Activity.endEvent(assetEvent));
   }
 
   processRequest(req, res, next) {
@@ -345,9 +394,6 @@ class Server {
     } else if (pathname.match(/^\/assets\//)) {
       this._processAssetsRequest(req, res);
       return;
-    } else if (pathname.match(/^\/profile\/?$/)) {
-      this._processProfile(req, res);
-      return;
     } else {
       next();
       return;
@@ -365,12 +411,27 @@ class Server {
           var bundleSource = p.getSource({
             inlineSourceMap: options.inlineSourceMap,
             minify: options.minify,
+            dev: options.dev,
           });
           res.setHeader('Content-Type', 'application/javascript');
-          res.end(bundleSource);
+          res.setHeader('ETag', p.getEtag());
+          if (req.headers['if-none-match'] === res.getHeader('ETag')){
+            res.statusCode = 304;
+            res.end();
+          } else {
+            res.end(bundleSource);
+          }
           Activity.endEvent(startReqEventId);
         } else if (requestType === 'map') {
-          var sourceMap = JSON.stringify(p.getSourceMap());
+          var sourceMap = p.getSourceMap({
+            minify: options.minify,
+            dev: options.dev,
+          });
+
+          if (typeof sourceMap !== 'string') {
+            sourceMap = JSON.stringify(sourceMap);
+          }
+
           res.setHeader('Content-Type', 'application/json');
           res.end(sourceMap);
           Activity.endEvent(startReqEventId);
@@ -390,7 +451,9 @@ class Server {
       'Content-Type': 'application/json; charset=UTF-8',
     });
 
-    if (error.type === 'TransformError' || error.type === 'NotFoundError') {
+    if (error.type === 'TransformError' ||
+        error.type === 'NotFoundError' ||
+        error.type === 'UnableToResolveError') {
       error.errors = [{
         description: error.description,
         filename: error.filename,
@@ -432,18 +495,28 @@ class Server {
     const sourceMapUrlObj = _.clone(urlObj);
     sourceMapUrlObj.pathname = pathname.replace(/\.bundle$/, '.map');
 
+    // try to get the platform from the url
+    const platform = urlObj.query.platform ||
+      getPlatformExtension(pathname);
+
     return {
       sourceMapUrl: url.format(sourceMapUrlObj),
       entryFile: entryFile,
       dev: this._getBoolOptionFromQuery(urlObj.query, 'dev', true),
       minify: this._getBoolOptionFromQuery(urlObj.query, 'minify'),
+      hot: this._getBoolOptionFromQuery(urlObj.query, 'hot', false),
       runModule: this._getBoolOptionFromQuery(urlObj.query, 'runModule', true),
       inlineSourceMap: this._getBoolOptionFromQuery(
         urlObj.query,
         'inlineSourceMap',
         false
       ),
-      platform: urlObj.query.platform,
+      platform: platform,
+      entryModuleOnly: this._getBoolOptionFromQuery(
+        urlObj.query,
+        'entryModuleOnly',
+        false,
+      ),
     };
   }
 

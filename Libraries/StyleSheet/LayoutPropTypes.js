@@ -14,10 +14,17 @@
 var ReactPropTypes = require('ReactPropTypes');
 
 /**
+ * React Native's layout system is based on Flexbox and is powered both
+ * on iOS and Android by an open source project called css-layout:
+ * https://github.com/facebook/css-layout
+ *
+ * The implementation in css-layout is slightly different from what the
+ * Flexbox spec defines - for example, we chose more sensible default
+ * values. Please refer to the css-layout README for details.
+ *
  * These properties are a subset of our styles that are consumed by the layout
  * algorithm and affect the positioning and sizing of views.
  */
-
 var LayoutPropTypes = {
   width: ReactPropTypes.number,
   height: ReactPropTypes.number,

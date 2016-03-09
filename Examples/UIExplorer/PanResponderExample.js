@@ -11,27 +11,27 @@
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @flow
+ * @flow weak
  */
 'use strict';
 
 var React = require('react-native');
 var {
-  StyleSheet,
   PanResponder,
+  StyleSheet,
   View,
+  processColor,
 } = React;
 
 var CIRCLE_SIZE = 80;
 var CIRCLE_COLOR = 'blue';
 var CIRCLE_HIGHLIGHT_COLOR = 'green';
 
-
 var PanResponderExample = React.createClass({
 
   statics: {
     title: 'PanResponder Sample',
-    description: 'Basic gesture handling example',
+    description: 'Shows the use of PanResponder to provide basic gesture handling.',
   },
 
   _panResponder: {},
@@ -52,8 +52,10 @@ var PanResponderExample = React.createClass({
     this._previousLeft = 20;
     this._previousTop = 84;
     this._circleStyles = {
-      left: this._previousLeft,
-      top: this._previousTop,
+      style: {
+        left: this._previousLeft,
+        top: this._previousTop
+      }
     };
   },
 
@@ -77,14 +79,20 @@ var PanResponderExample = React.createClass({
   },
 
   _highlight: function() {
-    this.circle && this.circle.setNativeProps({
-      backgroundColor: CIRCLE_HIGHLIGHT_COLOR
+    const circle = this.circle;
+    circle && circle.setNativeProps({
+      style: {
+        backgroundColor: processColor(CIRCLE_HIGHLIGHT_COLOR)
+      }
     });
   },
 
   _unHighlight: function() {
-    this.circle && this.circle.setNativeProps({
-      backgroundColor: CIRCLE_COLOR
+    const circle = this.circle;
+    circle && circle.setNativeProps({
+      style: {
+        backgroundColor: processColor(CIRCLE_COLOR)
+      }
     });
   },
 
@@ -106,8 +114,8 @@ var PanResponderExample = React.createClass({
     this._highlight();
   },
   _handlePanResponderMove: function(e: Object, gestureState: Object) {
-    this._circleStyles.left = this._previousLeft + gestureState.dx;
-    this._circleStyles.top = this._previousTop + gestureState.dy;
+    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
+    this._circleStyles.style.top = this._previousTop + gestureState.dy;
     this._updatePosition();
   },
   _handlePanResponderEnd: function(e: Object, gestureState: Object) {

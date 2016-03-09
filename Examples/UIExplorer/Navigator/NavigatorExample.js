@@ -10,13 +10,14 @@
  * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ *
+ * @providesModule NavigatorExample
+ */
 'use strict';
 
 var React = require('react-native');
 var {
   Navigator,
-  PixelRatio,
   ScrollView,
   StyleSheet,
   Text,
@@ -134,7 +135,7 @@ var TabBarExample = React.createClass({
       <Navigator
         ref={this._setNavigatorRef}
         style={styles.container}
-        initialRoute={{ message: "First Scene", }}
+        initialRoute={{ message: 'First Scene', }}
         renderScene={this.renderScene}
         configureScene={(route) => {
           if (route.sceneConfig) {
@@ -190,7 +191,7 @@ var styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
     padding: 15,
-    borderBottomWidth: 1 / PixelRatio.get(),
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#CDCDCD',
   },
   buttonText: {

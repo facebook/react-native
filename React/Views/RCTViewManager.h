@@ -21,7 +21,7 @@
 @class RCTSparseArray;
 @class RCTUIManager;
 
-typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *viewRegistry);
+typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry);
 
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
@@ -30,7 +30,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * allowing the manager (or the views that it manages) to manipulate the view
  * hierarchy and send events back to the JS context.
  */
-@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, weak, readonly) RCTBridge *bridge;
 
 /**
  * This method instantiates a native view to be managed by the module. Override
@@ -39,16 +39,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * return a fresh instance each time. The view module MUST NOT cache the returned
  * view and return the same instance for subsequent calls.
  */
-- (UIView<RCTComponent> *)view;
-
-/**
- * This method instantiates a native view using the props passed into the component.
- * This method should be used when you need to know about specific props in order to
- * initialize a view. By default, this just calls the -view method. Each prop will
- * still be set individually, after the view is created. Like the -view method,
- * -viewWithProps: should return a fresh instance each time it is called.
- */
-- (UIView *)viewWithProps:(NSDictionary *)props;
+- (UIView *)view;
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,
@@ -70,7 +61,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSArray *)customBubblingEventTypes;
+- (NSArray<NSString *> *)customBubblingEventTypes;
 
 /**
  * DEPRECATED: declare properties of type RCTDirectEventBlock instead
@@ -83,7 +74,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customDirectEventTypes] when overriding it.
  */
-- (NSArray *)customDirectEventTypes;
+- (NSArray<NSString *> *)customDirectEventTypes;
 
 /**
  * Called to notify manager that layout has finished, in case any calculated
@@ -97,19 +88,19 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, RCTSparseArray *v
  * custo  layout logic or tasks that involve walking the view hierarchy.
  * To be deprecated, hopefully.
  */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(RCTSparseArray *)shadowViewRegistry;
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;
 
 /**
  * This handles the simple case, where JS and native property names match.
  */
 #define RCT_EXPORT_VIEW_PROPERTY(name, type) \
-+ (NSArray *)propConfig_##name { return @[@#type]; }
++ (NSArray<NSString *> *)propConfig_##name { return @[@#type]; }
 
 /**
  * This macro maps a named property to an arbitrary key path in the view.
  */
 #define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type) \
-+ (NSArray *)propConfig_##name { return @[@#type, @#keyPath]; }
++ (NSArray<NSString *> *)propConfig_##name { return @[@#type, @#keyPath]; }
 
 /**
  * This macro can be used when you need to provide custom logic for setting
@@ -124,6 +115,6 @@ RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
  * This macro is used to map properties to the shadow view, instead of the view.
  */
 #define RCT_EXPORT_SHADOW_PROPERTY(name, type) \
-+ (NSArray *)propConfigShadow_##name { return @[@#type]; }
++ (NSArray<NSString *> *)propConfigShadow_##name { return @[@#type]; }
 
 @end

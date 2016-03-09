@@ -11,20 +11,21 @@
  */
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var PropTypes = require('ReactPropTypes');
-var RCTUIManager = require('NativeModules').UIManager;
-var React = require('React');
-var ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var StyleSheetPropType = require('StyleSheetPropType');
-var ViewStylePropTypes = require('ViewStylePropTypes');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const PropTypes = require('ReactPropTypes');
+const React = require('React');
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const StyleSheetPropType = require('StyleSheetPropType');
+const UIManager = require('UIManager');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+const requireNativeComponent = require('requireNativeComponent');
 
-var stylePropType = StyleSheetPropType(ViewStylePropTypes);
+const stylePropType = StyleSheetPropType(ViewStylePropTypes);
 
-var AccessibilityTraits = [
+const AccessibilityTraits = [
   'none',
   'button',
   'link',
@@ -43,6 +44,26 @@ var AccessibilityTraits = [
   'allowsDirectInteraction',
   'pageTurn',
 ];
+
+const AccessibilityComponentType = [
+  'none',
+  'button',
+  'radiobutton_checked',
+  'radiobutton_unchecked',
+];
+
+const forceTouchAvailable = (UIManager.RCTView.Constants &&
+  UIManager.RCTView.Constants.forceTouchAvailable) || false;
+
+const statics = {
+  AccessibilityTraits,
+  AccessibilityComponentType,
+  /**
+   * Is 3D Touch / Force Touch available (i.e. will touch events include `force`)
+   * @platform ios
+   */
+  forceTouchAvailable,
+};
 
 /**
  * The most fundamental component for building UI, `View` is a
@@ -64,7 +85,7 @@ var AccessibilityTraits = [
  * `View`s are designed to be used with `StyleSheet`s for clarity and
  * performance, although inline styles are also supported.
  */
-var View = React.createClass({
+const View = React.createClass({
   mixins: [NativeMethodsMixin],
 
   /**
@@ -74,6 +95,10 @@ var View = React.createClass({
   viewConfig: {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView
+  },
+
+  statics: {
+    ...statics,
   },
 
   propTypes: {
@@ -95,12 +120,7 @@ var View = React.createClass({
      * native one. Works for Android only.
      * @platform android
      */
-    accessibilityComponentType: PropTypes.oneOf([
-      'none',
-      'button',
-      'radiobutton_checked',
-      'radiobutton_unchecked',
-    ]),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentType),
 
     /**
      * Indicates to accessibility services whether the user should be notified
@@ -152,7 +172,7 @@ var View = React.createClass({
      * When `accessible` is true, the system will try to invoke this function
      * when the user performs accessibility tap gesture.
      */
-    onAcccessibilityTap: PropTypes.func,
+    onAccessibilityTap: PropTypes.func,
 
     /**
      * When `accessible` is true, the system will invoke this function when the
@@ -171,7 +191,6 @@ var View = React.createClass({
      * `TouchableHighlight` or `TouchableOpacity`. Check out `Touchable.js`,
      * `ScrollResponder.js` and `ResponderEventPlugin.js` for more discussion.
      */
-    onMoveShouldSetResponder: PropTypes.func,
     onResponderGrant: PropTypes.func,
     onResponderMove: PropTypes.func,
     onResponderReject: PropTypes.func,
@@ -180,6 +199,21 @@ var View = React.createClass({
     onResponderTerminationRequest: PropTypes.func,
     onStartShouldSetResponder: PropTypes.func,
     onStartShouldSetResponderCapture: PropTypes.func,
+    onMoveShouldSetResponder: PropTypes.func,
+    onMoveShouldSetResponderCapture: PropTypes.func,
+
+    /**
+     * This defines how far a touch event can start away from the view.
+     * Typical interface guidelines recommend touch targets that are at least
+     * 30 - 40 points/density-independent pixels. If a Touchable view has a
+     * height of 20 the touchable height can be extended to 40 with
+     * `hitSlop={{top: 10, bottom: 10, left: 0, right: 0}}`
+     * ** NOTE **
+     * The touch area never extends past the parent view bounds and the Z-index
+     * of sibling views always takes precedence if a touch hits two overlapping
+     * views.
+     */
+    hitSlop: EdgeInsetsPropType,
 
     /**
      * Invoked on mount and layout changes with
@@ -304,19 +338,24 @@ var View = React.createClass({
   },
 
   render: function() {
+    // WARNING: This method will not be used in production mode as in that mode we
+    // replace wrapper component View with generated native wrapper RCTView. Avoid
+    // adding functionality this component that you'd want to be available in both
+    // dev and prod modes.
     return <RCTView {...this.props} />;
   },
 });
 
-var RCTView = createReactNativeComponentClass({
-  validAttributes: ReactNativeViewAttributes.RCTView,
-  uiViewClassName: 'RCTView',
+const RCTView = requireNativeComponent('RCTView', View, {
+  nativeOnly: {
+    nativeBackgroundAndroid: true,
+  }
 });
-RCTView.propTypes = View.propTypes;
+
 if (__DEV__) {
-  var viewConfig = RCTUIManager.viewConfigs && RCTUIManager.viewConfigs.RCTView || {};
-  for (var prop in viewConfig.nativeProps) {
-    var viewAny: any = View; // Appease flow
+  const viewConfig = UIManager.viewConfigs && UIManager.viewConfigs.RCTView || {};
+  for (const prop in viewConfig.nativeProps) {
+    const viewAny: any = View; // Appease flow
     if (!viewAny.propTypes[prop] && !ReactNativeStyleAttributes[prop]) {
       throw new Error(
         'View is missing propType for native prop `' + prop + '`'
@@ -325,9 +364,11 @@ if (__DEV__) {
   }
 }
 
-var ViewToExport = RCTView;
+let ViewToExport = RCTView;
 if (__DEV__) {
   ViewToExport = View;
+} else {
+  Object.assign(RCTView, statics);
 }
 
 module.exports = ViewToExport;

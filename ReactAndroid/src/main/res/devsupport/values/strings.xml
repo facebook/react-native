@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="catalyst_reloadjs" project="catalyst" translatable="false">Reload JS</string>
+  <string name="catalyst_debugjs" project="catalyst" translatable="false">Debug in Chrome</string>
+  <string name="catalyst_debugjs_off" project="catalyst" translatable="false">Stop Chrome Debugging</string>
+  <string name="catalyst_hot_module_replacement" project="catalyst" translatable="false">Enable Hot Reloading</string>
+  <string name="catalyst_hot_module_replacement_off" project="catalyst" translatable="false">Disable Hot Reloading</string>
+  <string name="catalyst_live_reload" project="catalyst" translatable="false">Enable Live Reload</string>
+  <string name="catalyst_live_reload_off" project="catalyst" translatable="false">Disable Live Reload</string>
+  <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Enable Perf Monitor</string>
+  <string name="catalyst_perf_monitor_off" project="catalyst" translatable="false">Disable Perf Monitor</string>
+  <string name="catalyst_settings" project="catalyst" translatable="false">Dev Settings</string>
+  <string name="catalyst_settings_title" project="catalyst" translatable="false">Catalyst Dev Settings</string>
+  <string name="catalyst_jsload_title" project="catalyst" translatable="false">Please wait…</string>
+  <string name="catalyst_jsload_message" project="catalyst" translatable="false">Fetching JS bundle</string>
+  <string name="catalyst_jsload_error" project="catalyst" translatable="false">Unable to download JS bundle. Did you forget to start the development server or connect your device?</string>
+  <string name="catalyst_remotedbg_message" project="catalyst" translatable="false">Connecting to remote debugger</string>
+  <string name="catalyst_remotedbg_error" project="catalyst" translatable="false">Unable to connect with remote debugger</string>
+  <string name="catalyst_element_inspector" project="catalyst" translatable="false">Show Inspector</string>
+  <string name="catalyst_element_inspector_off" project="catalyst" translatable="false">Hide Inspector</string>
+  <string name="catalyst_start_profile" project="catalyst" translatable="false">Start Profile</string>
+  <string name="catalyst_stop_profile" project="catalyst" translatable="false">Stop Profile</string>
+</resources>

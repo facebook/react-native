@@ -6,11 +6,11 @@
  */
 'use strict';
 
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 var Sample = {
   test: function() {
-    warning("Not yet implemented for Android.");
+    warning('Not yet implemented for Android.');
   }
 };
 

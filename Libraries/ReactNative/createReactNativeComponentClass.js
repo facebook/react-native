@@ -27,13 +27,12 @@ type ReactNativeBaseComponentViewConfig = {
  */
 var createReactNativeComponentClass = function(
   viewConfig: ReactNativeBaseComponentViewConfig
-): ReactClass<any, any, any> {
+): ReactClass<any> {
   var Constructor = function(element) {
     this._currentElement = element;
 
     this._rootNodeID = null;
     this._renderedChildren = null;
-    this.previousFlattenedStyle = null;
   };
   Constructor.displayName = viewConfig.uiViewClassName;
   Constructor.viewConfig = viewConfig;

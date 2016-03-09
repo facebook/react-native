@@ -32,6 +32,10 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) RCTTextDecorationLineType textDecorationLine;
 @property (nonatomic, assign) CGFloat fontSizeMultiplier;
 @property (nonatomic, assign) BOOL allowFontScaling;
+@property (nonatomic, assign) CGFloat opacity;
+@property (nonatomic, assign) CGSize textShadowOffset;
+@property (nonatomic, assign) CGFloat textShadowRadius;
+@property (nonatomic, strong) UIColor *textShadowColor;
 
 - (void)recomputeText;
 

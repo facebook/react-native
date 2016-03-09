@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+'use strict';
 
 var Promise = require('bluebird');
 var request = require('request');
@@ -26,7 +27,7 @@ glob('src/**/*.*', function(er, files) {
   files.forEach(function(file) {
     var targetFile = file.replace(/^src/, 'build');
 
-    if (file.match(/\.js$/)) {
+    if (file.match(/\.js$/) && !file.match(/src\/react-native\/js/)) {
       targetFile = targetFile.replace(/\.js$/, '.html');
       queue = queue.then(function() {
         return new Promise(function(resolve, reject) {
@@ -56,7 +57,7 @@ glob('src/**/*.*', function(er, files) {
   });
 
   queue = queue.then(function() {
-    console.log('It is live at: http://facebook.github.io/react-native/');
+    console.log('Generated HTML files from JS');
   }).finally(function() {
     server.close();
   }).catch(function(e) {

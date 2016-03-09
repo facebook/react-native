@@ -79,7 +79,8 @@ var TabBarExample = React.createClass({
           {this._renderContent('#783E33', 'Red Tab', this.state.notifCount)}
         </TabBarIOS.Item>
         <TabBarIOS.Item
-          systemIcon="more"
+          icon={require('./flux.png')}
+          title="More"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={() => {
             this.setState({
