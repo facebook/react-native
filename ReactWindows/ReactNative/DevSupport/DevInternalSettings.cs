@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using Windows.Storage;
+﻿using Windows.Storage;
 
 namespace ReactNative.DevSupport
 {
