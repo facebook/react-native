@@ -353,11 +353,6 @@ namespace ReactNative
         {
             DispatcherHelpers.AssertOnDispatcher();
 
-            if (!DispatcherHelpers.IsInitialized)
-            {
-                DispatcherHelpers.Initialize();
-            }
-
             if (_useDeveloperSupport && _jsBundleFile == null && _jsMainModuleName != null)
             {
                 _devSupportManager.HandleReloadJavaScript();

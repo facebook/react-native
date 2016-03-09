@@ -15,7 +15,7 @@ namespace ReactNative.Modules.Core
         public JavaScriptException(string message, string stackTrace)
             : base(GetMessage(message, stackTrace))
         {
-            StackTrace = stackTrace;
+            JavaScriptStackTrace = stackTrace;
         }
 
         /// <summary>
@@ -27,13 +27,13 @@ namespace ReactNative.Modules.Core
         public JavaScriptException(string message, string stackTrace, Exception innerException)
             : base(GetMessage(message, stackTrace), innerException)
         {
-            StackTrace = stackTrace;
+            JavaScriptStackTrace = stackTrace;
         }
 
         /// <summary>
         /// The exception stack trace.
         /// </summary>
-        public string StackTrace
+        public string JavaScriptStackTrace
         {
             get;
         }

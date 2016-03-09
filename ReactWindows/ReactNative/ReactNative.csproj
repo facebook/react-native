@@ -173,8 +173,11 @@
     <Compile Include="DevSupport\ProgressDialog.xaml.cs">
       <DependentUpon>ProgressDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DevSupport\RedBoxDialog.cs" />
+    <Compile Include="DevSupport\RedBoxDialog.xaml.cs">
+      <DependentUpon>RedBoxDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DevSupport\ShakeAccelerometer.cs" />
+    <Compile Include="DevSupport\StackFrameConverter.cs" />
     <Compile Include="DevSupport\StackFrameExtensions.cs" />
     <Compile Include="DevSupport\StackTraceHelper.cs" />
     <Compile Include="Chakra\Executor\ChakraJavaScriptExecutor.cs" />
@@ -358,6 +361,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DevSupport\ProgressDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DevSupport\RedBoxDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
