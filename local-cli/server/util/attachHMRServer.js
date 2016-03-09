@@ -12,6 +12,10 @@ const getInverseDependencies = require('node-haste').getInverseDependencies;
 const querystring = require('querystring');
 const url = require('url');
 
+const blacklist = [
+  'Libraries/Utilities/HMRClient.js',
+];
+
 /**
  * Attaches a WebSocket based connection to the Packager to expose
  * Hot Module Replacement updates to the simulator.
@@ -123,6 +127,14 @@ function attachHMRServer({httpServer, path, packagerServer}) {
           console.log(
             `[Hot Module Replacement] File change detected (${time()})`
           );
+
+          const blacklisted = blacklist.find(path =>
+            filename.indexOf(path) !== -1
+          );
+
+          if (blacklisted) {
+            return;
+          }
 
           client.ws.send(JSON.stringify({type: 'update-start'}));
           stat.then(() => {
