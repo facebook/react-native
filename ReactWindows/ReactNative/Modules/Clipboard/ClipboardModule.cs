@@ -1,5 +1,6 @@
 ﻿using ReactNative.Bridge;
 using System;
+using Windows.UI.Core;
 using DataTransfer = Windows.ApplicationModel.DataTransfer;
 
 namespace ReactNative.Modules.Clipboard
@@ -41,7 +42,7 @@ namespace ReactNative.Modules.Clipboard
                 throw new ArgumentNullException(nameof(promise));
             }
 
-            DispatcherHelpers.RunOnDispatcher(async () =>
+            RunOnDispatcher(async () =>
             {
                 try
                 {
@@ -74,7 +75,7 @@ namespace ReactNative.Modules.Clipboard
         [ReactMethod]
         public void setString(string text)
         {
-            DispatcherHelpers.RunOnDispatcher(() =>
+            RunOnDispatcher(() =>
             {
                 if (text == null)
                 {
@@ -87,6 +88,15 @@ namespace ReactNative.Modules.Clipboard
                     DataTransfer.Clipboard.SetContent(package);
                 }
             });
+        }
+
+        /// <summary>
+        /// Run action in UI thread.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        private static async void RunOnDispatcher(DispatchedHandler action)
+        {
+            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, action);
         }
     }
 }
