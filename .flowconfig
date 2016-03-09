@@ -55,6 +55,9 @@
 .*/node_modules/builtin-modules/builtin-modules.json
 .*/node_modules/binary-extensions/binary-extensions.json
 .*/node_modules/url-regex/tlds.json
+.*/node_modules/joi/.*\.json
+.*/build/.*\.json
+.*/\.buckd/.*
 
 [include]
 
