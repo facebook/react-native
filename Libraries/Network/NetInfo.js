@@ -222,6 +222,7 @@ const NetInfo = {
       eventName: ChangeEventName,
       handler: Function
     ): void {
+      /* $FlowFixMe(site=react_native) */
       const listener = _isConnectedSubscriptions.get(handler);
       NetInfo.removeEventListener(
         eventName,

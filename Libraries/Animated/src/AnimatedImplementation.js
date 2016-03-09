@@ -130,6 +130,7 @@ function _flush(rootNode: AnimatedValue): void {
     }
   }
   findAnimatedStyles(rootNode);
+  /* $FlowFixMe(site=react_native) */
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 

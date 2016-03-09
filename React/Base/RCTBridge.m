@@ -15,6 +15,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
+#import "RCTModuleData.h"
 #import "RCTPerformanceLogger.h"
 #import "RCTUtils.h"
 
@@ -128,15 +129,13 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                    launchOptions:(NSDictionary *)launchOptions
 {
-  RCTAssertMainThread();
-
   if ((self = [super init])) {
     RCTPerformanceLoggerStart(RCTPLTTI);
 
     _delegate = delegate;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    [self bindKeys];
+    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
   }
   return self;
 }
@@ -145,8 +144,6 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                    moduleProvider:(RCTBridgeModuleProviderBlock)block
                     launchOptions:(NSDictionary *)launchOptions
 {
-  RCTAssertMainThread();
-
   if ((self = [super init])) {
     RCTPerformanceLoggerStart(RCTPLTTI);
 
@@ -154,7 +151,7 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     _moduleProvider = block;
     _launchOptions = [launchOptions copy];
     [self setUp];
-    [self bindKeys];
+    RCTExecuteOnMainThread(^{ [self bindKeys]; }, NO);
   }
   return self;
 }
@@ -224,6 +221,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [modules copy];
 }
 
+- (BOOL)moduleIsInitialized:(Class)moduleClass
+{
+  return [self.batchedBridge moduleIsInitialized:moduleClass];
+}
+
 - (RCTEventDispatcher *)eventDispatcher
 {
   return [self moduleForClass:[RCTEventDispatcher class]];
@@ -232,7 +234,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)reload
 {
   /**
-   * AnyThread
+   * Any thread
    */
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
@@ -242,8 +244,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)setUp
 {
-  RCTAssertMainThread();
-
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
   _delegateBundleURL = [self.delegate sourceURLForBridge:self];
