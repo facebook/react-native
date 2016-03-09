@@ -7,7 +7,7 @@ Example: [#5977](https://github.com/facebook/react-native/issues/5977)
 ### An issue is a question
 StackOverflow is really good for Q&A. It has a reputation system and voting. Questions should absolutely be asked on StackOverflow rather than GitHub. However, to make this work we should hang out on StackOverflow every now and then and answer questions. A nice side effect is you'll get reputation for answering questions there rather than on GitHub.
 Comment `@facebook-github-bot stack-overflow` to close the issue.
-Examples: [#6015](https://github.com/facebook/react-native/issues/6015), [#6059](https://github.com/facebook/react-native/issues/6059), [#6062](https://github.com/facebook/react-native/issues/6062)
+Examples: [#6378](https://github.com/facebook/react-native/issues/6378), [#6015](https://github.com/facebook/react-native/issues/6015), [#6059](https://github.com/facebook/react-native/issues/6059), [#6062](https://github.com/facebook/react-native/issues/6062).
 
 ### An issue is a question that's been answered
 Sometimes and issue has been resolved in the comments. Resolved issues should be closed.
