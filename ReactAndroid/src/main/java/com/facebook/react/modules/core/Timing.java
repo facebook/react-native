@@ -241,12 +241,17 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @ReactMethod
   public void deleteTimer(ExecutorToken executorToken, int timerId) {
     synchronized (mTimerGuard) {
-      Timer timer = mTimerIdsToTimers.get(executorToken).get(timerId);
-      if (timer != null) {
-        // We may have already called/removed it
-        mTimerIdsToTimers.remove(timerId);
-        mTimers.remove(timer);
+      SparseArray<Timer> timersForContext = mTimerIdsToTimers.get(executorToken);
+      if (timersForContext == null) {
+        return;
       }
+      Timer timer = timersForContext.get(timerId);
+      if (timer == null) {
+        return;
+      }
+      // We may have already called/removed it
+      mTimerIdsToTimers.remove(timerId);
+      mTimers.remove(timer);
     }
   }
 }
