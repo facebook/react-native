@@ -36,8 +36,12 @@ export type UIExplorerNavigationState = {
 };
 
 const UIExplorerStackReducer = StackReducer({
-  getPushedReducerForAction: (action) => {
+  getPushedReducerForAction: (action, lastState) => {
     if (action.type === 'UIExplorerExampleAction' && UIExplorerList.Modules[action.openExample]) {
+      if (lastState.children.find(child => child.key === action.openExample)) {
+        // The example is already open, we should avoid pushing examples twice
+        return null;
+      }
       return (state) => state || {key: action.openExample};
     }
     return null;
