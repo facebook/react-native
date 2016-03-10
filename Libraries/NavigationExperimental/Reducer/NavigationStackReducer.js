@@ -74,6 +74,7 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
       return lastState;
     }
     switch (action.type) {
+      case 'back':
       case 'BackAction':
         if (lastParentState.index === 0 || lastParentState.children.length === 1) {
           return lastParentState;
