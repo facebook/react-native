@@ -28,9 +28,8 @@ script:
   elif [ "$TEST_TYPE" = js ]
   then
 
-    npm install github@0.2.4
-    cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
-    npm run flow && npm test
+    ls -al Libraries/react-native
+    ./node_modules/.bin/flow check --verbose-indent --traces
 
   elif [ "$TEST_TYPE" = e2e-objc ]
   then
@@ -44,9 +43,7 @@ script:
 
 env:
   matrix:
-    - TEST_TYPE=objc
     - TEST_TYPE=js
-    - TEST_TYPE=e2e-objc
 
 branches:
   only:
