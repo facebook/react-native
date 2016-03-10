@@ -61,6 +61,8 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
+var JAVA_KEYWORDS = require('./java-keywords.js');
+
 checkForVersionArgument();
 
 var cli;
@@ -113,16 +115,7 @@ function validatePackageName(name) {
     process.exit(1);
   }
 
-  if (name === 'React') {
-    console.error(
-      '"%s" is not a valid name for a project. Please do not use the ' +
-        'reserved word "React".',
-      name
-    );
-    process.exit(1);
-  }
-
-  if (name.toUpperCase() === 'NATIVE') {
+  if (JAVA_KEYWORDS.indexOf(name.toUpperCase()) !== -1) {
       console.error(
           '"%s" is not a valid name for a project. Please do not use the ' +
           'reserved word "%s".',
