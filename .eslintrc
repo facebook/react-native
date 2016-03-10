@@ -147,11 +147,6 @@
     "wrap-iife": 0,                  // require immediate function invocation to be wrapped in parentheses (off by default)
     "yoda": 1,                       // require or disallow Yoda conditions
 
-  // Strict Mode
-  // These rules relate to using strict mode.
-
-    "strict": [2, "global"],         // require or disallow the "use strict" pragma in the global scope (off by default in the node environment)
-
   // Variables
   // These rules have to do with variable declarations.
 
