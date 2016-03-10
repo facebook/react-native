@@ -2,6 +2,7 @@
 
 buildscript {
     repositories {
+        maven{ url 'http://maven.oschina.net/content/groups/public/'}
         jcenter()
         mavenLocal()
     }
