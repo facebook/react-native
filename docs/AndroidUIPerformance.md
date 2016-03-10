@@ -4,6 +4,7 @@ title: Profiling Android UI Performance
 layout: docs
 category: Guides (Android)
 permalink: docs/android-ui-performance.html
+previous: signed-apk-android
 next: android-building-from-source
 ---
 

@@ -4,6 +4,7 @@ title: Performance
 layout: docs
 category: Guides
 permalink: docs/performance.html
+previous: known-issues
 next: upgrading
 ---
 

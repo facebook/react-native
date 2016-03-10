@@ -4,6 +4,7 @@ title: Native Modules
 layout: docs
 category: Guides (iOS)
 permalink: docs/native-modules-ios.html
+previous: platform-specific-code
 next: native-components-ios
 ---
 

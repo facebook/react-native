@@ -4,6 +4,7 @@ title: Videos
 layout: docs
 category: Quick Start
 permalink: docs/videos.html
+previous: tutorial
 next: style
 ---
 

@@ -4,6 +4,7 @@ title: Tutorial
 layout: docs
 category: Quick Start
 permalink: docs/tutorial.html
+previous: linux-windows-support
 next: videos
 ---
 

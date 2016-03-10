@@ -4,6 +4,7 @@ title: Platform Specific Code
 layout: docs
 category: Guides
 permalink: docs/platform-specific-code.html
+previous: upgrading
 next: native-modules-ios
 ---
 

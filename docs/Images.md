@@ -4,6 +4,7 @@ title: Images
 layout: docs
 category: Guides
 permalink: docs/images.html
+previous: style
 next: gesture-responder-system
 ---
 

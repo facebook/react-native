@@ -4,6 +4,7 @@ title: Upgrading
 layout: docs
 category: Guides
 permalink: docs/upgrading.html
+previous: performance
 next: platform-specific-code
 ---
 

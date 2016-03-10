@@ -4,6 +4,7 @@ title: Native UI Components
 layout: docs
 category: Guides (iOS)
 permalink: docs/native-components-ios.html
+previous: native-modules-ios
 next: linking-libraries-ios
 ---
 

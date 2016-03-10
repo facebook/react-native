@@ -4,6 +4,7 @@ title: Debugging
 layout: docs
 category: Guides
 permalink: docs/debugging.html
+previous: direct-manipulation
 next: testing
 ---
 

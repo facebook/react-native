@@ -4,6 +4,7 @@ title: Direct Manipulation
 layout: docs
 category: Guides
 permalink: docs/direct-manipulation.html
+previous: accessibility
 next: debugging
 ---
 

@@ -4,6 +4,7 @@ title: Navigator Comparison
 layout: docs
 category: Guides
 permalink: docs/navigator-comparison.html
+previous: javascript-environment
 next: known-issues
 ---
 

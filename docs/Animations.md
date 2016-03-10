@@ -4,6 +4,7 @@ title: Animations
 layout: docs
 category: Guides
 permalink: docs/animations.html
+previous: gesture-responder-system
 next: accessibility
 ---
 
