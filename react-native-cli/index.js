@@ -61,7 +61,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
-var RESERVED_WORDS = require('./java-keywords.js');
+var RESERVED_WORDS = require('./reserved-words.js');
 
 checkForVersionArgument();
 
