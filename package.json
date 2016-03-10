@@ -84,7 +84,8 @@
       "downstream/core/toArray.js",
       "node_modules/jest-cli",
       "node_modules/react/dist",
-      "/node_modules/fbjs/.*/__mocks__/"
+      "/node_modules/fbjs/.*/__mocks__/",
+      "<rootDir>/website/"
     ],
     "testFileExtensions": [
       "js"
