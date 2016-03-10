@@ -103,7 +103,7 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
-        setTiming={this._applyAnimation}
+        applyAnimation={this._applyAnimation}
         style={[styles.animatedView, this.props.style]}
       />
     );
