@@ -170,12 +170,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   BOOL isJSNavigation = [request.URL.scheme isEqualToString:RCTJSNavigationScheme];
 
+  static NSDictionary<NSNumber *, NSString *> *navigationTypes;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    navigationTypes = @{
+      @(UIWebViewNavigationTypeLinkClicked): @"click",
+      @(UIWebViewNavigationTypeFormSubmitted): @"formsubmit",
+      @(UIWebViewNavigationTypeBackForward): @"backforward",
+      @(UIWebViewNavigationTypeReload): @"reload",
+      @(UIWebViewNavigationTypeFormResubmitted): @"formresubmit",
+      @(UIWebViewNavigationTypeOther): @"other",
+    };
+  });
+
   // skip this for the JS Navigation handler
   if (!isJSNavigation && _onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
       @"url": (request.URL).absoluteString,
-      @"navigationType": @(navigationType)
+      @"navigationType": navigationTypes[@(navigationType)]
     }];
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
@@ -191,7 +204,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
       NSMutableDictionary<NSString *, id> *event = [self baseEvent];
       [event addEntriesFromDictionary: @{
         @"url": (request.URL).absoluteString,
-        @"navigationType": @(navigationType)
+        @"navigationType": navigationTypes[@(navigationType)]
       }];
       _onLoadingStart(event);
     }

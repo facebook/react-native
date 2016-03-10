@@ -29,7 +29,7 @@ export type NavigationStackReducerAction = BackAction | {
 
 export type ReducerForStateHandler = (state: NavigationState) => NavigationReducer;
 
-export type PushedReducerForActionHandler = (action: any) => ?NavigationReducer;
+export type PushedReducerForActionHandler = (action: any, lastState: NavigationParentState) => ?NavigationReducer;
 
 export type StackReducerConfig = {
   /*
@@ -93,7 +93,7 @@ function NavigationStackReducer({initialState, getReducerForState, getPushedRedu
       };
     }
 
-    const subReducerToPush = getPushedReducerForAction(action);
+    const subReducerToPush = getPushedReducerForAction(action, lastParentState);
     if (subReducerToPush) {
       return NavigationStateUtils.push(
         lastParentState,
