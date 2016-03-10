@@ -86,7 +86,7 @@ var Site = React.createClass({
               apiKey: '2c98749b4a1e588efec53b2acec13025',
               indexName: 'react-native-versions',
               inputSelector: '#algolia-doc-search',
-              algoliaOptions: { facetFilters: [ "tags:${algoliaVersion}" ] }
+              algoliaOptions: { facetFilters: [ "tags:${algoliaVersion}" ], hitsPerPage: 5 }
             });
           `}} />
           <script src="js/scripts.js" />
