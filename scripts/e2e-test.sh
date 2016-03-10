@@ -10,7 +10,7 @@ set -e
 set -x
 
 if [ -z $1 ]; then
-  echo "Please run the script with --ios, --android or --packager"
+  echo "Please run the script with --ios, --android or --packager" >&2
   exit 1
 fi
 
@@ -68,6 +68,7 @@ SINOPIA_PID=$!
 
 # Make sure to remove old version of react-native in
 # case it was cached
+npm cache clear
 npm unpublish react-native --force
 npm unpublish react-native-cli --force
 npm publish $ROOT
@@ -101,9 +102,11 @@ case $1 in
   ../node_modules/react-native/packager/packager.sh --nonPersistent &
   SERVER_PID=$!
   # TODO Start the app and check it renders "Welcome to React Native"
-  echo "The Android e2e test is not implemented yet"
+  echo "The Android e2e test is not implemented yet" >&2
+  exit 1
   ;;
 *)
-  echo "Please run the script with --ios, --android or --packager"
+  echo "Please run the script with --ios, --android or --packager" >&2
+  exit 1
   ;;
 esac

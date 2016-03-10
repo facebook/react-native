@@ -2,11 +2,6 @@ language: objective-c
 
 osx_image: xcode7.2
 
-cache:
-  directories:
-    - node_modules
-    - .nvm
-
 install:
   - brew reinstall nvm
   - mkdir -p .nvm
@@ -31,6 +26,16 @@ script:
     npm install github@0.2.4
     cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
     npm run flow && npm test
+    # testing js e2e with npm3
+    npm install -g npm@3
+    npm --version
+    ./scripts/e2e-test.sh --packager
+    # testing js e2e with npm2
+    rm -rf node_modules
+    npm install -g npm@2
+    npm install
+    npm --version
+    ./scripts/e2e-test.sh --packager
 
   elif [ "$TEST_TYPE" = e2e-objc ]
   then
