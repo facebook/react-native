@@ -83,6 +83,7 @@ cd "$repo_root"
 git checkout package.json
 git checkout React.podspec
 git checkout ReactAndroid/gradle.properties
+find . -path "*.bak" | xargs rm
 
 npm set registry "https://registry.npmjs.org/" || error "Couldn't set registry to ${npm_registry}"
 
