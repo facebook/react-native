@@ -35,8 +35,9 @@ var _eventHandlers = {
  *  - `active` - The app is running in the foreground
  *  - `background` - The app is running in the background. The user is either
  *     in another app or on the home screen
- *  - `inactive` - This is a transition state that currently never happens for
- *     typical React Native apps.
+ *  - `inactive` - This is a state that occurs when transitioning between
+ *  	 foreground & background, and during periods of inactivity such as
+ *  	 entering the Multitasking view or in the event of an incoming call
  *
  * For more information, see
  * [Apple's documentation](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/TheAppLifeCycle/TheAppLifeCycle.html)
