@@ -44,7 +44,7 @@ test:
 
   override:
     # flow check
-    - ./node_modules/.bin/flow check --verbose-indent --trace
+    - ./node_modules/.bin/flow check --verbose-indent --traces
   post:
     # copy test report for Circle CI to display
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/

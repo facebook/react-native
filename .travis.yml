@@ -29,7 +29,7 @@ script:
   then
 
     ls -al Libraries/react-native
-    ./node_modules/.bin/flow check --verbose-indent --trace
+    ./node_modules/.bin/flow check --verbose-indent --traces
 
   elif [ "$TEST_TYPE" = e2e-objc ]
   then
