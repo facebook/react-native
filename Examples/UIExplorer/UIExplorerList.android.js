@@ -15,6 +15,8 @@
  */
 'use strict';
 
+const React = require('react-native');
+
 export type UIExplorerExample = {
   key: string;
   module: React.Component;
