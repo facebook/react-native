@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spanned;
+import android.view.Gravity;
 import android.widget.TextView;
 
 import com.facebook.react.uimanager.ReactCompoundView;
@@ -20,9 +21,14 @@ import com.facebook.react.uimanager.ReactCompoundView;
 public class ReactTextView extends TextView implements ReactCompoundView {
 
   private boolean mContainsImages;
+  private int mDefaultGravityHorizontal;
+  private int mDefaultGravityVertical;
 
   public ReactTextView(Context context) {
     super(context);
+    mDefaultGravityHorizontal =
+      getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+    mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
   }
 
   public void setText(ReactTextUpdate update) {
@@ -149,5 +155,21 @@ public class ReactTextView extends TextView implements ReactCompoundView {
         span.onFinishTemporaryDetach();
       }
     }
+  }
+
+  /* package */ void setGravityHorizontal(int gravityHorizontal) {
+    if (gravityHorizontal == 0) {
+      gravityHorizontal = mDefaultGravityHorizontal;
+    }
+    setGravity(
+      (getGravity() & ~Gravity.HORIZONTAL_GRAVITY_MASK &
+        ~Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) | gravityHorizontal);
+  }
+
+  /* package */ void setGravityVertical(int gravityVertical) {
+    if (gravityVertical == 0) {
+      gravityVertical = mDefaultGravityVertical;
+    }
+    setGravity((getGravity() & ~Gravity.VERTICAL_GRAVITY_MASK) | gravityVertical);
   }
 }
