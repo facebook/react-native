@@ -90,7 +90,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  resolve(@[@{@"network_info": _status}]);
+  resolve(@{@"network_info": _status});
 }
 
 @end
