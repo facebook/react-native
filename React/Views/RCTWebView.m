@@ -133,7 +133,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
-  self.opaque = _webView.opaque = NO;
+  const CGFloat *components = CGColorGetComponents(backgroundColor.CGColor);
+  self.opaque = _webView.opaque = (components[0] == 1.0);
   _webView.backgroundColor = backgroundColor;
 }
 
