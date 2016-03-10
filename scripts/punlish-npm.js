@@ -6,16 +6,15 @@
  *
  * To cut a branch (and release RC):
  * - Developer: `git checkout -b 0.XY-stable`
- * - Developer: `git push` to git@github.com:facebook/react-native.git (or merge as pull request)
+ * - Developer: `git tag v0.XY.0-rc` and `git push --tags` to git@github.com:facebook/react-native.git
  * - CI: test and deploy to npm (run this script) with version 0.XY.0-rc with tag "next"
- * - Developer: `git tag v0.XY.0-rc` and `git push --tags` to git@github.com:facebook/react-native.git to hook Release Notes
  *
  * To update RC release:
  * - Developer: `git checkout 0.XY-stable`
  * - Developer: cherry-pick whatever changes needed
- * - Developer: `git push` to git@github.com:facebook/react-native.git (or merge as pull request)
- * - CI: test and deploy to npm (run this script) with version 0.XY.0-rc1 (incremented since what was pushed to npm)
- * with tag "next"
+ * - Developer: `git tag v0.XY.0-rc1` and `git push --tags` to git@github.com:facebook/react-native.git
+ * - CI: test and deploy to npm (run this script) with version 0.XY.0-rc1 with tag "next"
+ * TODO can we push version 0.XY.0-rc1?
  *
  * To publish release:
  * - Developer: `git checkout 0.XY-stable`
@@ -41,7 +40,8 @@
  */
 require(`shelljs/global`);
 
-const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '0.23-stable';
+// TODO get branch name from git
+const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '0.32-stable';
 const JAVA_VERSION=`1.7`;
 const PACKAGE_NAME = `react-native-evergreen`;
 
@@ -53,7 +53,16 @@ if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   exit(1);
 }
 // TODO get it from tag on current commit that looks like v${branchVersion}[-rc.*]
-let releaseVersion = branchVersion;
+
+const tagsOnThisCommit = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
+  .filter(version => !!version && version.indexOf(`v`) === 0);
+const tagsWithVersion = tagsOnThisCommit.filter(version => version.indexOf(branchVersion) !== -1);
+if (tagsWithVersion.length === 0) {
+  echo(`Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit`);
+  exit(1);
+}
+// git returns tags sorted, get the last one without first letter "v"
+const releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
 
 // -------- Generating Android Artifacts with JavaDoc
 // Java -version outputs to stderr 0_o
@@ -63,7 +72,8 @@ if (javaVersion.indexOf(JAVA_VERSION) === -1) {
   exit(1);
 }
 
-if (exec(`sed -i.bak 's/^VERSION_NAME=[0-9\.]*-SNAPSHOT/VERSION_NAME=${branchVersion}.0/g' "ReactAndroid/gradle.properties"`).code) {
+// TODO strip RC
+if (exec(`sed -i.bak 's/^VERSION_NAME=[0-9\.]*-SNAPSHOT/VERSION_NAME=${releaseVersion}.0/g' "ReactAndroid/gradle.properties"`).code) {
   echo(`Couldn't update version for Gradle`);
   exit(1);
 }
@@ -82,11 +92,12 @@ if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
 echo("Generated artifacts for Maven");
 
 let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) => {
-  return `react-native-${branchVersion}${suffix}`;
+  // TODO strip RC
+  return `react-native-${releaseVersion}${suffix}`;
 });
 
 artifacts.forEach((name) => {
-  if (!test(`-e`, `./android/com/facebook/react/react-native/${branchVersion}/${name}`)) {
+  if (!test(`-e`, `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
     echo(`file ${name} was not generated`);
     exit(1);
   }
@@ -94,15 +105,10 @@ artifacts.forEach((name) => {
 
 // ----------- Reverting changes to local files
 
-exec(`find . -path "*.bak" | xargs rm`);
-exec(`git checkout package.json`);
-exec(`git checkout React.podspec`);
 exec(`git checkout ReactAndroid/gradle.properties`);
+exec(`git checkout ReactAndroid/release.gradle`);
 
-echo(`Published to npm ${branchVersion}`);
-// TODO which tag?
-// exec(`npm publish`);
-exit(0);
+
 
 /*
 
@@ -111,3 +117,13 @@ sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version             
 
 npm publish || error "Couldn't publish package to sinopia (${npm_registry})"
 */
+
+exec(`git checkout package.json`);
+exec(`git checkout React.podspec`);
+
+echo(`Published to npm ${releaseVersion}`);
+// TODO which tag?
+exec(`find . -path "*.bak" | xargs rm`);
+
+// exec(`npm publish`);
+exit(0);
