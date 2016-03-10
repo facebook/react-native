@@ -135,7 +135,7 @@ class AssetServer {
         return stat(absPath).then(fstat => {
           // keep asset requests from traversing files
           // up from the root (e.g. ../../../etc/hosts)
-          if (absPath.indexOf(root) != 0) {
+          if (absPath.startsWith(root)) {
             return {path: absPath, isValid: false};
           }
           return {path: absPath, isValid: fstat.isDirectory()};
