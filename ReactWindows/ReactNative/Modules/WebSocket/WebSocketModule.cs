@@ -46,7 +46,7 @@ namespace ReactNative.Modules.WebSocket
 
             if (options != null && options.ContainsKey("origin"))
             {
-                throw new NotImplementedException(/* TODO */);
+                throw new NotImplementedException(/* TODO: (#253) */);
             }
 
             webSocket.MessageReceived += (sender, args) =>
