@@ -21,7 +21,6 @@
 @property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
-@property (nonatomic, strong) UIColor *tintColor;
 @property (nonatomic, strong) UIColor *clearButtonTintColor;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;

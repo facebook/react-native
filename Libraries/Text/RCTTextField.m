@@ -20,9 +20,9 @@
   NSMutableArray<UIView *> *_reactSubviews;
   BOOL _jsRequestingFirstResponder;
   NSInteger _nativeEventCount;
-  UIColor *_clearButtonTintColor;
   BOOL _submitted;
   UITextRange *_previousSelectionRange;
+  BOOL _clearButtonImagesUpdated;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -38,6 +38,7 @@
     [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
     _reactSubviews = [NSMutableArray new];
     _blurOnSubmit = YES;
+    _clearButtonImagesUpdated = NO;
   }
   return self;
 }
@@ -113,83 +114,49 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
   RCTUpdatePlaceholder(self);
 }
 
-- (UIColor *)tintColor
-{
-  return super.tintColor;
-}
-
-- (void)setTintColor:(UIColor *)tintColor
-{
-  super.tintColor = tintColor;
-}
-
-- (UIColor *)clearButtonTintColor
-{
-  return _clearButtonTintColor;
-}
-
 - (void)setClearButtonTintColor:(UIColor *)clearButtonTintColor
 {
-    _clearButtonTintColor = clearButtonTintColor;
+ _clearButtonTintColor = clearButtonTintColor;
+
+ [self tintClearButton];
 }
 
-static UIButton* findClearButton(RCTTextField *self)
++ (UIButton *)_findClearButton:(RCTTextField *)textField
 {
-    for(UIView *v in self.subviews)
-    {
-        if([v isKindOfClass:[UIButton class]])
-        {
-            UIButton *buttonClear = (UIButton *) v;
-            return buttonClear;
-        }
+  for (UIView *v in textField.subviews) {
+    if ([v isKindOfClass:[UIButton class]]) {
+      UIButton *buttonClear = (UIButton *) v;
+      return buttonClear;
     }
-    return nil;
+  }
+
+  return nil;
 }
 
--(void) layoutSubviews
+- (void)layoutSubviews
 {
-    [super layoutSubviews];
-    tintClearButton(self);
+  [super layoutSubviews];
+
+  [self tintClearButton];
 }
 
-static void tintClearButton(RCTTextField *self)
+- (void)tintClearButton
 {
-    UIButton *clearButton = findClearButton(self);
+  if (self.clearButtonTintColor) {
+    UIButton *clearButton = [[self class] _findClearButton:self];
 
-    if(self.clearButtonTintColor && clearButton)
-    {
+    if (clearButton) {
+      if (!_clearButtonImagesUpdated) {
         UIImage *imageNormal = [clearButton imageForState:UIControlStateNormal];
         UIImage *imageHighlighted = [clearButton imageForState:UIControlStateHighlighted];
 
-        UIImage *tintedImageNormal = tintedImage(imageNormal, self.clearButtonTintColor);
-        UIImage *tintedImageHighlighted = tintedImage(imageHighlighted, self.clearButtonTintColor);
+        [clearButton setImage:[imageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+        [clearButton setImage:[imageHighlighted imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateHighlighted];
+      }
 
-        if (tintedImageNormal && tintedImageHighlighted)
-        {
-            // Default image has transparency therefore we will be use higlighted image
-            [clearButton setImage:tintedImageHighlighted forState:UIControlStateNormal];
-            [clearButton setImage:tintedImageHighlighted forState:UIControlStateHighlighted];
-        }
+      clearButton.tintColor = self.clearButtonTintColor;
     }
-}
-
-
-static UIImage* tintedImage(UIImage *image, UIColor* tintColor)
-{
-    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-
-    CGRect rect = (CGRect){ CGPointZero, image.size };
-    CGContextSetBlendMode(context, kCGBlendModeNormal);
-    [image drawInRect:rect];
-
-    CGContextSetBlendMode(context, kCGBlendModeSourceIn);
-    [tintColor setFill];
-    CGContextFillRect(context, rect);
-
-    UIImage *imageTinted  = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return imageTinted;
+  }
 }
 
 - (NSArray<UIView *> *)reactSubviews
