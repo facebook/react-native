@@ -1,4 +1,6 @@
-﻿namespace ReactNative.Tracing
+﻿using System;
+
+namespace ReactNative.Tracing
 {
     /// <summary>
     /// Tracing helpers for the application.
@@ -41,6 +43,18 @@
         public static void Write(string tag, string message)
         {
             EventSourceManager.Instance.Write(tag, message);
+        }
+
+        /// <summary>
+        /// Write an error.
+        /// </summary>
+        /// <param name="tag">The trace tag.</param>
+        /// <param name="message">The trace message.</param>
+        /// <param name="exception">The exception.</param>
+        public static void Error(string tag, string message, Exception exception)
+        {
+            EventSourceManager.Instance.Write(tag, message);
+            EventSourceManager.Instance.Write(tag, exception);
         }
     }
 }

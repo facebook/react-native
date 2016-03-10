@@ -124,6 +124,7 @@
     <Compile Include="Modules\Network\NetworkingModuleTests.cs" />
     <Compile Include="Modules\Network\TaskCancellationManagerTests.cs" />
     <Compile Include="Modules\Toast\ToastNotificationTests.cs" />
+    <Compile Include="Modules\WebSocket\WebSocketModuleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReactInstanceManagerTests.cs" />
     <Compile Include="UIManager\AppRegistryTests.cs" />
@@ -183,6 +184,7 @@
       <Name>ReactNative</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

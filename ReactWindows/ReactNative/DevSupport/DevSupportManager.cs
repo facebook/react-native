@@ -121,7 +121,7 @@ namespace ReactNative.DevSupport
                 }
                 else
                 {
-                    Tracer.Write(ReactConstants.Tag, "Exception in native call from JavaScript. Error: " + exception);
+                    Tracer.Error(ReactConstants.Tag, "Exception in native call from JavaScript.", exception);
                     ShowNewNativeError(exception.Message, exception);
                 }
             }

@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:devsupport="using:ReactNative.DevSupport"
     mc:Ignorable="d"
-    Background="Red"
+    Background="#E80000"
     PrimaryButtonText="Reload JavaScript"
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick">
     <ContentDialog.Resources>
