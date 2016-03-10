@@ -58,15 +58,30 @@ public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTe
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public void setTextAlign(ReactTextView view, @Nullable String textAlign) {
     if (textAlign == null || "auto".equals(textAlign)) {
-      view.setGravity(Gravity.NO_GRAVITY);
+      view.setGravityHorizontal(Gravity.NO_GRAVITY);
     } else if ("left".equals(textAlign)) {
-      view.setGravity(Gravity.LEFT);
+      view.setGravityHorizontal(Gravity.LEFT);
     } else if ("right".equals(textAlign)) {
-      view.setGravity(Gravity.RIGHT);
+      view.setGravityHorizontal(Gravity.RIGHT);
     } else if ("center".equals(textAlign)) {
-      view.setGravity(Gravity.CENTER_HORIZONTAL);
+      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+    }
+  }
+
+  @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
+  public void setTextAlignVertical(ReactTextView view, @Nullable String textAlignVertical) {
+    if (textAlignVertical == null || "auto".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.NO_GRAVITY);
+    } else if ("top".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.TOP);
+    } else if ("bottom".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.BOTTOM);
+    } else if ("center".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.CENTER_VERTICAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
     }
   }
 
