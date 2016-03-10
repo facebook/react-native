@@ -99,8 +99,8 @@ var DrawerLayoutAndroid = React.createClass({
     /**
      * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
      * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
-     * - locked closed, meaning that the drawer will stay closed and not respond to gestures.
-     * - locked open, meaning that the drawer will stay opened and not respond to gestures.
+     * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
+     * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
      * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
      */
     drawerLockMode: ReactPropTypes.oneOf([
