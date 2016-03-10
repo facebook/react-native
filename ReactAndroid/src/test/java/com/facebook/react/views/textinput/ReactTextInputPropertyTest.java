@@ -289,26 +289,45 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testTextAlign() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
-    int gravity = view.getGravity();
-    assertThat(view.getGravity() & Gravity.BOTTOM).isNotEqualTo(Gravity.BOTTOM);
+    int defaultGravity = view.getGravity();
+    int defaultHorizontalGravity = defaultGravity & Gravity.HORIZONTAL_GRAVITY_MASK;
+    int defaultVerticalGravity = defaultGravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
-    assertThat(view.getGravity() & Gravity.BOTTOM).isEqualTo(Gravity.BOTTOM);
+    // Theme
+    assertThat(view.getGravity()).isNotEqualTo(Gravity.NO_GRAVITY);
 
-    mManager.updateProperties(
-        view,
-        buildStyles("textAlign", "right", "textAlignVertical", "top"));
-    assertThat(view.getGravity() & Gravity.BOTTOM).isNotEqualTo(Gravity.BOTTOM);
-    assertThat(view.getGravity() & (Gravity.RIGHT | Gravity.TOP))
-        .isEqualTo(Gravity.RIGHT | Gravity.TOP);
-
-    mManager.updateProperties(
-        view,
-        buildStyles("textAlignVertical", null));
-    assertThat(view.getGravity() & Gravity.RIGHT).isEqualTo(Gravity.RIGHT);
-    assertThat(view.getGravity() & Gravity.TOP).isNotEqualTo(Gravity.TOP);
-
+    // TextAlign
+    mManager.updateProperties(view, buildStyles("textAlign", "left"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.LEFT);
+    mManager.updateProperties(view, buildStyles("textAlign", "right"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT);
+    mManager.updateProperties(view, buildStyles("textAlign", "center"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL);
     mManager.updateProperties(view, buildStyles("textAlign", null));
-    assertThat(view.getGravity()).isEqualTo(gravity);
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity);
+
+    // TextAlignVertical
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "top"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.TOP);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.BOTTOM);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "center"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_VERTICAL);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", null));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(defaultVerticalGravity);
+
+    // TextAlign + TextAlignVertical
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", "center", "textAlignVertical", "center"));
+    assertThat(view.getGravity()).isEqualTo(Gravity.CENTER);
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", "right", "textAlignVertical", "bottom"));
+    assertThat(view.getGravity()).isEqualTo(Gravity.RIGHT | Gravity.BOTTOM);
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", null, "textAlignVertical", null));
+    assertThat(view.getGravity()).isEqualTo(defaultGravity);
   }
 }
