@@ -56,7 +56,7 @@ namespace ReactNative
         {
             get
             {
-                return "index.ios";
+                return "index.windows";
             }
         }
 

@@ -142,8 +142,7 @@ namespace ReactNative.DevSupport
 
             if (_isUsingJsProxy)
             {
-                await ReloadJavaScriptInProxyMode(progressDialog.Token);
-                dialogOperation.Cancel();
+                await ReloadJavaScriptInProxyMode(dialogOperation.Cancel, progressDialog.Token);
             }
             else if (_jsBundleFile == null)
             {
@@ -296,13 +295,30 @@ namespace ReactNative.DevSupport
             });
         }
 
-        private async Task ReloadJavaScriptInProxyMode(CancellationToken token)
+        private async Task ReloadJavaScriptInProxyMode(Action dismissProgress, CancellationToken token)
         {
-            await _devServerHelper.LaunchDevToolsAsync(token);
-            var executor = new WebSocketJavaScriptExecutor();
-            await executor.ConnectAsync(_devServerHelper.WebsocketProxyUrl, token);
-            var factory = new Func<IJavaScriptExecutor>(() => executor);
-            _reactInstanceCommandsHandler.OnReloadWithJavaScriptDebugger(factory);
+            try
+            {
+                await _devServerHelper.LaunchDevToolsAsync(token);
+                var executor = new WebSocketJavaScriptExecutor();
+                await executor.ConnectAsync(_devServerHelper.WebsocketProxyUrl, token);
+                var factory = new Func<IJavaScriptExecutor>(() => executor);
+                _reactInstanceCommandsHandler.OnReloadWithJavaScriptDebugger(factory);
+                dismissProgress();
+            }
+            catch (DebugServerException ex)
+            {
+                dismissProgress();
+                ShowNewNativeError(ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                dismissProgress();
+                ShowNewNativeError(
+                    "Unable to download JS bundle. Did you forget to " +
+                    "start the development server or connect your device?",
+                    ex);
+            }
         }
 
         private async Task ReloadJavaScriptFromServerAsync(Action dismissProgress, CancellationToken token)
