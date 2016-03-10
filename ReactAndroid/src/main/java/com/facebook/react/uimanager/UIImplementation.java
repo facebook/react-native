@@ -446,6 +446,12 @@ public class UIImplementation {
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
   public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
+    updateViewHierarchy(eventDispatcher);
+    mNativeViewHierarchyOptimizer.onBatchComplete();
+    mOperationsQueue.dispatchViewUpdates(batchId);
+  }
+
+  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
@@ -454,9 +460,6 @@ public class UIImplementation {
       calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
-
-    mNativeViewHierarchyOptimizer.onBatchComplete();
-    mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
   /**

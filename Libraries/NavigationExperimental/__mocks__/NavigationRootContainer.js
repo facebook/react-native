@@ -6,8 +6,11 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-'use strict';
 
-// Bug with Jest because we're going to the node_modules that is a sibling
-// of what jest thinks our root (the dir with the package.json) should be.
-module.exports = require.requireActual('underscore');
+const NavigationRootContainer = {
+  getBackAction: () => {
+    return { type: 'BackAction' };
+  }
+};
+
+module.exports = NavigationRootContainer;

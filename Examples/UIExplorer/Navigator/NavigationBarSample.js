@@ -24,8 +24,6 @@ var {
   TouchableOpacity,
 } = React;
 
-var cssVar = require('cssVar');
-
 class NavButton extends React.Component {
   render() {
     return (
@@ -178,7 +176,7 @@ var styles = StyleSheet.create({
     marginVertical: 10,
   },
   navBarTitleText: {
-    color: cssVar('fbui-bluegray-60'),
+    color: '#373E4D',
     fontWeight: '500',
     marginVertical: 9,
   },
@@ -189,7 +187,7 @@ var styles = StyleSheet.create({
     paddingRight: 10,
   },
   navBarButtonText: {
-    color: cssVar('fbui-accent-blue'),
+    color: '#5890FF',
   },
   scene: {
     flex: 1,
