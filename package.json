@@ -84,7 +84,8 @@
       "downstream/core/toArray.js",
       "node_modules/jest-cli",
       "node_modules/react/dist",
-      "/node_modules/fbjs/.*/__mocks__/"
+      "/node_modules/fbjs/.*/__mocks__/",
+      "<rootDir>/website/"
     ],
     "testFileExtensions": [
       "js"
@@ -151,6 +152,7 @@
     "json-stable-stringify": "^1.0.1",
     "json5": "^0.4.0",
     "jstransform": "^11.0.3",
+    "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "module-deps": "^3.9.1",
     "node-fetch": "^1.3.3",
@@ -169,7 +171,6 @@
     "stacktrace-parser": "^0.1.3",
     "temp": "0.8.3",
     "uglify-js": "^2.6.2",
-    "underscore": "^1.8.3",
     "wordwrap": "^1.0.0",
     "worker-farm": "^1.3.1",
     "ws": "^0.8.0",
@@ -179,9 +180,10 @@
   },
   "devDependencies": {
     "babel-eslint": "^5.0.0",
-    "eslint": "^2.2.0",
-    "eslint-plugin-react": "^4.1.0",
-    "flow-bin": "^0.22.0",
+    "eslint": "~2.2.0",
+    "eslint-plugin-flow-vars": "^0.2.1",
+    "eslint-plugin-react": "^4.2.1",
+    "flow-bin": "0.22.0",
     "jest-cli": "0.9.0-fb2",
     "portfinder": "0.4.0",
     "react": "^0.14.5"

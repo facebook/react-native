@@ -853,49 +853,36 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
 // setters here that will record the contentOffset beforehand, and
 // restore it after the property has been set.
 
-#define RCT_SET_AND_PRESERVE_OFFSET(setter, type)    \
-- (void)setter:(type)value                           \
-{                                                    \
-  CGPoint contentOffset = _scrollView.contentOffset; \
-  [_scrollView setter:value];                        \
-  _scrollView.contentOffset = contentOffset;         \
+#define RCT_SET_AND_PRESERVE_OFFSET(setter, getter, type) \
+- (void)setter:(type)value                                \
+{                                                         \
+  CGPoint contentOffset = _scrollView.contentOffset;      \
+  [_scrollView setter:value];                             \
+  _scrollView.contentOffset = contentOffset;              \
+}                                                         \
+- (type)getter                                            \
+{                                                         \
+  return [_scrollView getter];                            \
 }
 
-RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceHorizontal, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceVertical, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setBounces, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setBouncesZoom, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setCanCancelContentTouches, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setDecelerationRate, CGFloat)
-RCT_SET_AND_PRESERVE_OFFSET(setDirectionalLockEnabled, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setIndicatorStyle, UIScrollViewIndicatorStyle)
-RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, UIScrollViewKeyboardDismissMode)
-RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, CGFloat)
-RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, CGFloat)
-RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, BOOL)
-RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, CGFloat);
-RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, UIEdgeInsets);
-
-#pragma mark - Forward methods and properties to underlying UIScrollView
-
-- (BOOL)respondsToSelector:(SEL)aSelector
-{
-  return [super respondsToSelector:aSelector] || [_scrollView respondsToSelector:aSelector];
-}
-
-- (void)setValue:(id)value forUndefinedKey:(NSString *)key
-{
-  [_scrollView setValue:value forKey:key];
-}
-
-- (id)valueForUndefinedKey:(NSString *)key
-{
-  return [_scrollView valueForKey:key];
-}
+RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceHorizontal, alwaysBounceHorizontal, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setAlwaysBounceVertical, alwaysBounceVertical, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setBounces, bounces, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setBouncesZoom, bouncesZoom, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setCanCancelContentTouches, canCancelContentTouches, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setDecelerationRate, decelerationRate, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setDirectionalLockEnabled, isDirectionalLockEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setIndicatorStyle, indicatorStyle, UIScrollViewIndicatorStyle)
+RCT_SET_AND_PRESERVE_OFFSET(setKeyboardDismissMode, keyboardDismissMode, UIScrollViewKeyboardDismissMode)
+RCT_SET_AND_PRESERVE_OFFSET(setMaximumZoomScale, maximumZoomScale, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setMinimumZoomScale, minimumZoomScale, CGFloat)
+RCT_SET_AND_PRESERVE_OFFSET(setPagingEnabled, isPagingEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setScrollEnabled, isScrollEnabled, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
+RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
+RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIEdgeInsets);
 
 - (void)setOnRefreshStart:(RCTDirectEventBlock)onRefreshStart
 {
