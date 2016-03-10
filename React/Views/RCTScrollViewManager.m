@@ -74,16 +74,6 @@ RCT_EXPORT_VIEW_PROPERTY(snapToAlignment, NSString)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(onRefreshStart, RCTDirectEventBlock)
 
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return @{
-    @"DecelerationRate": @{
-      @"normal": @(UIScrollViewDecelerationRateNormal),
-      @"fast": @(UIScrollViewDecelerationRateFast),
-    },
-  };
-}
-
 RCT_EXPORT_METHOD(getContentSize:(nonnull NSNumber *)reactTag
                   callback:(RCTResponseSenderBlock)callback)
 {

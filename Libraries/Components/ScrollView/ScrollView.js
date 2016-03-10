@@ -134,8 +134,8 @@ var ScrollView = React.createClass({
      * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
      * for `UIScrollViewDecelerationRateNormal` and
      * `UIScrollViewDecelerationRateFast` respectively.
-     *   - Normal: 0.998 (the default)
-     *   - Fast: 0.9
+     *   - normal: 0.998 (the default)
+     *   - fast: 0.99
      * @platform ios
      */
     decelerationRate: PropTypes.oneOfType([
