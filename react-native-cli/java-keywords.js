@@ -9,7 +9,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-export default [
+const KEYWORDS = [
   'ABSTRACT',       'ASSERT',       'BOOLEAN',
   'BREAK',          'BYTE',         'CASE',
   'CASE',           'CATCH',        'CHAR',
@@ -21,11 +21,13 @@ export default [
   'IMPLEMENTS',     'IMPORT',       'INSTANCEOF',
   'INT',            'INTERFACE',    'LONG',
   'NATIVE',         'NEW',          'PACKAGE',
-  'PRIVATE',        'PROTECTED'     'PUBLIC',
+  'PRIVATE',        'PROTECTED',     'PUBLIC',
   'RETURN',         'SHORT',        'STATIC',
-  'STRICTFP',       'SUPER'         'SWITCH',
+  'STRICTFP',       'SUPER',         'SWITCH',
   'SYNCHRONIZED',   'THIS',         'THROW',
   'THROWS',         'TRANSIENT',    'TRY',
   'VOID',           'VOLATILE',     'WHILE',
   'REACT'
-]
+];
+
+module.exports = KEYWORDS;
