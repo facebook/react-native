@@ -185,6 +185,12 @@ typedef struct {
 
 RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 
+/**
+ * Systrace control window
+ */
+RCT_EXTERN void RCTProfileShowControls(void);
+RCT_EXTERN void RCTProfileHideControls(void);
+
 #else
 
 #define RCTProfileBeginFlowEvent()
@@ -214,5 +220,8 @@ RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 #define RCTProfileUnhookModules(...)
 
 #define RCTProfileSendResult(...)
+
+#define RCTProfileShowControls(...)
+#define RCTProfileHideControls(...)
 
 #endif
