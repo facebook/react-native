@@ -55,17 +55,23 @@ cd $TEMP
 # sinopia is npm registry proxy, it is used to make npm
 # think react-native and react-native-cli are actually
 # published on npm
-# Temporarily installing sinopia from a github fork
-# TODO t10060166 use npm repo when bug is fixed
 which sinopia || ${NPM_PATH}npm install -g sinopia
 
 # but in order to make npm use sinopia we temporarily
 # replace its config file
 [ -f ~/.npmrc ] && cp ~/.npmrc ~/.npmrc.bak
+
+# Point npm to Sinopia (localhost)
 cp $SCRIPTS/e2e-npmrc ~/.npmrc
 
-sinopia --config $SCRIPTS/e2e-sinopia.config.yml &
+echo "======== npm config ========"
+${NPM_PATH}npm config list
+echo "======== ======== ========"
+
+${SINOPIA_PATH}sinopia --config $SCRIPTS/e2e-sinopia.config.yml &
 SINOPIA_PID=$!
+
+echo "=========== Sinopia is running, pid ${SINOPIA_PID}"
 
 # Make sure to remove old version of react-native in
 # case it was cached
