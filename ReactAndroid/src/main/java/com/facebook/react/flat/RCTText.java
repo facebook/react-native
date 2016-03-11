@@ -78,6 +78,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 
     mText = text;
 
+    // technically, width should never be negative, but there is currently a bug in
+    // LayoutEngine where a negative value can be passed.
+    boolean unconstrainedWidth = Float.isNaN(width) || width < 0;
+
     BoringLayout.Metrics metrics = BoringLayout.isBoring(text, PAINT, sBoringLayoutMetrics);
     if (metrics != null) {
       sBoringLayoutMetrics = mBoringLayoutMetrics;
@@ -93,7 +97,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       mBoringLayoutMetrics = metrics;
 
       float measuredWidth = (float) metrics.width;
-      if (Float.isNaN(width) || measuredWidth <= width) {
+      if (unconstrainedWidth || measuredWidth <= width) {
         measureOutput.width = measuredWidth;
         measureOutput.height = getMetricsHeight(metrics, INCLUDE_PADDING);
 
@@ -106,7 +110,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
       // width < measuredWidth -> more that a single line -> not boring
     }
 
-    int maximumWidth = Float.isNaN(width) ? Integer.MAX_VALUE : (int) width;
+    int maximumWidth = unconstrainedWidth ? Integer.MAX_VALUE : (int) width;
 
     // Make sure we update the paint's text size. If we don't do this, ellipsis might be measured
     // incorrecly (but drawn correctly, which almost feels like an Android bug, because width of the
