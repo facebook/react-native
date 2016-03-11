@@ -33,7 +33,7 @@ onmessage = function(message) {
     handler(object, sendReply);
   } else {
     // Other methods get called on the bridge
-    var returnValue = [[], [], [], [], []];
+    var returnValue = [[], [], [], 0];
     try {
       if (typeof __fbBatchedBridge === 'object') {
         returnValue = __fbBatchedBridge[object.method].apply(null, object.arguments);
