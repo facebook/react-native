@@ -21,7 +21,7 @@ function waitForAVD {
   done
 }
 
-function retry {
+function retry3 {
   local n=1
   local max=3
   local delay=1
