@@ -11,14 +11,13 @@
 
 #import "RCTBridgeDelegate.h"
 
-@class RCTBridge;
-
 /**
  * Class that allows easy embedding, loading, life-cycle management of a
  * JavaScript application inside of a native application.
- * TODO: Incremental module loading. (low pri).
  */
 @interface RCTJavaScriptLoader : NSObject
+
++ (void)setURLSessionConfiguration:(NSURLSessionConfiguration *)urlSessionConfiguration;
 
 + (void)loadBundleAtURL:(NSURL *)moduleURL onComplete:(RCTSourceLoadBlock)onComplete;
 

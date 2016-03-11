@@ -19,6 +19,13 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+static NSURLSessionConfiguration *_urlSessionConfiguration = nil;
+
++ (void)setURLSessionConfiguration:(NSURLSessionConfiguration *)urlSessionConfiguration
+{
+  _urlSessionConfiguration = urlSessionConfiguration;
+}
+
 + (void)loadBundleAtURL:(NSURL *)scriptURL onComplete:(RCTSourceLoadBlock)onComplete
 {
   // Sanitize the script URL
@@ -46,10 +53,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  // Load remote script file
-  NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:scriptURL completionHandler:
-                                ^(NSData *data, NSURLResponse *response, NSError *error) {
+  NSURLSession *session;
+  if (_urlSessionConfiguration) {
+    session = [NSURLSession sessionWithConfiguration:_urlSessionConfiguration];
+  } else {
+    session = [NSURLSession sharedSession];
+  }
 
+  // Load remote script file
+  NSURLSessionDataTask *task = [session dataTaskWithURL:scriptURL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     // Handle general request errors
     if (error) {
       if ([error.domain isEqualToString:NSURLErrorDomain]) {

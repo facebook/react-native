@@ -17,6 +17,7 @@
 #import "RCTUtils.h"
 #import "RCTJSCExecutor.h"
 #import "RCTBridge+Private.h"
+#import "RCTJavascriptLoader.h"
 
 static const NSTimeInterval kTestTimeoutSeconds = 60;
 static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
@@ -51,6 +52,11 @@ static const NSTimeInterval kTestTeardownTimeoutSeconds = 30;
 #else
     _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
 #endif
+
+    // Travis can be extremely slow, configure higher timeouts
+    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    sessionConfig.timeoutIntervalForRequest = 120;
+    [RCTJavaScriptLoader setURLSessionConfiguration:sessionConfig];
   }
   return self;
 }
