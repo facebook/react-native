@@ -50,6 +50,8 @@ static NSMutableDictionary *RCTProfileOngoingEvents;
 static NSTimeInterval RCTProfileStartTime;
 static NSUInteger RCTProfileEventID = 0;
 static CADisplayLink *RCTProfileDisplayLink;
+static __weak RCTBridge *_RCTProfilingBridge;
+static UIWindow *RCTProfileControlsWindow;
 
 #pragma mark - Macros
 
@@ -96,6 +98,11 @@ void RCTProfileRegisterCallbacks(RCTProfileCallbacks *cb)
 }
 
 #pragma mark - Private Helpers
+
+static RCTBridge *RCTProfilingBridge(void)
+{
+  return _RCTProfilingBridge ?: [RCTBridge currentBridge];
+}
 
 static NSNumber *RCTProfileTimestamp(NSTimeInterval timestamp)
 {
@@ -288,6 +295,8 @@ UIView *RCTProfileCreateView(RCTComponentData *self, SEL _cmd, NSNumber *tag)
 
 void RCTProfileHookModules(RCTBridge *bridge)
 {
+  _RCTProfilingBridge = bridge;
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-pointer-compare"
   if (RCTProfileTrampoline == NULL) {
@@ -324,6 +333,8 @@ static void RCTProfileUnhookInstance(id instance)
 
 void RCTProfileUnhookModules(RCTBridge *bridge)
 {
+  _RCTProfilingBridge = nil;
+
   dispatch_group_enter(RCTProfileGetUnhookGroup());
 
   for (RCTModuleData *moduleData in [bridge valueForKey:@"moduleDataByID"]) {
@@ -349,6 +360,54 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 + (void)vsync:(CADisplayLink *)displayLink
 {
   RCTProfileImmediateEvent(0, @"VSYNC", displayLink.timestamp, 'g');
+}
+
++ (void)reload
+{
+  [RCTProfilingBridge() reload];
+}
+
++ (void)toggle:(UIButton *)target
+{
+  BOOL isProfiling = RCTProfileIsProfiling();
+
+  // Start and Stop are switched here, since we're going to toggle isProfiling
+  [target setTitle:isProfiling ? @"Start" : @"Stop"
+          forState:UIControlStateNormal];
+
+  if (isProfiling) {
+    RCTProfileEnd(RCTProfilingBridge(), ^(NSString *result) {
+      NSString *outFile = [NSTemporaryDirectory() stringByAppendingString:@"tmp_trace.json"];
+      [result writeToFile:outFile
+               atomically:YES
+                 encoding:NSUTF8StringEncoding
+                    error:nil];
+      UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[[NSURL fileURLWithPath:outFile]]
+                                                                                           applicationActivities:nil];
+      activityViewController.completionHandler = ^(__unused NSString *activityType, __unused BOOL completed) {
+        RCTProfileControlsWindow.hidden = NO;
+      };
+      RCTProfileControlsWindow.hidden = YES;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [[[[[UIApplication sharedApplication] delegate] window] rootViewController] presentViewController:activityViewController
+                                                                                                 animated:YES
+                                                                                               completion:nil];
+      });
+    });
+  } else {
+    RCTProfileInit(RCTProfilingBridge());
+  }
+}
+
++ (void)drag:(UIPanGestureRecognizer *)gestureRecognizer
+{
+  CGPoint translation = [gestureRecognizer translationInView:RCTProfileControlsWindow];
+  RCTProfileControlsWindow.center = CGPointMake(
+    RCTProfileControlsWindow.center.x + translation.x,
+    RCTProfileControlsWindow.center.y + translation.y
+  );
+  [gestureRecognizer setTranslation:CGPointMake(0, 0)
+                             inView:RCTProfileControlsWindow];
 }
 
 @end
@@ -711,6 +770,46 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
    }];
 
   [task resume];
+}
+
+void RCTProfileShowControls(void)
+{
+  static const CGFloat height = 30;
+  static const CGFloat width = 60;
+
+  UIWindow *window = [[UIWindow alloc] initWithFrame:CGRectMake(20, 80, width * 2, height)];
+  window.windowLevel = UIWindowLevelAlert + 1000;
+  window.hidden = NO;
+  window.backgroundColor = [UIColor lightGrayColor];
+  window.layer.borderColor = [UIColor grayColor].CGColor;
+  window.layer.borderWidth = 1;
+  window.alpha = 0.8;
+
+  UIButton *startOrStop = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, width, height)];
+  [startOrStop setTitle:RCTProfileIsProfiling() ? @"Stop" : @"Start"
+               forState:UIControlStateNormal];
+  [startOrStop addTarget:[RCTProfile class] action:@selector(toggle:) forControlEvents:UIControlEventTouchUpInside];
+  startOrStop.titleLabel.font = [UIFont systemFontOfSize:12];
+
+  UIButton *reload = [[UIButton alloc] initWithFrame:CGRectMake(width, 0, width, height)];
+  [reload setTitle:@"Reload" forState:UIControlStateNormal];
+  [reload addTarget:[RCTProfile class] action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
+  reload.titleLabel.font = [UIFont systemFontOfSize:12];
+
+  [window addSubview:startOrStop];
+  [window addSubview:reload];
+
+  UIPanGestureRecognizer *gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:[RCTProfile class]
+                                                                                      action:@selector(drag:)];
+  [window addGestureRecognizer:gestureRecognizer];
+
+  RCTProfileControlsWindow = window;
+}
+
+void RCTProfileHideControls(void)
+{
+  RCTProfileControlsWindow.hidden = YES;
+  RCTProfileControlsWindow = nil;
 }
 
 #endif
