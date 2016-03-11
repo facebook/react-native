@@ -10,7 +10,7 @@ set -e
 set -x
 
 if [ -z $1 ]; then
-  echo "Please run the script with --ios, --android or --packager" >&2
+  echo "Please run the script with --ios, --android or --packager"
   exit 1
 fi
 
@@ -46,6 +46,7 @@ function cleanup {
   [ $SINOPIA_PID ] && kill -9 $SINOPIA_PID
   [ $SERVER_PID ] && kill -9 $SERVER_PID
   [ -f ~/.npmrc.bak ] && mv ~/.npmrc.bak ~/.npmrc
+  ${NPM_PATH}npm uninstall -g sinopia
 }
 trap cleanup EXIT
 
@@ -56,7 +57,7 @@ cd $TEMP
 # published on npm
 # Temporarily installing sinopia from a github fork
 # TODO t10060166 use npm repo when bug is fixed
-which sinopia || npm install -g git://github.com/bestander/sinopia.git#68707efbab90569d5f52193138936f9281cc410c
+which sinopia || ${NPM_PATH}npm install -g git://github.com/bestander/sinopia.git#68707efbab90569d5f52193138936f9281cc410c
 
 # but in order to make npm use sinopia we temporarily
 # replace its config file
@@ -68,13 +69,12 @@ SINOPIA_PID=$!
 
 # Make sure to remove old version of react-native in
 # case it was cached
-npm cache clear
-npm unpublish react-native --force
-npm unpublish react-native-cli --force
-npm publish $ROOT
-npm publish $ROOT/react-native-cli
+${NPM_PATH}npm unpublish react-native --force
+${NPM_PATH}npm unpublish react-native-cli --force
+${NPM_PATH}npm publish $ROOT
+${NPM_PATH}npm publish $ROOT/react-native-cli
 
-npm install -g react-native-cli
+${NPM_PATH}npm install -g react-native-cli
 react-native init EndToEndTest
 cd EndToEndTest
 
@@ -102,11 +102,9 @@ case $1 in
   ../node_modules/react-native/packager/packager.sh --nonPersistent &
   SERVER_PID=$!
   # TODO Start the app and check it renders "Welcome to React Native"
-  echo "The Android e2e test is not implemented yet" >&2
-  exit 1
+  echo "The Android e2e test is not implemented yet"
   ;;
 *)
-  echo "Please run the script with --ios, --android or --packager" >&2
-  exit 1
+  echo "Please run the script with --ios, --android or --packager"
   ;;
 esac

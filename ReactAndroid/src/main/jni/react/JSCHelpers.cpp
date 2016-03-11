@@ -8,7 +8,7 @@
 #include "Value.h"
 
 #if WITH_FBJSCEXTENSIONS
-#include <jsc_function_info_cache.h>
+#include <jsc_preparsing_cache.h>
 #endif
 
 namespace facebook {
