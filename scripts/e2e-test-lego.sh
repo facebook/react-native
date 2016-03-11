@@ -57,7 +57,7 @@ cd $TEMP
 # published on npm
 # Temporarily installing sinopia from a github fork
 # TODO t10060166 use npm repo when bug is fixed
-which sinopia || ${NPM_PATH}npm install -g git://github.com/bestander/sinopia.git#68707efbab90569d5f52193138936f9281cc410c
+which sinopia || ${NPM_PATH}npm install -g sinopia
 
 # but in order to make npm use sinopia we temporarily
 # replace its config file
