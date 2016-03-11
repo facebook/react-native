@@ -2,6 +2,7 @@
 using ReactNative.Modules.AppState;
 using ReactNative.Modules.Clipboard;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.Storage;
 using ReactNative.Modules.Toast;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
@@ -32,7 +33,7 @@ namespace ReactNative.Shell
             return new List<INativeModule>
             {
                 new AppStateModule(reactContext),
-                //new AsyncStorageModule(reactContext),
+                new AsyncStorageModule(),
                 //new CameraRollManager(reactContext),
                 new ClipboardModule(reactContext),
                 //new DialogModule(reactContext),
