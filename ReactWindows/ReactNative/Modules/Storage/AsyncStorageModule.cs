@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
-using System;
+using System.Diagnostics;
 using Windows.Storage;
 
 namespace ReactNative.Modules.Storage
@@ -8,25 +8,31 @@ namespace ReactNative.Modules.Storage
     /// <summary>
     /// The asynchronous storage module.
     /// </summary>
-    public class AsyncStorageModule : ReactContextNativeModuleBase
+    public class AsyncStorageModule : NativeModuleBase
     {
-        private readonly string _arr = "A";
-        private readonly string _nul = "N";
-        private readonly string _str = "S";
+        private enum _DataType
+        {
+            Null,
+            String,
+            Array,
+        }
 
-        private readonly string _invalidKey = "Invalid key";
-        private readonly string _invalidPair = "Invalid key value pair";
+        private const string _invalidKey = "Invalid key";
+        private const string _invalidPair = "Invalid key value pair";
 
-        private ApplicationDataContainer _container; 
+        private const string _data = "Data";
+        private const string _type = "Type";
+
+        private ApplicationDataContainer _dataContainer;
+        private ApplicationDataContainer _typeContainer;
 
         /// <summary>
         /// Instantiates the <see cref="AsyncStorageModule"/>.
         /// </summary>
-        /// <param name="reactContext">The context.</param>
-        internal AsyncStorageModule(ReactContext reactContext)
-            : base(reactContext)
+        internal AsyncStorageModule()
         {
-            _container = ApplicationData.Current.LocalSettings.CreateContainer(Name, ApplicationDataCreateDisposition.Always);
+            _dataContainer = ApplicationData.Current.LocalSettings.CreateContainer(Name + _data, ApplicationDataCreateDisposition.Always);
+            _typeContainer = ApplicationData.Current.LocalSettings.CreateContainer(Name + _type, ApplicationDataCreateDisposition.Always);
         }
 
         /// <summary>
@@ -47,45 +53,19 @@ namespace ReactNative.Modules.Storage
         /// <param name="keys">Array of key values</param>
         /// <param name="callback">Callback.</param>
         [ReactMethod]
-        public void multiGet(JArray keys, ICallback callback)
+        public void multiGet(string[] keys, ICallback callback)
         {
-            if (keys == null)
-                throw new ArgumentNullException(nameof(keys));
-
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            Debug.Assert(keys != null);
+            Debug.Assert(callback != null);
 
             var result = new JArray();
-
             foreach (var key in keys)
             {
-                if (key.Type == JTokenType.String)
+                result.Add(new JArray
                 {
-                    var value = _container.Values[key.ToObject<string>()];
-                    if (value == null)
-                    {
-                        result.Add(new JArray { key, JValue.CreateNull() });
-                    }
-                    else
-                    {
-                        if (value.GetType() == typeof(bool) || value.GetType() == typeof(long) || value.GetType() == typeof(double))
-                        {
-                            result.Add(new JArray { key, JToken.FromObject(value) });
-                        }
-                        else if (value.GetType() == typeof(string))
-                        {
-                            if ( ((string)value).StartsWith(_arr) )
-                            {
-                                result.Add(new JArray { key, JToken.Parse(((string)value).Substring(1)) });
-                            }
-                            else if (((string)value).StartsWith(_str))
-                            {
-                                result.Add(new JArray { key, ((string)value).Substring(1) });
-                            }
-                            else result.Add(new JArray { key, JValue.CreateNull() });
-                        }
-                    }
-                }
+                    key,
+                    getTokenFromContainer(key),
+                });
             }
             callback.Invoke(result);
         }
@@ -98,54 +78,38 @@ namespace ReactNative.Modules.Storage
         [ReactMethod]
         public void multiSet(JArray keyValueArray, ICallback callback)
         {
-            if (keyValueArray == null)
-                throw new ArgumentNullException(nameof(keyValueArray));
+            Debug.Assert(keyValueArray != null);
+            Debug.Assert(callback != null);
 
             var result = new JArray();
-
             foreach (var keyValue in keyValueArray)
             {
-                if (keyValue.Type == JTokenType.Array && keyValue.ToObject<JArray>().Count == 2)
+                if (keyValue.Type == JTokenType.Array && keyValue.Value<JArray>().Count == 2)
                 {
-                    var pair = keyValue.ToObject<JArray>();
+                    var pair = keyValue.Value<JArray>();
                     if (pair.First.Type == JTokenType.String)
                     {
-                        var key = pair.First.ToObject<string>();
-                        switch (pair.Last.Type)
-                        {
-                            case JTokenType.Null:
-                                _container.Values[key] = _nul;
-                                break;
-                            case JTokenType.Boolean:
-                                _container.Values[key] = pair.Last.ToObject<bool>();
-                                break;
-                            case JTokenType.Integer:
-                                _container.Values[key] = pair.Last.ToObject<long>();
-                                break;
-                            case JTokenType.Float:
-                                _container.Values[key] = pair.Last.ToObject<double>();
-                                break;
-                            case JTokenType.String:
-                                _container.Values[key] = _str + pair.Last.ToObject<string>();
-                                break;
-                            case JTokenType.Array:
-                                _container.Values[key] = _arr + pair.Last.ToString();
-                                break;
-                            default:
-                                break;
-                        }
+                        addTokenToContainer(pair.First.Value<string>(), pair.Last);
                     }
                     else
                     {
-                        result.Add(new JArray { _invalidKey, pair.First });
+                        result.Add(new JArray
+                        {
+                            _invalidKey,
+                            pair.First,
+                        });
                     }
                 }
                 else
                 {
-                    result.Add(new JArray { _invalidPair, keyValue });
+                    result.Add(new JArray
+                    {
+                        _invalidPair,
+                        keyValue,
+                    });
                 }
             }
-            callback?.Invoke(result);
+            callback.Invoke(result);
         }
 
         /// <summary>
@@ -154,24 +118,18 @@ namespace ReactNative.Modules.Storage
         /// <param name="keys">Array of key values</param>
         /// <param name="callback">Callback.</param>
         [ReactMethod]
-        public void multiRemove(JArray keys, ICallback callback)
+        public void multiRemove(string[] keys, ICallback callback)
         {
-            var result = new JArray();
-            if (keys == null)
-                throw new ArgumentNullException(nameof(keys));
+            Debug.Assert(keys != null);
+            Debug.Assert(callback != null);
 
+            var result = new JArray();
             foreach (var key in keys)
             {
-                if (key.Type == JTokenType.String)
-                {
-                    _container.Values.Remove(key.ToObject<string>());
-                }
-                else
-                {
-                    result.Add(new JArray { _invalidKey, key });
-                }
+                _dataContainer.Values.Remove(key);
+                _typeContainer.Values.Remove(key);
             }
-            callback?.Invoke(result);
+            callback.Invoke(result);
         }
 
         /// <summary>
@@ -183,65 +141,58 @@ namespace ReactNative.Modules.Storage
         [ReactMethod]
         public void multiMerge(JArray keyValueArray, ICallback callback)
         {
-            if (keyValueArray == null)
-                throw new ArgumentNullException(nameof(keyValueArray));
+            Debug.Assert(keyValueArray != null);
+            Debug.Assert(callback != null);
 
             var result = new JArray();
-
             foreach (var keyValue in keyValueArray)
             {
-                if (keyValue.Type == JTokenType.Array && keyValue.ToObject<JArray>().Count == 2)
+                if (keyValue.Type == JTokenType.Array && keyValue.Value<JArray>().Count == 2)
                 {
-                    var pair = keyValue.ToObject<JArray>();
+                    var pair = keyValue.Value<JArray>();
                     if (pair.First.Type == JTokenType.String)
                     {
-                        var key = pair.First.ToObject<string>();                    
-                        var value = _container.Values[key];
-                        var token = pair.Last;
-                        if (value != null)
+                        var key = pair.First.Value<string>();
+                        var tokenOld = getTokenFromContainer(key);
+                        var tokenNew = pair.Last;
+
+                        if (tokenOld.Type != JTokenType.Null)
                         {
-                            JToken tokenOld = JValue.CreateNull();
-                            if (value.GetType() == typeof(bool) || value.GetType() == typeof(long) || value.GetType() == typeof(double))
-                            {
-                                tokenOld = JToken.FromObject(value);
-                            }
-                            else if (value.GetType() == typeof(string) && ((string)value).Length > 0)
-                            {
-                                if (((string)value).StartsWith(_arr))
-                                {
-                                    tokenOld = JToken.Parse(((string)value).Substring(1));
-                                }
-                                else if (((string)value).StartsWith(_str))
-                                {
-                                    tokenOld = JToken.FromObject(((string)value).Substring(1));
-                                }
-                            }
                             if (tokenOld.Type == JTokenType.Array)
                             {
-                                ((JArray)tokenOld).Merge(token);
-                                token = tokenOld;
+                                ((JArray)tokenOld).Merge(tokenNew);
+                                tokenNew = tokenOld;
                             }
-                            else if (token.Type == JTokenType.Array)
+                            else if (tokenNew.Type == JTokenType.Array)
                             {
-                                ((JArray)token).Merge(tokenOld);
+                                ((JArray)tokenNew).Merge(tokenOld);
+                            }
+                            else if (tokenNew.Type == JTokenType.Null)
+                            {
+                                tokenNew = tokenOld;
                             }
                         }
-                        if (token.Type != JTokenType.Null)
-                        {
-                            _container.Values[key] = pair.Last.ToString();
-                        }
+                        addTokenToContainer(key, tokenNew);
                     }
                     else
                     {
-                        result.Add(new JArray { _invalidKey, pair.First });
+                        result.Add(new JArray
+                        {
+                            _invalidKey,
+                            pair.First,
+                        });
                     }
                 }
                 else
                 {
-                    result.Add(new JArray { _invalidPair, keyValue });
+                    result.Add(new JArray
+                    {
+                        _invalidPair,
+                        keyValue,
+                    });
                 }
             }
-            callback?.Invoke(result);
+            callback.Invoke(result);
         }
 
         /// <summary>
@@ -251,9 +202,12 @@ namespace ReactNative.Modules.Storage
         [ReactMethod]
         public void clear(ICallback callback)
         {
-            ApplicationData.Current.LocalSettings.DeleteContainer(Name);
-            _container = ApplicationData.Current.LocalSettings.CreateContainer(Name, ApplicationDataCreateDisposition.Always);
-            callback?.Invoke();
+            Debug.Assert(callback != null);
+
+            _dataContainer.Values.Clear();
+            _typeContainer.Values.Clear();
+
+            callback.Invoke();
         }
 
         /// <summary>
@@ -263,16 +217,109 @@ namespace ReactNative.Modules.Storage
         [ReactMethod]
         public void getAllKeys(ICallback callback)
         {
-            if (callback == null)
-                throw new ArgumentNullException(nameof(callback));
+            Debug.Assert(callback != null);
 
-            var result = new JArray();
-            var keys = _container.Values.Keys;
-            foreach (var key in keys)
+            callback.Invoke(JToken.FromObject(_dataContainer.Values.Keys)); 
+        }
+
+        /// <summary>
+        /// Adds JToken to ApplicationDataContainer with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="token">The token.</param>
+        private void addTokenToContainer(string key, JToken token)
+        {
+            switch (token.Type)
             {
-                result.Add(JToken.FromObject(key));
+                case JTokenType.Null:
+                    _dataContainer.Values[key] = "";
+                    addTokenTypeToContainer(key, _DataType.Null);
+                    break;
+                case JTokenType.Boolean:
+                    _dataContainer.Values[key] = token.Value<bool>();
+                    break;
+                case JTokenType.Integer:
+                    _dataContainer.Values[key] = token.Value<long>();
+                    break;
+                case JTokenType.Float:
+                    _dataContainer.Values[key] = token.Value<double>();
+                    break;
+                case JTokenType.String:
+                    _dataContainer.Values[key] = token.Value<string>();
+                    addTokenTypeToContainer(key, _DataType.String);
+                    break;
+                case JTokenType.Array:
+                    _dataContainer.Values[key] = token.ToString();
+                    addTokenTypeToContainer(key, _DataType.Array);
+                    break;
+                default:
+                    break;
             }
-            callback.Invoke(result);
+        }
+
+        /// <summary>
+        /// Gets related value for a specific key from ApplicationDataContainer as JToken.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        private JToken getTokenFromContainer(string key)
+        {
+            var value = _dataContainer.Values[key];
+            if (value == null)
+            {
+                return JValue.CreateNull();
+            }
+            else
+            {
+                var t = value.GetType();
+                if (t == typeof(bool) || t == typeof(long) || t == typeof(double))
+                {
+                    return JToken.FromObject(value);
+                }
+                else if (t == typeof(string))
+                {
+                    var type = getTokenTypeFromContainer(key);
+                    if (type == _DataType.Array)
+                    {
+                        return JToken.Parse((string)value);
+                    }
+                    else if (type == _DataType.String)
+                    {
+                        return JToken.FromObject((string)value);
+                    }
+                    else
+                    {
+                        return JValue.CreateNull();
+                    }
+                }
+                else
+                {
+                    return JValue.CreateNull();
+                }
+            }
+        }
+
+        // <summary>
+        /// Adds token's type to ApplicationDataContainer with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="type">The type.</param>
+        private void addTokenTypeToContainer(string key, _DataType type)
+        {
+            _typeContainer.Values[key] = (int)type;
+        }
+
+        /// <summary>
+        /// Gets token's type for a specific key from ApplicationDataContainer.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        private _DataType getTokenTypeFromContainer(string key)
+        {
+            var value = _typeContainer.Values[key];
+            if (value == null)
+            {
+                return _DataType.Null;
+            }
+            return (_DataType)value;
         }
     }
 }
