@@ -27,6 +27,7 @@
  */
 'use strict';
 
+const NavigationAnimatedValueSubscription = require('NavigationAnimatedValueSubscription');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
 const NavigationContext = require('NavigationContext');
@@ -45,14 +46,20 @@ import type  {
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
-type State = any;
-
 type Props = {
   configureScene: any,
   initialRoute: any,
   initialRouteStack: any,
   renderScene: any,
+  navigationBar: any,
+  navigationBarNavigator: any,
+  renderScene: any,
   style: any,
+};
+
+type State = {
+  presentedIndex: number,
+  routeStack: Array<any>,
 };
 
 function getConfigPopDirection(config: any): ?string {
@@ -75,15 +82,24 @@ const RouteStack = NavigationLegacyNavigatorRouteStack;
  * `NavigationAnimatedView`...etc.
  */
 class NavigationLegacyNavigator extends React.Component<any, Props, State> {
-  static BreadcrumbNavigationBar;
+  static BreadcrumbNavigationBar: any;
   static NavigationBar: any;
   static SceneConfigs: any;
 
+  _key: string;
+  _navigationBarRef: any;
+  _onNavigationBarRef: (ref: any) => void;
+  _onPositionChange: (data: {value: number}) => void;
+  _positionListener: ?NavigationAnimatedValueSubscription;
+  _previousStack: NavigationLegacyNavigatorRouteStack;
   _renderCard: NavigationSceneRenderer;
   _renderHeader: NavigationSceneRenderer;
   _renderScene: NavigationSceneRenderer;
+  _stack: NavigationLegacyNavigatorRouteStack;
 
   navigationContext: NavigationContext;
+  props: Props;
+  state: State;
 
   constructor(props: Props, context: any) {
     super(props, context);
@@ -91,14 +107,22 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     this.navigationContext = new NavigationContext();
 
     const stack = this._getInitialRouteStack();
+
+    // Unfortunately, due to historical reasons, the `state` has been exposed
+    // as public members of the navigator, therefore we'd keep private state
+    // as private members.
+    this._key = guid();
+    this._previousStack = stack;
+    this._stack = stack;
+
     this.state = {
-      key: guid(),
-      stack,
+      routeStack: stack.toArray(),
+      presentedIndex: stack.index,
     };
   }
 
   jumpTo(route: any): void {
-    const index = this.state.stack.indexOf(route);
+    const index = this._stack.indexOf(route);
     invariant(
       index > -1,
       'Cannot jump to route that is not in the route stack'
@@ -107,26 +131,26 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   jumpForward(): void {
-    this._jumpToIndex(this.state.stack.index + 1);
+    this._jumpToIndex(this._stack.index + 1);
   }
 
   jumpBack(): void {
-    this._jumpToIndex(this.state.stack.index - 1);
+    this._jumpToIndex(this._stack.index - 1);
   }
 
   push(route: any): void {
-    this.setState({stack: this.state.stack.push(route)});
+    this._applyStack(this._stack.push(route));
   }
 
   pop(): void {
-    const {stack} = this.state;
+    const stack = this._stack;
     if (stack.size > 1) {
-      this.setState({stack: stack.pop()});
+      this._applyStack(stack.pop());
     }
   }
 
   replaceAtIndex(route: any, index: number): void {
-    const {stack} = this.state;
+    const stack = this._stack;
 
     if (index < 0) {
       index += stack.size;
@@ -137,65 +161,63 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
       return;
     }
 
-    this.setState({stack: stack.replaceAtIndex(index, route)});
+    this._applyStack(stack.replaceAtIndex(index, route));
   }
 
   replace(route: any): void {
-    this.replaceAtIndex(route, this.state.stack.index);
+    this.replaceAtIndex(route, this._stack.index);
   }
 
   replacePrevious(route: any): void {
-    this.replaceAtIndex(route, this.state.stack.index - 1);
+    this.replaceAtIndex(route, this._stack.index - 1);
   }
 
   popToTop(): void {
-    this.setState({stack: this.state.stack.slice(0, 1)});
+    this._applyStack(this._stack.slice(0, 1));
   }
 
   popToRoute(route: any): void {
-    const {stack} = this.state;
+    const stack = this._stack;
     const nextIndex = stack.indexOf(route);
     invariant(
       nextIndex > -1,
       'Calling popToRoute for a route that doesn\'t exist!'
     );
-    this.setState({stack: stack.slice(0, nextIndex + 1)});
+    this._applyStack(stack.slice(0, nextIndex + 1));
   }
 
   replacePreviousAndPop(route: any): void {
-    const {stack} = this.state;
+    const stack = this._stack;
     const nextIndex = stack.index - 1;
     if (nextIndex < 0) {
       return;
     }
-    this.setState({stack: stack.replaceAtIndex(nextIndex, route).pop()});
+    this._applyStack(stack.replaceAtIndex(nextIndex, route).pop());
   }
 
   resetTo(route: any): void {
     invariant(!!route, 'Must supply route');
-    this.setState({stack: this.state.stack.slice(0).replaceAtIndex(0, route)});
+    this._applyStack(this._stack.slice(0).replaceAtIndex(0, route));
   }
 
   immediatelyResetRouteStack(routes: Array<any>): void {
     const index = routes.length - 1;
     const stack = new RouteStack(index, routes);
-    this.setState({
-      key: guid(),
-      stack,
-    });
+    // Immediately blow away all current scenes with a new key.
+    this._key = guid();
+    this._applyStack(stack);
   }
 
   getCurrentRoutes(): Array<any> {
-    return this.state.stack.toArray();
+    return this._stack.toArray();
   }
 
   _jumpToIndex(index: number): void {
-    const {stack} = this.state;
+    const stack = this._stack;
     if (index < 0 || index >= stack.size) {
       return;
     }
-    const nextStack = stack.jumpToIndex(index);
-    this.setState({stack: nextStack});
+    this._applyStack(stack.jumpToIndex(index));
   }
 
   // Lyfe cycle and private methods below.
@@ -209,16 +231,22 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   componentWillMount(): void {
+    this._onNavigationBarRef = this._onNavigationBarRef.bind(this);
+    this._onPositionChange = this._onPositionChange.bind(this);
     this._renderCard = this._renderCard.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
     this._renderScene = this._renderScene.bind(this);
   }
 
+  componentWillUnmount(): void {
+    this._positionListener && this._positionListener.remove();
+  }
+
   render(): ReactElement {
     return (
       <NavigationAnimatedView
-        key={'main_' + this.state.key}
-        navigationState={this.state.stack.toNavigationState()}
+        key={'main_' + this._key}
+        navigationState={this._stack.toNavigationState()}
         renderOverlay={this._renderHeader}
         renderScene={this._renderCard}
         style={this.props.style}
@@ -236,8 +264,26 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   _renderHeader(props: NavigationSceneRendererProps): ?ReactElement {
-    // TODO(hedger): Render the legacy header.
-    return null;
+    this._positionListener && this._positionListener.remove();
+    this._positionListener = new NavigationAnimatedValueSubscription(
+      props.position,
+      this._onPositionChange,
+    );
+
+    const {navigationBar, navigationBarNavigator} = this.props;
+
+    if (!navigationBar) {
+      return null;
+    }
+
+    return React.cloneElement(
+      navigationBar,
+      {
+        ref: this._onNavigationBarRef,
+        navigator: navigationBarNavigator || this,
+        navState: {...this.state},
+      }
+    );
   }
 
   _renderCard(props: NavigationSceneRendererProps): ReactElement {
@@ -248,7 +294,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
 
     if (configureScene) {
       const route = RouteStack.getRouteByNavigationState(navigationState);
-      const config = configureScene(route, this.state.stack.toArray());
+      const config = configureScene(route, this.state.routeStack);
 
       switch (getConfigPopDirection(config)) {
         case 'left-to-right':
@@ -281,6 +327,39 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     const {navigationState} = props.scene;
     const route = RouteStack.getRouteByNavigationState(navigationState);
     return this.props.renderScene(route, this);
+  }
+
+  _applyStack(stack: NavigationLegacyNavigatorRouteStack): void {
+    if (stack !== this._stack) {
+      this._previousStack = this._stack;
+      this._stack = stack;
+      this.setState({
+        presentedIndex: stack.index,
+        routeStack: stack.toArray(),
+      });
+    }
+  }
+
+  _onNavigationBarRef(navigationBarRef: any): void {
+    this._navigationBarRef = navigationBarRef;
+    const {navigationBar} = this.props;
+    if (navigationBar && typeof navigationBar.ref === 'function') {
+      navigationBar.ref(navigationBarRef);
+    }
+  }
+
+  _onPositionChange(data: {value: number}): void {
+    const fromIndex = this._previousStack.index;
+    const toIndex = this._stack.index;
+
+    if (
+      fromIndex !== toIndex &&
+      this._navigationBarRef &&
+      typeof this._navigationBarRef.updateProgress === 'function'
+    ) {
+      const progress = (data.value - fromIndex) / (toIndex - fromIndex);
+      this._navigationBarRef.updateProgress(progress, fromIndex, toIndex);
+    }
   }
 }
 
