@@ -40,7 +40,7 @@ test:
     # starting emulator in advance because it takes very long to boot
     - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
             background: true
-    - waitForAVD
+    - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
     # build app
