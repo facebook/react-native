@@ -4,7 +4,7 @@ title: Getting Started on Linux
 layout: docs
 category: Quick Start
 permalink: docs/getting-started-linux.html
-previous: getting-started-linux
+previous: getting-started
 next: android-setup
 ---
 
