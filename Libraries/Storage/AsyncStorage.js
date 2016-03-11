@@ -105,6 +105,22 @@ var AsyncStorage = {
   /**
    * Merges existing value with input value, assuming they are stringified json.
    * Returns a `Promise` object. Not supported by all native implementations.
+   *
+   * Example:
+   * ```JavaScript
+   *   let k1 = 'key_1'
+   *   let val_1a = JSON.stringify({'a': '123', 'b': {'b1': '234', 'b2': '234'}})
+   *   let val_1b = JSON.stringify({'b': {'b2': '555', 'b3': '555'}})
+   *   let EXPECTED_RESULT = {'a':'123','b':{'b1':'234','b2':'555','b3':'555'}}
+   *
+   *   AsyncStorage.setItem(k1, val_1a, () => {
+   *     AsyncStorage.mergeItem(k1, val_1b, () => {
+   *       AsyncStorage.getItem(k1, (err, result) => {
+   *         console.log('result [%O] equals EXPECTED_RESULT [%O]', JSON.parse(result), EXPECTED_RESULT)
+   *       })
+   *     })
+   *   })
+   * ```
    */
   mergeItem: function(
     key: string,
@@ -144,6 +160,8 @@ var AsyncStorage = {
 
   /**
    * Gets *all* keys known to the app, for all callers, libraries, etc. Returns a `Promise` object.
+   *
+   * Example: see multiGet for example
    */
   getAllKeys: function(callback?: ?(error: ?Error, keys: ?Array<string>) => void): Promise {
     return new Promise((resolve, reject) => {
@@ -201,6 +219,17 @@ var AsyncStorage = {
    * matches the input format of multiSet. Returns a `Promise` object.
    *
    *   multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
+   *
+   * Example:
+   * ```JavaScript
+   *   AsyncStorage.getAllKeys( (err, keys) => {
+   *     AsyncStorage.multiGet( keys, (err, stores) => {
+   *      stores.map( (result, i, store) => {
+   *         console.log('store["%s"] contains...', store[i][0], store[i][1])
+   *       })
+   *     })
+   *   })
+   * ```
    */
   multiGet: function(
     keys: Array<string>,
@@ -243,6 +272,8 @@ var AsyncStorage = {
    * the output of multiGet, e.g. Returns a `Promise` object.
    *
    *   multiSet([['k1', 'val1'], ['k2', 'val2']], cb);
+   *
+   * Example: see multiMerge for an example
    */
   multiSet: function(
     keyValuePairs: Array<Array<string>>,
@@ -263,6 +294,14 @@ var AsyncStorage = {
 
   /**
    * Delete all the keys in the `keys` array. Returns a `Promise` object.
+   *
+   * Example:
+   * ```JavaScript
+   *   let keys = ['k1','k2']
+   *   AsyncStorage.multiRemove(keys, (err) => {
+   *     console.log('stores [%O] removed if they existed else nothing', keys)
+   *   })
+   * ```
    */
   multiRemove: function(
     keys: Array<string>,
@@ -286,6 +325,32 @@ var AsyncStorage = {
    * json. Returns a `Promise` object.
    *
    * Not supported by all native implementations.
+   *
+   * Example:
+   * ```JavaScript
+   *   let key_1 = 'k1'
+   *   let val_1a = JSON.stringify({'a': '123', 'b': {'b1': '234', 'b2': '234'}})
+   *   let val_1b = JSON.stringify({'b': {'b2': '555', 'b3': '555'}})
+   *
+   *   let key_2 = 'k2'
+   *   let val_2a = val_1a
+   *   let val_2b = val_1b
+   *
+   *   let multi_set_keys    = [[key_1, val_1a],[key_2, val_2a]]
+   *   let multi_merge_pairs = [[key_1, val_1b],[key_2, val_2b]]
+   *
+   *   AsyncStorage.multiSet(multi_set_keys, (err) => {
+   *     console.log('[multiSet] done!')
+   *     AsyncStorage.multiMerge(multi_merge_pairs, (err) => {
+   *       console.log('[multiMerge] done!')
+   *       AsyncStorage.multiGet([key_1,key_2], (err, stores) => {
+   *         stores.map( (result, i, store) => {
+   *           console.log('store["%s"] contains...', store[i][0], store[i][1])
+   *         })
+   *       })
+   *     })
+   *   })
+   * ```
    */
   multiMerge: function(
     keyValuePairs: Array<Array<string>>,
