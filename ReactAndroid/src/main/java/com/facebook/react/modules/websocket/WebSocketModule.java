@@ -175,11 +175,24 @@ public class WebSocketModule extends ReactContextBaseJavaModule {
     }
     try {
       client.sendMessage(
-        WebSocket.PayloadType.TEXT,
-        new Buffer().writeUtf8(message));
+        WebSocket.PayloadType.TEXT, new Buffer().writeUtf8(message));
     } catch (IOException | IllegalStateException e) {
       notifyWebSocketFailed(id, e.getMessage());
     }
+  }
+
+  @ReactMethod
+  public void sendBinary(Buffer buffer, int id) {
+      WebSocket client = mWebSocketConnections.get(id);
+      if (client == null) {
+          // This is a programmer error
+          throw new RuntimeException("Cannot send a message. Unknown WebSocket id " + id);
+      }
+      try {
+          client.sendMessage(WebSocket.PayloadType.BINARY, buffer);
+      } catch (IOException e) {
+          notifyWebSocketFailed(id, e.getMessage());
+      }
   }
 
   private void notifyWebSocketFailed(int id, String message) {
