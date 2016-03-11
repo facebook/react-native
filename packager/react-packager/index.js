@@ -10,7 +10,7 @@
 
 require('../babelRegisterOnly')([/react-packager\/src/]);
 
-require('fast-path').replace();
+require('node-haste/lib/fastpath').replace();
 useGracefulFs();
 
 var debug = require('debug');
