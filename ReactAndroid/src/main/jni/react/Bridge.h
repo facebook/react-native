@@ -30,7 +30,7 @@ public:
 
   virtual void onCallNativeModules(
       ExecutorToken executorToken,
-      std::vector<MethodCall>&& calls,
+      const std::string& callJSON,
       bool isEndOfBatch) = 0;
 
   virtual void onExecutorUnregistered(ExecutorToken executorToken) = 0;
@@ -66,8 +66,8 @@ public:
    */
   void callFunction(
     ExecutorToken executorToken,
-    const double moduleId,
-    const double methodId,
+    const std::string& moduleId,
+    const std::string& methodId,
     const folly::dynamic& args,
     const std::string& tracingName);
 

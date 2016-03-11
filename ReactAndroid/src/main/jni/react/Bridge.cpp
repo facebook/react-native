@@ -47,8 +47,8 @@ void Bridge::loadApplicationUnbundle(
 
 void Bridge::callFunction(
     ExecutorToken executorToken,
-    const double moduleId,
-    const double methodId,
+    const std::string& moduleId,
+    const std::string& methodId,
     const folly::dynamic& arguments,
     const std::string& tracingName) {
   if (*m_destroyed) {
@@ -174,7 +174,7 @@ void Bridge::callNativeModules(JSExecutor& executor, const std::string& callJSON
   if (*m_destroyed) {
     return;
   }
-  m_callback->onCallNativeModules(getTokenForExecutor(executor), parseMethodCalls(callJSON), isEndOfBatch);
+  m_callback->onCallNativeModules(getTokenForExecutor(executor), callJSON, isEndOfBatch);
 }
 
 ExecutorToken Bridge::getMainExecutorToken() const {

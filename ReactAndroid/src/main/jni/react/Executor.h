@@ -47,7 +47,7 @@ public:
    * method ID and optional additional arguments in JS. The executor is responsible
    * for using Bridge->callNativeModules to invoke any necessary native modules methods.
    */
-  virtual void callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) = 0;
+  virtual void callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) = 0;
 
   /**
    * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
