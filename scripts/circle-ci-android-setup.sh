@@ -2,6 +2,8 @@
 
 function getAndroidSDK {
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
+  echo y | android update sdk --no-ui --all --filter android-23
+  echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-23
 
   DEPS="$ANDROID_HOME/installed-dependencies"
 
