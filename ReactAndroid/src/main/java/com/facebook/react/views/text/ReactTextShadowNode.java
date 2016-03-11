@@ -205,8 +205,12 @@ public class ReactTextShadowNode extends LayoutShadowNode {
           float desiredWidth = boring == null ?
               Layout.getDesiredWidth(text, textPaint) : Float.NaN;
 
+          // technically, width should never be negative, but there is currently a bug in
+          // LayoutEngine where a negative value can be passed.
+          boolean unconstrainedWidth = CSSConstants.isUndefined(width) || width < 0;
+
           if (boring == null &&
-              (CSSConstants.isUndefined(width) ||
+              (unconstrainedWidth ||
                   (!CSSConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
             // Is used when the width is not known and the text is not boring, ie. if it contains
             // unicode characters.
@@ -218,7 +222,7 @@ public class ReactTextShadowNode extends LayoutShadowNode {
                 1,
                 0,
                 true);
-          } else if (boring != null && (CSSConstants.isUndefined(width) || boring.width <= width)) {
+          } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
             // Is used for single-line, boring text when the width is either unknown or bigger
             // than the width of the text.
             layout = BoringLayout.make(
