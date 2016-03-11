@@ -58,10 +58,10 @@ void ProxyExecutor::loadApplicationUnbundle(std::unique_ptr<JSModulesUnbundle>, 
     "Loading application unbundles is not supported for proxy executors");
 }
 
-void ProxyExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   std::vector<folly::dynamic> call{
-    (double) moduleId,
-    (double) methodId,
+    moduleId,
+    methodId,
     std::move(arguments),
   };
   std::string result = executeJSCallWithProxy(m_executor.get(), "callFunctionReturnFlushedQueue", std::move(call));
