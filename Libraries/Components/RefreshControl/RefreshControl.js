@@ -11,9 +11,10 @@
  */
 'use strict';
 
-const React = require('React');
-const Platform = require('Platform');
 const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const React = require('React');
 const View = require('View');
 
 const requireNativeComponent = require('requireNativeComponent');
@@ -33,6 +34,8 @@ const RefreshControl = React.createClass({
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },
+
+  mixins: [NativeMethodsMixin],
 
   propTypes: {
     ...View.propTypes,
@@ -76,8 +79,21 @@ const RefreshControl = React.createClass({
     size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
   },
 
+  _nativeRef: undefined,
+
   render() {
-    return <NativeRefreshControl {...this.props} />;
+    return (
+      <NativeRefreshControl
+        {...this.props}
+        ref={ref => this._nativeRef = ref}
+        onRefresh={this._onRefresh}
+      />
+    );
+  },
+
+  _onRefresh() {
+    this.props.onRefresh && this.props.onRefresh();
+    this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
   },
 });
 
