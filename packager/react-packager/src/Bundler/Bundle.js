@@ -31,6 +31,7 @@ class Bundle extends BundleBase {
   }
 
   addModule(resolver, resolutionResponse, module, moduleTransport) {
+    const index = super.addModule(moduleTransport);
     return resolver.wrapModule({
       resolutionResponse,
       module,
@@ -46,7 +47,8 @@ class Bundle extends BundleBase {
         this._shouldCombineSourceMaps = true;
       }
 
-      super.addModule(new ModuleTransport({...moduleTransport, code, map}));
+      this.replaceModuleAt(
+        index, new ModuleTransport({...moduleTransport, code, map}));
     });
   }
 
