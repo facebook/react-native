@@ -26,9 +26,49 @@ if (Platform.OS === 'android') {
 }
 
 /**
- * This component is used inside a ScrollView to add pull to refresh
+ * This component is used inside a ScrollView or ListView to add pull to refresh
  * functionality. When the ScrollView is at `scrollY: 0`, swiping down
  * triggers an `onRefresh` event.
+ *
+ * ### Usage example
+ *
+ * ``` js
+ * class RefreshableList extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       refreshing: false,
+ *     };
+ *   }
+ *
+ *   _onRefresh() {
+ *     this.setState({refreshing: true});
+ *     fetchData().then(() => {
+ *       this.setState({refreshing: false});
+ *     });
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <ListView
+ *         refreshControl={
+ *           <RefreshControl
+ *             refreshing={this.state.refreshing}
+ *             onRefresh={this._onRefresh.bind(this)}
+ *           />
+ *         }
+ *         ...
+ *       >
+ *       ...
+ *       </ListView>
+ *     );
+ *   }
+ *   ...
+ * }
+ * ```
+ *
+ * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
+ * in the `onRefresh` function otherwise the refresh indicator will stop immediatly.
  */
 const RefreshControl = React.createClass({
   statics: {
