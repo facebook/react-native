@@ -108,7 +108,7 @@ describe('Bundle', () => {
       });
     });
 
-    fpit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+    pit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
       const moduleTransports = [
         createModuleTransport({name: 'module1'}),
         createModuleTransport({name: 'module2'}),
@@ -122,7 +122,6 @@ describe('Bundle', () => {
         }
       };
 
-      console.log(bundle.addModule+'')
       const promise = Promise.all(
         moduleTransports.map(m => bundle.addModule(resolver, null, null, m)))
       .then(() => {
