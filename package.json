@@ -112,7 +112,8 @@
     "PATENTS",
     "README.md",
     "jestSupport",
-    ".flowconfig"
+    ".flowconfig",
+    "flow"
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",
