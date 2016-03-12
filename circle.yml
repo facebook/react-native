@@ -52,19 +52,19 @@ test:
 
     # instrumentation tests
     # compile native libs with Gradle script
-    - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -PdisablePreDex -Pjobs=1:
+    - ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1:
         timeout: 360
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     # build test APK
     - buck/bin/buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
-    - ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
+    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 
     # Deprecated: run tests with Gradle, we keep them for a while to compare performance
-    - ./gradlew :ReactAndroid:testDebugUnitTest -PdisablePreDex
-    - ./gradlew :ReactAndroid:connectedAndroidTest -PdisablePreDex --stacktrace --info:
-        timeout: 360
+    - ./gradlew :ReactAndroid:testDebugUnitTest
+    - ./gradlew :ReactAndroid:installDebugAndroidTest
+    - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
 
     # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
     - ./scripts/e2e-test.sh --packager

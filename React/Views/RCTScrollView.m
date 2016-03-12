@@ -838,7 +838,10 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, RCTScrollEventTypeMove)
   if (RCT_DEBUG) {
     // Validate that sticky headers are not out of range.
     NSUInteger subviewCount = _scrollView.contentView.reactSubviews.count;
-    NSUInteger lastIndex = _scrollView.stickyHeaderIndices.lastIndex;
+    NSUInteger lastIndex = NSNotFound;
+    if (_scrollView.stickyHeaderIndices != nil) {
+      lastIndex = _scrollView.stickyHeaderIndices.lastIndex;
+    }
     if (lastIndex != NSNotFound && lastIndex >= subviewCount) {
       RCTLogWarn(@"Sticky header index %zd was outside the range {0, %zd}",
                  lastIndex, subviewCount);
