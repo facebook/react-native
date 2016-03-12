@@ -8,14 +8,12 @@ namespace ReactNative.Modules.Clipboard
     /// <summary>
     /// A module that allows JS to get/set clipboard contents.
     /// </summary>
-    class ClipboardModule : ReactContextNativeModuleBase
+    class ClipboardModule : NativeModuleBase
     {
         /// <summary>
         /// Instantiates the <see cref="ClipboardModule"/>.
         /// </summary>
-        /// <param name="reactContext">The context.</param>
-        internal ClipboardModule(ReactContext reactContext)
-            : base(reactContext)
+        internal ClipboardModule()
         {
         }
 
