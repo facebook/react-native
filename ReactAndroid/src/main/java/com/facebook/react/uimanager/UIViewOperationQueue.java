@@ -9,9 +9,14 @@
 
 package com.facebook.react.uimanager;
 
+import android.net.Uri;
+import android.view.View;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.ReactContext;
@@ -491,6 +497,33 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class TakeSnapshot extends ViewOperation {
+    private Snapshot snapshot;
+    private Promise promise;
+    private File destFile;
+
+    public TakeSnapshot(int tag, Snapshot snapshot, File destFile, Promise promise) {
+      super(tag);
+      this.snapshot = snapshot;
+      this.promise = promise;
+      this.destFile = destFile;
+    }
+    @Override
+    public void execute() {
+      try {
+        View view = mNativeViewHierarchyManager.resolveView(mTag);
+        FileOutputStream fileOutputStream = new FileOutputStream(destFile);
+        snapshot.captureViewToFileOutputStream(view, fileOutputStream);
+        fileOutputStream.close();
+        String uri = Uri.fromFile(destFile).toString();
+        promise.resolve(uri);
+      }
+      catch (Exception e) {
+        promise.reject(e);
+      }
+    }
+  }
+
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final AnimationRegistry mAnimationRegistry;
 
@@ -685,6 +718,10 @@ public class UIViewOperationQueue {
 
   public void enqueueSendAccessibilityEvent(int tag, int eventType) {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
+  }
+
+  public void enqueueTakeSnapshot(int tag, Snapshot snapshot, File destFile, Promise promise) {
+    mOperations.add(new TakeSnapshot(tag, snapshot, destFile, promise));
   }
 
   /* package */ void dispatchViewUpdates(final int batchId) {

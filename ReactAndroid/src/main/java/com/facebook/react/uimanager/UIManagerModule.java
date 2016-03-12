@@ -9,16 +9,27 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+
 import javax.annotation.Nullable;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.GuardedAsyncTask;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -76,6 +87,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       List<ViewManager> viewManagerList,
       UIImplementation uiImplementation) {
     super(reactContext);
+    new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerList);
     mUIImplementation = uiImplementation;
@@ -112,6 +124,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     mEventDispatcher.onCatalystInstanceDestroyed();
+    new CleanTask(getReactApplicationContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   private static Map<String, Object> createConstants(List<ViewManager> viewManagerList) {
@@ -448,5 +461,92 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
+  }
+
+  @ReactMethod
+  public void takeSnapshot(String target, int tag, ReadableMap options, Promise promise) {
+    String format = options.hasKey("format") ? options.getString("format") : "png";
+    Bitmap.CompressFormat compressFormat =
+    format.equals("png") ? Bitmap.CompressFormat.PNG :
+    format.equals("jpg")||format.equals("jpeg") ? Bitmap.CompressFormat.JPEG :
+    format.equals("webm") ? Bitmap.CompressFormat.WEBP :
+    null;
+    if (compressFormat == null) {
+      throw new JSApplicationIllegalArgumentException("Unsupported image format: " + format);
+    }
+    double quality = options.hasKey("quality") ? options.getDouble("quality") : 1.0;
+    Integer width = options.hasKey("width") ? options.getInt("width") : null;
+    Integer height = options.hasKey("height") ? options.getInt("height") : null;
+    try {
+      File tmpFile = createTempFile(getReactApplicationContext(), format);
+      mUIImplementation.takeSnapshot(target, tag, new Snapshot(compressFormat, quality, width, height), tmpFile, promise);
+    }
+    catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+
+  private static final String TEMP_FILE_PREFIX = "ReactNative_snapshot_image_";
+  /**
+   * Asynchronous task that cleans up cache dirs (internal and, if available, external) of cropped
+   * image files. This is run when the catalyst instance is being destroyed (i.e. app is shutting
+   * down) and when the module is instantiated, to handle the case where the app crashed.
+   */
+  private static class CleanTask extends GuardedAsyncTask<Void, Void> {
+    private final Context mContext;
+
+    private CleanTask(ReactContext context) {
+      super(context);
+      mContext = context;
+    }
+
+    @Override
+    protected void doInBackgroundGuarded(Void... params) {
+      cleanDirectory(mContext.getCacheDir());
+      File externalCacheDir = mContext.getExternalCacheDir();
+      if (externalCacheDir != null) {
+        cleanDirectory(externalCacheDir);
+      }
+    }
+
+    private void cleanDirectory(File directory) {
+      File[] toDelete = directory.listFiles(
+        new FilenameFilter() {
+          @Override
+          public boolean accept(File dir, String filename) {
+            return filename.startsWith(TEMP_FILE_PREFIX);
+          }
+        });
+      if (toDelete != null) {
+        for (File file: toDelete) {
+          file.delete();
+        }
+      }
+    }
+  }
+
+  /**
+   * Create a temporary file in the cache directory on either internal or external storage,
+   * whichever is available and has more free space.
+   */
+  private File createTempFile(Context context, String ext)
+    throws IOException {
+    File externalCacheDir = context.getExternalCacheDir();
+    File internalCacheDir = context.getCacheDir();
+    File cacheDir;
+    if (externalCacheDir == null && internalCacheDir == null) {
+      throw new IOException("No cache directory available");
+    }
+    if (externalCacheDir == null) {
+      cacheDir = internalCacheDir;
+    }
+    else if (internalCacheDir == null) {
+      cacheDir = externalCacheDir;
+    } else {
+      cacheDir = externalCacheDir.getFreeSpace() > internalCacheDir.getFreeSpace() ?
+        externalCacheDir : internalCacheDir;
+    }
+    return File.createTempFile(TEMP_FILE_PREFIX, ext, cacheDir);
   }
 }

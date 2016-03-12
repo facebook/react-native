@@ -10,6 +10,7 @@ package com.facebook.react.uimanager;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +19,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -728,5 +731,26 @@ public class UIImplementation {
       }
     }
     cssNode.markUpdateSeen();
+  }
+
+  public void takeSnapshot(String target, int tag, Snapshot snapshot, File destFile, Promise promise) {
+    int t;
+    if (target == null) {
+      t = tag;
+    }
+    else {
+      if (target.equals("window")) {
+        t = mShadowNodeRegistry.getRootTag(0);
+      }
+      else {
+        throw new JSApplicationIllegalArgumentException("Invalid snapshot target: "+target);
+      }
+    }
+    mOperationsQueue.enqueueTakeSnapshot(
+      t,
+      snapshot,
+      destFile,
+      promise
+    );
   }
 }

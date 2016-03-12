@@ -33,29 +33,56 @@ var ScreenshotExample = React.createClass({
 
   render() {
     return (
-      <View>
+      <View style={style.root} ref={ref => this._view = ref}>
+        <Image
+          source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
+          style={style.image}
+        />
         <Text onPress={this.takeScreenshot} style={style.button}>
-          Click to take a screenshot
+          Click here to screenshot the App (JPG 50%)
         </Text>
-        <Image style={style.image} source={{uri: this.state.uri}}/>
+        <Text onPress={this.takeScreenshot2} style={style.button}>
+          Click here to screenshot this View (PNG)
+        </Text>
+
+        <Image style={style.result} source={{uri: this.state.uri}}/>
       </View>
     );
   },
 
   takeScreenshot() {
     UIManager
-      .takeSnapshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
+      .takeSnapshot('window', {format: 'jpeg', quality: 0.5 }) // See UIManager.js for options
+      .then((uri) => this.setState({uri}))
+      .catch((error) => alert(error));
+  },
+
+  takeScreenshot2() {
+    UIManager
+      .takeSnapshot(this._view)
       .then((uri) => this.setState({uri}))
       .catch((error) => alert(error));
   }
 });
 
 var style = StyleSheet.create({
+  root: {
+    backgroundColor: '#fff',
+    position: 'relative',
+  },
   button: {
-    marginBottom: 10,
+    margin: 5,
     fontWeight: '500',
+    backgroundColor: 'transparent',
   },
   image: {
+    width: 40,
+    height: 40,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+  },
+  result: {
     flex: 1,
     height: 300,
     resizeMode: 'contain',

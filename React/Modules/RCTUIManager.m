@@ -1226,7 +1226,8 @@ RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
   callback(@[results]);
 }
 
-RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
+RCT_EXPORT_METHOD(takeSnapshot:(NSString *)target
+                  withTag:(nonnull NSNumber *)tag
                   withOptions:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -1235,10 +1236,10 @@ RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
 
     // Get view
     UIView *view;
-    if (target == nil || [target isEqual:@"window"]) {
+    if (target && [target isEqual:@"window"]) {
       view = RCTKeyWindow();
-    } else if ([target isKindOfClass:[NSNumber class]]) {
-      view = viewRegistry[target];
+    } else {
+      view = viewRegistry[tag];
       if (!view) {
         RCTLogError(@"No view found with reactTag: %@", target);
         return;
@@ -1269,7 +1270,7 @@ RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
       NSData *data;
       if ([format isEqualToString:@"png"]) {
         data = UIImagePNGRepresentation(image);
-      } else if ([format isEqualToString:@"jpeg"]) {
+      } else if ([format isEqualToString:@"jpeg"]||[format isEqualToString:@"jpg"]) {
         CGFloat quality = [RCTConvert CGFloat:options[@"quality"] ?: @1];
         data = UIImageJPEGRepresentation(image, quality);
       } else {

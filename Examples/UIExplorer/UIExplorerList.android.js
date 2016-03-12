@@ -48,6 +48,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ScrollViewSimpleExample'),
   },
   {
+    key: 'SnapshotExample',
+    module: require('./SnapshotExample'),
+  },
+  {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
   },

@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import android.graphics.Bitmap;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -26,16 +27,21 @@ import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
 import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.JSApplicationCausedNativeException;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between

@@ -49,15 +49,15 @@ const _takeSnapshot = UIManager.takeSnapshot;
  * Capture an image of the screen, window or an individual view. The image
  * will be stored in a temporary file that will only exist for as long as the
  * app is running.
- * 
+ *
  * The `view` argument can be the literal string `window` if you want to
  * capture the entire window, or it can be a reference to a specific
  * React Native component.
  *
  * The `options` argument may include:
  * - width/height (number) - the width and height of the image to capture.
- * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
- * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
+ * - format (string) - either 'png' or 'jpg'/'jpeg' or 'webm' (Android). Defaults to 'png'.
+ * - quality (number) - the quality. 0.0 - 1.0 (default). (only available on lossy formats like jpeg)
  *
  * Returns a Promise.
  * @platform ios
@@ -78,7 +78,8 @@ UIManager.takeSnapshot = async function(
   if (typeof view !== 'number' && view !== 'window') {
     view = findNodeHandle(view) || 'window';
   }
-  return _takeSnapshot(view, options);
+  const isTag = typeof view === 'number';
+  return _takeSnapshot(isTag ? null : view, isTag ? view : 0, options || {});
 };
 
 module.exports = UIManager;
