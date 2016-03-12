@@ -119,7 +119,7 @@ const RefreshControl = React.createClass({
     size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
   },
 
-  _nativeRef: undefined,
+  _nativeRef: {},
 
   render() {
     return (
