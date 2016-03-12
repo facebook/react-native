@@ -124,4 +124,19 @@ describe('Easing', () => {
       });
     });
   });
+
+  it('should work with cubic bezier', () => {
+    var easing = Easing.bezier(0, 1, 0.6, 1);
+    var progress = 0;
+    var hasFaultyValues = false;
+    while (progress <= 1) {
+      progress = Math.round(progress * 1000) / 1000;
+      var result = easing(progress);
+      if (result < 0) {
+        hasFaultyValues = true;
+      }
+      progress += 0.01;
+    }
+    expect(hasFaultyValues).toBe(false);
+  });
 });
