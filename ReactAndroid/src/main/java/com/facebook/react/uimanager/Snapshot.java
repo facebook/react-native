@@ -1,7 +1,7 @@
 package com.facebook.react.uimanager;
 
+import javax.annotation.Nullable;
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
 import android.view.View;
 import java.io.FileOutputStream;
 

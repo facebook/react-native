@@ -25,6 +25,8 @@ var {
 } = React;
 
 var ScreenshotExample = React.createClass({
+  _view: null,
+
   getInitialState() {
     return {
       uri: undefined,
@@ -33,7 +35,7 @@ var ScreenshotExample = React.createClass({
 
   render() {
     return (
-      <View style={style.root} ref={ref => this._view = ref}>
+      <View style={style.root} ref={ref => { this._view = ref; }}>
         <Image
           source={{uri: 'http://facebook.github.io/react/img/logo_og.png'}}
           style={style.image}
