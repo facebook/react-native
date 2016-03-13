@@ -32,10 +32,10 @@ NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContext
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
-// TODO: add lineNo
 typedef struct ModuleData
 {
   uint32_t offset;
+  uint32_t lineNo;
 } ModuleData;
 
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
@@ -668,6 +668,14 @@ static void freeModuleData(__unused CFAllocatorRef allocator, void *ptr)
   free(ptr);
 }
 
+static uint32_t readUint32(const void **ptr) {
+  uint32_t data;
+  memcpy(&data, *ptr, sizeof(uint32_t));
+  data = NSSwapLittleIntToHost(data);
+  *ptr += sizeof(uint32_t);
+  return data;
+}
+
 - (NSData *)loadRAMBundle:(NSData *)script
 {
   __weak RCTJSCExecutor *weakSelf = self;
@@ -679,8 +687,9 @@ static void freeModuleData(__unused CFAllocatorRef allocator, void *ptr)
 
     ModuleData *moduleData = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRef module = JSStringCreateWithUTF8CString((const char *)_bundle.bytes + moduleData->offset);
+    int lineNo = [moduleName isEqual:@""] ? 0 : moduleData->lineNo;
     JSValueRef jsError = NULL;
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, module, NULL, strongSelf->_bundleURL, NULL, &jsError);
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, module, NULL, strongSelf->_bundleURL, lineNo, NULL);
 
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
     JSStringRelease(module);
@@ -706,26 +715,28 @@ static void freeModuleData(__unused CFAllocatorRef allocator, void *ptr)
   memcpy(&tableLength, bytes + currentOffset, sizeof(tableLength));
   tableLength = NSSwapLittleIntToHost(tableLength);
 
-  uint32_t baseOffset = currentOffset + tableLength;
+  // offset where the code starts on the bundle
+  const uint32_t baseOffset = currentOffset + tableLength;
+
+  // skip table length
   currentOffset += sizeof(baseOffset);
 
-  while (currentOffset < baseOffset) {
-    const char *moduleName = (const char *)bytes + currentOffset;
-    uint32_t offset;
+  // pointer to first byte out of the index
+  const uint8_t *endOfTable = bytes + baseOffset;
+
+  // pointer to current position on table
+  const uint8_t *tablePos = bytes + 2 * sizeof(uint32_t); // skip magic number and table length
+
+  while (tablePos < endOfTable) {
+    const char *moduleName = (const char *)tablePos;
 
     // the space allocated for each module's metada gets freed when the module is injected into JSC on `nativeRequire`
-    ModuleData *moduleData = malloc(sizeof(moduleData));
+    ModuleData *moduleData = malloc(sizeof(ModuleData));
 
-    // skip module name and null byte terminator
-    currentOffset += strlen(moduleName) + 1;
+    tablePos += strlen(moduleName) + 1; // null byte terminator
 
-    // read and save offset
-    memcpy(&offset, bytes + currentOffset, sizeof(offset));
-    offset = NSSwapLittleIntToHost(offset);
-    moduleData->offset = baseOffset + offset;
-
-    // TODO: replace length with lineNo
-    currentOffset += sizeof(offset) * 2; // skip both offset and lenght
+    moduleData->offset = baseOffset + readUint32((const void **)&tablePos);
+    moduleData->lineNo = readUint32((const void **)&tablePos);
 
     CFDictionarySetValue(_jsModules, moduleName, moduleData);
   }

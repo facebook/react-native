@@ -261,6 +261,10 @@ class Resolver {
       : result;
   }
 
+  minifyModule({path, code, map}) {
+    return this._minifyCode(path, code, map);
+  }
+
   getDebugInfo() {
     return this._depGraph.getDebugInfo();
   }

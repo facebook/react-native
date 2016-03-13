@@ -16,9 +16,6 @@ const crypto = require('crypto');
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
 
-const getCode = x => x.code;
-const getNameAndCode = ({name, code}) => ({name, code});
-
 class Bundle extends BundleBase {
   constructor({sourceMapUrl, minify} = {}) {
     super();
@@ -40,6 +37,7 @@ class Bundle extends BundleBase {
       map: moduleTransport.map,
       meta: moduleTransport.meta,
       minify: this._minify,
+      polyfill: module.isPolyfill(),
     }).then(({code, map}) => {
       // If we get a map from the transformer we'll switch to a mode
       // were we're combining the source maps as opposed to
@@ -113,20 +111,21 @@ class Bundle extends BundleBase {
     const modules =
       allModules
         .splice(prependedModules, allModules.length - requireCalls - prependedModules);
-    const startupCode = allModules.map(getCode).join('\n');
+    const startupCode = allModules.map(({code}) => code).join('\n');
 
     return {
       startupCode,
-      modules: modules.map(getNameAndCode)
+      modules: modules.map(({name, code, polyfill}) =>
+        ({name, code, polyfill})
+      ),
     };
   }
 
   /**
-   * I found a neat trick in the sourcemap spec that makes it easy
-   * to concat sourcemaps. The `sections` field allows us to combine
-   * the sourcemap easily by adding an offset. Tested on chrome.
-   * Seems like it's not yet in Firefox but that should be fine for
-   * now.
+   * Combine each of the sourcemaps multiple modules have into a single big
+   * one. This works well thanks to a neat trick defined on the sourcemap spec
+   * that makes use of of the `sections` field to combine sourcemaps by adding
+   * an offset. This is supported only by Chrome for now.
    */
   _getCombinedSourceMaps(options) {
     const result = {
