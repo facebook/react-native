@@ -32,6 +32,12 @@ NSString *const RCTJavaScriptContextCreatedNotification = @"RCTJavaScriptContext
 
 static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnabled";
 
+// TODO: add lineNo
+typedef struct ModuleData
+{
+  uint32_t offset;
+} ModuleData;
+
 @interface RCTJavaScriptContext : NSObject <RCTInvalidating>
 
 @property (nonatomic, strong, readonly) JSContext *context;
@@ -94,7 +100,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
-  NSURL *_bundleURL;
+
+  NSData *_bundle;
+  JSStringRef _bundleURL;
+  CFMutableDictionaryRef _jsModules;
 }
 
 @synthesize valid = _valid;
@@ -385,6 +394,10 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   _valid = NO;
 
+  if (_jsModules) {
+    CFRelease(_jsModules);
+  }
+
 #if RCT_DEV
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 #endif
@@ -534,8 +547,20 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                        sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
+  // Check if it's a `RAM bundle` ("Random Access Modules" bundle).
+  // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
+  // The benefit of RAM bundle over a regular bundle is that we can lazily inject
+  // modules into JSC as they're required.
+  static const uint32_t ramBundleMagicNumber = 0xFB0BD1E5;
+  uint32_t magicNumber = *(uint32_t *)script.bytes;
+  if (magicNumber == ramBundleMagicNumber) {
+    script = [self loadRAMBundle:script];
+  }
+
   RCTAssertParam(script);
   RCTAssertParam(sourceURL);
+
+  _bundleURL = JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
 
   __weak RCTJSCExecutor *weakSelf = self;
 
@@ -631,6 +656,82 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
       onComplete(nil);
     }
   }), 0, @"js_call,json_call", (@{@"objectName": objectName}))];
+}
+
+static int streq(const char *a, const char *b)
+{
+  return strcmp(a, b) == 0;
+}
+
+static void freeModuleData(__unused CFAllocatorRef allocator, void *ptr)
+{
+  free(ptr);
+}
+
+- (NSData *)loadRAMBundle:(NSData *)script
+{
+  __weak RCTJSCExecutor *weakSelf = self;
+  _context.context[@"nativeRequire"] = ^(NSString *moduleName) {
+    RCTJSCExecutor *strongSelf = weakSelf;
+    if (!strongSelf || !moduleName) {
+      return;
+    }
+
+    ModuleData *moduleData = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
+    JSStringRef module = JSStringCreateWithUTF8CString((const char *)_bundle.bytes + moduleData->offset);
+    JSValueRef jsError = NULL;
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, module, NULL, strongSelf->_bundleURL, NULL, &jsError);
+
+    CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
+    JSStringRelease(module);
+
+    if (!result) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        RCTFatal(RCTNSErrorFromJSError(strongSelf->_context.ctx, jsError));
+        [strongSelf invalidate];
+      });
+    }
+  };
+
+  _bundle = script;
+  CFDictionaryKeyCallBacks keyCallbacks = { 0, NULL, NULL, NULL, (CFDictionaryEqualCallBack)streq, (CFDictionaryHashCallBack)strlen };
+  // once a module has been loaded free its space from the heap, remove it from the index and release the module name
+  CFDictionaryValueCallBacks valueCallbacks = { 0, NULL, (CFDictionaryReleaseCallBack)freeModuleData, NULL, NULL };
+  _jsModules = CFDictionaryCreateMutable(NULL, 0, &keyCallbacks, &valueCallbacks);
+
+  const uint8_t *bytes = script.bytes;
+  uint32_t currentOffset = 4; // skip magic number
+
+  uint32_t tableLength;
+  memcpy(&tableLength, bytes + currentOffset, sizeof(tableLength));
+  tableLength = NSSwapLittleIntToHost(tableLength);
+
+  uint32_t baseOffset = currentOffset + tableLength;
+  currentOffset += sizeof(baseOffset);
+
+  while (currentOffset < baseOffset) {
+    const char *moduleName = (const char *)bytes + currentOffset;
+    uint32_t offset;
+
+    // the space allocated for each module's metada gets freed when the module is injected into JSC on `nativeRequire`
+    ModuleData *moduleData = malloc(sizeof(moduleData));
+
+    // skip module name and null byte terminator
+    currentOffset += strlen(moduleName) + 1;
+
+    // read and save offset
+    memcpy(&offset, bytes + currentOffset, sizeof(offset));
+    offset = NSSwapLittleIntToHost(offset);
+    moduleData->offset = baseOffset + offset;
+
+    // TODO: replace length with lineNo
+    currentOffset += sizeof(offset) * 2; // skip both offset and lenght
+
+    CFDictionarySetValue(_jsModules, moduleName, moduleData);
+  }
+
+  uint32_t offset = ((ModuleData *)CFDictionaryGetValue(_jsModules, ""))->offset;
+  return [NSData dataWithBytesNoCopy:((char *) script.bytes) + offset length:script.length - offset freeWhenDone:NO];
 }
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
