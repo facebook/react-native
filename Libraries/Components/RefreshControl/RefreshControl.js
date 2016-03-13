@@ -11,9 +11,10 @@
  */
 'use strict';
 
-const React = require('React');
-const Platform = require('Platform');
 const ColorPropType = require('ColorPropType');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const React = require('React');
 const View = require('View');
 
 const requireNativeComponent = require('requireNativeComponent');
@@ -25,14 +26,56 @@ if (Platform.OS === 'android') {
 }
 
 /**
- * This component is used inside a ScrollView to add pull to refresh
+ * This component is used inside a ScrollView or ListView to add pull to refresh
  * functionality. When the ScrollView is at `scrollY: 0`, swiping down
  * triggers an `onRefresh` event.
+ *
+ * ### Usage example
+ *
+ * ``` js
+ * class RefreshableList extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       refreshing: false,
+ *     };
+ *   }
+ *
+ *   _onRefresh() {
+ *     this.setState({refreshing: true});
+ *     fetchData().then(() => {
+ *       this.setState({refreshing: false});
+ *     });
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <ListView
+ *         refreshControl={
+ *           <RefreshControl
+ *             refreshing={this.state.refreshing}
+ *             onRefresh={this._onRefresh.bind(this)}
+ *           />
+ *         }
+ *         ...
+ *       >
+ *       ...
+ *       </ListView>
+ *     );
+ *   }
+ *   ...
+ * }
+ * ```
+ *
+ * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
+ * in the `onRefresh` function otherwise the refresh indicator will stop immediatly.
  */
 const RefreshControl = React.createClass({
   statics: {
     SIZE: RefreshLayoutConsts.SIZE,
   },
+
+  mixins: [NativeMethodsMixin],
 
   propTypes: {
     ...View.propTypes,
@@ -76,8 +119,21 @@ const RefreshControl = React.createClass({
     size: React.PropTypes.oneOf(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE),
   },
 
+  _nativeRef: {},
+
   render() {
-    return <NativeRefreshControl {...this.props} />;
+    return (
+      <NativeRefreshControl
+        {...this.props}
+        ref={ref => this._nativeRef = ref}
+        onRefresh={this._onRefresh}
+      />
+    );
+  },
+
+  _onRefresh() {
+    this.props.onRefresh && this.props.onRefresh();
+    this._nativeRef.setNativeProps({refreshing: this.props.refreshing});
   },
 });
 

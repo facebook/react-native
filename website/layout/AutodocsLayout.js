@@ -41,12 +41,12 @@ function renderType(type) {
     return '{' + Object.keys(type.value).map((key => key + ': ' + renderType(type.value[key]))).join(', ') + '}';
   }
 
-  if (type.name == 'union') {
+  if (type.name === 'union') {
     return type.value.map(renderType).join(', ');
   }
 
   if (type.name === 'arrayOf') {
-    return '[' + renderType(type.value) + ']';
+    return <span>[{renderType(type.value)}]</span>;
   }
 
   if (type.name === 'instanceOf') {
@@ -56,10 +56,10 @@ function renderType(type) {
   if (type.name === 'custom') {
     if (styleReferencePattern.test(type.raw)) {
       var name = type.raw.substring(0, type.raw.indexOf('.'));
-      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>
+      return <a href={'docs/' + slugify(name) + '.html#style'}>{name}#style</a>;
     }
     if (type.raw === 'ColorPropType') {
-      return <a href={'docs/colors.html'}>color</a>
+      return <a href={'docs/colors.html'}>color</a>;
     }
     if (type.raw === 'EdgeInsetsPropType') {
       return '{top: number, left: number, bottom: number, right: number}';
