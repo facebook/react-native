@@ -292,7 +292,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             () => {
               // do nothing, file was removed
             },
-          ).finally(() => {
+          ).then(() => {
             client.ws.send(JSON.stringify({type: 'update-done'}));
           });
         });
