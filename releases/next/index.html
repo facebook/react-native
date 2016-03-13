@@ -194,15 +194,9 @@ public class <span class="token class-name">MyCustomModule</span> extends <span 
 </div><h3>Creating Android views</h3><p>Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @UIProp annotation. Then a simple JavaScript file connects the dots.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Java
 </span>
 public class <span class="token class-name">MyCustomViewManager</span> extends <span class="token class-name">SimpleViewManager</span>&lt;MyCustomView<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
-
-  private static final String REACT_CLASS <span class="token operator">=</span> <span class="token string">&quot;MyCustomView&quot;</span><span class="token punctuation">;</span>
-
-  @<span class="token function">UIProp<span class="token punctuation">(</span></span>UIProp<span class="token punctuation">.</span>Type<span class="token punctuation">.</span>STRING<span class="token punctuation">)</span>
-  public static final String PROP_MY_CUSTOM_PROPERTY <span class="token operator">=</span> <span class="token string">&quot;myCustomProperty&quot;</span><span class="token punctuation">;</span>
-
   @Override
   public String <span class="token function">getName<span class="token punctuation">(</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> REACT_CLASS<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token string">&quot;MyCustomView&quot;</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
   @Override
@@ -210,13 +204,9 @@ public class <span class="token class-name">MyCustomViewManager</span> extends <
     <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">MyCustomView</span><span class="token punctuation">(</span>reactContext<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
-  @Override
-  public void <span class="token function">updateView<span class="token punctuation">(</span></span>MyCustomView view<span class="token punctuation">,</span> ReactStylesDiffMap props<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    super<span class="token punctuation">.</span><span class="token function">updateView<span class="token punctuation">(</span></span>view<span class="token punctuation">,</span> props<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>props<span class="token punctuation">.</span><span class="token function">hasKey<span class="token punctuation">(</span></span>PROP_MY_CUSTOM_PROPERTY<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      view<span class="token punctuation">.</span><span class="token function">setMyCustomProperty<span class="token punctuation">(</span></span>props<span class="token punctuation">.</span><span class="token function">getString<span class="token punctuation">(</span></span>PROP_MY_CUSTOM_PROPERTY<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+  @<span class="token function">ReactProp<span class="token punctuation">(</span></span>name <span class="token operator">=</span> <span class="token string">&quot;myCustomProperty&quot;</span><span class="token punctuation">)</span>
+  public void <span class="token function">setMyCustomProperty<span class="token punctuation">(</span></span>MyCustomView view<span class="token punctuation">,</span> String value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    view<span class="token punctuation">.</span><span class="token function">setMyCustomProperty<span class="token punctuation">(</span></span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </div><div class="prism language-javascript"><span class="token comment" spellcheck="true">// JavaScript
