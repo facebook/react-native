@@ -12,6 +12,7 @@ package com.facebook.react.uimanager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.DisplayMetrics;
 
 import javax.annotation.Nullable;
 
@@ -465,6 +466,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
 
   @ReactMethod
   public void takeSnapshot(String target, int tag, ReadableMap options, Promise promise) {
+    ReactApplicationContext context = getReactApplicationContext();
     String format = options.hasKey("format") ? options.getString("format") : "png";
     Bitmap.CompressFormat compressFormat =
     format.equals("png") ? Bitmap.CompressFormat.PNG :
@@ -475,8 +477,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       throw new JSApplicationIllegalArgumentException("Unsupported image format: " + format);
     }
     double quality = options.hasKey("quality") ? options.getDouble("quality") : 1.0;
-    Integer width = options.hasKey("width") ? options.getInt("width") : null;
-    Integer height = options.hasKey("height") ? options.getInt("height") : null;
+    DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+    Integer width = options.hasKey("width") ? (int)(displayMetrics.density * options.getDouble("width")) : null;
+    Integer height = options.hasKey("height") ? (int)(displayMetrics.density * options.getDouble("height")) : null;
     try {
       File tmpFile = createTempFile(getReactApplicationContext(), format);
       mUIImplementation.takeSnapshot(target, tag, new Snapshot(compressFormat, quality, width, height), tmpFile, promise);

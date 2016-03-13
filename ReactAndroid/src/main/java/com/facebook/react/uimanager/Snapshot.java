@@ -12,7 +12,7 @@ public class Snapshot {
   Integer width;
   Integer height;
 
-  public Snapshot(Bitmap.CompressFormat format, double quality, @Nullable Integer width, @Nullable Integer height ) {
+  public Snapshot(Bitmap.CompressFormat format, double quality, @Nullable Integer width, @Nullable Integer height) {
     this.format = format;
     this.quality = quality;
     this.width = width;
@@ -36,7 +36,7 @@ public class Snapshot {
       view.setDrawingCacheEnabled(true);
     bitmap = view.getDrawingCache();
     if (width != null && height != null && (width != w || height != h)) {
-      bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+      bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
     }
     return bitmap;
   }

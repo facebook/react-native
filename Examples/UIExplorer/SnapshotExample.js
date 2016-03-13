@@ -41,12 +41,14 @@ var ScreenshotExample = React.createClass({
           style={style.image}
         />
         <Text onPress={this.takeScreenshot} style={style.button}>
-          Click here to screenshot the App (JPG 50%)
+          Screenshot the App (JPG 50%)
         </Text>
         <Text onPress={this.takeScreenshot2} style={style.button}>
-          Click here to screenshot this View (PNG)
+          Screenshot this View (PNG)
         </Text>
-
+        <Text onPress={this.takeScreenshot3} style={style.button}>
+          Screenshot the App & resize to 32x48
+        </Text>
         <Image style={style.result} source={{uri: this.state.uri}}/>
       </View>
     );
@@ -64,6 +66,13 @@ var ScreenshotExample = React.createClass({
       .takeSnapshot(this._view)
       .then((uri) => this.setState({uri}))
       .catch((error) => alert(error));
+  },
+
+  takeScreenshot3() {
+    UIManager
+      .takeSnapshot('window', { width: 32, height: 48 })
+      .then((uri) => this.setState({uri}))
+      .catch((error) => alert(error));
   }
 });
 
@@ -76,6 +85,7 @@ var style = StyleSheet.create({
     margin: 5,
     fontWeight: '500',
     backgroundColor: 'transparent',
+    textDecorationLine: 'underline'
   },
   image: {
     width: 40,
