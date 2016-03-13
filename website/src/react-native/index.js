@@ -328,15 +328,9 @@ var Message = React.createClass({
 {`// Java
 
 public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
-
-  private static final String REACT_CLASS = "MyCustomView";
-
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_MY_CUSTOM_PROPERTY = "myCustomProperty";
-
   @Override
   public String getName() {
-    return REACT_CLASS;
+    return "MyCustomView";
   }
 
   @Override
@@ -344,13 +338,9 @@ public class MyCustomViewManager extends SimpleViewManager<MyCustomView> {
     return new MyCustomView(reactContext);
   }
 
-  @Override
-  public void updateView(MyCustomView view, ReactStylesDiffMap props) {
-    super.updateView(view, props);
-
-    if (props.hasKey(PROP_MY_CUSTOM_PROPERTY)) {
-      view.setMyCustomProperty(props.getString(PROP_MY_CUSTOM_PROPERTY));
-    }
+  @ReactProp(name = "myCustomProperty")
+  public void setMyCustomProperty(MyCustomView view, String value) {
+    view.setMyCustomProperty(value);
   }
 }
 `}
@@ -387,4 +377,3 @@ module.exports = MyCustomView;
 });
 
 module.exports = index;
-
