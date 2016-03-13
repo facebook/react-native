@@ -9,6 +9,7 @@ using ReactNative.Modules.Toast;
 using ReactNative.Modules.WebSocket;
 using ReactNative.UIManager;
 using ReactNative.Views.Image;
+using ReactNative.Views.Picker;
 using ReactNative.Views.Scroll;
 using ReactNative.Views.Switch;
 using ReactNative.Views.Text;
@@ -73,6 +74,7 @@ namespace ReactNative.Shell
                 new ReactImageManager(),
                 new ReactVirtualImageManager(),
                 //new ReactProgressBarViewManager(),
+                new ReactPickerManager(),
                 new ReactRawTextManager(),
                 //new RecyclerViewBackedScrollViewManager(),
                 new ReactScrollViewManager(),
