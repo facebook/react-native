@@ -192,9 +192,14 @@ class MessageQueue {
     let debug = this._debugInfo[cbID >> 1];
     let module = debug && this._remoteModuleTable[debug[0]];
     let method = debug && this._remoteMethodTable[debug[0]][debug[1]];
+    let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
+    if (method != null || method != undefined) {
+      errorMessage = `The callback ${method}() exists in module ${module}, `
+      + `but only one callback may be registered to a function in a native module.`;
+    }
     invariant(
       callback,
-      `Callback with id ${cbID}: ${module}.${method}() not found`
+      errorMessage
     );
     let profileName = debug ? '<callback for ' + module + '.' + method + '>' : cbID;
     if (callback && SPY_MODE && __DEV__) {
