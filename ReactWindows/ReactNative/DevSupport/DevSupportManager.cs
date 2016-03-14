@@ -249,7 +249,7 @@ namespace ReactNative.DevSupport
             ShowNewError(message, StackTraceHelper.ConvertNativeStackTrace(exception), NativeErrorCookie);
         }
 
-        public void UpdateJavaScriptError(string title, JArray details, int errorCookie)
+        public void UpdateJavaScriptError(string message, JArray details, int errorCookie)
         {
             DispatcherHelpers.RunOnDispatcher(() =>
             {
@@ -260,7 +260,7 @@ namespace ReactNative.DevSupport
                     return;
                 }
 
-                _redBoxDialog.Title = title;
+                _redBoxDialog.Message = message;
                 _redBoxDialog.StackTrace = StackTraceHelper.ConvertJavaScriptStackTrace(details);
             });
         }

@@ -135,7 +135,7 @@ namespace ReactNative.DevSupport
             {
                 get
                 {
-                    return _map.Value<string>("fileName");
+                    return _map.Value<string>("file");
                 }
             }
 
