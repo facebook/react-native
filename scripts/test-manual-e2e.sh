@@ -88,6 +88,5 @@ find . -path "*.bak" | xargs rm
 npm set registry "https://registry.npmjs.org/" || error "Couldn't set registry to ${npm_registry}"
 
 info "Next steps:"
-info "   - git push origin ${RELEASE}-stable"
-info "   - git tag v${RELEASE}.0-rc ${RELEASE}-stable"
-info "   - git push --tags"
+info "   - git tag v${RELEASE}.0-rc"
+info "   - git push origin ${RELEASE}-stable --tags"
