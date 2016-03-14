@@ -431,7 +431,7 @@ var ScrollView = React.createClass({
       invariant(
         childLayoutProps.length === 0,
         'ScrollView child layout (' + JSON.stringify(childLayoutProps) +
-          ') must by applied through the contentContainerStyle prop.'
+          ') must be applied through the contentContainerStyle prop.'
       );
     }
 
