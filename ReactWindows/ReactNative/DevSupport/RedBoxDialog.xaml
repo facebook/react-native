@@ -31,9 +31,9 @@
                    FontWeight="SemiBold"
                    Foreground="White"
                    Padding="0 16 0 16"
-                   Text="{x:Bind Path=Message}"
+                   Text="{x:Bind Path=Message, Mode=OneWay}"
                    TextWrapping="Wrap" />
-        <ListView ItemsSource="{x:Bind Path=StackTrace}"
+        <ListView ItemsSource="{x:Bind Path=StackTrace, Mode=OneWay}"
                   ItemTemplate="{StaticResource StackFrameTemplate}"
                   SelectionMode="None">
             <ListView.ItemContainerStyle>

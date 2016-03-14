@@ -223,8 +223,8 @@ namespace ReactNative.DevSupport
                 SourceMapUrlFormat,
                 DebugServerHost,
                 mainModuleName,
-                IsJavaScriptDevModeEnabled,
-                IsHotModuleReplacementEnabled);
+                IsJavaScriptDevModeEnabled ? "true" : "false",
+                IsHotModuleReplacementEnabled ? "true" : "false");
         }
 
         /// <summary>
@@ -239,8 +239,8 @@ namespace ReactNative.DevSupport
                 BundleUrlFormat,
                 DebugServerHost,
                 mainModuleName,
-                IsJavaScriptDevModeEnabled,
-                IsHotModuleReplacementEnabled);
+                IsJavaScriptDevModeEnabled ? "true" : "false",
+                IsHotModuleReplacementEnabled ? "true" : "false");
         }
 
         /// <summary>
@@ -255,8 +255,8 @@ namespace ReactNative.DevSupport
                 BundleUrlFormat,
                 JavaScriptProxyHost,
                 mainModuleName,
-                IsJavaScriptDevModeEnabled,
-                IsHotModuleReplacementEnabled);
+                IsJavaScriptDevModeEnabled ? "true" : "false",
+                IsHotModuleReplacementEnabled ? "true" : "false");
         }
 
         private string CreatePackagerStatusUrl(string host)
