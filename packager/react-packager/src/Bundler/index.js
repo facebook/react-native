@@ -230,8 +230,9 @@ class Bundler {
     platform,
     moduleSystemDeps = [],
     hot,
+    unbundle,
     entryModuleOnly,
-    resolutionResponse
+    resolutionResponse,
   }) {
     const onResolutionResponse = response => {
       bundle.setMainModuleId(response.mainModuleId);
@@ -265,6 +266,7 @@ class Bundler {
       platform,
       bundle,
       hot,
+      unbundle,
       resolutionResponse,
       onResolutionResponse,
       finalizeBundle,
@@ -316,6 +318,7 @@ class Bundler {
     platform,
     bundle,
     hot,
+    unbundle,
     resolutionResponse,
     onResolutionResponse = noop,
     onModuleTransformed = noop,
@@ -336,8 +339,15 @@ class Bundler {
         };
       }
 
-      resolutionResponse = this.getDependencies(
-        {entryFile, dev, platform, hot, onProgess, minify});
+      resolutionResponse = this.getDependencies({
+        entryFile,
+        dev,
+        platform,
+        hot,
+        onProgess,
+        minify,
+        generateSourceMaps: unbundle,
+      });
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
@@ -391,10 +401,18 @@ class Bundler {
     minify = !dev,
     hot = false,
     recursive = true,
+    generateSourceMaps = false,
     onProgess,
   }) {
     return this.getTransformOptions(
-      entryFile, {dev, platform, hot, projectRoots: this._projectRoots}
+      entryFile,
+      {
+        dev,
+        platform,
+        hot,
+        generateSourceMaps,
+        projectRoots: this._projectRoots,
+      },
     ).then(transformSpecificOptions => {
       const transformOptions = {
         minify,
