@@ -81,16 +81,24 @@ function attachHMRServer({httpServer, path, packagerServer}) {
             dependenciesModulesCache[depName] = dep;
           });
         })).then(() => {
-          return getInverseDependencies(response)
-            .then(inverseDependenciesCache => {
-              return {
-                dependenciesCache,
-                dependenciesModulesCache,
-                shallowDependencies,
-                inverseDependenciesCache,
-                resolutionResponse: response,
-              };
-            });
+          const inverseDependencies = getInverseDependencies(response);
+          const inverseDependenciesCache = Object.create(null);
+          return Promise.all(
+            Array.from(inverseDependencies).map(([module, dependents]) => {
+              return Promise.all([
+                module.getName(),
+                Promise.all(Array.from(dependents).map(m => m.getName())),
+              ]).then(([moduleName, dependentsNames]) => {
+                inverseDependenciesCache[moduleName] = dependentsNames;
+              });
+            })
+          ).then(() => ({
+            dependenciesCache,
+            dependenciesModulesCache,
+            shallowDependencies,
+            inverseDependenciesCache,
+            resolutionResponse: response,
+          }));
         });
       });
     });
