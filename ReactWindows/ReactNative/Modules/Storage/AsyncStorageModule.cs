@@ -220,12 +220,12 @@ namespace ReactNative.Modules.Storage
                         }
                         else if (tokenOld.Type == JTokenType.Array)
                         {
-                            (tokenOld as JArray).Merge(tokenNew);
+                            ((JArray)tokenOld).Merge(tokenNew);
                             AddTokenToContainer(key, tokenOld);
                         }
                         else if (tokenNew.Type == JTokenType.Array)
                         {
-                            (tokenNew as JArray).Merge(tokenOld);
+                            ((JArray)tokenNew).Merge(tokenOld);
                             AddTokenToContainer(key, tokenNew);
                         }
                         else if (tokenOld.Type == JTokenType.Null)
@@ -361,23 +361,24 @@ namespace ReactNative.Modules.Storage
                 }
                 else if (value is string)
                 {
+                    var valueStr = (string)value;
                     var type = GetTokenTypeFromContainer(key);
                     switch (type)
                     {
                         case _DataType.Array:
-                            return JArray.Parse(value as string);
+                            return JArray.Parse(valueStr);
                         case _DataType.Constructor:
-                            return JToken.Parse(value as string);
+                            return JToken.Parse(valueStr);
                         case _DataType.Object:
-                            return JObject.Parse(value as string);
+                            return JObject.Parse(valueStr);
                         case _DataType.Date:
-                            return JToken.FromObject(DateTime.Parse(value as string));
+                            return JToken.FromObject(DateTime.Parse(valueStr));
                         case _DataType.Uri:
-                            return JToken.FromObject(new Uri(value as string));
+                            return JToken.FromObject(new Uri(valueStr));
                         case _DataType.Raw:
-                            return new JRaw(value);
+                            return new JRaw(valueStr);
                         case _DataType.String:
-                            return JValue.CreateString(value as string); 
+                            return JValue.CreateString(valueStr); 
                         default:
                             break;
                     }
@@ -431,7 +432,7 @@ namespace ReactNative.Modules.Storage
                 oldObj.TryGetValue(key, out tokenOld);
                 if (tokenNew?.Type == JTokenType.Object && tokenOld?.Type == JTokenType.Object)
                 {
-                    DeepMergeInto(tokenOld as JObject, tokenNew as JObject);
+                    DeepMergeInto((JObject)tokenOld, (JObject)tokenNew);
                     PutToJObject(key, tokenOld, oldObj);
                 }
                 else
