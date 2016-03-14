@@ -151,6 +151,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 
 @implementation RCTCustomScrollView
+{
+  __weak UIView *_dockedHeaderView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -335,6 +338,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
   currentHeader.transform = CGAffineTransformMakeTranslation(0, yOffset);
   currentHeader.layer.zPosition = ZINDEX_STICKY_HEADER;
+  _dockedHeaderView = currentHeader;
 
   if (previousHeader) {
     // The previous header sits right above the currentHeader's initial position
@@ -349,22 +353,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-  __block UIView *hitView;
-
-  NSArray *subviews = [self contentView].reactSubviews;
-  NSUInteger subviewCount = subviews.count;
-  [_stickyHeaderIndices enumerateIndexesWithOptions:0 usingBlock:^(NSUInteger idx, BOOL *stop) {
-    if (idx >= subviewCount) {
-      *stop = YES;
-      return;
+  if (_dockedHeaderView && [self pointInside:point withEvent:event]) {
+    CGPoint convertedPoint = [_dockedHeaderView convertPoint:point fromView:self];
+    UIView *hitView = [_dockedHeaderView hitTest:convertedPoint withEvent:event];
+    if (hitView) {
+      return hitView;
     }
-    UIView *stickyHeader = subviews[idx];
-    CGPoint convertedPoint = [stickyHeader convertPoint:point fromView:self];
-    hitView = [stickyHeader hitTest:convertedPoint withEvent:event];
-    *stop = (hitView != nil);
-  }];
-
-  return hitView ?: [super hitTest:point withEvent:event];
+  }
+  return [super hitTest:point withEvent:event];
 }
 
 - (void)setRefreshControl:(RCTRefreshControl *)refreshControl
@@ -897,7 +893,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   _onRefreshStart = [onRefreshStart copy];
 
   if (!_scrollView.refreshControl) {
-    RCTRefreshControl *refreshControl = [[RCTRefreshControl alloc] init];
+    RCTRefreshControl *refreshControl = [RCTRefreshControl new];
     [refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
     _scrollView.refreshControl = refreshControl;
   }
