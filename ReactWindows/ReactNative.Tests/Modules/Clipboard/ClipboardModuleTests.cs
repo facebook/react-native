@@ -7,6 +7,7 @@ using System.Threading;
 namespace ReactNative.Tests.Modules.Clipboard
 {
     [TestClass]
+    [Ignore]
     public class ClipboardModuleTests
     {
         [TestMethod]
