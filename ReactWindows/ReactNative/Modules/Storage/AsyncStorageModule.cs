@@ -82,7 +82,7 @@ namespace ReactNative.Modules.Storage
                 result.Add(new JArray
                 {
                     key,
-                    getTokenFromContainer(key),
+                    GetTokenFromContainer(key),
                 });
             }
 
@@ -121,7 +121,7 @@ namespace ReactNative.Modules.Storage
                     var pair = keyValue.Value<JArray>();
                     if (pair.First.Type == JTokenType.String)
                     {
-                        addTokenToContainer(pair.First.Value<string>(), pair.Last);
+                        AddTokenToContainer(pair.First.Value<string>(), pair.Last);
                     }
                     else
                     {
@@ -210,27 +210,27 @@ namespace ReactNative.Modules.Storage
                     if (pair.First.Type == JTokenType.String)
                     {
                         var key = pair.First.Value<string>();
-                        var tokenOld = getTokenFromContainer(key);
+                        var tokenOld = GetTokenFromContainer(key);
                         var tokenNew = pair.Last;
 
                         if (tokenOld.Type == JTokenType.Object && tokenNew.Type == JTokenType.Object)
                         {
-                            deepMergeInto((JObject)tokenOld, (JObject)tokenNew);
-                            addTokenToContainer(key, tokenOld);
+                            DeepMergeInto((JObject)tokenOld, (JObject)tokenNew);
+                            AddTokenToContainer(key, tokenOld);
                         }
                         else if (tokenOld.Type == JTokenType.Array)
                         {
                             (tokenOld as JArray).Merge(tokenNew);
-                            addTokenToContainer(key, tokenOld);
+                            AddTokenToContainer(key, tokenOld);
                         }
                         else if (tokenNew.Type == JTokenType.Array)
                         {
                             (tokenNew as JArray).Merge(tokenOld);
-                            addTokenToContainer(key, tokenNew);
+                            AddTokenToContainer(key, tokenNew);
                         }
                         else if (tokenOld.Type == JTokenType.Null)
                         {
-                            addTokenToContainer(key, tokenNew);
+                            AddTokenToContainer(key, tokenNew);
                         }
                     }
                     else
@@ -289,13 +289,13 @@ namespace ReactNative.Modules.Storage
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="token">The token.</param>
-        private void addTokenToContainer(string key, JToken token)
+        private void AddTokenToContainer(string key, JToken token)
         {
             switch (token.Type)
             {
                 case JTokenType.Null:
                     _dataContainer.Values[key] = "";
-                    addTokenTypeToContainer(key, _DataType.Null);
+                    AddTokenTypeToContainer(key, _DataType.Null);
                     break;
                 case JTokenType.Boolean:
                     _dataContainer.Values[key] = token.Value<bool>();
@@ -314,31 +314,31 @@ namespace ReactNative.Modules.Storage
                     break;
                 case JTokenType.Date:
                     _dataContainer.Values[key] = token.ToString();
-                    addTokenTypeToContainer(key, _DataType.Date);
+                    AddTokenTypeToContainer(key, _DataType.Date);
                     break;
                 case JTokenType.Uri:
                     _dataContainer.Values[key] = token.ToString();
-                    addTokenTypeToContainer(key, _DataType.Uri);
+                    AddTokenTypeToContainer(key, _DataType.Uri);
                     break;                                
                 case JTokenType.String:
                     _dataContainer.Values[key] = token.Value<string>();
-                    addTokenTypeToContainer(key, _DataType.String);
+                    AddTokenTypeToContainer(key, _DataType.String);
                     break;
                 case JTokenType.Array:
                     _dataContainer.Values[key] = token.ToString();
-                    addTokenTypeToContainer(key, _DataType.Array);
+                    AddTokenTypeToContainer(key, _DataType.Array);
                     break;
                 case JTokenType.Constructor:
                     _dataContainer.Values[key] = token.ToString();
-                    addTokenTypeToContainer(key, _DataType.Constructor);
+                    AddTokenTypeToContainer(key, _DataType.Constructor);
                     break;
                 case JTokenType.Object:
                     _dataContainer.Values[key] = token.ToString();
-                    addTokenTypeToContainer(key, _DataType.Object);
+                    AddTokenTypeToContainer(key, _DataType.Object);
                     break;              
                 case JTokenType.Raw:
                     _dataContainer.Values[key] = token.ToString();
-                    addTokenTypeToContainer(key, _DataType.Raw);
+                    AddTokenTypeToContainer(key, _DataType.Raw);
                     break;
                 default:
                     Debug.Assert(false); // Not supported JToken type
@@ -350,7 +350,7 @@ namespace ReactNative.Modules.Storage
         /// Gets related value for a specific key from <see cref="ApplicationDataContainer"/> as <see cref="JToken"/>.
         /// </summary>
         /// <param name="key">The key.</param>
-        private JToken getTokenFromContainer(string key)
+        private JToken GetTokenFromContainer(string key)
         {
             object value;
             if (_dataContainer.Values.TryGetValue(key, out value))
@@ -361,7 +361,7 @@ namespace ReactNative.Modules.Storage
                 }
                 else if (value is string)
                 {
-                    var type = getTokenTypeFromContainer(key);
+                    var type = GetTokenTypeFromContainer(key);
                     switch (type)
                     {
                         case _DataType.Array:
@@ -392,7 +392,7 @@ namespace ReactNative.Modules.Storage
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="type">The type.</param>
-        private void addTokenTypeToContainer(string key, _DataType type)
+        private void AddTokenTypeToContainer(string key, _DataType type)
         {
             _typeContainer.Values[key] = (int)type;
         }
@@ -401,7 +401,7 @@ namespace ReactNative.Modules.Storage
         /// Gets token's type for a specific key from <see cref="ApplicationDataContainer"/>.
         /// </summary>
         /// <param name="key">The key.</param>
-        private _DataType getTokenTypeFromContainer(string key)
+        private _DataType GetTokenTypeFromContainer(string key)
         {
             object value;
             if (_typeContainer.Values.TryGetValue(key, out value))
@@ -419,7 +419,7 @@ namespace ReactNative.Modules.Storage
         /// </summary>
         /// <param name="oldObj">The old value.</param>
         /// <param name="newObj">The old value.</param>
-        private static void deepMergeInto(JObject oldObj, JObject newObj)
+        private static void DeepMergeInto(JObject oldObj, JObject newObj)
         {
             IDictionary<string, JToken> dictionary = newObj; 
             var keys = dictionary.Keys;
@@ -431,15 +431,15 @@ namespace ReactNative.Modules.Storage
                 oldObj.TryGetValue(key, out tokenOld);
                 if (tokenNew?.Type == JTokenType.Object && tokenOld?.Type == JTokenType.Object)
                 {
-                    deepMergeInto(tokenOld as JObject, tokenNew as JObject);
-                    putToJObject(key, tokenOld, oldObj);
+                    DeepMergeInto(tokenOld as JObject, tokenNew as JObject);
+                    PutToJObject(key, tokenOld, oldObj);
                 }
                 else
                 {
                     var property = newObj.Property(key);
                     foreach (var token in property)
                     {
-                        putToJObject(key, token, oldObj);
+                        PutToJObject(key, token, oldObj);
                     }
                 }
             }
@@ -452,7 +452,7 @@ namespace ReactNative.Modules.Storage
         /// <param name="key">The key.</param>
         /// <param name="token">The token.</param>
         /// <param name="obj">The object.</param>
-        private static void putToJObject(string key, JToken token, JObject obj)
+        private static void PutToJObject(string key, JToken token, JObject obj)
         {
             obj.Remove(key);
             obj.Add(key, token);
