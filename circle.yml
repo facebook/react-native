@@ -68,7 +68,7 @@ test:
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests.gradle
 
     # Publish to Sinopia, create a new app using 'react-native init' and check the packager starts
-    - ./scripts/e2e-test.sh --packager
+#    - ./scripts/e2e-test.sh --packager
 
     # testing docs generation is not broken
     - cd website && node ./server/generate.js
@@ -89,6 +89,5 @@ deployment:
 #      - git config --global user.name "Website Deployment Script"
 #      - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
 #      - cd website && GIT_USER=reactjs-bot npm run gh-pages
-      # TODO temp, for testing changing name to my own
-      - sed -i.bak -E "s/(\"name\":[[:space:]]*\")react-native(\")/\"name\": \"react-native-bestander\"/g" "package.json"
+#      - sed -i.bak -E "s/(\"name\":[[:space:]]*\")react-native(\")/\"name\": \"react-native-bestander\"/g" "package.json"
       - node scripts/publish-npm.js
