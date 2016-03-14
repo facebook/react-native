@@ -3,6 +3,7 @@
 #include <android/asset_manager_jni.h>
 #include <android/input.h>
 #include <fb/log.h>
+#include <fb/glog_init.h>
 #include <folly/json.h>
 #include <jni/Countable.h>
 #include <jni/Environment.h>
@@ -15,6 +16,7 @@
 #include <react/Executor.h>
 #include <react/JSCExecutor.h>
 #include <react/JSModulesUnbundle.h>
+#include <react/MethodCall.h>
 #include <react/Platform.h>
 #include "JExecutorToken.h"
 #include "JExecutorTokenFactory.h"
@@ -647,11 +649,11 @@ public:
 
   virtual void onCallNativeModules(
       ExecutorToken executorToken,
-      std::vector<MethodCall>&& calls,
+      const std::string& callJSON,
       bool isEndOfBatch) override {
-    executeCallbackOnCallbackQueueThread([executorToken, calls, isEndOfBatch] (ResolvedWeakReference& callback) {
+    executeCallbackOnCallbackQueueThread([executorToken, callJSON, isEndOfBatch] (ResolvedWeakReference& callback) {
       JNIEnv* env = Environment::current();
-      for (auto& call : calls) {
+      for (auto& call : react::parseMethodCalls(callJSON)) {
         makeJavaCall(env, executorToken, callback, call);
         if (env->ExceptionCheck()) {
           return;
@@ -779,8 +781,8 @@ static void callFunction(JNIEnv* env, jobject obj, JExecutorToken::jhybridobject
   try {
     bridge->callFunction(
       cthis(wrap_alias(jExecutorToken))->getExecutorToken(wrap_alias(jExecutorToken)),
-      (double) moduleId,
-      (double) methodId,
+      folly::to<std::string>(moduleId),
+      folly::to<std::string>(methodId),
       std::move(arguments->array),
       fromJString(env, tracingName)
     );
@@ -907,6 +909,7 @@ jmethodID getLogMarkerMethod() {
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   return initialize(vm, [] {
+    facebook::gloginit::initialize();
     // Inject some behavior into react/
     ReactMarker::logMarker = bridge::logMarker;
     WebWorkerUtil::createWebWorkerThread = WebWorkers::createWebWorkerThread;

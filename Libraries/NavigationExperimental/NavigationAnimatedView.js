@@ -16,6 +16,7 @@ const NavigationContainer = require('NavigationContainer');
 const NavigationPropTypes = require('NavigationPropTypes');
 const NavigationStateUtils = require('NavigationStateUtils');
 const React = require('react-native');
+const StyleSheet = require('StyleSheet');
 const View = require('View');
 
 import type {
@@ -211,14 +212,22 @@ class NavigationAnimatedView
   }
 
   render(): ReactElement {
+    const overlay = this._renderOverlay();
+    const scenes = this._renderScenes();
     return (
       <View
         onLayout={this._onLayout}
         style={this.props.style}>
-        {this.state.scenes.map(this._renderScene, this)}
-        {this._renderOverlay()}
+        <View style={styles.scenes} key="scenes">
+          {scenes}
+        </View>
+        {overlay}
       </View>
     );
+  }
+
+  _renderScenes(): Array<?ReactElement> {
+    return this.state.scenes.map(this._renderScene, this);
   }
 
   _renderScene(scene: NavigationScene): ?ReactElement {
@@ -283,6 +292,12 @@ class NavigationAnimatedView
     layout.width.setValue(width);
   }
 }
+
+const styles = StyleSheet.create({
+  scenes: {
+    flex: 1,
+  },
+});
 
 NavigationAnimatedView.propTypes = propTypes;
 NavigationAnimatedView.defaultProps = defaultProps;
