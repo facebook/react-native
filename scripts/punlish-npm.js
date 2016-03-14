@@ -113,7 +113,13 @@ if (exec(`sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version   
 exec(`git checkout package.json`);
 exec(`git checkout React.podspec`);
 
-// exec(`npm publish`);
+if (releaseVersion.indexOf(`-rc`) === -1) {
+  // release, package will be installed by default
+  exec(`npm publish`);
+} else {
+  // RC release, package will be installed only if users specifically do it
+  exec(`npm publish --tag next`);
+}
 
 echo(`Published to npm ${releaseVersion}`);
 exec(`find . -path "*.bak" | xargs rm`);
