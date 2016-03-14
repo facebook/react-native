@@ -107,19 +107,27 @@ var AsyncStorage = {
    * Returns a `Promise` object. Not supported by all native implementations.
    *
    * Example:
-   * ```JavaScript
-   *   let k1 = 'key_1'
-   *   let val_1a = JSON.stringify({'a': '123', 'b': {'b1': '234', 'b2': '234'}})
-   *   let val_1b = JSON.stringify({'b': {'b2': '555', 'b3': '555'}})
-   *   let EXPECTED_RESULT = {'a':'123','b':{'b1':'234','b2':'555','b3':'555'}}
-   *
-   *   AsyncStorage.setItem(k1, val_1a, () => {
-   *     AsyncStorage.mergeItem(k1, val_1b, () => {
-   *       AsyncStorage.getItem(k1, (err, result) => {
-   *         console.log('result [%O] equals EXPECTED_RESULT [%O]', JSON.parse(result), EXPECTED_RESULT)
-   *       })
-   *     })
-   *   })
+   * ```javascript
+   * let UID123_object = {
+   *  name: 'Chris',
+   *  age: 30,
+   *  traits: {hair: 'brown', eyes: 'brown'},  
+   * };
+
+   // need only define what will be added or updated
+   * let UID123_delta = {
+   *  age: 31,
+   *  traits: {eyes: 'blue', shoe_size: 10}
+   * };
+   
+   * AsyncStorage.setItem(store_key, JSON.stringify(UID123_object), () => {
+   *   AsyncStorage.mergeItem('UID123', JSON.stringify(UID123_delta), () => {
+   *     AsyncStorage.getItem('UID123', (err, result) => {
+   *       console.log(result);
+   *       // => {'name':'Chris','age':31,'traits':{'shoe_size':10,'hair':'brown','eyes':'blue'}}
+   *     });
+   *   });
+   * });
    * ```
    */
   mergeItem: function(
@@ -221,14 +229,16 @@ var AsyncStorage = {
    *   multiGet(['k1', 'k2'], cb) -> cb([['k1', 'val1'], ['k2', 'val2']])
    *
    * Example:
-   * ```JavaScript
-   *   AsyncStorage.getAllKeys( (err, keys) => {
-   *     AsyncStorage.multiGet( keys, (err, stores) => {
-   *      stores.map( (result, i, store) => {
-   *         console.log('store["%s"] contains...', store[i][0], store[i][1])
-   *       })
-   *     })
-   *   })
+   * ```javascript
+   * AsyncStorage.getAllKeys((err, keys) => {
+   *   AsyncStorage.multiGet(keys, (err, stores) => {
+   *    stores.map((result, i, store) => {
+   *      // get at each store's key/value so you can work with it
+   *      let key = store[i][0];
+   *      let value = store[i][1];
+   *     });
+   *   });
+   * });
    * ```
    */
   multiGet: function(
@@ -296,11 +306,12 @@ var AsyncStorage = {
    * Delete all the keys in the `keys` array. Returns a `Promise` object.
    *
    * Example:
-   * ```JavaScript
-   *   let keys = ['k1','k2']
-   *   AsyncStorage.multiRemove(keys, (err) => {
-   *     console.log('stores [%O] removed if they existed else nothing', keys)
-   *   })
+   * ```javascript
+   * let keys = ['k1', 'k2'];
+   * AsyncStorage.multiRemove(keys, (err) => {
+   *   // keys k1 & k2 removed, if they existed
+   *   // do most stuff after removal (if you want)
+   * });
    * ```
    */
   multiRemove: function(
@@ -327,29 +338,49 @@ var AsyncStorage = {
    * Not supported by all native implementations.
    *
    * Example:
-   * ```JavaScript
-   *   let key_1 = 'k1'
-   *   let val_1a = JSON.stringify({'a': '123', 'b': {'b1': '234', 'b2': '234'}})
-   *   let val_1b = JSON.stringify({'b': {'b2': '555', 'b3': '555'}})
-   *
-   *   let key_2 = 'k2'
-   *   let val_2a = val_1a
-   *   let val_2b = val_1b
-   *
-   *   let multi_set_keys    = [[key_1, val_1a],[key_2, val_2a]]
-   *   let multi_merge_pairs = [[key_1, val_1b],[key_2, val_2b]]
-   *
-   *   AsyncStorage.multiSet(multi_set_keys, (err) => {
-   *     console.log('[multiSet] done!')
-   *     AsyncStorage.multiMerge(multi_merge_pairs, (err) => {
-   *       console.log('[multiMerge] done!')
-   *       AsyncStorage.multiGet([key_1,key_2], (err, stores) => {
-   *         stores.map( (result, i, store) => {
-   *           console.log('store["%s"] contains...', store[i][0], store[i][1])
-   *         })
-   *       })
-   *     })
-   *   })
+   * ```javascript
+   // first user, initial values
+   * let UID234_object = {
+   *  name: 'Chris',
+   *  age: 30,
+   *  traits: {hair: 'brown', eyes: 'brown'},  
+   * };
+
+   * // first user, delta values
+   * let UID234_delta = {
+   *  age: 31,
+   *  traits: {eyes: 'blue', shoe_size: 10},
+   * };
+
+   * // second user, initial values
+   * let UID345_object = {
+   *  name: 'Marge',
+   *  age: 25,
+   *  traits: {hair: 'blonde', eyes: 'blue'},  
+   * };
+
+   * // second user, delta values
+   * let UID345_delta = {
+   *  age: 26,
+   *  traits: {eyes: 'green', shoe_size: 6},
+   * };
+   
+   * let multi_set_pairs   = [['UID234', JSON.stringify(UID234_object)], ['UID345', JSON.stringify(UID345_object)]]
+   * let multi_merge_pairs = [['UID234', JSON.stringify(UID234_delta)], ['UID345', JSON.stringify(UID345_delta)]]
+   
+   * AsyncStorage.multiSet(multi_set_pairs, (err) => {
+   *   AsyncStorage.multiMerge(multi_merge_pairs, (err) => {
+   *     AsyncStorage.multiGet(['UID234','UID345'], (err, stores) => {
+   *       stores.map( (result, i, store) => {
+   *         let key = store[i][0];
+   *         let val = store[i][1];
+   *         console.log(key, val);
+   *         // => UID234 {"name":"Chris","age":31,"traits":{"shoe_size":10,"hair":"brown","eyes":"blue"}}
+   *         // => UID345 {"name":"Marge","age":26,"traits":{"shoe_size":6,"hair":"blonde","eyes":"green"}}
+   *       });
+   *     });
+   *   });
+   * });
    * ```
    */
   multiMerge: function(
