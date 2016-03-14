@@ -172,7 +172,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-  /* package */ void callFunction(
+  @Override
+  public void callFunction(
       ExecutorToken executorToken,
       int moduleId,
       int methodId,
