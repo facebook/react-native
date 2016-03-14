@@ -23,7 +23,7 @@ On Android, ‘accessible={true}’ property for a react-native View will be tra
 ```javascript
 <View accessible={true}>
   <Text>text one</Text>
-  <Text >text two</Text>
+  <Text>text two</Text>
 </View>
 ```
 
