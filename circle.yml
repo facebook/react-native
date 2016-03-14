@@ -88,3 +88,4 @@ deployment:
       - git config --global user.name "Website Deployment Script"
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
       - cd website && GIT_USER=reactjs-bot npm run gh-pages
+      - node scripts/publish-npm.js

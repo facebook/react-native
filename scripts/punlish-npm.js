@@ -45,7 +45,7 @@ if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   branchVersion = CIRCLE_BRANCH.slice(0, CIRCLE_BRANCH.indexOf(`-stable`));
 } else {
   echo(`Error: We publish only from stable branches`);
-  exit(1);
+  exit(0);
 }
 
 const tagsOnThisCommit = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
