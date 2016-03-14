@@ -48,6 +48,7 @@ if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   exit(0);
 }
 
+// TODO non -rc must be higher than rc
 const tagsOnThisCommit = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
   .filter(version => !!version && version.indexOf(`v`) === 0);
 const tagsWithVersion = tagsOnThisCommit.filter(version => version.indexOf(branchVersion) !== -1);
