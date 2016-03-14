@@ -2,6 +2,8 @@
 
 /**
  * This script publishes a new version of react-native to NPM.
+ * It is supposed to run in CI environment, not on a developer's PC.
+ *
  * To reduce stress on developers it uses some logic to identify with which version to publish the package.
  *
  * To cut a branch (and release RC):
@@ -37,12 +39,12 @@
  */
 require(`shelljs/global`);
 
-const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '0.99-stable';
-const JAVA_VERSION=`1.7`;
+const buildBranch = process.env.CIRCLE_BRANCH;
+const requiredJavaVersion = `1.7`;
 
 let branchVersion;
-if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
-  branchVersion = CIRCLE_BRANCH.slice(0, CIRCLE_BRANCH.indexOf(`-stable`));
+if (buildBranch.indexOf(`-stable`) !== -1) {
+  branchVersion = buildBranch.slice(0, buildBranch.indexOf(`-stable`));
 } else {
   echo(`Error: We publish only from stable branches`);
   exit(0);
@@ -67,7 +69,7 @@ if (tagsWithVersion[0].indexOf(`-rc`) === -1) {
 // -------- Generating Android Artifacts with JavaDoc
 // Java -version outputs to stderr 0_o
 const javaVersion = exec(`java -version`).stderr;
-if (javaVersion.indexOf(JAVA_VERSION) === -1) {
+if (javaVersion.indexOf(requiredJavaVersion) === -1) {
   echo(`Java version must be 1.7.x in order to generate Javadoc. Check: java -version`);
   exit(1);
 }
