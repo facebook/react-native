@@ -14,7 +14,6 @@
  * - Developer: cherry-pick whatever changes needed
  * - Developer: `git tag v0.XY.0-rc1` and `git push --tags` to git@github.com:facebook/react-native.git
  * - CI: test and deploy to npm (run this script) with version 0.XY.0-rc1 with tag "next"
- * TODO can we push version 0.XY.0-rc1?
  *
  * To publish release:
  * - Developer: `git checkout 0.XY-stable`
@@ -35,15 +34,11 @@
  * Important tags:
  * If tag v0.XY.0-rcZ is present on the commit then publish to npm with version 0.XY.0-rcZ and tag next
  * If tag v0.XY.Z is present on the commit then publish to npm with version 0.XY.Z and no tag (npm will consider it latest)
- * This logic could be applied to website generation
- * TODO: is latest tag needed if we just can track tags v0.XY.Z on a commit in CI?
  */
 require(`shelljs/global`);
 
-// TODO get branch name from git
 const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '0.32-stable';
 const JAVA_VERSION=`1.7`;
-const PACKAGE_NAME = `react-native-evergreen`;
 
 let branchVersion;
 if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
@@ -52,7 +47,6 @@ if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   echo(`Error: We publish only from stable branches`);
   exit(1);
 }
-// TODO get it from tag on current commit that looks like v${branchVersion}[-rc.*]
 
 const tagsOnThisCommit = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
   .filter(version => !!version && version.indexOf(`v`) === 0);
@@ -116,8 +110,8 @@ if (exec(`sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version   
   exit(1);
 }
 
-// exec(`git checkout package.json`);
-// exec(`git checkout React.podspec`);
+exec(`git checkout package.json`);
+exec(`git checkout React.podspec`);
 
 // exec(`npm publish`);
 
