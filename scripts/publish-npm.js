@@ -48,16 +48,21 @@ if (CIRCLE_BRANCH.indexOf(`-stable`) !== -1) {
   exit(0);
 }
 
-// TODO non -rc must be higher than rc
 const tagsOnThisCommit = exec(`git tag -l --points-at HEAD`).stdout.split(/\s/)
-  .filter(version => !!version && version.indexOf(`v`) === 0);
+  .filter(version => !!version && version.indexOf(`v${branchVersion}`) === 0);
 const tagsWithVersion = tagsOnThisCommit.filter(version => version.indexOf(branchVersion) !== -1);
 if (tagsWithVersion.length === 0) {
   echo(`Error: Can't find version tag in current commit. To deploy to NPM you must add tag v0.XY.Z[-rc] to your commit`);
   exit(1);
 }
-// git returns tags sorted, get the last one without first letter "v"
-const releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
+let releaseVersion;
+if (tagsWithVersion[0].indexOf(`-rc`) === -1) {
+  // if first tag on this commit is non -rc then we are making a stable release
+  releaseVersion = tagsWithVersion[0];
+} else {
+  // otherwise pick last -rc tag alphabetically
+  releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
+}
 
 // -------- Generating Android Artifacts with JavaDoc
 // Java -version outputs to stderr 0_o
