@@ -3555,15 +3555,15 @@
           "from": "abbrev@1",
           "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.7.tgz"
         },
-        "ansi": {
-          "version": "0.3.0",
-          "from": "ansi@~0.3.0",
-          "resolved": "https://registry.npmjs.org/ansi/-/ansi-0.3.0.tgz"
-        },
         "ansi-regex": {
           "version": "2.0.0",
           "from": "ansi-regex@^2.0.0",
           "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.0.0.tgz"
+        },
+        "ansi": {
+          "version": "0.3.0",
+          "from": "ansi@~0.3.0",
+          "resolved": "https://registry.npmjs.org/ansi/-/ansi-0.3.0.tgz"
         },
         "ansi-styles": {
           "version": "2.1.0",
@@ -3685,15 +3685,15 @@
           "from": "extend@~3.0.0",
           "resolved": "https://registry.npmjs.org/extend/-/extend-3.0.0.tgz"
         },
-        "form-data": {
-          "version": "1.0.0-rc3",
-          "from": "form-data@~1.0.0-rc3",
-          "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.0-rc3.tgz"
-        },
         "forever-agent": {
           "version": "0.6.1",
           "from": "forever-agent@~0.6.1",
           "resolved": "https://registry.npmjs.org/forever-agent/-/forever-agent-0.6.1.tgz"
+        },
+        "form-data": {
+          "version": "1.0.0-rc3",
+          "from": "form-data@~1.0.0-rc3",
+          "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.0-rc3.tgz"
         },
         "fstream": {
           "version": "1.0.8",
@@ -5599,8 +5599,8 @@
       }
     },
     "node-haste": {
-      "version": "2.8.0",
-      "from": "node-haste@>=2.8.0 <2.9.0",
+      "version": "2.9.0",
+      "from": "node-haste@>=2.9.0 <2.10.0",
       "dependencies": {
         "denodeify": {
           "version": "1.2.1",
