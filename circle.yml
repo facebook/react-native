@@ -91,5 +91,6 @@ deployment:
 #      - cd website && GIT_USER=reactjs-bot npm run gh-pages
   npm:
     branch: [/.*-stable/]
+    commands:
       # TODO temp for testing
       - node ./scripts/publish-npm.js

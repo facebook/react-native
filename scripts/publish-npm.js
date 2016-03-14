@@ -111,9 +111,6 @@ if (sed(`-i`, `s.version             = "0.0.1-master"`, `s.version             =
   exit(1);
 }
 
-exec(`git checkout package.json`);
-exec(`git checkout React.podspec`);
-
 // TODO temp while testing
 sed(`-i`, `"name": "react-native"`, `"name": "react-native-bestander"`, `package.json`);
 sed(`-i`, `"name": "react-native"`, `"name": "react-native-bestander"`, `npm-shrinkwrap.json`);
@@ -125,6 +122,10 @@ if (releaseVersion.indexOf(`-rc`) === -1) {
   // RC release, package will be installed only if users specifically do it
   exec(`npm publish --tag next`);
 }
+
+exec(`git checkout package.json`);
+exec(`git checkout React.podspec`);
+exec(`git checkout npm-shrinkwrap.json`);
 
 echo(`Published to npm ${releaseVersion}`);
 
