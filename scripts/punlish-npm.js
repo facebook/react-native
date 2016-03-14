@@ -63,67 +63,65 @@ if (tagsWithVersion.length === 0) {
 }
 // git returns tags sorted, get the last one without first letter "v"
 const releaseVersion = tagsWithVersion[tagsWithVersion.length - 1].slice(1);
+//
+// // -------- Generating Android Artifacts with JavaDoc
+// // Java -version outputs to stderr 0_o
+// const javaVersion = exec(`java -version`).stderr;
+// if (javaVersion.indexOf(JAVA_VERSION) === -1) {
+//   echo(`Java version must be 1.7.x in order to generate Javadoc. Check: java -version`);
+//   exit(1);
+// }
+//
+// if (exec(`sed -i.bak 's/^VERSION_NAME=[0-9\.]*-SNAPSHOT/VERSION_NAME=${releaseVersion}/g' "ReactAndroid/gradle.properties"`).code) {
+//   echo(`Couldn't update version for Gradle`);
+//   exit(1);
+// }
+//
+// // Uncomment Javadoc generation
+// if (exec('sed -i.bak s://\\\ archives\\\ androidJavadocJar:archives\\\ androidJavadocJar:g "ReactAndroid/release.gradle"').code) {
+//   echo(`Couldn't enable Javadoc generation`);
+//   exit(1);
+// }
+//
+// if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
+//   echo(`Couldn't generate artifacts`);
+//   exit(1);
+// }
+//
+// echo("Generated artifacts for Maven");
+//
+// let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) => {
+//   return `react-native-${releaseVersion}${suffix}`;
+// });
+//
+// artifacts.forEach((name) => {
+//   if (!test(`-e`, `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
+//     echo(`file ${name} was not generated`);
+//     exit(1);
+//   }
+// });
+//
+// // ----------- Reverting changes to local files
+//
+// exec(`git checkout ReactAndroid/gradle.properties`);
+// exec(`git checkout ReactAndroid/release.gradle`);
 
-// -------- Generating Android Artifacts with JavaDoc
-// Java -version outputs to stderr 0_o
-const javaVersion = exec(`java -version`).stderr;
-if (javaVersion.indexOf(JAVA_VERSION) === -1) {
-  echo(`Java version must be 1.7.x in order to generate Javadoc. Check: java -version`);
+
+if (exec(`sed -i.bak -E s//(\\\"version\\\":[[:space:]]*\\\").+(\\\")/\\\"version\\\": \\\"${releaseVersion}\\\"/g" "package.json"`).code) {
+  echo(`Couldn't update version for npm`);
+  // exit(1);
+}
+if (exec(`sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version             = \"${releaseVersion}\"/g" "React.podspec"`).code) {
+  echo(`Couldn't update version for CocoaPods`);
   exit(1);
 }
-
-// TODO strip RC
-if (exec(`sed -i.bak 's/^VERSION_NAME=[0-9\.]*-SNAPSHOT/VERSION_NAME=${releaseVersion}.0/g' "ReactAndroid/gradle.properties"`).code) {
-  echo(`Couldn't update version for Gradle`);
-  exit(1);
-}
-
-// Uncomment Javadoc generation
-if (exec('sed -i.bak s://\\\ archives\\\ androidJavadocJar:archives\\\ androidJavadocJar:g "ReactAndroid/release.gradle"').code) {
-  echo(`Couldn't enable Javadoc generation`);
-  exit(1);
-}
-
-if (exec(`./gradlew :ReactAndroid:installArchives`).code) {
-  echo(`Couldn't generate artifacts`);
-  exit(1);
-}
-
-echo("Generated artifacts for Maven");
-
-let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) => {
-  // TODO strip RC
-  return `react-native-${releaseVersion}${suffix}`;
-});
-
-artifacts.forEach((name) => {
-  if (!test(`-e`, `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
-    echo(`file ${name} was not generated`);
-    exit(1);
-  }
-});
-
-// ----------- Reverting changes to local files
-
-exec(`git checkout ReactAndroid/gradle.properties`);
-exec(`git checkout ReactAndroid/release.gradle`);
-
-
-
-/*
-
-sed -i.bak -E "s/(\"version\":[[:space:]]*\").+(\")/\"version\": \"${RELEASE}.0-rc\"/g" "package.json" || error "Couldn't update version for npm"
-sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version             = \"${RELEASE}.0-rc\"/g" "React.podspec" || error "Couldn't update version for CocoaPods"
-
-npm publish || error "Couldn't publish package to sinopia (${npm_registry})"
-*/
 
 exec(`git checkout package.json`);
 exec(`git checkout React.podspec`);
 
+// exec(`npm publish`);
+
 echo(`Published to npm ${releaseVersion}`);
-// TODO which tag?
 exec(`find . -path "*.bak" | xargs rm`);
 
-// exec(`npm publish`);
 exit(0);
