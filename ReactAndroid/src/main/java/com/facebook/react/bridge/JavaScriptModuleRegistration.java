@@ -24,14 +24,14 @@ import com.facebook.infer.annotation.Assertions;
  * Registration info for a {@link JavaScriptModule}. Maps its methods to method ids.
  */
 @Immutable
-class JavaScriptModuleRegistration {
+public class JavaScriptModuleRegistration {
 
   private final int mModuleId;
   private final Class<? extends JavaScriptModule> mModuleInterface;
   private final Map<Method, Integer> mMethodsToIds;
   private final Map<Method, String> mMethodsToTracingNames;
 
-  JavaScriptModuleRegistration(int moduleId, Class<? extends JavaScriptModule> moduleInterface) {
+  public JavaScriptModuleRegistration(int moduleId, Class<? extends JavaScriptModule> moduleInterface) {
     mModuleId = moduleId;
     mModuleInterface = moduleInterface;
 
