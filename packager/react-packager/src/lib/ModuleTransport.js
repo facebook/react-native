@@ -11,6 +11,9 @@
 function ModuleTransport(data) {
   this.name = data.name;
 
+  assertExists(data, 'id');
+  this.id = data.id;
+
   assertExists(data, 'code');
   this.code = data.code;
 

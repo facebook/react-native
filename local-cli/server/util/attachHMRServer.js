@@ -39,6 +39,8 @@ function attachHMRServer({httpServer, path, packagerServer}) {
       hot: true,
       entryFile: bundleEntry,
     }).then(response => {
+      const {getModuleId} = response;
+
       // for each dependency builds the object:
       // `{path: '/a/b/c.js', deps: ['modA', 'modB', ...]}`
       return Promise.all(Object.values(response.dependencies).map(dep => {
@@ -76,30 +78,25 @@ function attachHMRServer({httpServer, path, packagerServer}) {
         // map from module name to the modules' dependencies the bundle entry
         // has
         const dependenciesModulesCache = Object.create(null);
-        return Promise.all(response.dependencies.map(dep => {
-          return dep.getName().then(depName => {
-            dependenciesModulesCache[depName] = dep;
-          });
-        })).then(() => {
-          const inverseDependencies = getInverseDependencies(response);
-          const inverseDependenciesCache = Object.create(null);
-          return Promise.all(
-            Array.from(inverseDependencies).map(([module, dependents]) => {
-              return Promise.all([
-                module.getName(),
-                Promise.all(Array.from(dependents).map(m => m.getName())),
-              ]).then(([moduleName, dependentsNames]) => {
-                inverseDependenciesCache[moduleName] = dependentsNames;
-              });
-            })
-          ).then(() => ({
-            dependenciesCache,
-            dependenciesModulesCache,
-            shallowDependencies,
-            inverseDependenciesCache,
-            resolutionResponse: response,
-          }));
+        response.dependencies.forEach(dep => {
+          dependenciesModulesCache[getModuleId(dep)] = dep;
         });
+
+
+        const inverseDependenciesCache = Object.create(null);
+        const inverseDependencies = getInverseDependencies(response);
+        for (const [module, dependents] of inverseDependencies) {
+          inverseDependenciesCache[getModuleId(module)] =
+            Array.from(dependents).map(getModuleId);
+        }
+
+        return {
+          dependenciesCache,
+          dependenciesModulesCache,
+          shallowDependencies,
+          inverseDependenciesCache,
+          resolutionResponse: response,
+        };
       });
     });
   }
