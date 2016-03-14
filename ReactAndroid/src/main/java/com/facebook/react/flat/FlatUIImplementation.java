@@ -169,6 +169,7 @@ public class FlatUIImplementation extends UIImplementation {
   public void measure(int reactTag, Callback callback) {
     FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
     if (node.mountsToView()) {
+      mStateBuilder.ensureBackingViewIsCreated(node);
       super.measure(reactTag, callback);
       return;
     }
@@ -182,6 +183,7 @@ public class FlatUIImplementation extends UIImplementation {
     while (true) {
       node =  Assertions.assumeNotNull((FlatShadowNode) node.getParent());
       if (node.mountsToView()) {
+        mStateBuilder.ensureBackingViewIsCreated(node);
         break;
       }
 
@@ -200,6 +202,48 @@ public class FlatUIImplementation extends UIImplementation {
         width / parentWidth,
         height / parentHeight,
         callback);
+  }
+
+  private void ensureMountsToViewAndBackingViewIsCreated(int reactTag) {
+    FlatShadowNode node = (FlatShadowNode) resolveShadowNode(reactTag);
+    node.forceMountToView();
+    mStateBuilder.ensureBackingViewIsCreated(node);
+  }
+
+  @Override
+  public void findSubviewIn(int reactTag, float targetX, float targetY, Callback callback) {
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    super.findSubviewIn(reactTag, targetX, targetY, callback);
+  }
+
+  @Override
+  public void measureInWindow(int reactTag, Callback callback) {
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    super.measureInWindow(reactTag, callback);
+  }
+
+  @Override
+  public void addAnimation(int reactTag, int animationID, Callback onSuccess) {
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    super.addAnimation(reactTag, animationID, onSuccess);
+  }
+
+  @Override
+  public void dispatchViewManagerCommand(int reactTag, int commandId, ReadableArray commandArgs) {
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    super.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
+  }
+
+  @Override
+  public void showPopupMenu(int reactTag, ReadableArray items, Callback error, Callback success) {
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    super.showPopupMenu(reactTag, items, error, success);
+  }
+
+  @Override
+  public void sendAccessibilityEvent(int reactTag, int eventType) {
+    ensureMountsToViewAndBackingViewIsCreated(reactTag);
+    super.sendAccessibilityEvent(reactTag, eventType);
   }
 
   /**
