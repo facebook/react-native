@@ -21,8 +21,8 @@ var View = require('View');
 var ScrollView = require('ScrollView');
 
 var deprecatedPropType = require('deprecatedPropType');
-var invariant = require('invariant');
-var keyMirror = require('keyMirror');
+var invariant = require('fbjs/lib/invariant');
+var keyMirror = require('fbjs/lib/keyMirror');
 var processDecelerationRate = require('processDecelerationRate');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
@@ -39,16 +39,16 @@ var WebViewState = keyMirror({
   ERROR: null,
 });
 
-var NavigationType = {
-  click: RCTWebViewManager.NavigationType.LinkClicked,
-  formsubmit: RCTWebViewManager.NavigationType.FormSubmitted,
-  backforward: RCTWebViewManager.NavigationType.BackForward,
-  reload: RCTWebViewManager.NavigationType.Reload,
-  formresubmit: RCTWebViewManager.NavigationType.FormResubmitted,
-  other: RCTWebViewManager.NavigationType.Other,
-};
+const NavigationType = keyMirror({
+  click: true,
+  formsubmit: true,
+  backforward: true,
+  reload: true,
+  formresubmit: true,
+  other: true,
+});
 
-var JSNavigationScheme = RCTWebViewManager.JSNavigationScheme;
+const JSNavigationScheme = 'react-js-navigation';
 
 type ErrorEvent = {
   domain: any;
@@ -179,8 +179,8 @@ var WebView = React.createClass({
      * shortcuts `"normal"` and `"fast"` which match the underlying iOS settings
      * for `UIScrollViewDecelerationRateNormal` and
      * `UIScrollViewDecelerationRateFast` respectively.
-     *   - Normal: 0.998
-     *   - Fast: 0.9 (the default for iOS WebView)
+     *   - normal: 0.998
+     *   - fast: 0.99 (the default for iOS WebView)
      * @platform ios
      */
     decelerationRate: ScrollView.propTypes.decelerationRate,
@@ -213,7 +213,6 @@ var WebView = React.createClass({
 
     /**
      * Sets whether the webpage scales to fit the view and the user can change the scale.
-     * @platform ios
      */
     scalesPageToFit: PropTypes.bool,
 

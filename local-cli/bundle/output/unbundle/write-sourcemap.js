@@ -16,7 +16,7 @@ function writeSourcemap(fileName, contents, log) {
     return Promise.resolve();
   }
   log('Writing sourcemap output to:', fileName);
-  const writeMap = writeFile(fileName, '', null);
+  const writeMap = writeFile(fileName, contents, null);
   writeMap.then(() => log('Done writing sourcemap output'));
   return writeMap;
 }

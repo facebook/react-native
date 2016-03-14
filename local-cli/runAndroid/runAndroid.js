@@ -15,6 +15,7 @@ const path = require('path');
 const parseCommandLine = require('../util/parseCommandLine');
 const isPackagerRunning = require('../util/isPackagerRunning');
 const Promise = require('promise');
+const adb = require('./adb');
 
 /**
  * Starts the app on a connected Android emulator or device.
@@ -30,21 +31,31 @@ function _runAndroid(argv, config, resolve, reject) {
     command: 'install-debug',
     type: 'string',
     required: false,
+  }, {
+    command: 'root',
+    type: 'string',
+    description: 'Override the root directory for the android build (which contains the android directory)',
+  }, {
+    command: 'flavor',
+    type: 'string',
+    required: false,
   }], argv);
 
-  if (!checkAndroid()) {
+  args.root = args.root || '';
+
+  if (!checkAndroid(args)) {
     console.log(chalk.red('Android project not found. Maybe run react-native android first?'));
     return;
   }
 
   resolve(isPackagerRunning().then(result => {
     if (result === 'running') {
-      console.log(chalk.bold('JS server already running.'));
+      console.log(chalk.bold(`JS server already running.`));
     } else if (result === 'unrecognized') {
-      console.warn(chalk.yellow('JS server not recognized, continuing with build...'));
+      console.warn(chalk.yellow(`JS server not recognized, continuing with build...`));
     } else {
       // result == 'not_running'
-      console.log(chalk.bold('Starting JS server...'));
+      console.log(chalk.bold(`Starting JS server...`));
       startServerInNewWindow();
     }
     buildAndRun(args, reject);
@@ -52,26 +63,33 @@ function _runAndroid(argv, config, resolve, reject) {
 }
 
 // Verifies this is an Android project
-function checkAndroid() {
-  return fs.existsSync('android/gradlew');
+function checkAndroid(args) {
+  return fs.existsSync(path.join(args.root, 'android/gradlew'));
 }
 
 // Builds the app and runs it on a connected emulator / device.
 function buildAndRun(args, reject) {
-  process.chdir('android');
+  process.chdir(path.join(args.root, 'android'));
   try {
     const cmd = process.platform.startsWith('win')
       ? 'gradlew.bat'
       : './gradlew';
 
-    const gradleArgs = ['installDebug'];
+    const gradleArgs = [];
+    if (args['flavor']) {
+        gradleArgs.push('install' +
+          args['flavor'][0].toUpperCase() + args['flavor'].slice(1)
+        );
+    } else {
+        gradleArgs.push('installDebug');
+    }
+
     if (args['install-debug']) {
       gradleArgs.push(args['install-debug']);
     }
 
     console.log(chalk.bold(
-      'Building and installing the app on the device (cd android && ' + cmd +
-      ' ' + gradleArgs.join(' ') + ')...'
+      `Building and installing the app on the device (cd android && ${cmd} ${gradleArgs.join(' ')}...`
     ));
 
     child_process.execFileSync(cmd, gradleArgs, {
@@ -101,18 +119,34 @@ function buildAndRun(args, reject) {
       ? process.env.ANDROID_HOME + '/platform-tools/adb'
       : 'adb';
 
-    const adbArgs = [
-      'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
-    ];
+    const devices = adb.getDevices();
+    
+    if (devices && devices.length > 0) {
+      devices.forEach((device) => {
 
-    console.log(chalk.bold(
-      'Starting the app (' + adbPath + ' ' + adbArgs.join(' ') + ')...'
-    ));
+        const adbArgs = ['-s', device, 'shell', 'am', 'start', '-n', packageName + '/.MainActivity'];
 
-    child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});
+        console.log(chalk.bold(
+          `Starting the app on ${device} (${adbPath} ${adbArgs.join(' ')})...`
+        ));
+
+        child_process.spawnSync(adbPath, adbArgs, {stdio: 'inherit'});  
+      }); 
+    } else {
+      // If we cannot execute based on adb devices output, fall back to
+      // shell am start
+      const fallbackAdbArgs = [
+        'shell', 'am', 'start', '-n', packageName + '/.MainActivity'
+      ];
+      console.log(chalk.bold(
+        `Starting the app (${adbPath} ${fallbackAdbArgs.join(' ')}...`
+      ));
+      child_process.spawnSync(adbPath, fallbackAdbArgs, {stdio: 'inherit'});
+    }
+
   } catch (e) {
     console.log(chalk.red(
-      'adb invocation failed. Do you have adb in your PATH?'
+      `adb invocation failed. Do you have adb in your PATH?`
     ));
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
@@ -123,18 +157,24 @@ function buildAndRun(args, reject) {
 }
 
 function startServerInNewWindow() {
+  var yargV = require('yargs').argv;
+
   const launchPackagerScript = path.resolve(
     __dirname, '..', '..', 'packager', 'launchPackager.command'
   );
 
   if (process.platform === 'darwin') {
-    child_process.spawnSync('open', [launchPackagerScript]);
+    if (yargV.open) {
+      return child_process.spawnSync('open', ['-a', yargV.open, launchPackagerScript]);
+    }
+    return child_process.spawnSync('open', [launchPackagerScript]);
+
   } else if (process.platform === 'linux') {
-    child_process.spawn(
-      'xterm',
-      ['-e', 'sh', launchPackagerScript],
-      {detached: true}
-    );
+    if (yargV.open){
+      return child_process.spawn(yargV.open,['-e', 'sh', launchPackagerScript], {detached: true});
+    }
+    return child_process.spawn('xterm',['-e', 'sh', launchPackagerScript],{detached: true});
+
   } else if (/^win/.test(process.platform)) {
     console.log(chalk.yellow('Starting the packager in a new window ' +
       'is not supported on Windows yet.\nPlease start it manually using ' +
@@ -144,8 +184,7 @@ function startServerInNewWindow() {
       'Windows on a daily basis.\n' +
       'Would you be up for sending a pull request?');
   } else {
-    console.log(chalk.red('Cannot start the packager. Unknown platform ' +
-      process.platform));
+    console.log(chalk.red(`Cannot start the packager. Unknown platform ${process.platform}`));
   }
 }
 

@@ -117,6 +117,7 @@ class WebSocket extends WebSocketBase {
         var event = new WebSocketEvent('error');
         event.message = ev.message;
         this.onerror && this.onerror(event);
+        this.onclose && this.onclose(event);
         this.dispatchEvent(event);
         this._unregisterEvents();
         this.close();

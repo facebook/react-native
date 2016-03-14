@@ -257,7 +257,6 @@ where the modal was opened from. See the Animations guide for more
 information about how to use LayoutAnimation.
 
 Caveats:
-- LayoutAnimation only exists on iOS.
 - LayoutAnimation only works for fire-and-forget animations ("static"
   animations) -- if it must be be interruptible, you will need to use
 Animated.

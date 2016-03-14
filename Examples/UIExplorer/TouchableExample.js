@@ -24,6 +24,8 @@ var {
   TouchableHighlight,
   TouchableOpacity,
   UIManager,
+  Platform,
+  TouchableNativeFeedback,
   View,
 } = React;
 
@@ -55,7 +57,7 @@ exports.examples = [
             activeOpacity={1}
             animationVelocity={0}
             underlayColor="rgb(210, 230, 255)"
-            onPress={() => console.log('custom THW text - hightlight')}>
+            onPress={() => console.log('custom THW text - highlight')}>
             <View style={styles.wrapperCustom}>
               <Text style={styles.text}>
                 Tap Here For Custom Highlight!
@@ -99,6 +101,13 @@ exports.examples = [
      'without changing the view bounds.',
    render: function(): ReactElement {
      return <TouchableHitSlop />;
+   },
+ }, {
+   title: 'Disabled Touchable*',
+   description: '<Touchable*> components accept disabled prop which prevents ' +
+     'any interaction with component',
+   render: function(): ReactElement {
+     return <TouchableDisabled />;
    },
  }];
 
@@ -292,6 +301,72 @@ var TouchableHitSlop = React.createClass({
   }
 });
 
+var TouchableDisabled = React.createClass({
+  render: function() {
+    return (
+      <View>
+        <TouchableOpacity disabled={true} style={[styles.row, styles.block]}>
+          <Text style={styles.disabledButton}>Disabled TouchableOpacity</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity disabled={false} style={[styles.row, styles.block]}>
+          <Text style={styles.button}>Enabled TouchableOpacity</Text>
+        </TouchableOpacity>
+
+        <TouchableHighlight
+          activeOpacity={1}
+          disabled={true}
+          animationVelocity={0}
+          underlayColor="rgb(210, 230, 255)"
+          style={[styles.row, styles.block]}
+          onPress={() => console.log('custom THW text - highlight')}>
+          <Text style={styles.disabledButton}>
+            Disabled TouchableHighlight
+          </Text>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          activeOpacity={1}
+          animationVelocity={0}
+          underlayColor="rgb(210, 230, 255)"
+          style={[styles.row, styles.block]}
+          onPress={() => console.log('custom THW text - highlight')}>
+          <Text style={styles.button}>
+            Disabled TouchableHighlight
+          </Text>
+        </TouchableHighlight>
+
+        {Platform.OS === 'android' &&
+          <TouchableNativeFeedback
+            style={[styles.row, styles.block]}
+            onPress={() => console.log('custom TNF has been clicked')}
+            background={TouchableNativeFeedback.SelectableBackground()}>
+            <View>
+              <Text style={[styles.button, styles.nativeFeedbackButton]}>
+                Enabled TouchableNativeFeedback
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
+        }
+
+        {Platform.OS === 'android' &&
+          <TouchableNativeFeedback
+            disabled={true}
+            style={[styles.row, styles.block]}
+            onPress={() => console.log('custom TNF has been clicked')}
+            background={TouchableNativeFeedback.SelectableBackground()}>
+            <View>
+              <Text style={[styles.disabledButton, styles.nativeFeedbackButton]}>
+                Disabled TouchableNativeFeedback
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
+        }
+      </View>
+    );
+  }
+});
+
 var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
 
 var styles = StyleSheet.create({
@@ -310,8 +385,19 @@ var styles = StyleSheet.create({
   text: {
     fontSize: 16,
   },
+  block: {
+    padding: 10,
+  },
   button: {
     color: '#007AFF',
+  },
+  disabledButton: {
+    color: '#007AFF',
+    opacity: 0.5,
+  },
+  nativeFeedbackButton: {
+    textAlign: 'center',
+    margin: 10,
   },
   hitSlopButton: {
     color: 'white',

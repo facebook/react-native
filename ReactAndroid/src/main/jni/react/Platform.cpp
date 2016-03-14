@@ -16,14 +16,15 @@ GetCurrentMessageQueueThread getCurrentMessageQueueThread;
 namespace WebWorkerUtil {
 WebWorkerQueueFactory createWebWorkerThread;
 LoadScriptFromAssets loadScriptFromAssets;
+LoadScriptFromNetworkSync loadScriptFromNetworkSync;
 };
 
 namespace PerfLogging {
 InstallNativeHooks installNativeHooks;
-}
+};
 
 namespace JSLogging {
 JSCNativeHook nativeHook = nullptr;
-}
+};
 
 } }

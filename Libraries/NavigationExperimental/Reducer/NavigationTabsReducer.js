@@ -12,21 +12,16 @@
 'use strict';
 
 const NavigationFindReducer = require('NavigationFindReducer');
-const NavigationStateUtils = require('NavigationState');
+const NavigationStateUtils = require('NavigationStateUtils');
 
 import type {
   NavigationReducer,
-  NavigationReducerWithDefault,
   NavigationState,
-  NavigationParentState
-} from 'NavigationState';
+} from 'NavigationTypeDefinition';
 
 const ActionTypes = {
   JUMP_TO: 'react-native/NavigationExperimental/tabs-jumpTo',
-  ON_TAB_ACTION: 'react-native/NavigationExperimental/tabs-onTabAction',
 };
-
-const DEFAULT_KEY = 'TABS_STATE_DEFAULT_KEY';
 
 export type JumpToAction = {
   type: typeof ActionTypes.JUMP_TO,
@@ -39,37 +34,18 @@ function NavigationTabsJumpToAction(index: number): JumpToAction {
   };
 }
 
-export type OnTabAction = {
-  type: string,
-  index: number,
-  action: any,
-};
-function NavigationTabsOnTabAction(index: number, action: any): OnTabAction {
-  return {
-    type: ActionTypes.ON_TAB_ACTION,
-    index,
-    action,
-  };
-}
-
 type TabsReducerConfig = {
   key: string;
-  initialIndex: ?number;
-  tabReducers: Array<NavigationReducerWithDefault>;
+  initialIndex: number;
+  tabReducers: Array<NavigationReducer>;
 };
 
 function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConfig): NavigationReducer {
-  if (initialIndex == null) {
-    initialIndex = 0;
-  }
-  if (key == null) {
-    key = DEFAULT_KEY;
-  }
-  return function(lastNavState: ?NavigationState, action: ?any): ?NavigationState {
+  return function(lastNavState: ?NavigationState, action: ?any): NavigationState {
     if (!lastNavState) {
       lastNavState = {
         children: tabReducers.map(reducer => reducer(null, null)),
-        index: initialIndex,
+        index: initialIndex || 0,
         key,
       };
     }
@@ -86,37 +62,17 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
         action.index,
       );
     }
-    if (action.type === ActionTypes.ON_TAB_ACTION) {
-      const onTabAction: OnTabAction = action;
-      const lastTabRoute = lastParentNavState.children[onTabAction.index];
-      const tabReducer = tabReducers[onTabAction.index];
-      if (tabReducer) {
-        const newTabRoute = tabReducer(lastTabRoute, action.action);
-        if (newTabRoute && newTabRoute !== lastTabRoute) {
-          let navState = NavigationStateUtils.replaceAtIndex(
-            lastParentNavState,
-            onTabAction.index,
-            newTabRoute
-          );
-          navState = NavigationStateUtils.jumpToIndex(
-            navState,
-            onTabAction.index
-          );
-          return navState;
-        }
-      }
-    }
     const subReducers = tabReducers.map((tabReducer, tabIndex) => {
-      return function reduceTab(lastNavState: ?NavigationState, tabAction: ?any): ?NavigationState {
-        if (!tabReducer || !lastNavState) {
-          return lastNavState;
+      return function(navState: ?NavigationState, tabAction: any): NavigationState {
+        if (!navState) {
+          return lastParentNavState;
         }
-        const lastParentNavState = NavigationStateUtils.getParent(lastNavState);
-        const lastSubTabState = lastParentNavState && lastParentNavState.children[tabIndex];
-        const nextSubTabState = tabReducer(lastSubTabState, tabAction);
-        if (nextSubTabState && lastSubTabState !== nextSubTabState) {
-          const tabs = lastParentNavState && lastParentNavState.children || [];
-          tabs[tabIndex] = nextSubTabState;
+        const parentState = NavigationStateUtils.getParent(navState);
+        const tabState = parentState && parentState.children[tabIndex];
+        const nextTabState = tabReducer(tabState, tabAction);
+        if (nextTabState && tabState !== nextTabState) {
+          const tabs = parentState && parentState.children || [];
+          tabs[tabIndex] = nextTabState;
           return {
             ...lastParentNavState,
             tabs,
@@ -127,22 +83,21 @@ function NavigationTabsReducer({key, initialIndex, tabReducers}: TabsReducerConf
       };
     });
     let selectedTabReducer = subReducers.splice(lastParentNavState.index, 1)[0];
-    subReducers.unshift(selectedTabReducer);
-    subReducers.push((lastParentNavState: ?NavigationState, action: ?any) => {
-      if (lastParentNavState && action && action.type === 'BackAction') {
+    subReducers.unshift(function(navState: ?NavigationState, action: any): NavigationState {
+      if (navState && action.type === 'BackAction') {
         return NavigationStateUtils.jumpToIndex(
           lastParentNavState,
-          0
+          initialIndex || 0
         );
       }
       return lastParentNavState;
     });
-    const findReducer = NavigationFindReducer(subReducers);
+    subReducers.unshift(selectedTabReducer);
+    const findReducer = NavigationFindReducer(subReducers, lastParentNavState);
     return findReducer(lastParentNavState, action);
   };
 }
 
 NavigationTabsReducer.JumpToAction = NavigationTabsJumpToAction;
-NavigationTabsReducer.OnTabAction = NavigationTabsOnTabAction;
 
 module.exports = NavigationTabsReducer;

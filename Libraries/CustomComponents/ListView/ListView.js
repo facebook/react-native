@@ -231,19 +231,23 @@ var ListView = React.createClass({
 
   /**
    * Provides a handle to the underlying scroll responder.
+   * Note that the view in `SCROLLVIEW_REF` may not be a `ScrollView`, so we
+   * need to check that it responds to `getScrollResponder` before calling it.
    */
   getScrollResponder: function() {
-    return this.refs[SCROLLVIEW_REF] && 
+    return this.refs[SCROLLVIEW_REF] &&
+      this.refs[SCROLLVIEW_REF].getScrollResponder &&
       this.refs[SCROLLVIEW_REF].getScrollResponder();
   },
 
   scrollTo: function(...args) {
-    this.refs[SCROLLVIEW_REF] && 
+    this.refs[SCROLLVIEW_REF] &&
+      this.refs[SCROLLVIEW_REF].scrollTo &&
       this.refs[SCROLLVIEW_REF].scrollTo(...args);
   },
 
   setNativeProps: function(props) {
-    this.refs[SCROLLVIEW_REF] && 
+    this.refs[SCROLLVIEW_REF] &&
       this.refs[SCROLLVIEW_REF].setNativeProps(props);
   },
 
@@ -390,8 +394,10 @@ var ListView = React.createClass({
             rowID,
             adjacentRowHighlighted
           );
-          bodyComponents.push(separator);
-          totalIndex++;
+          if (separator) {
+            bodyComponents.push(separator);
+            totalIndex++;
+          }
         }
         if (++rowCount === this.state.curRenderedRowsCount) {
           break;

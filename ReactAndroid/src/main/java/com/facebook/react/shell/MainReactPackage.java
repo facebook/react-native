@@ -22,8 +22,8 @@ import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
-import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.datepicker.DatePickerDialogModule;
+import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.location.LocationModule;
@@ -33,6 +33,7 @@ import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
+import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.art.ARTRenderableViewManager;
@@ -45,16 +46,16 @@ import com.facebook.react.views.progressbar.ReactProgressBarViewManager;
 import com.facebook.react.views.recyclerview.RecyclerViewBackedScrollViewManager;
 import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager;
 import com.facebook.react.views.scroll.ReactScrollViewManager;
+import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.switchview.ReactSwitchManager;
 import com.facebook.react.views.text.ReactRawTextManager;
 import com.facebook.react.views.text.ReactTextViewManager;
-import com.facebook.react.views.text.ReactTextInlineImageViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
+import com.facebook.react.views.textfrescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
-import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager;
 import com.facebook.react.views.webview.ReactWebViewManager;
 
 /**
@@ -81,6 +82,7 @@ public class MainReactPackage implements ReactPackage {
       new StatusBarModule(reactContext),
       new TimePickerDialogModule(reactContext),
       new ToastModule(reactContext),
+      new VibrationModule(reactContext),
       new WebSocketModule(reactContext)
     );
   }
@@ -106,7 +108,7 @@ public class MainReactPackage implements ReactPackage {
       new ReactRawTextManager(),
       new ReactScrollViewManager(),
       new ReactSwitchManager(),
-      new ReactTextInlineImageViewManager(),
+      new FrescoBasedReactTextInlineImageViewManager(),
       new ReactTextInputManager(),
       new ReactTextViewManager(),
       new ReactToolbarManager(),

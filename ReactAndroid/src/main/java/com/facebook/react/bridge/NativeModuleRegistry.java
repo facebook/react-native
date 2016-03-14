@@ -30,6 +30,7 @@ public class NativeModuleRegistry {
   private final List<ModuleDefinition> mModuleTable;
   private final Map<Class<? extends NativeModule>, NativeModule> mModuleInstances;
   private final ArrayList<OnBatchCompleteListener> mBatchCompleteListenerModules;
+  private final ArrayList<OnExecutorUnregisteredListener> mOnExecutorUnregisteredListenerModules;
 
   private NativeModuleRegistry(
       List<ModuleDefinition> moduleTable,
@@ -37,17 +38,22 @@ public class NativeModuleRegistry {
     mModuleTable = moduleTable;
     mModuleInstances = moduleInstances;
 
-    mBatchCompleteListenerModules = new ArrayList<OnBatchCompleteListener>(mModuleTable.size());
+    mBatchCompleteListenerModules = new ArrayList<>(mModuleTable.size());
+    mOnExecutorUnregisteredListenerModules = new ArrayList<>(mModuleTable.size());
     for (int i = 0; i < mModuleTable.size(); i++) {
       ModuleDefinition definition = mModuleTable.get(i);
       if (definition.target instanceof OnBatchCompleteListener) {
         mBatchCompleteListenerModules.add((OnBatchCompleteListener) definition.target);
+      }
+      if (definition.target instanceof OnExecutorUnregisteredListener) {
+        mOnExecutorUnregisteredListenerModules.add((OnExecutorUnregisteredListener) definition.target);
       }
     }
   }
 
   /* package */ void call(
       CatalystInstance catalystInstance,
+      ExecutorToken executorToken,
       int moduleId,
       int methodId,
       ReadableNativeArray parameters) {
@@ -55,7 +61,7 @@ public class NativeModuleRegistry {
     if (definition == null) {
       throw new RuntimeException("Call to unknown module: " + moduleId);
     }
-    definition.call(catalystInstance, methodId, parameters);
+    definition.call(catalystInstance, executorToken, methodId, parameters);
   }
 
   /* package */ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
@@ -65,6 +71,7 @@ public class NativeModuleRegistry {
       for (ModuleDefinition moduleDef : mModuleTable) {
         jg.writeObjectFieldStart(moduleDef.name);
         jg.writeNumberField("moduleID", moduleDef.id);
+        jg.writeBooleanField("supportsWebWorkers", moduleDef.target.supportsWebWorkers());
         jg.writeObjectFieldStart("methods");
         for (int i = 0; i < moduleDef.methods.size(); i++) {
           MethodRegistration method = moduleDef.methods.get(i);
@@ -133,6 +140,12 @@ public class NativeModuleRegistry {
     }
   }
 
+  public void onExecutorUnregistered(ExecutorToken executorToken) {
+    for (int i = 0; i < mOnExecutorUnregisteredListenerModules.size(); i++) {
+      mOnExecutorUnregisteredListenerModules.get(i).onExecutorDestroyed(executorToken);
+    }
+  }
+
   public <T extends NativeModule> T getModule(Class<T> moduleInterface) {
     return (T) Assertions.assertNotNull(mModuleInstances.get(moduleInterface));
   }
@@ -163,12 +176,13 @@ public class NativeModuleRegistry {
 
     public void call(
         CatalystInstance catalystInstance,
+        ExecutorToken executorToken,
         int methodId,
         ReadableNativeArray parameters) {
       MethodRegistration method = this.methods.get(methodId);
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, method.tracingName);
       try {
-        this.methods.get(methodId).method.invoke(catalystInstance, parameters);
+        this.methods.get(methodId).method.invoke(catalystInstance, executorToken, parameters);
       } finally {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       }

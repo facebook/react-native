@@ -203,7 +203,6 @@ var components = [
   '../Libraries/Components/Picker/Picker.js',
   '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.android.js',
   '../Libraries/Components/ProgressViewIOS/ProgressViewIOS.ios.js',
-  '../Libraries/PullToRefresh/PullToRefreshViewAndroid.android.js',
   '../Libraries/Components/RefreshControl/RefreshControl.js',
   '../Libraries/Components/ScrollView/ScrollView.js',
   '../Libraries/Components/SegmentedControlIOS/SegmentedControlIOS.ios.js',
@@ -235,6 +234,7 @@ var apis = [
   '../Libraries/Storage/AsyncStorage.js',
   '../Libraries/Utilities/BackAndroid.android.js',
   '../Libraries/CameraRoll/CameraRoll.js',
+  '../Libraries/Components/Clipboard/Clipboard.js',
   '../Libraries/Components/DatePickerAndroid/DatePickerAndroid.android.js',
   '../Libraries/Utilities/Dimensions.js',
   '../Libraries/Components/Intent/IntentAndroid.android.js',
@@ -252,6 +252,7 @@ var apis = [
   '../Libraries/Components/TimePickerAndroid/TimePickerAndroid.android.js',
   '../Libraries/Components/ToastAndroid/ToastAndroid.android.js',
   '../Libraries/Vibration/VibrationIOS.ios.js',
+  '../Libraries/Vibration/Vibration.js',
 ];
 
 var stylesWithPermalink = [

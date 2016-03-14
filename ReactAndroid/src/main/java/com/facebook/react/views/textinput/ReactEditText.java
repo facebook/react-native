@@ -67,6 +67,7 @@ public class ReactEditText extends EditText {
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   private boolean mContainsImages;
+  private boolean mBlurOnSubmit;
   private @Nullable SelectionWatcher mSelectionWatcher;
   private final InternalKeyListener mKeyListener;
 
@@ -84,6 +85,7 @@ public class ReactEditText extends EditText {
     mNativeEventCount = 0;
     mIsSettingTextFromJS = false;
     mIsJSSettingFocus = false;
+    mBlurOnSubmit = true;
     mListeners = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
@@ -177,6 +179,14 @@ public class ReactEditText extends EditText {
 
   public void setSelectionWatcher(SelectionWatcher selectionWatcher) {
     mSelectionWatcher = selectionWatcher;
+  }
+
+  public void setBlurOnSubmit(boolean blurOnSubmit) {
+    mBlurOnSubmit = blurOnSubmit;
+  }
+
+  public boolean getBlurOnSubmit() {
+    return mBlurOnSubmit;
   }
 
   /*protected*/ int getStagedInputType() {

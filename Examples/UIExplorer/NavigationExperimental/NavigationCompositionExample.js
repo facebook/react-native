@@ -10,57 +10,77 @@
  * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ *
+ * @flow
+ */
 'use strict';
 
 const React = require('react-native');
+const NavigationExampleRow = require('./NavigationExampleRow');
+const NavigationExampleTabBar = require('./NavigationExampleTabBar');
+
 const {
   NavigationExperimental,
   ScrollView,
   StyleSheet,
   View,
 } = React;
+
 const {
   AnimatedView: NavigationAnimatedView,
-  Card: NavigationCard,
+  CardStack: NavigationCardStack,
   Container: NavigationContainer,
-  RootContainer: NavigationRootContainer,
   Header: NavigationHeader,
   Reducer: NavigationReducer,
+  RootContainer: NavigationRootContainer,
   View: NavigationView,
 } = NavigationExperimental;
-const NavigationExampleRow = require('./NavigationExampleRow');
-const NavigationExampleTabBar = require('./NavigationExampleTabBar');
+
+
+import type {
+  NavigationParentState,
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
+
+type Action = {
+  isExitAction?: boolean,
+};
 
 const ExampleExitAction = () => ({
   isExitAction: true,
 });
-ExampleExitAction.match = (action) => (
+
+ExampleExitAction.match = (action: Action) => (
   action && action.isExitAction === true
 );
 
-const ExamplePageAction = (type) => ({
+const PageAction = (type) => ({
   type,
   isPageAction: true,
 });
-ExamplePageAction.match = (action) => (
+
+PageAction.match = (action) => (
   action && action.isPageAction === true
 );
 
-const ExampleSettingsPageAction = (type) => ({
-  ...ExamplePageAction(type),
-  isSettingsPageAction: true,
+const ExampleProfilePageAction = (type) => ({
+  ...PageAction(type),
+  isProfilePageAction: true,
 });
-ExampleSettingsPageAction.match = (action) => (
-  action && action.isSettingsPageAction === true
+
+ExampleProfilePageAction.match = (action) => (
+  action && action.isProfilePageAction === true
 );
 
-const ExampleInfoAction = () => ExamplePageAction('InfoPage');
+const ExampleInfoAction = () => PageAction('InfoPage');
 
-const ExampleNotifSettingsAction = () => ExampleSettingsPageAction('NotifSettingsPage');
+const ExampleNotifProfileAction = () => ExampleProfilePageAction('NotifProfilePage');
 
 const _jsInstanceUniqueId = '' + Date.now();
+
 let _uniqueIdCount = 0;
+
 function pageStateActionMap(action) {
   return {
     key: 'page-' + _jsInstanceUniqueId + '-' + (_uniqueIdCount++),
@@ -68,147 +88,150 @@ function pageStateActionMap(action) {
   };
 }
 
-function getTabActionMatcher(key) {
-  return function (action) {
-    if (!ExamplePageAction.match(action)) {
-      return false;
-    }
-    if (ExampleSettingsPageAction.match(action)) {
-      return key === 'settings';
-    }
-    return true;
-  };
-}
-
-var ExampleTabs = [
-  {
-    label: 'Account',
-    reducer: NavigationReducer.StackReducer({
-      initialStates: [
-        {type: 'AccountPage', key: 'base'}
-      ],
-      key: 'account',
-      matchAction: getTabActionMatcher('account'),
-      actionStateMap: pageStateActionMap,
-    }),
-  },
-  {
-    label: 'Notifications',
-    reducer: NavigationReducer.StackReducer({
-      initialStates: [
-        {type: 'NotifsPage', key: 'base'}
-      ],
-      key: 'notifs',
-      matchAction: getTabActionMatcher('notifs'),
-      actionStateMap: pageStateActionMap,
-    }),
-  },
-  {
-    label: 'Settings',
-    reducer: NavigationReducer.StackReducer({
-      initialStates: [
-        {type: 'SettingsPage', key: 'base'}
-      ],
-      key: 'settings',
-      matchAction: getTabActionMatcher('settings'),
-      actionStateMap: pageStateActionMap,
-    }),
-  },
-];
-
 const ExampleAppReducer = NavigationReducer.TabsReducer({
-  tabReducers: ExampleTabs.map(tab => tab.reducer),
+  key: 'AppNavigationState',
+  initialIndex: 0,
+  tabReducers: [
+    NavigationReducer.StackReducer({
+      getPushedReducerForAction: (action) => {
+        if (PageAction.match(action) && !ExampleProfilePageAction.match(action)) {
+          return (state) => (state || pageStateActionMap(action));
+        }
+        return null;
+      },
+      initialState: {
+        key: 'notifs',
+        index: 0,
+        children: [
+          {key: 'base', type: 'NotifsPage'},
+        ],
+      },
+    }),
+    NavigationReducer.StackReducer({
+      getPushedReducerForAction: (action) => {
+        if (PageAction.match(action) && !ExampleProfilePageAction.match(action)) {
+          return (state) => (state || pageStateActionMap(action));
+        }
+        return null;
+      },
+      initialState: {
+        key: 'settings',
+        index: 0,
+        children: [
+          {key: 'base', type: 'SettingsPage'},
+        ],
+      },
+    }),
+    NavigationReducer.StackReducer({
+      getPushedReducerForAction: (action) => {
+        if (PageAction.match(action) || ExampleProfilePageAction.match(action)) {
+          return (state) => (state || pageStateActionMap(action));
+        }
+        return null;
+      },
+      initialState: {
+        key: 'profile',
+        index: 0,
+        children: [
+          {key: 'base', type: 'ProfilePage'},
+        ],
+      },
+    }),
+  ],
 });
 
 function stateTypeTitleMap(pageState) {
   switch (pageState.type) {
-    case 'AccountPage':
-      return 'Account Page';
+    case 'ProfilePage':
+      return 'Profile Page';
     case 'NotifsPage':
       return 'Notifications';
     case 'SettingsPage':
       return 'Settings';
     case 'InfoPage':
       return 'Info Page';
-    case 'NotifSettingsPage':
-      return 'Notification Settings';
+    case 'NotifProfilePage':
+      return 'Page in Profile';
   }
 }
 
 class ExampleTabScreen extends React.Component {
+  _renderCard: NavigationSceneRenderer;
+  _renderHeader: NavigationSceneRenderer;
+  _renderScene: NavigationSceneRenderer;
+
+  componentWillMount() {
+    this._renderHeader = this._renderHeader.bind(this);
+    this._renderScene = this._renderScene.bind(this);
+  }
+
   render() {
     return (
-      <NavigationAnimatedView
+      <NavigationCardStack
         style={styles.tabContent}
         navigationState={this.props.navigationState}
-        renderOverlay={this._renderHeader.bind(this)}
-        renderScene={this._renderScene.bind(this)}
+        renderOverlay={this._renderHeader}
+        renderScene={this._renderScene}
       />
     );
   }
-  _renderHeader(position, layout) {
+  _renderHeader(props: NavigationSceneRendererProps) {
     return (
       <NavigationHeader
-        navigationState={this.props.navigationState}
-        position={position}
-        layout={layout}
+        {...props}
         getTitle={state => stateTypeTitleMap(state)}
       />
     );
   }
-  _renderScene(child, index, position, layout) {
+
+  _renderScene(props: NavigationSceneRendererProps) {
+    const {onNavigate} = props;
     return (
-      <NavigationCard
-        key={child.key}
-        index={index}
-        childState={child}
-        navigationState={this.props.navigationState}
-        position={position}
-        layout={layout}>
-        <ScrollView style={styles.scrollView}>
-          <NavigationExampleRow
-            text="Open page"
-            onPress={() => {
-              this.props.onNavigate(ExampleInfoAction());
-            }}
-          />
-          <NavigationExampleRow
-            text="Open notifs settings in settings tab"
-            onPress={() => {
-              this.props.onNavigate(ExampleNotifSettingsAction());
-            }}
-          />
-          <NavigationExampleRow
-            text="Exit Composition Example"
-            onPress={() => {
-              this.props.onNavigate(ExampleExitAction());
-            }}
-          />
-        </ScrollView>
-      </NavigationCard>
+      <ScrollView style={styles.scrollView}>
+        <NavigationExampleRow
+          text="Open page"
+          onPress={() => {
+            onNavigate(ExampleInfoAction());
+          }}
+        />
+        <NavigationExampleRow
+          text="Open a page in the profile tab"
+          onPress={() => {
+            onNavigate(ExampleNotifProfileAction());
+          }}
+        />
+        <NavigationExampleRow
+          text="Exit Composition Example"
+          onPress={() => {
+            onNavigate(ExampleExitAction());
+          }}
+        />
+      </ScrollView>
     );
   }
 }
 ExampleTabScreen = NavigationContainer.create(ExampleTabScreen);
 
 class NavigationCompositionExample extends React.Component {
+  navRootContainer: NavigationRootContainer;
+
   render() {
     return (
       <NavigationRootContainer
         reducer={ExampleAppReducer}
-        persistenceKey="NavigationCompositionExampleState"
+        persistenceKey="NavigationCompositionState"
         ref={navRootContainer => { this.navRootContainer = navRootContainer; }}
         renderNavigation={this.renderApp.bind(this)}
       />
     );
   }
-  handleBackAction() {
+  handleBackAction(): boolean {
     return (
       this.navRootContainer &&
       this.navRootContainer.handleNavigation(NavigationRootContainer.getBackAction())
     );
   }
-  renderApp(navigationState, onNavigate) {
+  renderApp(navigationState: NavigationParentState, onNavigate: Function) {
     if (!navigationState) {
       return null;
     }

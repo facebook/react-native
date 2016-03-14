@@ -71,10 +71,22 @@ var featured = [
     author: 'MovieLaLa'
   },
   {
+    name: 'MyMuesli',
+    icon: 'https://lh3.googleusercontent.com/1dCCeiyjuWRgY-Cnv-l-lOA1sVH3Cn0vkVWWZnaBQbhHOhsngLcnfy68WEerudPUysc=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.mymuesli',
+    author: 'Shawn Khameneh (@shawnscode), 3DWD'
+  },
+  {
     name: 'Myntra',
     icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/9c/78/df/9c78dfa6-0061-1af2-5026-3e1d5a073c94/icon350x350.png',
     link: 'https://itunes.apple.com/in/app/myntra-fashion-shopping-app/id907394059',
     author: 'Myntra Designs',
+  },
+  {
+    name: 'Noodler',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
+    link: 'http://www.noodler-app.com/',
+    author: 'Michele Humes & Joshua Sierles',
   },
   {
     name: 'React Native Playground',
@@ -84,12 +96,33 @@ var featured = [
     author: 'Joshua Sierles',
   },
   {
+    name: 'Round - A better way to remember your medicine',
+    icon: 'https://s3.mzstatic.com/us/r30/Purple69/v4/d3/ee/54/d3ee54cf-13b6-5f56-0edc-6c70ac90b2be/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/round-beautiful-medication/id1059591124?mt=8',
+    author: 'Circadian Design',
+  },
+  {
     name: 'Running',
     icon: 'http://a1.mzstatic.com/us/r30/Purple3/v4/33/eb/4f/33eb4f73-c7e3-8659-9285-f758e403485b/icon175x175.jpeg',
     link: 'https://gyrosco.pe/running/',
     author: 'Gyroscope Innovations',
     blogs: [
       'https://blog.gyrosco.pe/the-making-of-gyroscope-running-a4ad10acc0d0',
+    ],
+  },
+  {
+    name: 'SoundCloud Pulse',
+    icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
+    link: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
+    author: 'SoundCloud',
+  },
+  {
+    name: 'Spero for Cancer',
+    icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
+    link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
+    author: 'Spero.io',
+    videos: [
+      'https://www.youtube.com/watch?v=JImX3L6qnj8',
     ],
   },
   {
@@ -103,6 +136,12 @@ var featured = [
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/de/9b/6f/de9b6fe8-84ea-7a12-ba2c-0a6d6c7b10b0/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/start-medication-manager-for/id1012099928?mt=8',
     author: 'Iodine Inc.',
+  },
+  {
+    name: 'This AM',
+    icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
+    link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
+    author: 'Refinery29',
   },
   {
     name: 'Townske',
@@ -120,6 +159,21 @@ var featured = [
       'https://medium.com/@clayallsopp/making-tucci-the-technical-details-cc7aded6c75f#.wf72nq372',
     ],
   },
+  {
+    name: 'WPV',
+    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
+    link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
+    author: 'Yamill Vallecillo',
+  },
+  {
+    name: 'Zhopout',
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zhopout',
+    author: 'Jarvis Software Private Limited ',
+    blogs: [
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+    ],
+  },
 ];
 
 var apps = [
@@ -128,6 +182,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
     author: 'Accio Delivery Inc.',
+  },
+  {
+    name: 'ArcChat.com',
+    icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.arcchat',
+    author: 'Lukas Liesis',
   },
   {
     name: 'Beetroot',
@@ -179,6 +239,12 @@ var apps = [
     author: 'Codementor',
   },
   {
+    name: 'Collegiate - Learn Anywhere',
+    icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/17/a9/60/17a960d3-8cbd-913a-9f08-ebd9139c116c/icon175x175.png',
+    link: 'https://itunes.apple.com/app/id1072463482',
+    author: 'Gaurav Arora',
+  },
+  {
     name: 'Company name search',
     icon: 'http://a4.mzstatic.com/us/r30/Purple69/v4/fd/47/53/fd47537c-5861-e208-d1d1-1e26b5e45a36/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/company-name-search/id1043824076',
@@ -194,6 +260,12 @@ var apps = [
     author: 'Rishabh Mehan',
   },
   {
+    name: 'Deskbookers',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
+    author: 'Emilio Rodriguez'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
@@ -202,13 +274,6 @@ var apps = [
       'http://www.s21g.com/DockMan.html',
     ],
     author: 'Genki Takiuchi (s21g Inc.)',
-  },
-  {
-    name: 'Fixt',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
-    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
-    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
-    author: 'Fixt',
   },
   {
     name: 'Due',
@@ -242,6 +307,13 @@ var apps = [
     author: 'Arjun Komath',
   },
   {
+    name: 'Fixt',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
+    author: 'Fixt',
+  },
+  {
     name: 'Foodstand',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/33/c1/3b/33c13b88-8ec2-23c1-56bb-712ad9938290/icon350x350.jpeg',
     link: 'https://www.thefoodstand.com/download',
@@ -252,6 +324,12 @@ var apps = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/gou-huo/id1001476888?ls=1&mt=8',
     author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
+    name: 'HackerWeb',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    author: 'Lim Chee Aun',
   },
   {
     name: 'Harmonizome',
@@ -276,6 +354,13 @@ var apps = [
     icon: 'http://honestreviews.techulus.com/icon.png',
     link: 'https://play.google.com/store/apps/details?id=com.techulus.honestreviews&hl=en',
     author: 'Arjun Komath',
+  },
+  {
+    name: 'Hover',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/ba/55/e6/ba55e6ee-71cf-b843-f592-0917c9b6c645/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/hover-1-drone-uav-pilot-app!/id947641516?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.analyticadevelopment.android.hover',
+    author: 'KevinEJohn',
   },
   {
     name: 'HSK Level 1 Chinese Flashcards',
@@ -393,17 +478,12 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
-  {
-    name: 'Ncredible',
-    icon: 'http://a3.mzstatic.com/us/r30/Purple2/v4/a9/00/74/a9007400-7ccf-df10-553b-3b6cb67f3f5f/icon350x350.png',
-    link: 'https://itunes.apple.com/ca/app/ncredible/id1019662810?mt=8',
-    author: 'NBC News Digital, LLC',
-  },
-  {
-    name: 'Noodler',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple6/v4/d9/9a/69/d99a6919-7f11-35ad-76ea-f1741643d875/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/noodler-noodle-soup-oracle/id1013183002?mt=8',
-    author: 'Michele Humes & Joshua Sierles',
+	{
+    name: 'No Fluff: Hiragana',
+    icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
+    link: 'https://play.google.com/store/apps/details?id=com.hiragana',
+    author: 'Matthias Sieber',
+    source: 'https://github.com/manonthemat/no-fluff-hiragana'
   },
   {
     name: 'Night Light',
@@ -442,6 +522,15 @@ var apps = [
     author: 'Jonathan Solichin',
   },
   {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
+  },
+  {
     name: 'RenovationFind',
     icon: 'http://a2.mzstatic.com/us/r30/Purple3/v4/4f/89/af/4f89af72-9733-2f59-6876-161983a0ee82/icon175x175.png',
     link: 'https://itunes.apple.com/ca/app/renovationfind/id1040331641?mt=8',
@@ -464,12 +553,6 @@ var apps = [
     icon: 'http://a5.mzstatic.com/us/r30/Purple3/v4/51/ca/49/51ca4924-61c8-be1d-ab6d-afa510b1d393/icon175x175.jpeg',
     link: 'https://itunes.apple.com/us/app/rota-worker-shifts-on-demand/id1042111289?mt=8',
     author: 'Rota',
-  },
-  {
-    name: 'Round - A better way to remember your medicine',
-    icon: 'https://s3.mzstatic.com/us/r30/Purple69/v4/d3/ee/54/d3ee54cf-13b6-5f56-0edc-6c70ac90b2be/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/round-beautiful-medication/id1059591124?mt=8',
-    author: 'Circadian Design',
   },
   {
     name: 'RWpodPlayer - audio player for RWpod podcast',
@@ -509,10 +592,11 @@ var apps = [
     author: 'PrazAs Learning Inc.',
   },
   {
-    name: 'Thai Tone',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
-    author: 'Alexey Ledak',
+    name: 'TeamWarden',
+    icon: 'http://a1.mzstatic.com/eu/r30/Purple69/v4/09/37/61/0937613a-46e3-3278-5457-5de49a4ee9ab/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/gb/app/teamwarden/id1052570507?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.teamwarden',
+    author: 'nittygritty.net',
   },
   {
     name: 'Text Blast',
@@ -521,16 +605,22 @@ var apps = [
     author: 'Sesh',
   },
   {
-    name: 'This AM',
-    icon: 'http://s3.r29static.com//bin/public/efe/x/1542038/image.png',
-    link: 'https://itunes.apple.com/us/app/refinery29-this-am-top-breaking/id988472315?mt=8',
-    author: 'Refinery29',
+    name: 'Thai Tone',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
+    author: 'Alexey Ledak',
   },
   {
     name: 'Tong Xing Wang',
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'Veggies in Season',
+    icon: 'https://s3.amazonaws.com/veggies-assets/icon175x175.png',
+    link: 'https://itunes.apple.com/es/app/veggies-in-season/id1088215278?mt=8',
+    author: 'Victor Delgado',
   },
   {
     name: 'WEARVR',
@@ -540,16 +630,16 @@ var apps = [
     author: 'WEARVR LLC',
   },
   {
+    name: 'Whammy',
+    icon: 'http://a4.mzstatic.com/us/r30/Purple49/v4/8f/1c/21/8f1c2158-c7fb-1bbb-94db-e77b867aad1a/icon175x175.jpeg',
+    link: 'https://itunes.apple.com/us/app/whammy/id899759777',
+    author: 'Play Company',
+  },
+  {
     name: 'WOOP',
     icon: 'http://a4.mzstatic.com/us/r30/Purple6/v4/b0/44/f9/b044f93b-dbf3-9ae5-0f36-9b4956628cab/icon350x350.jpeg',
     link: 'https://itunes.apple.com/us/app/woop-app/id790247988?mt=8',
     author: 'Moritz Schwörer (@mosch)',
-  },
-  {
-    name: 'WPV',
-    icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
-    link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
-    author: 'Yamill Vallecillo',
   },
   {
     name: 'Yoloci',
@@ -595,6 +685,12 @@ var apps = [
     linkPlayStore: 'https://play.google.com/store/apps/details?id=com.plasticaromantica.utayomin',
     author: 'Takayuki IMAI'
   },
+  {
+    name: '烘焙帮',
+    icon: 'http://a1.mzstatic.com/us/r30/Purple69/v4/79/85/ba/7985ba1d-a807-7c34-98f1-e9e2ed5d2cb5/icon175x175.jpeg',
+    linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
+    author: 'Hongbeibang'
+  },
 ];
 
 var AppList = React.createClass({
@@ -615,6 +711,8 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
+				{this._renderSourceLink(app)}
+        {this._renderVideos(app)}
       </div>
     );
 
@@ -624,7 +722,7 @@ var AppList = React.createClass({
 
     return (
       <div className="showcase" key={i}>
-        <a href={app.link} target="blank">
+        <a href={app.link} target="_blank">
           {inner}
         </a>
       </div>
@@ -638,7 +736,7 @@ var AppList = React.createClass({
 
     if (app.blogs.length === 1) {
       return (
-        <p><a href={app.blogs[0]} target="blank">Blog post</a></p>
+        <p><a href={app.blogs[0]} target="_blank">Blog post</a></p>
       );
     } else if (app.blogs.length > 1) {
       return (
@@ -649,7 +747,41 @@ var AppList = React.createClass({
 
   _renderBlogPost: function(url, i) {
     return (
-      <a href={url} target="blank">
+      <a href={url} target="_blank">
+        {i + 1}&nbsp;
+      </a>
+    );
+  },
+
+	_renderSourceLink: function(app) {
+    if (!app.source) {
+      return;
+    }
+
+    return (
+      <p><a href={app.source} target="_blank">Source</a></p>
+    );
+  },
+
+  _renderVideos: function(app) {
+    if (!app.videos) {
+      return;
+    }
+
+    if (app.videos.length === 1) {
+      return (
+        <p><a href={app.videos[0]} target="_blank">Video</a></p>
+      );
+    } else if (app.videos.length > 1) {
+      return (
+        <p>Videos: {app.videos.map(this._renderVideo)}</p>
+      );
+    }
+  },
+
+  _renderVideo: function(url, i) {
+    return (
+      <a href={url} target="_blank">
         {i + 1}&nbsp;
       </a>
     );
@@ -658,9 +790,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="blank">iOS</a>
-        {" - "}
-        <a href={app.linkPlayStore} target="blank">Android</a>
+        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
   },

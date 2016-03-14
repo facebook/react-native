@@ -23,15 +23,15 @@ public class JavaScriptModulesConfig {
 
   private final List<JavaScriptModuleRegistration> mModules;
 
-  private JavaScriptModulesConfig(List<JavaScriptModuleRegistration> modules) {
+  public JavaScriptModulesConfig(List<JavaScriptModuleRegistration> modules) {
     mModules = modules;
   }
 
-  /*package*/ List<JavaScriptModuleRegistration> getModuleDefinitions() {
+  public List<JavaScriptModuleRegistration> getModuleDefinitions() {
     return mModules;
   }
 
-  /*package*/ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
+  public void writeModuleDescriptions(JsonGenerator jg) throws IOException {
     jg.writeStartObject();
     for (JavaScriptModuleRegistration registration : mModules) {
       jg.writeObjectFieldStart(registration.getName());
@@ -52,6 +52,9 @@ public class JavaScriptModulesConfig {
       jg.writeEndObject();
     }
     jg.writeEndObject();
+    if (registration.getModuleInterface().isAnnotationPresent(SupportsWebWorkers.class)) {
+      jg.writeBooleanField("supportsWebWorkers", true);
+    }
   }
 
   public static class Builder {
