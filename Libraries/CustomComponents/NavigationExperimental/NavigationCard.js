@@ -28,142 +28,260 @@
 'use strict';
 
 const Animated = require('Animated');
-const NavigationRootContainer = require('NavigationRootContainer');
 const NavigationContainer = require('NavigationContainer');
-const PanResponder = require('PanResponder');
-const Platform = require('Platform');
+const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
+const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
+const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const ENABLE_GESTURES = Platform.OS !== 'android';
+const {Directions} = NavigationLinearPanResponder;
+
+import type  {
+  NavigationAnimatedValue,
+  NavigationLayout,
+  NavigationPosition,
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
 import type {
-  NavigationParentState
-} from 'NavigationStateUtils';
+  NavigationGestureDirection
+} from 'NavigationLinearPanResponder';
 
-type Layout = {
-  initWidth: number,
-  initHeight: number,
-  width: Animated.Value;
-  height: Animated.Value;
+type State = {
+  hash: string,
+  height: number,
+  width: number,
 };
 
-type Props = {
-  navigationState: NavigationParentState;
-  index: number;
-  position: Animated.Value;
-  layout: Layout;
-  onNavigate: Function;
-  children: Object;
+type Props = NavigationSceneRendererProps & {
+  direction: NavigationGestureDirection,
+  renderScene: NavigationSceneRenderer,
 };
 
-class NavigationCard extends React.Component {
-  _responder: ?Object;
-  _lastHeight: number;
-  _lastWidth: number;
-  _widthListener: string;
-  _heightListener: string;
-  props: Props;
-  componentWillMount() {
-    if (ENABLE_GESTURES) {
-      this._enableGestures();
-    }
+const {PropTypes} = React;
+
+const propTypes = {
+  ...NavigationPropTypes.SceneRenderer,
+  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+  renderScene: PropTypes.func.isRequired,
+};
+
+const defaultProps = {
+  direction: Directions.HORIZONTAL,
+};
+
+class AmimatedValueSubscription {
+  _value: NavigationAnimatedValue;
+  _token: string;
+
+  constructor(value: NavigationAnimatedValue, callback: Function) {
+    this._value = value;
+    this._token = value.addListener(callback);
   }
-  _enableGestures() {
-    this._responder = PanResponder.create({
-      onMoveShouldSetPanResponder: (e, {dx, dy, moveX, moveY, x0, y0}) => {
-        if (this.props.navigationState.index === 0) {
-          return false;
-        }
-        if (moveX > 30) {
-          return false;
-        }
-        if (dx > 5 && Math.abs(dy) < 4) {
-          return true;
-        }
-        return false;
-      },
-      onPanResponderGrant: (e, {dx, dy, moveX, moveY, x0, y0}) => {
-      },
-      onPanResponderMove: (e, {dx}) => {
-        const a = (-dx / this._lastWidth) + this.props.navigationState.index;
-        this.props.position.setValue(a);
-      },
-      onPanResponderRelease: (e, {vx, dx}) => {
-        const xRatio = dx / this._lastWidth;
-        const doesPop = (xRatio + vx) > 0.45;
-        if (doesPop) {
-          // todo: add an action which accepts velocity of the pop action/gesture, which is caught and used by NavigationAnimatedView
-          this.props.onNavigate(NavigationRootContainer.getBackAction());
-          return;
-        }
-        Animated.spring(this.props.position, {
-          toValue: this.props.navigationState.index,
-        }).start();
-      },
-      onPanResponderTerminate: (e, {vx, dx}) => {
-        Animated.spring(this.props.position, {
-          toValue: this.props.navigationState.index,
-        }).start();
-      },
-    });
-  }
-  componentDidMount() {
-    this._lastHeight = this.props.layout.initHeight;
-    this._lastWidth = this.props.layout.initWidth;
-    this._widthListener = this.props.layout.width.addListener(({value}) => {
-      this._lastWidth = value;
-    });
-    this._heightListener = this.props.layout.height.addListener(({value}) => {
-      this._lastHeight = value;
-    });
-    // todo: fix listener and last layout dimentsions when props change. potential bugs here
-  }
-  componentWillUnmount() {
-    this.props.layout.width.removeListener(this._widthListener);
-    this.props.layout.height.removeListener(this._heightListener);
-  }
-  render() {
-    const cardPosition = Animated.add(this.props.position, new Animated.Value(-this.props.index));
-    const gestureValue = Animated.multiply(cardPosition, this.props.layout.width);
-    const touchResponderHandlers = this._responder ? this._responder.panHandlers : null;
-    return (
-      <Animated.View
-        {...touchResponderHandlers}
-        style={[
-          styles.card,
-          {
-            right: gestureValue,
-            left: gestureValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, -1],
-            }),
-            opacity: cardPosition.interpolate({
-              inputRange: [-1,0,1],
-              outputRange: [0,1,1],
-            }),
-          }
-        ]}>
-        {this.props.children}
-      </Animated.View>
-    );
+
+  remove() {
+    this._value.removeListener(this._token);
   }
 }
 
-NavigationCard = NavigationContainer.create(NavigationCard);
+/**
+ * Class that provides the required information for the
+ * `NavigationLinearPanResponder`. This class must implement
+ * the interface `NavigationLinearPanResponderDelegate`.
+ */
+class PanResponderDelegate {
+  _props : Props;
+
+  constructor(props: Props) {
+    this._props = props;
+  }
+
+  getDirection(): NavigationGestureDirection {
+    return this._props.direction;
+  }
+
+  getIndex(): number {
+    return this._props.navigationState.index;
+  }
+
+  getLayout(): NavigationLayout {
+    return this._props.layout;
+  }
+
+  getPosition(): NavigationPosition {
+    return this._props.position;
+  }
+
+  onNavigate(action: {type: string}): void {
+    this._props.onNavigate && this._props.onNavigate(action);
+  }
+}
+
+/**
+ * Component that renders the scene as card for the <NavigationCardStack />.
+ */
+class NavigationCard extends React.Component {
+  props: Props;
+  state: State;
+  _calculateState: (t: NavigationLayout) => State;
+  _layoutListeners: Array<AmimatedValueSubscription>;
+
+  constructor(props: Props, context: any) {
+    super(props, context);
+
+    this.state = this._calculateState(props.layout);
+    this._layoutListeners = [];
+  }
+
+  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
+    return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
+      this,
+      nextProps,
+      nextState
+    );
+  }
+
+  componentWillMount(): void {
+    this._calculateState = this._calculateState.bind(this);
+  }
+
+  componentDidMount(): void {
+    this._applyLayout(this.props.layout);
+  }
+
+  componentWillUnmount(): void {
+    this._layoutListeners.forEach(subscription => subscription.remove);
+  }
+
+  componentWillReceiveProps(nextProps: Props): void {
+    this._applyLayout(nextProps.layout);
+  }
+
+  render(): ReactElement {
+    const {
+      direction,
+      layout,
+      navigationState,
+      onNavigate,
+      position,
+      scene,
+      scenes,
+    } = this.props;
+
+    const {
+      height,
+      width,
+    } = this.state;
+
+    const index = scene.index;
+    const isVertical = direction === 'vertical';
+    const inputRange = [index - 1, index, index + 1];
+    const animatedStyle = {
+
+      opacity: position.interpolate({
+        inputRange,
+        outputRange: [1, 1, 0.3],
+      }),
+
+      transform: [
+        {
+          scale: position.interpolate({
+            inputRange,
+            outputRange: [1, 1, 0.95],
+          }),
+        },
+        {
+          translateX: isVertical ? 0 :
+            position.interpolate({
+              inputRange,
+              outputRange: [width, 0, -10],
+            }),
+        },
+        {
+          translateY: !isVertical ? 0 :
+            position.interpolate({
+              inputRange,
+              outputRange: [height, 0, -10],
+            }),
+        },
+      ],
+    };
+
+    let panHandlers = null;
+    if (navigationState.index === index) {
+      const delegate = new PanResponderDelegate(this.props);
+      const panResponder = new NavigationLinearPanResponder(delegate);
+      panHandlers = panResponder.panHandlers;
+    }
+
+    const sceneProps = {
+      layout,
+      navigationState,
+      onNavigate,
+      position,
+      scene,
+      scenes,
+    };
+
+    return (
+      <Animated.View
+        {...panHandlers}
+        style={[styles.main, animatedStyle]}>
+        {this.props.renderScene(sceneProps)}
+      </Animated.View>
+    );
+  }
+
+  _calculateState(layout: NavigationLayout): State {
+    const width = layout.width.__getValue();
+    const height = layout.height.__getValue();
+    const hash = 'layout-' + width + '-' + height;
+    const state = {
+      height,
+      width,
+      hash,
+    };
+    return state;
+  }
+
+  _applyLayout(layout: NavigationLayout) {
+    this._layoutListeners.forEach(subscription => subscription.remove);
+
+    this._layoutListeners.length = 0;
+
+    const callback = this._applyLayout.bind(this, layout);
+
+    this._layoutListeners.push(
+      new AmimatedValueSubscription(layout.width, callback),
+      new AmimatedValueSubscription(layout.height, callback),
+    );
+
+    const nextState = this._calculateState(layout);
+    if (nextState.hash !== this.state.hash) {
+      this.setState(nextState);
+    }
+  }
+}
+
+NavigationCard.propTypes = propTypes;
+NavigationCard.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
-  card: {
+  main: {
     backgroundColor: '#E9E9EF',
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
     shadowColor: 'black',
-    shadowOpacity: 0.4,
     shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.4,
     shadowRadius: 10,
     top: 0,
-    bottom: 0,
-    position: 'absolute',
   },
 });
 
-module.exports = NavigationCard;
+module.exports = NavigationContainer.create(NavigationCard);

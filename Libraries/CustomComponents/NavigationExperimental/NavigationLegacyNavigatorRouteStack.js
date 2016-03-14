@@ -11,8 +11,7 @@ const invariant = require('fbjs/lib/invariant');
 import type {
   NavigationState,
   NavigationParentState,
-} from 'NavigationStateUtils';
-
+} from 'NavigationTypeDefinition';
 
 type IterationCallback = (route: any, index: number, key: string) => void;
 

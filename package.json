@@ -1,6 +1,6 @@
 {
   "name": "react-native",
-  "version": "0.21.0-even1",
+  "version": "0.22.0-even1",
   "description": "A framework for building native apps using React",
   "license": "BSD-3-Clause",
   "repository": {
@@ -111,8 +111,7 @@
     "PATENTS",
     "README.md",
     "jestSupport",
-    ".flowconfig",
-    "npm-shrinkwrap.json"
+    ".flowconfig"
   ],
   "scripts": {
     "test": "NODE_ENV=test jest",

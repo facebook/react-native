@@ -17,10 +17,6 @@ var sharedBlacklist = [
   'node_modules/react/lib/React.js',
   // 'node_modules/react/lib/ReactDOM.js', [Even]
 
-  // fbjs forks:
-  // 'node_modules/fbjs/lib/Map.js', [Even]
-  // 'node_modules/fbjs/lib/isEmpty.js', [Even]
-
   'downstream/core/invariant.js',
 
   /website\/node_modules\/.*/,
