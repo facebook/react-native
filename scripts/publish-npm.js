@@ -116,10 +116,6 @@ if (sed(`-i`, `s.version             = "0.0.1-master"`, `s.version             =
   exit(1);
 }
 
-// TODO temp while testing
-sed(`-i`, `"name": "react-native"`, `"name": "react-native-bestander"`, `package.json`);
-sed(`-i`, `"name": "react-native"`, `"name": "react-native-bestander"`, `npm-shrinkwrap.json`);
-
 if (releaseVersion.indexOf(`-rc`) === -1) {
   // release, package will be installed by default
   exec(`npm publish`);
