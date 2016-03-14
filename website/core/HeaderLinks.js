@@ -35,7 +35,7 @@ var HeaderLinks = React.createClass({
           </a>
         </li>
       );
-    }, this)
+    }, this);
   },
 
   render: function() {
