@@ -30,6 +30,7 @@ dependencies:
     - "buck-out/bin"
     - "website/node_modules"
   override:
+    - npm config set //registry.npmjs.org/:_authToken=$CIRCLE_NPM_TOKEN
     - npm config set spin=false
     - npm config set progress=false
     - npm install
