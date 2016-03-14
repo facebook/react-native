@@ -37,7 +37,6 @@ class Bundle extends BundleBase {
       map: moduleTransport.map,
       meta: moduleTransport.meta,
       minify: this._minify,
-      polyfill: module.isPolyfill(),
     }).then(({code, map}) => {
       // If we get a map from the transformer we'll switch to a mode
       // were we're combining the source maps as opposed to
@@ -65,10 +64,11 @@ class Bundle extends BundleBase {
   }
 
   _addRequireCall(moduleId) {
-    const code = ';require("' + moduleId + '");';
+    const code = `;require(${JSON.stringify(moduleId)});`;
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
       name,
+      id: this._numRequireCalls - 1,
       code,
       virtual: true,
       sourceCode: code,
@@ -118,6 +118,7 @@ class Bundle extends BundleBase {
       modules: modules.map(({name, code, polyfill}) =>
         ({name, code, polyfill})
       ),
+      modules,
     };
   }
 
