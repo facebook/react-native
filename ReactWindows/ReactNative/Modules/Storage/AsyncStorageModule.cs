@@ -73,6 +73,7 @@ namespace ReactNative.Modules.Storage
                     _invalidKey,
                     JValue.CreateNull(),
                 });
+
                 callback.Invoke(result);
                 return;
             }
@@ -86,7 +87,7 @@ namespace ReactNative.Modules.Storage
                 });
             }
 
-            callback.Invoke(result);
+            callback.Invoke(null, result);
         }
 
         /// <summary>
@@ -101,19 +102,18 @@ namespace ReactNative.Modules.Storage
         {
             Debug.Assert(callback != null);
 
-            var result = new JArray();
-
             if (keyValueArray == null)
             {
-                result.Add(new JArray
+                callback.Invoke(new JArray
                 {
                     _invalidKey,
-                    JValue.CreateNull(),
+                    null,
                 });
-                callback.Invoke(result);
+
                 return;
             }
 
+            var result = default(JArray);
             foreach (var keyValue in keyValueArray)
             {
                 if (keyValue.Type == JTokenType.Array && keyValue.Value<JArray>().Count == 2)
@@ -125,6 +125,7 @@ namespace ReactNative.Modules.Storage
                     }
                     else
                     {
+                        result = result ?? new JArray();
                         result.Add(new JArray
                         {
                             _invalidKey,
@@ -134,6 +135,7 @@ namespace ReactNative.Modules.Storage
                 }
                 else
                 {
+                    result = result ?? new JArray();
                     result.Add(new JArray
                     {
                         _invalidPair,
@@ -156,16 +158,14 @@ namespace ReactNative.Modules.Storage
         {
             Debug.Assert(callback != null);
 
-            var result = new JArray();
-
             if (keys == null)
             {
-                result.Add(new JArray
+                callback.Invoke(new JArray
                 {
                     _invalidKey,
                     JValue.CreateNull(),
                 });
-                callback.Invoke(result);
+
                 return;
             }
 
@@ -174,7 +174,8 @@ namespace ReactNative.Modules.Storage
                 _dataContainer.Values.Remove(key);
                 _typeContainer.Values.Remove(key);
             }
-            callback.Invoke(result);
+
+            callback.Invoke();
         }
 
         /// <summary>
@@ -189,19 +190,18 @@ namespace ReactNative.Modules.Storage
         {
             Debug.Assert(callback != null);
 
-            var result = new JArray();
-
             if (keyValueArray == null)
             {
-                result.Add(new JArray
+                callback.Invoke(new JArray
                 {
                     _invalidKey,
                     JValue.CreateNull(),
                 });
-                callback.Invoke(result);
+
                 return;
             }
 
+            var result = default(JArray);
             foreach (var keyValue in keyValueArray)
             {
                 if (keyValue.Type == JTokenType.Array && keyValue.Value<JArray>().Count == 2)
@@ -235,6 +235,7 @@ namespace ReactNative.Modules.Storage
                     }
                     else
                     {
+                        result = result ?? new JArray();
                         result.Add(new JArray
                         {
                             _invalidKey,
@@ -244,6 +245,7 @@ namespace ReactNative.Modules.Storage
                 }
                 else
                 {
+                    result = result ?? new JArray();
                     result.Add(new JArray
                     {
                         _invalidPair,
@@ -281,7 +283,7 @@ namespace ReactNative.Modules.Storage
         {
             Debug.Assert(callback != null);
 
-            callback.Invoke(new JArray(_dataContainer.Values.Keys));
+            callback.Invoke(null, new JArray(_dataContainer.Values.Keys));
         }
 
         /// <summary>
