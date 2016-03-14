@@ -111,6 +111,12 @@ var featured = [
     ],
   },
   {
+    name: 'SoundCloud Pulse',
+    icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
+    link: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
+    author: 'SoundCloud',
+  },
+  {
     name: 'Spero for Cancer',
     icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
     link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
@@ -158,6 +164,15 @@ var featured = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple49/v4/a8/26/d7/a826d7bf-337b-c6b8-488d-aca98027754d/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
     author: 'Yamill Vallecillo',
+  },
+  {
+    name: 'Zhopout',
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zhopout',
+    author: 'Jarvis Software Private Limited ',
+    blogs: [
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+    ],
   },
 ];
 
@@ -311,6 +326,12 @@ var apps = [
     author: 'beijing qingfengyun Technology Co., Ltd.',
   },
   {
+    name: 'HackerWeb',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    author: 'Lim Chee Aun',
+  },
+  {
     name: 'Harmonizome',
     icon: 'http://is1.mzstatic.com/image/thumb/Purple6/v4/18/a9/bc/18a9bcde-d2d9-7574-2664-e82fff7b7208/pr_source.png/350x350-75.png',
     link: 'https://itunes.apple.com/us/app/harmonizome/id1046990905?mt=8',
@@ -456,6 +477,13 @@ var apps = [
     icon: 'https://lh3.googleusercontent.com/5N0WYat5WuFbhi5yR2ccdbqmiZ0wbTtKRG9GhT3YK7Z-qRvmykZyAgk0HNElOxD2JOPr=w300-rw',
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
+  },
+	{
+    name: 'No Fluff: Hiragana',
+    icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
+    link: 'https://play.google.com/store/apps/details?id=com.hiragana',
+    author: 'Matthias Sieber',
+    source: 'https://github.com/manonthemat/no-fluff-hiragana'
   },
   {
     name: 'Night Light',
@@ -683,6 +711,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
+				{this._renderSourceLink(app)}
         {this._renderVideos(app)}
       </div>
     );
@@ -693,7 +722,7 @@ var AppList = React.createClass({
 
     return (
       <div className="showcase" key={i}>
-        <a href={app.link} target="blank">
+        <a href={app.link} target="_blank">
           {inner}
         </a>
       </div>
@@ -707,7 +736,7 @@ var AppList = React.createClass({
 
     if (app.blogs.length === 1) {
       return (
-        <p><a href={app.blogs[0]} target="blank">Blog post</a></p>
+        <p><a href={app.blogs[0]} target="_blank">Blog post</a></p>
       );
     } else if (app.blogs.length > 1) {
       return (
@@ -718,9 +747,19 @@ var AppList = React.createClass({
 
   _renderBlogPost: function(url, i) {
     return (
-      <a href={url} target="blank">
+      <a href={url} target="_blank">
         {i + 1}&nbsp;
       </a>
+    );
+  },
+
+	_renderSourceLink: function(app) {
+    if (!app.source) {
+      return;
+    }
+
+    return (
+      <p><a href={app.source} target="_blank">Source</a></p>
     );
   },
 
@@ -731,7 +770,7 @@ var AppList = React.createClass({
 
     if (app.videos.length === 1) {
       return (
-        <p><a href={app.videos[0]} target="blank">Video</a></p>
+        <p><a href={app.videos[0]} target="_blank">Video</a></p>
       );
     } else if (app.videos.length > 1) {
       return (
@@ -742,7 +781,7 @@ var AppList = React.createClass({
 
   _renderVideo: function(url, i) {
     return (
-      <a href={url} target="blank">
+      <a href={url} target="_blank">
         {i + 1}&nbsp;
       </a>
     );
@@ -751,9 +790,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="blank">iOS</a>
-        {" - "}
-        <a href={app.linkPlayStore} target="blank">Android</a>
+        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
   },

@@ -130,6 +130,7 @@ function _flush(rootNode: AnimatedValue): void {
     }
   }
   findAnimatedStyles(rootNode);
+  /* $FlowFixMe */
   animatedStyles.forEach(animatedStyle => animatedStyle.update());
 }
 

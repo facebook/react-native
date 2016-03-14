@@ -40,6 +40,10 @@ using fbsystrace::FbSystraceSection;
 #include <jsc_config_android.h>
 #endif
 
+#ifdef JSC_HAS_PERF_STATS_API
+#include "JSCPerfStats.h"
+#endif
+
 static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
 static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
 
@@ -179,6 +183,10 @@ void JSCExecutor::initOnJSVMThread() {
   #ifdef WITH_FB_MEMORY_PROFILING
   addNativeMemoryHooks(m_context);
   #endif
+
+  #ifdef JSC_HAS_PERF_STATS_API
+  addJSCPerfStatsHooks(m_context);
+  #endif
 }
 
 void JSCExecutor::terminateOnJSVMThread() {
@@ -236,11 +244,11 @@ void JSCExecutor::flush() {
   m_bridge->callNativeModules(*this, calls, true);
 }
 
-void JSCExecutor::callFunction(const double moduleId, const double methodId, const folly::dynamic& arguments) {
+void JSCExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {
   // TODO:  Make this a first class function instead of evaling. #9317773
   std::vector<folly::dynamic> call{
-    (double) moduleId,
-    (double) methodId,
+    moduleId,
+    methodId,
     std::move(arguments),
   };
   std::string calls = executeJSCallWithJSC(m_context, "callFunctionReturnFlushedQueue", std::move(call));
