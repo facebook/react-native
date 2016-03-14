@@ -92,4 +92,4 @@ deployment:
   npm:
     branch: [/.*-stable/]
       # TODO temp for testing
-      - node scripts/publish-npm.js
+      - node ./scripts/publish-npm.js
