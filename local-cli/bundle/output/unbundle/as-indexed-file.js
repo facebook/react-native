@@ -8,6 +8,7 @@
  */
 'use strict';
 
+const buildUnbundleSourcemap = require('./buildUnbundleSourcemap');
 const fs = require('fs');
 const Promise = require('promise');
 const writeSourceMap = require('./write-sourcemap');
@@ -26,23 +27,27 @@ function saveAsIndexedFile(bundle, options, log) {
   const {
     'bundle-output': bundleOutput,
     'bundle-encoding': encoding,
-    dev,
     'sourcemap-output': sourcemapOutput,
   } = options;
 
   log('start');
-  const {startupCode, modules} = bundle.getUnbundle({minify: !dev});
+  const {startupCode, modules} = bundle.getUnbundle();
   log('finish');
 
   log('Writing unbundle output to:', bundleOutput);
   const writeUnbundle = writeBuffers(
     fs.createWriteStream(bundleOutput),
     buildTableAndContents(startupCode, modules, encoding)
-  );
+  ).then(() => log('Done writing unbundle output'));
 
-  writeUnbundle.then(() => log('Done writing unbundle output'));
-
-  return Promise.all([writeUnbundle, writeSourceMap(sourcemapOutput, '', log)]);
+  return Promise.all([
+    writeUnbundle,
+    writeSourceMap(
+      sourcemapOutput,
+      buildUnbundleSourcemap(bundle),
+      log,
+    ),
+  ]);
 }
 
 /* global Buffer: true */
@@ -60,13 +65,16 @@ function writeBuffers(stream, buffers) {
   });
 }
 
-const moduleToBuffer = ({name, code}, encoding) => ({
-  name,
-  buffer: Buffer.concat([
-    Buffer(code, encoding),
-    nullByteBuffer // create \0-terminated strings
-  ])
-});
+function moduleToBuffer(name, code, encoding) {
+  return {
+    name,
+    linesCount: code.split('\n').length,
+    buffer: Buffer.concat([
+      Buffer(code, encoding),
+      nullByteBuffer // create \0-terminated strings
+    ])
+  };
+}
 
 function uInt32Buffer(n) {
   const buffer = Buffer(4);
@@ -82,23 +90,28 @@ function buildModuleTable(buffers) {
   // entry:
   //  - module_id: NUL terminated utf8 string
   //  - module_offset: uint_32 offset into the module string
-  //  - module_length: uint_32 length of the module string, including terminating NUL byte
+  //  - module_line: uint_32 line on which module starts on the bundle
 
   const numBuffers = buffers.length;
 
   const tableLengthBuffer = uInt32Buffer(0);
   let tableLength = 4; // the table length itself, 4 == tableLengthBuffer.length
   let currentOffset = 0;
+  let currentLine = 1;
 
   const offsetTable = [tableLengthBuffer];
   for (let i = 0; i < numBuffers; i++) {
-    const {name, buffer: {length}} = buffers[i];
+    const {name, linesCount, buffer: {length}} = buffers[i];
+
     const entry = Buffer.concat([
       Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : name, 'utf8'),
       nullByteBuffer,
       uInt32Buffer(currentOffset),
-      uInt32Buffer(length)
+      uInt32Buffer(currentLine),
     ]);
+
+    currentLine += linesCount - 1;
+
     currentOffset += length;
     tableLength += entry.length;
     offsetTable.push(entry);
@@ -110,14 +123,22 @@ function buildModuleTable(buffers) {
 
 function buildModuleBuffers(startupCode, modules, encoding) {
   return (
-    [moduleToBuffer({name: '', code: startupCode}, encoding)]
-      .concat(modules.map(module => moduleToBuffer(module, encoding)))
+    [moduleToBuffer('', startupCode, encoding, true)].concat(
+      modules.map(module =>
+        moduleToBuffer(
+          module.name,
+          module.code + '\n', // each module starts on a newline
+          encoding,
+        )
+      )
+    )
   );
 }
 
 function buildTableAndContents(startupCode, modules, encoding) {
   const buffers = buildModuleBuffers(startupCode, modules, encoding);
   const table = buildModuleTable(buffers, encoding);
+
   return [fileHeader, table].concat(buffers.map(({buffer}) => buffer));
 }
 
