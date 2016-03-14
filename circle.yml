@@ -91,6 +91,5 @@ deployment:
 #      - cd website && GIT_USER=reactjs-bot npm run gh-pages
   npm:
     branch: [/.*-stable/]
-      #
-      - sed -i.bak -E "s/(\"name\":[[:space:]]*\")react-native(\")/\"name\": \"react-native-bestander\"/g" "package.json"
+      # TODO temp for testing
       - node scripts/publish-npm.js

@@ -37,7 +37,7 @@
  */
 require(`shelljs/global`);
 
-const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '0.32-stable';
+const CIRCLE_BRANCH = process.env.CIRCLE_BRANCH || '0.99-stable';
 const JAVA_VERSION=`1.7`;
 
 let branchVersion;
@@ -67,13 +67,13 @@ if (javaVersion.indexOf(JAVA_VERSION) === -1) {
   exit(1);
 }
 
-if (exec(`sed -i.bak 's/^VERSION_NAME=[0-9\.]*-SNAPSHOT/VERSION_NAME=${releaseVersion}/g' "ReactAndroid/gradle.properties"`).code) {
+if (sed(`-i`, /^VERSION_NAME=[0-9\.]*-SNAPSHOT/, `VERSION_NAME=${releaseVersion}`, `ReactAndroid/gradle.properties`).code) {
   echo(`Couldn't update version for Gradle`);
   exit(1);
 }
 
 // Uncomment Javadoc generation
-if (exec('sed -i.bak s://\\\ archives\\\ androidJavadocJar:archives\\\ androidJavadocJar:g "ReactAndroid/release.gradle"').code) {
+if (sed(`-i`, `// archives androidJavadocJar`, `archives androidJavadocJar`, `ReactAndroid/release.gradle`).code) {
   echo(`Couldn't enable Javadoc generation`);
   exit(1);
 }
@@ -106,13 +106,17 @@ if (exec(`npm version --no-git-tag-version ${releaseVersion}`).code) {
   echo(`Couldn't update version for npm`);
   exit(1);
 }
-if (exec(`sed -i.bak -E "s/(s.version[[:space:]]{13}=[[:space:]].+)/s.version             = \"${releaseVersion}\"/g" "React.podspec"`).code) {
-  echo(`Couldn't update version for CocoaPods`);
+if (sed(`-i`, `s.version             = "0.0.1-master"`, `s.version             = \"${releaseVersion}\"`, `React.podspec`).code) {
+  echo(`Couldn't update version for React.podspec`);
   exit(1);
 }
 
 exec(`git checkout package.json`);
 exec(`git checkout React.podspec`);
+
+// TODO temp while testing
+sed(`-i`, `"name": "react-native"`, `"name": "react-native-bestander"`, `package.json`);
+sed(`-i`, `"name": "react-native"`, `"name": "react-native-bestander"`, `npm-shrinkwrap.json`);
 
 if (releaseVersion.indexOf(`-rc`) === -1) {
   // release, package will be installed by default
@@ -123,6 +127,5 @@ if (releaseVersion.indexOf(`-rc`) === -1) {
 }
 
 echo(`Published to npm ${releaseVersion}`);
-exec(`find . -path "*.bak" | xargs rm`);
 
 exit(0);
