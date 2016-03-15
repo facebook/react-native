@@ -114,6 +114,7 @@ let artifacts = ['-javadoc.jar', '-sources.jar', '.aar', '.pom'].map((suffix) =>
 
 artifacts.forEach((name) => {
   if (!test(`-e`, `./android/com/facebook/react/react-native/${releaseVersion}/${name}`)) {
+    echo(ls(`./android/com/facebook/react/react-native/${releaseVersion}`));
     echo(`file ${name} was not generated`);
     exit(1);
   }
