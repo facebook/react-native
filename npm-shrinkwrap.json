@@ -6135,6 +6135,11 @@
       "from": "https://registry.npmjs.org/shebang-regex/-/shebang-regex-1.0.0.tgz",
       "resolved": "https://registry.npmjs.org/shebang-regex/-/shebang-regex-1.0.0.tgz"
     },
+    "shelljs": {
+      "version": "0.6.0",
+      "from": "shelljs@>=0.6.0 <0.7.0",
+      "resolved": "https://registry.npmjs.org/shelljs/-/shelljs-0.6.0.tgz"
+    },
     "simple-fmt": {
       "version": "0.1.0",
       "from": "https://registry.npmjs.org/simple-fmt/-/simple-fmt-0.1.0.tgz",
