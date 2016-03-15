@@ -1,16 +1,17 @@
-Here are some tips on how to manage GitHub issues efficiently:
+## Tips on managing GitHub issues efficiently
 
 ### An issue is a duplicate of another issue
 Comment e.g. `@facebook-github-bot duplicate #123`. This will add a comment and close the issue.
 Example: [#5977](https://github.com/facebook/react-native/issues/5977)
 
 ### An issue is a question
-StackOverflow is really good for Q&A. It has a reputation system and voting. Questions should absolutely be asked on StackOverflow rather than GitHub. However, to make this work we should hang out on StackOverflow every now and then and answer questions. A nice side effect is you'll get reputation for answering questions there rather than on GitHub.
+Questions should absolutely be asked on StackOverflow rather than GitHub.
 Comment `@facebook-github-bot stack-overflow` to close the issue.
 Examples: [#6378](https://github.com/facebook/react-native/issues/6378), [#6015](https://github.com/facebook/react-native/issues/6015), [#6059](https://github.com/facebook/react-native/issues/6059), [#6062](https://github.com/facebook/react-native/issues/6062).
+Feel free to also answer some [SO questions](stackoverflow.com/questions/tagged/react-native), you'll get rep :)
 
 ### An issue is a question that's been answered
-Sometimes and issue has been resolved in the comments. Resolved issues should be closed.
+Sometimes and issue has been resolved in the comments. 
 Comment `@facebook-github-bot answered` to close it.
 Example: [#6045](https://github.com/facebook/react-native/issues/6045)
 
@@ -26,13 +27,14 @@ Comment mentioning the author asking if they plan to provide the additional info
 Example: [#6056](https://github.com/facebook/react-native/issues/6056)
 
 ### An issue is a valid bug report
-Valid bug reports with good repro steps are some of the best issues! Thank the author for finding it, explain that React Native is a community project and ask them if they would be up for sending a fix.
+Valid bug reports with good repro steps are some of the best issues! Thank the author for finding it, explain that React Native is a community project and **ask them if they would be up for sending a fix**.
 
-### An issue is a feature request and you're pretty sure React Native should have that feature
-Tell the author something like: "Pull requests are welcome. In case you're not up for sending a PR, you should post to [Product Pains](https://productpains.com/product/react-native/?tab=top). It has a voting system and if the feature gets upvoted enough it might get implemented."
-
-### An issue is a feature request for a feature we don't want
+### An issue is a feature request. The feature shouldn't be in the code and don't want to maintain it.
 This especially includes **new modules** Facebook doesn't use in production. Explain that those modules should be released to npm separately and that everyone will still be able to use the module super easily that way.
+
+### An issue is a feature request, you're pretty sure we should maintain this feature as part of RN
+This should be rare - adding a new feature means maintaining it.
+Tell the author something like: "Pull requests are welcome. In case you're not up for sending a PR, you should post to [Product Pains](https://productpains.com/product/react-native/?tab=top). It has a voting system and if the feature gets upvoted enough it might get implemented."
 
 ### How to add a label
 Add any relevant labels, for example 'Android', 'iOS'.
