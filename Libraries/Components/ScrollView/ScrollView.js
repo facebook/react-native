@@ -532,6 +532,8 @@ const ScrollView = React.createClass({
       } else {
         ScrollViewClass = AndroidScrollView;
       }
+    } else if (Platform.OS === 'windows') {
+      ScrollViewClass = RCTScrollView;        
     }
     invariant(
       ScrollViewClass !== undefined,
@@ -602,6 +604,8 @@ if (Platform.OS === 'android') {
     }
   };
   RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView, nativeOnlyProps);
+} else if (Platform.OS === 'windows') {
+  RCTScrollView = requireNativeComponent('RCTScrollView', ScrollView);  
 }
 
 module.exports = ScrollView;

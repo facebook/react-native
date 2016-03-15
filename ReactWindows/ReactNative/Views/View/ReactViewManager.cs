@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Automation.Provider;
+using Windows.UI.Xaml.Controls;
 
 namespace ReactNative.Views.View
 {
@@ -182,18 +183,30 @@ namespace ReactNative.Views.View
         }
 
         /// <summary>
+        /// Sets whether the view is collapsible.
+        /// </summary>
+        /// <param name="view">The view instance.</param>
+        /// <param name="collapsible">The flag.</param>
+        [ReactProperty(ViewProperties.Collapsible)]
+        public void SetCollapsible(BorderedContentControl view, bool collapsible)
+        {
+            // no-op: it's here only so that "collapsable" property is exported to JS. The value is actually
+            // handled in NativeViewHierarchyOptimizer
+        }
+
+        /// <summary>
         /// Creates a new view instance.
         /// </summary>
         /// <param name="reactContext">The react context.</param>
         /// <returns>The view instance.</returns>
         protected override BorderedContentControl CreateViewInstance(ThemedReactContext reactContext)
         {
-            return new BorderedContentControl(new ReactCanvas());
+            return new BorderedContentControl(new Canvas());
         }
 
-        private ReactCanvas GetInstance(BorderedContentControl control)
+        private Canvas GetInstance(BorderedContentControl control)
         {
-            return (ReactCanvas)control.Content;
+            return (Canvas)control.Content;
         }
     }
 }

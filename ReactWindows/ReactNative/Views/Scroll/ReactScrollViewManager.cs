@@ -122,7 +122,12 @@ namespace ReactNative.Views.Scroll
         /// <returns>The view instance.</returns>
         protected override ScrollViewer CreateViewInstance(ThemedReactContext reactContext)
         {
-            var view = new ScrollViewer();
+            var view = new ScrollViewer
+            {
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Hidden,
+            };
+
             view.ViewChanging += OnViewChanging;
             return view;
         }
