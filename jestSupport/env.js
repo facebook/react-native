@@ -8,7 +8,8 @@
  */
 'use strict';
 
-require('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
+require.requireActual('../packager/react-packager/src/Resolver/polyfills/babelHelpers.js');
+
 global.__DEV__ = true;
 global.__fbBatchedBridgeConfig = {
   remoteModuleConfig: [],
