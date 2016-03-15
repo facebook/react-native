@@ -52,6 +52,11 @@ var LayoutPropTypes = {
   borderBottomWidth: ReactPropTypes.number,
   borderLeftWidth: ReactPropTypes.number,
 
+  direction: ReactPropTypes.oneOf([
+    'ltr',
+    'rtl'
+  ]),
+
   position: ReactPropTypes.oneOf([
     'absolute',
     'relative'
@@ -60,7 +65,9 @@ var LayoutPropTypes = {
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-direction
   flexDirection: ReactPropTypes.oneOf([
     'row',
-    'column'
+    'row-reverse',
+    'column',
+    'column-reverse'
   ]),
 
   // https://developer.mozilla.org/en-US/docs/Web/CSS/flex-wrap

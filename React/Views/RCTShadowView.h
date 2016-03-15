@@ -124,6 +124,8 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 @property (nonatomic, assign) css_wrap_type_t flexWrap;
 @property (nonatomic, assign) CGFloat flex;
 
+@property (nonatomic, assign) css_direction_t direction;
+
 /**
  * Calculate property changes that need to be propagated to the view.
  * The applierBlocks set contains RCTApplierBlock functions that must be applied
