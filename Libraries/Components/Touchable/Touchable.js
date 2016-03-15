@@ -599,18 +599,22 @@ var TouchableMixin = {
    * @sideeffects
    */
   _receiveSignal: function(signal, e) {
+    var responderID = this.state.touchable.responderID;
     var curState = this.state.touchable.touchState;
     var nextState = Transitions[curState] && Transitions[curState][signal];
+    if (!responderID && signal === Signals.RESPONDER_RELEASE) {
+      return;
+    }
     if (!nextState) {
       throw new Error(
         'Unrecognized signal `' + signal + '` or state `' + curState +
-        '` for Touchable responder `' + this.state.touchable.responderID + '`'
+        '` for Touchable responder `' + responderID + '`'
       );
     }
     if (nextState === States.ERROR) {
       throw new Error(
         'Touchable cannot transition from `' + curState + '` to `' + signal +
-        '` for responder `' + this.state.touchable.responderID + '`'
+        '` for responder `' + responderID + '`'
       );
     }
     if (curState !== nextState) {
