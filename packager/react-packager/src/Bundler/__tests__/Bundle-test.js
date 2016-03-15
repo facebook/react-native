@@ -394,6 +394,7 @@ function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill
 function createModuleTransport(data) {
   return new ModuleTransport({
     code: '',
+    id: '',
     sourceCode: '',
     sourcePath: '',
     ...data,

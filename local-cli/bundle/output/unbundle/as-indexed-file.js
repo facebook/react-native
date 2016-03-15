@@ -65,9 +65,9 @@ function writeBuffers(stream, buffers) {
   });
 }
 
-function moduleToBuffer(name, code, encoding) {
+function moduleToBuffer(id, code, encoding) {
   return {
-    name,
+    id,
     linesCount: code.split('\n').length,
     buffer: Buffer.concat([
       Buffer(code, encoding),
@@ -101,10 +101,10 @@ function buildModuleTable(buffers) {
 
   const offsetTable = [tableLengthBuffer];
   for (let i = 0; i < numBuffers; i++) {
-    const {name, linesCount, buffer: {length}} = buffers[i];
+    const {id, linesCount, buffer: {length}} = buffers[i];
 
     const entry = Buffer.concat([
-      Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : name, 'utf8'),
+      Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : id, 'utf8'),
       nullByteBuffer,
       uInt32Buffer(currentOffset),
       uInt32Buffer(currentLine),
@@ -126,7 +126,7 @@ function buildModuleBuffers(startupCode, modules, encoding) {
     [moduleToBuffer('', startupCode, encoding, true)].concat(
       modules.map(module =>
         moduleToBuffer(
-          module.name,
+          String(module.id),
           module.code + '\n', // each module starts on a newline
           encoding,
         )
