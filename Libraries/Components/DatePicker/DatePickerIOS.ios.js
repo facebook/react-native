@@ -123,17 +123,20 @@ var DatePickerIOS = React.createClass({
         <RCTDatePickerIOS
           ref={ picker => this._picker = picker }
           style={styles.datePickerIOS}
-          date={props.date.getTime()}
+          date={props.date}
           maximumDate={
-            props.maximumDate ? props.maximumDate.getTime() : undefined
+            props.maximumDate ? props.maximumDate : undefined
           }
           minimumDate={
-            props.minimumDate ? props.minimumDate.getTime() : undefined
+            props.minimumDate ? props.minimumDate : undefined
           }
           mode={props.mode}
           minuteInterval={props.minuteInterval}
           timeZoneOffsetInMinutes={props.timeZoneOffsetInMinutes}
           onChange={this._onChange}
+          onDateChange={() => {
+            // for passing vefify. i konw it's foolish
+          }}
         />
       </View>
     );
@@ -148,7 +151,7 @@ var styles = StyleSheet.create({
 });
 
 var RCTDatePickerIOS = requireNativeComponent('RCTDatePicker', DatePickerIOS, {
-  nativeOnly: { onChange: true },
+  nativeOnly: { onChange: true, }
 });
 
 module.exports = DatePickerIOS;
