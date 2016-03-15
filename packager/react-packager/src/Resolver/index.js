@@ -47,6 +47,10 @@ const validateOpts = declareOpts({
     type: 'object',
     required: true,
   },
+  getModuleId: {
+    type: 'function',
+    required: true,
+  },
   transformCode: {
     type: 'function',
   },
@@ -103,8 +107,10 @@ class Resolver {
       cache: opts.cache,
       shouldThrowOnUnresolvedErrors: (_, platform) => platform === 'ios',
       transformCode: opts.transformCode,
+      assetDependencies: ['AssetRegistry'],
     });
 
+    this._getModuleId = options.getModuleId;
     this._minifyCode = opts.minifyCode;
     this._polyfillModuleNames = opts.polyfillModuleNames || [];
 
@@ -139,6 +145,8 @@ class Resolver {
         polyfill => resolutionResponse.prependDependency(polyfill)
       );
 
+      // currently used by HMR
+      resolutionResponse.getModuleId = this._getModuleId;
       return resolutionResponse.finalize();
     });
   }
@@ -186,53 +194,40 @@ class Resolver {
   }
 
   resolveRequires(resolutionResponse, module, code, dependencyOffsets = []) {
-    return Promise.resolve().then(() => {
-      const resolvedDeps = Object.create(null);
-      const resolvedDepsArr = [];
+    const resolvedDeps = Object.create(null);
 
-      return Promise.all(
-        // here, we build a map of all require strings (relative and absolute)
-        // to the canonical name of the module they reference
-        resolutionResponse.getResolvedDependencyPairs(module).map(
-          ([depName, depModule]) => {
-            if (depModule) {
-              return depModule.getName().then(name => {
-                resolvedDeps[depName] = name;
-                resolvedDepsArr.push(name);
-              });
-            }
-          }
-        )
-      ).then(() => {
-        const relativizeCode = (codeMatch, quot, depName) => {
-          // if we have a canonical name for the module imported here,
-          // we use it, so that require() is always called with the same
-          // id for every module.
-          // Example:
-          // -- in a/b.js:
-          //    require('./c') => require('a/c');
-          // -- in b/index.js:
-          //    require('../a/c') => require('a/c');
-          const depId = resolvedDeps[depName];
-          if (depId) {
-            return quot + depId + quot;
-          } else {
-            return codeMatch;
-          }
-        };
-
-        code = dependencyOffsets.reduceRight((codeBits, offset) => {
-          const first = codeBits.shift();
-          codeBits.unshift(
-            first.slice(0, offset),
-            first.slice(offset).replace(/(['"])([^'"']*)\1/, relativizeCode),
-          );
-          return codeBits;
-        }, [code]);
-
-        return code.join('');
+    // here, we build a map of all require strings (relative and absolute)
+    // to the canonical ID of the module they reference
+    resolutionResponse.getResolvedDependencyPairs(module)
+      .forEach(([depName, depModule]) => {
+        if (depModule) {
+          resolvedDeps[depName] = this._getModuleId(depModule);
+        }
       });
-    });
+
+    // if we have a canonical ID for the module imported here,
+    // we use it, so that require() is always called with the same
+    // id for every module.
+    // Example:
+    // -- in a/b.js:
+    //    require('./c') => require(3);
+    // -- in b/index.js:
+    //    require('../a/c') => require(3);
+    const replaceModuleId = (codeMatch, quote, depName) =>
+      depName in resolvedDeps
+        ? `${JSON.stringify(resolvedDeps[depName])} /* ${depName} */`
+        : codeMatch;
+
+    code = dependencyOffsets.reduceRight((codeBits, offset) => {
+      const first = codeBits.shift();
+      codeBits.unshift(
+        first.slice(0, offset),
+        first.slice(offset).replace(/(['"])([^'"']*)\1/, replaceModuleId),
+      );
+      return codeBits;
+    }, [code]);
+
+    return code.join('');
   }
 
   wrapModule({
@@ -247,18 +242,24 @@ class Resolver {
     if (module.isJSON()) {
       code = `module.exports = ${code}`;
     }
-    const result = module.isPolyfill()
-      ? Promise.resolve({code: definePolyfillCode(code)})
-      : this.resolveRequires(
+
+    if (module.isPolyfill()) {
+      code = definePolyfillCode(code);
+    } else {
+      const moduleId = this._getModuleId(module);
+      code = this.resolveRequires(
         resolutionResponse,
         module,
         code,
         meta.dependencyOffsets
-      ).then(code => ({code: defineModuleCode(name, code), map}));
+      );
+      code = defineModuleCode(moduleId, code, name);
+    }
+
 
     return minify
-      ? result.then(({code, map}) => this._minifyCode(module.path, code, map))
-      : result;
+      ? this._minifyCode(module.path, code, map)
+      : Promise.resolve({code, map});
   }
 
   minifyModule({path, code, map}) {
@@ -270,10 +271,10 @@ class Resolver {
   }
 }
 
-function defineModuleCode(moduleName, code) {
+function defineModuleCode(moduleName, code, verboseName = '') {
   return [
     `__d(`,
-    `${JSON.stringify(moduleName)}, `,
+    `${JSON.stringify(moduleName)} /* ${verboseName} */, `,
     `function(global, require, module, exports) {`,
       `${code}`,
     '\n});',
