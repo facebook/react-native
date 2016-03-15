@@ -1,8 +1,8 @@
 'use strict';
 
 jest
-  .dontMock('../../lib/getPlatformExtension')
-  .dontMock('../../lib/getAssetDataFromName')
+  .dontMock('node-haste/lib/lib/getPlatformExtension')
+  .dontMock('node-haste/node_modules/throat')
   .dontMock('../');
 
 jest
@@ -16,6 +16,11 @@ var crypto = require('crypto');
 var fs = require('fs');
 
 describe('AssetServer', () => {
+  beforeEach(() => {
+    const NodeHaste = require('node-haste');
+    NodeHaste.getAssetDataFromName = require.requireActual('node-haste/lib/lib/getAssetDataFromName');
+  });
+
   describe('assetServer.get', () => {
     pit('should work for the simple case', () => {
       const server = new AssetServer({
@@ -185,7 +190,7 @@ describe('AssetServer', () => {
     });
   });
 
-  describe('assetSerer.getAssetData', () => {
+  describe('assetServer.getAssetData', () => {
     pit('should get assetData', () => {
       const hash = {
         update: jest.genMockFn(),
@@ -217,6 +222,12 @@ describe('AssetServer', () => {
           type: 'png',
           name: 'b',
           scales: [1, 2, 4, 4.5],
+          files: [
+            '/root/imgs/b@1x.png',
+            '/root/imgs/b@2x.png',
+            '/root/imgs/b@4x.png',
+            '/root/imgs/b@4.5x.png',
+          ],
           hash: 'wow such hash',
         });
       });
@@ -253,6 +264,12 @@ describe('AssetServer', () => {
           type: 'jpg',
           name: 'b',
           scales: [1, 2, 4, 4.5],
+          files: [
+            '/root/imgs/b@1x.jpg',
+            '/root/imgs/b@2x.jpg',
+            '/root/imgs/b@4x.jpg',
+            '/root/imgs/b@4.5x.jpg',
+          ],
           hash: 'wow such hash',
         });
       });

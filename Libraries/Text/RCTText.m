@@ -16,7 +16,7 @@
 @implementation RCTText
 {
   NSTextStorage *_textStorage;
-  NSMutableArray *_reactSubviews;
+  NSMutableArray<UIView *> *_reactSubviews;
   CAShapeLayer *_highlightLayer;
 }
 
@@ -52,6 +52,11 @@
   }];
 }
 
+- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
+{
+  self.backgroundColor = inheritedBackgroundColor;
+}
+
 - (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
 {
   [_reactSubviews insertObject:subview atIndex:atIndex];
@@ -62,15 +67,17 @@
   [_reactSubviews removeObject:subview];
 }
 
-- (NSArray *)reactSubviews
+- (NSArray<UIView *> *)reactSubviews
 {
   return _reactSubviews;
 }
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
 {
-  _textStorage = textStorage;
-  [self setNeedsDisplay];
+  if (_textStorage != textStorage) {
+    _textStorage = textStorage;
+    [self setNeedsDisplay];
+  }
 }
 
 - (void)drawRect:(CGRect)rect

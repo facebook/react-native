@@ -82,7 +82,7 @@ var styles = StyleSheet.create({
   },
   border7: {
     borderWidth: 10,
-    borderColor: 'rgba(255,0,0,0.5)',
+    borderColor: '#f007',
     borderRadius: 30,
     overflow: 'hidden',
   },
@@ -90,6 +90,41 @@ var styles = StyleSheet.create({
     backgroundColor: 'blue',
     width: 100,
     height: 100
+  },
+  border8: {
+    width: 60,
+    height: 60,
+    borderColor: 'black',
+    marginRight: 10,
+    backgroundColor: 'lightgrey',
+  },
+  border9: {
+    borderWidth: 10,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'black',
+  },
+  border10: {
+    borderWidth: 10,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 20,
+    borderColor: 'black',
+    elevation: 10,
+  },
+  border11: {
+    width: 0,
+    height: 0,
+    borderStyle: 'solid',
+    overflow: 'hidden',
+    borderTopWidth: 50,
+    borderRightWidth: 0,
+    borderBottomWidth: 50,
+    borderLeftWidth: 100,
+    borderTopColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: 'red',
   },
 });
 
@@ -157,6 +192,42 @@ exports.examples = [
           <View style={styles.border7_inner} />
         </View>
       );
+    }
+  },
+  {
+    title: 'Single Borders',
+    description: 'top, left, bottom right',
+    render() {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <View style={[styles.box, styles.border8, {borderTopWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderLeftWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderBottomWidth: 5}]} />
+          <View style={[styles.box, styles.border8, {borderRightWidth: 5}]} />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Corner Radii',
+    description: 'borderTopLeftRadius & borderBottomRightRadius',
+    render() {
+      return <View style={[styles.box, styles.border9]} />;
+    }
+  },
+  {
+    title: 'Corner Radii / Elevation',
+    description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
+    platform: 'android',
+    render() {
+      return <View style={[styles.box, styles.border10]} />;
+    }
+  },
+  {
+    title: 'CSS Trick - Triangle',
+    description: 'create a triangle by manipulating border colors and widths',
+    render() {
+      return <View style={[styles.border11]} />;
     }
   },
 ];

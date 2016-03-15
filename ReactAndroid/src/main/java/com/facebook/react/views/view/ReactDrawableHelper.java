@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.ViewProps;
  * Utility class that helps with converting android drawable description used in JS to an actual
  * instance of {@link Drawable}.
  */
-/* package */ class ReactDrawableHelper {
+public class ReactDrawableHelper {
 
   private static final TypedValue sResolveOutValue = new TypedValue();
 
@@ -63,7 +63,7 @@ import com.facebook.react.uimanager.ViewProps;
       int color;
       if (drawableDescriptionDict.hasKey(ViewProps.COLOR) &&
           !drawableDescriptionDict.isNull(ViewProps.COLOR)) {
-        color = drawableDescriptionDict.getColorInt(ViewProps.COLOR);
+        color = drawableDescriptionDict.getInt(ViewProps.COLOR);
       } else {
         if (context.getTheme().resolveAttribute(
             android.R.attr.colorControlHighlight,

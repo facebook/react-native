@@ -1,8 +1,16 @@
 {
   "name": "react-native-cli",
-  "version": "0.1.4",
-  "description": "The ReactNative cli tools",
+  "version": "0.1.10",
+  "license" : "BSD-3-Clause",
+  "description": "The React Native CLI tools",
   "main": "index.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git"
+  },
   "scripts": {
     "test": "mocha"
   },
@@ -10,6 +18,8 @@
     "react-native": "index.js"
   },
   "dependencies": {
-    "prompt": "^0.2.14"
+    "chalk": "^1.1.1",
+    "prompt": "^0.2.14",
+    "semver": "^5.0.3"
   }
 }

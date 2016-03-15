@@ -1,0 +1,11 @@
+prebuilt_jar(
+    name = 'okio',
+    binary_jar = ':okio-binary-jar',
+    visibility = ['//ReactAndroid/...',],
+)
+
+remote_file(
+    name = 'okio-binary-jar',
+    url = 'mvn:com.squareup.okio:okio:jar:1.6.0',
+    sha1 = '98476622f10715998eacf9240d6b479f12c66143',
+)

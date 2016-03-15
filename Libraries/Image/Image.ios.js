@@ -15,18 +15,23 @@ var EdgeInsetsPropType = require('EdgeInsetsPropType');
 var ImageResizeMode = require('ImageResizeMode');
 var ImageStylePropTypes = require('ImageStylePropTypes');
 var NativeMethodsMixin = require('NativeMethodsMixin');
-var NativeModules = require('NativeModules');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+var View = require('View');
 var StyleSheet = require('StyleSheet');
 var StyleSheetPropType = require('StyleSheetPropType');
 
 var flattenStyle = require('flattenStyle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var requireNativeComponent = require('requireNativeComponent');
 var resolveAssetSource = require('resolveAssetSource');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
+
+var {
+  ImageViewManager,
+  NetworkImageViewManager,
+} = require('NativeModules');
 
 /**
  * A React component for displaying different types of images,
@@ -41,7 +46,7 @@ var warning = require('warning');
  *     <View>
  *       <Image
  *         style={styles.icon}
- *         source={require('image!myIcon')}
+ *         source={require('./myIcon.png')}
  *       />
  *       <Image
  *         style={styles.logo}
@@ -58,7 +63,7 @@ var Image = React.createClass({
     /**
      * `uri` is a string representing the resource identifier for the image, which
      * could be an http address, a local file path, or the name of a static image
-     * resource (which should be wrapped in the `require('image!name')` function).
+     * resource (which should be wrapped in the `require('./path/to/image.png')` function).
      */
     source: PropTypes.oneOfType([
       PropTypes.shape({
@@ -68,13 +73,16 @@ var Image = React.createClass({
       PropTypes.number,
     ]),
     /**
-     * A static image to display while downloading the final image off the
-     * network.
+     * A static image to display while loading the image source.
      * @platform ios
      */
-    defaultSource: PropTypes.shape({
-      uri: PropTypes.string,
-    }),
+    defaultSource: PropTypes.oneOfType([
+      PropTypes.shape({
+        uri: PropTypes.string,
+      }),
+      // Opaque type returned by require('./image.jpg')
+      PropTypes.number,
+    ]),
     /**
      * When true, indicates the image is an accessibility element.
      * @platform ios
@@ -98,6 +106,17 @@ var Image = React.createClass({
     /**
      * Determines how to resize the image when the frame doesn't match the raw
      * image dimensions.
+     *
+     * 'cover': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal
+     * to or larger than the corresponding dimension of the view (minus padding).
+     *
+     * 'contain': Scale the image uniformly (maintain the image's aspect ratio)
+     * so that both dimensions (width and height) of the image will be equal to
+     * or less than the corresponding dimension of the view (minus padding).
+     *
+     * 'stretch': Scale width and height independently, This may change the
+     * aspect ratio of the src.
      */
     resizeMode: PropTypes.oneOf(['cover', 'contain', 'stretch']),
     /**
@@ -112,7 +131,6 @@ var Image = React.createClass({
     onLayout: PropTypes.func,
     /**
      * Invoked on load start
-     * @platform ios
      */
     onLoadStart: PropTypes.func,
     /**
@@ -127,18 +145,38 @@ var Image = React.createClass({
     onError: PropTypes.func,
     /**
      * Invoked when load completes successfully
-     * @platform ios
      */
     onLoad: PropTypes.func,
     /**
      * Invoked when load either succeeds or fails
-     * @platform ios
      */
     onLoadEnd: PropTypes.func,
   },
 
   statics: {
     resizeMode: ImageResizeMode,
+    /**
+     * Retrieve the width and height (in pixels) of an image prior to displaying it.
+     * This method can fail if the image cannot be found, or fails to download.
+     *
+     * In order to retrieve the image dimensions, the image may first need to be
+     * loaded or downloaded, after which it will be cached. This means that in
+     * principle you could use this method to preload images, however it is not
+     * optimized for that purpose, and may in future be implemented in a way that
+     * does not fully load/download the image data. A proper, supported way to
+     * preload images will be provided as a separate API.
+     *
+     * @platform ios
+     */
+    getSize: function(
+      uri: string,
+      success: (width: number, height: number) => void,
+      failure: (error: any) => void,
+    ) {
+      ImageViewManager.getSize(uri, success, failure || function() {
+        console.warn('Failed to get size for image: ' + uri);
+      });
+    }
   },
 
   mixins: [NativeMethodsMixin],
@@ -152,23 +190,36 @@ var Image = React.createClass({
     validAttributes: ReactNativeViewAttributes.UIView
   },
 
-  render: function() {
-    for (var prop in cfg.nativeOnly) {
-      if (this.props[prop] !== undefined) {
-        console.warn('Prop `' + prop + ' = ' + this.props[prop] + '` should ' +
-          'not be set directly on Image.');
-      }
-    }
-    var source = resolveAssetSource(this.props.source) || {};
-    var defaultSource = (this.props.defaultSource && resolveAssetSource(this.props.defaultSource)) || {};
+  contextTypes: {
+    isInAParentText: React.PropTypes.bool
+  },
 
-    var {width, height} = source;
+  render: function() {
+    var source = resolveAssetSource(this.props.source) || {};
+    var {width, height, uri} = source;
     var style = flattenStyle([{width, height}, styles.base, this.props.style]) || {};
 
-    var isNetwork = source.uri && source.uri.match(/^https?:/);
+    var isNetwork = uri && uri.match(/^https?:/);
     var RawImage = isNetwork ? RCTNetworkImageView : RCTImageView;
     var resizeMode = this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
     var tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+
+    // This is a workaround for #8243665. RCTNetworkImageView does not support tintColor
+    // TODO: Remove this hack once we have one image implementation #8389274
+    if (isNetwork && tintColor) {
+      RawImage = RCTImageView;
+    }
+
+    if (this.props.src) {
+      console.warn('The <Image> component requires a `source` property rather than `src`.');
+    }
+
+    if (this.context.isInAParentText) {
+      RawImage = RCTVirtualImage;
+      if (!width || !height) {
+        console.warn('You must specify a width and height for the image %s', uri);
+      }
+    }
 
     return (
       <RawImage
@@ -176,11 +227,10 @@ var Image = React.createClass({
         style={style}
         resizeMode={resizeMode}
         tintColor={tintColor}
-        src={source.uri}
-        defaultImageSrc={defaultSource.uri}
+        source={source}
       />
     );
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -189,15 +239,9 @@ var styles = StyleSheet.create({
   },
 });
 
-var cfg = {
-  nativeOnly: {
-    src: true,
-    defaultImageSrc: true,
-    imageTag: true,
-    progressHandlerRegistered: true,
-  },
-};
-var RCTImageView = requireNativeComponent('RCTImageView', Image, cfg);
-var RCTNetworkImageView = (NativeModules.NetworkImageViewManager) ? requireNativeComponent('RCTNetworkImageView', Image, cfg) : RCTImageView;
+var RCTImageView = requireNativeComponent('RCTImageView', Image);
+var RCTNetworkImageView = NetworkImageViewManager ? requireNativeComponent('RCTNetworkImageView', Image) : RCTImageView;
+var RCTVirtualImage = requireNativeComponent('RCTVirtualImage', Image);
+
 
 module.exports = Image;

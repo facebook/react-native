@@ -13,7 +13,8 @@
 
 var RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
+var processColor = require('processColor');
 
 var ActionSheetIOS = {
   showActionSheetWithOptions(options: Object, callback: Function) {
@@ -26,12 +27,22 @@ var ActionSheetIOS = {
       'Must provide a valid callback'
     );
     RCTActionSheetManager.showActionSheetWithOptions(
-      options,
-      () => {}, // RKActionSheet compatibility hack
+      {...options, tintColor: processColor(options.tintColor)},
       callback
     );
   },
-
+  
+  /**
+   * Display the iOS share sheet. The `options` object should contain
+   * one or both of:
+   * 
+   * - `message` (string) - a message to share
+   * - `url` (string) - a URL to share
+   *
+   * NOTE: if `url` points to a local file, or is a base64-encoded
+   * uri, the file it points to will be loaded and shared directly.
+   * In this way, you can share images, videos, PDF files, etc.
+   */
   showShareActionSheetWithOptions(
     options: Object,
     failureCallback: Function,
@@ -50,7 +61,7 @@ var ActionSheetIOS = {
       'Must provide a valid successCallback'
     );
     RCTActionSheetManager.showShareActionSheetWithOptions(
-      options,
+      {...options, tintColor: processColor(options.tintColor)},
       failureCallback,
       successCallback
     );

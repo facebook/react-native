@@ -11,18 +11,9 @@
 
 #import "RCTAssert.h"
 #import "RCTBridge.h"
+#import "RCTBridge+Private.h"
 #import "RCTLog.h"
-#import "RCTSparseArray.h"
 #import "RCTUtils.h"
-
-@interface RCTBridge (Private)
-
-/**
- * Allow super fast, one time, timers to skip the queue and be directly executed
- */
-- (void)_immediatelyCallTimer:(NSNumber *)timer;
-
-@end
 
 @interface RCTTimer : NSObject
 
@@ -66,11 +57,12 @@
 
 @implementation RCTTiming
 {
-  RCTSparseArray *_timers;
+  NSMutableDictionary<NSNumber *, RCTTimer *> *_timers;
 }
 
 @synthesize bridge = _bridge;
 @synthesize paused = _paused;
+@synthesize pauseCallback = _pauseCallback;
 
 RCT_EXPORT_MODULE()
 
@@ -78,7 +70,7 @@ RCT_EXPORT_MODULE()
 {
   if ((self = [super init])) {
     _paused = YES;
-    _timers = [RCTSparseArray new];
+    _timers = [NSMutableDictionary new];
 
     for (NSString *name in @[UIApplicationWillResignActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -120,7 +112,7 @@ RCT_EXPORT_MODULE()
 
 - (void)stopTimers
 {
-  _paused = YES;
+  self.paused = YES;
 }
 
 - (void)startTimers
@@ -129,18 +121,28 @@ RCT_EXPORT_MODULE()
     return;
   }
 
-  _paused = NO;
+  self.paused = NO;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+  if (_paused != paused) {
+    _paused = paused;
+    if (_pauseCallback) {
+      _pauseCallback();
+    }
+  }
 }
 
 - (void)didUpdateFrame:(__unused RCTFrameUpdate *)update
 {
-  NSMutableArray *timersToCall = [NSMutableArray new];
-  for (RCTTimer *timer in _timers.allObjects) {
+  NSMutableArray<NSNumber *> *timersToCall = [NSMutableArray new];
+  for (RCTTimer *timer in _timers.allValues) {
     if ([timer updateFoundNeedsJSUpdate]) {
       [timersToCall addObject:timer.callbackID];
     }
     if (!timer.target) {
-      _timers[timer.callbackID] = nil;
+      [_timers removeObjectForKey:timer.callbackID];
     }
   }
 
@@ -172,15 +174,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
     return;
   }
 
-  NSTimeInterval jsSchedulingOverhead = -jsSchedulingTime.timeIntervalSinceNow;
-  if (jsSchedulingOverhead < 0) {
-    RCTLogWarn(@"jsSchedulingOverhead (%ims) should be positive", (int)(jsSchedulingOverhead * 1000));
-
-    /**
-     * Probably debugging on device, set to 0 so we don't ignore the interval
-     */
-    jsSchedulingOverhead = 0;
-  }
+  NSTimeInterval jsSchedulingOverhead = MAX(-jsSchedulingTime.timeIntervalSinceNow, 0);
 
   NSTimeInterval targetTime = jsDuration - jsSchedulingOverhead;
   if (jsDuration < 0.018) { // Make sure short intervals run each frame
@@ -197,7 +191,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
 
 RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
-  _timers[timerID] = nil;
+  [_timers removeObjectForKey:timerID];
   if (_timers.count == 0) {
     [self stopTimers];
   }

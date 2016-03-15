@@ -103,7 +103,7 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
     }
   }
 
-  public void executeApplicationScript(
+  public void loadApplicationScript(
       String sourceURL,
       HashMap<String, String> injectedObjects,
       JSDebuggerCallback callback) {
@@ -126,7 +126,6 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
   }
 
   public void executeJSCall(
-      String moduleName,
       String methodName,
       String jsonArgsArray,
       JSDebuggerCallback callback) {
@@ -136,9 +135,7 @@ public class JSDebuggerWebSocketClient implements WebSocketListener {
 
     try {
       JsonGenerator jg = startMessageObject(requestID);
-      jg.writeStringField("method","executeJSCall");
-      jg.writeStringField("moduleName", moduleName);
-      jg.writeStringField("moduleMethod", methodName);
+      jg.writeStringField("method", methodName);
       jg.writeFieldName("arguments");
       jg.writeRawValue(jsonArgsArray);
       sendMessage(requestID, endMessageObject(jg));

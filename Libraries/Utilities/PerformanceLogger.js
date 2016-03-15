@@ -10,10 +10,12 @@
  */
 'use strict';
 
+var BatchedBridge = require('BatchedBridge');
 
-var performanceNow = require('performanceNow');
+var performanceNow = require('fbjs/lib/performanceNow');
 
 var timespans = {};
+var extras = {};
 
 /**
  * This is meant to collect and log performance data in production, which means
@@ -64,14 +66,34 @@ var PerformanceLogger = {
       }
       return;
     }
+    if (timespans[key].endTime) {
+      if (__DEV__) {
+        console.log(
+          'PerformanceLogger: Attempting to end a timespan that has already ended ',
+          key
+        );
+      }
+      return;
+    }
 
     timespans[key].endTime = performanceNow();
     timespans[key].totalTime =
       timespans[key].endTime - timespans[key].startTime;
   },
 
-  clearTimespans() {
+  clear() {
     timespans = {};
+    extras = {};
+  },
+
+  clearExceptTimespans(keys) {
+    timespans = Object.keys(timespans).reduce(function(previous, key) {
+      if (keys.indexOf(key) !== -1) {
+        previous[key] = timespans[key];
+      }
+      return previous;
+    }, {});
+    extras = {};
   },
 
   getTimespans() {
@@ -99,7 +121,29 @@ var PerformanceLogger = {
         label
       );
     }
+  },
+
+  setExtra(key, value) {
+    if (extras[key]) {
+      if (__DEV__) {
+        console.log(
+          'PerformanceLogger: Attempting to set an extra that already exists ',
+          key
+        );
+      }
+      return;
+    }
+    extras[key] = value;
+  },
+
+  getExtras() {
+    return extras;
   }
 };
+
+BatchedBridge.registerCallableModule(
+  'PerformanceLogger',
+  PerformanceLogger
+);
 
 module.exports = PerformanceLogger;

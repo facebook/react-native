@@ -11,59 +11,36 @@
  */
 'use strict';
 
-var EdgeInsetsPropType = require('EdgeInsetsPropType');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var View = require('View');
+const ColorPropType = require('ColorPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const Image = require('Image');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var deepDiffer = require('deepDiffer');
-var insetsDiffer = require('insetsDiffer');
-var merge = require('merge');
-var requireNativeComponent = require('requireNativeComponent');
+const deprecatedPropType = require('deprecatedPropType');
+const processColor = require('processColor');
+const resolveAssetSource = require('resolveAssetSource');
+const requireNativeComponent = require('requireNativeComponent');
 
 type Event = Object;
-type MapRegion = {
-  latitude: number;
-  longitude: number;
-  latitudeDelta: number;
-  longitudeDelta: number;
-};
 
-var MapView = React.createClass({
+export type AnnotationDragState = $Enum<{
+  idle: string;
+  starting: string;
+  dragging: string;
+  canceling: string;
+  ending: string;
+}>;
+
+const MapView = React.createClass({
+
   mixins: [NativeMethodsMixin],
 
-  checkAnnotationIds: function (annotations: Array<Object>) {
-
-    var newAnnotations = annotations.map(function (annotation) {
-      if (!annotation.id) {
-        // TODO: add a base64 (or similar) encoder here
-        annotation.id = encodeURIComponent(JSON.stringify(annotation));
-      }
-
-      return annotation;
-    });
-
-    this.setState({
-      annotations: newAnnotations
-    });
-  },
-
-  componentWillMount: function() {
-    if (this.props.annotations) {
-      this.checkAnnotationIds(this.props.annotations);
-    }
-  },
-
-  componentWillReceiveProps: function(nextProps: Object) {
-    if (nextProps.annotations) {
-      this.checkAnnotationIds(nextProps.annotations);
-    }
-  },
-
   propTypes: {
+    ...View.propTypes,
     /**
      * Used to style and layout the `MapView`.  See `StyleSheet.js` and
      * `ViewStylePropTypes.js` for more info.
@@ -71,18 +48,39 @@ var MapView = React.createClass({
     style: View.propTypes.style,
 
     /**
-     * If `true` the app will ask for the user's location and focus on it.
-     * Default value is `false`.
+     * If `true` the app will ask for the user's location and display it on
+     * the map. Default value is `false`.
      *
-     * **NOTE**: You need to add NSLocationWhenInUseUsageDescription key in
-     * Info.plist to enable geolocation, otherwise it is going
-     * to *fail silently*!
+     * **NOTE**: on iOS, you need to add the `NSLocationWhenInUseUsageDescription`
+     * key in Info.plist to enable geolocation, otherwise it will fail silently.
      */
     showsUserLocation: React.PropTypes.bool,
 
     /**
+     * If `true` the map will follow the user's location whenever it changes.
+     * Note that this has no effect unless `showsUserLocation` is enabled.
+     * Default value is `true`.
+     * @platform ios
+     */
+    followUserLocation: React.PropTypes.bool,
+
+    /**
+     * If `false` points of interest won't be displayed on the map.
+     * Default value is `true`.
+     * @platform ios
+     */
+    showsPointsOfInterest: React.PropTypes.bool,
+
+    /**
+     * If `false` compass won't be displayed on the map.
+     * Default value is `true`.
+     * @platform ios
+     */
+    showsCompass: React.PropTypes.bool,
+
+    /**
      * If `false` the user won't be able to pinch/zoom the map.
-     * Default `value` is true.
+     * Default value is `true`.
      */
     zoomEnabled: React.PropTypes.bool,
 
@@ -115,7 +113,9 @@ var MapView = React.createClass({
      *
      * - standard: standard road map (default)
      * - satellite: satellite view
-     * - hybrid: satellite view with roads and points of interest overlayed
+     * - hybrid: satellite view with roads and points of interest overlaid
+     *
+     * @platform ios
      */
     mapType: React.PropTypes.oneOf([
       'standard',
@@ -137,15 +137,16 @@ var MapView = React.createClass({
       longitude: React.PropTypes.number.isRequired,
 
       /**
-       * Distance between the minimun and the maximum latitude/longitude
+       * Distance between the minimum and the maximum latitude/longitude
        * to be displayed.
        */
-      latitudeDelta: React.PropTypes.number.isRequired,
-      longitudeDelta: React.PropTypes.number.isRequired,
+      latitudeDelta: React.PropTypes.number,
+      longitudeDelta: React.PropTypes.number,
     }),
 
     /**
      * Map annotations with title/subtitle.
+     * @platform ios
      */
     annotations: React.PropTypes.arrayOf(React.PropTypes.shape({
       /**
@@ -160,43 +161,129 @@ var MapView = React.createClass({
       animateDrop: React.PropTypes.bool,
 
       /**
+       * Whether the pin should be draggable or not
+       */
+      draggable: React.PropTypes.bool,
+
+      /**
+       * Event that fires when the annotation drag state changes.
+       */
+      onDragStateChange: React.PropTypes.func,
+
+      /**
+       * Event that fires when the annotation gets was tapped by the user
+       * and the callout view was displayed.
+       */
+      onFocus: React.PropTypes.func,
+
+      /**
+       * Event that fires when another annotation or the mapview itself
+       * was tapped and a previously shown annotation will be closed.
+       */
+      onBlur: React.PropTypes.func,
+
+      /**
        * Annotation title/subtile.
        */
       title: React.PropTypes.string,
       subtitle: React.PropTypes.string,
 
       /**
-       * Whether the Annotation has callout buttons.
+       * Callout views.
        */
-      hasLeftCallout: React.PropTypes.bool,
-      hasRightCallout: React.PropTypes.bool,
+      leftCalloutView: React.PropTypes.element,
+      rightCalloutView: React.PropTypes.element,
+      detailCalloutView: React.PropTypes.element,
 
       /**
-       * Event handlers for callout buttons.
+       * The pin color. This can be any valid color string, or you can use one
+       * of the predefined PinColors constants. Applies to both standard pins
+       * and custom pin images.
+       *
+       * Note that on iOS 8 and earlier, only the standard PinColor constants
+       * are supported for regular pins. For custom pin images, any tintColor
+       * value is supported on all iOS versions.
        */
-      onLeftCalloutPress: React.PropTypes.func,
-      onRightCalloutPress: React.PropTypes.func,
+      tintColor: ColorPropType,
+
+      /**
+       * Custom pin image. This must be a static image resource inside the app.
+       */
+      image: Image.propTypes.source,
+
+      /**
+       * Custom pin view. If set, this replaces the pin or custom pin image.
+       */
+      view: React.PropTypes.element,
 
       /**
        * annotation id
        */
-      id: React.PropTypes.string
+      id: React.PropTypes.string,
 
+      /**
+       * Deprecated. Use the left/right/detailsCalloutView props instead.
+       */
+      hasLeftCallout: deprecatedPropType(
+        React.PropTypes.bool,
+        'Use `leftCalloutView` instead.'
+      ),
+      hasRightCallout: deprecatedPropType(
+        React.PropTypes.bool,
+        'Use `rightCalloutView` instead.'
+      ),
+      onLeftCalloutPress: deprecatedPropType(
+        React.PropTypes.func,
+        'Use `leftCalloutView` instead.'
+      ),
+      onRightCalloutPress: deprecatedPropType(
+        React.PropTypes.func,
+        'Use `rightCalloutView` instead.'
+      ),
+    })),
+
+    /**
+     * Map overlays
+     * @platform ios
+     */
+    overlays: React.PropTypes.arrayOf(React.PropTypes.shape({
+      /**
+       * Polyline coordinates
+       */
+      coordinates: React.PropTypes.arrayOf(React.PropTypes.shape({
+        latitude: React.PropTypes.number.isRequired,
+        longitude: React.PropTypes.number.isRequired
+      })),
+
+      /**
+       * Line attributes
+       */
+      lineWidth: React.PropTypes.number,
+      strokeColor: ColorPropType,
+      fillColor: ColorPropType,
+
+      /**
+       * Overlay id
+       */
+      id: React.PropTypes.string
     })),
 
     /**
      * Maximum size of area that can be displayed.
+     * @platform ios
      */
     maxDelta: React.PropTypes.number,
 
     /**
      * Minimum size of area that can be displayed.
+     * @platform ios
      */
     minDelta: React.PropTypes.number,
 
     /**
      * Insets for the map's legal label, originally at bottom left of the map.
      * See `EdgeInsetsPropType.js` for more information.
+     * @platform ios
      */
     legalLabelInsets: EdgeInsetsPropType,
 
@@ -211,75 +298,220 @@ var MapView = React.createClass({
     onRegionChangeComplete: React.PropTypes.func,
 
     /**
-     * Callback that is called once, when the user is clicked on a annotation.
+     * Deprecated. Use annotation onFocus and onBlur instead.
      */
     onAnnotationPress: React.PropTypes.func,
+
+    /**
+     * @platform android
+     */
+    active: React.PropTypes.bool,
   },
 
-  _onChange: function(event: Event) {
-    if (event.nativeEvent.continuous) {
-      this.props.onRegionChange &&
-        this.props.onRegionChange(event.nativeEvent.region);
-    } else {
-      this.props.onRegionChangeComplete &&
-        this.props.onRegionChangeComplete(event.nativeEvent.region);
-    }
-  },
-
-  _onPress: function(event: Event) {
-    if (event.nativeEvent.action === 'annotation-click') {
-      this.props.onAnnotationPress && this.props.onAnnotationPress(event.nativeEvent.annotation);
-    }
-
-    if (event.nativeEvent.action === 'callout-click') {
-      if (!this.props.annotations) {
-        return;
-      }
-
-      // Find the annotation with the id of what has been pressed
-      for (var i = 0; i < this.props.annotations.length; i++) {
-        var annotation = this.props.annotations[i];
-        if (annotation.id === event.nativeEvent.annotationId) {
-          // Pass the right function
-          if (event.nativeEvent.side === 'left') {
-            annotation.onLeftCalloutPress && annotation.onLeftCalloutPress(event.nativeEvent);
-          } else if (event.nativeEvent.side === 'right') {
-            annotation.onRightCalloutPress && annotation.onRightCalloutPress(event.nativeEvent);
-          }
-        }
-      }
-
-    }
+  statics: {
+    /**
+     * Standard iOS MapView pin color constants, to be used with the
+     * `annotation.tintColor` property. On iOS 8 and earlier these are the
+     * only supported values when using regular pins. On iOS 9 and later
+     * you are not obliged to use these, but they are useful for matching
+     * the standard iOS look and feel.
+     */
+    PinColors: {
+      RED: '#ff3b30',
+      GREEN: '#4cd964',
+      PURPLE: '#c969e0',
+    },
   },
 
   render: function() {
-    return <RCTMap {...this.props} onPress={this._onPress} onChange={this._onChange} />;
+    let children = [], {annotations, overlays, followUserLocation} = this.props;
+    annotations = annotations && annotations.map((annotation: Object) => {
+      let {
+        id,
+        image,
+        tintColor,
+        view,
+        leftCalloutView,
+        rightCalloutView,
+        detailCalloutView,
+      } = annotation;
+
+      if (!view && image && tintColor) {
+        view = <Image
+          style={{
+            tintColor: processColor(tintColor),
+          }}
+          source={image}
+        />;
+        image = undefined;
+      }
+      if (view) {
+        if (image) {
+          console.warn('`image` and `view` both set on annotation. Image will be ignored.');
+        }
+        var viewIndex = children.length;
+        children.push(React.cloneElement(view, {
+          style: [styles.annotationView, view.props.style || {}]
+        }));
+      }
+      if (leftCalloutView) {
+        var leftCalloutViewIndex = children.length;
+        children.push(React.cloneElement(leftCalloutView, {
+          style: [styles.calloutView, leftCalloutView.props.style || {}]
+        }));
+      }
+      if (rightCalloutView) {
+        var rightCalloutViewIndex = children.length;
+        children.push(React.cloneElement(rightCalloutView, {
+          style: [styles.calloutView, rightCalloutView.props.style || {}]
+        }));
+      }
+      if (detailCalloutView) {
+        var detailCalloutViewIndex = children.length;
+        children.push(React.cloneElement(detailCalloutView, {
+          style: [styles.calloutView, detailCalloutView.props.style || {}]
+        }));
+      }
+
+      let result = {
+        ...annotation,
+        tintColor: tintColor && processColor(tintColor),
+        image,
+        viewIndex,
+        leftCalloutViewIndex,
+        rightCalloutViewIndex,
+        detailCalloutViewIndex,
+        view: undefined,
+        leftCalloutView: undefined,
+        rightCalloutView: undefined,
+        detailCalloutView: undefined,
+      };
+      result.id = id || encodeURIComponent(JSON.stringify(result));
+      result.image = image && resolveAssetSource(image);
+      return result;
+    });
+    overlays = overlays && overlays.map((overlay: Object) => {
+      let {id, fillColor, strokeColor} = overlay;
+      let result = {
+        ...overlay,
+        strokeColor: strokeColor && processColor(strokeColor),
+        fillColor: fillColor && processColor(fillColor),
+      };
+      result.id = id || encodeURIComponent(JSON.stringify(result));
+      return result;
+    });
+
+    const findByAnnotationId = (annotationId: string) => {
+      if (!annotations) {
+        return null;
+      }
+      for (let i = 0, l = annotations.length; i < l; i++) {
+        if (annotations[i].id === annotationId) {
+          return annotations[i];
+        }
+      }
+      return null;
+    };
+
+    // TODO: these should be separate events, to reduce bridge traffic
+    let onPress, onAnnotationDragStateChange, onAnnotationFocus, onAnnotationBlur;
+    if (annotations) {
+      onPress = (event: Event) => {
+        if (event.nativeEvent.action === 'annotation-click') {
+          // TODO: Remove deprecated onAnnotationPress API call later.
+          this.props.onAnnotationPress &&
+            this.props.onAnnotationPress(event.nativeEvent.annotation);
+        } else if (event.nativeEvent.action === 'callout-click') {
+          const annotation = findByAnnotationId(event.nativeEvent.annotationId);
+          if (annotation) {
+            // Pass the right function
+            if (event.nativeEvent.side === 'left' && annotation.onLeftCalloutPress) {
+              annotation.onLeftCalloutPress(event.nativeEvent);
+            } else if (event.nativeEvent.side === 'right' && annotation.onRightCalloutPress) {
+              annotation.onRightCalloutPress(event.nativeEvent);
+            }
+          }
+        }
+      };
+      onAnnotationDragStateChange = (event: Event) => {
+        const annotation = findByAnnotationId(event.nativeEvent.annotationId);
+        if (annotation) {
+          // Update location
+          annotation.latitude = event.nativeEvent.latitude;
+          annotation.longitude = event.nativeEvent.longitude;
+          // Call callback
+          annotation.onDragStateChange &&
+            annotation.onDragStateChange(event.nativeEvent);
+        }
+      };
+      onAnnotationFocus = (event: Event) => {
+        const annotation = findByAnnotationId(event.nativeEvent.annotationId);
+        if (annotation && annotation.onFocus) {
+          annotation.onFocus(event.nativeEvent);
+        }
+      };
+      onAnnotationBlur = (event: Event) => {
+        const annotation = findByAnnotationId(event.nativeEvent.annotationId);
+        if (annotation && annotation.onBlur) {
+          annotation.onBlur(event.nativeEvent);
+        }
+      };
+    }
+
+    // TODO: these should be separate events, to reduce bridge traffic
+    if (this.props.onRegionChange || this.props.onRegionChangeComplete) {
+      var onChange = (event: Event) => {
+        if (event.nativeEvent.continuous) {
+          this.props.onRegionChange &&
+            this.props.onRegionChange(event.nativeEvent.region);
+        } else {
+          this.props.onRegionChangeComplete &&
+            this.props.onRegionChangeComplete(event.nativeEvent.region);
+        }
+      };
+    }
+
+    // followUserLocation defaults to true if showUserLocation is set
+    if (followUserLocation === undefined) {
+      followUserLocation = this.props.showUserLocation;
+    }
+
+    return (
+      <RCTMap
+        {...this.props}
+        annotations={annotations}
+        children={children}
+        followUserLocation={followUserLocation}
+        overlays={overlays}
+        onPress={onPress}
+        onChange={onChange}
+        onAnnotationDragStateChange={onAnnotationDragStateChange}
+        onAnnotationFocus={onAnnotationFocus}
+        onAnnotationBlur={onAnnotationBlur}
+      />
+    );
   },
 });
 
-if (Platform.OS === 'android') {
-  var RCTMap = createReactNativeComponentClass({
-    validAttributes: merge(
-      ReactNativeViewAttributes.UIView, {
-        active: true,
-        showsUserLocation: true,
-        zoomEnabled: true,
-        rotateEnabled: true,
-        pitchEnabled: true,
-        scrollEnabled: true,
-        region: {diff: deepDiffer},
-        annotations: {diff: deepDiffer},
-        maxDelta: true,
-        minDelta: true,
-        legalLabelInsets: {diff: insetsDiffer},
-      }
-    ),
-    uiViewClassName: 'RCTMap',
-  });
-} else {
-  var RCTMap = requireNativeComponent('RCTMap', MapView, {
-    nativeOnly: {onChange: true, onPress: true}
-  });
-}
+const styles = StyleSheet.create({
+  annotationView: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+  },
+  calloutView: {
+    position: 'absolute',
+    backgroundColor: 'white',
+  },
+});
+
+const RCTMap = requireNativeComponent('RCTMap', MapView, {
+  nativeOnly: {
+    onAnnotationDragStateChange: true,
+    onAnnotationFocus: true,
+    onAnnotationBlur: true,
+    onChange: true,
+    onPress: true
+  }
+});
 
 module.exports = MapView;

@@ -14,7 +14,7 @@
 function setupDevtools() {
   var messageListeners = [];
   var closeListeners = [];
-  var ws = new window.WebSocket('ws://localhost:8081/devtools');
+  var ws = new window.WebSocket('ws://localhost:8097/devtools');
   // this is accessed by the eval'd backend code
   var FOR_BACKEND = { // eslint-disable-line no-unused-vars
     resolveRNStyle: require('flattenStyle'),
@@ -30,17 +30,20 @@ function setupDevtools() {
       },
     },
   };
-  ws.onclose = () => {
-    console.warn('devtools socket closed');
-    closeListeners.forEach(fn => fn());
-  };
-  ws.onerror = error => {
-    console.warn('devtools socket errored', error);
-    closeListeners.forEach(fn => fn());
-  };
+  ws.onclose = handleClose;
+  ws.onerror = handleClose;
   ws.onopen = function () {
     tryToConnect();
   };
+
+  var hasClosed = false;
+  function handleClose() {
+    if (!hasClosed) {
+      hasClosed = true;
+      setTimeout(setupDevtools, 200);
+      closeListeners.forEach(fn => fn());
+    }
+  }
 
   function tryToConnect() {
     ws.send('attach:agent');
@@ -58,7 +61,7 @@ function setupDevtools() {
       // FOR_BACKEND is used by the eval'd code
       eval(text); // eslint-disable-line no-eval
     } catch (e) {
-      console.error('Failed to eval' + e.message);
+      console.error('Failed to eval: ' + e.message);
       return;
     }
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.inject({

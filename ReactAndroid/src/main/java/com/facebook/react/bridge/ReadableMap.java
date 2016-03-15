@@ -20,11 +20,9 @@ public interface ReadableMap {
   boolean getBoolean(String name);
   double getDouble(String name);
   int getInt(String name);
-  // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-  int getColorInt(String name);
   String getString(String name);
   ReadableArray getArray(String name);
   ReadableMap getMap(String name);
   ReadableType getType(String name);
-  ReadableMapKeySeyIterator keySetIterator();
+  ReadableMapKeySetIterator keySetIterator();
 }

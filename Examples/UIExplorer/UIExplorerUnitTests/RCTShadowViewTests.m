@@ -17,10 +17,22 @@
 #import "RCTShadowView.h"
 
 @interface RCTShadowViewTests : XCTestCase
-
+@property (nonatomic, strong) RCTShadowView *parentView;
 @end
 
 @implementation RCTShadowViewTests
+
+- (void)setUp
+{
+  [super setUp];
+  
+  self.parentView = [self _shadowViewWithStyle:^(css_style_t *style) {
+    style->flex_direction = CSS_FLEX_DIRECTION_COLUMN;
+    style->dimensions[0] = 440;
+    style->dimensions[1] = 440;
+  }];
+  self.parentView.reactTag = @1; // must be valid rootView tag
+}
 
 // Just a basic sanity test to ensure css-layout is applied correctly in the context of our shadow view hierarchy.
 //
@@ -69,32 +81,87 @@
     style->flex = 1;
   }];
 
-  RCTShadowView *parentView = [self _shadowViewWithStyle:^(css_style_t *style) {
-    style->flex_direction = CSS_FLEX_DIRECTION_COLUMN;
-    style->padding[0] = 10;
-    style->padding[1] = 10;
-    style->padding[2] = 10;
-    style->padding[3] = 10;
-    style->dimensions[0] = 440;
-    style->dimensions[1] = 440;
-  }];
+  self.parentView.cssNode->style.padding[0] = 10;
+  self.parentView.cssNode->style.padding[1] = 10;
+  self.parentView.cssNode->style.padding[2] = 10;
+  self.parentView.cssNode->style.padding[3] = 10;
 
-  [parentView insertReactSubview:headerView atIndex:0];
-  [parentView insertReactSubview:mainView atIndex:1];
-  [parentView insertReactSubview:footerView atIndex:2];
+  [self.parentView insertReactSubview:headerView atIndex:0];
+  [self.parentView insertReactSubview:mainView atIndex:1];
+  [self.parentView insertReactSubview:footerView atIndex:2];
 
-  [parentView collectRootUpdatedFrames:nil parentConstraint:CGSizeZero];
+  [self.parentView collectRootUpdatedFrames];
 
-  XCTAssertTrue(CGRectEqualToRect([parentView measureLayoutRelativeToAncestor:parentView], CGRectMake(0, 0, 440, 440)));
-  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets([parentView paddingAsInsets], UIEdgeInsetsMake(10, 10, 10, 10)));
+  XCTAssertTrue(CGRectEqualToRect([self.parentView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(0, 0, 440, 440)));
+  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets([self.parentView paddingAsInsets], UIEdgeInsetsMake(10, 10, 10, 10)));
 
-  XCTAssertTrue(CGRectEqualToRect([headerView measureLayoutRelativeToAncestor:parentView], CGRectMake(10, 10, 420, 100)));
-  XCTAssertTrue(CGRectEqualToRect([mainView measureLayoutRelativeToAncestor:parentView], CGRectMake(10, 120, 420, 200)));
-  XCTAssertTrue(CGRectEqualToRect([footerView measureLayoutRelativeToAncestor:parentView], CGRectMake(10, 330, 420, 100)));
+  XCTAssertTrue(CGRectEqualToRect([headerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 10, 420, 100)));
+  XCTAssertTrue(CGRectEqualToRect([mainView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 120, 420, 200)));
+  XCTAssertTrue(CGRectEqualToRect([footerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 330, 420, 100)));
 
-  XCTAssertTrue(CGRectEqualToRect([leftView measureLayoutRelativeToAncestor:parentView], CGRectMake(10, 120, 100, 200)));
-  XCTAssertTrue(CGRectEqualToRect([centerView measureLayoutRelativeToAncestor:parentView], CGRectMake(120, 120, 200, 200)));
-  XCTAssertTrue(CGRectEqualToRect([rightView measureLayoutRelativeToAncestor:parentView], CGRectMake(330, 120, 100, 200)));
+  XCTAssertTrue(CGRectEqualToRect([leftView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(10, 120, 100, 200)));
+  XCTAssertTrue(CGRectEqualToRect([centerView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(120, 120, 200, 200)));
+  XCTAssertTrue(CGRectEqualToRect([rightView measureLayoutRelativeToAncestor:self.parentView], CGRectMake(330, 120, 100, 200)));
+}
+
+- (void)testAssignsSuggestedWidthDimension
+{
+  [self _withShadowViewWithStyle:^(css_style_t *style) {
+                                   style->position[CSS_LEFT] = 0;
+                                   style->position[CSS_TOP] = 0;
+                                   style->dimensions[CSS_HEIGHT] = 10;
+                                 }
+            assertRelativeLayout:CGRectMake(0, 0, 3, 10)
+        withIntrinsicContentSize:CGSizeMake(3, UIViewNoIntrinsicMetric)];
+}
+
+- (void)testAssignsSuggestedHeightDimension
+{
+  [self _withShadowViewWithStyle:^(css_style_t *style) {
+                                   style->position[CSS_LEFT] = 0;
+                                   style->position[CSS_TOP] = 0;
+                                   style->dimensions[CSS_WIDTH] = 10;
+                                 }
+            assertRelativeLayout:CGRectMake(0, 0, 10, 4)
+        withIntrinsicContentSize:CGSizeMake(UIViewNoIntrinsicMetric, 4)];
+}
+
+- (void)testDoesNotOverrideDimensionStyleWithSuggestedDimensions
+{
+  [self _withShadowViewWithStyle:^(css_style_t *style) {
+                                   style->position[CSS_LEFT] = 0;
+                                   style->position[CSS_TOP] = 0;
+                                   style->dimensions[CSS_WIDTH] = 10;
+                                   style->dimensions[CSS_HEIGHT] = 10;
+                                 }
+          assertRelativeLayout:CGRectMake(0, 0, 10, 10)
+      withIntrinsicContentSize:CGSizeMake(3, 4)];
+}
+
+- (void)testDoesNotAssignSuggestedDimensionsWhenStyledWithFlexAttribute
+{
+  float parentWidth = self.parentView.cssNode->style.dimensions[CSS_WIDTH];
+  float parentHeight = self.parentView.cssNode->style.dimensions[CSS_HEIGHT];
+  [self _withShadowViewWithStyle:^(css_style_t *style) {
+                                   style->flex = 1;
+                                 }
+            assertRelativeLayout:CGRectMake(0, 0, parentWidth, parentHeight)
+        withIntrinsicContentSize:CGSizeMake(3, 4)];
+}
+
+- (void)_withShadowViewWithStyle:(void(^)(css_style_t *style))styleBlock
+            assertRelativeLayout:(CGRect)expectedRect
+        withIntrinsicContentSize:(CGSize)contentSize
+{
+  RCTShadowView *view = [self _shadowViewWithStyle:styleBlock];
+  [self.parentView insertReactSubview:view atIndex:0];
+  view.intrinsicContentSize = contentSize;
+  [self.parentView collectRootUpdatedFrames];
+  CGRect actualRect = [view measureLayoutRelativeToAncestor:self.parentView];
+  XCTAssertTrue(CGRectEqualToRect(expectedRect, actualRect),
+                @"Expected layout to be %@, got %@",
+                NSStringFromCGRect(expectedRect),
+                NSStringFromCGRect(actualRect));
 }
 
 - (RCTShadowView *)_shadowViewWithStyle:(void(^)(css_style_t *style))styleBlock

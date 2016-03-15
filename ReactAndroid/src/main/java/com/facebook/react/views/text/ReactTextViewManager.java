@@ -9,20 +9,19 @@
 
 package com.facebook.react.views.text;
 
+import javax.annotation.Nullable;
+
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.TextView;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.uimanager.BaseViewPropertyApplicator;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewDefaults;
-import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.common.annotations.VisibleForTesting;
 
@@ -34,17 +33,10 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * @{link ReactTextShadowNode} hierarchy to calculate a {@link Spannable} text representing the
  * whole text subtree.
  */
-public class ReactTextViewManager extends ViewManager<ReactTextView, ReactTextShadowNode> {
+public class ReactTextViewManager extends BaseViewManager<ReactTextView, ReactTextShadowNode> {
 
   @VisibleForTesting
   public static final String REACT_CLASS = "RCTText";
-
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_NUMBER_OF_LINES = ViewProps.NUMBER_OF_LINES;
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_TEXT_ALIGN = ViewProps.TEXT_ALIGN;
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_LINE_HEIGHT = ViewProps.LINE_HEIGHT;
 
   @Override
   public String getName() {
@@ -56,48 +48,69 @@ public class ReactTextViewManager extends ViewManager<ReactTextView, ReactTextSh
     return new ReactTextView(context);
   }
 
-  @Override
-  public void updateView(ReactTextView view, CatalystStylesDiffMap props) {
-    BaseViewPropertyApplicator.applyCommonViewProperties(view, props);
-    // maxLines can only be set in master view (block), doesn't really make sense to set in a span
-    if (props.hasKey(PROP_NUMBER_OF_LINES)) {
-      view.setMaxLines(props.getInt(PROP_NUMBER_OF_LINES, ViewDefaults.NUMBER_OF_LINES));
-      view.setEllipsize(TextUtils.TruncateAt.END);
+  // maxLines can only be set in master view (block), doesn't really make sense to set in a span
+  @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ViewDefaults.NUMBER_OF_LINES)
+  public void setNumberOfLines(ReactTextView view, int numberOfLines) {
+    view.setMaxLines(numberOfLines);
+    view.setEllipsize(TextUtils.TruncateAt.END);
+  }
+
+  @ReactProp(name = ViewProps.TEXT_ALIGN)
+  public void setTextAlign(ReactTextView view, @Nullable String textAlign) {
+    if (textAlign == null || "auto".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.NO_GRAVITY);
+    } else if ("left".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.LEFT);
+    } else if ("right".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.RIGHT);
+    } else if ("center".equals(textAlign)) {
+      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
     }
-    // same with textAlign
-    if (props.hasKey(PROP_TEXT_ALIGN)) {
-      final String textAlign = props.getString(PROP_TEXT_ALIGN);
-      if (textAlign == null || "auto".equals(textAlign)) {
-        view.setGravity(Gravity.NO_GRAVITY);
-      } else if ("left".equals(textAlign)) {
-        view.setGravity(Gravity.LEFT);
-      } else if ("right".equals(textAlign)) {
-        view.setGravity(Gravity.RIGHT);
-      } else if ("center".equals(textAlign)) {
-        view.setGravity(Gravity.CENTER_HORIZONTAL);
-      } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
-      }
+  }
+
+  @ReactProp(name = ViewProps.TEXT_ALIGN_VERTICAL)
+  public void setTextAlignVertical(ReactTextView view, @Nullable String textAlignVertical) {
+    if (textAlignVertical == null || "auto".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.NO_GRAVITY);
+    } else if ("top".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.TOP);
+    } else if ("bottom".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.BOTTOM);
+    } else if ("center".equals(textAlignVertical)) {
+      view.setGravityVertical(Gravity.CENTER_VERTICAL);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid textAlignVertical: " + textAlignVertical);
     }
-    // same for lineSpacing
-    if (props.hasKey(PROP_LINE_HEIGHT)) {
-      if (props.isNull(PROP_LINE_HEIGHT)) {
-        view.setLineSpacing(0, 1);
-      } else {
-        float lineHeight =
-            PixelUtil.toPixelFromSP(props.getInt(PROP_LINE_HEIGHT, ViewDefaults.LINE_HEIGHT));
-        view.setLineSpacing(lineHeight, 0);
-      }
+  }
+
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = Float.NaN)
+  public void setLineHeight(ReactTextView view, float lineHeight) {
+    if (Float.isNaN(lineHeight)) { // NaN will be used if property gets reset
+      view.setLineSpacing(0, 1);
+    } else {
+      view.setLineSpacing(PixelUtil.toPixelFromSP(lineHeight), 0);
     }
   }
 
   @Override
   public void updateExtraData(ReactTextView view, Object extraData) {
-    view.setText((Spanned) extraData);
+    ReactTextUpdate update = (ReactTextUpdate) extraData;
+    if (update.containsImages()) {
+      Spannable spannable = update.getText();
+      TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
+    }
+    view.setText(update);
   }
 
   @Override
-  public ReactTextShadowNode createCSSNodeInstance() {
+  public ReactTextShadowNode createShadowNodeInstance() {
     return new ReactTextShadowNode(false);
+  }
+
+  @Override
+  public Class<ReactTextShadowNode> getShadowNodeClass() {
+    return ReactTextShadowNode.class;
   }
 }

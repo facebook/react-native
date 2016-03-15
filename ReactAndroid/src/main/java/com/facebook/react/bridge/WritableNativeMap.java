@@ -30,14 +30,11 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   @Override
   public native void putDouble(String key, double value);
   @Override
+  public native void putInt(String key, int value);
+  @Override
   public native void putString(String key, String value);
   @Override
   public native void putNull(String key);
-
-  @Override
-  public void putInt(String key, int value) {
-    putDouble(key, value);
-  }
 
   // Note: this consumes the map so do not reuse it.
   @Override

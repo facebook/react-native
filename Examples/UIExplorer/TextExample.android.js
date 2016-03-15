@@ -17,6 +17,7 @@
 
 var React = require('react-native');
 var {
+  Image,
   StyleSheet,
   Text,
   View,
@@ -160,6 +161,22 @@ var TextExample = React.createClass({
             </View>
           </View>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Custom Fonts">
+          <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
+            <View style={{flex: 1}}>
+              <Text style={{fontFamily: 'notoserif'}}>
+                NotoSerif Regular
+              </Text>
+              <Text style={{fontFamily: 'notoserif', fontStyle: 'italic', fontWeight: 'bold'}}>
+                NotoSerif Bold Italic
+              </Text>
+              <Text style={{fontFamily: 'notoserif', fontStyle: 'italic'}}>
+                NotoSerif Italic (Missing Font file)
+              </Text>
+            </View>
+          </View>
+        </UIExplorerBlock>
+
         <UIExplorerBlock title="Font Size">
           <Text style={{fontSize: 23}}>
             Size 23
@@ -310,6 +327,15 @@ var TextExample = React.createClass({
               </Text>
             </Text>
           </Text>
+          <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+            Same alpha as background,
+            <Text>
+              Inherited alpha from background,
+              <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+                Reapply alpha
+              </Text>
+            </Text>
+          </Text>
         </UIExplorerBlock>
         <UIExplorerBlock title="containerBackgroundColor attribute">
           <View style={{flexDirection: 'row', height: 85}}>
@@ -332,6 +358,16 @@ var TextExample = React.createClass({
           </Text>
           <Text style={{marginTop: 20}}>
             No maximum lines specified no matter now much I write here. If I keep writing it{"'"}ll just keep going and going
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Inline images">
+          <Text>
+            This text contains an inline image <Image source={require('./flux.png')}/>. Neat, huh?
+          </Text>
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Text shadow">
+          <Text style={{fontSize: 20, textShadowOffset: {width: 2, height: 2}, textShadowRadius: 1, textShadowColor: '#00cccc'}}>
+            Demo text shadow
           </Text>
         </UIExplorerBlock>
       </UIExplorerPage>

@@ -72,24 +72,165 @@ var TextEventsExample = React.createClass({
   }
 });
 
+class AutoExpandingTextInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: '', height: 0};
+  }
+  render() {
+    return (
+      <TextInput
+        {...this.props}
+        multiline={true}
+        onChange={(event) => {
+          this.setState({
+            text: event.nativeEvent.text,
+            height: event.nativeEvent.contentSize.height,
+          });
+        }}
+        style={[styles.default, {height: Math.max(35, this.state.height)}]}
+        value={this.state.text}
+      />
+    );
+  }
+}
+
 class RewriteExample extends React.Component {
   constructor(props) {
     super(props);
     this.state = {text: ''};
   }
   render() {
+    var limit = 20;
+    var remainder = limit - this.state.text.length;
+    var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
-      <TextInput
-        onChangeText={(text) => {
-          text = text.replace(/ /g, '_');
-          this.setState({text});
-        }}
-        style={styles.singleLine}
-        value={this.state.text}
-      />
+      <View style={styles.rewriteContainer}>
+        <TextInput
+          multiline={false}
+          maxLength={limit}
+          onChangeText={(text) => {
+            text = text.replace(/ /g, '_');
+            this.setState({text});
+          }}
+          style={styles.default}
+          value={this.state.text}
+        />
+        <Text style={[styles.remainder, {color: remainderColor}]}>
+          {remainder}
+        </Text>
+      </View>
     );
   }
 }
+
+class TokenizedTextExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {text: 'Hello #World'};
+  }
+  render() {
+
+    //define delimiter
+    let delimiter = /\s+/;
+
+    //split string
+    let _text = this.state.text;
+    let token, index, parts = [];
+    while (_text) {
+      delimiter.lastIndex = 0;
+      token = delimiter.exec(_text);
+      if (token === null) {
+        break;
+      }
+      index = token.index;
+      if (token[0].length === 0) {
+        index = 1;
+      }
+      parts.push(_text.substr(0, index));
+      parts.push(token[0]);
+      index = index + token[0].length;
+      _text = _text.slice(index);
+    }
+    parts.push(_text);
+
+    //highlight hashtags
+    parts = parts.map((text) => {
+      if (/^#/.test(text)) {
+        return <Text key={text} style={styles.hashtag}>{text}</Text>;
+      } else {
+        return text;
+      }
+    });
+
+    return (
+      <View>
+        <TextInput
+          multiline={true}
+          style={styles.multiline}
+          onChangeText={(text) => {
+            this.setState({text});
+          }}>
+          <Text>{parts}</Text>
+        </TextInput>
+      </View>
+    );
+  }
+}
+
+var BlurOnSubmitExample = React.createClass({
+  focusNextField(nextField) {
+    this.refs[nextField].focus();
+  },
+
+  render: function() {
+    return (
+      <View>
+        <TextInput
+          ref="1"
+          style={styles.singleLine}
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('2')}
+        />
+        <TextInput
+          ref="2"
+          style={styles.singleLine}
+          keyboardType="email-address"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('3')}
+        />
+        <TextInput
+          ref="3"
+          style={styles.singleLine}
+          keyboardType="url"
+          placeholder="blurOnSubmit = false"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('4')}
+        />
+        <TextInput
+          ref="4"
+          style={styles.singleLine}
+          keyboardType="numeric"
+          placeholder="blurOnSubmit = false"
+          blurOnSubmit={false}
+          onSubmitEditing={() => this.focusNextField('5')}
+        />
+        <TextInput
+          ref="5"
+          style={styles.singleLine}
+          keyboardType="numbers-and-punctuation"
+          placeholder="blurOnSubmit = true"
+          returnKeyType="done"
+        />
+      </View>
+    );
+  }
+});
 
 var styles = StyleSheet.create({
   multiline: {
@@ -109,6 +250,10 @@ var styles = StyleSheet.create({
   singleLineWithHeightTextInput: {
     height: 30,
   },
+  hashtag: {
+    color: 'blue',
+    fontWeight: 'bold',
+  },
 });
 
 exports.title = '<TextInput>';
@@ -117,7 +262,13 @@ exports.examples = [
   {
     title: 'Auto-focus',
     render: function() {
-      return <TextInput autoFocus={true} style={styles.singleLine} />;
+      return (
+        <TextInput
+          autoFocus={true}
+          style={styles.singleLine}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      );
     }
   },
   {
@@ -138,6 +289,7 @@ exports.examples = [
       var examples = autoCapitalizeTypes.map((type) => {
         return (
           <TextInput
+            key={type}
             autoCapitalize={type}
             placeholder={'autoCapitalize: ' + type}
             style={styles.singleLine}
@@ -173,10 +325,12 @@ exports.examples = [
         'default',
         'email-address',
         'numeric',
+        'phone-pad',
       ];
       var examples = keyboardTypes.map((type) => {
         return (
           <TextInput
+            key={type}
             keyboardType={type}
             placeholder={'keyboardType: ' + type}
             style={styles.singleLine}
@@ -185,6 +339,10 @@ exports.examples = [
       });
       return <View>{examples}</View>;
     }
+  },
+  {
+    title: 'Blur on submit',
+    render: function(): ReactElement { return <BlurOnSubmitExample />; },
   },
   {
     title: 'Event handling',
@@ -221,6 +379,18 @@ exports.examples = [
             style={styles.singleLine}
             underlineColorAndroid="blue"
           />
+          <TextInput
+            defaultValue="Same BackgroundColor as View "
+            style={[styles.singleLine, {backgroundColor: 'rgba(100, 100, 100, 0.3)'}]}>
+            <Text style={{backgroundColor: 'rgba(100, 100, 100, 0.3)'}}>
+              Darker backgroundColor
+            </Text>
+          </TextInput>
+          <TextInput
+            defaultValue="Highlight Color is red"
+            selectionColor={'red'}
+            style={styles.singleLine}>
+          </TextInput>
         </View>
       );
     }
@@ -270,25 +440,19 @@ exports.examples = [
             placeholder="multiline, aligned top-left"
             placeholderTextColor="red"
             multiline={true}
-            textAlign="start"
-            textAlignVertical="top"
-            style={styles.multiline}
+            style={[styles.multiline, {textAlign: "left", textAlignVertical: "top"}]}
           />
           <TextInput
             autoCorrect={true}
             placeholder="multiline, aligned center"
             placeholderTextColor="green"
             multiline={true}
-            textAlign="center"
-            textAlignVertical="center"
-            style={[styles.multiline]}
+            style={[styles.multiline, {textAlign: "center", textAlignVertical: "center"}]}
           />
           <TextInput
             autoCorrect={true}
             multiline={true}
-            textAlign="end"
-            textAlignVertical="bottom"
-            style={[styles.multiline, {color: 'blue'}]}>
+            style={[styles.multiline, {color: 'blue'}, {textAlign: "right", textAlignVertical: "bottom"}]}>
             <Text style={styles.multiline}>multiline with children, aligned bottom-right</Text>
           </TextInput>
         </View>
@@ -311,6 +475,26 @@ exports.examples = [
           />
         </View>
       );
+    }
+  },
+  {
+    title: 'Auto-expanding',
+    render: function() {
+      return (
+        <View>
+          <AutoExpandingTextInput
+            placeholder="height increases with content"
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+          />
+        </View>
+      );
+    }
+  },
+  {
+    title: 'Attributed text',
+    render: function() {
+      return <TokenizedTextExample />;
     }
   },
 ];

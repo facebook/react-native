@@ -7,8 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import "RCTBridgeModule.h"
+#import "RCTDefines.h"
 
-@interface RCTWebSocketManager : NSObject <RCTBridgeModule>
+#if RCT_DEV // Only supported in dev mode
 
+#import "RCTWebSocketProxy.h"
+
+@interface RCTWebSocketManager : NSObject <RCTWebSocketProxy>
 @end
+
+#endif

@@ -24,35 +24,44 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)canLoadImageURL:(NSURL *)requestURL
 {
-  return [requestURL.scheme.lowercaseString isEqualToString:@"ph"];
+  return [requestURL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL size:(CGSize)size scale:(CGFloat)scale resizeMode:(UIViewContentMode)resizeMode progressHandler:(RCTImageLoaderProgressBlock)progressHandler completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                              size:(CGSize)size
+                                             scale:(CGFloat)scale
+                                        resizeMode:(RCTResizeMode)resizeMode
+                                   progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                 completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   // Using PhotoKit for iOS 8+
   // The 'ph://' prefix is used by FBMediaKit to differentiate between
   // assets-library. It is prepended to the local ID so that it is in the
   // form of an, NSURL which is what assets-library uses.
-  NSString *phAssetID = [imageURL.absoluteString substringFromIndex:[@"ph://" length]];
+  NSString *phAssetID = [imageURL.absoluteString substringFromIndex:@"ph://".length];
   PHFetchResult *results = [PHAsset fetchAssetsWithLocalIdentifiers:@[phAssetID] options:nil];
   if (results.count == 0) {
     NSString *errorText = [NSString stringWithFormat:@"Failed to fetch PHAsset with local identifier %@ with no error message.", phAssetID];
-    NSError *error = RCTErrorWithMessage(errorText);
-    completionHandler(error, nil);
+    completionHandler(RCTErrorWithMessage(errorText), nil);
     return ^{};
   }
 
   PHAsset *asset = [results firstObject];
-
   PHImageRequestOptions *imageOptions = [PHImageRequestOptions new];
-  imageOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-    static const double multiplier = 1e6;
-    progressHandler(progress * multiplier, multiplier);
-  };
+
+  if (progressHandler) {
+    imageOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary<NSString *, id> *info) {
+      static const double multiplier = 1e6;
+      progressHandler(progress * multiplier, multiplier);
+    };
+  }
+
+  // Note: PhotoKit defaults to a deliveryMode of PHImageRequestOptionsDeliveryModeOpportunistic
+  // which means it may call back multiple times - we probably don't want that
+  imageOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
 
   BOOL useMaximumSize = CGSizeEqualToSize(size, CGSizeZero);
   CGSize targetSize;
-
   if (useMaximumSize) {
     targetSize = PHImageManagerMaximumSize;
     imageOptions.resizeMode = PHImageRequestOptionsResizeModeNone;
@@ -62,11 +71,16 @@ RCT_EXPORT_MODULE()
   }
 
   PHImageContentMode contentMode = PHImageContentModeAspectFill;
-  if (resizeMode == UIViewContentModeScaleAspectFit) {
+  if (resizeMode == RCTResizeModeContain) {
     contentMode = PHImageContentModeAspectFit;
   }
 
-  PHImageRequestID requestID = [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:contentMode options:imageOptions resultHandler:^(UIImage *result, NSDictionary *info) {
+  PHImageRequestID requestID =
+  [[PHImageManager defaultManager] requestImageForAsset:asset
+                                             targetSize:targetSize
+                                            contentMode:contentMode
+                                                options:imageOptions
+                                          resultHandler:^(UIImage *result, NSDictionary<NSString *, id> *info) {
     if (result) {
       completionHandler(nil, result);
     } else {

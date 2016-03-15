@@ -24,11 +24,50 @@ var {
   ActivityIndicatorIOS
 } = React;
 
+var base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABLCAQAAACSR7JhAAADtUlEQVR4Ac3YA2Bj6QLH0XPT1Fzbtm29tW3btm3bfLZtv7e2ObZnms7d8Uw098tuetPzrxv8wiISrtVudrG2JXQZ4VOv+qUfmqCGGl1mqLhoA52oZlb0mrjsnhKpgeUNEs91Z0pd1kvihA3ULGVHiQO2narKSHKkEMulm9VgUyE60s1aWoMQUbpZOWE+kaqs4eLEjdIlZTcFZB0ndc1+lhB1lZrIuk5P2aib1NBpZaL+JaOGIt0ls47SKzLC7CqrlGF6RZ09HGoNy1lYl2aRSWL5GuzqWU1KafRdoRp0iOQEiDzgZPnG6DbldcomadViflnl/cL93tOoVbsOLVM2jylvdWjXolWX1hmfZbGR/wjypDjFLSZIRov09BgYmtUqPQPlQrPapecLgTIy0jMgPKtTeob2zWtrGH3xvjUkPCtNg/tm1rjwrMa+mdUkPd3hWbH0jArPGiU9ufCsNNWFZ40wpwn+62/66R2RUtoso1OB34tnLOcy7YB1fUdc9e0q3yru8PGM773vXsuZ5YIZX+5xmHwHGVvlrGPN6ZSiP1smOsMMde40wKv2VmwPPVXNut4sVpUreZiLBHi0qln/VQeI/LTMYXpsJtFiclUN+5HVZazim+Ky+7sAvxWnvjXrJFneVtLWLyPJu9K3cXLWeOlbMTlrIelbMDlrLenrjEQOtIF+fuI9xRp9ZBFp6+b6WT8RrxEpdK64BuvHgDk+vUy+b5hYk6zfyfs051gRoNO1usU12WWRWL73/MMEy9pMi9qIrR4ZpV16Rrvduxazmy1FSvuFXRkqTnE7m2kdb5U8xGjLw/spRr1uTov4uOgQE+0N/DvFrG/Jt7i/FzwxbA9kDanhf2w+t4V97G8lrT7wc08aA2QNUkuTfW/KimT01wdlfK4yEw030VfT0RtZbzjeMprNq8m8tnSTASrTLti64oBNdpmMQm0eEwvfPwRbUBywG5TzjPCsdwk3IeAXjQblLCoXnDVeoAz6SfJNk5TTzytCNZk/POtTSV40NwOFWzw86wNJRpubpXsn60NJFlHeqlYRbslqZm2jnEZ3qcSKgm0kTli3zZVS7y/iivZTweYXJ26Y+RTbV1zh3hYkgyFGSTKPfRVbRqWWVReaxYeSLarYv1Qqsmh1s95S7G+eEWK0f3jYKTbV6bOwepjfhtafsvUsqrQvrGC8YhmnO9cSCk3yuY984F1vesdHYhWJ5FvASlacshUsajFt2mUM9pqzvKGcyNJW0arTKN1GGGzQlH0tXwLDgQTurS8eIQAAAABJRU5ErkJggg==';
+
 var ImageCapInsetsExample = require('./ImageCapInsetsExample');
 
-var NetworkImageExample = React.createClass({
-  watchID: (null: ?number),
+var NetworkImageCallbackExample = React.createClass({
+  getInitialState: function() {
+    return {
+      events: [],
+      mountTime: new Date(),
+    };
+  },
 
+  componentWillMount() {
+    this.setState({mountTime: new Date()});
+  },
+
+  render: function() {
+    var { mountTime } = this.state;
+
+    return (
+      <View>
+        <Image
+          source={this.props.source}
+          style={[styles.base, {overflow: 'visible'}]}
+          onLoadStart={() => this._loadEventFired(`✔ onLoadStart (+${new Date() - mountTime}ms)`)}
+          onLoad={() => this._loadEventFired(`✔ onLoad (+${new Date() - mountTime}ms)`)}
+          onLoadEnd={() => this._loadEventFired(`✔ onLoadEnd (+${new Date() - mountTime}ms)`)}
+        />
+
+        <Text style={{marginTop: 20}}>
+          {this.state.events.join('\n')}
+        </Text>
+      </View>
+    );
+  },
+
+  _loadEventFired(event) {
+    this.setState((state) => {
+      return state.events = [...state.events, event];
+    });
+  }
+});
+
+var NetworkImageExample = React.createClass({
   getInitialState: function() {
     return {
       error: false,
@@ -56,6 +95,38 @@ var NetworkImageExample = React.createClass({
   }
 });
 
+var ImageSizeExample = React.createClass({
+  getInitialState: function() {
+    return {
+      width: 0,
+      height: 0,
+    };
+  },
+  componentDidMount: function() {
+    Image.getSize(this.props.source.uri, (width, height) => {
+      this.setState({width, height});
+    });
+  },
+  render: function() {
+    return (
+      <View style={{flexDirection: 'row'}}>
+        <Image
+          style={{
+            width: 60,
+            height: 60,
+            backgroundColor: 'transparent',
+            marginRight: 10,
+          }}
+          source={this.props.source} />
+        <Text>
+          Actual dimensions:{'\n'}
+          Width: {this.state.width}, Height: {this.state.height}
+        </Text>
+      </View>
+    );
+  },
+});
+
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Image>';
@@ -77,16 +148,24 @@ exports.examples = [
   },
   {
     title: 'Plain Static Image',
-    description: 'Static assets should be required by prefixing with `image!` ' +
-      'and are located in the app bundle.',
+    description: 'Static assets should be placed in the source code tree, and ' +
+    'required in the same way as JavaScript modules.',
     render: function() {
       return (
         <View style={styles.horizontal}>
-          <Image source={require('image!uie_thumb_normal')} style={styles.icon} />
-          <Image source={require('image!uie_thumb_selected')} style={styles.icon} />
-          <Image source={require('image!uie_comment_normal')} style={styles.icon} />
-          <Image source={require('image!uie_comment_highlighted')} style={styles.icon} />
+          <Image source={require('./uie_thumb_normal.png')} style={styles.icon} />
+          <Image source={require('./uie_thumb_selected.png')} style={styles.icon} />
+          <Image source={require('./uie_comment_normal.png')} style={styles.icon} />
+          <Image source={require('./uie_comment_highlighted.png')} style={styles.icon} />
         </View>
+      );
+    },
+  },
+  {
+    title: 'Image Loading Events',
+    render: function() {
+      return (
+        <NetworkImageCallbackExample source={{uri: 'http://facebook.github.io/origami/public/images/blog-hero.jpg?r=1'}}/>
       );
     },
   },
@@ -109,6 +188,20 @@ exports.examples = [
     platform: 'ios',
   },
   {
+    title: 'defaultSource',
+    description: 'Show a placeholder image when a network image is loading',
+    render: function() {
+      return (
+        <Image
+          defaultSource={require('./bunny.png')}
+          source={{uri: 'http://facebook.github.io/origami/public/images/birds.jpg'}}
+          style={styles.base}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'Border Color',
     render: function() {
       return (
@@ -124,7 +217,6 @@ exports.examples = [
         </View>
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Border Width',
@@ -142,7 +234,6 @@ exports.examples = [
         </View>
       );
     },
-    platform: 'ios',
   },
   {
     title: 'Border Radius',
@@ -243,19 +334,19 @@ exports.examples = [
         <View>
           <View style={styles.horizontal}>
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa' }]}
             />
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#4cd964' }]}
             />
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#ff2d55' }]}
             />
             <Image
-              source={require('image!uie_thumb_normal')}
+              source={require('./uie_thumb_normal.png')}
               style={[styles.icon, styles.leftMargin, {borderRadius: 5, tintColor: '#8e8e93' }]}
             />
           </View>
@@ -290,37 +381,41 @@ exports.examples = [
       'rendered within the frame.',
     render: function() {
       return (
-        <View style={styles.horizontal}>
-          <View>
-            <Text style={[styles.resizeModeText]}>
-              Contain
-            </Text>
-            <Image
-              style={styles.resizeMode}
-              resizeMode={Image.resizeMode.contain}
-              source={fullImage}
-            />
-          </View>
-          <View style={styles.leftMargin}>
-            <Text style={[styles.resizeModeText]}>
-              Cover
-            </Text>
-            <Image
-              style={styles.resizeMode}
-              resizeMode={Image.resizeMode.cover}
-              source={fullImage}
-            />
-          </View>
-          <View style={styles.leftMargin}>
-            <Text style={[styles.resizeModeText]}>
-              Stretch
-            </Text>
-            <Image
-              style={styles.resizeMode}
-              resizeMode={Image.resizeMode.stretch}
-              source={fullImage}
-            />
-          </View>
+        <View>
+          {[smallImage, fullImage].map((image, index) => {
+            return <View style={styles.horizontal} key={index}>
+              <View>
+                <Text style={[styles.resizeModeText]}>
+                  Contain
+                </Text>
+                <Image
+                  style={styles.resizeMode}
+                  resizeMode={Image.resizeMode.contain}
+                  source={image}
+                />
+              </View>
+              <View style={styles.leftMargin}>
+                <Text style={[styles.resizeModeText]}>
+                  Cover
+                </Text>
+                <Image
+                  style={styles.resizeMode}
+                  resizeMode={Image.resizeMode.cover}
+                  source={image}
+                />
+              </View>
+              <View style={styles.leftMargin}>
+                <Text style={[styles.resizeModeText]}>
+                  Stretch
+                </Text>
+                <Image
+                  style={styles.resizeMode}
+                  resizeMode={Image.resizeMode.stretch}
+                  source={image}
+                />
+            </View>
+          </View>;
+        })}
         </View>
       );
     },
@@ -338,6 +433,18 @@ exports.examples = [
     platform: 'ios',
   },
   {
+    title: 'Base64 image',
+    render: function() {
+      return (
+        <Image
+          style={styles.base64}
+          source={{uri: base64Icon, scale: 3}}
+        />
+      );
+    },
+    platform: 'ios',
+  },
+  {
     title: 'Cap Insets',
     description:
       'When the image is resized, the corners of the size specified ' +
@@ -346,6 +453,13 @@ exports.examples = [
       'resizable rounded buttons, shadows, and other resizable assets.',
     render: function() {
       return <ImageCapInsetsExample />;
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Image Size',
+    render: function() {
+      return <ImageSizeExample source={fullImage} />; 
     },
     platform: 'ios',
   },
@@ -400,5 +514,10 @@ var styles = StyleSheet.create({
   gif: {
     flex: 1,
     height: 200,
+  },
+  base64: {
+    flex: 1,
+    height: 50,
+    resizeMode: 'contain',
   },
 });

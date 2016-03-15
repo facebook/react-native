@@ -7,7 +7,9 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
+#if __OBJC__
+#  import <Foundation/Foundation.h>
+#endif
 
 /**
  * Make global functions usable in C++

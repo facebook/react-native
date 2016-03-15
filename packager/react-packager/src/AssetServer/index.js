@@ -13,7 +13,7 @@ const Promise = require('promise');
 const crypto = require('crypto');
 const declareOpts = require('../lib/declareOpts');
 const fs = require('fs');
-const getAssetDataFromName = require('../lib/getAssetDataFromName');
+const getAssetDataFromName = require('node-haste').getAssetDataFromName;
 const path = require('path');
 
 const stat = Promise.denodeify(fs.stat);
@@ -60,6 +60,7 @@ class AssetServer {
 
     return this._getAssetRecord(assetPath, platform).then(record => {
       data.scales = record.scales;
+      data.files = record.files;
 
       return Promise.all(
         record.files.map(file => stat(file))

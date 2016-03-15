@@ -9,6 +9,8 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nullable;
+
 import android.os.Bundle;
 
 public class Arguments {
@@ -138,5 +140,53 @@ public class Arguments {
       }
     }
     return map;
+  }
+
+  /**
+   * Convert a {@link WritableMap} to a {@link Bundle}.
+   * @param readableMap the {@link WritableMap} to convert.
+   * @return the converted {@link Bundle}.
+   */
+  @Nullable
+  public static Bundle toBundle(@Nullable ReadableMap readableMap) {
+    if (readableMap == null) {
+      return null;
+    }
+
+    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+    if (!iterator.hasNextKey()) {
+      return null;
+    }
+
+    Bundle bundle = new Bundle();
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      ReadableType readableType = readableMap.getType(key);
+      switch (readableType) {
+        case Null:
+          bundle.putString(key, null);
+          break;
+        case Boolean:
+          bundle.putBoolean(key, readableMap.getBoolean(key));
+          break;
+        case Number:
+          // Can be int or double.
+          bundle.putDouble(key, readableMap.getDouble(key));
+          break;
+        case String:
+          bundle.putString(key, readableMap.getString(key));
+          break;
+        case Map:
+          bundle.putBundle(key, toBundle(readableMap.getMap(key)));
+          break;
+        case Array:
+          // TODO t8873322
+          throw new UnsupportedOperationException("Arrays aren't supported yet.");
+        default:
+          throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
+      }
+    }
+
+    return bundle;
   }
 }

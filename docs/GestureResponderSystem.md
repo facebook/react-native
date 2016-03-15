@@ -51,8 +51,8 @@ If the view is responding, the following handlers can be called:
      + `identifier` - The ID of the touch
      + `locationX` - The X position of the touch, relative to the element
      + `locationY` - The Y position of the touch, relative to the element
-     + `pageX` - The X position of the touch, relative to the screen
-     + `pageY` - The Y position of the touch, relative to the screen
+     + `pageX` - The X position of the touch, relative to the root element
+     + `pageY` - The Y position of the touch, relative to the root element
      + `target` - The node id of the element receiving the touch event
      + `timestamp` - A time identifier for the touch, useful for velocity calculation
      + `touches` - Array of all current touches on the screen
@@ -68,4 +68,4 @@ However, sometimes a parent will want to make sure that it becomes responder. Th
 
 ### PanResponder
 
-For higher-level gesture interpretation, check out [PanResponder](/react-native/docs/panresponder.html).
+For higher-level gesture interpretation, check out [PanResponder](docs/panresponder.html).

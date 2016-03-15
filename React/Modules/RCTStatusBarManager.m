@@ -46,15 +46,13 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-    [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
-    [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+  _bridge = bridge;
 
-  }
-  return self;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
+  [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
 }
 
 - (void)dealloc
@@ -72,10 +70,10 @@ RCT_EXPORT_MODULE()
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
   NSDictionary *event = @{
     @"frame": @{
-        @"x": @(frame.origin.x),
-        @"y": @(frame.origin.y),
-        @"width": @(frame.size.width),
-        @"height": @(frame.size.height),
+      @"x": @(frame.origin.x),
+      @"y": @(frame.origin.y),
+      @"width": @(frame.size.width),
+      @"height": @(frame.size.height),
     },
   };
   [_bridge.eventDispatcher sendDeviceEventWithName:eventName body:event];
@@ -89,6 +87,13 @@ RCT_EXPORT_MODULE()
 - (void)applicationWillChangeStatusBarFrame:(NSNotification *)notification
 {
   [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
+}
+
+RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
+{
+  callback(@[@{
+    @"height": @([UIApplication sharedApplication].statusBarFrame.size.height),
+  }]);
 }
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle

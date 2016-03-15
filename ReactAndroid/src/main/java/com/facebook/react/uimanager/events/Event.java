@@ -11,15 +11,34 @@ package com.facebook.react.uimanager.events;
 
 /**
  * A UI event that can be dispatched to JS.
+ *
+ * For dispatching events {@link EventDispatcher#dispatchEvent} should be used. Once event object
+ * is passed to the EventDispatched it should no longer be used as EventDispatcher may decide
+ * to recycle that object (by calling {@link #dispose}).
  */
 public abstract class Event<T extends Event> {
 
-  private final int mViewTag;
-  private final long mTimestampMs;
+  private static int sUniqueID = 0;
+
+  private boolean mInitialized;
+  private int mViewTag;
+  private long mTimestampMs;
+  private int mUniqueID = sUniqueID++;
+
+  protected Event() {
+  }
 
   protected Event(int viewTag, long timestampMs) {
+    init(viewTag, timestampMs);
+  }
+
+  /**
+   * This method needs to be called before event is sent to event dispatcher.
+   */
+  protected void init(int viewTag, long timestampMs) {
     mViewTag = viewTag;
     mTimestampMs = timestampMs;
+    mInitialized = true;
   }
 
   /**
@@ -65,10 +84,26 @@ public abstract class Event<T extends Event> {
   }
 
   /**
+   * @return The unique id of this event.
+   */
+  public int getUniqueID() {
+    return mUniqueID;
+  }
+
+  /**
    * Called when the EventDispatcher is done with an event, either because it was dispatched or
    * because it was coalesced with another Event.
    */
-  public void dispose() {
+  public void onDispose() {
+  }
+
+  /*package*/ boolean isInitialized() {
+    return mInitialized;
+  }
+
+  /*package*/ final void dispose() {
+    mInitialized = false;
+    onDispose();
   }
 
   /**

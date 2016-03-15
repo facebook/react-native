@@ -23,6 +23,7 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) BOOL isHighlighted;
 @property (nonatomic, assign) CGFloat letterSpacing;
 @property (nonatomic, assign) CGFloat lineHeight;
+@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
 @property (nonatomic, assign) NSUInteger numberOfLines;
 @property (nonatomic, assign) CGSize shadowOffset;
 @property (nonatomic, assign) NSTextAlignment textAlign;
@@ -32,6 +33,10 @@ extern NSString *const RCTReactTagAttributeName;
 @property (nonatomic, assign) RCTTextDecorationLineType textDecorationLine;
 @property (nonatomic, assign) CGFloat fontSizeMultiplier;
 @property (nonatomic, assign) BOOL allowFontScaling;
+@property (nonatomic, assign) CGFloat opacity;
+@property (nonatomic, assign) CGSize textShadowOffset;
+@property (nonatomic, assign) CGFloat textShadowRadius;
+@property (nonatomic, strong) UIColor *textShadowColor;
 
 - (void)recomputeText;
 

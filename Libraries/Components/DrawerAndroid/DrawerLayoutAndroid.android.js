@@ -10,18 +10,17 @@
  */
 'use strict';
 
-var DrawerConsts = require('NativeModules').UIManager.AndroidDrawerLayout.Constants;
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 var ReactPropTypes = require('ReactPropTypes');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-var RCTUIManager = require('NativeModules').UIManager;
 var StyleSheet = require('StyleSheet');
+var UIManager = require('UIManager');
 var View = require('View');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
+var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
+
 var dismissKeyboard = require('dismissKeyboard');
-var merge = require('merge');
+var requireNativeComponent = require('requireNativeComponent');
 
 var RK_DRAWER_REF = 'drawerlayout';
 var INNERVIEW_REF = 'innerView';
@@ -29,6 +28,7 @@ var INNERVIEW_REF = 'innerView';
 var DrawerLayoutValidAttributes = {
   drawerWidth: true,
   drawerPosition: true,
+  drawerLockMode: true
 };
 
 var DRAWER_STATES = [
@@ -50,15 +50,19 @@ var DRAWER_STATES = [
  * ```
  * render: function() {
  *   var navigationView = (
- *     <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
+ *     <View style={{flex: 1, backgroundColor: '#fff'}}>
+ *       <Text style={{margin: 10, fontSize: 15, textAlign: 'left'}}>I'm in the Drawer!</Text>
+ *     </View>
  *   );
  *   return (
  *     <DrawerLayoutAndroid
  *       drawerWidth={300}
  *       drawerPosition={DrawerLayoutAndroid.positions.Left}
  *       renderNavigationView={() => navigationView}>
- *       <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
- *       <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
+ *       <View style={{flex: 1, alignItems: 'center'}}>
+ *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
+ *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>World!</Text>
+ *       </View>
  *     </DrawerLayoutAndroid>
  *   );
  * },
@@ -70,6 +74,7 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   propTypes: {
+    ...View.propTypes,
     /**
      * Determines whether the keyboard gets dismissed in response to a drag.
      *   - 'none' (the default), drags do not dismiss the keyboard.
@@ -92,13 +97,25 @@ var DrawerLayoutAndroid = React.createClass({
      */
     drawerWidth: ReactPropTypes.number,
     /**
+     * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
+     * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
+     * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
+     * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
+     * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
+     */
+    drawerLockMode: ReactPropTypes.oneOf([
+      'unlocked',
+      'locked-closed',
+      'locked-open'
+    ]),
+    /**
      * Function called whenever there is an interaction with the navigation view.
      */
     onDrawerSlide: ReactPropTypes.func,
     /**
      * Function called when the drawer state has changed. The drawer can be in 3 states:
      * - idle, meaning there is no interaction with the navigation view happening at the time
-     * - dragging, meaning there is currently an interation with the navigation view
+     * - dragging, meaning there is currently an interaction with the navigation view
      * - settling, meaning that there was an interaction with the navigation view, and the
      * navigation view is now finishing it's closing or opening animation
      */
@@ -138,6 +155,7 @@ var DrawerLayoutAndroid = React.createClass({
         ref={RK_DRAWER_REF}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
+        drawerLockMode={this.props.drawerLockMode}
         style={styles.base}
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
@@ -177,17 +195,17 @@ var DrawerLayoutAndroid = React.createClass({
   },
 
   openDrawer: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      RCTUIManager.AndroidDrawerLayout.Commands.openDrawer,
+      UIManager.AndroidDrawerLayout.Commands.openDrawer,
       null
     );
   },
 
   closeDrawer: function() {
-    RCTUIManager.dispatchViewManagerCommand(
+    UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      RCTUIManager.AndroidDrawerLayout.Commands.closeDrawer,
+      UIManager.AndroidDrawerLayout.Commands.closeDrawer,
       null
     );
   },
@@ -216,9 +234,6 @@ var styles = StyleSheet.create({
 });
 
 // The View that contains both the actual drawer and the main view
-var AndroidDrawerLayout = createReactNativeComponentClass({
-  validAttributes: merge(ReactNativeViewAttributes.UIView, DrawerLayoutValidAttributes),
-  uiViewClassName: 'AndroidDrawerLayout',
-});
+var AndroidDrawerLayout = requireNativeComponent('AndroidDrawerLayout', DrawerLayoutAndroid);
 
 module.exports = DrawerLayoutAndroid;

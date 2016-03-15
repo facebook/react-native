@@ -10,18 +10,19 @@
 
 var path = require('path');
 
-// Don't forget to everything listed here to `testConfig.json`
+// Don't forget to everything listed here to `package.json`
 // modulePathIgnorePatterns.
 var sharedBlacklist = [
-  'node_modules/react-tools/src/React.js',
-  'node_modules/react-tools/src/renderers/shared/event/EventPropagators.js',
-  'node_modules/react-tools/src/renderers/shared/event/eventPlugins/ResponderEventPlugin.js',
-  'node_modules/react-tools/src/shared/vendor/core/ExecutionEnvironment.js',
-];
+  /node_modules[/\\]react[/\\]dist[/\\].*/,
+  'node_modules/react/lib/React.js',
+  'node_modules/react/lib/ReactDOM.js',
 
-// Raw unescaped patterns in case you need to use wildcards
-var sharedBlacklistWildcards = [
-  'website\/node_modules\/.*',
+  'downstream/core/invariant.js',
+
+  /website\/node_modules\/.*/,
+
+  // TODO(jkassens, #9876132): Remove this rule when it's no longer needed.
+  'Libraries/Relay/relay/tools/relayUnstableBatchedUpdates.js',
 ];
 
 var platformBlacklists = {
@@ -39,10 +40,16 @@ var platformBlacklists = {
   ],
 };
 
-function escapeRegExp(str) {
-  var escaped = str.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-  // convert the '/' into an escaped local file separator
-  return escaped.replace(/\//g,'\\' + path.sep);
+function escapeRegExp(pattern) {
+  if (Object.prototype.toString.call(pattern) === '[object RegExp]') {
+    return pattern.source.replace(/\//g, path.sep);
+  } else if (typeof pattern === 'string') {
+    var escaped = pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+    // convert the '/' into an escaped local file separator
+    return escaped.replace(/\//g,'\\' + path.sep);
+  } else {
+    throw new Error('Unexpected packager blacklist pattern: ' + pattern);
+  }
 }
 
 function blacklist(platform, additionalBlacklist) {
@@ -50,7 +57,6 @@ function blacklist(platform, additionalBlacklist) {
     (additionalBlacklist || []).concat(sharedBlacklist)
       .concat(platformBlacklists[platform] || [])
       .map(escapeRegExp)
-      .concat(sharedBlacklistWildcards)
       .join('|') +
     ')$'
   );

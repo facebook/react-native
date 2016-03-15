@@ -11,7 +11,7 @@
 const Promise = require('promise');
 const Server = require('../Server');
 const bser = require('bser');
-const debug = require('debug')('ReactPackager:SocketServer');
+const debug = require('debug')('ReactNativePackager:SocketServer');
 const fs = require('fs');
 const net = require('net');
 
@@ -23,8 +23,15 @@ class SocketServer {
     this._server = net.createServer();
     this._server.listen(sockPath);
     this._ready = new Promise((resolve, reject) => {
-      this._server.on('error', (e) => reject(e));
-      this._server.on('listening', () => {
+      this._server.once('error', (e) => reject(e));
+      this._server.once('listening', () => {
+        // Remove error listener so we make sure errors propagate.
+        this._server.removeAllListeners('error');
+        this._server.on(
+          'close',
+          () => debug('server closed')
+        );
+
         debug(
           'Process %d listening on socket path %s ' +
           'for server with options %j',
@@ -41,17 +48,15 @@ class SocketServer {
     });
 
     process.on('uncaughtException', (error) => {
-      debug('uncaught error', error);
+      debug('uncaught error', error.stack);
       setImmediate(() => process.exit(1));
     });
 
-    this._numConnections = 0;
     this._server.on('connection', (sock) => this._handleConnection(sock));
 
     // Disable the file watcher.
     options.nonPersistent = true;
     this._packagerServer = new Server(options);
-    this._jobs = 0;
     this._dieEventually(MAX_STARTUP_TIME);
   }
 
@@ -61,8 +66,6 @@ class SocketServer {
 
   _handleConnection(sock) {
     debug('connection to server', process.pid);
-    this._numConnections++;
-    sock.on('close', () => this._numConnections--);
 
     const bunser = new bser.BunserBuf();
     sock.on('data', (buf) => bunser.append(buf));
@@ -88,7 +91,6 @@ class SocketServer {
 
     const handleError = (error) => {
       debug('request error', error);
-      this._jobs--;
       this._reply(sock, m.id, 'error', error.stack);
 
       // Fatal error from JSTransformer transform workers.
@@ -99,7 +101,6 @@ class SocketServer {
 
     switch (m.type) {
       case 'getDependencies':
-        this._jobs++;
         this._packagerServer.getDependencies(m.data).then(
           ({ dependencies }) => this._reply(sock, m.id, 'result', dependencies),
           handleError,
@@ -107,9 +108,22 @@ class SocketServer {
         break;
 
       case 'buildBundle':
-        this._jobs++;
         this._packagerServer.buildBundle(m.data).then(
           (result) => this._reply(sock, m.id, 'result', result),
+          handleError,
+        );
+        break;
+
+      case 'buildPrepackBundle':
+        this._packagerServer.buildPrepackBundle(m.data).then(
+          (result) => this._reply(sock, m.id, 'result', result),
+          handleError,
+        );
+        break;
+
+      case 'getOrderedDependencyPaths':
+        this._packagerServer.getOrderedDependencyPaths(m.data).then(
+          (dependencies) => this._reply(sock, m.id, 'result', dependencies),
           handleError,
         );
         break;
@@ -133,17 +147,19 @@ class SocketServer {
     // Debounce the kill timer to make sure all the bytes are sent through
     // the socket and the client has time to fully finish and disconnect.
     this._dieEventually();
-    this._jobs--;
   }
 
   _dieEventually(delay = MAX_IDLE_TIME) {
     clearTimeout(this._deathTimer);
     this._deathTimer = setTimeout(() => {
-      if (this._jobs <= 0 && this._numConnections <= 0) {
-        debug('server dying', process.pid);
-        process.exit();
-      }
-      this._dieEventually();
+      this._server.getConnections((error, numConnections) => {
+        // error is passed when connection count is below 0
+        if (error || numConnections <= 0) {
+          debug('server dying', process.pid);
+          process.exit();
+        }
+        this._dieEventually();
+      });
     }, delay);
   }
 

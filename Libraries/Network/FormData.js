@@ -47,47 +47,46 @@ type FormDataPart = {
  */
 class FormData {
   _parts: Array<FormDataNameValuePair>;
-  _partsByKey: {[key: string]: FormDataNameValuePair};
 
   constructor() {
     this._parts = [];
-    this._partsByKey = {};
   }
 
   append(key: string, value: FormDataValue) {
-    var parts = this._partsByKey[key];
-    if (parts) {
-      // It's a bit unclear what the behaviour should be in this case.
-      // The XMLHttpRequest spec doesn't specify it, while MDN says that
-      // the any new values should appended to existing values. We're not
-      // doing that for now -- it's tedious and doesn't seem worth the effort.
-      parts[1] = value;
-      return;
-    }
-    parts = [key, value];
-    this._parts.push(parts);
-    this._partsByKey[key] = parts;
+    // The XMLHttpRequest spec doesn't specify if duplicate keys are allowed.
+    // MDN says that any new values should be appended to existing values.
+    // In any case, major browsers allow duplicate keys, so that's what we'll do
+    // too. They'll simply get appended as additional form data parts in the
+    // request body, leaving the server to deal with them.
+    this._parts.push([key, value]);
   }
 
   getParts(): Array<FormDataPart> {
     return this._parts.map(([name, value]) => {
       var contentDisposition = 'form-data; name="' + name + '"';
-      var headers: Headers = {'content-disposition': contentDisposition};
-      if (typeof value === 'string') {
-        return {string: value, headers, fieldName: name};
+      // Convert non-object values to strings as per FormData.append() spec
+      if (typeof value !== 'object') {
+        value = '' + value;
       }
+
+      /* $FlowIssue(>=0.20.1) #9463928 */
+      var headers: Headers = {'content-disposition': contentDisposition};
 
       // The body part is a "blob", which in React Native just means
       // an object with a `uri` attribute. Optionally, it can also
       // have a `name` and `type` attribute to specify filename and
       // content type (cf. web Blob interface.)
-      if (typeof value.name === 'string') {
-        headers['content-disposition'] += '; filename="' + value.name + '"';
+      if (typeof value === 'object') {
+        if (typeof value.name === 'string') {
+          headers['content-disposition'] += '; filename="' + value.name + '"';
+        }
+        if (typeof value.type === 'string') {
+          headers['content-type'] = value.type;
+        }
+        return {...value, headers, fieldName: name};
       }
-      if (typeof value.type === 'string') {
-        headers['content-type'] = value.type;
-      }
-      return {...value, headers, fieldName: name};
+      // Cast to string all other values
+      return {string: String(value), headers, fieldName: name};
     });
   }
 }

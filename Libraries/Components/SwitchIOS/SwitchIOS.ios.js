@@ -13,10 +13,12 @@
  */
 'use strict';
 
+var ColorPropType = require('ColorPropType');
 var NativeMethodsMixin = require('NativeMethodsMixin');
 var PropTypes = require('ReactPropTypes');
 var React = require('React');
 var StyleSheet = require('StyleSheet');
+var View = require('View');
 
 var requireNativeComponent = require('requireNativeComponent');
 
@@ -40,6 +42,7 @@ var SwitchIOS = React.createClass({
   mixins: [NativeMethodsMixin],
 
   propTypes: {
+    ...View.propTypes,
     /**
      * The value of the switch, if true the switch will be turned on.
      * Default value is false.
@@ -60,17 +63,17 @@ var SwitchIOS = React.createClass({
     /**
      * Background color when the switch is turned on.
      */
-    onTintColor: PropTypes.string,
+    onTintColor: ColorPropType,
 
     /**
      * Background color for the switch round button.
      */
-    thumbTintColor: PropTypes.string,
+    thumbTintColor: ColorPropType,
 
     /**
      * Background color when the switch is turned off.
      */
-    tintColor: PropTypes.string,
+    tintColor: ColorPropType,
   },
 
   getDefaultProps: function(): DefaultProps {

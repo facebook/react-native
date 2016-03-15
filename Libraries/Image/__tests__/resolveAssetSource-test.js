@@ -10,7 +10,8 @@
 
 jest
   .dontMock('AssetRegistry')
-  .dontMock('../resolveAssetSource');
+  .dontMock('../resolveAssetSource')
+  .dontMock('../../../local-cli/bundle/assetPathUtils');
 
 var AssetRegistry = require('AssetRegistry');
 var Platform = require('Platform');
@@ -25,26 +26,23 @@ function expectResolvesAsset(input, expectedSource) {
 describe('resolveAssetSource', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
-    __DEV__ = true;
   });
 
   it('returns same source for simple static and network images', () => {
     var source1 = {uri: 'https://www.facebook.com/logo'};
     expect(resolveAssetSource(source1)).toBe(source1);
 
-    var source2 = {isStatic: true, uri: 'logo'};
+    var source2 = {uri: 'logo'};
     expect(resolveAssetSource(source2)).toBe(source2);
   });
 
   it('does not change deprecated assets', () => {
     expect(resolveAssetSource({
-      isStatic: true,
       deprecated: true,
       width: 100,
       height: 200,
       uri: 'logo',
     })).toEqual({
-      isStatic: true,
       deprecated: true,
       width: 100,
       height: 200,
@@ -77,10 +75,11 @@ describe('resolveAssetSource', () => {
         name: 'logo',
         type: 'png',
       }, {
-        isStatic: false,
+        __packager_asset: true,
         width: 100,
         height: 200,
         uri: 'http://10.0.0.1:8081/assets/module/a/logo.png?platform=ios&hash=5b6f00f',
+        scale: 1,
       });
     });
 
@@ -96,20 +95,20 @@ describe('resolveAssetSource', () => {
         name: 'logo',
         type: 'png',
       }, {
-        isStatic: false,
+        __packager_asset: true,
         width: 100,
         height: 200,
         uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
+        scale: 2,
       });
     });
 
   });
 
-  describe('bundle was loaded from file (PROD) on iOS', () => {
+  describe('bundle was loaded from file on iOS', () => {
     beforeEach(() => {
       NativeModules.SourceCode.scriptURL =
-        'file:///Path/To/Simulator/main.bundle';
-      __DEV__ = false;
+        'file:///Path/To/Sample.app/main.bundle';
       Platform.OS = 'ios';
     });
 
@@ -125,19 +124,19 @@ describe('resolveAssetSource', () => {
         name: 'logo',
         type: 'png',
       }, {
-        isStatic: true,
+        __packager_asset: true,
         width: 100,
         height: 200,
-        uri: 'assets/module/a/logo.png',
+        uri: '/Path/To/Sample.app/assets/module/a/logo.png',
+        scale: 1,
       });
     });
   });
 
-  describe('bundle was loaded from file (PROD) on Android', () => {
+  describe('bundle was loaded from assets on Android', () => {
     beforeEach(() => {
       NativeModules.SourceCode.scriptURL =
-        'file:///Path/To/Simulator/main.bundle';
-      __DEV__ = false;
+        'assets://Path/To/Simulator/main.bundle';
       Platform.OS = 'android';
     });
 
@@ -153,10 +152,67 @@ describe('resolveAssetSource', () => {
         name: '!@Logo#1_€', // Invalid chars shouldn't get passed to native
         type: 'png',
       }, {
-        isStatic: true,
+        __packager_asset: true,
         width: 100,
         height: 200,
         uri: 'awesomemodule_subdir_logo1_',
+        scale: 1,
+      });
+    });
+  });
+
+  describe('bundle was loaded from file on Android', () => {
+    beforeEach(() => {
+      NativeModules.SourceCode.scriptURL =
+        'file:///sdcard/Path/To/Simulator/main.bundle';
+      Platform.OS = 'android';
+    });
+
+    it('uses pre-packed image', () => {
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/AwesomeModule/Subdir',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: '!@Logo#1_€',
+        type: 'png',
+      }, {
+        __packager_asset: true,
+        width: 100,
+        height: 200,
+        uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+        scale: 1,
+      });
+    });
+  });
+
+  describe('bundle was loaded from raw file on Android', () => {
+    beforeEach(() => {
+      NativeModules.SourceCode.scriptURL =
+        '/sdcard/Path/To/Simulator/main.bundle';
+      Platform.OS = 'android';
+    });
+
+    it('uses sideloaded image', () => {
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/AwesomeModule/Subdir',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: '!@Logo#1_€',
+        type: 'png',
+      }, {
+        __packager_asset: true,
+        width: 100,
+        height: 200,
+        uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+        scale: 1,
       });
     });
   });

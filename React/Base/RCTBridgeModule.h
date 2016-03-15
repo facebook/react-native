@@ -12,6 +12,7 @@
 #import "RCTDefines.h"
 
 @class RCTBridge;
+@protocol RCTBridgeMethod;
 
 /**
  * The type of a block that is capable of sending a response to a bridged
@@ -36,7 +37,7 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  * The error may be nil but it is preferable to pass an NSError object for more
  * precise error messages.
  */
-typedef void (^RCTPromiseRejectBlock)(NSError *error);
+typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
 
 /**
  * This constant can be returned from +methodQueue to force module
@@ -75,7 +76,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * will be set automatically by the bridge when it initializes the module.
  * To implement this in your module, just add `@synthesize bridge = _bridge;`
  */
-@property (nonatomic, weak) RCTBridge *bridge;
+@property (nonatomic, weak, readonly) RCTBridge *bridge;
 
 /**
  * The queue that will be used to call all exported methods. If omitted, this
@@ -93,7 +94,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * }
  *
  * If you don't want to specify the queue yourself, but you need to use it
- * inside your class (e.g. if you have internal methods that need to disaptch
+ * inside your class (e.g. if you have internal methods that need to dispatch
  * onto that queue), you can just add `@synthesize methodQueue = _methodQueue;`
  * and the bridge will populate the methodQueue property for you automatically
  * when it initializes the module.
@@ -208,7 +209,8 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_METHOD(js_name, method) \
-  + (NSArray *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+  + (NSArray<NSString *> *)RCT_CONCAT(__rct_export__, \
+    RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
     return @[@#js_name, @#method]; \
   }
 
@@ -217,7 +219,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * methods defined using the macros above.  This method is called only once,
  * before registration.
  */
-- (NSArray *)methodsToExport;
+- (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
 
 /**
  * Injects constants into JS. These constants are made accessible via
@@ -226,11 +228,19 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * for long-lived values such as session keys, that are regenerated only as
  * part of a reload of the entire React application.
  */
-- (NSDictionary *)constantsToExport;
+- (NSDictionary<NSString *, id> *)constantsToExport;
 
 /**
  * Notifies the module that a batch of JS method invocations has just completed.
  */
 - (void)batchDidComplete;
+
+/**
+ * Notifies the module that the active batch of JS method invocations has been
+ * partially flushed.
+ *
+ * This occurs before -batchDidComplete, and more frequently.
+ */
+- (void)partialBatchDidFlush;
 
 @end

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import android.util.SparseBooleanArray;
 
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMapKeySeyIterator;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -42,7 +42,7 @@ import com.facebook.react.bridge.ReadableMapKeySeyIterator;
  * - Create a view with only layout props: a description of that view is created as a
  *   {@link ReactShadowNode} in UIManagerModule, but this class will not output any commands to
  *   create the view in the native view hierarchy.
- * - Update a layout-only view to have non-layout props: before issuing the updateProperties call
+ * - Update a layout-only view to have non-layout props: before issuing the updateShadowNode call
  *   to the native view hierarchy, issue commands to create the view we optimized away move it into
  *   the view hierarchy
  * - Manage the children of a view: multiple manageChildren calls for various parent views may be
@@ -69,11 +69,15 @@ public class NativeViewHierarchyOptimizer {
    */
   public void handleCreateView(
       ReactShadowNode node,
-      int rootViewTag,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      ThemedReactContext themedContext,
+      @Nullable ReactStylesDiffMap initialProps) {
     if (!ENABLED) {
       int tag = node.getReactTag();
-      mUIViewOperationQueue.enqueueCreateView(rootViewTag, tag, node.getViewClass(), initialProps);
+      mUIViewOperationQueue.enqueueCreateView(
+          themedContext,
+          tag,
+          node.getViewClass(),
+          initialProps);
       return;
     }
 
@@ -83,11 +87,18 @@ public class NativeViewHierarchyOptimizer {
 
     if (!isLayoutOnly) {
       mUIViewOperationQueue.enqueueCreateView(
-          rootViewTag,
+          themedContext,
           node.getReactTag(),
           node.getViewClass(),
           initialProps);
     }
+  }
+
+  /**
+   * Handles native children cleanup when css node is removed from hierarchy
+   */
+  public static void handleRemoveNode(ReactShadowNode node) {
+    node.removeAllNativeChildren();
   }
 
   /**
@@ -98,7 +109,7 @@ public class NativeViewHierarchyOptimizer {
   public void handleUpdateView(
       ReactShadowNode node,
       String className,
-      CatalystStylesDiffMap props) {
+      ReactStylesDiffMap props) {
     if (!ENABLED) {
       mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), className, props);
       return;
@@ -366,7 +377,7 @@ public class NativeViewHierarchyOptimizer {
 
   private void transitionLayoutOnlyViewToNativeView(
       ReactShadowNode node,
-      @Nullable CatalystStylesDiffMap props) {
+      @Nullable ReactStylesDiffMap props) {
     ReactShadowNode parent = node.getParent();
     if (parent == null) {
       node.setIsLayoutOnly(false);
@@ -384,7 +395,7 @@ public class NativeViewHierarchyOptimizer {
 
     // Create the view since it doesn't exist in the native hierarchy yet
     mUIViewOperationQueue.enqueueCreateView(
-        node.getRootNode().getReactTag(),
+        node.getRootNode().getThemedContext(),
         node.getReactTag(),
         node.getViewClass(),
         props);
@@ -408,7 +419,7 @@ public class NativeViewHierarchyOptimizer {
     mTagsWithLayoutVisited.clear();
   }
 
-  private static boolean isLayoutOnlyAndCollapsable(@Nullable CatalystStylesDiffMap props) {
+  private static boolean isLayoutOnlyAndCollapsable(@Nullable ReactStylesDiffMap props) {
     if (props == null) {
       return true;
     }
@@ -417,7 +428,7 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    ReadableMapKeySeyIterator keyIterator = props.mBackingMap.keySetIterator();
+    ReadableMapKeySetIterator keyIterator = props.mBackingMap.keySetIterator();
     while (keyIterator.hasNextKey()) {
       if (!ViewProps.isLayoutOnly(keyIterator.nextKey())) {
         return false;

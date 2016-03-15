@@ -19,9 +19,7 @@ var React = require('react-native');
 var {
   AlertIOS,
   Platform,
-  Text,
   ToastAndroid,
-  TouchableHighlight,
   View,
 } = React;
 var TimerMixin = require('react-timer-mixin');
@@ -173,9 +171,20 @@ exports.examples = [
           }
           return (
             <View>
-              {timer}
+              {this.state.showTimer && this._renderTimer()}
               <UIExplorerButton onPress={this._toggleTimer}>
-                {toggleText}
+                {this.state.showTimer ? 'Unmount timer' : 'Mount new timer'}
+              </UIExplorerButton>
+            </View>
+          );
+        },
+
+        _renderTimer: function() {
+          return (
+            <View>
+              <TimerTester ref="interval" dt={25} type="setInterval" />
+              <UIExplorerButton onPress={() => this.refs.interval.clear() }>
+                Clear interval
               </UIExplorerButton>
             </View>
           );

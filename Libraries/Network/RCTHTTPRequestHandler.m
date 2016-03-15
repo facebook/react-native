@@ -21,33 +21,30 @@
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
-{
-  if ((self = [super init])) {
-    _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
-                                           valueOptions:NSPointerFunctionsStrongMemory
-                                               capacity:0];
-  }
-  return self;
-}
-
 - (void)invalidate
 {
   [_session invalidateAndCancel];
   _session = nil;
-  _delegates = nil;
 }
 
 - (BOOL)isValid
 {
-  return _delegates != nil;
+  // if session == nil and delegates != nil, we've been invalidated
+  return _session || !_delegates;
 }
 
 #pragma mark - NSURLRequestHandler
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [@[@"http", @"https", @"file"] containsObject:request.URL.scheme.lowercaseString];
+  static NSSet<NSString *> *schemes = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // technically, RCTHTTPRequestHandler can handle file:// as well,
+    // but it's less efficient than using RCTFileRequestHandler
+    schemes = [[NSSet alloc] initWithObjects:@"http", @"https", nil];
+  });
+  return [schemes containsObject:request.URL.scheme.lowercaseString];
 }
 
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
@@ -55,12 +52,17 @@ RCT_EXPORT_MODULE()
 {
   // Lazy setup
   if (!_session && [self isValid]) {
+
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     _session = [NSURLSession sessionWithConfiguration:configuration
                                              delegate:self
                                         delegateQueue:callbackQueue];
+
+    _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
+                                           valueOptions:NSPointerFunctionsStrongMemory
+                                               capacity:0];
   }
 
   NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];

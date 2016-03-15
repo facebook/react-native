@@ -17,17 +17,21 @@
 @interface RCTTextView : RCTView <UITextViewDelegate>
 
 @property (nonatomic, assign) BOOL autoCorrect;
+@property (nonatomic, assign) BOOL blurOnSubmit;
 @property (nonatomic, assign) BOOL clearTextOnFocus;
 @property (nonatomic, assign) BOOL selectTextOnFocus;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, copy) NSString *text;
-@property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
 @property (nonatomic, strong) NSNumber *maxLength;
 
+@property (nonatomic, copy) RCTDirectEventBlock onSelectionChange;
+
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
+
+- (void)performTextUpdate;
 
 @end

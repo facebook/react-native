@@ -12,6 +12,7 @@
 
 #import "Layout.h"
 #import "RCTAnimationType.h"
+#import "RCTBorderStyle.h"
 #import "RCTTextDecorationLineType.h"
 #import "RCTDefines.h"
 #import "RCTLog.h"
@@ -56,12 +57,14 @@ typedef NSURL RCTFileURL;
 + (NSTimeZone *)NSTimeZone:(id)json;
 + (NSTimeInterval)NSTimeInterval:(id)json;
 
++ (NSLineBreakMode)NSLineBreakMode:(id)json;
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
 + (UIKeyboardType)UIKeyboardType:(id)json;
++ (UIKeyboardAppearance)UIKeyboardAppearance:(id)json;
 + (UIReturnKeyType)UIReturnKeyType:(id)json;
 
 + (UIViewContentMode)UIViewContentMode:(id)json;
@@ -82,9 +85,6 @@ typedef NSURL RCTFileURL;
 + (UIColor *)UIColor:(id)json;
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
-+ (UIImage *)UIImage:(id)json;
-+ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
-
 + (UIFont *)UIFont:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withSize:(id)json;
 + (UIFont *)UIFont:(UIFont *)font withWeight:(id)json;
@@ -94,26 +94,14 @@ typedef NSURL RCTFileURL;
               size:(id)size weight:(id)weight style:(id)style
    scaleMultiplier:(CGFloat)scaleMultiplier;
 
-typedef NSArray NSArrayArray;
-+ (NSArrayArray *)NSArrayArray:(id)json;
-
-typedef NSArray NSStringArray;
-+ (NSStringArray *)NSStringArray:(id)json;
-
-typedef NSArray NSDictionaryArray;
-+ (NSDictionaryArray *)NSDictionaryArray:(id)json;
-
-typedef NSArray NSURLArray;
-+ (NSURLArray *)NSURLArray:(id)json;
-
-typedef NSArray RCTFileURLArray;
-+ (RCTFileURLArray *)RCTFileURLArray:(id)json;
-
-typedef NSArray NSNumberArray;
-+ (NSNumberArray *)NSNumberArray:(id)json;
-
-typedef NSArray UIColorArray;
-+ (UIColorArray *)UIColorArray:(id)json;
++ (NSArray<NSArray *> *)NSArrayArray:(id)json;
++ (NSArray<NSString *> *)NSStringArray:(id)json;
++ (NSArray<NSArray<NSString *> *> *)NSStringArrayArray:(id)json;
++ (NSArray<NSDictionary *> *)NSDictionaryArray:(id)json;
++ (NSArray<NSURL *> *)NSURLArray:(id)json;
++ (NSArray<RCTFileURL *> *)RCTFileURLArray:(id)json;
++ (NSArray<NSNumber *> *)NSNumberArray:(id)json;
++ (NSArray<UIColor *> *)UIColorArray:(id)json;
 
 typedef NSArray CGColorArray;
 + (CGColorArray *)CGColorArray:(id)json;
@@ -135,7 +123,32 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
++ (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
+
+@end
+
+@interface RCTConvert (Deprecated)
+
+/**
+ * Use lightweight generics syntax instead, e.g. NSArray<NSString *>
+ */
+typedef NSArray NSArrayArray __deprecated_msg("Use NSArray<NSArray *>");
+typedef NSArray NSStringArray __deprecated_msg("Use NSArray<NSString *>");
+typedef NSArray NSStringArrayArray __deprecated_msg("Use NSArray<NSArray<NSString *> *>");
+typedef NSArray NSDictionaryArray __deprecated_msg("Use NSArray<NSDictionary *>");
+typedef NSArray NSURLArray __deprecated_msg("Use NSArray<NSURL *>");
+typedef NSArray RCTFileURLArray __deprecated_msg("Use NSArray<RCTFileURL *>");
+typedef NSArray NSNumberArray __deprecated_msg("Use NSArray<NSNumber *>");
+typedef NSArray UIColorArray __deprecated_msg("Use NSArray<UIColor *>");
+
+/**
+ * Synchronous image loading is generally a bad idea for performance reasons.
+ * If you need to pass image references, try to use `RCTImageSource` and then
+ * `RCTImageLoader` instead of converting directly to a UIImage.
+ */
++ (UIImage *)UIImage:(id)json;
++ (CGImageRef)CGImage:(id)json CF_RETURNS_NOT_RETAINED;
 
 @end
 
@@ -145,6 +158,11 @@ typedef BOOL css_clip_t, css_backface_visibility_t;
 RCT_EXTERN NSNumber *RCTConvertEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSNumber *RCTConvertMultiEnumValue(const char *, NSDictionary *, NSNumber *, id);
 RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
+
+/**
+ * Get the converter function for the specified type
+ */
+RCT_EXTERN SEL RCTConvertSelectorForType(NSString *type);
 
 /**
  * This macro is used for logging conversion errors. This is just used to
@@ -222,7 +240,7 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
  * This macro is used for creating converter functions for typed arrays.
  */
 #define RCT_ARRAY_CONVERTER(type)                      \
-+ (NSArray *)type##Array:(id)json                      \
++ (NSArray<id> *)type##Array:(id)json                      \
 {                                                      \
   return RCTConvertArrayValue(@selector(type:), json); \
 }

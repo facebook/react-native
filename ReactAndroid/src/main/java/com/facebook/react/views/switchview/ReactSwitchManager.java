@@ -8,9 +8,8 @@
  */
 
 // switchview because switch is a keyword
-package com.facebook.react.views.switchviewview;
+package com.facebook.react.views.switchview;
 
-import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -18,14 +17,13 @@ import android.widget.CompoundButton;
 import com.facebook.csslayout.CSSNode;
 import com.facebook.csslayout.MeasureOutput;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
-import com.facebook.react.uimanager.ReactShadowNode;
+import com.facebook.react.common.SystemClock;
+import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.annotations.ReactProp;
 
 /**
  * View manager for {@link ReactSwitch} components.
@@ -33,10 +31,8 @@ import com.facebook.react.uimanager.ViewProps;
 public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
   private static final String REACT_CLASS = "AndroidSwitch";
-  @UIProp(UIProp.Type.BOOLEAN) public static final String PROP_ENABLED = ViewProps.ENABLED;
-  @UIProp(UIProp.Type.BOOLEAN) public static final String PROP_ON = ViewProps.ON;
 
-  private static class ReactSwitchShadowNode extends ReactShadowNode implements
+  static class ReactSwitchShadowNode extends LayoutShadowNode implements
       CSSNode.MeasureFunction {
 
     private int mWidth;
@@ -48,7 +44,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     }
 
     @Override
-    public void measure(CSSNode node, float width, MeasureOutput measureOutput) {
+    public void measure(CSSNode node, float width, float height, MeasureOutput measureOutput) {
       if (!mMeasured) {
         // Create a switch with the default config and measure it; since we don't (currently)
         // support setting custom switch text, this is fine, as all switches will measure the same
@@ -75,7 +71,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
           reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
               new ReactSwitchEvent(
                   buttonView.getId(),
-                  SystemClock.uptimeMillis(),
+                  SystemClock.nanoTime(),
                   isChecked));
         }
       };
@@ -86,8 +82,13 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   }
 
   @Override
-  public ReactShadowNode createCSSNodeInstance() {
+  public LayoutShadowNode createShadowNodeInstance() {
     return new ReactSwitchShadowNode();
+  }
+
+  @Override
+  public Class getShadowNodeClass() {
+    return ReactSwitchShadowNode.class;
   }
 
   @Override
@@ -97,19 +98,18 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     return view;
   }
 
-  @Override
-  public void updateView(ReactSwitch view, CatalystStylesDiffMap props) {
-    super.updateView(view, props);
-    if (props.hasKey(PROP_ENABLED)) {
-      view.setEnabled(props.getBoolean(PROP_ENABLED, true));
-    }
-    if (props.hasKey(PROP_ON)) {
-      // we set the checked change listener to null and then restore it so that we don't fire an
-      // onChange event to JS when JS itself is updating the value of the switch
-      view.setOnCheckedChangeListener(null);
-      view.setOn(props.getBoolean(PROP_ON, false));
-      view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
-    }
+  @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
+  public void setEnabled(ReactSwitch view, boolean enabled) {
+    view.setEnabled(enabled);
+  }
+
+  @ReactProp(name = ViewProps.ON)
+  public void setOn(ReactSwitch view, boolean on) {
+    // we set the checked change listener to null and then restore it so that we don't fire an
+    // onChange event to JS when JS itself is updating the value of the switch
+    view.setOnCheckedChangeListener(null);
+    view.setOn(on);
+    view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
   }
 
   @Override

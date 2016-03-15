@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -25,13 +26,14 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.ConnectionPool;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
+
 import okio.Okio;
 import okio.Sink;
 
@@ -44,24 +46,27 @@ import okio.Sink;
  *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
  *  - Genymotion emulator with default settings: 10.0.3.2
  */
-/* package */ class DevServerHelper {
+public class DevServerHelper {
 
   public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
 
-  private static final String EMULATOR_LOCALHOST = "10.0.2.2";
-  private static final String GENYMOTION_LOCALHOST = "10.0.3.2";
-  private static final String DEVICE_LOCALHOST = "localhost";
+  private static final String EMULATOR_LOCALHOST = "10.0.2.2:8081";
+  private static final String GENYMOTION_LOCALHOST = "10.0.3.2:8081";
+  private static final String DEVICE_LOCALHOST = "localhost:8081";
 
   private static final String BUNDLE_URL_FORMAT =
-      "http://%s:8081/%s.bundle?platform=android";
+      "http://%s/%s.bundle?platform=android&dev=%s&hot=%s";
   private static final String SOURCE_MAP_URL_FORMAT =
       BUNDLE_URL_FORMAT.replaceFirst("\\.bundle", ".map");
   private static final String LAUNCH_CHROME_DEVTOOLS_COMMAND_URL_FORMAT =
-      "http://%s:8081/launch-chrome-devtools";
+      "http://%s/launch-chrome-devtools";
   private static final String ONCHANGE_ENDPOINT_URL_FORMAT =
-      "http://%s:8081/onchange";
-  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s:8081/debugger-proxy";
+      "http://%s/onchange";
+  private static final String WEBSOCKET_PROXY_URL_FORMAT = "ws://%s/debugger-proxy?role=client";
+  private static final String PACKAGER_STATUS_URL_FORMAT = "http://%s/status";
+
+  private static final String PACKAGER_OK_STATUS = "packager-status:running";
 
   private static final int LONG_POLL_KEEP_ALIVE_DURATION_MS = 2 * 60 * 1000; // 2 mins
   private static final int LONG_POLL_FAILURE_DELAY_MS = 5000;
@@ -76,13 +81,18 @@ import okio.Sink;
     void onServerContentChanged();
   }
 
+  public interface PackagerStatusCallback {
+    void onPackagerStatusFetched(boolean packagerIsRunning);
+  }
+
   private final DevInternalSettings mSettings;
   private final OkHttpClient mClient;
+  private final Handler mRestartOnChangePollingHandler;
 
   private boolean mOnChangePollingEnabled;
   private @Nullable OkHttpClient mOnChangePollingClient;
-  private @Nullable Handler mRestartOnChangePollingHandler;
   private @Nullable OnServerContentChangeListener mOnServerContentChangeListener;
+  private @Nullable Call mDownloadBundleFromURLCall;
 
   public DevServerHelper(DevInternalSettings settings) {
     mSettings = settings;
@@ -92,6 +102,7 @@ import okio.Sink;
     // No read or write timeouts by default
     mClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
     mClient.setWriteTimeout(0, TimeUnit.MILLISECONDS);
+    mRestartOnChangePollingHandler = new Handler();
   }
 
   /** Intent action for reloading the JS */
@@ -107,7 +118,21 @@ import okio.Sink;
    * @return the host to use when connecting to the bundle server from the host itself.
    */
   private static String getHostForJSProxy() {
-    return "localhost";
+    return DEVICE_LOCALHOST;
+  }
+
+  /**
+   * @return whether we should enable dev mode when requesting JS bundles.
+   */
+  private boolean getDevMode() {
+    return mSettings.isJSDevModeEnabled();
+  }
+
+  /**
+   * @return whether we should enabled HMR when requesting JS bundles.
+   */
+  private boolean getHMR() {
+    return mSettings.isHotModuleReplacementEnabled();
   }
 
   /**
@@ -144,27 +169,49 @@ import okio.Sink;
     return Build.FINGERPRINT.contains("generic");
   }
 
-  private String createBundleURL(String host, String jsModulePath) {
-    return String.format(BUNDLE_URL_FORMAT, host, jsModulePath);
+  private static String createBundleURL(String host, String jsModulePath, boolean devMode, boolean hmr) {
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, host, jsModulePath, devMode, hmr);
   }
 
   public void downloadBundleFromURL(
       final BundleDownloadCallback callback,
       final String jsModulePath,
       final File outputFile) {
-    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath);
-    Request request = new Request.Builder()
+    final String bundleURL = createBundleURL(getDebugServerHost(), jsModulePath, getDevMode(), getHMR());
+    final Request request = new Request.Builder()
         .url(bundleURL)
         .build();
-    Call call = mClient.newCall(request);
-    call.enqueue(new Callback() {
+    mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
+    mDownloadBundleFromURLCall.enqueue(new Callback() {
       @Override
       public void onFailure(Request request, IOException e) {
-        callback.onFailure(e);
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Could not connect to development server.\n\n")
+          .append("URL: ").append(request.urlString()).append("\n\n")
+          .append("Try the following to fix the issue:\n")
+          .append("\u2022 Ensure that the packager server is running\n")
+          .append("\u2022 Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices\n")
+          .append("\u2022 If you're on a physical device connected to the same machine, run 'adb reverse tcp:8081 tcp:8081' to forward requests from your device\n")
+          .append("\u2022 If your device is on the same Wi-Fi network, set 'Debug server host & port for device' in 'Dev settings' to your machine's IP address and the port of the local dev server - e.g. 10.0.1.1:8081");
+        callback.onFailure(new DebugServerException(sb.toString()));
       }
 
       @Override
       public void onResponse(Response response) throws IOException {
+        // ignore callback if call was cancelled
+        if (mDownloadBundleFromURLCall == null || mDownloadBundleFromURLCall.isCanceled()) {
+          mDownloadBundleFromURLCall = null;
+          return;
+        }
+        mDownloadBundleFromURLCall = null;
+
         // Check for server errors. If the server error has the expected form, fail with more info.
         if (!response.isSuccessful()) {
           String body = response.body().string();
@@ -172,7 +219,12 @@ import okio.Sink;
           if (debugServerException != null) {
             callback.onFailure(debugServerException);
           } else {
-            callback.onFailure(new IOException("Unexpected response code: " + response.code()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("The development server returned response error code: ").append(response.code()).append("\n\n")
+              .append("URL: ").append(request.urlString()).append("\n\n")
+              .append("Body:\n")
+              .append(body);
+            callback.onFailure(new DebugServerException(sb.toString()));
           }
           return;
         }
@@ -191,12 +243,67 @@ import okio.Sink;
     });
   }
 
+  public void cancelDownloadBundleFromURL() {
+    if (mDownloadBundleFromURLCall != null) {
+      mDownloadBundleFromURLCall.cancel();
+      mDownloadBundleFromURLCall = null;
+    }
+  }
+
+  public void isPackagerRunning(final PackagerStatusCallback callback) {
+    String statusURL = createPackagerStatusURL(getDebugServerHost());
+    Request request = new Request.Builder()
+        .url(statusURL)
+        .build();
+
+    mClient.newCall(request).enqueue(
+        new Callback() {
+          @Override
+          public void onFailure(Request request, IOException e) {
+            FLog.w(
+                ReactConstants.TAG,
+                "The packager does not seem to be running as we got an IOException requesting " +
+                    "its status: " + e.getMessage());
+            callback.onPackagerStatusFetched(false);
+          }
+
+          @Override
+          public void onResponse(Response response) throws IOException {
+            if (!response.isSuccessful()) {
+              FLog.e(
+                  ReactConstants.TAG,
+                  "Got non-success http code from packager when requesting status: " +
+                      response.code());
+              callback.onPackagerStatusFetched(false);
+              return;
+            }
+            ResponseBody body = response.body();
+            if (body == null) {
+              FLog.e(
+                  ReactConstants.TAG,
+                  "Got null body response from packager when requesting status");
+              callback.onPackagerStatusFetched(false);
+              return;
+            }
+            if (!PACKAGER_OK_STATUS.equals(body.string())) {
+              FLog.e(
+                  ReactConstants.TAG,
+                  "Got unexpected response from packager when requesting status: " + body.string());
+              callback.onPackagerStatusFetched(false);
+              return;
+            }
+            callback.onPackagerStatusFetched(true);
+          }
+        });
+  }
+
+  private static String createPackagerStatusURL(String host) {
+    return String.format(Locale.US, PACKAGER_STATUS_URL_FORMAT, host);
+  }
+
   public void stopPollingOnChangeEndpoint() {
     mOnChangePollingEnabled = false;
-    if (mRestartOnChangePollingHandler != null) {
-      mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
-      mRestartOnChangePollingHandler = null;
-    }
+    mRestartOnChangePollingHandler.removeCallbacksAndMessages(null);
     if (mOnChangePollingClient != null) {
       mOnChangePollingClient.cancel(this);
       mOnChangePollingClient = null;
@@ -216,7 +323,6 @@ import okio.Sink;
     mOnChangePollingClient
         .setConnectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS))
         .setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-    mRestartOnChangePollingHandler = new Handler();
     enqueueOnChangeEndpointLongPolling();
   }
 
@@ -246,7 +352,7 @@ import okio.Sink;
           // of a failure, so that we don't flood network queue with frequent requests in case when
           // dev server is down
           FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
-          Assertions.assertNotNull(mRestartOnChangePollingHandler).postDelayed(
+          mRestartOnChangePollingHandler.postDelayed(
               new Runnable() {
             @Override
             public void run() {
@@ -291,17 +397,17 @@ import okio.Sink;
   }
 
   public String getSourceMapUrl(String mainModuleName) {
-    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName);
+    return String.format(Locale.US, SOURCE_MAP_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName);
+    return String.format(Locale.US, BUNDLE_URL_FORMAT, getDebugServerHost(), mainModuleName, getDevMode(), getHMR());
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host IP we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the Chrome proxy running on the
     // host itself.
-    return createBundleURL(getHostForJSProxy(), mainModuleName);
+    return createBundleURL(getHostForJSProxy(), mainModuleName, getDevMode(), getHMR());
   }
 }

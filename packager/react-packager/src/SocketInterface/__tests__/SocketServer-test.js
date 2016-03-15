@@ -8,10 +8,10 @@
  */
 'use strict';
 
-jest.setMock('worker-farm', function() { return () => {}; })
-    .setMock('uglify-js')
+jest.setMock('uglify-js')
     .mock('net')
     .mock('fs')
+    .dontMock('node-haste/node_modules/throat')
     .dontMock('../SocketServer');
 
 var PackagerServer = require('../../Server');
@@ -22,6 +22,7 @@ var net = require('net');
 describe('SocketServer', () => {
   let netServer;
   let bunser;
+  let processOn;
 
   beforeEach(() => {
     const {EventEmitter} = require.requireActual('events');
@@ -32,6 +33,14 @@ describe('SocketServer', () => {
     bunser = new EventEmitter();
     bser.BunserBuf.mockImpl(() => bunser);
     bser.dumpToBuffer.mockImpl((a) => a);
+
+    // Don't attach `process.on('exit')` handlers directly from SocketServer
+    processOn = process.on;
+    process.on = jest.genMockFn();
+  });
+
+  afterEach(() => {
+    process.on = processOn;
   });
 
   pit('create a server', () => {

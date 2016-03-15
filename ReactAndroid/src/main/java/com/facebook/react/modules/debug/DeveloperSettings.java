@@ -23,4 +23,14 @@ public interface DeveloperSettings {
    * @return Whether debug information about transitions should be displayed.
    */
   boolean isAnimationFpsDebugEnabled();
+
+  /**
+   * @return Whether dev mode should be enabled in JS bundles.
+   */
+  boolean isJSDevModeEnabled();
+
+  /**
+   * @return Whether element inspector is enabled.
+   */
+  boolean isElementInspectorEnabled();
 }

@@ -15,7 +15,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewParent;
 
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Provides implementation of common tasks for view and it's view manager supporting property
@@ -55,20 +55,5 @@ public class ReactClippingViewGroupHelper {
       }
     }
     view.getDrawingRect(outputRect);
-  }
-
-  /**
-   * Can be used by view's manager in {@link ViewManager#updateView} method to update property
-   * {@code removeClippedSubviews} in the view.
-   *
-   * @param view view instance passed to {@link ViewManager#updateView}
-   * @param props property map passed to {@link ViewManager#updateView}
-   */
-  public static void applyRemoveClippedSubviewsProperty(
-      ReactClippingViewGroup view,
-      CatalystStylesDiffMap props) {
-    if (props.hasKey(PROP_REMOVE_CLIPPED_SUBVIEWS)) {
-      view.setRemoveClippedSubviews(props.getBoolean(PROP_REMOVE_CLIPPED_SUBVIEWS, false));
-    }
   }
 }

@@ -155,42 +155,11 @@ You may have noticed that we passed all of the props down to the child
 view using `{...this.props}`. The reason for this is that
 `TouchableOpacity` is actually a composite component, and so in addition
 to depending on `setNativeProps` on its child, it also requires that the
-child perform touch handling. To dot this, it passes on [various
-props](https://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder)
+child perform touch handling. To do this, it passes on [various
+props](docs/view.html#onmoveshouldsetresponder)
 that call back to the `TouchableOpacity` component.
-`TouchableHighlight`, in contrast, is backed by a native view only
+`TouchableHighlight`, in contrast, is backed by a native view and only
 requires that we implement `setNativeProps`.
-
-## Precomputing style
-
-We learned above that `setNativeProps` is a wrapper around
-`RCTUIManager.updateView`, which is also used internally by React to
-perform updates on re-render. One important difference is that
-`setNativeProps` does not call `precomputeStyle`, which is done
-internally by React, and so the `transform` property will not work if
-you try to update it manually with `setNativeProps`. To fix this,
-you can call `precomputeStyle` on your object first:
-
-```javascript
-var precomputeStyle = require('precomputeStyle');
-
-var App = React.createClass({
-  componentDidMount() {
-    var nativeProps = precomputeStyle({transform: [{rotate: '45deg'}]});
-    this._root.setNativeProps(nativeProps);
-  },
-
-  render() {
-    return (
-      <View ref={component => this._root = component}
-            style={styles.container}>
-        <Text>Precompute style!</Text>
-      </View>
-    )
-  },
-});
-```
-[Run this example](https://rnplay.org/apps/8_mIAA)
 
 ## setNativeProps to clear TextInput value
 

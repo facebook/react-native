@@ -93,6 +93,20 @@ var ToolbarAndroidExample = React.createClass({
             Touch the icon to reset the custom colors to the default (theme-provided) ones.
           </Text>
         </UIExplorerBlock>
+        <UIExplorerBlock title="Toolbar with remote logo & navIcon">
+          <ToolbarAndroid
+            actions={[{title: 'Bunny', icon: require('./bunny.png'), show: 'always'}]}
+            logo={require('./hawk.png')}
+            navIcon={require('./bunny.png')}
+            title="Bunny and Hawk"
+            style={styles.toolbar} />
+        </UIExplorerBlock>
+        <UIExplorerBlock title="Toolbar with custom overflowIcon">
+          <ToolbarAndroid
+            actions={toolbarActions}
+            overflowIcon={require('./bunny.png')}
+            style={styles.toolbar} />
+        </UIExplorerBlock>
       </UIExplorerPage>
     );
   },

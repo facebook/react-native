@@ -4,14 +4,24 @@
 
 #include <memory>
 #include <sstream>
+#include <unordered_map>
+#include <vector>
+
+#include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSRetainPtr.h>
 #include <JavaScriptCore/JSStringRef.h>
 #include <JavaScriptCore/JSValueRef.h>
-#include <fb/noncopyable.h>
+
+#include "noncopyable.h"
+
+#if WITH_FBJSCEXTENSIONS
+#include <jsc_stringref.h>
+#endif
 
 namespace facebook {
 namespace react {
 
+class Value;
 class Context;
 
 class String : public noncopyable {
@@ -19,9 +29,11 @@ public:
   explicit String(const char* utf8) :
     m_string(Adopt, JSStringCreateWithUTF8CString(utf8))
   {}
+
   String(String&& other) :
     m_string(Adopt, other.m_string.leakRef())
   {}
+
   String(const String& other) :
     m_string(other.m_string)
   {}
@@ -53,6 +65,14 @@ public:
     return JSStringIsEqualToUTF8CString(m_string.get(), utf8);
   }
 
+  static String createExpectingAscii(std::string const &utf8) {
+  #if WITH_FBJSCEXTENSIONS
+    return String(Adopt, JSStringCreateWithUTF8CStringExpectAscii(utf8.c_str(), utf8.size()));
+  #else
+    return String(Adopt, JSStringCreateWithUTF8CString(utf8.c_str()));
+  #endif
+  }
+
   static String ref(JSStringRef string) {
     return String(string);
   }
@@ -73,11 +93,74 @@ private:
   JSRetainPtr<JSStringRef> m_string;
 };
 
+class Object : public noncopyable {
+public:
+  Object(JSContextRef context, JSObjectRef obj) :
+    m_context(context),
+    m_obj(obj)
+  {}
+
+  Object(Object&& other) :
+      m_context(other.m_context),
+      m_obj(other.m_obj),
+      m_isProtected(other.m_isProtected) {
+    other.m_obj = nullptr;
+    other.m_isProtected = false;
+  }
+
+  ~Object() {
+    if (m_isProtected && m_obj) {
+      JSValueUnprotect(m_context, m_obj);
+    }
+  }
+
+  operator JSObjectRef() const {
+    return m_obj;
+  }
+
+  operator Value() const;
+
+  bool isFunction() const {
+    return JSObjectIsFunction(m_context, m_obj);
+  }
+
+  Value callAsFunction(int nArgs, JSValueRef args[]);
+
+  Value getProperty(const String& propName) const;
+  Value getProperty(const char *propName) const;
+  Value getPropertyAtIndex(unsigned index) const;
+  void setProperty(const String& propName, const Value& value) const;
+  void setProperty(const char *propName, const Value& value) const;
+  std::vector<std::string> getPropertyNames() const;
+  std::unordered_map<std::string, std::string> toJSONMap() const;
+
+  void makeProtected() {
+    if (!m_isProtected && m_obj) {
+      JSValueProtect(m_context, m_obj);
+      m_isProtected = true;
+    }
+  }
+
+  static Object getGlobalObject(JSContextRef ctx) {
+    auto globalObj = JSContextGetGlobalObject(ctx);
+    return Object(ctx, globalObj);
+  }
+
+  /**
+   * Creates an instance of the default object class.
+   */
+  static Object create(JSContextRef ctx);
+
+private:
+  JSContextRef m_context;
+  JSObjectRef m_obj;
+  bool m_isProtected = false;
+};
+
 class Value : public noncopyable {
 public:
   Value(JSContextRef context, JSValueRef value);
   Value(Value&&);
-  ~Value();
 
   operator JSValueRef() const {
     return m_value;
@@ -97,6 +180,10 @@ public:
 
   bool isNull() const {
     return JSValueIsNull(context(), m_value);
+  }
+
+  bool isUndefined() const {
+    return JSValueIsUndefined(context(), m_value);
   }
 
   double asNumber() const {
@@ -119,6 +206,8 @@ public:
     return JSValueIsObject(context(), m_value);
   }
 
+  Object asObject();
+
   bool isString() const {
     return JSValueIsString(context(), m_value);
   }
@@ -128,7 +217,7 @@ public:
   }
 
   std::string toJSONString(unsigned indent = 0) const;
-  static Value fromJSON(JSContextRef& ctx, const String& json);
+  static Value fromJSON(JSContextRef ctx, const String& json);
 protected:
   JSContextRef context() const;
   JSContextRef m_context;

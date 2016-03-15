@@ -21,15 +21,32 @@ NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)init
+- (void)setBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleOpenURLNotification:)
-                                                 name:RCTOpenURLNotification
-                                               object:nil];
+  _bridge = bridge;
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleOpenURLNotification:)
+                                               name:RCTOpenURLNotification
+                                             object:nil];
+}
+
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  NSURL *initialURL;
+
+  if (_bridge.launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
+  } else if (&UIApplicationLaunchOptionsUserActivityDictionaryKey &&
+      _bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey]) {
+    NSDictionary *userActivityDictionary = _bridge.launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+
+    if ([userActivityDictionary[UIApplicationLaunchOptionsUserActivityTypeKey] isEqual:NSUserActivityTypeBrowsingWeb]) {
+      initialURL = ((NSUserActivity *)userActivityDictionary[@"UIApplicationLaunchOptionsUserActivityKey"]).webpageURL;
+    }
   }
-  return self;
+
+  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
 }
 
 - (void)dealloc
@@ -42,10 +59,23 @@ RCT_EXPORT_MODULE()
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
-  NSDictionary *payload = @{@"url": URL.absoluteString};
+  NSDictionary<NSString *, id> *payload = @{@"url": URL.absoluteString};
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
                                                       object:self
                                                     userInfo:payload];
+  return YES;
+}
+
++ (BOOL)application:(UIApplication *)application
+continueUserActivity:(NSUserActivity *)userActivity
+  restorationHandler:(void (^)(NSArray *))restorationHandler
+{
+  if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSDictionary *payload = @{@"url": userActivity.webpageURL.absoluteString};
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTOpenURLNotification
+                                                        object:self
+                                                      userInfo:payload];
+  }
   return YES;
 }
 
@@ -55,30 +85,28 @@ RCT_EXPORT_MODULE()
                                               body:notification.userInfo];
 }
 
-RCT_EXPORT_METHOD(openURL:(NSURL *)URL)
+RCT_EXPORT_METHOD(openURL:(NSURL *)URL
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  // Doesn't really matter what thread we call this on since it exits the app
-  [RCTSharedApplication() openURL:URL];
+  BOOL opened = [RCTSharedApplication() openURL:URL];
+  resolve(@(opened));
 }
 
 RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
-                  callback:(RCTResponseSenderBlock)callback)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
   if (RCTRunningInAppExtension()) {
     // Technically Today widgets can open urls, but supporting that would require
     // a reference to the NSExtensionContext
-    callback(@[@(NO)]);
+    resolve(@NO);
+    return;
   }
 
   // This can be expensive, so we deliberately don't call on main thread
   BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
-  callback(@[@(canOpen)]);
-}
-
-- (NSDictionary *)constantsToExport
-{
-  NSURL *initialURL = _bridge.launchOptions[UIApplicationLaunchOptionsURLKey];
-  return @{@"initialURL": RCTNullIfNil(initialURL.absoluteString)};
+  resolve(@(canOpen));
 }
 
 @end

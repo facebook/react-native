@@ -11,14 +11,17 @@ package com.facebook.react.views.image;
 
 import javax.annotation.Nullable;
 
+import java.util.Map;
+
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIProp;
 import com.facebook.react.uimanager.ViewProps;
 
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {
@@ -30,16 +33,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
-  // In JS this is Image.props.source.uri
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_SRC = "src";
-  @UIProp(UIProp.Type.NUMBER)
-  public static final String PROP_BORDER_RADIUS = "borderRadius";
-  @UIProp(UIProp.Type.STRING)
-  public static final String PROP_RESIZE_MODE = ViewProps.RESIZE_MODE;
-  private static final String PROP_TINT_COLOR = "tintColor";
-
-  private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
+  private ResourceDrawableIdHelper mResourceDrawableIdHelper;
+  private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
   public ReactImageManager(
@@ -47,43 +42,119 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public ReactImageManager() {
+    // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
+  }
+
+  public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
+    if (mDraweeControllerBuilder == null) {
+      mDraweeControllerBuilder = Fresco.newDraweeControllerBuilder();
+    }
+    return mDraweeControllerBuilder;
+  }
+
+  public Object getCallerContext() {
+    return mCallerContext;
   }
 
   @Override
   public ReactImageView createViewInstance(ThemedReactContext context) {
     return new ReactImageView(
         context,
-        mDraweeControllerBuilder == null ?
-            Fresco.newDraweeControllerBuilder() : mDraweeControllerBuilder,
-        mCallerContext);
+        getDraweeControllerBuilder(),
+        getCallerContext());
+  }
+
+  // In JS this is Image.props.source.uri
+  @ReactProp(name = "src")
+  public void setSource(ReactImageView view, @Nullable String source) {
+    view.setSource(source, mResourceDrawableIdHelper);
+  }
+
+  // In JS this is Image.props.loadingIndicatorSource.uri
+  @ReactProp(name = "loadingIndicatorSrc")
+  public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
+    view.setLoadingIndicatorSource(source, mResourceDrawableIdHelper);
+  }
+
+  @ReactProp(name = "borderColor", customType = "Color")
+  public void setBorderColor(ReactImageView view, @Nullable Integer borderColor) {
+    if (borderColor == null) {
+      view.setBorderColor(Color.TRANSPARENT);
+    } else {
+      view.setBorderColor(borderColor);
+    }
+  }
+
+  @ReactProp(name = "overlayColor")
+  public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
+    if (overlayColor == null) {
+      view.setOverlayColor(Color.TRANSPARENT);
+    } else {
+      view.setOverlayColor(overlayColor);
+    }
+  }
+
+  @ReactProp(name = "borderWidth")
+  public void setBorderWidth(ReactImageView view, float borderWidth) {
+    view.setBorderWidth(borderWidth);
+  }
+
+  @ReactProp(name = "borderRadius")
+  public void setBorderRadius(ReactImageView view, float borderRadius) {
+    view.setBorderRadius(borderRadius);
+  }
+
+  @ReactProp(name = ViewProps.RESIZE_MODE)
+  public void setResizeMode(ReactImageView view, @Nullable String resizeMode) {
+    view.setScaleType(ImageResizeMode.toScaleType(resizeMode));
+  }
+
+  @ReactProp(name = "tintColor", customType = "Color")
+  public void setTintColor(ReactImageView view, @Nullable Integer tintColor) {
+    if (tintColor == null) {
+      view.clearColorFilter();
+    } else {
+      view.setColorFilter(tintColor, Mode.SRC_IN);
+    }
+  }
+
+  @ReactProp(name = "progressiveRenderingEnabled")
+  public void setProgressiveRenderingEnabled(ReactImageView view, boolean enabled) {
+    view.setProgressiveRenderingEnabled(enabled);
+  }
+
+  @ReactProp(name = "fadeDuration")
+  public void setFadeDuration(ReactImageView view, int durationMs) {
+    view.setFadeDuration(durationMs);
+  }
+
+  @ReactProp(name = "shouldNotifyLoadEvents")
+  public void setLoadHandlersRegistered(ReactImageView view, boolean shouldNotifyLoadEvents) {
+    view.setShouldNotifyLoadEvents(shouldNotifyLoadEvents);
   }
 
   @Override
-  public void updateView(final ReactImageView view, final CatalystStylesDiffMap props) {
-    super.updateView(view, props);
+  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.of(
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
+        MapBuilder.of("registrationName", "onLoadStart"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
+        MapBuilder.of("registrationName", "onLoad"),
+      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
+        MapBuilder.of("registrationName", "onLoadEnd")
+    );
+  }
 
-    if (props.hasKey(PROP_RESIZE_MODE)) {
-      view.setScaleType(ImageResizeMode.toScaleType(props.getString(PROP_RESIZE_MODE)));
-    }
-    if (props.hasKey(PROP_SRC)) {
-       view.setSource(props.getString(PROP_SRC));
-    }
-    if (props.hasKey(PROP_BORDER_RADIUS)) {
-      view.setBorderRadius(props.getFloat(PROP_BORDER_RADIUS, 0.0f));
-    }
-    if (props.hasKey(PROP_TINT_COLOR)) {
-      if (props.isNull(PROP_TINT_COLOR)) {
-        view.clearColorFilter();
-      } else {
-        final int tintColor = props.getColorInt(PROP_TINT_COLOR, Color.TRANSPARENT);
-        view.setColorFilter(tintColor);
-      }
-    }
+  @Override
+  protected void onAfterUpdateTransaction(ReactImageView view) {
+    super.onAfterUpdateTransaction(view);
     view.maybeUpdateView();
   }
 }

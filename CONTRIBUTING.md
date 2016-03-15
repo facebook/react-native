@@ -17,12 +17,30 @@ The core team will be monitoring for pull requests. When we get one, we'll run s
 *Before* submitting a pull request, please make sure the following is done…
 
 1. Fork the repo and create your branch from `master`.
-2. If you've added code that should be tested, add tests!
+2. **Describe your test plan in your commit.** If you've added code that should be tested, add tests!
 3. If you've changed APIs, update the documentation.
-4. Ensure tests pass on Travis.
-5. Make sure your code lints (`node linter.js <files touched>`).
-6. Squash your commits (`git rebase -i`).
-7. If you haven't already, complete the CLA.
+4. Add the copyright notice to the top of any new files you've added.
+5. Ensure tests pass on Travis and Circle CI.
+6. Make sure your code lints (`node linter.js <files touched>`).
+7. Squash your commits (`git rebase -i`).
+8. If you haven't already, sign the [CLA](https://code.facebook.com/cla).
+
+#### Copyright Notice for files
+
+Copy and paste this to the top of your new file(s):
+
+```JS
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+```
+
+If you've added a new module, add a `@providesModule <moduleName>` at the end of the comment. This will allow the haste package manager to find it.
 
 ### Contributor License Agreement (CLA)
 
@@ -46,8 +64,8 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ## How to Get in Touch
 
-* IRC - [#reactnative on freenode](http://webchat.freenode.net/?channels=reactnative)
 * [Facebook group](https://www.facebook.com/groups/react.native.community/)
+* Reactiflux — [#react-native](http://join.reactiflux.com/)
 
 ## Style Guide
 
@@ -55,6 +73,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 #### General
 
+* **Most important: Look around.** Match the style you see used in the rest of the project. This includes formatting, naming things in code, naming things in documentation.
 * Add trailing commas,
 * 2 spaces for indentation (no tabs)
 * "Attractive"
@@ -67,6 +86,14 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 * Do not use the optional parameters of `setTimeout` and `setInterval`
 * 80 character line length
 
+#### JSX
+
+* Prefer `'` over `"` for string literal props
+* When wrapping opening tags over multiple lines, place one prop per line
+* `{}` of props should hug their values (no spaces)
+* Place the closing `>` of opening tags on the same line as the last prop
+* Place the closing `/>` of self-closing tags on their own line and left-align them with the opening `<`
+
 #### Objective-C
 
 * Space after `@property` declarations
@@ -74,6 +101,12 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 * `- method`, `@interface`, and `@implementation` brackets on the following line
 * *Try* to keep it around 80 characters line length (sometimes it's just not possible...)
 * `*` operator goes with the variable name (e.g. `NSObject *variableName;`)
+
+#### Java
+
+* If a method call spans multiple lines closing bracket is on the same line as the last argument.
+* If a method header doesn't fit on one line each argument goes on a separate line.
+* 100 character line length
 
 ### Documentation
 

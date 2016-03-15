@@ -33,15 +33,19 @@ public class ReactScrollViewCommandHelper {
   public static class ScrollToCommandData {
 
     public final int mDestX, mDestY;
+    public final boolean mAnimated;
 
-    ScrollToCommandData(int destX, int destY) {
+    ScrollToCommandData(int destX, int destY, boolean animated) {
       mDestX = destX;
       mDestY = destY;
+      mAnimated = animated;
     }
   }
 
   public static Map<String,Integer> getCommandsMap() {
-    return MapBuilder.of("scrollTo", COMMAND_SCROLL_TO);
+    return MapBuilder.of(
+        "scrollTo",
+        COMMAND_SCROLL_TO);
   }
 
   public static <T> void receiveCommand(
@@ -53,11 +57,13 @@ public class ReactScrollViewCommandHelper {
     Assertions.assertNotNull(scrollView);
     Assertions.assertNotNull(args);
     switch (commandType) {
-      case COMMAND_SCROLL_TO:
-        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getInt(0)));
-        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getInt(1)));
-        viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY));
+      case COMMAND_SCROLL_TO: {
+        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
+        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
+        boolean animated = args.getBoolean(2);
+        viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated));
         return;
+      }
       default:
         throw new IllegalArgumentException(String.format(
             "Unsupported command %d received by %s.",

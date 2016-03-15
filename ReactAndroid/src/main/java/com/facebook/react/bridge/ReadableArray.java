@@ -20,8 +20,6 @@ public interface ReadableArray {
   boolean getBoolean(int index);
   double getDouble(int index);
   int getInt(int index);
-  // Check CatalystStylesDiffMap#getColorInt() to see why this is needed
-  int getColorInt(int index);
   String getString(int index);
   ReadableArray getArray(int index);
   ReadableMap getMap(int index);
