@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -48,6 +49,9 @@ namespace Playground
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
+
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                AppViewBackButtonVisibility.Visible;
 #endif
 
             Frame rootFrame = Window.Current.Content as Frame;

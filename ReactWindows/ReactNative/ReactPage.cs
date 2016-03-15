@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -106,6 +107,11 @@ namespace ReactNative
         public void OnResume()
         {
             _reactInstanceManager.OnResume(OnBackPressed);
+
+            SystemNavigationManager.GetForCurrentView().BackRequested += (sender, args) =>
+            {
+                _reactInstanceManager.OnBackPressed();
+            };
         }
 
         /// <summary>
