@@ -718,9 +718,6 @@ static uint32_t readUint32(const void **ptr) {
   // offset where the code starts on the bundle
   const uint32_t baseOffset = currentOffset + tableLength;
 
-  // skip table length
-  currentOffset += sizeof(baseOffset);
-
   // pointer to first byte out of the index
   const uint8_t *endOfTable = bytes + baseOffset;
 
