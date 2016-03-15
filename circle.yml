@@ -30,6 +30,7 @@ dependencies:
     - "buck-out/bin"
     - "website/node_modules"
   override:
+    - echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
     - npm config set spin=false
     - npm config set progress=false
     - npm install
@@ -80,7 +81,7 @@ test:
     #- find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
 
 deployment:
-  website:
+  stable:
     branch: [/.*-stable/, /master/]
     commands:
       # generate docs website
@@ -88,3 +89,4 @@ deployment:
       - git config --global user.name "Website Deployment Script"
       - echo "machine github.com login reactjs-bot password $GITHUB_TOKEN" > ~/.netrc
       - cd website && GIT_USER=reactjs-bot npm run gh-pages
+      - node ./scripts/publish-npm.js
