@@ -217,6 +217,14 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     long adjustedDuration = (long) Math.max(
         0,
         jsSchedulingTime - SystemClock.currentTimeMillis() + duration);
+    if (duration == 0 && !repeat) {
+      WritableArray timerToCall = Arguments.createArray();
+      timerToCall.pushInt(callbackID);
+      getReactApplicationContext().getJSModule(executorToken, JSTimersExecution.class)
+        .callTimers(timerToCall);
+      return;
+    }
+
     long initialTargetTime = SystemClock.nanoTime() / 1000000 + adjustedDuration;
     Timer timer = new Timer(executorToken, callbackID, initialTargetTime, duration, repeat);
     synchronized (mTimerGuard) {
@@ -233,12 +241,17 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @ReactMethod
   public void deleteTimer(ExecutorToken executorToken, int timerId) {
     synchronized (mTimerGuard) {
-      Timer timer = mTimerIdsToTimers.get(executorToken).get(timerId);
-      if (timer != null) {
-        // We may have already called/removed it
-        mTimerIdsToTimers.remove(timerId);
-        mTimers.remove(timer);
+      SparseArray<Timer> timersForContext = mTimerIdsToTimers.get(executorToken);
+      if (timersForContext == null) {
+        return;
       }
+      Timer timer = timersForContext.get(timerId);
+      if (timer == null) {
+        return;
+      }
+      // We may have already called/removed it
+      mTimerIdsToTimers.remove(timerId);
+      mTimers.remove(timer);
     }
   }
 }

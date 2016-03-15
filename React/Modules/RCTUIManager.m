@@ -201,16 +201,13 @@ static UIViewAnimationOptions UIViewAnimationOptionsFromRCTAnimationType(RCTAnim
   NSDictionary *_componentDataByName;
 
   NSMutableSet<id<RCTComponent>> *_bridgeTransactionListeners;
+
+  UIInterfaceOrientation _currentInterfaceOrientation;
 }
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
-
-/**
- * Declared in RCTBridge.
- */
-extern NSString *RCTBridgeModuleNameForClass(Class cls);
 
 - (void)didReceiveNewContentSizeMultiplier
 {
@@ -223,6 +220,23 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
       [strongSelf batchDidComplete];
     }
   });
+}
+
+- (void)interfaceOrientationWillChange:(NSNotification *)notification
+{
+  UIInterfaceOrientation nextOrientation =
+    [notification.userInfo[UIApplicationStatusBarOrientationUserInfoKey] integerValue];
+
+  // Update when we go from portrait to landscape, or landscape to portrait
+  if ((UIInterfaceOrientationIsPortrait(_currentInterfaceOrientation) &&
+      !UIInterfaceOrientationIsPortrait(nextOrientation)) ||
+      (UIInterfaceOrientationIsLandscape(_currentInterfaceOrientation) &&
+      !UIInterfaceOrientationIsLandscape(nextOrientation))) {
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
+                                                body:RCTExportedDimensions(YES)];
+  }
+
+  _currentInterfaceOrientation = nextOrientation;
 }
 
 - (void)invalidate
@@ -298,6 +312,11 @@ extern NSString *RCTBridgeModuleNameForClass(Class cls);
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceOrientationWillChange:)
+                                               name:UIApplicationWillChangeStatusBarOrientationNotification
+                                             object:nil];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -1231,7 +1250,7 @@ RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
 
     // Get view
     UIView *view;
@@ -1367,19 +1386,29 @@ RCT_EXPORT_METHOD(clearJSResponder)
      allJSConstants[name] = constantsNamespace;
   }];
 
+  _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
   [allJSConstants addEntriesFromDictionary:@{
     @"customBubblingEventTypes": bubblingEvents,
     @"customDirectEventTypes": directEvents,
-    @"Dimensions": @{
-      @"window": @{
-        @"width": @(RCTScreenSize().width),
-        @"height": @(RCTScreenSize().height),
-        @"scale": @(RCTScreenScale()),
-      },
-    },
+    @"Dimensions": RCTExportedDimensions(NO)
   }];
 
   return allJSConstants;
+}
+
+static NSDictionary *RCTExportedDimensions(BOOL rotateBounds)
+{
+  RCTAssertMainThread();
+
+  // Don't use RCTScreenSize since it the interface orientation doesn't apply to it
+  CGRect screenSize = [[UIScreen mainScreen] bounds];
+  return @{
+    @"window": @{
+        @"width": @(rotateBounds ? screenSize.size.height : screenSize.size.width),
+        @"height": @(rotateBounds ? screenSize.size.width : screenSize.size.height),
+        @"scale": @(RCTScreenScale()),
+    },
+  };
 }
 
 RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config

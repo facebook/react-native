@@ -123,6 +123,13 @@ RCT_EXTERN BOOL RCTBridgeModuleClassIsRegistered(Class);
 - (NSArray *)modulesConformingToProtocol:(Protocol *)protocol;
 
 /**
+ * Test if a module has been initialized. Use this prior to calling
+ * `moduleForClass:` or `moduleForName:` if you do not want to cause the module 
+ * to be instantiated if it hasn't been already.
+ */
+- (BOOL)moduleIsInitialized:(Class)moduleClass;
+
+/**
  * All registered bridge module classes.
  */
 @property (nonatomic, copy, readonly) NSArray<Class> *moduleClasses;

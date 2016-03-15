@@ -24,11 +24,10 @@ function buildBundle(args, config, output = outputBundle) {
     const options = {
       projectRoots: config.getProjectRoots(),
       assetRoots: config.getAssetRoots(),
-      blacklistRE: config.getBlacklistRE(),
+      blacklistRE: config.getBlacklistRE(args.platform),
       getTransformOptionsModulePath: config.getTransformOptionsModulePath,
       transformModulePath: args.transformer,
       verbose: args.verbose,
-      disableInternalTransforms: true,
     };
 
     const requestOpts = {

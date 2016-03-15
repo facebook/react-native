@@ -14,14 +14,13 @@ const Bundle = require('../Bundle');
 const ModuleTransport = require('../../lib/ModuleTransport');
 const Promise = require('Promise');
 const SourceMapGenerator = require('source-map').SourceMapGenerator;
-const UglifyJS = require('uglify-js');
 const crypto = require('crypto');
 
 describe('Bundle', () => {
   var bundle;
 
   beforeEach(() => {
-    bundle = new Bundle('test_url');
+    bundle = new Bundle({sourceMapUrl: 'test_url'});
     bundle.getSourceMap = jest.genMockFn().mockImpl(() => {
       return 'test-source-map';
     });
@@ -109,33 +108,38 @@ describe('Bundle', () => {
       });
     });
 
-    pit('should get minified source', () => {
-      const minified = {
-        code: 'minified',
-        map: 'map',
+    pit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+      const moduleTransports = [
+        createModuleTransport({name: 'module1'}),
+        createModuleTransport({name: 'module2'}),
+        createModuleTransport({name: 'module3'}),
+      ];
+
+      const resolves = {};
+      const resolver = {
+        wrapModule({name}) {
+          return new Promise(resolve => resolves[name] = resolve);
+        }
       };
 
-      UglifyJS.minify = function() {
-        return minified;
-      };
-
-      return Promise.resolve().then(() => {
-        return addModule({
-          bundle,
-          code: 'transformed foo;',
-          sourceCode: 'source foo',
-          sourcePath: 'foo path',
-        });
-      }).then(() => {
-        bundle.finalize();
-        expect(bundle.getMinifiedSourceAndMap({dev: true})).toBe(minified);
+      const promise = Promise.all(
+        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
+      .then(() => {
+        expect(bundle.getModules())
+          .toEqual(moduleTransports);
       });
+
+      resolves.module2({code: ''});
+      resolves.module3({code: ''});
+      resolves.module1({code: ''});
+
+      return promise;
     });
   });
 
   describe('sourcemap bundle', () => {
     pit('should create sourcemap', () => {
-      const otherBundle = new Bundle('test_url');
+      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
       return Promise.resolve().then(() => {
         return addModule({
@@ -179,7 +183,7 @@ describe('Bundle', () => {
     });
 
     pit('should combine sourcemaps', () => {
-      const otherBundle = new Bundle('test_url');
+      const otherBundle = new Bundle({sourceMapUrl: 'test_url'});
 
       return Promise.resolve().then(() => {
         return addModule({
@@ -269,7 +273,7 @@ describe('Bundle', () => {
 
   describe('getAssets()', () => {
     it('should save and return asset objects', () => {
-      var p = new Bundle('test_url');
+      var p = new Bundle({sourceMapUrl: 'test_url'});
       var asset1 = {};
       var asset2 = {};
       p.addAsset(asset1);
@@ -281,7 +285,7 @@ describe('Bundle', () => {
 
   describe('getJSModulePaths()', () => {
     pit('should return module paths', () => {
-      var otherBundle = new Bundle('test_url');
+      var otherBundle = new Bundle({sourceMapUrl: 'test_url'});
       return Promise.resolve().then(() => {
         return addModule({
           bundle: otherBundle,
@@ -305,7 +309,7 @@ describe('Bundle', () => {
 
   describe('getEtag()', function() {
     it('should return an etag', function() {
-      var bundle = new Bundle('test_url');
+      var bundle = new Bundle({sourceMapUrl: 'test_url'});
       bundle.finalize({});
       var eTag = crypto.createHash('md5').update(bundle.getSource()).digest('hex');
       expect(bundle.getEtag()).toEqual(eTag);
@@ -365,19 +369,34 @@ function genSourceMap(modules) {
   return sourceMapGen.toJSON();
 }
 
-function resolverFor(code) {
+function resolverFor(code, map) {
   return {
-    wrapModule: (response, module, sourceCode) => Promise.resolve(
-      {name: 'name', code}
-    ),
+    wrapModule: () => Promise.resolve({code, map}),
   };
 }
 
-function addModule({bundle, code, sourceCode, sourcePath, map, virtual}) {
+function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill}) {
   return bundle.addModule(
-    resolverFor(code),
+    resolverFor(code, map),
     null,
-    null,
-    {sourceCode, sourcePath, map, virtual}
+    {isPolyfill: () => polyfill},
+    createModuleTransport({
+      code,
+      sourceCode,
+      sourcePath,
+      map,
+      virtual,
+      polyfill,
+    }),
   );
+}
+
+function createModuleTransport(data) {
+  return new ModuleTransport({
+    code: '',
+    id: '',
+    sourceCode: '',
+    sourcePath: '',
+    ...data,
+  });
 }

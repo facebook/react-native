@@ -22,6 +22,6 @@ On Windows the packager won't be started automatically when you run `react-nativ
     cd MyAwesomeApp
     react-native start
 
-If you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/master/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your node_modules/react-native).
+If you hit a `ERROR  Watcher took too long to load` on Windows, try increasing the timeout in [this file](https://github.com/facebook/react-native/blob/5fa33f3d07f8595a188f6fe04d6168a6ede1e721/packager/react-packager/src/DependencyResolver/FileWatcher/index.js#L16) (under your `node_modules/react-native/`).
 
 
