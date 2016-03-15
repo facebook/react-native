@@ -231,12 +231,12 @@ NSNumber *RCTConvertMultiEnumValue(const char *typeName, NSDictionary *mapping, 
 }
 
 RCT_ENUM_CONVERTER(NSLineBreakMode, (@{
-  @"wordWrapping": @(NSLineBreakByWordWrapping),
-  @"charWrapping": @(NSLineBreakByCharWrapping),
   @"clipping": @(NSLineBreakByClipping),
-  @"truncatingHead": @(NSLineBreakByTruncatingHead),
-  @"truncatingTail": @(NSLineBreakByTruncatingTail),
-  @"truncatingMiddle": @(NSLineBreakByTruncatingMiddle),
+  @"word-wrapping": @(NSLineBreakByWordWrapping),
+  @"char-wrapping": @(NSLineBreakByCharWrapping),
+  @"truncating-head": @(NSLineBreakByTruncatingHead),
+  @"truncating-middle": @(NSLineBreakByTruncatingMiddle),
+  @"truncating-tail": @(NSLineBreakByTruncatingTail),
 }), NSLineBreakByWordWrapping, integerValue)
 
 RCT_ENUM_CONVERTER(NSTextAlignment, (@{
