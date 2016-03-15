@@ -11,7 +11,6 @@
 
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
-#import "RCTConvert.h"
 #import "RCTUtils.h"
 
 @implementation RCTSRWebSocket (React)
@@ -45,14 +44,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols headers:(NSDictionary *)headers socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(NSDictionary *)options socketID:(nonnull NSNumber *)socketID)
 {
-  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-  [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
-  }];
-
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURL:URL protocols:protocols options:options];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
   if (!_sockets) {

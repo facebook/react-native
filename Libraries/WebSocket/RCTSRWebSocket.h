@@ -60,17 +60,19 @@ extern NSString *const RCTSRHTTPResponseErrorKey;
 @property (nonatomic, readonly, copy) NSString *protocol;
 
 // Protocols should be an array of strings that turn into Sec-WebSocket-Protocol.
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols NS_DESIGNATED_INITIALIZER;
+// options can contain a custom "origin" NSString
+- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, NSString *> *)options NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 
 // Some helper constructors.
+- (instancetype)initWithURL:(NSURL *)url protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, NSString *> *)options;
 - (instancetype)initWithURL:(NSURL *)url protocols:(NSArray<NSString *> *)protocols;
 - (instancetype)initWithURL:(NSURL *)url;
 
 // Delegate queue will be dispatch_main_queue by default.
 // You cannot set both OperationQueue and dispatch_queue.
-- (void)setDelegateOperationQueue:(NSOperationQueue *)queue;
-- (void)setDelegateDispatchQueue:(dispatch_queue_t)queue;
+- (void)setDelegateOperationQueue:(NSOperationQueue*) queue;
+- (void)setDelegateDispatchQueue:(dispatch_queue_t) queue;
 
 // By default, it will schedule itself on +[NSRunLoop RCTSR_networkRunLoop] using defaultModes.
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode;
