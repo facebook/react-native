@@ -365,11 +365,11 @@ var AsyncStorage = {
    *  traits: {eyes: 'green', shoeSize: 6},
    * };
    *
-   * let multi_set_pairs   = [['UID234', JSON.stringify(UID234_object)], ['UID345', JSON.stringify(UID345_object)]]
-   * let multi_merge_pairs = [['UID234', JSON.stringify(UID234_delta)], ['UID345', JSON.stringify(UID345_delta)]]
+   * let multiSetPairs   = [['UID234', JSON.stringify(UID234_object)], ['UID345', JSON.stringify(UID345_object)]]
+   * let multiMergePairs = [['UID234', JSON.stringify(UID234_delta)], ['UID345', JSON.stringify(UID345_delta)]]
    *
-   * AsyncStorage.multiSet(multi_set_pairs, (err) => {
-   *   AsyncStorage.multiMerge(multi_merge_pairs, (err) => {
+   * AsyncStorage.multiSet(multiSetPairs, (err) => {
+   *   AsyncStorage.multiMerge(multiMergePairs, (err) => {
    *     AsyncStorage.multiGet(['UID234','UID345'], (err, stores) => {
    *       stores.map((result, i, store) => {
    *         let key = store[i][0];
