@@ -743,7 +743,7 @@ static void loadScriptFromAssets(JNIEnv* env, jobject obj, jobject assetManager,
 
   env->CallStaticVoidMethod(markerClass, gLogMarkerMethod, env->NewStringUTF("loadScriptFromAssets_read"));
   if (JniJSModulesUnbundle::isUnbundle(manager, assetNameStr)) {
-    loadApplicationUnbundle(bridge, manager, script, "file://" + assetNameStr);
+    loadApplicationUnbundle(bridge, manager, script, assetNameStr);
   } else {
     loadApplicationScript(bridge, script, "file://" + assetNameStr);
   }
