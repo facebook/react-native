@@ -234,7 +234,7 @@ typedef void (^data_callback)(RCTSRWebSocket *webSocket,  NSData *data);
   __strong RCTSRWebSocket *_selfRetain;
 
   NSArray<NSString *> *_requestedProtocols;
-  NSDictionary<NSString *, NSString *> *_requestedOptions;
+  NSDictionary<NSString *, NSString *> *_requestedHeaders;
   RCTSRIOConsumerPool *_consumerPool;
 }
 
@@ -245,7 +245,7 @@ static __strong NSData *CRLFCRLF;
   CRLFCRLF = [[NSData alloc] initWithBytes:"\r\n\r\n" length:4];
 }
 
-- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, NSString *> *)options
+- (instancetype)initWithURLRequest:(NSURLRequest *)request protocols:(NSArray<NSString *> *)protocols headers:(NSDictionary<NSString *, NSString *> *)headers
 {
   RCTAssertParam(request);
 
@@ -254,7 +254,7 @@ static __strong NSData *CRLFCRLF;
     _urlRequest = request;
 
     _requestedProtocols = [protocols copy];
-    _requestedOptions = [options copy];
+    _requestedHeaders= [headers copy];
 
     [self _RCTSR_commonInit];
   }
@@ -265,20 +265,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (instancetype)initWithURLRequest:(NSURLRequest *)request;
 {
-  return [self initWithURLRequest:request protocols:nil options: nil];
+  return [self initWithURLRequest:request protocols:nil headers: nil];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL;
 {
-  return [self initWithURL:URL protocols:nil options:nil];
+  return [self initWithURL:URL protocols:nil headers:nil];
 }
 
 - (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols;
 {
-  return [self initWithURL:URL protocols:protocols options:nil];
+  return [self initWithURL:URL protocols:protocols headers:nil];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols options:(NSDictionary<NSString *, id> *)options
+- (instancetype)initWithURL:(NSURL *)URL protocols:(NSArray<NSString *> *)protocols headers:(NSDictionary<NSString *, id> *)headers
 {
   NSMutableURLRequest *request;
   if (URL) {
@@ -297,7 +297,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:components.URL];
     [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
   }
-  return [self initWithURLRequest:request protocols:protocols options:options];
+  return [self initWithURLRequest:request protocols:protocols headers:headers];
 }
 
 - (void)_RCTSR_commonInit;
@@ -492,7 +492,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)[_requestedProtocols componentsJoinedByString:@", "]);
   }
 
-  CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Origin"), (__bridge CFStringRef)(_requestedOptions[@"origin"] ?: _url.RCTSR_origin));
+  if (_requestedHeaders) {
+    
+    if (!_requestedHeaders[@"origin"]) {
+      CFHTTPMessageSetHeaderFieldValue(request, CFSTR("origin"), (__bridge CFStringRef)(_url.RCTSR_origin));
+    }
+    
+    [_requestedHeaders enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+       if ([obj description]) {
+         CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
+       } else {
+         RCTSRFastLog(@"Ignoring passed in header: %@, value not a string.", key);
+       }
+     }];
+  } else {
+    CFHTTPMessageSetHeaderFieldValue(request, CFSTR("origin"), (__bridge CFStringRef)(_url.RCTSR_origin));
+  }
 
   [_urlRequest.allHTTPHeaderFields enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     CFHTTPMessageSetHeaderFieldValue(request, (__bridge CFStringRef)key, (__bridge CFStringRef)obj);
