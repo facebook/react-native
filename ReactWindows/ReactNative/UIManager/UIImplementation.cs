@@ -783,12 +783,13 @@ namespace ReactNative.UIManager
 
                 if (cssNode.ShouldNotifyOnLayout)
                 {
-                    OnLayoutEvent.Obtain(
-                        tag,
-                        cssNode.ScreenX,
-                        cssNode.ScreenY,
-                        cssNode.ScreenWidth,
-                        cssNode.ScreenHeight);
+                    eventDispatcher.DispatchEvent(
+                        OnLayoutEvent.Obtain(
+                            tag,
+                            cssNode.ScreenX,
+                            cssNode.ScreenY,
+                            cssNode.ScreenWidth,
+                            cssNode.ScreenHeight));
                 }
             }
 

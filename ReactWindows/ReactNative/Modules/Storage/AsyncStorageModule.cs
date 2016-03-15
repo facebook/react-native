@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿#define CLEAR_STORAGE
+
+using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
 using System.Diagnostics;
@@ -40,6 +42,10 @@ namespace ReactNative.Modules.Storage
         {
             _dataContainer = ApplicationData.Current.LocalSettings.CreateContainer(Name + _data, ApplicationDataCreateDisposition.Always);
             _typeContainer = ApplicationData.Current.LocalSettings.CreateContainer(Name + _type, ApplicationDataCreateDisposition.Always);
+#if CLEAR_STORAGE
+            _dataContainer.Values.Clear();
+            _typeContainer.Values.Clear();
+#endif
         }
 
         /// <summary>

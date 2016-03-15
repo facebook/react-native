@@ -2,6 +2,8 @@
 using ReactNative.Modules.AppState;
 using ReactNative.Modules.Clipboard;
 using ReactNative.Modules.Core;
+using ReactNative.Modules.NetInfo;
+using ReactNative.Modules.Network;
 using ReactNative.Modules.Storage;
 using ReactNative.Modules.Toast;
 using ReactNative.Modules.WebSocket;
@@ -38,8 +40,8 @@ namespace ReactNative.Shell
                 new ClipboardModule(),
                 //new DialogModule(reactContext),
                 //new LocationModule(reactContext),
-                //new NetworkingModule(reactContext),
-                //new NetInfoModule(reactContext),
+                new NetworkingModule(reactContext),
+                new NetInfoModule(reactContext),
                 new ToastModule(reactContext),
                 new WebSocketModule(reactContext),
             };
