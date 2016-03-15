@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -30,8 +35,10 @@
 const NavigationAnimatedValueSubscription = require('NavigationAnimatedValueSubscription');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
+const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContext = require('NavigationContext');
 const NavigationLegacyNavigatorRouteStack = require('NavigationLegacyNavigatorRouteStack');
+const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
 const NavigatorBreadcrumbNavigationBar = require('NavigatorBreadcrumbNavigationBar');
 const NavigatorNavigationBar = require('NavigatorNavigationBar');
 const NavigatorSceneConfigs = require('NavigatorSceneConfigs');
@@ -287,38 +294,48 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   _renderCard(props: NavigationSceneRendererProps): ReactElement {
-    let direction = 'horizontal';
-
-    const {navigationState} = props.scene;
+    const {scene} = props;
     const {configureScene} = this.props;
 
-    if (configureScene) {
-      const route = RouteStack.getRouteByNavigationState(navigationState);
-      const config = configureScene(route, this.state.routeStack);
+    let isVertical = false;
 
-      switch (getConfigPopDirection(config)) {
+    if (configureScene) {
+      const route = RouteStack.getRouteByNavigationState(scene.navigationState);
+      const config = configureScene(route, this.state.routeStack);
+      const direction = getConfigPopDirection(config);
+
+      switch (direction) {
         case 'left-to-right':
-          direction = 'horizontal';
+          // default.
           break;
 
         case 'top-to-bottom':
-          direction = 'vertical';
+          isVertical = true;
           break;
 
         default:
           // unsupported config.
           if (__DEV__) {
-            console.warn('unsupported scene configuration');
+            console.warn('unsupported scene configuration %s', direction);
           }
       }
     }
 
+    const style = isVertical ?
+      NavigationCardStackStyleInterpolator.forVertical(props) :
+      NavigationCardStackStyleInterpolator.forHorizontal(props);
+
+    const panHandlers = isVertical ?
+      NavigationLinearPanResponder.forVertical(props) :
+      NavigationLinearPanResponder.forHorizontal(props);
+
     return (
       <NavigationCard
         {...props}
-        direction={direction}
-        key={'card_' + navigationState.key}
+        key={'card_' + props.scene.navigationState.key}
+        panHandlers={panHandlers}
         renderScene={this._renderScene}
+        style={style}
       />
     );
   }

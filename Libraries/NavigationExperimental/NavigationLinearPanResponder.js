@@ -1,5 +1,10 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NavigationLinearPanResponder
  * @flow
@@ -13,9 +18,8 @@ const NavigationAbstractPanResponder = require('NavigationAbstractPanResponder')
 const clamp = require('clamp');
 
 import type {
-  NavigationActionCaller,
-  NavigationLayout,
-  NavigationPosition,
+  NavigationPanPanHandlers,
+  NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
 /**
@@ -36,9 +40,9 @@ const POSITION_THRESHOLD = 1 / 3;
 const RESPOND_THRESHOLD = 15;
 
 /**
- * The threshold (in speed) to finish the gesture action.
+ * The threshold (in pixels) to finish the gesture action.
  */
-const VELOCITY_THRESHOLD = 100;
+const DISTANCE_THRESHOLD = 100;
 
 /**
  * Primitive gesture directions.
@@ -48,7 +52,7 @@ const Directions = {
   'VERTICAL': 'vertical',
 };
 
-export type NavigationGestureDirection =  $Enum<typeof Directions>;
+export type NavigationGestureDirection =  'horizontal' | 'vertical';
 
 /**
  * Primitive gesture actions.
@@ -61,42 +65,38 @@ const Actions = {
 };
 
 /**
- * The type interface of the object that provides the information required by
- * NavigationLinearPanResponder.
- */
-export type NavigationLinearPanResponderDelegate = {
-  getDirection: () => NavigationGestureDirection;
-  getIndex: () => number,
-  getLayout: () => NavigationLayout,
-  getPosition: () => NavigationPosition,
-  onNavigate: NavigationActionCaller,
-};
-
-/**
  * Pan responder that handles the One-dimensional gesture (horizontal or
  * vertical).
  */
 class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
-  static Actions: Object;
-  static Directions: Object;
 
   _isResponding: boolean;
+  _isVertical: boolean;
+  _props: NavigationSceneRendererProps;
   _startValue: number;
-  _delegate: NavigationLinearPanResponderDelegate;
 
-  constructor(delegate: NavigationLinearPanResponderDelegate) {
+  constructor(
+    direction: NavigationGestureDirection,
+    props: NavigationSceneRendererProps,
+  ) {
     super();
     this._isResponding = false;
+    this._isVertical = direction === Directions.VERTICAL;
+    this._props = props;
     this._startValue = 0;
-    this._delegate = delegate;
   }
 
   onMoveShouldSetPanResponder(event: any, gesture: any): boolean {
-    const delegate = this._delegate;
-    const layout = delegate.getLayout();
-    const isVertical = delegate.getDirection() === Directions.VERTICAL;
+    const props = this._props;
+
+    if (props.navigationState.index !== props.scene.index) {
+      return false;
+    }
+
+    const layout = props.layout;
+    const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
-    const index = delegate.getIndex();
+    const index = props.navigationState.index;
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
@@ -110,7 +110,7 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
 
   onPanResponderGrant(): void {
     this._isResponding = false;
-    this._delegate.getPosition().stopAnimation((value: number) => {
+    this._props.position.stopAnimation((value: number) => {
       this._isResponding = true;
       this._startValue = value;
     });
@@ -121,11 +121,11 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
       return;
     }
 
-    const delegate = this._delegate;
-    const layout = delegate.getLayout();
-    const isVertical = delegate.getDirection() === Directions.VERTICAL;
+    const props = this._props;
+    const layout = props.layout;
+    const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
-    const index = delegate.getIndex();
+    const index = props.navigationState.index;
     const distance = isVertical ?
       layout.height.__getValue() :
       layout.width.__getValue();
@@ -136,7 +136,7 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
       index
     );
 
-    this._delegate.getPosition().setValue(value);
+    props.position.setValue(value);
   }
 
   onPanResponderRelease(event: any, gesture: any): void {
@@ -146,16 +146,16 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
 
     this._isResponding = false;
 
-    const delegate = this._delegate;
-    const isVertical = delegate.getDirection() === Directions.VERTICAL;
+    const props = this._props;
+    const isVertical = this._isVertical;
     const axis = isVertical ? 'dy' : 'dx';
-    const index = delegate.getIndex();
-    const velocity = gesture[axis];
+    const index = props.navigationState.index;
+    const distance = gesture[axis];
 
-    delegate.getPosition().stopAnimation((value: number) => {
+    props.position.stopAnimation((value: number) => {
       this._reset();
-       if (velocity > VELOCITY_THRESHOLD  || value <= index - POSITION_THRESHOLD) {
-        delegate.onNavigate(Actions.BACK);
+       if (distance > DISTANCE_THRESHOLD  || value <= index - POSITION_THRESHOLD) {
+        props.onNavigate(Actions.BACK);
       }
     });
   }
@@ -166,17 +166,40 @@ class NavigationLinearPanResponder extends NavigationAbstractPanResponder {
   }
 
   _reset(): void {
+    const props = this._props;
     Animated.timing(
-      this._delegate.getPosition(),
+      props.position,
       {
-        toValue: this._delegate.getIndex(),
+        toValue: props.navigationState.index,
         duration: ANIMATION_DURATION,
       }
     ).start();
   }
 }
 
-NavigationLinearPanResponder.Actions = Actions;
-NavigationLinearPanResponder.Directions = Directions;
+function createPanHandlers(
+  direction: NavigationGestureDirection,
+  props: NavigationSceneRendererProps,
+): NavigationPanPanHandlers {
+  const responder = new NavigationLinearPanResponder(direction, props);
+  return responder.panHandlers;
+}
 
-module.exports = NavigationLinearPanResponder;
+function forHorizontal(
+  props: NavigationSceneRendererProps,
+): NavigationPanPanHandlers {
+  return createPanHandlers(Directions.HORIZONTAL, props);
+}
+
+function forVertical(
+  props: NavigationSceneRendererProps,
+): NavigationPanPanHandlers {
+  return createPanHandlers(Directions.VERTICAL, props);
+}
+
+module.exports = {
+  Actions,
+  Directions,
+  forHorizontal,
+  forVertical,
+};
