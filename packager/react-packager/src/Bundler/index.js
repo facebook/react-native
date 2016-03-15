@@ -81,6 +81,10 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  silent: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Bundler {
@@ -352,8 +356,8 @@ class Bundler {
     const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
-      let onProgess;
-      if (process.stdout.isTTY) {
+      let onProgess = noop;
+      if (process.stdout.isTTY && !this._opts.silent) {
         const bar = new ProgressBar(
           'transformed :current/:total (:percent)',
           {complete: '=', incomplete: ' ', width: 40, total: 1},

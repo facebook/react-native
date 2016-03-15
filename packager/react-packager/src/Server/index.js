@@ -73,6 +73,10 @@ const validateOpts = declareOpts({
     type: 'string',
     required: false,
   },
+  silent: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 const bundleOpts = declareOpts({
