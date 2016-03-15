@@ -131,7 +131,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
     // Asynchronously initialize the JS executor
     dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      RCTPerformanceLoggerStart(RCTPLJSCExecutorSetup);
       [weakSelf setUpExecutor];
+      RCTPerformanceLoggerEnd(RCTPLJSCExecutorSetup);
     });
 
     // Asynchronously gather the module config
@@ -171,13 +173,8 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 - (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad
 {
   RCTPerformanceLoggerStart(RCTPLScriptDownload);
-  NSUInteger cookie = RCTProfileBeginAsyncEvent(0, @"JavaScript download", nil);
-
-  // Suppress a warning if RCTProfileBeginAsyncEvent gets compiled out
-  (void)cookie;
 
   RCTSourceLoadBlock onSourceLoad = ^(NSError *error, NSData *source) {
-    RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async", nil);
     RCTPerformanceLoggerEnd(RCTPLScriptDownload);
 
     _onSourceLoad(error, source);
@@ -332,7 +329,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
                     moduleClass, moduleName, moduleData.moduleClass);
       }
     }
-    
+
     // Instantiate moduleData (TODO: can we defer this until config generation?)
     moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
                                                      bridge:self];
@@ -366,6 +363,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
   _moduleSetupComplete = YES;
 
   // Set up modules that require main thread init or constants export
+  RCTPerformanceLoggerSet(RCTPLNativeModuleMainThread, 0);
   for (RCTModuleData *moduleData in _moduleDataByID) {
     __weak RCTBatchedBridge *weakSelf = self;
     if (moduleData.requiresMainThreadSetup) {
@@ -376,8 +374,10 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       // they will already be available before they are ever required.
       dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
         if (weakSelf.valid) {
+          RCTPerformanceLoggerAppendStart(RCTPLNativeModuleMainThread);
           (void)[moduleData instance];
           [moduleData gatherConstants];
+          RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
         }
       });
     } else if (moduleData.hasConstantsToExport) {
@@ -386,7 +386,9 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
       (void)[moduleData instance];
       dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), ^{
         if (weakSelf.valid) {
+          RCTPerformanceLoggerAppendStart(RCTPLNativeModuleMainThread);
           [moduleData gatherConstants];
+          RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
         }
       });
     }
