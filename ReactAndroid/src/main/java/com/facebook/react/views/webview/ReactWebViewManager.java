@@ -267,6 +267,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setDomStorageEnabled(WebView view, boolean enabled) {
     view.getSettings().setDomStorageEnabled(enabled);
   }
+    
 
   @ReactProp(name = "userAgent")
   public void setUserAgent(WebView view, @Nullable String userAgent) {
@@ -274,6 +275,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       // TODO(8496850): Fix incorrect behavior when property is unset (uA == null)
       view.getSettings().setUserAgentString(userAgent);
     }
+  }
+
+  @ReactProp(name = "mediaPlaybackRequiresUserAction")
+  public void setMediaPlaybackRequiresUserAction(WebView view, boolean requires) {
+    view.getSettings().setMediaPlaybackRequiresUserGesture(requires);
   }
 
   @ReactProp(name = "injectedJavaScript")

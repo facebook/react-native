@@ -233,6 +233,12 @@ var WebView = React.createClass({
      * @platform ios
      */
     allowsInlineMediaPlayback: PropTypes.bool,
+
+    /**
+     * Determines whether HTML5 audio & videos require the user to tap before they can
+     * start playing. The default value is `false`.
+     */
+    mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -311,6 +317,7 @@ var WebView = React.createClass({
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
+        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (

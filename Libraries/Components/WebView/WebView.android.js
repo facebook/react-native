@@ -137,6 +137,12 @@ var WebView = React.createClass({
      * Used to locate this view in end-to-end tests.
      */
     testID: PropTypes.string,
+
+    /**
+     * Determines whether HTML5 audio & videos require the user to tap before they can
+     * start playing. The default value is `false`.
+     */
+    mediaPlaybackRequiresUserAction: PropTypes.bool,
   },
 
   getInitialState: function() {
@@ -212,6 +218,7 @@ var WebView = React.createClass({
         onLoadingFinish={this.onLoadingFinish}
         onLoadingError={this.onLoadingError}
         testID={this.props.testID}
+        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
       />;
 
     return (
