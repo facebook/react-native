@@ -68,7 +68,7 @@ echo "======== npm config ========"
 ${NPM_PATH}npm config list
 echo "======== ======== ========"
 
-${SINOPIA_PATH}sinopia --config $SCRIPTS/e2e-sinopia.config.yml &
+${NPM_PATH}node ${SINOPIA_PATH}sinopia --config $SCRIPTS/e2e-sinopia-lego.config.yml &
 SINOPIA_PID=$!
 
 echo "=========== Sinopia is running, pid ${SINOPIA_PID}"
