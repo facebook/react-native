@@ -267,6 +267,12 @@ it provides much less control than `Animated` and other animation libraries, so
 you may need to use another approach if you can't get `LayoutAnimation` to do
 what you want.
 
+Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+
+```javascript
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+```
+
 ![](img/LayoutAnimationExample.gif)
 
 ```javascript
