@@ -50,8 +50,6 @@ function cleanup {
 }
 trap cleanup EXIT
 
-cd $TEMP
-
 # sinopia is npm registry proxy, it is used to make npm
 # think react-native and react-native-cli are actually
 # published on npm
@@ -66,12 +64,27 @@ cp $SCRIPTS/e2e-npmrc ~/.npmrc
 
 echo "======== npm config ========"
 ${NPM_PATH}npm config list
+${NPM_PATH}npm config get registry
+${NPM_PATH}npm config get email
 echo "======== ======== ========"
+
+echo "======== sinopia proxy ==========="
+echo ===HTTP_PROXY; echo $HTTP_PROXY
+echo ===HTTPS_PROXY; echo $HTTPS_PROXY
 
 ${NPM_PATH}node ${SINOPIA_PATH}sinopia --config $SCRIPTS/e2e-sinopia-lego.config.yml &
 SINOPIA_PID=$!
 
+echo "=========== Sleeping 10s"
+sleep 10
+
 echo "=========== Sinopia is running, pid ${SINOPIA_PID}"
+
+echo ===localhost; nc -z localhost 4873; echo $?
+echo ===listening on 4873; lsof -i :4873
+echo ===node listening on port; lsof -i | grep node
+
+echo ====host_dns; host localhost
 
 # Make sure to remove old version of react-native in
 # case it was cached
@@ -81,6 +94,8 @@ ${NPM_PATH}npm publish $ROOT
 ${NPM_PATH}npm publish $ROOT/react-native-cli
 
 ${NPM_PATH}npm install -g react-native-cli
+
+cd $TEMP
 react-native init EndToEndTest
 cd EndToEndTest
 
