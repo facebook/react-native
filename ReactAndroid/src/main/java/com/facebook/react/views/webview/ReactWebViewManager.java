@@ -17,13 +17,15 @@ import java.util.Map;
 
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.ConditionVariable;
 import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.facebook.catalyst.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.ShouldOverrideUrlLoadingEvent;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
@@ -40,6 +42,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.common.MapBuilder;
 
 /**
  * Manages instances of {@link WebView}
@@ -53,6 +56,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
  *  - topLoadingFinish
  *  - topLoadingStart
  *  - topLoadingError
+ *  - topShouldOverrideUrlLoading
  *
  * Each event will carry the following properties:
  *  - target - view's react tag
@@ -74,6 +78,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public static final int COMMAND_GO_BACK = 1;
   public static final int COMMAND_GO_FORWARD = 2;
   public static final int COMMAND_RELOAD = 3;
+  public static final int COMMAND_SHOULD_OVERRIDE_WITH_RESULT = 4;
 
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
@@ -143,6 +148,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
               createWebViewEvent(webView, url)));
     }
 
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+      ReactWebView view = ((ReactWebView)webView);
+      view.mShouldOverrideUrlLoadingResult = false;
+      dispatchEvent(
+          webView,
+          new ShouldOverrideUrlLoadingEvent(
+              webView.getId(),
+              SystemClock.nanoTime(),
+              createWebViewEvent(webView, url)));
+
+      view.mShouldOverrideUrlLoadingConditionVariable.close();
+      view.mShouldOverrideUrlLoadingConditionVariable.block(250);
+
+      return view.mShouldOverrideUrlLoadingResult;
+    }
+
     private void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
           webView,
@@ -180,6 +202,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   private static class ReactWebView extends WebView implements LifecycleEventListener {
     private @Nullable String injectedJS;
 
+    protected ConditionVariable mShouldOverrideUrlLoadingConditionVariable;
+    protected boolean mShouldOverrideUrlLoadingResult;
+
     /**
      * WebView must be created with an context of the current activity
      *
@@ -189,6 +214,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
      */
     public ReactWebView(ThemedReactContext reactContext) {
       super(reactContext);
+      mShouldOverrideUrlLoadingConditionVariable = new ConditionVariable();
     }
 
     @Override
@@ -221,6 +247,11 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     private void cleanupCallbacksAndDestroy() {
       setWebViewClient(null);
       destroy();
+    }
+
+    private void shouldOverrideWithResult(ReadableArray args) {
+        this.mShouldOverrideUrlLoadingResult = args.getBoolean(0);
+        this.mShouldOverrideUrlLoadingConditionVariable.open();
     }
   }
 
@@ -342,7 +373,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     return MapBuilder.of(
         "goBack", COMMAND_GO_BACK,
         "goForward", COMMAND_GO_FORWARD,
-        "reload", COMMAND_RELOAD);
+        "reload", COMMAND_RELOAD,
+        "shouldOverrideWithResult", COMMAND_SHOULD_OVERRIDE_WITH_RESULT);
   }
 
   @Override
@@ -357,6 +389,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       case COMMAND_RELOAD:
         root.reload();
         break;
+      case COMMAND_SHOULD_OVERRIDE_WITH_RESULT:
+        ((ReactWebView) root).shouldOverrideWithResult(args);
+        break;
     }
   }
 
@@ -365,5 +400,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     super.onDropViewInstance(webView);
     ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
+  }
+
+  @Override
+  public @Nullable Map getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.builder()
+      .put("topShouldOverrideUrlLoading", MapBuilder.of("registrationName", "onShouldOverrideUrlLoading"))
+      .build();
   }
 }

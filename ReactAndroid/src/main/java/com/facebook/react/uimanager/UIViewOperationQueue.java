@@ -236,6 +236,10 @@ public class UIViewOperationQueue {
     public void execute() {
       mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
     }
+
+    public void executeSync() {
+      mNativeViewHierarchyManager.dispatchCommandSync(mTag, mCommand, mArgs);
+    }
   }
 
   private final class ShowPopupMenuOperation extends ViewOperation {
@@ -581,6 +585,14 @@ public class UIViewOperationQueue {
       int commandId,
       ReadableArray commandArgs) {
     mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
+  }
+
+  public void executeDispatchCommand(
+      int reactTag,
+      int commandId,
+      ReadableArray commandArgs) {
+      DispatchCommandOperation operation = new DispatchCommandOperation(reactTag, commandId, commandArgs);
+      operation.executeSync();
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {

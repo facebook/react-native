@@ -14,14 +14,14 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event emitted when there is an error in loading.
+ * Event emitted when loading has started
  */
-public class TopLoadingErrorEvent extends Event<TopLoadingErrorEvent> {
+public class ShouldOverrideUrlLoadingEvent extends Event<ShouldOverrideUrlLoadingEvent> {
 
-  public static final String EVENT_NAME = "topLoadingError";
+  public static final String EVENT_NAME = "topShouldOverrideUrlLoading";
   private WritableMap mEventData;
 
-  public TopLoadingErrorEvent(int viewId, long timestampMs, WritableMap eventData) {
+  public ShouldOverrideUrlLoadingEvent(int viewId, long timestampMs, WritableMap eventData) {
     super(viewId, timestampMs);
     mEventData = eventData;
   }
@@ -34,6 +34,11 @@ public class TopLoadingErrorEvent extends Event<TopLoadingErrorEvent> {
   @Override
   public boolean canCoalesce() {
     return false;
+  }
+
+  @Override
+  public boolean isSync() {
+    return true;
   }
 
   @Override
