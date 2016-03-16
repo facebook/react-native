@@ -11,7 +11,7 @@
 jest
   .setMock('worker-farm', () => () => undefined)
   .dontMock('node-haste/node_modules/throat')
-  .dontMock('underscore')
+  .dontMock('lodash')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
   .dontMock('../');
@@ -204,6 +204,7 @@ describe('Bundler', function() {
           transform: {
             dev: true,
             hot: false,
+            generateSourceMaps: false,
             projectRoots,
           }
         },

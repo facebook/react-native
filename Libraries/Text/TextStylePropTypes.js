@@ -41,6 +41,17 @@ var TextStylePropTypes = Object.assign(Object.create(ViewStylePropTypes), {
   letterSpacing: ReactPropTypes.number,
   lineHeight: ReactPropTypes.number,
   /**
+   * @platform ios
+   */
+  lineBreakMode: ReactPropTypes.oneOf([
+    'clipping',
+    'word-wrapping',
+    'char-wrapping',
+    'truncating-head',
+    'truncating-middle',
+    'truncating-tail',
+  ]),
+  /**
    * Specifies text alignment. The value 'justify' is only supported on iOS.
    */
   textAlign: ReactPropTypes.oneOf(

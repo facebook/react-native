@@ -10,7 +10,6 @@
 
 jest.setMock('uglify-js')
     .mock('child_process')
-    .dontMock('underscore')
     .dontMock('../');
 
 var SocketInterface = require('../');

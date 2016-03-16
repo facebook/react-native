@@ -75,6 +75,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   NSString *message = [RCTConvert NSString:args[@"message"]];
   UIAlertViewStyle type = [RCTConvert UIAlertViewStyle:args[@"type"]];
   NSArray<NSDictionary *> *buttons = [RCTConvert NSDictionaryArray:args[@"buttons"]];
+  NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];
   NSString *cancelButtonKey = [RCTConvert NSString:args[@"cancelButtonKey"]];
   NSString *destructiveButtonKey = [RCTConvert NSString:args[@"destructiveButtonKey"]];
 
@@ -112,7 +113,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     alertView.message = message;
 
     if (type != UIAlertViewStyleDefault) {
-      NSString *defaultValue = [RCTConvert NSString:args[@"defaultValue"]];
       [alertView textFieldAtIndex:0].text = defaultValue;
     }
 
@@ -168,25 +168,32 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
                                           message:nil
                                    preferredStyle:UIAlertControllerStyleAlert];
     switch (type) {
-      case UIAlertViewStylePlainTextInput:
+      case UIAlertViewStylePlainTextInput: {
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.secureTextEntry = NO;
+          textField.text = defaultValue;
         }];
         break;
-      case UIAlertViewStyleSecureTextInput:
+      }
+      case UIAlertViewStyleSecureTextInput: {
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.placeholder = RCTUIKitLocalizedString(@"Password");
           textField.secureTextEntry = YES;
+          textField.text = defaultValue;
         }];
         break;
-      case UIAlertViewStyleLoginAndPasswordInput:
+      }
+      case UIAlertViewStyleLoginAndPasswordInput: {
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.placeholder = RCTUIKitLocalizedString(@"Login");
+          textField.text = defaultValue;
         }];
         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
           textField.placeholder = RCTUIKitLocalizedString(@"Password");
           textField.secureTextEntry = YES;
         }];
+        break;
+      }
       case UIAlertViewStyleDefault:
         break;
     }

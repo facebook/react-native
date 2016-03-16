@@ -165,6 +165,15 @@ var featured = [
     link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
     author: 'Yamill Vallecillo',
   },
+  {
+    name: 'Zhopout',
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zhopout',
+    author: 'Jarvis Software Private Limited ',
+    blogs: [
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+    ],
+  },
 ];
 
 var apps = [
@@ -315,6 +324,12 @@ var apps = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/gou-huo/id1001476888?ls=1&mt=8',
     author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
+    name: 'HackerWeb',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    author: 'Lim Chee Aun',
   },
   {
     name: 'Harmonizome',

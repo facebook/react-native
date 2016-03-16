@@ -1,4 +1,4 @@
-React Native GitHub Issue Task Force: brentvatne, chirag04, christopherdro, corbt, dsibiski, grabbou, ide, jsierles, kmagiera, Kureev, lelandrichardson, satya164, skevy, janicduplessis
+React Native GitHub Issue Task Force: astreet, bestander, brentvatne, browniefed, cancan101, chirag04, christopherdro, corbt, cosmith, davidaurelio, dmmiller, dsibiski, foghina, frantic, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, kmagiera, Kureev, lelandrichardson, martinbigio, mkonicek, satya164, skevy, vjeux
 
 @facebook-github-bot answered
 comment Closing this issue as {author} says the question asked has been answered. Please help us by asking questions on [StackOverflow](http://stackoverflow.com/questions/tagged/react-native). StackOverflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.
