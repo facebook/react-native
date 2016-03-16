@@ -272,8 +272,6 @@ Note that In order to get this to work on **Android** you need to set the follow
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 ```
 
-
-
 ![](img/LayoutAnimationExample.gif)
 
 ```javascript
