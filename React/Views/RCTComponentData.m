@@ -88,7 +88,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   RCTAssertMainThread();
 
-  UIView *view = [_manager view];
+  UIView *view = [self.manager view];
   view.reactTag = tag;
   view.multipleTouchEnabled = YES;
   view.userInteractionEnabled = YES; // required for touch handling
@@ -117,10 +117,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     SEL type = NULL;
     NSString *keyPath = nil;
     SEL selector = NSSelectorFromString([NSString stringWithFormat:@"propConfig%@_%@", shadowView ? @"Shadow" : @"", name]);
-    Class managerClass = [_manager class];
-    if ([managerClass respondsToSelector:selector]) {
+    if ([_managerClass respondsToSelector:selector]) {
       NSArray<NSString *> *typeAndKeyPath =
-        ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(managerClass, selector);
+        ((NSArray<NSString *> *(*)(id, SEL))objc_msgSend)(_managerClass, selector);
       type = RCTConvertSelectorForType(typeAndKeyPath[0]);
       keyPath = typeAndKeyPath.count > 1 ? typeAndKeyPath[1] : nil;
     } else {
@@ -140,12 +139,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
         if (!strongSelf) {
           return;
         }
+        json = RCTNilIfNull(json);
         if (!json && !strongSelf->_defaultView) {
           // Only create default view if json is null
           strongSelf->_defaultView = [strongSelf createViewWithTag:nil];
         }
         ((void (*)(id, SEL, id, id, id))objc_msgSend)(
-          strongSelf.manager, customSetter, json == (id)kCFNull ? nil : json, view, strongSelf->_defaultView
+          strongSelf.manager, customSetter, json, view, strongSelf->_defaultView
         );
       };
 
@@ -173,7 +173,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
           type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
 
         // Special case for event handlers
-        __weak RCTViewManager *weakManager = _manager;
+        __weak RCTViewManager *weakManager = self.manager;
         setterBlock = ^(id target, id json) {
           __weak id<RCTComponent> weakTarget = target;
           ((void (*)(id, SEL, id))objc_msgSend)(target, setter, [RCTConvert BOOL:json] ? ^(NSDictionary *body) {
@@ -443,7 +443,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   };
 }
 
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *,RCTShadowView *> *)registry
+- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)registry
 {
   if (_implementsUIBlockToAmendWithShadowViewRegistry) {
     return [[self manager] uiBlockToAmendWithShadowViewRegistry:registry];
