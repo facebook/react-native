@@ -220,7 +220,7 @@ class <span class="token class-name">Message</span> extends <span class="token c
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-</div><h3>Creating Android views</h3><p>Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @UIProp annotation. Then a simple JavaScript file connects the dots.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Java
+</div><h3>Creating Android views</h3><p>Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @ReactProp annotation. Then a simple JavaScript file connects the dots.</p><div class="prism language-javascript"><span class="token comment" spellcheck="true">// Java
 </span>
 public class <span class="token class-name">MyCustomViewManager</span> extends <span class="token class-name">SimpleViewManager</span>&lt;MyCustomView<span class="token operator">&gt;</span> <span class="token punctuation">{</span>
   @Override
