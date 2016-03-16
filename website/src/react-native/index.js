@@ -351,7 +351,7 @@ class Message extends Component {
 
           <h3>Creating Android views</h3>
           <p>
-          Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @UIProp annotation. Then a simple JavaScript file connects the dots.
+          Custom Android views can be exposed by extending SimpleViewManager, implementing a createViewInstance and getName methods, and exporting properties with the @ReactProp annotation. Then a simple JavaScript file connects the dots.
           </p>
           <Prism>
 {`// Java
