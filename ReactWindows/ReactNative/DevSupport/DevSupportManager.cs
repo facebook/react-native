@@ -30,7 +30,7 @@ namespace ReactNative.DevSupport
 
         private bool _isDevSupportEnabled = true;
         private bool _isShakeDetectorRegistered;
-        private bool _isUsingJsProxy = true;
+        private bool _isUsingJsProxy;
 
         private RedBoxDialog _redBoxDialog;
         private Action _dismissRedBoxDialog;
