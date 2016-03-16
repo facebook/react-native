@@ -32,6 +32,13 @@ var invariant = require('fbjs/lib/invariant');
 var isEmpty = require('isEmpty');
 var warning = require('fbjs/lib/warning');
 
+function defaultRowHasChanged(
+  data1: any,
+  data2: any
+): bool {
+  return true;
+}
+
 function defaultGetRowData(
   dataBlob: any,
   sectionID: number | string,
@@ -48,9 +55,15 @@ function defaultGetSectionHeaderData(
 }
 
 type differType = (data1: any, data2: any) => bool;
+type rowsType = Array<any> | {[key: string]: any};
+type rowIdentitiesType = Array<Array<string>>;
+type sectionIdentitiesType = Array<string>;
 
 type ParamType = {
-  rowHasChanged: differType;
+  rows?: ?rowsType;
+  rowIdentities?: ?rowIdentitiesType;
+  sectionIdentities?: ?sectionIdentitiesType;
+  rowHasChanged: ?typeof defaultRowHasChanged;
   getRowData: ?typeof defaultGetRowData;
   sectionHeaderHasChanged: ?differType;
   getSectionHeaderData: ?typeof defaultGetSectionHeaderData;
@@ -112,31 +125,57 @@ class ListViewDataSource {
    * The constructor takes in a params argument that can contain any of the
    * following:
    *
+   * - rows
+   * - rowIdentities
+   * - sectionIdentities
    * - getRowData(dataBlob, sectionID, rowID);
    * - getSectionHeaderData(dataBlob, sectionID);
    * - rowHasChanged(prevRowData, nextRowData);
    * - sectionHeaderHasChanged(prevSectionData, nextSectionData);
    */
-  constructor(params: ParamType) {
-    invariant(
-      params && typeof params.rowHasChanged === 'function',
-      'Must provide a rowHasChanged function.'
-    );
-    this._rowHasChanged = params.rowHasChanged;
-    this._getRowData = params.getRowData || defaultGetRowData;
-    this._sectionHeaderHasChanged = params.sectionHeaderHasChanged;
-    this._getSectionHeaderData =
-      params.getSectionHeaderData || defaultGetSectionHeaderData;
+  constructor({rows, sectionIdentities, rowIdentities, rowHasChanged, getRowData,
+              sectionHeaderHasChanged, getSectionHeaderData}: ParamType) {
+    this._rowHasChanged = rowHasChanged || defaultRowHasChanged;
+    this._getRowData = getRowData || defaultGetRowData;
+    this._getSectionHeaderData = getSectionHeaderData || defaultGetSectionHeaderData;
+    this._sectionHeaderHasChanged = sectionHeaderHasChanged;
 
-    this._dataBlob = null;
-    this._dirtyRows = [];
-    this._dirtySections = [];
-    this._cachedRowCount = 0;
+    if (rows) {
+      if (rows.constructor === Array) {
+        this._dataBlob = {s1: rows};
+      } else {
+        this._dataBlob = rows;
+      }
 
-    // These two private variables are accessed by outsiders because ListView
-    // uses them to iterate over the data in this class.
-    this.rowIdentities = [];
-    this.sectionIdentities = [];
+      if (sectionIdentities) {
+        this.sectionIdentities = sectionIdentities;
+      } else {
+        this.sectionIdentities = Object.keys(this._dataBlob);
+      }
+
+      if (rowIdentities) {
+        this.rowIdentities = rowIdentities;
+      } else {
+        this.rowIdentities = [];
+        this.sectionIdentities.forEach((sectionID) => {
+          this.rowIdentities.push(Object.keys(this._dataBlob[sectionID]));
+        });
+      }
+      this._cachedRowCount = countRows(this.rowIdentities);
+
+      // Dirty all rows and sections
+      this._calculateDirtyArrays([], [], []);
+    } else {
+      this._dataBlob = [];
+      this._dirtyRows = [];
+      this._dirtySections = [];
+      this._cachedRowCount = 0;
+
+      // These two private variables are accessed by outsiders because ListView
+      // uses them to iterate over the data in this class.
+      this.rowIdentities = [];
+      this.sectionIdentities = [];
+    }
   }
 
   /**
@@ -156,7 +195,7 @@ class ListViewDataSource {
    * this function as the `dataBlob`.
    */
    cloneWithRows(
-       dataBlob: Array<any> | {[key: string]: any},
+       dataBlob: rowsType,
        rowIdentities: ?Array<string>
    ): ListViewDataSource {
     var rowIds = rowIdentities ? [rowIdentities] : null;
@@ -179,8 +218,8 @@ class ListViewDataSource {
    */
   cloneWithRowsAndSections(
       dataBlob: any,
-      sectionIdentities: ?Array<string>,
-      rowIdentities: ?Array<Array<string>>
+      sectionIdentities: ?sectionIdentitiesType,
+      rowIdentities: ?rowIdentitiesType
   ): ListViewDataSource {
     invariant(
       typeof this._sectionHeaderHasChanged === 'function',
@@ -192,26 +231,14 @@ class ListViewDataSource {
     );
 
     var newSource = new ListViewDataSource({
+      rows: dataBlob,
+      sectionIdentities: sectionIdentities,
+      rowIdentities: rowIdentities,
       getRowData: this._getRowData,
       getSectionHeaderData: this._getSectionHeaderData,
       rowHasChanged: this._rowHasChanged,
       sectionHeaderHasChanged: this._sectionHeaderHasChanged,
     });
-    newSource._dataBlob = dataBlob;
-    if (sectionIdentities) {
-      newSource.sectionIdentities = sectionIdentities;
-    } else {
-      newSource.sectionIdentities = Object.keys(dataBlob);
-    }
-    if (rowIdentities) {
-      newSource.rowIdentities = rowIdentities;
-    } else {
-      newSource.rowIdentities = [];
-      newSource.sectionIdentities.forEach((sectionID) => {
-        newSource.rowIdentities.push(Object.keys(dataBlob[sectionID]));
-      });
-    }
-    newSource._cachedRowCount = countRows(newSource.rowIdentities);
 
     newSource._calculateDirtyArrays(
       this._dataBlob,
@@ -335,13 +362,13 @@ class ListViewDataSource {
 
   // These two 'protected' variables are accessed by ListView to iterate over
   // the data in this class.
-  rowIdentities: Array<Array<string>>;
-  sectionIdentities: Array<string>;
+  rowIdentities: rowIdentitiesType;
+  sectionIdentities: sectionIdentitiesType;
 
   _calculateDirtyArrays(
     prevDataBlob: any,
-    prevSectionIDs: Array<string>,
-    prevRowIDs: Array<Array<string>>
+    prevSectionIDs: sectionIdentitiesType,
+    prevRowIDs: rowIdentitiesType
   ): void {
     // construct a hashmap of the existing (old) id arrays
     var prevSectionsHash = keyedDictionaryFromArray(prevSectionIDs);
