@@ -78,6 +78,8 @@ NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
     @(RCTPLData[RCTPLNativeModulePrepareConfig][1]),
     @(RCTPLData[RCTPLNativeModuleInjectConfig][0]),
     @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
+    @(RCTPLData[RCTPLNativeModuleMainThreadUsesCount][0]),
+    @(RCTPLData[RCTPLNativeModuleMainThreadUsesCount][1]),
     @(RCTPLData[RCTPLJSCExecutorSetup][0]),
     @(RCTPLData[RCTPLJSCExecutorSetup][1]),
     @(RCTPLData[RCTPLTTI][0]),
