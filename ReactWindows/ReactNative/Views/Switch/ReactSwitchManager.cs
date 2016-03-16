@@ -90,7 +90,6 @@ namespace ReactNative.Views.Switch
             view.Toggled -= OnToggled;
         }
 
-
         /// <summary>
         /// Creates a new view instance of type <see cref="ToggleSwitch"/>.
         /// </summary>

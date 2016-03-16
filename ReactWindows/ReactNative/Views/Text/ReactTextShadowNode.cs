@@ -111,6 +111,7 @@ namespace ReactNative.Views.Text
             }
 
             base.OnCollectExtraUpdates(uiViewOperationQueue);
+
             if (_inline != null)
             {
                 uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, _inline);

@@ -333,7 +333,6 @@
     <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
     <Compile Include="Views\TextInput\ReactTextInputBlurEvent.cs" />
     <Compile Include="Views\TextInput\ReactTextInputFocusEvent.cs" />
-    <Compile Include="Views\View\ReactCanvas.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
     <Compile Include="Modules\Toast\ToastHelper.cs" />
