@@ -10,6 +10,7 @@
 
 jest
   .dontMock('AssetRegistry')
+  .dontMock('AssetSourceResolver')
   .dontMock('../resolveAssetSource')
   .dontMock('../../../local-cli/bundle/assetPathUtils');
 
@@ -212,6 +213,60 @@ describe('resolveAssetSource', () => {
         width: 100,
         height: 200,
         uri: 'file:///sdcard/Path/To/Simulator/drawable-mdpi/awesomemodule_subdir_logo1_.png',
+        scale: 1,
+      });
+    });
+  });
+
+  describe('source resolver can be customized', () => {
+    beforeEach(() => {
+      NativeModules.SourceCode.scriptURL =
+        'file:///sdcard/Path/To/Simulator/main.bundle';
+      Platform.OS = 'android';
+    });
+
+    it('uses bundled source, event when js is sideloaded', () => {
+      resolveAssetSource.setCustomSourceTransformer(
+        (resolver) => resolver.resourceIdentifierWithoutScale(),
+      );
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/AwesomeModule/Subdir',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: '!@Logo#1_€',
+        type: 'png',
+      }, {
+        __packager_asset: true,
+        width: 100,
+        height: 200,
+        uri: 'awesomemodule_subdir_logo1_',
+        scale: 1,
+      });
+    });
+
+    it('allows any customization', () => {
+      resolveAssetSource.setCustomSourceTransformer(
+        (resolver) => resolver.fromSource('TEST')
+      );
+      expectResolvesAsset({
+        __packager_asset: true,
+        fileSystemLocation: '/root/app/module/a',
+        httpServerLocation: '/assets/AwesomeModule/Subdir',
+        width: 100,
+        height: 200,
+        scales: [1],
+        hash: '5b6f00f',
+        name: '!@Logo#1_€',
+        type: 'png',
+      }, {
+        __packager_asset: true,
+        width: 100,
+        height: 200,
+        uri: 'TEST',
         scale: 1,
       });
     });
