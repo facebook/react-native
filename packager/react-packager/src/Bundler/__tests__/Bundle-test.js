@@ -11,6 +11,7 @@
 jest.autoMockOff();
 
 const Bundle = require('../Bundle');
+const ModuleTransport = require('../../lib/ModuleTransport');
 const Promise = require('Promise');
 const SourceMapGenerator = require('source-map').SourceMapGenerator;
 const crypto = require('crypto');
@@ -105,6 +106,34 @@ describe('Bundle', () => {
           '\/\/# sourceMappingURL=test_url',
         ].join('\n'));
       });
+    });
+
+    pit('should insert modules in a deterministic order, independent from timing of the wrapping process', () => {
+      const moduleTransports = [
+        createModuleTransport({name: 'module1'}),
+        createModuleTransport({name: 'module2'}),
+        createModuleTransport({name: 'module3'}),
+      ];
+
+      const resolves = {};
+      const resolver = {
+        wrapModule({name}) {
+          return new Promise(resolve => resolves[name] = resolve);
+        }
+      };
+
+      const promise = Promise.all(
+        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
+      .then(() => {
+        expect(bundle.getModules())
+          .toEqual(moduleTransports);
+      });
+
+      resolves.module2({code: ''});
+      resolves.module3({code: ''});
+      resolves.module1({code: ''});
+
+      return promise;
     });
   });
 
@@ -346,11 +375,28 @@ function resolverFor(code, map) {
   };
 }
 
-function addModule({bundle, code, sourceCode, sourcePath, map, virtual}) {
+function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill}) {
   return bundle.addModule(
     resolverFor(code, map),
     null,
-    null,
-    {code, sourceCode, sourcePath, map, virtual}
+    {isPolyfill: () => polyfill},
+    createModuleTransport({
+      code,
+      sourceCode,
+      sourcePath,
+      map,
+      virtual,
+      polyfill,
+    }),
   );
+}
+
+function createModuleTransport(data) {
+  return new ModuleTransport({
+    code: '',
+    id: '',
+    sourceCode: '',
+    sourcePath: '',
+    ...data,
+  });
 }

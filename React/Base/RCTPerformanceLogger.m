@@ -12,11 +12,18 @@
 #import "RCTPerformanceLogger.h"
 #import "RCTRootView.h"
 #import "RCTLog.h"
+#import "RCTProfile.h"
 
 static int64_t RCTPLData[RCTPLSize][2] = {};
+static int64_t RCTPLCookies[RCTPLSize] = {};
 
 void RCTPerformanceLoggerStart(RCTPLTag tag)
 {
+  if (RCTProfileIsProfiling()) {
+    NSString *label = RCTPerformanceLoggerLabels()[tag];
+    RCTPLCookies[tag] = RCTProfileBeginAsyncEvent(0, label, nil);
+  }
+
   RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
   RCTPLData[tag][1] = 0;
 }
@@ -25,6 +32,11 @@ void RCTPerformanceLoggerEnd(RCTPLTag tag)
 {
   if (RCTPLData[tag][0] != 0 && RCTPLData[tag][1] == 0) {
     RCTPLData[tag][1] = CACurrentMediaTime() * 1000;
+
+    if (RCTProfileIsProfiling()) {
+      NSString *label = RCTPerformanceLoggerLabels()[tag];
+      RCTProfileEndAsyncEvent(0, @"native", RCTPLCookies[tag], label, @"RCTPerformanceLogger", nil);
+    }
   } else {
     RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
   }
@@ -36,6 +48,21 @@ void RCTPerformanceLoggerSet(RCTPLTag tag, int64_t value)
   RCTPLData[tag][1] = value;
 }
 
+void RCTPerformanceLoggerAppendStart(RCTPLTag tag)
+{
+  RCTPLData[tag][0] = CACurrentMediaTime() * 1000;
+}
+
+void RCTPerformanceLoggerAppendEnd(RCTPLTag tag)
+{
+  if (RCTPLData[tag][0] != 0) {
+    RCTPLData[tag][1] += CACurrentMediaTime() * 1000 - RCTPLData[tag][0];
+    RCTPLData[tag][0] = 0;
+  } else {
+    RCTLogInfo(@"Unbalanced calls start/end for tag %li", (unsigned long)tag);
+  }
+}
+
 NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 {
   return @[
@@ -45,10 +72,14 @@ NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
     @(RCTPLData[RCTPLScriptExecution][1]),
     @(RCTPLData[RCTPLNativeModuleInit][0]),
     @(RCTPLData[RCTPLNativeModuleInit][1]),
+    @(RCTPLData[RCTPLNativeModuleMainThread][0]),
+    @(RCTPLData[RCTPLNativeModuleMainThread][1]),
     @(RCTPLData[RCTPLNativeModulePrepareConfig][0]),
     @(RCTPLData[RCTPLNativeModulePrepareConfig][1]),
     @(RCTPLData[RCTPLNativeModuleInjectConfig][0]),
     @(RCTPLData[RCTPLNativeModuleInjectConfig][1]),
+    @(RCTPLData[RCTPLJSCExecutorSetup][0]),
+    @(RCTPLData[RCTPLJSCExecutorSetup][1]),
     @(RCTPLData[RCTPLTTI][0]),
     @(RCTPLData[RCTPLTTI][1]),
     @(RCTPLData[RCTPLBundleSize][0]),
@@ -58,15 +89,22 @@ NSArray<NSNumber *> *RCTPerformanceLoggerOutput(void)
 
 NSArray *RCTPerformanceLoggerLabels(void)
 {
-  return @[
-    @"ScriptDownload",
-    @"ScriptExecution",
-    @"NativeModuleInit",
-    @"NativeModulePrepareConfig",
-    @"NativeModuleInjectConfig",
-    @"TTI",
-    @"BundleSize",
-  ];
+  static NSArray *labels;
+  static dispatch_once_t token;
+  dispatch_once(&token, ^{
+    labels = @[
+      @"ScriptDownload",
+      @"ScriptExecution",
+      @"NativeModuleInit",
+      @"NativeModuleMainThread",
+      @"NativeModulePrepareConfig",
+      @"NativeModuleInjectConfig",
+      @"JSCExecutorSetup",
+      @"RootViewTTI",
+      @"BundleSize",
+    ];
+  });
+  return labels;
 }
 
 @interface RCTPerformanceLogger : NSObject <RCTBridgeModule>

@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -13,20 +20,23 @@
 */
 'use strict';
 
-var React = require('react-native');
-var {
+const React = require('react-native');
+
+const {
   Animated,
   NavigationExperimental,
   StyleSheet,
   ScrollView,
 } = React;
-var NavigationExampleRow = require('./NavigationExampleRow');
-var {
+
+const  NavigationExampleRow = require('./NavigationExampleRow');
+
+const  {
   AnimatedView: NavigationAnimatedView,
   Card: NavigationCard,
-  RootContainer: NavigationRootContainer,
-  Reducer: NavigationReducer,
   Header: NavigationHeader,
+  Reducer: NavigationReducer,
+  RootContainer: NavigationRootContainer,
 } = NavigationExperimental;
 
 const NavigationBasicReducer = NavigationReducer.StackReducer({
@@ -78,8 +88,8 @@ class NavigationAnimatedExample extends React.Component {
         navigationState={navigationState}
         style={styles.animatedView}
         renderOverlay={this._renderHeader}
-        setTiming={(pos, navState) => {
-          Animated.timing(pos, {toValue: navState.index, duration: 1000}).start();
+        applyAnimation={(pos, navState) => {
+          Animated.timing(pos, {toValue: navState.index, duration: 500}).start();
         }}
         renderScene={this._renderCard}
       />

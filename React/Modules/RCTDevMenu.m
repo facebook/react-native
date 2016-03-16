@@ -541,7 +541,9 @@ RCT_EXPORT_METHOD(show)
 
 RCT_EXPORT_METHOD(reload)
 {
-  [_bridge reload];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification
+                                                      object:nil
+                                                    userInfo:nil];
 }
 
 - (void)setShakeToShow:(BOOL)shakeToShow

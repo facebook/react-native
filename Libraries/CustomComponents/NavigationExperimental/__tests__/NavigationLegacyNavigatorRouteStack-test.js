@@ -24,7 +24,6 @@
  */
 'use strict';
 
-
 jest
  .autoMockOff()
  .mock('ErrorUtils');
@@ -73,13 +72,13 @@ describe('NavigationLegacyNavigatorRouteStack:', () => {
   });
 
   it('throws at index out of bound', () => {
-    expect(() => {
-      new NavigationLegacyNavigatorRouteStack(-1, ['a', 'b']);
-    }).toThrow();
+    expect(
+      () => new NavigationLegacyNavigatorRouteStack(-1, ['a', 'b'])
+    ).toThrow();
 
-    expect(() => {
-      new NavigationLegacyNavigatorRouteStack(100, ['a', 'b']);
-    }).toThrow();
+    expect(
+      () => new NavigationLegacyNavigatorRouteStack(100, ['a', 'b'])
+    ).toThrow();
   });
 
   it('finds index', () => {

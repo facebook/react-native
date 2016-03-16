@@ -8,16 +8,13 @@
  */
 'use strict';
 
-const _ = require('underscore');
+const _ = require('lodash');
 const base64VLQ = require('./base64-vlq');
 const BundleBase = require('./BundleBase');
 const ModuleTransport = require('../lib/ModuleTransport');
 const crypto = require('crypto');
 
 const SOURCEMAPPING_URL = '\n\/\/# sourceMappingURL=';
-
-const getCode = x => x.code;
-const getNameAndCode = ({name, code}) => ({name, code});
 
 class Bundle extends BundleBase {
   constructor({sourceMapUrl, minify} = {}) {
@@ -31,6 +28,7 @@ class Bundle extends BundleBase {
   }
 
   addModule(resolver, resolutionResponse, module, moduleTransport) {
+    const index = super.addModule(moduleTransport);
     return resolver.wrapModule({
       resolutionResponse,
       module,
@@ -46,7 +44,8 @@ class Bundle extends BundleBase {
         this._shouldCombineSourceMaps = true;
       }
 
-      super.addModule(new ModuleTransport({...moduleTransport, code, map}));
+      this.replaceModuleAt(
+        index, new ModuleTransport({...moduleTransport, code, map}));
     });
   }
 
@@ -65,10 +64,11 @@ class Bundle extends BundleBase {
   }
 
   _addRequireCall(moduleId) {
-    const code = ';require("' + moduleId + '");';
+    const code = `;require(${JSON.stringify(moduleId)});`;
     const name = 'require-' + moduleId;
     super.addModule(new ModuleTransport({
       name,
+      id: this._numRequireCalls - 1,
       code,
       virtual: true,
       sourceCode: code,
@@ -111,20 +111,22 @@ class Bundle extends BundleBase {
     const modules =
       allModules
         .splice(prependedModules, allModules.length - requireCalls - prependedModules);
-    const startupCode = allModules.map(getCode).join('\n');
+    const startupCode = allModules.map(({code}) => code).join('\n');
 
     return {
       startupCode,
-      modules: modules.map(getNameAndCode)
+      modules: modules.map(({name, code, polyfill}) =>
+        ({name, code, polyfill})
+      ),
+      modules,
     };
   }
 
   /**
-   * I found a neat trick in the sourcemap spec that makes it easy
-   * to concat sourcemaps. The `sections` field allows us to combine
-   * the sourcemap easily by adding an offset. Tested on chrome.
-   * Seems like it's not yet in Firefox but that should be fine for
-   * now.
+   * Combine each of the sourcemaps multiple modules have into a single big
+   * one. This works well thanks to a neat trick defined on the sourcemap spec
+   * that makes use of of the `sections` field to combine sourcemaps by adding
+   * an offset. This is supported only by Chrome for now.
    */
   _getCombinedSourceMaps(options) {
     const result = {
@@ -143,7 +145,7 @@ class Bundle extends BundleBase {
 
       if (options.excludeSource) {
         if (map.sourcesContent && map.sourcesContent.length) {
-          map = _.extend({}, map, {sourcesContent: []});
+          map = Object.assign({}, map, {sourcesContent: []});
         }
       }
 

@@ -81,6 +81,10 @@ const validateOpts = declareOpts({
     type: 'number',
     required: false,
   },
+  silent: {
+    type: 'boolean',
+    default: false,
+  },
 });
 
 class Bundler {
@@ -105,6 +109,8 @@ class Bundler {
       opts.projectRoots.join(',').split(path.sep).join('-'),
       mtime,
     ];
+
+    this._getModuleId = createModuleIdFactory();
 
     if (opts.transformModulePath) {
       const transformer = require(opts.transformModulePath);
@@ -131,6 +137,7 @@ class Bundler {
       fileWatcher: opts.fileWatcher,
       assetExts: opts.assetExts,
       cache: this._cache,
+      getModuleId: this._getModuleId,
       transformCode:
         (module, code, options) =>
           this._transformer.transformFile(module.path, code, options),
@@ -208,6 +215,7 @@ class Bundler {
 
   hmrBundle(options, host, port) {
     return this._bundle({
+      ...options,
       bundle: new HMRBundle({
         sourceURLFn: this._sourceHMRURL.bind(this, options.platform, host, port),
         sourceMappingURLFn: this._sourceMappingHMRURL.bind(
@@ -216,7 +224,7 @@ class Bundler {
         ),
       }),
       hot: true,
-      ...options,
+      dev: true,
     });
   }
 
@@ -230,11 +238,22 @@ class Bundler {
     platform,
     moduleSystemDeps = [],
     hot,
+    unbundle,
     entryModuleOnly,
-    resolutionResponse
+    resolutionResponse,
   }) {
+    if (dev && runBeforeMainModule) { // no runBeforeMainModule for hmr bundles
+      // `require` calls in the require polyfill itself are not extracted and
+      // replaced with numeric module IDs, but the require polyfill
+      // needs Systrace.
+      // Therefore, we include the Systrace module before the main module, and
+      // it will set itself as property on the require function.
+      // TODO(davidaurelio) Scan polyfills for dependencies, too (t9759686)
+      runBeforeMainModule = runBeforeMainModule.concat(['Systrace']);
+    }
+
     const onResolutionResponse = response => {
-      bundle.setMainModuleId(response.mainModuleId);
+      bundle.setMainModuleId(this._getModuleId(getMainModule(response)));
       if (bundle.setNumPrependedModules) {
         bundle.setNumPrependedModules(
           response.numPrependedDependencies + moduleSystemDeps.length
@@ -248,13 +267,23 @@ class Bundler {
         response.dependencies = moduleSystemDeps.concat(response.dependencies);
       }
     };
-    const finalizeBundle = ({bundle, transformedModules, response}) =>
+    const finalizeBundle = ({bundle, transformedModules, response, modulesByName}) =>
       Promise.all(
         transformedModules.map(({module, transformed}) =>
           bundle.addModule(this._resolver, response, module, transformed)
         )
       ).then(() => {
-        bundle.finalize({runBeforeMainModule, runMainModule});
+        const runBeforeMainModuleIds = Array.isArray(runBeforeMainModule)
+          ? runBeforeMainModule
+              .map(name => modulesByName[name])
+              .filter(Boolean)
+              .map(this._getModuleId, this)
+          : undefined;
+
+        bundle.finalize({
+          runMainModule,
+          runBeforeMainModule: runBeforeMainModuleIds,
+        });
         return bundle;
       });
 
@@ -265,6 +294,7 @@ class Bundler {
       platform,
       bundle,
       hot,
+      unbundle,
       resolutionResponse,
       onResolutionResponse,
       finalizeBundle,
@@ -316,16 +346,18 @@ class Bundler {
     platform,
     bundle,
     hot,
+    unbundle,
     resolutionResponse,
     onResolutionResponse = noop,
     onModuleTransformed = noop,
     finalizeBundle = noop,
   }) {
     const findEventId = Activity.startEvent('find dependencies');
+    const modulesByName = Object.create(null);
 
     if (!resolutionResponse) {
-      let onProgess;
-      if (process.stdout.isTTY) {
+      let onProgess = noop;
+      if (process.stdout.isTTY && !this._opts.silent) {
         const bar = new ProgressBar(
           'transformed :current/:total (:percent)',
           {complete: '=', incomplete: ' ', width: 40, total: 1},
@@ -336,8 +368,15 @@ class Bundler {
         };
       }
 
-      resolutionResponse = this.getDependencies(
-        {entryFile, dev, platform, hot, onProgess, minify});
+      resolutionResponse = this.getDependencies({
+        entryFile,
+        dev,
+        platform,
+        hot,
+        onProgess,
+        minify,
+        generateSourceMaps: unbundle,
+      });
     }
 
     return Promise.resolve(resolutionResponse).then(response => {
@@ -350,6 +389,7 @@ class Bundler {
           bundle,
           transformOptions: response.transformOptions,
         }).then(transformed => {
+          modulesByName[transformed.name] = module;
           onModuleTransformed({
             module,
             response,
@@ -361,9 +401,9 @@ class Bundler {
 
       return Promise.all(response.dependencies.map(toModuleTransport))
         .then(transformedModules =>
-          Promise
-            .resolve(finalizeBundle({bundle, transformedModules, response}))
-            .then(() => bundle)
+          Promise.resolve(
+            finalizeBundle({bundle, transformedModules, response, modulesByName})
+          ).then(() => bundle)
         );
     });
   }
@@ -391,10 +431,18 @@ class Bundler {
     minify = !dev,
     hot = false,
     recursive = true,
+    generateSourceMaps = false,
     onProgess,
   }) {
     return this.getTransformOptions(
-      entryFile, {dev, platform, hot, projectRoots: this._projectRoots}
+      entryFile,
+      {
+        dev,
+        platform,
+        hot,
+        generateSourceMaps,
+        projectRoots: this._projectRoots,
+      },
     ).then(transformSpecificOptions => {
       const transformOptions = {
         minify,
@@ -463,6 +511,7 @@ class Bundler {
       [name, {code, dependencies, dependencyOffsets, map, source}]
     ) => new ModuleTransport({
       name,
+      id: this._getModuleId(module),
       code,
       map,
       meta: {dependencies, dependencyOffsets},
@@ -495,6 +544,7 @@ class Bundler {
 
       return new ModuleTransport({
         name: id,
+        id: this._getModuleId(module),
         code: code,
         sourceCode: code,
         sourcePath: module.path,
@@ -560,8 +610,9 @@ class Bundler {
       bundle.addAsset(asset);
       return new ModuleTransport({
         name,
+        id: this._getModuleId(module),
         code,
-        meta,
+        meta: meta,
         sourceCode: code,
         sourcePath: module.path,
         virtual: true,
@@ -594,6 +645,22 @@ function getPathRelativeToRoot(roots, absPath) {
 function verifyRootExists(root) {
   // Verify that the root exists.
   assert(fs.statSync(root).isDirectory(), 'Root has to be a valid directory');
+}
+
+function createModuleIdFactory() {
+  const fileToIdMap = Object.create(null);
+  let nextId = 0;
+  return ({path}) => {
+    if (!(path in fileToIdMap)) {
+      fileToIdMap[path] = nextId;
+      nextId += 1;
+    }
+    return fileToIdMap[path];
+  };
+}
+
+function getMainModule({dependencies, numPrependedDependencies = 0}) {
+  return dependencies[numPrependedDependencies];
 }
 
 module.exports = Bundler;
