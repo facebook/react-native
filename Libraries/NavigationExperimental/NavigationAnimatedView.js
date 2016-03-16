@@ -59,7 +59,7 @@ function compareScenes(
 
   return compareKey(
     one.navigationState.key,
-    two.navigationState.key,
+    two.navigationState.key
   );
 }
 
