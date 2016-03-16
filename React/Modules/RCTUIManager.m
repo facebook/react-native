@@ -905,6 +905,10 @@ RCT_EXPORT_METHOD(createView:(nonnull NSNumber *)reactTag
         [uiManager->_bridgeTransactionListeners addObject:view];
       }
       ((NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry)[reactTag] = view;
+
+#if RCT_DEV
+      [view _DEBUG_setReactShadowView:shadowView];
+#endif
     }
   }];
 }
