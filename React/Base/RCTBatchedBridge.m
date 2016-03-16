@@ -364,6 +364,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
   // Set up modules that require main thread init or constants export
   RCTPerformanceLoggerSet(RCTPLNativeModuleMainThread, 0);
+  NSUInteger modulesOnMainThreadCount = 0;
   for (RCTModuleData *moduleData in _moduleDataByID) {
     __weak RCTBatchedBridge *weakSelf = self;
     if (moduleData.requiresMainThreadSetup) {
@@ -380,6 +381,7 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
           RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
         }
       });
+      modulesOnMainThreadCount++;
     } else if (moduleData.hasConstantsToExport) {
       // Constants must be exported on the main thread, but module setup can
       // be done on any queue
@@ -391,10 +393,12 @@ RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
           RCTPerformanceLoggerAppendEnd(RCTPLNativeModuleMainThread);
         }
       });
+      modulesOnMainThreadCount++;
     }
   }
 
   RCTPerformanceLoggerEnd(RCTPLNativeModuleInit);
+  RCTPerformanceLoggerSet(RCTPLNativeModuleMainThreadUsesCount, modulesOnMainThreadCount);
 }
 
 - (void)setUpExecutor
