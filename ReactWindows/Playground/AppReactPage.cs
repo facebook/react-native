@@ -11,7 +11,7 @@ namespace Playground
         {
             get
             {
-                return "UIExplorerApp";
+                return "ReactRoot";
             }
         }
 
@@ -19,7 +19,7 @@ namespace Playground
         {
             get
             {
-                return "Examples/UIExplorer/UIExplorerApp.windows";
+                return "ReactWindows/Playground/index.windows";
             }
         }
 

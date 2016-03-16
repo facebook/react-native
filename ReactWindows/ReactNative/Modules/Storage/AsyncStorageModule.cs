@@ -1,11 +1,9 @@
-﻿#define CLEAR_STORAGE
-
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using ReactNative.Bridge;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Storage;
-using System.Collections.Generic;
 
 namespace ReactNative.Modules.Storage
 {

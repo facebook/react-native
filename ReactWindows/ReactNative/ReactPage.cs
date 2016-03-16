@@ -91,6 +91,9 @@ namespace ReactNative
         {
             RootView.Background = (Brush)Application.Current.Resources["ApplicationPageBackgroundThemeBrush"];
             RootView.StartReactApplication(_reactInstanceManager, MainComponentName);
+
+            SystemNavigationManager.GetForCurrentView().BackRequested +=
+                (sender, args) => _reactInstanceManager.OnBackPressed();
         }
 
         /// <summary>
@@ -107,11 +110,6 @@ namespace ReactNative
         public void OnResume()
         {
             _reactInstanceManager.OnResume(OnBackPressed);
-
-            SystemNavigationManager.GetForCurrentView().BackRequested += (sender, args) =>
-            {
-                _reactInstanceManager.OnBackPressed();
-            };
         }
 
         /// <summary>
