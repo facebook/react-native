@@ -293,7 +293,7 @@ const StatusBarStaticExample = React.createClass({
   },
 });
 
-const examples = [{
+exports.examples = [{
   title: 'StatusBar',
   render() {
     return <StatusBarExample />;
@@ -303,22 +303,17 @@ const examples = [{
   render() {
     return <StatusBarStaticExample />;
   },
+}, {
+  title: 'StatusBar dimensions',
+  render() {
+    return (
+      <View>
+        <Text>Height: {StatusBar.currentHeight} pts</Text>
+      </View>
+    );
+  },
+  platform: 'android',
 }];
-
-if (android) {
-  examples.push({
-    title: 'StatusBar dimensions',
-    render() {
-      return (
-        <View>
-          <Text>Height: {StatusBar.currentHeight} pts</Text>
-        </View>
-      );
-    },
-  });
-}
-
-exports.examples = examples;
 
 var styles = StyleSheet.create({
   wrapper: {

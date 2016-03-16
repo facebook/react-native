@@ -31,6 +31,9 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 
+/**
+ * {@link NativeModule} that allows changing the appearance of the status bar.
+ */
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
   private static final String ERROR_NO_ACTIVITY = "E_NO_ACTIVITY";
@@ -50,10 +53,10 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
   @Override
   public @Nullable Map<String, Object> getConstants() {
-    final Context ctx = getReactApplicationContext();
-    final int heightResId = ctx.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    final Context context = getReactApplicationContext();
+    final int heightResId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
     final float height = heightResId > 0 ?
-      PixelUtil.toDIPFromPixel(ctx.getResources().getDimensionPixelSize(heightResId)) :
+      PixelUtil.toDIPFromPixel(context.getResources().getDimensionPixelSize(heightResId)) :
       0;
 
     return MapBuilder.<String, Object>of(
