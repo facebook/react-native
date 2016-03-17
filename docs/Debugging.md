@@ -11,7 +11,7 @@ next: testing
 To access the in-app developer menu:
 
 1. On iOS shake the device or press `control + ⌘ + z` in the simulator.
-2. On Android shake the device or press hardware menu button (available on older devices and in most of the emulators, e.g. in [genymotion](https://www.genymotion.com) you can press `⌘ + m` to simulate hardware menu button click). You can also install [Frappé](http://getfrappe.com), a tool for OS X, which allows you to emulate shaking of devices remotely. You can use `⌘ + Shift + R` as a shortcut to trigger a **shake** from Frappé.
+2. On Android shake the device or press hardware menu button (available on older devices and in most of the emulators, e.g. in [genymotion](https://www.genymotion.com) you can press `⌘ + m` or `F2` to simulate hardware menu button click). You can also install [Frappé](http://getfrappe.com), a tool for OS X, which allows you to emulate shaking of devices remotely. You can use `⌘ + Shift + R` as a shortcut to trigger a **shake** from Frappé.
 
 > Hint
 
