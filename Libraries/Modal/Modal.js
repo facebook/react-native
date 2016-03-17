@@ -48,7 +48,7 @@ class Modal extends React.Component {
       <RCTModalHostView
         animated={this.props.animated}
         transparent={this.props.transparent}
-        onDismiss={this.props.onDismiss}
+        onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         style={styles.modal}>
         <View style={[styles.container, containerBackgroundColor]}>
@@ -63,7 +63,7 @@ Modal.propTypes = {
   animated: PropTypes.bool,
   transparent: PropTypes.bool,
   visible: PropTypes.bool,
-  onDismiss: PropTypes.func,
+  onRequestClose: PropTypes.func,
   onShow: PropTypes.func,
 };
 
@@ -76,8 +76,10 @@ var styles = StyleSheet.create({
     position: 'absolute',
   },
   container: {
-    left: 0,
     position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     top: 0,
   }
 });
