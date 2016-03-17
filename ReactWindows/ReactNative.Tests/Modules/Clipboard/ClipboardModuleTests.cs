@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using ReactNative.Bridge;
 using ReactNative.Modules.Clipboard;
 using System;
 using System.Threading;
@@ -7,7 +6,6 @@ using System.Threading;
 namespace ReactNative.Tests.Modules.Clipboard
 {
     [TestClass]
-    [Ignore]
     public class ClipboardModuleTests
     {
         [TestMethod]
