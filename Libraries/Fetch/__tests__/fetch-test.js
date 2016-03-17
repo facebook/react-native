@@ -10,25 +10,25 @@
 'use strict';
 
 jest.dontMock('fetch');
-const fetch = require('fetch').fetch
+const fetch = require('fetch').fetch;
 
 // Let fetch pick up a XMLHttpRequest mock from global scope
-global.XMLHttpRequest = jest.fn()
+global.XMLHttpRequest = jest.fn();
 
 describe('fetch', () => {
   it('should only set XMLHttpRequest timeout if set in options', () => {
-    const url = 'http://foobar/'
+    const url = 'http://foobar/';
 
-    fetch(url).then(() => {}, () => {})
-    jest.runAllTicks()
-    expect(XMLHttpRequest.mock.instances.length).toBe(1)
-    expect(XMLHttpRequest.mock.instances[0].timeout).toBeUndefined()
+    fetch(url).then(() => {}, () => {});
+    jest.runAllTicks();
+    expect(XMLHttpRequest.mock.instances.length).toBe(1);
+    expect(XMLHttpRequest.mock.instances[0].timeout).toBeUndefined();
 
-    XMLHttpRequest.mockClear()
+    XMLHttpRequest.mockClear();
 
-    fetch(url, {timeout: 42}).then(() => {}, () => {})
-    jest.runAllTicks()
-    expect(XMLHttpRequest.mock.instances.length).toBe(1)
-    expect(XMLHttpRequest.mock.instances[0].timeout).toBe(42)
-  })
-})
+    fetch(url, {timeout: 42}).then(() => {}, () => {});
+    jest.runAllTicks();
+    expect(XMLHttpRequest.mock.instances.length).toBe(1);
+    expect(XMLHttpRequest.mock.instances[0].timeout).toBe(42);
+  });
+});
