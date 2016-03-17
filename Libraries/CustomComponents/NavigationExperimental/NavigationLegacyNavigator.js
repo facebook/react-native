@@ -32,6 +32,7 @@
  */
 'use strict';
 
+const Animated = require('Animated');
 const NavigationAnimatedValueSubscription = require('NavigationAnimatedValueSubscription');
 const NavigationAnimatedView = require('NavigationAnimatedView');
 const NavigationCard = require('NavigationCard');
@@ -45,9 +46,10 @@ const NavigatorSceneConfigs = require('NavigatorSceneConfigs');
 const React = require('react-native');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 
-const guid = require('guid');
-
 import type  {
+  NavigationAnimatedValue,
+  NavigationAnimationSetter,
+  NavigationParentState,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
@@ -56,9 +58,12 @@ type Props = {
   configureScene: any,
   initialRoute: any,
   initialRouteStack: any,
-  renderScene: any,
   navigationBar: any,
   navigationBarNavigator: any,
+  navigator: any,
+  onDidFocus: any,
+  onWillFocus: any,
+  renderScene: any,
   renderScene: any,
   style: any,
 };
@@ -92,7 +97,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   static NavigationBar: any;
   static SceneConfigs: any;
 
-  _key: string;
+  _applyAnimation: NavigationAnimationSetter;
   _navigationBarRef: any;
   _onNavigationBarRef: (ref: any) => void;
   _onPositionChange: (data: {value: number}) => void;
@@ -101,25 +106,31 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   _renderCard: NavigationSceneRenderer;
   _renderHeader: NavigationSceneRenderer;
   _renderScene: NavigationSceneRenderer;
+  _routeFocused: any;
+  _routeToFocus: any;
   _stack: NavigationLegacyNavigatorRouteStack;
+  _useAnimation: boolean;
 
   navigationContext: NavigationContext;
+  parentNavigator: any;
   props: Props;
   state: State;
 
   constructor(props: Props, context: any) {
     super(props, context);
 
-    this.navigationContext = new NavigationContext();
-
     const stack = this._getInitialRouteStack();
 
     // Unfortunately, due to historical reasons, the `state` has been exposed
     // as public members of the navigator, therefore we'd keep private state
     // as private members.
-    this._key = guid();
     this._previousStack = stack;
     this._stack = stack;
+    this._useAnimation = false;
+
+    // Legacy members portred from `Navigator`.
+    this.parentNavigator = props.navigator;
+    this.navigationContext = new NavigationContext();
 
     this.state = {
       routeStack: stack.toArray(),
@@ -176,9 +187,7 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   immediatelyResetRouteStack(routes: Array<any>): void {
-    // Immediately blow away all current scenes with a new key.
-    this._key = guid();
-    this._applyStack(this._stack.resetRoutes(routes));
+    this._applyStack(this._stack.resetRoutes(routes), true);
   }
 
   getCurrentRoutes(): Array<any> {
@@ -196,21 +205,40 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   componentWillMount(): void {
+    this._applyAnimation = this._applyAnimation.bind(this);
     this._onNavigationBarRef = this._onNavigationBarRef.bind(this);
     this._onPositionChange = this._onPositionChange.bind(this);
     this._renderCard = this._renderCard.bind(this);
     this._renderHeader = this._renderHeader.bind(this);
     this._renderScene = this._renderScene.bind(this);
+
+    this._willFocus();
+  }
+
+  componentDidMount(): void {
+    this._didFocus();
   }
 
   componentWillUnmount(): void {
     this._positionListener && this._positionListener.remove();
   }
 
+  componentWillUpdate(nextProps: Props, nextState: State): void {
+    this._willFocus();
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State): void {
+    if (this._useAnimation) {
+      // will play animation.
+      return;
+    }
+    this._didFocus();
+  }
+
   render(): ReactElement {
     return (
       <NavigationAnimatedView
-        key={'main_' + this._key}
+        applyAnimation={this._applyAnimation}
         navigationState={this._stack.toNavigationState()}
         renderOverlay={this._renderHeader}
         renderScene={this._renderCard}
@@ -229,6 +257,8 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
   }
 
   _renderHeader(props: NavigationSceneRendererProps): ?ReactElement {
+    // `_renderHeader` is the always called before `_renderCard`. We should
+    // subscribe to the position here.
     this._positionListener && this._positionListener.remove();
     this._positionListener = new NavigationAnimatedValueSubscription(
       props.position,
@@ -236,7 +266,6 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     );
 
     const {navigationBar, navigationBarNavigator} = this.props;
-
     if (!navigationBar) {
       return null;
     }
@@ -304,10 +333,17 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
     return this.props.renderScene(route, this);
   }
 
-  _applyStack(stack: NavigationLegacyNavigatorRouteStack): void {
+  _applyStack(
+    stack: NavigationLegacyNavigatorRouteStack,
+    noAnimation: ?boolean,
+  ): void {
     if (stack !== this._stack) {
       this._previousStack = this._stack;
       this._stack = stack;
+
+      this._useAnimation = noAnimation ||
+        this._previousStack.index !== stack.index;
+
       this.setState({
         presentedIndex: stack.index,
         routeStack: stack.toArray(),
@@ -335,6 +371,54 @@ class NavigationLegacyNavigator extends React.Component<any, Props, State> {
       const progress = (data.value - fromIndex) / (toIndex - fromIndex);
       this._navigationBarRef.updateProgress(progress, fromIndex, toIndex);
     }
+
+    const diff = this._stack.index - data.value;
+    // When animation stops, the `diff` can still be very a small non-zero value
+    // (e.g. 0.00000002). Call `willFocus` when `diff` is small enough.
+    if (diff < 0.05) {
+      this._didFocus();
+    }
+  }
+
+  _applyAnimation(
+    position: NavigationAnimatedValue,
+    nextState: NavigationParentState,
+    prevState: NavigationParentState,
+  ): void {
+    const {index} = nextState;
+
+    if (!this._useAnimation) {
+      position.setValue(index);
+      return;
+    }
+
+    Animated.timing(
+      position,
+      {
+        duration: 500,
+        toValue: index,
+      }
+    ).start();
+  }
+
+  _willFocus(): void {
+    const route = this._stack.get(this._stack.index);
+    if (this._routeToFocus === route) {
+      return;
+    }
+    this._routeToFocus = route;
+    this.navigationContext.emit('willfocus', {route: route});
+    this.props.onWillFocus && this.props.onWillFocus(route);
+  }
+
+  _didFocus(): void {
+    const route = this._stack.get(this._stack.index);
+    if (this._routeFocused === route) {
+      return;
+    }
+    this._routeFocused = route;
+    this.navigationContext.emit('didfocus', {route: route});
+    this.props.onDidFocus && this.props.onDidFocus(route);
   }
 }
 
