@@ -13,13 +13,23 @@ namespace ReactNative.Views.TextInput
         private readonly string _text;
         private readonly double _contextWidth;
         private readonly double _contentHeight;
+        private readonly int _eventCount;
 
-        public ReactTextChangedEvent(int viewId, string text, double contentWidth, double contentHeight) 
-            : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
+        /// <summary>
+        /// Instantiates a <see cref="ReactTextChangedEvent"/>.
+        /// </summary>
+        /// <param name="viewTag">The view tag.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="contentWidth">The content width.</param>
+        /// <param name="contentHeight">The content height.</param>
+        /// <param name="eventCount">The event count.</param>
+        public ReactTextChangedEvent(int viewTag, string text, double contentWidth, double contentHeight, int eventCount) 
+            : base(viewTag, TimeSpan.FromTicks(Environment.TickCount))
         {
             _text = text;
             _contextWidth = contentWidth;
             _contentHeight = contentHeight;
+            _eventCount = eventCount;
         }
 
         /// <summary>
@@ -53,21 +63,21 @@ namespace ReactNative.Views.TextInput
         /// <param name="rctEventEmitter">The event emitter.</param>
         public override void Dispatch(RCTEventEmitter rctEventEmitter)
         {
-            rctEventEmitter.receiveEvent(this.ViewTag, this.EventName, this.GetEventJavascriptProperties);
-        }
-
-        private JObject GetEventJavascriptProperties
-        {
-            get
+            var contentSize = new JObject
             {
-                return new JObject()
-                {
-                    { "width", _contextWidth },
-                    { "height", _contentHeight },
-                    { "text", _text },
-                    { "target", ViewTag }
-                };
-            }
+                { "width", _contextWidth },
+                { "height", _contentHeight },
+            };
+
+            var eventData = new JObject
+            {
+                { "text", _text },
+                { "contentSize", contentSize },
+                { "eventCount", _eventCount },
+                { "target", ViewTag },
+            };
+
+            rctEventEmitter.receiveEvent(ViewTag, EventName, eventData);
         }
     }
 }

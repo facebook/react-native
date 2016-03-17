@@ -70,7 +70,7 @@ namespace ReactNative.UIManager.LayoutAnimation
         /// </returns>
         public bool ShouldAnimateLayout(FrameworkElement view)
         {
-            return _shouldAnimateLayout && view.Parent != null;
+            return _shouldAnimateLayout && view.Parent != null && !(view is ILayoutManager);
         }
 
         /// <summary>

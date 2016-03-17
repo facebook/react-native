@@ -60,6 +60,7 @@ namespace ReactNative.UIManager
         public const string Value = "value";
         public const string ResizeMode = "resizeMode";
         public const string TextAlign = "textAlign";
+        public const string TextAlignVertical = "textAlignVertical";
 
         public const string BorderWidth = "borderWidth";
         public const string BorderLeftWidth = "borderLeftWidth";

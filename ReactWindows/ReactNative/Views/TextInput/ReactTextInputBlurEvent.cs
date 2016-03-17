@@ -10,13 +10,17 @@ namespace ReactNative.Views.TextInput
     /// </summary>
     class ReactTextInputBlurEvent : Event
     {
-        public ReactTextInputBlurEvent(int viewId) 
-            : base(viewId, TimeSpan.FromTicks(Environment.TickCount))
+        /// <summary>
+        /// Instantiate a <see cref="ReactTextInputBlurEvent"/>.
+        /// </summary>
+        /// <param name="viewTag">The view tag.</param>
+        public ReactTextInputBlurEvent(int viewTag) 
+            : base(viewTag, TimeSpan.FromTicks(Environment.TickCount))
         {
         }
 
         /// <summary>
-        /// Gets the name of the Event
+        /// The event name.
         /// </summary>
         public override string EventName
         {

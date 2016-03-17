@@ -2,11 +2,11 @@
 using ReactNative.Bridge;
 using ReactNative.UIManager;
 using ReactNative.Views.Text;
+using System;
 using Windows.Foundation;
-using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Documents;
 
 namespace ReactNative.Views.TextInput
 {
@@ -14,188 +14,153 @@ namespace ReactNative.Views.TextInput
     /// This extension of <see cref="LayoutShadowNode"/> is responsible for 
     /// measuring the layout for Native <see cref="TextBox"/>.
     /// </summary>
-    public class ReactTextInputShadowNode : LayoutShadowNode
+    public class ReactTextInputShadowNode : ReactTextShadowNode
     {
-        private const int UNSET = -1;
+        private const int Unset = -1;
 
-        private readonly bool _isVirtual;
+        private float[] _computedPadding;
 
-        private ReactTextBoxProperties _textBoxStyle;
-        
+        private int _numberOfLines = Unset;
+        private int _jsEventCount = Unset;
+
         /// <summary>
         /// Instantiates the <see cref="ReactTextInputShadowNode"/>.
         /// </summary>
-        /// <param name="isVirtual">
-        /// Indicates whether the shadow node is virtual or not.
-        /// </param>
-        public ReactTextInputShadowNode(bool isVirtual)
+        public ReactTextInputShadowNode()
+            : base(false)
         {
-            _textBoxStyle = new ReactTextBoxProperties();
-            _isVirtual = isVirtual;
-
-            if (!isVirtual)
-            {
-                MeasureFunction = MeasureText;
-            }
+            var computedPadding = GetDefaultPaddings();
+            SetPadding(CSSSpacingType.Left, computedPadding[0]);
+            SetPadding(CSSSpacingType.Top, computedPadding[1]);
+            SetPadding(CSSSpacingType.Right, computedPadding[2]);
+            SetPadding(CSSSpacingType.Bottom, computedPadding[3]);
+            MeasureFunction = MeasureText;
         }
 
         /// <summary>
-        /// Nodes that return <code>true</code> will be treated as "virtual"
-        /// nodes. That is, nodes that are not mapped into native views (e.g.,
-        /// nested text node).
+        /// Set the most recent event count in JavaScript.
         /// </summary>
-        public override bool IsVirtual
+        /// <param name="mostRecentEventCount">The event count.</param>
+        [ReactProperty("mostRecentEventCount")]
+        public void SetMostRecentEventCount(int mostRecentEventCount)
         {
-            get
-            {
-                return _isVirtual;
-            }
+            _jsEventCount = mostRecentEventCount;
         }
 
         /// <summary>
-        /// Queues up the view operations onto the <see cref="UIViewOperationQueue"/>.
+        /// Set the number of lines for the text input.
         /// </summary>
-        /// <param name="uiViewOperationQueue"></param>
-        public override void OnCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue)
+        /// <param name="numberOfLines">The event count.</param>
+        [ReactProperty("numberOfLines")]
+        public void SetNumberOfLines(int numberOfLines)
         {
-            if (_isVirtual)
-            {
-                return;
-            }
-
-            base.OnCollectExtraUpdates(uiViewOperationQueue);
-            if (_textBoxStyle != null)
-            {
-                uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, _textBoxStyle);
-            }
+            _numberOfLines = numberOfLines;
         }
 
         /// <summary>
-        /// This lifecycle method is called by <see cref="UIImplementation"/> to bind the CSS styling to the <see cref="ReactTextInputShadowNode"/>.
+        /// Called once per batch of updates by the <see cref="UIManagerModule"/>
+        /// if the text node is dirty.
         /// </summary>
         public override void OnBeforeLayout()
         {
-            DispatcherHelpers.AssertOnDispatcher();
+            return;
+        }
 
-            if (_isVirtual)
+        /// <summary>
+        /// Called to aggregate the current text and event counter.
+        /// </summary>
+        /// <param name="uiViewOperationQueue">The UI operation queue.</param>
+        public override void OnCollectExtraUpdates(UIViewOperationQueue uiViewOperationQueue)
+        {
+            base.OnCollectExtraUpdates(uiViewOperationQueue);
+
+            if (_computedPadding != null)
             {
-                return;
+                uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, _computedPadding);
+                _computedPadding = null;
             }
 
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the font size for the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="fontSize">The font size.</param>
-        [ReactProperty(ViewProperties.FontSize, DefaultDouble = UNSET)]
-        public void SetFontSize(double fontSize)
-        {
-            _textBoxStyle.FontSize = (int)fontSize;
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the text <see cref="FontFamily"/> for the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="fontFamily">Font family string.</param>
-        [ReactProperty(ViewProperties.FontFamily)]
-        public void SetFontFamily(string fontFamily)
-        {
-            _textBoxStyle.FontFamily = new FontFamily(fontFamily);
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the text <see cref="FontWeight"/> for the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="fontWeightString">Font weight string.</param>
-        [ReactProperty(ViewProperties.FontWeight)]
-        public void SetFontWeight(string fontWeightString)
-        {
-            var fontWeight = FontStyleHelpers.ParseFontWeight(fontWeightString);
-            if (_textBoxStyle.FontWeight.HasValue != fontWeight.HasValue ||
-                (_textBoxStyle.FontWeight.HasValue && fontWeight.HasValue &&
-                _textBoxStyle.FontWeight.Value.Weight != fontWeight.Value.Weight))
+            if (_jsEventCount != Unset)
             {
-                _textBoxStyle.FontWeight = fontWeight;
-                MarkUpdated();
-            }
-        }
-
-        /// <summary>
-        /// Sets the text <see cref="FontStyle"/> for the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="fontStyleString">Font style string.</param>
-        [ReactProperty(ViewProperties.FontStyle)]
-        public void SetFontStyle(string fontStyleString)
-        {
-            var fontStyle = FontStyleHelpers.ParseFontStyle(fontStyleString);
-            if (_textBoxStyle.FontStyle != fontStyle)
-            {
-                _textBoxStyle.FontStyle = fontStyle;
-                MarkUpdated();
-            }
-        }
-
-        /// <summary>
-        /// Sets the text value for the <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        [ReactProperty("text")]
-        public void SetText(string text)
-        {
-            _textBoxStyle.Text = text;
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the the border color for a <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="color">The masked color value.</param>
-        [ReactProperty("borderColor")]
-        public void SetBorderColor(uint? color)
-        {
-            if (color.HasValue)
-            {
-                _textBoxStyle.BorderColor = ColorHelpers.Parse(color.Value);
-                MarkUpdated();
-            }
-        }
-
-        /// <summary>
-        /// Marks the node as updated/dirty. This occurs on any property 
-        /// changes affecting the measurement of the <see cref="TextBox"/>.
-        /// </summary>
-        protected override void MarkUpdated()
-        {
-            base.MarkUpdated();
-
-            if (!_isVirtual)
-            {
-                dirty();
+                uiViewOperationQueue.EnqueueUpdateExtraData(ReactTag, Tuple.Create(_jsEventCount, Text));
             }
         }
 
         private MeasureOutput MeasureText(CSSNode node, float width, float height)
         {
-            var shadowNode = (ReactTextInputShadowNode)node;
-            var textBox = new TextBox();
- 
-            textBox.SetReactTextBoxProperties(shadowNode._textBoxStyle);
-            
-            if (!float.IsNaN(width))
-            {
-                textBox.MaxWidth = width;
-            }
+            _computedPadding = GetComputedPadding();
 
-            if (!float.IsNaN(height))
-            {
-                textBox.MaxHeight = height;
-            }
+            var normalizedWidth = CSSConstants.IsUndefined(width) ? double.PositiveInfinity : width;
+            var normalizedHeight = CSSConstants.IsUndefined(height) ? double.PositiveInfinity : height;
 
-            return new MeasureOutput((float)textBox.DesiredSize.Width, (float)textBox.DesiredSize.Height);
+            var borderLeftWidth = GetBorder(CSSSpacingType.Left);
+            var borderRightWidth = GetBorder(CSSSpacingType.Right);
+
+            normalizedWidth -= _computedPadding[0];
+            normalizedWidth -= _computedPadding[2];
+            normalizedWidth -= CSSConstants.IsUndefined(borderLeftWidth) ? 0 : borderLeftWidth;
+            normalizedWidth -= CSSConstants.IsUndefined(borderRightWidth) ? 0 : borderRightWidth;
+
+            // This is not a terribly efficient way of projecting the height of
+            // the text elements. It requires that we have access to the
+            // dispatcher in order to do measurement, which, for obvious
+            // reasons, can cause perceived performance issues as it will block
+            // the UI thread from handling other work.
+            //
+            // TODO: determine another way to measure text elements.
+            var task = DispatcherHelpers.CallOnDispatcher(() =>
+            {
+                var textNode = (ReactTextInputShadowNode)node;
+
+                var textBlock = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                };
+
+                var normalizedText = string.IsNullOrEmpty(textNode.Text) ? " " : textNode.Text;
+                var inline = new Run { Text = normalizedText };
+                FormatInline(textNode, inline, true);
+
+                textBlock.Inlines.Add(inline);
+
+                textBlock.Measure(new Size(normalizedWidth, normalizedHeight));
+
+                var borderTopWidth = GetBorder(CSSSpacingType.Top);
+                var borderBottomWidth = GetBorder(CSSSpacingType.Bottom);
+
+                var finalizedHeight = (float)textBlock.DesiredSize.Height;
+                finalizedHeight += _computedPadding[1];
+                finalizedHeight += _computedPadding[3];
+                finalizedHeight += CSSConstants.IsUndefined(borderTopWidth) ? 0 : borderTopWidth;
+                finalizedHeight += CSSConstants.IsUndefined(borderBottomWidth) ? 0 : borderBottomWidth;
+
+                return new MeasureOutput(width, finalizedHeight);
+            });
+
+            return task.Result;
+        }
+
+        private float[] GetDefaultPaddings()
+        {
+            // TODO: calculate dynamically
+            return new[]
+            {
+                10f,
+                3f,
+                6f,
+                5f,
+            };
+        }
+
+        private float[] GetComputedPadding()
+        {
+            return new float[]
+            {
+                GetPadding(CSSSpacingType.Left),
+                GetPadding(CSSSpacingType.Top),
+                GetPadding(CSSSpacingType.Right),
+                GetPadding(CSSSpacingType.Bottom),
+            };
         }
     }
 }

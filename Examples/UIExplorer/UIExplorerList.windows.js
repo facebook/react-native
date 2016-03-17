@@ -22,6 +22,10 @@ export type UIExplorerExample = {
 
 var ComponentExamples: Array<UIExplorerExample> = [
   {
+    key: 'TextInputExample',
+    module: require('./TextInputExample'),
+  },
+  {
     key: 'ViewExample',
     module: require('./ViewExample'),
   },

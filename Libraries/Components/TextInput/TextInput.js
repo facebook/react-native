@@ -46,6 +46,8 @@ if (Platform.OS === 'android') {
 } else if (Platform.OS === 'ios') {
   var RCTTextView = requireNativeComponent('RCTTextView', null);
   var RCTTextField = requireNativeComponent('RCTTextField', null);
+} else if (Platform.OS === 'windows') {
+  var RCTTextBox = requireNativeComponent('RCTTextBox', null);    
 }
 
 type Event = Object;
@@ -350,7 +352,9 @@ var TextInput = React.createClass({
       RCTTextField.viewConfig :
       (Platform.OS === 'android' && AndroidTextInput ?
         AndroidTextInput.viewConfig :
-        {})) : Object),
+        (Platform.OS === 'windows' && RCTTextField ?
+          RCTTextBox.viewConfig :
+          {}))) : Object),
 
   /**
    * Returns if the input is currently focused.
@@ -416,6 +420,8 @@ var TextInput = React.createClass({
       return this._renderIOS();
     } else if (Platform.OS === 'android') {
       return this._renderAndroid();
+    } else if (Platform.OS === 'windows') {
+      return this._renderWindows();
     }
   },
 
@@ -579,6 +585,66 @@ var TextInput = React.createClass({
       </TouchableWithoutFeedback>
     );
   },
+  
+  _renderWindows: function() {
+    var textContainer;
+
+    var onSelectionChange;
+    if (this.props.selectionState || this.props.onSelectionChange) {
+      onSelectionChange = (event: Event) => {
+        if (this.props.selectionState) {
+          var selection = event.nativeEvent.selection;
+          this.props.selectionState.update(selection.start, selection.end);
+        }
+        this.props.onSelectionChange && this.props.onSelectionChange(event);
+      };
+    }
+
+    var children = this.props.children;
+    var childCount = 0;
+    ReactChildren.forEach(children, () => ++childCount);
+    invariant(
+        !childCount,
+        'TextInput children are not supported on Windows.'
+    );
+    
+    var textContainer =
+      <RCTTextBox
+        ref="input"
+        style={[this.props.style]}
+        autoCorrect={this.props.autoCorrect}
+        keyboardType={this.props.keyboardType}
+        mostRecentEventCount={0}
+        multiline={this.props.multiline}
+        maxLength={this.props.maxLength}
+        onFocus={this._onFocus}
+        onBlur={this._onBlur}
+        onChange={this._onChange}
+        onSelectionChange={onSelectionChange}
+        onEndEditing={this.props.onEndEditing}
+        onSubmitEditing={this.props.onSubmitEditing}
+        clearTextOnFocus={this.props.clearTextOnFocus}
+        selectTextOnFocus={this.props.selectTextOnFocus}
+        onLayout={this.props.onLayout}
+        placeholder={this.props.placeholder}
+        selectionColor={this.props.selectionColor}
+        text={this._getText()}
+        editable={this.props.editable}
+      />;
+    
+    return (
+      <TouchableWithoutFeedback
+        onPress={this._onPress}
+        rejectResponderTermination={true}
+        accessible={this.props.accessible}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityTraits={this.props.accessibilityTraits}
+        testID={this.props.testID}>
+        {textContainer}
+      </TouchableWithoutFeedback>
+    );
+  },
+
 
   _onFocus: function(event: Event) {
     if (this.props.onFocus) {
