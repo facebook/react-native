@@ -200,6 +200,8 @@
     <Compile Include="Modules\Network\NetworkingModule.cs" />
     <Compile Include="Modules\Network\HttpContentHelpers.cs" />
     <Compile Include="Modules\Network\TaskCancellationManager.cs" />
+    <Compile Include="Modules\NetInfo\NetInfoModule.cs" />
+    <Compile Include="Modules\StatusBar\StatusBarModule.cs" />
     <Compile Include="ReactContextInitializedEventArgs.cs" />
     <Compile Include="ReactPage.cs" />
     <Compile Include="ReactRootView.cs" />

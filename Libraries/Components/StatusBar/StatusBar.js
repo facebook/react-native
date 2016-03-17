@@ -142,6 +142,8 @@ const StatusBar = React.createClass({
         StatusBarManager.setHidden(hidden, animation);
       } else if (Platform.OS === 'android') {
         StatusBarManager.setHidden(hidden);
+      } else if (Platform.OS === 'windows') {
+        StatusBarManager.setHidden(hidden);
       }
     },
 
@@ -165,8 +167,8 @@ const StatusBar = React.createClass({
     },
 
     setBackgroundColor(color: string, animated?: boolean) {
-      if (Platform.OS !== 'android') {
-        console.warn('`setBackgroundColor` is only available on Android');
+      if (Platform.OS === 'ios') {
+        console.warn('`setBackgroundColor` is only available on Android and Windows');
         return;
       }
       animated = animated || false;
@@ -175,12 +177,18 @@ const StatusBar = React.createClass({
     },
 
     setTranslucent(translucent: boolean) {
-      if (Platform.OS !== 'android') {
+      if (Platform.OS === 'windows') {
+        StatusBar._defaultProps.translucent = translucent;
+        StatusBarManager.setTranslucent(translucent);
+      }
+      else if (Platform.OS !== 'android') {
         console.warn('`setTranslucent` is only available on Android');
         return;
       }
-      StatusBar._defaultProps.translucent = translucent;
-      StatusBarManager.setTranslucent(translucent);
+      else {     
+        StatusBar._defaultProps.translucent = translucent;
+        StatusBarManager.setTranslucent(translucent);
+      }
     },
   },
 
@@ -303,6 +311,19 @@ const StatusBar = React.createClass({
           );
         }
       } else if (Platform.OS === 'android') {
+        if (!oldProps || oldProps.backgroundColor.value !== mergedProps.backgroundColor.value) {
+          StatusBarManager.setColor(
+            processColor(mergedProps.backgroundColor.value),
+            mergedProps.backgroundColor.animated,
+          );
+        }
+        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+          StatusBarManager.setHidden(mergedProps.hidden.value);
+        }
+        if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
+          StatusBarManager.setTranslucent(mergedProps.translucent);
+        }
+      } else if (Platform.OS === 'windows') {
         if (!oldProps || oldProps.backgroundColor.value !== mergedProps.backgroundColor.value) {
           StatusBarManager.setColor(
             processColor(mergedProps.backgroundColor.value),
