@@ -1,5 +1,6 @@
 ﻿using ReactNative.Bridge;
 using System;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using DataTransfer = Windows.ApplicationModel.DataTransfer;
 
@@ -94,7 +95,7 @@ namespace ReactNative.Modules.Clipboard
         /// <param name="action">The action.</param>
         private static async void RunOnDispatcher(DispatchedHandler action)
         {
-            await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, action);
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, action);
         }
     }
 }
