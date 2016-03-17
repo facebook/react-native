@@ -100,8 +100,7 @@ var ListViewSimpleExample = React.createClass({
   },
 
   _renderSeperator: function(sectionID: number, rowID: number, adjacentRowHighlighted: bool) {
-    console.log('adjacentRowHighlighted', adjacentRowHighlighted);
-    return(
+    return (
       <View
         key={`${sectionID}-${rowID}`}
         style={{
