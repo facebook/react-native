@@ -42,7 +42,7 @@ namespace Playground
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             _reactPage.OnCreate();
-            _reactPage.OnResume();
+            _reactPage.OnResume(Exit);
 
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -110,7 +110,7 @@ namespace Playground
         /// <param name="e">Details about the resume request.</param>
         private void OnResuming(object sender, object e)
         {
-            _reactPage.OnResume();
+            _reactPage.OnResume(Exit);
         }
     }
 }
