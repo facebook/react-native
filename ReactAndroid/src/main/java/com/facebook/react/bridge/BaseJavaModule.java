@@ -9,8 +9,6 @@
 
 package com.facebook.react.bridge;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 
@@ -325,20 +323,18 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @Override
-  public final void writeConstantsField(JsonGenerator jg, String fieldName) throws IOException {
+  public final void writeConstantsField(JsonWriter writer, String fieldName) throws IOException {
     Map<String, Object> constants = getConstants();
     if (constants == null || constants.isEmpty()) {
       return;
     }
 
-    jg.writeObjectFieldStart(fieldName);
+    writer.name(fieldName).beginObject();
     for (Map.Entry<String, Object> constant : constants.entrySet()) {
-      JsonGeneratorHelper.writeObjectField(
-        jg,
-        constant.getKey(),
-        constant.getValue());
+      writer.name(constant.getKey());
+      JsonWriterHelper.value(writer, constant.getValue());
     }
-    jg.writeEndObject();
+    writer.endObject();
   }
 
   @Override

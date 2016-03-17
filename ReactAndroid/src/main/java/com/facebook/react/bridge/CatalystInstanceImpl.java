@@ -31,9 +31,6 @@ import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-
 /**
  * This provides an implementation of the public CatalystInstance instance.  It is public because
  * it is built by ReactInstanceManager which is in a different package.
@@ -358,21 +355,24 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private String buildModulesConfigJSONProperty(
       NativeModuleRegistry nativeModuleRegistry,
       JavaScriptModulesConfig jsModulesConfig) {
-    JsonFactory jsonFactory = new JsonFactory();
-    StringWriter writer = new StringWriter();
+    StringWriter stringWriter = new StringWriter();
+    JsonWriter writer = new JsonWriter(stringWriter);
     try {
-      JsonGenerator jg = jsonFactory.createGenerator(writer);
-      jg.writeStartObject();
-      jg.writeFieldName("remoteModuleConfig");
-      nativeModuleRegistry.writeModuleDescriptions(jg);
-      jg.writeFieldName("localModulesConfig");
-      jsModulesConfig.writeModuleDescriptions(jg);
-      jg.writeEndObject();
-      jg.close();
+      writer.beginObject();
+      writer.name("remoteModuleConfig");
+      nativeModuleRegistry.writeModuleDescriptions(writer);
+      writer.name("localModulesConfig");
+      jsModulesConfig.writeModuleDescriptions(writer);
+      writer.endObject();
+      return stringWriter.toString();
     } catch (IOException ioe) {
       throw new RuntimeException("Unable to serialize JavaScript module declaration", ioe);
+    } finally {
+      try {
+        writer.close();
+      } catch (IOException ignored) {
+      }
     }
-    return writer.getBuffer().toString();
   }
 
   private void incrementPendingJSCalls() {
