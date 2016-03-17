@@ -31,8 +31,6 @@ const {
   Container: NavigationContainer,
 } = NavigationExperimental;
 
-globalvar = true;
-
 import type {
   UIExplorerExample,
 } from './UIExplorerList.ios'
@@ -201,7 +199,6 @@ var styles = StyleSheet.create({
   rowDetailText: {
     fontSize: 15,
     color: '#888888',
-    lineHeight: 20,
     lineHeight: 20,
   },
   searchRow: {
