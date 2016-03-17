@@ -90,6 +90,7 @@ function buildModuleTable(buffers) {
   // entry:
   //  - module_id: NUL terminated utf8 string
   //  - module_offset: uint_32 offset into the module string
+  //  - module_length: uint_32 length in bytes of the module
   //  - module_line: uint_32 line on which module starts on the bundle
 
   const numBuffers = buffers.length;
@@ -107,6 +108,7 @@ function buildModuleTable(buffers) {
       Buffer(i === 0 ? MAGIC_STARTUP_MODULE_ID : id, 'utf8'),
       nullByteBuffer,
       uInt32Buffer(currentOffset),
+      uInt32Buffer(length),
       uInt32Buffer(currentLine),
     ]);
 

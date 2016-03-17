@@ -15,6 +15,10 @@
 #import "RCTUtils.h"
 #import "RCTPerformanceLogger.h"
 
+#include <sys/stat.h>
+
+uint32_t const RCTRAMBundleMagicNumber = 0xFB0BD1E5;
+
 @implementation RCTJavaScriptLoader
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -34,13 +38,48 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   // Load local script file
   if (scriptURL.fileURL) {
-    NSString *filePath = scriptURL.path;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
       NSError *error = nil;
-      NSData *source = [NSData dataWithContentsOfFile:filePath
-                                              options:NSDataReadingMappedIfSafe
-                                                error:&error];
-      RCTPerformanceLoggerSet(RCTPLBundleSize, source.length);
+      NSData *source = nil;
+
+      // Load the first 4 bytes to check if the bundle is regular or RAM ("Random Access Modules" bundle).
+      // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
+      // The benefit of RAM bundle over a regular bundle is that we can lazily inject
+      // modules into JSC as they're required.
+      FILE *bundle = fopen(scriptURL.path.UTF8String, "r");
+      if (!bundle) {
+        onComplete(RCTErrorWithMessage([NSString stringWithFormat:@"Error opening bundle %@", scriptURL.path]), source);
+        return;
+      }
+
+      uint32_t magicNumber;
+      if (fread(&magicNumber, sizeof(magicNumber), 1, bundle) != 1) {
+        fclose(bundle);
+        onComplete(RCTErrorWithMessage(@"Error reading bundle"), source);
+        return;
+      }
+
+      magicNumber = NSSwapLittleIntToHost(magicNumber);
+
+      int32_t sourceLength = 0;
+      if (magicNumber == RCTRAMBundleMagicNumber) {
+        source = [NSData dataWithBytes:&magicNumber length:sizeof(magicNumber)];
+
+        struct stat statInfo;
+        if (stat(scriptURL.path.UTF8String, &statInfo) != 0) {
+          error = RCTErrorWithMessage(@"Error reading bundle");
+        } else {
+          sourceLength = statInfo.st_size;
+        }
+      } else {
+        source = [NSData dataWithContentsOfFile:scriptURL.path
+                                                options:NSDataReadingMappedIfSafe
+                                                  error:&error];
+        sourceLength = source.length;
+      }
+
+      RCTPerformanceLoggerSet(RCTPLBundleSize, sourceLength);
+      fclose(bundle);
       onComplete(error, source);
     });
     return;
