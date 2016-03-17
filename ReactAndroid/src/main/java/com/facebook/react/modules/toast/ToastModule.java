@@ -53,6 +53,6 @@ public class ToastModule extends ReactContextBaseJavaModule {
       void run(){
         Toast.makeText(getReactApplicationContext(), message, duration).show();        
       }
-    })
+    });
   }
 }
