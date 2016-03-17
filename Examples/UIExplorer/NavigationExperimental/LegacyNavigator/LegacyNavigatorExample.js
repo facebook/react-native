@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -161,7 +168,7 @@ var TabBarExample = React.createClass({
       if (navigator) {
         var callback = (event) => {
           console.log(
-            `TabBarExample: event ${event.type}`,
+            `LegacyNavigator: event ${event.type}`,
             {
               route: JSON.stringify(event.data.route),
               target: event.target,
