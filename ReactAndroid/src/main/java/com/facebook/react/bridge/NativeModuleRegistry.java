@@ -20,8 +20,6 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.Systrace;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-
 /**
   * A set of Java APIs to expose to a particular JavaScript instance.
   */
@@ -64,27 +62,27 @@ public class NativeModuleRegistry {
     definition.call(catalystInstance, executorToken, methodId, parameters);
   }
 
-  /* package */ void writeModuleDescriptions(JsonGenerator jg) throws IOException {
+  /* package */ void writeModuleDescriptions(JsonWriter writer) throws IOException {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "CreateJSON");
     try {
-      jg.writeStartObject();
+      writer.beginObject();
       for (ModuleDefinition moduleDef : mModuleTable) {
-        jg.writeObjectFieldStart(moduleDef.name);
-        jg.writeNumberField("moduleID", moduleDef.id);
-        jg.writeBooleanField("supportsWebWorkers", moduleDef.target.supportsWebWorkers());
-        jg.writeObjectFieldStart("methods");
+        writer.name(moduleDef.name).beginObject();
+        writer.name("moduleID").value(moduleDef.id);
+        writer.name("supportsWebWorkers").value(moduleDef.target.supportsWebWorkers());
+        writer.name("methods").beginObject();
         for (int i = 0; i < moduleDef.methods.size(); i++) {
           MethodRegistration method = moduleDef.methods.get(i);
-          jg.writeObjectFieldStart(method.name);
-          jg.writeNumberField("methodID", i);
-          jg.writeStringField("type", method.method.getType());
-          jg.writeEndObject();
+          writer.name(method.name).beginObject();
+          writer.name("methodID").value(i);
+          writer.name("type").value(method.method.getType());
+          writer.endObject();
         }
-        jg.writeEndObject();
-        moduleDef.target.writeConstantsField(jg, "constants");
-        jg.writeEndObject();
+        writer.endObject();
+        moduleDef.target.writeConstantsField(writer, "constants");
+        writer.endObject();
       }
-      jg.writeEndObject();
+      writer.endObject();
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
