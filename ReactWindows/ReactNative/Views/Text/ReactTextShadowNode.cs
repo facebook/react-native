@@ -2,6 +2,7 @@
 using ReactNative.Bridge;
 using ReactNative.UIManager;
 using System;
+using System.Collections.Generic;
 using Windows.Foundation;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -16,25 +17,19 @@ namespace ReactNative.Views.Text
     /// </summary>
     public class ReactTextShadowNode : LayoutShadowNode
     {
-        private const string INLINE_IMAGE_PLACEHOLDER = "I";
-        private const int UNSET = -1;
+        private const int Unset = -1;
 
-        private const string PROP_TEXT = "text";
-
-        private int _lineHeight = UNSET;
         private bool _isColorSet = false;
         private uint _color;
         private bool _isBackgroundColorSet = false;
         private uint _backgroundColor;
 
-        private int _numberOfLines = UNSET;
-        private int _fontSize = UNSET;
+        private int _fontSize = Unset;
 
         private FontStyle? _fontStyle;
         private FontWeight? _fontWeight;
 
         private string _fontFamily;
-        private string _text;
 
         private Inline _inline;
 
@@ -85,6 +80,15 @@ namespace ReactNative.Views.Text
         }
 
         /// <summary>
+        /// The text value.
+        /// </summary>
+        protected string Text
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Called once per batch of updates by the <see cref="UIManagerModule"/>
         /// if the text node is dirty.
         /// </summary>
@@ -95,7 +99,7 @@ namespace ReactNative.Views.Text
                 return;
             }
 
-            _inline = DispatcherHelpers.CallOnDispatcher(() => FromTextCSSNode(this)).Result;
+            _inline = DispatcherHelpers.CallOnDispatcher(() => ReactTextShadowNodeInlineVisitor.Apply(this)).Result;
             MarkUpdated();
         }
 
@@ -125,29 +129,7 @@ namespace ReactNative.Views.Text
         [ReactProperty("text")]
         public void SetText(string text)
         {
-            _text = text;
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the number of lines for the node.
-        /// </summary>
-        /// <param name="numberOfLines">The number of lines.</param>
-        [ReactProperty(ViewProperties.NumberOfLines, DefaultInteger = UNSET)]
-        public void SetNumberOfLines(int numberOfLines)
-        {
-            _numberOfLines = numberOfLines;
-            MarkUpdated();
-        }
-
-        /// <summary>
-        /// Sets the line height for the node.
-        /// </summary>
-        /// <param name="lineHeight">The line height.</param>
-        [ReactProperty(ViewProperties.LineHeight, DefaultInteger = UNSET)]
-        public void SetLineHeight(int lineHeight)
-        {
-            _lineHeight = lineHeight;
+            Text = text;
             MarkUpdated();
         }
 
@@ -155,7 +137,7 @@ namespace ReactNative.Views.Text
         /// Sets the font size for the node.
         /// </summary>
         /// <param name="fontSize">The font size.</param>
-        [ReactProperty(ViewProperties.FontSize, DefaultDouble = UNSET)]
+        [ReactProperty(ViewProperties.FontSize, DefaultDouble = Unset)]
         public void SetFontSize(double fontSize)
         {
             _fontSize = (int)fontSize;
@@ -253,82 +235,20 @@ namespace ReactNative.Views.Text
             }
         }
 
-        private static MeasureOutput MeasureText(CSSNode node, float width, float height)
+        /// <summary>
+        /// Formats an inline instance with shadow properties..
+        /// </summary>
+        /// <param name="textNode">The text shadow node.</param>
+        /// <param name="inline">The inline.</param>
+        /// <param name="measureOnly">Signals if the operation is used only for measurement.</param>
+        protected static void FormatInline(ReactTextShadowNode textNode, Inline inline, bool measureOnly)
         {
-            // This is not a terribly efficient way of projecting the height of
-            // the text elements. It requires that we have access to the
-            // dispatcher in order to do measurement, which, for obvious
-            // reasons, can cause perceived performance issues as it will block
-            // the UI thread from handling other work.
-            //
-            // TODO: determine another way to measure text elements.
-            var task = DispatcherHelpers.CallOnDispatcher(() =>
-            {
-                var shadowNode = (ReactTextShadowNode)node;
-                var textBlock = new TextBlock
-                {
-                    TextWrapping = TextWrapping.Wrap,
-                };
-
-                textBlock.Inlines.Add(FromTextCSSNode(shadowNode));
-
-                try
-                {
-                    var adjustedWidth = float.IsNaN(width) ? double.PositiveInfinity : width;
-                    var adjustedHeight = float.IsNaN(height) ? double.PositiveInfinity : height;
-                    textBlock.Measure(new Size(adjustedWidth, adjustedHeight));
-                    return new MeasureOutput(
-                        (float)textBlock.DesiredSize.Width,
-                        (float)textBlock.DesiredSize.Height);
-                }
-                finally
-                {
-                    textBlock.Inlines.Clear();
-                }
-            });
-
-            return task.Result;
-        }
-        
-        private static Inline FromTextCSSNode(ReactTextShadowNode textNode)
-        {
-            return BuildInlineFromTextCSSNode(textNode);
-        }
-
-        private static Inline BuildInlineFromTextCSSNode(ReactTextShadowNode textNode)
-        {
-            var length = textNode.ChildCount;
-            var inline = default(Inline);
-            if (length == 0)
-            {
-                inline = new Run { Text = textNode._text };
-            }
-            else
-            {
-                var span = new Span();
-                for (var i = 0; i < length; ++i)
-                {
-                    var child = textNode.GetChildAt(i);
-                    var textChild = child as ReactTextShadowNode;
-                    if (textChild == null)
-                    {
-                        throw new InvalidOperationException(
-                            $"Unexpected view type '{child.GetType()}' nested under text node.");
-                    }
-
-                    var childInline = BuildInlineFromTextCSSNode(textChild);
-                    span.Inlines.Add(childInline);
-                }
-
-                inline = span;
-            }
-
-            if (textNode._isColorSet)
+            if (!measureOnly && textNode._isColorSet)
             {
                 inline.Foreground = new SolidColorBrush(ColorHelpers.Parse(textNode._color));
             }
 
-            if (textNode._fontSize != UNSET)
+            if (textNode._fontSize != Unset)
             {
                 var fontSize = textNode._fontSize;
                 inline.FontSize = fontSize;
@@ -351,8 +271,85 @@ namespace ReactNative.Views.Text
                 var fontFamily = new FontFamily(textNode._fontFamily);
                 inline.FontFamily = fontFamily;
             }
+        }
 
-            return inline;
+        private static MeasureOutput MeasureText(CSSNode node, float width, float height)
+        {
+            // This is not a terribly efficient way of projecting the height of
+            // the text elements. It requires that we have access to the
+            // dispatcher in order to do measurement, which, for obvious
+            // reasons, can cause perceived performance issues as it will block
+            // the UI thread from handling other work.
+            //
+            // TODO: determine another way to measure text elements.
+            var task = DispatcherHelpers.CallOnDispatcher(() =>
+            {
+                var textBlock = new TextBlock
+                {
+                    TextWrapping = TextWrapping.Wrap,
+                };
+
+                textBlock.Inlines.Add(ReactTextShadowNodeInlineVisitor.Apply(node));
+
+                try
+                {
+                    var normalizedWidth = CSSConstants.IsUndefined(width) ? double.PositiveInfinity : width;
+                    var normalizedHeight = CSSConstants.IsUndefined(height) ? double.PositiveInfinity : height;
+                    textBlock.Measure(new Size(normalizedWidth, normalizedHeight));
+                    return new MeasureOutput(
+                        (float)textBlock.DesiredSize.Width,
+                        (float)textBlock.DesiredSize.Height);
+                }
+                finally
+                {
+                    textBlock.Inlines.Clear();
+                }
+            });
+
+            return task.Result;
+        }
+
+        class ReactTextShadowNodeInlineVisitor : CSSNodeVisitor<Inline>
+        {
+            private static ReactTextShadowNodeInlineVisitor s_instance = new ReactTextShadowNodeInlineVisitor();
+
+            public static Inline Apply(CSSNode node)
+            {
+                return s_instance.Visit(node);
+            } 
+
+            protected sealed override Inline Make(CSSNode node, IList<Inline> children)
+            {
+                var textNode = (ReactTextShadowNode)node;
+                if (textNode._isVirtual)
+                {
+                    textNode.MarkUpdateSeen();
+                }
+
+                var text = textNode.Text;
+                if (text != null && children.Count > 0)
+                {
+                    throw new InvalidOperationException("Only leaf nodes can contain text.");
+                }
+                else if (text != null)
+                {
+                    var inline = new Run();
+                    inline.Text = text;
+                    FormatInline(textNode, inline, false);
+                    return inline;
+                }
+                else
+                {
+                    var inline = new Span();
+                    foreach (var child in children)
+                    {
+                        inline.Inlines.Add(child);
+                    }
+
+                    FormatInline(textNode, inline, false);
+                    return inline;
+                }
+            }
         }
     }
 }

@@ -78,7 +78,6 @@ namespace ReactNative.Shell
                 new ReactScrollViewManager(),
                 new ReactSwitchManager(),
                 new ReactTextInputManager(),
-                new ReactMultilineTextInputManager(),
                 new ReactTextViewManager(),
                 //new ReactToolbarManager(),
                 new ReactViewManager(),

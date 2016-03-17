@@ -109,7 +109,7 @@ namespace ReactNative.UIManager
         /// <param name="parentTag">The parent view tag.</param>
         /// <param name="tag">The view tag.</param>
         /// <param name="x">The left coordinate.</param>
-        /// <param name="y">The right coordinate.</param>
+        /// <param name="y">The top coordinate.</param>
         /// <param name="width">The layout width.</param>
         /// <param name="height">The layout height.</param>
         public void UpdateLayout(int parentTag, int tag, int x, int y, int width, int height)
@@ -507,9 +507,14 @@ namespace ReactNative.UIManager
 
         private void UpdateLayout(FrameworkElement viewToUpdate, int x, int y, int width, int height)
         {
+            var layoutManager = default(ILayoutManager);
             if (_layoutAnimator.ShouldAnimateLayout(viewToUpdate))
             {
                 _layoutAnimator.ApplyLayoutUpdate(viewToUpdate, x, y, width, height);
+            }
+            else if ((layoutManager = viewToUpdate as ILayoutManager) != null)
+            {
+                layoutManager.UpdateLayout(x, y, width, height);
             }
             else
             {

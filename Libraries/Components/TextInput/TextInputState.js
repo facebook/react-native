@@ -48,6 +48,12 @@ var TextInputState = {
           UIManager.AndroidTextInput.Commands.focusTextInput,
           null
         );
+      } else if (Platform.OS === 'windows') {
+        UIManager.dispatchViewManagerCommand(
+          textFieldID,
+          UIManager.RCTTextBox.Commands.focusTextInput,
+          null
+        );
       }
     }
   },
@@ -66,6 +72,12 @@ var TextInputState = {
         UIManager.dispatchViewManagerCommand(
           textFieldID,
           UIManager.AndroidTextInput.Commands.blurTextInput,
+          null
+        );
+      } else if (Platform.OS === 'windows') {
+        UIManager.dispatchViewManagerCommand(
+          textFieldID,
+          UIManager.RCTTextBox.Commands.blurTextInput,
           null
         );
       }
