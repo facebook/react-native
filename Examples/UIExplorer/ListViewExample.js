@@ -57,17 +57,20 @@ var ListViewSimpleExample = React.createClass({
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
           renderScrollComponent={props => <RecyclerViewBackedScrollView {...props} />}
-          renderSeparator={(sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={styles.separator} />}
+          renderSeparator={this._renderSeperator}
         />
       </UIExplorerPage>
     );
   },
 
-  _renderRow: function(rowData: string, sectionID: number, rowID: number) {
+  _renderRow: function(rowData: string, sectionID: number, rowID: number, highlightRow: funct) {
     var rowHash = Math.abs(hashCode(rowData));
     var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
-      <TouchableHighlight onPress={() => this._pressRow(rowID)}>
+      <TouchableHighlight onPress={() => {
+          this._pressRow(rowID);
+          highlightRow(sectionID, rowID);
+        }}>
         <View>
           <View style={styles.row}>
             <Image style={styles.thumb} source={imgSource} />
@@ -95,6 +98,19 @@ var ListViewSimpleExample = React.createClass({
       this._genRows(this._pressData)
     )});
   },
+
+  _renderSeperator: function(sectionID: number, rowID: number, adjacentRowHighlighted: bool) {
+    console.log('adjacentRowHighlighted', adjacentRowHighlighted);
+    return(
+      <View
+        key={`${sectionID}-${rowID}`}
+        style={{
+          height: adjacentRowHighlighted ? 4 : 1,
+          backgroundColor: adjacentRowHighlighted ? '#3B5998' : '#CCCCCC',
+        }}
+      />
+    );
+  }
 });
 
 var THUMB_URLS = [
@@ -128,10 +144,6 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
     backgroundColor: '#F6F6F6',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#CCCCCC',
   },
   thumb: {
     width: 64,
