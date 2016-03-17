@@ -20,9 +20,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
 
+import com.facebook.common.logging.FLog;
+
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -101,8 +104,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       try {
         Method method = ReactDrawerLayout.class.getMethod("setDrawerElevation", float.class);
         method.invoke(view, PixelUtil.toPixelFromDIP(elevation));
-      } catch (Exception e) {
-        // Ignore errors when the method is not present in older versions of support lib.
+      } catch (Exception ex) {
+        FLog.w(
+            ReactConstants.TAG,
+            "setDrawerElevation is not available in this version of the support lib.",
+            ex);
       }
     }
   }
