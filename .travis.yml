@@ -21,7 +21,7 @@ script:
   - if [[ "$TEST_TYPE" = e2e-objc ]]; then \
     travis_retry ./scripts/e2e-test.sh --ios; fi
   - if [[ "$TEST_TYPE" = js ]]; then \
-    npm install linsert && \
+    npm install linesert && \
     node -e "require('linesert')('.flowconfig').beforeLine(2).insert('.*/Examples/.*', ()=>{})" && \
     npm run flow check && \
     npm test -- --maxWorkers=1 && \
