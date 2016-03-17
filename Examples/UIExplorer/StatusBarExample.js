@@ -44,7 +44,7 @@ const showHideTransitions = [
   'slide',
 ];
 
-function getValue(values: Array<any>, index: number): any {
+function getValue<T>(values: Array<T>, index: number): T {
   return values[index % values.length];
 }
 
