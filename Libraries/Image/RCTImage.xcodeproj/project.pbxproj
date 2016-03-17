@@ -18,6 +18,7 @@
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
 		35123E6B1B59C99D00EBAD80 /* RCTImageStoreManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35123E6A1B59C99D00EBAD80 /* RCTImageStoreManager.m */; };
 		354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 354631671B69857700AA0B86 /* RCTImageEditingManager.m */; };
+		EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,6 +57,8 @@
 		354631661B69857700AA0B86 /* RCTImageEditingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageEditingManager.h; sourceTree = "<group>"; };
 		354631671B69857700AA0B86 /* RCTImageEditingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageEditingManager.m; sourceTree = "<group>"; };
 		58B5115D1A9E6B3D00147676 /* libRCTImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTImageBlurUtils.h; sourceTree = "<group>"; };
+		EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageBlurUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +75,8 @@
 		58B511541A9E6B3D00147676 = {
 			isa = PBXGroup;
 			children = (
+				EEF314701C9B0DD30049118E /* RCTImageBlurUtils.h */,
+				EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */,
 				139A38821C4D57AD00862840 /* RCTResizeMode.h */,
 				139A38831C4D587C00862840 /* RCTResizeMode.m */,
 				13EF7F7D1BC825B1003F47DD /* RCTXCAssetImageLoader.h */,
@@ -172,6 +177,7 @@
 				354631681B69857700AA0B86 /* RCTImageEditingManager.m in Sources */,
 				139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */,
 				1304D5AB1AA8C4A30002E2BE /* RCTImageView.m in Sources */,
+				EEF314721C9B0DD30049118E /* RCTImageBlurUtils.m in Sources */,
 				13EF7F0B1BC42D4E003F47DD /* RCTShadowVirtualImage.m in Sources */,
 				13EF7F7F1BC825B1003F47DD /* RCTXCAssetImageLoader.m in Sources */,
 				134B00A21B54232B00EC8DFB /* RCTImageUtils.m in Sources */,
