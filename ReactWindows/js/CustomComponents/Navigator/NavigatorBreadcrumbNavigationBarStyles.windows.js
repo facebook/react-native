@@ -27,14 +27,14 @@
 'use strict';
 
 var Dimensions = require('Dimensions');
-var NavigatorNavigationBarStylesIOS = require('NavigatorNavigationBarStylesIOS');
+var NavigatorNavigationBarStylesWindows = require('NavigatorNavigationBarStylesWindows');
 
 var buildStyleInterpolator = require('buildStyleInterpolator');
 var merge = require('merge');
 
 var SCREEN_WIDTH = Dimensions.get('window').width;
-var STATUS_BAR_HEIGHT = NavigatorNavigationBarStylesIOS.General.StatusBarHeight;
-var NAV_BAR_HEIGHT = NavigatorNavigationBarStylesIOS.General.NavBarHeight;
+var STATUS_BAR_HEIGHT = NavigatorNavigationBarStylesWindows.General.StatusBarHeight;
+var NAV_BAR_HEIGHT = NavigatorNavigationBarStylesWindows.General.NavBarHeight;
 
 var SPACING = 4;
 var ICON_WIDTH = 40;
