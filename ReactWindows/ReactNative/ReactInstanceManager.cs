@@ -545,7 +545,7 @@ namespace ReactNative
             using (Tracer.Trace(Tracer.TRACE_TAG_REACT_BRIDGE, "createAndProcessCoreModulesPackage"))
             {
                 var coreModulesPackage = 
-                    new CoreModulesPackage(this, OnBackPressed, _uiImplementationProvider);
+                    new CoreModulesPackage(this, InvokeDefaultOnBackPressed, _uiImplementationProvider);
 
                 ProcessPackage(coreModulesPackage, reactContext, nativeRegistryBuilder, jsModulesBuilder);
             }
