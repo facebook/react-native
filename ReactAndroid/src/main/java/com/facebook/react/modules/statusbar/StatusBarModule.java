@@ -17,6 +17,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import java.util.Map;
@@ -112,22 +113,39 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
       res.reject(ERROR_NO_ACTIVITY, ERROR_NO_ACTIVITY_MESSAGE);
       return;
     }
-    UiThreadUtil.runOnUiThread(
-      new Runnable() {
-        @Override
-        public void run() {
-          int flags = activity.getWindow().getDecorView().getSystemUiVisibility();
-          if (translucent) {
-            flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-          } else {
-            flags &= ~(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+          @Override
+          public void run() {
+            // If the status bar is translucent hook into the window insets calculations
+            // and consume all the top insets so no padding will be added under the status bar.
+            View decorView = activity.getWindow().getDecorView();
+            if (translucent) {
+              decorView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                  WindowInsets defaultInsets = v.onApplyWindowInsets(insets);
+                  return defaultInsets.replaceSystemWindowInsets(
+                    defaultInsets.getSystemWindowInsetLeft(),
+                    0,
+                    defaultInsets.getSystemWindowInsetRight(),
+                    defaultInsets.getSystemWindowInsetBottom()
+                  );
+                }
+              });
+            } else {
+              decorView.setOnApplyWindowInsetsListener(null);
+            }
+
+            ViewCompat.requestApplyInsets(decorView);
+            res.resolve(null);
           }
-          activity.getWindow().getDecorView().setSystemUiVisibility(flags);
-          ViewCompat.requestApplyInsets(activity.getWindow().getDecorView());
-          res.resolve(null);
         }
-      }
-    );
+      );
+    }
   }
 
   @ReactMethod
