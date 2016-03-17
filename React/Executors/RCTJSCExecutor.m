@@ -18,6 +18,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTDefines.h"
 #import "RCTDevMenu.h"
+#import "RCTJavaScriptLoader.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTPerformanceLogger.h"
@@ -35,6 +36,7 @@ static NSString *const RCTJSCProfilerEnabledDefaultsKey = @"RCTJSCProfilerEnable
 typedef struct ModuleData
 {
   uint32_t offset;
+  uint32_t length;
   uint32_t lineNo;
 } ModuleData;
 
@@ -101,7 +103,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RCTJavaScriptContext *_context;
   NSThread *_javaScriptThread;
 
-  NSData *_bundle;
+  FILE *_bundle;
   JSStringRef _bundleURL;
   CFMutableDictionaryRef _jsModules;
 }
@@ -368,6 +370,7 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
   if (_jsModules) {
     CFRelease(_jsModules);
+    fclose(_bundle);
   }
 
 #if RCT_DEV
@@ -519,18 +522,32 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
                        sourceURL:(NSURL *)sourceURL
                       onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
-  // Check if it's a `RAM bundle` ("Random Access Modules" bundle).
-  // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
-  // The benefit of RAM bundle over a regular bundle is that we can lazily inject
-  // modules into JSC as they're required.
-  static const uint32_t ramBundleMagicNumber = 0xFB0BD1E5;
-  uint32_t magicNumber = *(uint32_t *)script.bytes;
-  if (magicNumber == ramBundleMagicNumber) {
-    script = [self loadRAMBundle:script];
-  }
-
   RCTAssertParam(script);
   RCTAssertParam(sourceURL);
+
+  // The RAM bundle has a magic number in the 4 first bytes `(0xFB0BD1E5)`.
+  uint32_t magicNumber = NSSwapLittleIntToHost(*((uint32_t *)script.bytes));
+  BOOL isRAMBundle = magicNumber == RCTRAMBundleMagicNumber;
+  if (isRAMBundle) {
+    NSError *error;
+    script = [self loadRAMBundle:sourceURL error:&error];
+
+    if (error) {
+      if (onComplete) {
+        onComplete(error);
+      }
+      return;
+    }
+  } else {
+    // JSStringCreateWithUTF8CString expects a null terminated C string.
+    // RAM Bundling already provides a null terminated one.
+    NSMutableData *nullTerminatedScript = [NSMutableData dataWithCapacity:script.length + 1];
+
+    [nullTerminatedScript appendData:script];
+    [nullTerminatedScript appendBytes:"" length:1];
+
+    script = nullTerminatedScript;
+  }
 
   _bundleURL = JSStringCreateWithUTF8CString(sourceURL.absoluteString.UTF8String);
 
@@ -544,14 +561,8 @@ static void RCTInstallJSCProfiler(RCTBridge *bridge, JSContextRef context)
 
     RCTPerformanceLoggerStart(RCTPLScriptExecution);
 
-    // JSStringCreateWithUTF8CString expects a null terminated C string
-    NSMutableData *nullTerminatedScript = [NSMutableData dataWithCapacity:script.length + 1];
-
-    [nullTerminatedScript appendData:script];
-    [nullTerminatedScript appendBytes:"" length:1];
-
     JSValueRef jsError = NULL;
-    JSStringRef execJSString = JSStringCreateWithUTF8CString(nullTerminatedScript.bytes);
+    JSStringRef execJSString = JSStringCreateWithUTF8CString(script.bytes);
     JSStringRef jsURL = JSStringCreateWithCFString((__bridge CFStringRef)sourceURL.absoluteString);
     JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, execJSString, NULL, jsURL, 0, &jsError);
     JSStringRelease(jsURL);
@@ -635,7 +646,7 @@ static int streq(const char *a, const char *b)
   return strcmp(a, b) == 0;
 }
 
-static void freeModuleData(__unused CFAllocatorRef allocator, void *ptr)
+static void freeModule(__unused CFAllocatorRef allocator, void *ptr)
 {
   free(ptr);
 }
@@ -648,7 +659,19 @@ static uint32_t readUint32(const void **ptr) {
   return data;
 }
 
-- (NSData *)loadRAMBundle:(NSData *)script
+static int readBundle(FILE *fd, size_t offset, size_t length, void *ptr) {
+  if (fseek(fd, offset, SEEK_SET) != 0) {
+   return 1;
+  }
+
+  if (fread(ptr, sizeof(uint8_t), length, fd) != length) {
+    return 1;
+  }
+
+  return 0;
+}
+
+- (void)registerNativeRequire
 {
   __weak RCTJSCExecutor *weakSelf = self;
   _context.context[@"nativeRequire"] = ^(NSString *moduleName) {
@@ -657,14 +680,18 @@ static uint32_t readUint32(const void **ptr) {
       return;
     }
 
-    ModuleData *moduleData = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
-    JSStringRef module = JSStringCreateWithUTF8CString((const char *)_bundle.bytes + moduleData->offset);
-    int lineNo = [moduleName isEqual:@""] ? 0 : moduleData->lineNo;
+    ModuleData *data = (ModuleData *)CFDictionaryGetValue(strongSelf->_jsModules, moduleName.UTF8String);
+    char bytes[data->length];
+    if (readBundle(strongSelf->_bundle, data->offset, data->length, bytes) != 0) {
+      RCTFatal(RCTErrorWithMessage(@"Error loading RAM module"));
+      return;
+    }
+    JSStringRef code = JSStringCreateWithUTF8CString(bytes);
     JSValueRef jsError = NULL;
-    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, module, NULL, strongSelf->_bundleURL, lineNo, NULL);
+    JSValueRef result = JSEvaluateScript(strongSelf->_context.ctx, code, NULL, strongSelf->_bundleURL, data->lineNo, NULL);
 
     CFDictionaryRemoveValue(strongSelf->_jsModules, moduleName.UTF8String);
-    JSStringRelease(module);
+    JSStringRelease(code);
 
     if (!result) {
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -673,45 +700,82 @@ static uint32_t readUint32(const void **ptr) {
       });
     }
   };
+}
 
-  _bundle = script;
-  CFDictionaryKeyCallBacks keyCallbacks = { 0, NULL, NULL, NULL, (CFDictionaryEqualCallBack)streq, (CFDictionaryHashCallBack)strlen };
+- (NSData *)loadRAMBundle:(NSURL *)sourceURL error:(NSError **)error
+{
+  _bundle = fopen(sourceURL.path.UTF8String, "r");
+  if (!_bundle) {
+    *error = RCTErrorWithMessage([NSString stringWithFormat:@"Bundle %@ cannot be opened: %d", sourceURL.path, errno]);
+    return nil;
+  }
+
+  [self registerNativeRequire];
+
   // once a module has been loaded free its space from the heap, remove it from the index and release the module name
-  CFDictionaryValueCallBacks valueCallbacks = { 0, NULL, (CFDictionaryReleaseCallBack)freeModuleData, NULL, NULL };
+  CFDictionaryKeyCallBacks keyCallbacks = { 0, NULL, (CFDictionaryReleaseCallBack)freeModule, NULL, (CFDictionaryEqualCallBack)streq, (CFDictionaryHashCallBack)strlen };
+  CFDictionaryValueCallBacks valueCallbacks = { 0, NULL, (CFDictionaryReleaseCallBack)freeModule, NULL, NULL };
   _jsModules = CFDictionaryCreateMutable(NULL, 0, &keyCallbacks, &valueCallbacks);
 
-  const uint8_t *bytes = script.bytes;
-  uint32_t currentOffset = 4; // skip magic number
+  uint32_t currentOffset = sizeof(uint32_t); // skip magic number
 
   uint32_t tableLength;
-  memcpy(&tableLength, bytes + currentOffset, sizeof(tableLength));
+  if (readBundle(_bundle, currentOffset, sizeof(tableLength), &tableLength) != 0) {
+    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    return nil;
+  }
   tableLength = NSSwapLittleIntToHost(tableLength);
 
-  // offset where the code starts on the bundle
-  const uint32_t baseOffset = currentOffset + tableLength;
+  currentOffset += sizeof(uint32_t); // skip table length
 
-  // pointer to first byte out of the index
-  const uint8_t *endOfTable = bytes + baseOffset;
+  // base offset to add to every module's offset to skip the header of the RAM bundle
+  uint32_t baseOffset = 4 + tableLength;
 
-  // pointer to current position on table
-  const uint8_t *tablePos = bytes + 2 * sizeof(uint32_t); // skip magic number and table length
+  char tableStart[tableLength];
+  if (readBundle(_bundle, currentOffset, tableLength, tableStart) != 0) {
+    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    return nil;
+  }
 
-  while (tablePos < endOfTable) {
-    const char *moduleName = (const char *)tablePos;
+  void *tableCursor = tableStart;
+  void *endOfTable = tableCursor + tableLength;
+
+  while (tableCursor < endOfTable) {
+    uint32_t nameLength = strlen((const char *)tableCursor);
+    char *name = malloc(nameLength + 1);
+
+    if (!name) {
+      *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+      return nil;
+    }
+
+    strcpy(name, tableCursor);
 
     // the space allocated for each module's metada gets freed when the module is injected into JSC on `nativeRequire`
     ModuleData *moduleData = malloc(sizeof(ModuleData));
 
-    tablePos += strlen(moduleName) + 1; // null byte terminator
+    tableCursor += nameLength + 1; // null byte terminator
 
-    moduleData->offset = baseOffset + readUint32((const void **)&tablePos);
-    moduleData->lineNo = readUint32((const void **)&tablePos);
+    moduleData->offset = baseOffset + readUint32((const void **)&tableCursor);
+    moduleData->length = readUint32((const void **)&tableCursor);
+    moduleData->lineNo = readUint32((const void **)&tableCursor);
 
-    CFDictionarySetValue(_jsModules, moduleName, moduleData);
+    CFDictionarySetValue(_jsModules, name, moduleData);
   }
 
-  uint32_t offset = ((ModuleData *)CFDictionaryGetValue(_jsModules, ""))->offset;
-  return [NSData dataWithBytesNoCopy:((char *) script.bytes) + offset length:script.length - offset freeWhenDone:NO];
+  ModuleData *startupData = ((ModuleData *)CFDictionaryGetValue(_jsModules, ""));
+
+  void *startupCode;
+  if (!(startupCode = malloc(startupData->length))) {
+    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    return nil;
+  }
+
+  if (readBundle(_bundle, startupData->offset, startupData->length, startupCode) != 0) {
+    *error = RCTErrorWithMessage(@"Error loading RAM Bundle");
+    return nil;
+  }
+  return [NSData dataWithBytesNoCopy:startupCode length:startupData->length freeWhenDone:YES];
 }
 
 RCT_EXPORT_METHOD(setContextName:(nonnull NSString *)name)
