@@ -57,7 +57,7 @@ class DependencyGraph {
       providesModuleNodeModules,
       platforms: platforms || [],
       preferNativePlatform: preferNativePlatform || false,
-      extensions: extensions || ['js', 'json'],
+      extensions: extensions || ['js', 'jsx', 'json'],
       mocksPattern,
       extractRequires,
       shouldThrowOnUnresolvedErrors,
