@@ -219,18 +219,6 @@ const Text = React.createClass({
         isHighlighted: this.state.isHighlighted,
       };
     }
-    if (Platform.OS === 'ios' && newProps.lineBreakMode === undefined) {
-      // Prevent mutation of `this.props`!
-      if (newProps === this.props) {
-        newProps = { ...this.props };
-      }
-      // If `numberOfLines` is undefined, it defaults to 0 in native code.
-      if (newProps.numberOfLines !== undefined && newProps.numberOfLines > 0) {
-        newProps.lineBreakMode = 'truncating-tail';
-      } else {
-        newProps.lineBreakMode = 'clipping';
-      }
-    }
     if (this.context.isInAParentText) {
       return <RCTVirtualText {...newProps} />;
     } else {
