@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -24,9 +29,7 @@
  */
 'use strict';
 
-jest
- .autoMockOff()
- .mock('ErrorUtils');
+jest.dontMock('NavigationLegacyNavigatorRouteStack');
 
 const NavigationLegacyNavigatorRouteStack = require('NavigationLegacyNavigatorRouteStack');
 
@@ -263,11 +266,20 @@ describe('NavigationLegacyNavigatorRouteStack:', () => {
     expect(stack2.index).toBe(0);
   });
 
-  it('throws when popping to empty stack', () => {
-    expect(() => {
-      const stack = new NavigationLegacyNavigatorRouteStack(0, ['a']);
-      stack.pop();
-    }).toThrow();
+  it('does nothing while popping to empty', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(0, ['a']);
+    expect(stack.pop()).toBe(stack);
+    expect(stack.pop().pop()).toBe(stack);
+  });
+
+  it('pops to route', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(1, ['a', 'b', 'c']);
+    expect(stack.popToRoute('b').toArray()).toEqual(['a', 'b']);
+    expect(stack.popToRoute('b').index).toBe(1);
+    expect(stack.popToRoute('a').toArray()).toEqual(['a']);
+    expect(stack.popToRoute('a').index).toBe(0);
+
+    expect(() => {stack.popToRoute('x');}).toThrow();
   });
 
   // Jump
@@ -290,6 +302,24 @@ describe('NavigationLegacyNavigatorRouteStack:', () => {
       stack.jumpToIndex(-1);
     }).toThrow();
   });
+
+  it('jumps to route', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(0, ['a', 'b']);
+    expect(stack.jumpTo('b').index).toBe(1);
+  });
+
+  it('jumps backward', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(1, ['a', 'b']);
+    expect(stack.jumpBack().index).toBe(0);
+    expect(stack.jumpBack().jumpBack().jumpBack().index).toBe(0);
+  });
+
+  it('jumps forward', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(0, ['a', 'b']);
+    expect(stack.jumpForward().index).toBe(1);
+    expect(stack.jumpForward().jumpForward().jumpForward().index).toBe(1);
+  });
+
 
   // Replace
   it('replaces route at index', () => {
@@ -317,11 +347,40 @@ describe('NavigationLegacyNavigatorRouteStack:', () => {
     }).toThrow();
   });
 
-  it('throws when replacing at index out of bound', () => {
-    expect(() => {
-      const stack = new NavigationLegacyNavigatorRouteStack(1, ['a', 'b']);
-      stack.replaceAtIndex(100, 'x');
-    }).toThrow();
+  it('does nothing when replacing at index out of bound', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(1, ['a', 'b']);
+    expect(stack.replaceAtIndex(100, 'x')).toBe(stack);
+    expect(stack.replaceAtIndex(-100, 'x')).toBe(stack);
+  });
+
+  it('replaces previous and pop route', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(1, ['a', 'b', 'c']);
+    expect(stack.replacePreviousAndPop('x').toArray()).toEqual(['x']);
+    expect(stack.replacePreviousAndPop('x').index).toBe(0);
+  });
+
+  it('does nothing when there is nothing to replace', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(0, ['a', 'b', 'c']);
+    expect(stack.replacePreviousAndPop('x')).toBe(stack);
+  });
+
+  // Reset
+
+  it('resets route', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(1, ['a', 'b', 'c']);
+    expect(stack.resetTo('b')).toBe(stack);
+
+    expect(stack.resetTo('x').toArray()).toEqual(['a', 'x']);
+    expect(stack.resetTo('x').index).toBe(1);
+
+    expect(() => {stack.resetTo(null);}).toThrow();
+    expect(() => {stack.resetTo('a');}).toThrow();
+  });
+
+  it('resets routes', () => {
+    const stack = new NavigationLegacyNavigatorRouteStack(0, ['a']);
+    expect(stack.resetRoutes(['x', 'y']).toArray()).toEqual(['x', 'y']);
+    expect(stack.resetRoutes(['x', 'y']).index).toBe(1);
   });
 
   // Iteration

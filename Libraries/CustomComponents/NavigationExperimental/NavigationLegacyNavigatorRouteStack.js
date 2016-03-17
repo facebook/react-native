@@ -1,5 +1,10 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * @providesModule NavigationLegacyNavigatorRouteStack
  * @flow
@@ -85,8 +90,7 @@ class RouteNode {
   }
 
   toNavigationState(): NavigationState {
-    const state: NavigationState = this;
-    return state;
+    return this;
   }
 }
 
@@ -114,7 +118,7 @@ class RouteStack {
 
     invariant(
       index > -1 && index <= routes.length - 1,
-      'index out of bound'
+      'RouteStack: index out of bound'
     );
 
 
@@ -187,7 +191,7 @@ class RouteStack {
     }
 
     for (let ii = 0, jj = this._routeNodes.length; ii < jj; ii++) {
-      let node = this._routeNodes[ii];
+      const node = this._routeNodes[ii];
       if (node.route === route) {
         return ii;
       }
@@ -230,14 +234,27 @@ class RouteStack {
    * excluding the last index in this stack.
    */
   pop(): RouteStack {
-    invariant(
-      this._routeNodes.length > 1,
-      'should not pop routeNodes stack to empty'
-    );
+    if (this._routeNodes.length <= 1) {
+      return this;
+    }
 
     // When popping, removes the rest of the routes past the current index.
     const routeNodes = this._routeNodes.slice(0, this._index);
     return this._update(routeNodes.length - 1, routeNodes);
+  }
+
+  popToRoute(route: any): RouteStack {
+    const index = this.indexOf(route);
+    invariant(
+      index > -1,
+      'Calling popToRoute for a route that doesn\'t exist!'
+    );
+    return this.slice(0, index + 1);
+  }
+
+  jumpTo(route: any): RouteStack {
+    const index = this.indexOf(route);
+    return this.jumpToIndex(index);
   }
 
   jumpToIndex(index: number): RouteStack {
@@ -246,6 +263,22 @@ class RouteStack {
       'jumpToIndex: index out of bound'
     );
 
+    return this._update(index, this._routeNodes);
+  }
+
+  jumpForward(): RouteStack {
+    const index = this._index + 1;
+    if (index >= this._routeNodes.length) {
+      return this;
+    }
+    return this._update(index, this._routeNodes);
+  }
+
+  jumpBack(): RouteStack {
+    const index = this._index - 1;
+    if (index < 0) {
+      return this;
+    }
     return this._update(index, this._routeNodes);
   }
 
@@ -267,18 +300,57 @@ class RouteStack {
 
     invariant(this.indexOf(route) === -1, 'route must be unique');
 
+    const size = this._routeNodes.length;
     if (index < 0) {
-      index += this._routeNodes.length;
+      index += size;
     }
 
-    invariant(
-      index > -1 && index < this._routeNodes.length,
-      'replaceAtIndex: index out of bound'
-    );
+    if (index < 0 || index >= size) {
+      return this;
+    }
 
     const routeNodes = this._routeNodes.slice(0);
     routeNodes[index] = new RouteNode(route);
     return this._update(index, routeNodes);
+  }
+
+  replacePreviousAndPop(route: any): RouteStack {
+    if (this._index < 1) {
+      // stack is too small.
+      return this;
+    }
+
+    const index = this.indexOf(route);
+    invariant(
+      index === -1 || index === this._index - 1,
+      'route already exists in the stack'
+    );
+
+    return this.replaceAtIndex(this._index - 1, route).popToRoute(route);
+  }
+
+  // Reset
+
+  /**
+   * Replace the current active route with a new route, and pops out
+   * the rest routes after it.
+   */
+  resetTo(route: any): RouteStack {
+    invariant(!isRouteEmpty(route), 'Must supply route');
+    const index = this.indexOf(route);
+    if (index === this._index) {
+      // Already has this active route.
+      return this;
+    }
+    invariant(index === -1, 'route already exists in the stack');
+    const routeNodes = this._routeNodes.slice(0, this._index);
+    routeNodes.push(new RouteNode(route));
+    return this._update(routeNodes.length - 1, routeNodes);
+  }
+
+  resetRoutes(routes: Array<any>): RouteStack {
+    const index = routes.length - 1;
+    return new RouteStack(index, routes);
   }
 
   // Iterations
