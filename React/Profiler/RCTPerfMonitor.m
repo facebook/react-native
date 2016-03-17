@@ -506,7 +506,12 @@ RCT_EXPORT_MODULE()
   NSArray<NSNumber *> *values = RCTPerformanceLoggerOutput();
   for (NSString *label in RCTPerformanceLoggerLabels()) {
     long long value = values[i+1].longLongValue - values[i].longLongValue;
-    NSString *unit = [label isEqualToString:@"BundleSize"] ? @"b" : @"ms";
+    NSString *unit = @"ms";
+    if ([label hasSuffix:@"Size"]) {
+      unit = @"b";
+    } else if ([label hasSuffix:@"Count"]) {
+      unit = @"";
+    }
     [data addObject:[NSString stringWithFormat:@"%@: %lld%@", label, value, unit]];
     i += 2;
   }

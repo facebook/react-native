@@ -101,6 +101,7 @@ NSArray *RCTPerformanceLoggerLabels(void)
       @"NativeModuleMainThread",
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
+      @"NativeModuleMainThreadUsesCount",
       @"JSCExecutorSetup",
       @"RootViewTTI",
       @"BundleSize",
