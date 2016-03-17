@@ -179,10 +179,10 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                 // dependencies we used to have with the one we now have
                 return getDependencies(client.platform, client.bundleEntry)
                   .then(({
-                    depsCache,
-                    depsModulesCache,
-                    shallowDeps,
-                    inverseDepsCache,
+                    dependenciesCache: depsCache,
+                    dependenciesModulesCache: depsModulesCache,
+                    shallowDependencies: shallowDeps,
+                    inverseDependenciesCache: inverseDepsCache,
                     resolutionResponse,
                   }) => {
                     if (!client) {
@@ -192,7 +192,7 @@ function attachHMRServer({httpServer, path, packagerServer}) {
                     // build list of modules for which we'll send HMR updates
                     const modulesToUpdate = [packagerServer.getModuleForPath(filename)];
                     Object.keys(depsModulesCache).forEach(module => {
-                      if (!client.depsModulesCache[module]) {
+                      if (!client.dependenciesModulesCache[module]) {
                         modulesToUpdate.push(depsModulesCache[module]);
                       }
                     });
