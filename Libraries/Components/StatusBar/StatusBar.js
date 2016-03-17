@@ -39,8 +39,37 @@ type DefaultProps = {
  */
 function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Object {
   return propsStack.reduce((prev, cur) => {
-    return Object.assign(prev, cur);
-  }, defaultValues);
+    for (let prop in cur) {
+      if (cur[prop] != null) {
+        prev[prop] = cur[prop];
+      }
+    }
+    return prev;
+  }, Object.assign({}, defaultValues));
+}
+
+/**
+ * Returns an object to insert in the props stack from the props
+ * and the transition/animation info.
+ */
+function createStackEntry(props: any): any {
+  return {
+    backgroundColor: props.backgroundColor != null ? {
+      value: props.backgroundColor,
+      animated: props.animated,
+    } : null,
+    barStyle: props.barStyle != null ? {
+      value: props.barStyle,
+      animated: props.animated,
+    } : null,
+    translucent: props.translucent,
+    hidden: props.hidden != null ? {
+      value: props.hidden,
+      animated: props.animated,
+      transition: props.showHideTransition,
+    } : null,
+    networkActivityIndicatorVisible: props.networkActivityIndicatorVisible,
+  };
 }
 
 /**
@@ -81,19 +110,34 @@ function mergePropsStack(propsStack: Array<Object>, defaultValues: Object): Obje
 const StatusBar = React.createClass({
   statics: {
     _propsStack: [],
-    _defaultProps: {
+    _defaultProps: createStackEntry({
+      animated: false,
+      showHideTransition: 'fade',
       backgroundColor: 'black',
       barStyle: 'default',
       translucent: false,
       hidden: false,
       networkActivityIndicatorVisible: false,
-    },
+    }),
+    // Timer for updating the native module values at the end of the frame.
+    _updateImmediate: null,
+    // The current merged values from the props stack.
+    _currentValues: null,
+
+    // TODO(janic): Provide a real API to deal with status bar height. See the
+    // discussion in #6195.
+    /**
+     * The current height of the status bar on the device.
+     *
+     * @platform android
+     */
+    currentHeight: StatusBarManager.HEIGHT,
 
     // Provide an imperative API as static functions of the component.
     // See the corresponding prop for more detail.
     setHidden(hidden: boolean, animation?: StatusBarAnimation) {
       animation = animation || 'none';
-      StatusBar._defaultProps.hidden = hidden;
+      StatusBar._defaultProps.hidden.value = hidden;
       if (Platform.OS === 'ios') {
         StatusBarManager.setHidden(hidden, animation);
       } else if (Platform.OS === 'android') {
@@ -107,7 +151,7 @@ const StatusBar = React.createClass({
         return;
       }
       animated = animated || false;
-      StatusBar._defaultProps.barStyle = style;
+      StatusBar._defaultProps.barStyle.value = style;
       StatusBarManager.setStyle(style, animated);
     },
 
@@ -126,7 +170,7 @@ const StatusBar = React.createClass({
         return;
       }
       animated = animated || false;
-      StatusBar._defaultProps.backgroundColor = color;
+      StatusBar._defaultProps.backgroundColor.value = color;
       StatusBarManager.setColor(processColor(color), animated);
     },
 
@@ -197,27 +241,31 @@ const StatusBar = React.createClass({
     };
   },
 
+  _stackEntry: null,
+
   componentDidMount() {
     // Every time a StatusBar component is mounted, we push it's prop to a stack
     // and always update the native status bar with the props from the top of then
     // stack. This allows having multiple StatusBar components and the one that is
     // added last or is deeper in the view hierachy will have priority.
-    StatusBar._propsStack.push(this.props);
+    this._stackEntry = createStackEntry(this.props);
+    StatusBar._propsStack.push(this._stackEntry);
     this._updatePropsStack();
   },
 
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
-    const index = StatusBar._propsStack.indexOf(this.props);
+    const index = StatusBar._propsStack.indexOf(this._stackEntry);
     StatusBar._propsStack.splice(index, 1);
 
     this._updatePropsStack();
   },
 
-  componentDidUpdate(oldProps: Object) {
-    const index = StatusBar._propsStack.indexOf(oldProps);
-    StatusBar._propsStack[index] = this.props;
+  componentDidUpdate() {
+    const index = StatusBar._propsStack.indexOf(this._stackEntry);
+    this._stackEntry = createStackEntry(this.props);
+    StatusBar._propsStack[index] = this._stackEntry;
 
     this._updatePropsStack();
   },
@@ -226,34 +274,51 @@ const StatusBar = React.createClass({
    * Updates the native status bar with the props from the stack.
    */
   _updatePropsStack() {
-    const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
+    // Send the update to the native module only once at the end of the frame.
+    clearImmediate(StatusBar._updateImmediate);
+    StatusBar._updateImmediate = setImmediate(() => {
+      const oldProps = StatusBar._currentValues;
+      const mergedProps = mergePropsStack(StatusBar._propsStack, StatusBar._defaultProps);
 
-    if (Platform.OS === 'ios') {
-      if (mergedProps.barStyle !== undefined) {
-        StatusBarManager.setStyle(mergedProps.barStyle, this.props.animated);
+      // Update the props that have changed using the merged values from the props stack.
+      if (Platform.OS === 'ios') {
+        if (!oldProps || oldProps.barStyle.value !== mergedProps.barStyle.value) {
+          StatusBarManager.setStyle(
+            mergedProps.barStyle.value,
+            mergedProps.barStyle.animated,
+          );
+        }
+        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+          StatusBarManager.setHidden(
+            mergedProps.hidden.value,
+            mergedProps.hidden.animated ?
+              mergedProps.hidden.transition :
+              'none',
+          );
+        }
+
+        if (!oldProps || oldProps.networkActivityIndicatorVisible !== mergedProps.networkActivityIndicatorVisible) {
+          StatusBarManager.setNetworkActivityIndicatorVisible(
+            mergedProps.networkActivityIndicatorVisible
+          );
+        }
+      } else if (Platform.OS === 'android') {
+        if (!oldProps || oldProps.backgroundColor.value !== mergedProps.backgroundColor.value) {
+          StatusBarManager.setColor(
+            processColor(mergedProps.backgroundColor.value),
+            mergedProps.backgroundColor.animated,
+          );
+        }
+        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+          StatusBarManager.setHidden(mergedProps.hidden.value);
+        }
+        if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
+          StatusBarManager.setTranslucent(mergedProps.translucent);
+        }
       }
-      if (mergedProps.hidden !== undefined) {
-        StatusBarManager.setHidden(
-          mergedProps.hidden,
-          this.props.animated ? this.props.showHideTransition : 'none'
-        );
-      }
-      if (mergedProps.networkActivityIndicatorVisible !== undefined) {
-        StatusBarManager.setNetworkActivityIndicatorVisible(
-          mergedProps.networkActivityIndicatorVisible
-        );
-      }
-    } else if (Platform.OS === 'android') {
-      if (mergedProps.backgroundColor !== undefined) {
-        StatusBarManager.setColor(processColor(mergedProps.backgroundColor), this.props.animated);
-      }
-      if (mergedProps.hidden !== undefined) {
-        StatusBarManager.setHidden(mergedProps.hidden);
-      }
-      if (mergedProps.translucent !== undefined) {
-        StatusBarManager.setTranslucent(mergedProps.translucent);
-      }
-    }
+      // Update the current prop values.
+      StatusBar._currentValues = mergedProps;
+    });
   },
 
   render(): ?ReactElement {
