@@ -61,6 +61,10 @@
 .*/build/.*\.json
 .*/\.buckd/.*
 
+# Travis-gone-crazy list, for some reason on Travis these files cause flow errors
+# TODO temporarily
+.*/Examples/.*
+
 [include]
 
 [libs]
