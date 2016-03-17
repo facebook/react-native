@@ -9,7 +9,6 @@
 'use strict';
 
 jest.setMock('worker-farm', function() { return () => {}; })
-    .dontMock('node-haste/node_modules/throat')
     .dontMock('os')
     .dontMock('lodash')
     .dontMock('path')
@@ -18,6 +17,15 @@ jest.setMock('worker-farm', function() { return () => {}; })
     .setMock('uglify-js')
     .dontMock('../')
     .setMock('crypto');
+
+// npm2/npm3 interoperability
+try {
+  jest
+    .dontMock('throat')
+} catch (e) {
+  jest
+    .dontMock('node-haste/node_modules/throat')
+}
 
 const Promise = require('promise');
 

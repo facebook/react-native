@@ -10,11 +10,19 @@
 
 jest
   .setMock('worker-farm', () => () => undefined)
-  .dontMock('node-haste/node_modules/throat')
   .dontMock('lodash')
   .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
   .dontMock('../');
+
+// npm2/npm3 interoperability
+try {
+  jest
+    .dontMock('throat')
+} catch (e) {
+  jest
+    .dontMock('node-haste/node_modules/throat')
+}
 
 jest.mock('fs');
 

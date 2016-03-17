@@ -2,8 +2,16 @@
 
 jest
   .dontMock('node-haste/lib/lib/getPlatformExtension')
-  .dontMock('node-haste/node_modules/throat')
   .dontMock('../');
+
+// npm2/npm3 interoperability
+try {
+  jest
+    .dontMock('throat')
+} catch (e) {
+  jest
+    .dontMock('node-haste/node_modules/throat')
+}
 
 jest
   .mock('crypto')
