@@ -208,6 +208,13 @@ var apps = [
     author: 'Digidemon',
   },
   {
+    name: 'breathe Meditation Timer',
+    icon: 'http://a2.mzstatic.com/eu/r30/Purple49/v4/09/21/d2/0921d265-087a-98f0-58ce-bbf9d44b114d/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/de/app/breathe-meditation-timer/id1087354227?mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.idearockers.breathe',
+    author: 'idearockers UG',
+  },
+  {
     name: 'CANDDi',
     icon: 'http://a5.mzstatic.com/eu/r30/Purple7/v4/c4/e4/85/c4e48546-7127-a133-29f2-3e2e1aa0f9af/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/canddi/id1018168131?mt=8',
