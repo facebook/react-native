@@ -58,8 +58,6 @@
 .*/node_modules/joi/.*\.json
 .*/node_modules/isemail/.*\.json
 .*/node_modules/tr46/.*\.json
-.*/build/.*\.json
-.*/\.buckd/.*
 
 [include]
 
