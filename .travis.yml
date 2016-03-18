@@ -16,16 +16,11 @@ install:
   - npm install
 
 script:
-  - if [[ "$TEST_TYPE" = objc ]]; then \
-    travis_retry ./scripts/objc-test.sh; fi
-  - if [[ "$TEST_TYPE" = e2e-objc ]]; then \
-    travis_retry ./scripts/e2e-test.sh --ios; fi
-  - if [[ "$TEST_TYPE" = js ]]; then \
-    npm install linesert && \
-    node -e "require('linesert')('.flowconfig').beforeLine(2).insert('.*/Examples/.*', ()=>{})" && \
-    npm run flow check && \
-    npm test -- --maxWorkers=1 && \
-    ./scripts/e2e-test.sh --packager;  fi
+  - if [[ "$TEST_TYPE" = objc ]]; then travis_retry ./scripts/objc-test.sh; fi
+  - if [[ "$TEST_TYPE" = e2e-objc ]]; then travis_retry ./scripts/e2e-test.sh --ios; fi
+  - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
+  - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
+  - if [[ "$TEST_TYPE" = js ]]; ./scripts/e2e-test.sh --packager; fi
 
 env:
   matrix:
