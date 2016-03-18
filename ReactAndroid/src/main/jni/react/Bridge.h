@@ -138,6 +138,7 @@ public:
    */
   void destroy();
 private:
+  void runOnExecutorQueue(ExecutorToken token, std::function<void(JSExecutor*)> task);
   std::unique_ptr<BridgeCallback> m_callback;
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
   // on the same thread. In that case, the callback will try to run the task on m_callback which
