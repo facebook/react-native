@@ -20,7 +20,7 @@ script:
   # temporarily disable flow check because it went mad on Travis
 #  - if [[ "$TEST_TYPE" = js ]]; then npm run flow check; fi
   - if [[ "$TEST_TYPE" = js ]]; then npm test -- --maxWorkers=1; fi
-  - if [[ "$TEST_TYPE" = js ]]; ./scripts/e2e-test.sh --packager; fi
+  - if [[ "$TEST_TYPE" = js ]]; then ./scripts/e2e-test.sh --packager; fi
 
 env:
   matrix:

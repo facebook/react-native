@@ -8,30 +8,22 @@
  */
 'use strict';
 
+jest.autoMockOff();
+
 jest.setMock('worker-farm', function() { return () => {}; })
-    .dontMock('os')
-    .dontMock('lodash')
-    .dontMock('path')
-    .dontMock('url')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
-    .dontMock('../')
-    .setMock('crypto');
-
-// npm2/npm3 interoperability
-try {
-  jest
-    .dontMock('throat')
-} catch (e) {
-  jest
-    .dontMock('node-haste/node_modules/throat')
-}
+    .setMock('crypto')
+    .mock('../../Bundler')
+    .mock('../../AssetServer')
+    .mock('../../lib/declareOpts')
+    .mock('node-haste')
+    .mock('../../Activity');
 
 const Promise = require('promise');
 
 var Bundler = require('../../Bundler');
 var Server = require('../');
-var Server = require('../../Server');
 var AssetServer = require('../../AssetServer');
 
 var FileWatcher;

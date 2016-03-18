@@ -1,17 +1,6 @@
 'use strict';
 
-jest
-  .dontMock('node-haste/lib/lib/getPlatformExtension')
-  .dontMock('../');
-
-// npm2/npm3 interoperability
-try {
-  jest
-    .dontMock('throat')
-} catch (e) {
-  jest
-    .dontMock('node-haste/node_modules/throat')
-}
+jest.autoMockOff();
 
 jest
   .mock('crypto')

@@ -8,19 +8,12 @@
  */
 'use strict';
 
+jest.autoMockOff();
 jest.setMock('uglify-js')
     .mock('net')
     .mock('fs')
-    .dontMock('../SocketServer');
-
-// npm2/npm3 interoperability
-try {
-  jest
-    .dontMock('throat')
-} catch (e) {
-  jest
-    .dontMock('node-haste/node_modules/throat')
-}
+    .mock('bser')
+    .mock('../../Server');
 
 var PackagerServer = require('../../Server');
 var SocketServer = require('../SocketServer');
