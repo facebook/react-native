@@ -72,11 +72,14 @@ namespace ReactNative.Modules.StatusBar
         /// </summary>
         /// <param name="color">RGB color.</param>
         [ReactMethod]
-        public void setColor(uint color)
+        public void setColor(uint? color)
         {
-            _color = ColorHelpers.Parse(color);
+            if (color.HasValue)
+            {
+                _color = ColorHelpers.Parse(color.Value);
 
-            SetProperties(_hidden, _translucent, _color);
+                SetProperties(_hidden, _translucent, _color);
+            }
         }
 
         /// <summary>

@@ -194,6 +194,9 @@
     <Compile Include="Modules\Core\JavaScriptException.cs" />
     <Compile Include="Modules\Core\JSTimersExecution.cs" />
     <Compile Include="Modules\Core\SourceCodeModule.cs" />
+    <Compile Include="Modules\NetInfo\DefaultNetworkInformation.cs" />
+    <Compile Include="Modules\NetInfo\IConnectionProfile.cs" />
+    <Compile Include="Modules\NetInfo\INetworkInformation.cs" />
     <Compile Include="Modules\Network\DefaultHttpClient.cs" />
     <Compile Include="Modules\Network\HttpContentHeaderData.cs" />
     <Compile Include="Modules\Network\IHttpClient.cs" />
@@ -252,7 +255,6 @@
     <Compile Include="Touch\JavaScriptResponderHandler.cs" />
     <Compile Include="Animation\ReactAnimationRegistry.cs" />
     <Compile Include="UIManager\BaseViewManager.cs" />
-    <Compile Include="UIManager\ILayoutManager.cs" />
     <Compile Include="UIManager\IViewManager.cs" />
     <Compile Include="UIManager\IViewParentManager.cs" />
     <Compile Include="UIManager\LayoutAnimation\BaseLayoutAnimation.cs" />
@@ -286,20 +288,12 @@
     <Compile Include="Views\Image\ReactImageLoadEvent.cs" />
     <Compile Include="Views\Image\ReactImageManager.cs" />
     <Compile Include="Views\Image\ReactVirtualImageManager.cs" />
-    <Compile Include="Views\Picker\ReactPickerManager.cs" />
-    <Compile Include="Views\Picker\ReactPickerShadowNode.cs" />
     <Compile Include="Views\Scroll\IScrollCommandHandler.cs" />
     <Compile Include="Views\Scroll\ReactScrollViewCommandHelper.cs" />
     <Compile Include="Views\Scroll\ScrollEventType.cs" />
     <Compile Include="Views\Scroll\ScrollEventTypeExtensions.cs" />
-    <Compile Include="Views\TextInput\InputScopeHelpers.cs" />
-    <Compile Include="Views\TextInput\ReactTextBox.cs" />
-    <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputBlurEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputEndEditingEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputFocusEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputSelectionEvent.cs" />
-    <Compile Include="Views\TextInput\ReactTextInputSubmitEditingEvent.cs" />
+    <Compile Include="Views\TextInput\ReactMultilineTextInputManager.cs" />
+    <Compile Include="Views\TextInput\TextBoxExtensions.cs" />
     <Compile Include="Views\Text\FontStyleHelpers.cs" />
     <Compile Include="UIManager\RootViewHelper.cs" />
     <Compile Include="UIManager\RootViewManager.cs" />
@@ -331,16 +325,19 @@
     <Compile Include="UIManager\ViewManager.cs" />
     <Compile Include="UIManager\ViewManagerRegistry.cs" />
     <Compile Include="Views\Scroll\ReactScrollViewManager.cs" />
+    <Compile Include="Views\TextInput\ReactTextBoxProperties.cs" />
     <Compile Include="Views\TextInput\ReactTextInputShadowNode.cs" />
     <Compile Include="Views\Switch\ReactSwitchManager.cs" />
     <Compile Include="Views\Switch\ReactSwitchShadowNode.cs" />
-    <Compile Include="UIManager\CSSNodeVisitor.cs" />
     <Compile Include="Views\ViewManagersPropertyCache.cs" />
     <Compile Include="UIManager\ViewProperties.cs" />
     <Compile Include="Views\Text\ReactRawTextManager.cs" />
     <Compile Include="Views\Text\ReactTextShadowNode.cs" />
     <Compile Include="Views\Text\ReactTextViewManager.cs" />
     <Compile Include="Views\Text\ReactVirtualTextViewManager.cs" />
+    <Compile Include="Views\TextInput\ReactTextChangedEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputBlurEvent.cs" />
+    <Compile Include="Views\TextInput\ReactTextInputFocusEvent.cs" />
     <Compile Include="Views\View\ReactViewManager.cs" />
     <Compile Include="Views\TextInput\ReactTextInputManager.cs" />
     <Compile Include="Modules\Toast\ToastHelper.cs" />
@@ -375,7 +372,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <SDKReference Include="WindowsDesktop, Version=10.0.10586.0">
+      <Name>Windows Desktop Extensions for the UWP</Name>
+    </SDKReference>
+    <SDKReference Include="WindowsMobile, Version=10.0.10586.0">
+      <Name>Windows Mobile Extensions for the UWP</Name>
+    </SDKReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
