@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -28,36 +33,24 @@
 'use strict';
 
 const Animated = require('Animated');
+const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContainer = require('NavigationContainer');
 const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
 const NavigationPropTypes = require('NavigationPropTypes');
-const React = require('React');
+const React = require('react-native');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const {Directions} = NavigationLinearPanResponder;
-
 import type  {
-  NavigationAnimatedValue,
-  NavigationLayout,
-  NavigationPosition,
+  NavigationPanPanHandlers,
   NavigationSceneRenderer,
   NavigationSceneRendererProps,
 } from 'NavigationTypeDefinition';
 
-import type {
-  NavigationGestureDirection
-} from 'NavigationLinearPanResponder';
-
-type State = {
-  hash: string,
-  height: number,
-  width: number,
-};
-
 type Props = NavigationSceneRendererProps & {
-  direction: NavigationGestureDirection,
+  style: any,
+  panHandlers: ?NavigationPanPanHandlers,
   renderScene: NavigationSceneRenderer,
 };
 
@@ -65,78 +58,18 @@ const {PropTypes} = React;
 
 const propTypes = {
   ...NavigationPropTypes.SceneRenderer,
-  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+  style: PropTypes.any,
+  panHandlers: NavigationPropTypes.panHandlers,
   renderScene: PropTypes.func.isRequired,
 };
-
-const defaultProps = {
-  direction: Directions.HORIZONTAL,
-};
-
-class AmimatedValueSubscription {
-  _value: NavigationAnimatedValue;
-  _token: string;
-
-  constructor(value: NavigationAnimatedValue, callback: Function) {
-    this._value = value;
-    this._token = value.addListener(callback);
-  }
-
-  remove() {
-    this._value.removeListener(this._token);
-  }
-}
-
-/**
- * Class that provides the required information for the
- * `NavigationLinearPanResponder`. This class must implement
- * the interface `NavigationLinearPanResponderDelegate`.
- */
-class PanResponderDelegate {
-  _props : Props;
-
-  constructor(props: Props) {
-    this._props = props;
-  }
-
-  getDirection(): NavigationGestureDirection {
-    return this._props.direction;
-  }
-
-  getIndex(): number {
-    return this._props.navigationState.index;
-  }
-
-  getLayout(): NavigationLayout {
-    return this._props.layout;
-  }
-
-  getPosition(): NavigationPosition {
-    return this._props.position;
-  }
-
-  onNavigate(action: {type: string}): void {
-    this._props.onNavigate && this._props.onNavigate(action);
-  }
-}
 
 /**
  * Component that renders the scene as card for the <NavigationCardStack />.
  */
-class NavigationCard extends React.Component {
+class NavigationCard extends React.Component<any, Props, any> {
   props: Props;
-  state: State;
-  _calculateState: (t: NavigationLayout) => State;
-  _layoutListeners: Array<AmimatedValueSubscription>;
 
-  constructor(props: Props, context: any) {
-    super(props, context);
-
-    this.state = this._calculateState(props.layout);
-    this._layoutListeners = [];
-  }
-
-  shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
+  shouldComponentUpdate(nextProps: Props, nextState: any): boolean {
     return ReactComponentWithPureRenderMixin.shouldComponentUpdate.call(
       this,
       nextProps,
@@ -144,130 +77,32 @@ class NavigationCard extends React.Component {
     );
   }
 
-  componentWillMount(): void {
-    this._calculateState = this._calculateState.bind(this);
-  }
-
-  componentDidMount(): void {
-    this._applyLayout(this.props.layout);
-  }
-
-  componentWillUnmount(): void {
-    this._layoutListeners.forEach(subscription => subscription.remove);
-  }
-
-  componentWillReceiveProps(nextProps: Props): void {
-    this._applyLayout(nextProps.layout);
-  }
-
   render(): ReactElement {
-    const {
-      direction,
-      layout,
-      navigationState,
-      onNavigate,
-      position,
-      scene,
-      scenes,
+    let {
+      style,
+      panHandlers,
+      renderScene,
+      ...props,
     } = this.props;
 
-    const {
-      height,
-      width,
-    } = this.state;
-
-    const index = scene.index;
-    const isVertical = direction === 'vertical';
-    const inputRange = [index - 1, index, index + 1];
-    const animatedStyle = {
-
-      opacity: position.interpolate({
-        inputRange,
-        outputRange: [1, 1, 0.3],
-      }),
-
-      transform: [
-        {
-          scale: position.interpolate({
-            inputRange,
-            outputRange: [1, 1, 0.95],
-          }),
-        },
-        {
-          translateX: isVertical ? 0 :
-            position.interpolate({
-              inputRange,
-              outputRange: [width, 0, -10],
-            }),
-        },
-        {
-          translateY: !isVertical ? 0 :
-            position.interpolate({
-              inputRange,
-              outputRange: [height, 0, -10],
-            }),
-        },
-      ],
-    };
-
-    let panHandlers = null;
-    if (navigationState.index === index) {
-      const delegate = new PanResponderDelegate(this.props);
-      const panResponder = new NavigationLinearPanResponder(delegate);
-      panHandlers = panResponder.panHandlers;
+    if (style === undefined) {
+      // fall back to default style.
+      style = NavigationCardStackStyleInterpolator.forHorizontal(props);
     }
-
-    const sceneProps = {
-      layout,
-      navigationState,
-      onNavigate,
-      position,
-      scene,
-      scenes,
-    };
+    if (panHandlers === undefined) {
+      // fall back to default pan handlers.
+      panHandlers = NavigationLinearPanResponder.forHorizontal(props);
+    }
 
     return (
-      <Animated.View
-        {...panHandlers}
-        style={[styles.main, animatedStyle]}>
-        {this.props.renderScene(sceneProps)}
+      <Animated.View {...panHandlers} style={[styles.main, style]}>
+        {renderScene(props)}
       </Animated.View>
     );
-  }
-
-  _calculateState(layout: NavigationLayout): State {
-    const width = layout.width.__getValue();
-    const height = layout.height.__getValue();
-    const hash = 'layout-' + width + '-' + height;
-    const state = {
-      height,
-      width,
-      hash,
-    };
-    return state;
-  }
-
-  _applyLayout(layout: NavigationLayout) {
-    this._layoutListeners.forEach(subscription => subscription.remove);
-
-    this._layoutListeners.length = 0;
-
-    const callback = this._applyLayout.bind(this, layout);
-
-    this._layoutListeners.push(
-      new AmimatedValueSubscription(layout.width, callback),
-      new AmimatedValueSubscription(layout.height, callback),
-    );
-
-    const nextState = this._calculateState(layout);
-    if (nextState.hash !== this.state.hash) {
-      this.setState(nextState);
-    }
   }
 }
 
 NavigationCard.propTypes = propTypes;
-NavigationCard.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   main: {

@@ -68,9 +68,26 @@ const SceneRenderer = {
   scenes: PropTypes.arrayOf(scene).isRequired,
 };
 
+/* NavigationPanPanHandlers */
+const panHandlers = PropTypes.shape({
+  onMoveShouldSetResponder: PropTypes.func.isRequired,
+  onMoveShouldSetResponderCapture: PropTypes.func.isRequired,
+  onResponderEnd: PropTypes.func.isRequired,
+  onResponderGrant: PropTypes.func.isRequired,
+  onResponderMove: PropTypes.func.isRequired,
+  onResponderReject: PropTypes.func.isRequired,
+  onResponderRelease: PropTypes.func.isRequired,
+  onResponderStart: PropTypes.func.isRequired,
+  onResponderTerminate: PropTypes.func.isRequired,
+  onResponderTerminationRequest: PropTypes.func.isRequired,
+  onStartShouldSetResponder: PropTypes.func.isRequired,
+  onStartShouldSetResponderCapture: PropTypes.func.isRequired,
+});
+
 module.exports = {
   SceneRenderer,
   action,
   navigationParentState,
   navigationState,
+  panHandlers,
 };

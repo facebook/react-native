@@ -32,6 +32,10 @@ var ComponentExamples: Array<UIExplorerExample> = [
     module: require('./ListViewExample'),
   },
   {
+    key: 'ModalExample',
+    module: require('./ModalExample'),
+  },
+  {
     key: 'PickerAndroidExample',
     module: require('./PickerAndroidExample'),
   },

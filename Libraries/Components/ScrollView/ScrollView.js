@@ -396,7 +396,7 @@ var ScrollView = React.createClass({
 
   handleScroll: function(e: Object) {
     if (__DEV__) {
-      if (this.props.onScroll && !this.props.scrollEventThrottle) {
+      if (this.props.onScroll && !this.props.scrollEventThrottle && Platform.OS === 'ios') {
         console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
           '`scrollEventThrottle`. You will only receive one event. ' +
@@ -431,7 +431,7 @@ var ScrollView = React.createClass({
       invariant(
         childLayoutProps.length === 0,
         'ScrollView child layout (' + JSON.stringify(childLayoutProps) +
-          ') must by applied through the contentContainerStyle prop.'
+          ') must be applied through the contentContainerStyle prop.'
       );
     }
 

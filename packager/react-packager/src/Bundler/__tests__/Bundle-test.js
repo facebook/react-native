@@ -123,7 +123,7 @@ describe('Bundle', () => {
       };
 
       const promise = Promise.all(
-        moduleTransports.map(m => bundle.addModule(resolver, null, null, m)))
+        moduleTransports.map(m => bundle.addModule(resolver, null, {isPolyfill: () => false}, m)))
       .then(() => {
         expect(bundle.getModules())
           .toEqual(moduleTransports);
@@ -375,18 +375,26 @@ function resolverFor(code, map) {
   };
 }
 
-function addModule({bundle, code, sourceCode, sourcePath, map, virtual}) {
+function addModule({bundle, code, sourceCode, sourcePath, map, virtual, polyfill}) {
   return bundle.addModule(
     resolverFor(code, map),
     null,
-    null,
-    createModuleTransport({code, sourceCode, sourcePath, map, virtual})
+    {isPolyfill: () => polyfill},
+    createModuleTransport({
+      code,
+      sourceCode,
+      sourcePath,
+      map,
+      virtual,
+      polyfill,
+    }),
   );
 }
 
 function createModuleTransport(data) {
   return new ModuleTransport({
     code: '',
+    id: '',
     sourceCode: '',
     sourcePath: '',
     ...data,
