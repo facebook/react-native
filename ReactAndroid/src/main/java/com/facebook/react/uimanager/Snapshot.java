@@ -5,7 +5,12 @@ import android.graphics.Bitmap;
 import android.view.View;
 import java.io.FileOutputStream;
 
+/**
+ * Snapshot utility class allow to screenshot a view.
+ */
 public class Snapshot {
+
+  static final String ERROR_UNABLE_TO_SNAPSHOT = "E_UNABLE_TO_SNAPSHOT";
 
   Bitmap.CompressFormat format;
   double quality;
@@ -19,6 +24,11 @@ public class Snapshot {
     this.height = height;
   }
 
+  /**
+   * Write the captured image to a file output stream.
+   * @param view the view to screenshot
+   * @param out the file output stream to write
+   */
   public void captureViewToFileOutputStream (View view, FileOutputStream out) {
     Bitmap bitmap = captureView(view);
     if (bitmap == null) {
@@ -27,6 +37,11 @@ public class Snapshot {
     bitmap.compress(format, (int)(100.0 * quality), out);
   }
 
+  /**
+   * Screenshot a view and return the captured bitmap.
+   * @param view the view to capture
+   * @return the screenshot or null if it failed.
+   */
   public Bitmap captureView (View view) {
     int w = view.getWidth();
     int h = view.getHeight();

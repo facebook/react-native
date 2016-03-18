@@ -17,6 +17,7 @@ import javax.annotation.concurrent.GuardedBy;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -502,6 +503,13 @@ public class UIViewOperationQueue {
     private Promise promise;
     private File destFile;
 
+    /**
+     * Create a TakeSnapshot operation that will screenshot a view and save it to a file.
+     * @param tag the view to snapshot
+     * @param snapshot the snapshot instance (configure the snapshot and provide utility methods)
+     * @param destFile the output file
+     * @param promise will be resolved with the uri (or rejected)
+     */
     public TakeSnapshot(int tag, Snapshot snapshot, File destFile, Promise promise) {
       super(tag);
       this.snapshot = snapshot;
@@ -510,16 +518,25 @@ public class UIViewOperationQueue {
     }
     @Override
     public void execute() {
+      FileOutputStream fileOutputStream = null;
       try {
         View view = mNativeViewHierarchyManager.resolveView(mTag);
-        FileOutputStream fileOutputStream = new FileOutputStream(destFile);
+        fileOutputStream = new FileOutputStream(destFile);
         snapshot.captureViewToFileOutputStream(view, fileOutputStream);
-        fileOutputStream.close();
         String uri = Uri.fromFile(destFile).toString();
         promise.resolve(uri);
       }
       catch (Exception e) {
-        promise.reject(e);
+        promise.reject(Snapshot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag "+mTag);
+      }
+      finally {
+        if (fileOutputStream != null) {
+          try {
+            fileOutputStream.close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
       }
     }
   }

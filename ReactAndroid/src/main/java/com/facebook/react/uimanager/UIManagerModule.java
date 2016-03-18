@@ -485,7 +485,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
       mUIImplementation.takeSnapshot(target, tag, new Snapshot(compressFormat, quality, width, height), tmpFile, promise);
     }
     catch (Exception e) {
-      promise.reject(e);
+      promise.reject(Snapshot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag "+tag);
     }
   }
 
