@@ -29,6 +29,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		13B6C1A31C34225900D3FAF5 /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */; };
+		13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */; };
 		13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DB03471B5D2ED500C27245 /* RCTJSONTests.m */; };
 		13DF61B61B67A45000EDB188 /* RCTMethodArgumentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */; };
 		143BC5A11B21E45C00462512 /* UIExplorerSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 143BC5A01B21E45C00462512 /* UIExplorerSnapshotTests.m */; };
@@ -204,6 +205,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = UIExplorer/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = UIExplorer/main.m; sourceTree = "<group>"; };
 		13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTURLUtilsTests.m; sourceTree = "<group>"; };
+		13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTComponentPropsTests.m; sourceTree = "<group>"; };
 		13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = ../../Libraries/Settings/RCTSettings.xcodeproj; sourceTree = "<group>"; };
 		13DB03471B5D2ED500C27245 /* RCTJSONTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTJSONTests.m; sourceTree = "<group>"; };
 		13DF61B51B67A45000EDB188 /* RCTMethodArgumentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMethodArgumentTests.m; sourceTree = "<group>"; };
@@ -431,6 +433,7 @@
 				1393D0371B68CD1300E1B601 /* RCTModuleMethodTests.m */,
 				138D6A161B53CD440074A87E /* RCTShadowViewTests.m */,
 				1497CFAB1B21F5E400C1F8F2 /* RCTUIManagerTests.m */,
+				13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */,
 				143BC57E1B21E18100462512 /* Info.plist */,
 				14D6D7101B220EB3001FB087 /* libOCMock.a */,
 				14D6D7011B220AE3001FB087 /* OCMock */,
@@ -883,6 +886,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1497CFB01B21F5E400C1F8F2 /* RCTConvert_UIFontTests.m in Sources */,
+				13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */,
 				144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */,
 				1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.m in Sources */,
 				1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */,
