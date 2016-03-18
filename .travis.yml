@@ -19,34 +19,11 @@ install:
   - npm install
 
 script:
-- |
-  if [ "$TEST_TYPE" = objc ]
-  then
-
-    travis_retry ./scripts/objc-test.sh
-
-  elif [ "$TEST_TYPE" = js ]
-  then
-
-    npm install github@0.2.4
-    cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" node bots/code-analysis-bot.js
-    npm run flow && npm test
-
-  elif [ "$TEST_TYPE" = e2e-objc ]
-  then
-
-    travis_retry ./scripts/e2e-test.sh --ios
-
-  else
-    echo "Unknown test type: $TEST_TYPE"
-    exit 1
-  fi
+  - npm run flow
 
 env:
   matrix:
-    - TEST_TYPE=objc
     - TEST_TYPE=js
-    - TEST_TYPE=e2e-objc
 
 branches:
   only:
