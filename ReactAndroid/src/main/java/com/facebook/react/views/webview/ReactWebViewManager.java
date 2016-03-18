@@ -21,9 +21,9 @@ import android.text.TextUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.facebook.catalyst.views.webview.events.TopLoadingErrorEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingFinishEvent;
-import com.facebook.catalyst.views.webview.events.TopLoadingStartEvent;
+import com.facebook.react.views.webview.events.TopLoadingErrorEvent;
+import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
+import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
