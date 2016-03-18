@@ -182,7 +182,7 @@ var BoxOnlyExample = React.createClass({
 });
 
 type ExampleClass = {
-  Component: ReactClass<any>,
+  Component: ReactClass<any, any, any>,
   title: string,
   description: string,
 };
