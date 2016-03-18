@@ -231,7 +231,7 @@ android {
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir "$buildDir/react-ndk/exported"
-        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell']
+        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal']
         java {
           srcDirs = ['src/main/java', 'src/main/libraries/soloader']
           exclude 'com/facebook/react/processing'
