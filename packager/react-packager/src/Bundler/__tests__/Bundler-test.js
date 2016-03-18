@@ -8,15 +8,24 @@
  */
 'use strict';
 
+jest.autoMockOff();
+
 jest
   .setMock('worker-farm', () => () => undefined)
-  .dontMock('node-haste/node_modules/throat')
-  .dontMock('lodash')
-  .dontMock('../../lib/ModuleTransport')
   .setMock('uglify-js')
-  .dontMock('../');
-
-jest.mock('fs');
+  .mock('image-size')
+  .mock('fs')
+  .mock('assert')
+  .mock('progress')
+  .mock('node-haste')
+  .mock('../../JSTransformer')
+  .mock('../../lib/declareOpts')
+  .mock('../../Resolver')
+  .mock('../Bundle')
+  .mock('../PrepackBundle')
+  .mock('../HMRBundle')
+  .mock('../../Activity')
+  .mock('../../lib/declareOpts');
 
 var Bundler = require('../');
 var Resolver = require('../../Resolver');
