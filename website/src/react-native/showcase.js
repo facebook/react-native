@@ -234,6 +234,13 @@ var apps = [
     author: 'CBS Sports',
   },
   {
+    name: 'Chillin\'',
+    icon: 'http://www.chillin.io/img/logo175x175.png',
+    linkAppStore: 'https://itunes.apple.com/us/app/chillin/id1059803303?ls=1&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.chillinmobile',
+    author: 'Chillin LLC',
+  },
+  {
     name: 'Choke - Rap Battle With Friends',
     icon: 'http://a3.mzstatic.com/us/r30/Purple49/v4/3e/83/85/3e8385d8-140f-da38-a100-1393cef3e816/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/choke-rap-battle-with-friends/id1077937445?ls=1&mt=8',
