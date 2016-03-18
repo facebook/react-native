@@ -20,7 +20,6 @@ The work on React Native for Android started later than React Native for iOS. No
 #### Views
 
 - Maps - Please use Leland Richardson's [react-native-maps](https://github.com/lelandrichardson/react-native-maps) as it is more feature-complete than our internal implementation at fb.
-- Modal
 - Slider (also known as SeekBar)
 
 #### Modules
