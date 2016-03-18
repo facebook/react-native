@@ -446,7 +446,8 @@ var apps = [
   {
     name: 'Mobabuild',
     icon: 'http://mobabuild.co/images/applogo.png',
-    link: 'http://mobabuild.co',
+    linkAppStore: 'https://itunes.apple.com/tr/app/mobabuild-builds-for-league/id1059193502?l=tr&mt=8',
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.sercanov.mobabuild',
     author: 'Sercan Demircan ( @sercanov )',
   },
   {
