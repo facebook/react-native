@@ -8,16 +8,20 @@
  */
 'use strict';
 
-if (!process.env.TRAVIS_REPO_SLUG) {
-  console.error('Missing TRAVIS_REPO_SLUG. Example: facebook/react-native');
+if (!process.env.CI_USER) {
+  console.error('Missing CI_USER. Example: facebook');
+  process.exit(1);
+}
+if (!process.env.CI_REPO) {
+  console.error('Missing CI_REPO. Example: react-native');
   process.exit(1);
 }
 if (!process.env.GITHUB_TOKEN) {
   console.error('Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e');
   process.exit(1);
 }
-if (!process.env.TRAVIS_PULL_REQUEST) {
-  console.error('Missing TRAVIS_PULL_REQUEST. Example: 4687');
+if (!process.env.PULL_REQUEST_NUMBER) {
+  console.error('Missing PULL_REQUEST_NUMBER. Example: 4687');
   process.exit(1);
 }
 
@@ -231,12 +235,10 @@ process.stdin.on('end', function() {
     delete messages[absolutePath];
   }
 
-  // TRAVIS_REPO_SLUG // 'facebook/react-native'
-  var user_repo = process.env.TRAVIS_REPO_SLUG.split('/');
-  var user = user_repo[0];
-  var repo = user_repo[1];
-  var number = process.env.TRAVIS_PULL_REQUEST;
+  var user = process.env.CI_USER;
+  var repo = process.env.CI_REPO;
+  var number = process.env.PULL_REQUEST_NUMBER;
 
   // intentional lint warning to make sure that the bot is working :)
-  main(messages, user, repo, number)
+  main(messages, user, repo, number);
 });
