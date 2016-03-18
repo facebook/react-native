@@ -13,8 +13,8 @@
 'use strict';
 
 var ColorPropType = require('ColorPropType');
-//var PickerIOS = require('PickerIOS');
-//var PickerAndroid = require('PickerAndroid');
+var PickerIOS = require('PickerIOS');
+var PickerAndroid = require('PickerAndroid');
 var PickerWindows = require('PickerWindows');
 var Platform = require('Platform');
 var React = require('React');

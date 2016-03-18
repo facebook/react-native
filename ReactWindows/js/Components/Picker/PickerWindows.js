@@ -41,6 +41,8 @@ var PickerWindows = React.createClass({
   propTypes: {
     ...View.propTypes,
     style: pickerStyleType,
+    items: React.PropTypes.any,
+    selected: React.PropTypes.number,
     selectedValue: React.PropTypes.any,
     enabled: ReactPropTypes.bool,
     onValueChange: ReactPropTypes.func,
@@ -74,7 +76,7 @@ var PickerWindows = React.createClass({
     });
     return {selectedIndex, items};
   },
-
+  
   render: function() {
     var Picker = ComboBoxPicker;
 
@@ -125,6 +127,11 @@ var styles = StyleSheet.create({
   },
 });
 
-var ComboBoxPicker = requireNativeComponent('RCTPicker', PickerWindows);
+var cfg = {
+  nativeOnly: {
+  }
+};
+
+var ComboBoxPicker = requireNativeComponent('RCTPicker', PickerWindows, PickerWindows, cfg);
 
 module.exports = PickerWindows;

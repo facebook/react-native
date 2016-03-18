@@ -2,7 +2,6 @@
 using ReactNative.UIManager;
 using ReactNative.UIManager.Events;
 using System;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -14,12 +13,6 @@ namespace ReactNative.Views.Picker
     /// </summary>
     public class ReactPickerManager : BaseViewManager<ComboBox, ReactPickerShadowNode>
     {
-        private const string PROP_COLOR     = "color";
-        private const string PROP_ENABLED   = "enabled";
-        private const string PROP_ITEMS     = "items";
-        private const string PROP_LABEL     = "label";
-        private const string PROP_SELECTED  = "selected";     
-
         private int _selected;
 
         /// <summary>
@@ -41,7 +34,7 @@ namespace ReactNative.Views.Picker
         /// Set to <code>true</code> if the picker should be enabled,
         /// otherwise, set to <code>false</code>.
         /// </param>
-        [ReactProperty(PROP_ENABLED)]
+        [ReactProperty("enabled")]
         public void SetEnabled(ComboBox view, bool enabled)
         {
             view.IsEnabled = enabled;
@@ -52,16 +45,16 @@ namespace ReactNative.Views.Picker
         /// </summary>
         /// <param name="view">a combobox instance.</param>
         /// <param name="selected">The selected item.</param>
-        [ReactProperty(PROP_SELECTED)]
+        [ReactProperty("selected")]
         public void SetSelected(ComboBox view, int selected)
         {
             // Temporarily disable selection changed event handler.
             view.SelectionChanged -= OnSelectionChanged;
 
-            _selected = selected >= -1 ? selected : -1;
-            view.SelectedIndex = view.Items.Count > _selected ? _selected : view.Items.Count - 1;
+            _selected = selected;
+            view.SelectedIndex = view.Items.Count > _selected ? _selected : -1;
 
-            if (view.SelectedIndex != -1 )
+            if (view.SelectedIndex != -1)
             {
                 view.Foreground = ((ComboBoxItem)(view.Items[view.SelectedIndex])).Foreground;
             }
@@ -74,30 +67,29 @@ namespace ReactNative.Views.Picker
         /// </summary>
         /// <param name="view">a combobox instance.</param>
         /// <param name="items">The picker items.</param>
-        [ReactProperty(PROP_ITEMS)]
+        [ReactProperty("items")]
         public void SetItems(ComboBox view, JArray items)
         {
+            // Temporarily disable selection changed event handler.
             view.SelectionChanged -= OnSelectionChanged;
 
-            for (int index = 0; index < items.Count; index++)
+            for (var index = 0; index < items.Count; index++)
             {
-                JToken token;
-                if ( (items[index] as JObject).TryGetValue(PROP_LABEL, out token) )
+                JToken label;
+                if ((items[index] as JObject).TryGetValue("label", out label))
                 {
                     var item = new ComboBoxItem();
                     JToken color;
-                    item.Content = token.Value<string>();
-                    if (((JObject)(items[index])).TryGetValue(PROP_COLOR, out color) )
+                    item.Content = label.Value<string>();
+                    if ((color = items[index].Value<JToken>("color")) != null)
                     {
-                        var rgb = color.Value<long>();
-                        item.Foreground = new SolidColorBrush(Color.FromArgb((byte)((rgb >> 24) & 0xff), 
-                                                                             (byte)((rgb >> 16) & 0xff), 
-                                                                             (byte)((rgb >> 8) & 0xff), 
-                                                                             (byte)(rgb & 0xff)));
+                        var rgb = color.Value<uint>();
+                        item.Foreground = new SolidColorBrush(ColorHelpers.Parse(rgb));
                     } 
                     view.Items.Add(item);
                 }            
-            }    
+            } 
+               
             view.SelectedIndex = view.Items.Count > _selected ? _selected : -1;
 
             view.SelectionChanged += OnSelectionChanged;
