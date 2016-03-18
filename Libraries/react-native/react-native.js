@@ -86,6 +86,7 @@ var ReactNative = {
   get StyleSheet() { return require('StyleSheet'); },
   get TimePickerAndroid() { return require('TimePickerAndroid'); },
   get UIManager() { return require('UIManager'); },
+  get Vibration() { return require('Vibration'); },
   get VibrationIOS() { return require('VibrationIOS'); },
 
   // Plugins

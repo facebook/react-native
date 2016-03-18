@@ -24,6 +24,18 @@ struct dynamic;
 namespace facebook {
 namespace react {
 
+class BridgeCallback {
+public:
+  virtual ~BridgeCallback() {};
+
+  virtual void onCallNativeModules(
+      ExecutorToken executorToken,
+      const std::string& callJSON,
+      bool isEndOfBatch) = 0;
+
+  virtual void onExecutorUnregistered(ExecutorToken executorToken) = 0;
+};
+
 class Bridge;
 class ExecutorRegistration {
 public:
@@ -39,15 +51,13 @@ public:
 
 class Bridge {
 public:
-  typedef std::function<void(ExecutorToken executorToken, std::vector<MethodCall>, bool isEndOfBatch)> Callback;
-
   /**
    * This must be called on the main JS thread.
    */
   Bridge(
       JSExecutorFactory* jsExecutorFactory,
       std::unique_ptr<ExecutorTokenFactory> executorTokenFactory,
-      Callback callback);
+      std::unique_ptr<BridgeCallback> callback);
   virtual ~Bridge();
 
   /**
@@ -56,8 +66,8 @@ public:
    */
   void callFunction(
     ExecutorToken executorToken,
-    const double moduleId,
-    const double methodId,
+    const std::string& moduleId,
+    const std::string& methodId,
     const folly::dynamic& args,
     const std::string& tracingName);
 
@@ -128,7 +138,7 @@ public:
    */
   void destroy();
 private:
-  Callback m_callback;
+  std::unique_ptr<BridgeCallback> m_callback;
   // This is used to avoid a race condition where a proxyCallback gets queued after ~Bridge(),
   // on the same thread. In that case, the callback will try to run the task on m_callback which
   // will have been destroyed within ~Bridge(), thus causing a SIGSEGV.

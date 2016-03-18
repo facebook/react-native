@@ -12,8 +12,6 @@ package com.facebook.react.bridge;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -82,12 +80,11 @@ public class JavaScriptModuleConfigTest {
 
   private static String getModuleDescriptions(JavaScriptModulesConfig jsModulesConfig)
       throws IOException {
-    JsonFactory jsonFactory = new JsonFactory();
-    StringWriter writer = new StringWriter();
-    JsonGenerator jg = jsonFactory.createGenerator(writer);
-    jsModulesConfig.writeModuleDescriptions(jg);
-    jg.close();
-    return writer.getBuffer().toString();
+    StringWriter stringWriter = new StringWriter();
+    JsonWriter writer = new JsonWriter(stringWriter);
+    jsModulesConfig.writeModuleDescriptions(writer);
+    writer.close();
+    return stringWriter.getBuffer().toString();
   }
 
   private JsonNode parse(String json) throws Exception {

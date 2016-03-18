@@ -4,6 +4,7 @@ include_defs('//ReactAndroid/DEFS')
 SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
 
 DEPS = [
+  FBGLOGINIT_TARGET,
   '//native/jni:jni',
   '//native/third-party/android-ndk:android',
   '//xplat/folly:molly',
@@ -69,6 +70,7 @@ jni_library(
   compiler_flags = [
     '-Wall',
     '-Werror',
+    '-Wno-deprecated-declarations',
     '-fexceptions',
     '-std=c++11',
     '-fvisibility=hidden',

@@ -111,6 +111,12 @@ var featured = [
     ],
   },
   {
+    name: 'SoundCloud Pulse',
+    icon: 'https://i1.sndcdn.com/artworks-000149203716-k5je96-original.jpg',
+    link: 'https://itunes.apple.com/us/app/soundcloud-pulse-for-creators/id1074278256?mt=8',
+    author: 'SoundCloud',
+  },
+  {
     name: 'Spero for Cancer',
     icon: 'https://s3-us-west-1.amazonaws.com/cancerspot/site_images/Spero1024.png',
     link: 'https://geo.itunes.apple.com/us/app/spero-for-cancer/id1033923573?mt=8',
@@ -159,6 +165,15 @@ var featured = [
     link: 'https://itunes.apple.com/us/app/wpv/id725222647?mt=8',
     author: 'Yamill Vallecillo',
   },
+  {
+    name: 'Zhopout',
+    icon: 'http://zhopout.com/Content/Images/zhopout-logo-app-3.png',    
+    linkPlayStore: 'https://play.google.com/store/apps/details?id=com.zhopout',
+    author: 'Jarvis Software Private Limited ',
+    blogs: [
+      "https://medium.com/@murugandurai/how-we-developed-our-mobile-app-in-30-days-using-react-native-45affa6449e8#.29nnretsi",     
+    ],
+  },
 ];
 
 var apps = [
@@ -167,6 +182,12 @@ var apps = [
     icon: 'http://a3.mzstatic.com/us/r30/Purple3/v4/03/a1/5b/03a15b9f-04d7-a70a-620a-9c9850a859aa/icon175x175.png',
     link: 'https://itunes.apple.com/us/app/accio-on-demand-delivery/id1047060673?mt=8',
     author: 'Accio Delivery Inc.',
+  },
+  {
+    name: 'ArcChat.com',
+    icon: 'https://lh3.googleusercontent.com/mZJjidMobu3NAZApdtp-vdBBzIWzCNTaIcKShbGqwXRRzL3B9bbi6E0eRuykgT6vmg=w300-rw',
+    link: 'https://play.google.com/store/apps/details?id=com.arcchat',
+    author: 'Lukas Liesis',
   },
   {
     name: 'Beetroot',
@@ -239,6 +260,12 @@ var apps = [
     author: 'Rishabh Mehan',
   },
   {
+    name: 'Deskbookers',
+    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
+    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
+    author: 'Emilio Rodriguez'
+  },
+  {
     name: 'DockMan',
     icon: 'http://a1.mzstatic.com/us/r30/Purple49/v4/91/b5/75/91b57552-d9bc-d8bc-10a1-617de920aaa6/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/app/dockman/id1061469696',
@@ -247,13 +274,6 @@ var apps = [
       'http://www.s21g.com/DockMan.html',
     ],
     author: 'Genki Takiuchi (s21g Inc.)',
-  },
-  {
-    name: 'Fixt',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
-    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
-    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
-    author: 'Fixt',
   },
   {
     name: 'Due',
@@ -287,6 +307,13 @@ var apps = [
     author: 'Arjun Komath',
   },
   {
+    name: 'Fixt',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple69/v4/46/bc/66/46bc66a2-7775-4d24-235d-e1fe28d55d7f/icon175x175.png',
+    linkAppStore:  'https://itunes.apple.com/us/app/dropbot-phone-replacement/id1000855694?mt=8',
+    linkPlayStore:  'https://play.google.com/store/apps/details?id=co.fixt',
+    author: 'Fixt',
+  },
+  {
     name: 'Foodstand',
     icon: 'http://a3.mzstatic.com/us/r30/Purple69/v4/33/c1/3b/33c13b88-8ec2-23c1-56bb-712ad9938290/icon350x350.jpeg',
     link: 'https://www.thefoodstand.com/download',
@@ -297,6 +324,12 @@ var apps = [
     icon: 'http://a2.mzstatic.com/us/r30/Purple5/v4/42/50/5a/42505a8d-3c7a-e49a-16e3-422315f24cf1/icon350x350.png',
     link: 'https://itunes.apple.com/us/app/gou-huo/id1001476888?ls=1&mt=8',
     author: 'beijing qingfengyun Technology Co., Ltd.',
+  },
+  {
+    name: 'HackerWeb',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple49/v4/5a/bd/39/5abd3951-782c-ef12-8e40-33ebe1e43768/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/hackerweb/id1084209377?mt=8',
+    author: 'Lim Chee Aun',
   },
   {
     name: 'Harmonizome',
@@ -445,6 +478,13 @@ var apps = [
     link: 'https://play.google.com/store/apps/details?id=com.rhyble.nalathekerala',
     author: 'Rhyble',
   },
+	{
+    name: 'No Fluff: Hiragana',
+    icon: 'https://lh3.googleusercontent.com/kStXwjpbPsu27E1nIEU1gfG0I8j9t5bAR_20OMhGZvu0j2vab3EbBV7O_KNZChjflZ_O',
+    link: 'https://play.google.com/store/apps/details?id=com.hiragana',
+    author: 'Matthias Sieber',
+    source: 'https://github.com/manonthemat/no-fluff-hiragana'
+  },
   {
     name: 'Night Light',
     icon: 'http://is3.mzstatic.com/image/pf/us/r30/Purple7/v4/5f/50/5f/5f505fe5-0a30-6bbf-6ed9-81ef09351aba/mzl.lkeqxyeo.png',
@@ -480,6 +520,15 @@ var apps = [
     icon: 'http://is2.mzstatic.com/image/pf/us/r30/Purple5/v4/e3/c8/79/e3c87934-70c6-4974-f20d-4adcfc68d71d/mzl.wevtbbkq.png',
     link: 'https://itunes.apple.com/us/app/reactto36/id989009293?mt=8',
     author: 'Jonathan Solichin',
+  },
+  {
+    name: 'Reading',
+    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
+    link: 'http://www.wandoujia.com/apps/com.reading',
+    author: 'RichardCao',
+    blogs: [
+      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
+    ],
   },
   {
     name: 'RenovationFind',
@@ -543,12 +592,6 @@ var apps = [
     author: 'PrazAs Learning Inc.',
   },
   {
-    name: 'Thai Tone',
-    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
-    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
-    author: 'Alexey Ledak',
-  },
-  {
     name: 'TeamWarden',
     icon: 'http://a1.mzstatic.com/eu/r30/Purple69/v4/09/37/61/0937613a-46e3-3278-5457-5de49a4ee9ab/icon175x175.png',
     linkAppStore: 'https://itunes.apple.com/gb/app/teamwarden/id1052570507?mt=8',
@@ -562,10 +605,22 @@ var apps = [
     author: 'Sesh',
   },
   {
+    name: 'Thai Tone',
+    icon: 'http://a5.mzstatic.com/us/r30/Purple2/v4/b1/e6/2b/b1e62b3d-6747-0d0b-2a21-b6ba316a7890/icon175x175.png',
+    link: 'https://itunes.apple.com/us/app/thai-tone/id1064086189?mt=8',
+    author: 'Alexey Ledak',
+  },
+  {
     name: 'Tong Xing Wang',
     icon: 'http://a3.mzstatic.com/us/r30/Purple1/v4/7d/52/a7/7d52a71f-9532-82a5-b92f-87076624fdb2/icon175x175.jpeg',
     link: 'https://itunes.apple.com/cn/app/tong-xing-wang/id914254459?mt=8',
     author: 'Ho Yin Tsun Eugene',
+  },
+  {
+    name: 'Veggies in Season',
+    icon: 'https://s3.amazonaws.com/veggies-assets/icon175x175.png',
+    link: 'https://itunes.apple.com/es/app/veggies-in-season/id1088215278?mt=8',
+    author: 'Victor Delgado',
   },
   {
     name: 'WEARVR',
@@ -636,21 +691,6 @@ var apps = [
     linkAppStore: 'https://itunes.apple.com/cn/app/hong-bei-bang-hai-liang-hong/id1007812319?mt=8',
     author: 'Hongbeibang'
   },
-  {
-    name: 'Reading',
-    icon: 'http://7xr0xq.com1.z0.glb.clouddn.com/about_logo.png',
-    link: 'http://www.wandoujia.com/apps/com.reading',
-    author: 'RichardCao',
-    blogs: [
-      'http://richard-cao.github.io/2016/02/06/Reading-App-Write-In-React-Native/',
-    ],
-  },
-  {
-    name: 'Deskbookers',
-    icon: 'http://a4.mzstatic.com/eu/r30/Purple69/v4/be/61/7d/be617d63-88f5-5629-7ac0-bc2c9eb4802a/icon175x175.png',
-    linkAppStore: 'https://itunes.apple.com/nl/app/deskbookers/id964447401?mt=8',
-    author: 'Emilio Rodriguez'
-  },
 ];
 
 var AppList = React.createClass({
@@ -671,6 +711,7 @@ var AppList = React.createClass({
         {app.linkAppStore && app.linkPlayStore ? this._renderLinks(app) : null}
         <p>By {app.author}</p>
         {this._renderBlogPosts(app)}
+				{this._renderSourceLink(app)}
         {this._renderVideos(app)}
       </div>
     );
@@ -681,7 +722,7 @@ var AppList = React.createClass({
 
     return (
       <div className="showcase" key={i}>
-        <a href={app.link} target="blank">
+        <a href={app.link} target="_blank">
           {inner}
         </a>
       </div>
@@ -695,7 +736,7 @@ var AppList = React.createClass({
 
     if (app.blogs.length === 1) {
       return (
-        <p><a href={app.blogs[0]} target="blank">Blog post</a></p>
+        <p><a href={app.blogs[0]} target="_blank">Blog post</a></p>
       );
     } else if (app.blogs.length > 1) {
       return (
@@ -706,9 +747,19 @@ var AppList = React.createClass({
 
   _renderBlogPost: function(url, i) {
     return (
-      <a href={url} target="blank">
+      <a href={url} target="_blank">
         {i + 1}&nbsp;
       </a>
+    );
+  },
+
+	_renderSourceLink: function(app) {
+    if (!app.source) {
+      return;
+    }
+
+    return (
+      <p><a href={app.source} target="_blank">Source</a></p>
     );
   },
 
@@ -719,7 +770,7 @@ var AppList = React.createClass({
 
     if (app.videos.length === 1) {
       return (
-        <p><a href={app.videos[0]} target="blank">Video</a></p>
+        <p><a href={app.videos[0]} target="_blank">Video</a></p>
       );
     } else if (app.videos.length > 1) {
       return (
@@ -730,7 +781,7 @@ var AppList = React.createClass({
 
   _renderVideo: function(url, i) {
     return (
-      <a href={url} target="blank">
+      <a href={url} target="_blank">
         {i + 1}&nbsp;
       </a>
     );
@@ -739,9 +790,8 @@ var AppList = React.createClass({
   _renderLinks: function(app) {
     return (
       <p>
-        <a href={app.linkAppStore} target="blank">iOS</a>
-        {" - "}
-        <a href={app.linkPlayStore} target="blank">Android</a>
+        <a href={app.linkAppStore} target="_blank">iOS</a> -
+        <a href={app.linkPlayStore} target="_blank">Android</a>
       </p>
     );
   },

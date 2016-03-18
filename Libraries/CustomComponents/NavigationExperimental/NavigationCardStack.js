@@ -1,5 +1,10 @@
 /**
- * Copyright (c) 2015, Facebook, Inc.  All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
  *
  * Facebook, Inc. ("Facebook") owns all right, title and interest, including
  * all intellectual property and other proprietary rights, in and to the React
@@ -29,9 +34,11 @@
 
 const Animated = require('Animated');
 const NavigationAnimatedView = require('NavigationAnimatedView');
-const NavigationCardStackItem = require('NavigationCardStackItem');
+const NavigationCard = require('NavigationCard');
+const NavigationCardStackStyleInterpolator = require('NavigationCardStackStyleInterpolator');
 const NavigationContainer = require('NavigationContainer');
 const NavigationLinearPanResponder = require('NavigationLinearPanResponder');
+const NavigationPropTypes = require('NavigationPropTypes');
 const React = require('React');
 const ReactComponentWithPureRenderMixin = require('ReactComponentWithPureRenderMixin');
 const StyleSheet = require('StyleSheet');
@@ -42,34 +49,50 @@ const {PropTypes} = React;
 const {Directions} = NavigationLinearPanResponder;
 
 import type {
+  NavigationAnimatedValue,
+  NavigationAnimationSetter,
   NavigationParentState,
-} from 'NavigationStateUtils';
+  NavigationSceneRenderer,
+  NavigationSceneRendererProps,
+} from 'NavigationTypeDefinition';
 
 import type {
-  NavigationStateRenderer,
-  NavigationStateRendererProps,
-  Position,
-  TimingSetter,
-} from 'NavigationAnimatedView';
+  NavigationGestureDirection,
+} from 'NavigationLinearPanResponder';
 
 type Props = {
-  direction: string,
+  direction: NavigationGestureDirection,
   navigationState: NavigationParentState,
-  renderOverlay: ?NavigationStateRenderer,
-  renderScene: NavigationStateRenderer,
+  renderOverlay: ?NavigationSceneRenderer,
+  renderScene: NavigationSceneRenderer,
+};
+
+const propTypes = {
+  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
+  navigationState: NavigationPropTypes.navigationParentState.isRequired,
+  renderOverlay: PropTypes.func,
+  renderScene: PropTypes.func.isRequired,
+};
+
+const defaultProps = {
+  direction: Directions.HORIZONTAL,
+  renderOverlay: emptyFunction.thatReturnsNull,
 };
 
 /**
  * A controlled navigation view that renders a list of cards.
  */
 class NavigationCardStack extends React.Component {
-  _renderScene : NavigationStateRenderer;
-  _setTiming: TimingSetter;
+  _applyAnimation: NavigationAnimationSetter;
+  _renderScene : NavigationSceneRenderer;
 
   constructor(props: Props, context: any) {
     super(props, context);
+  }
+
+  componentWillMount(): void {
+    this._applyAnimation = this._applyAnimation.bind(this);
     this._renderScene = this._renderScene.bind(this);
-    this._setTiming = this._setTiming.bind(this);
   }
 
   shouldComponentUpdate(nextProps: Object, nextState: Object): boolean {
@@ -86,36 +109,38 @@ class NavigationCardStack extends React.Component {
         navigationState={this.props.navigationState}
         renderOverlay={this.props.renderOverlay}
         renderScene={this._renderScene}
-        setTiming={this._setTiming}
+        applyAnimation={this._applyAnimation}
         style={[styles.animatedView, this.props.style]}
       />
     );
   }
 
-  _renderScene(props: NavigationStateRendererProps): ReactElement {
-    const {
-      index,
-      layout,
-      navigationState,
-      position,
-      navigationParentState,
-    } = props;
+  _renderScene(props: NavigationSceneRendererProps): ReactElement {
+    const isVertical = this.props.direction === 'vertical';
+
+    const style = isVertical ?
+      NavigationCardStackStyleInterpolator.forVertical(props) :
+      NavigationCardStackStyleInterpolator.forHorizontal(props);
+
+    const panHandlers = isVertical ?
+      NavigationLinearPanResponder.forVertical(props) :
+      NavigationLinearPanResponder.forHorizontal(props);
 
     return (
-      <NavigationCardStackItem
-        direction={this.props.direction}
-        index={index}
-        key={navigationState.key}
-        layout={layout}
-        navigationParentState={navigationParentState}
-        navigationState={navigationState}
-        position={position}
+      <NavigationCard
+        {...props}
+        key={'card_' + props.scene.navigationState.key}
+        panHandlers={panHandlers}
         renderScene={this.props.renderScene}
+        style={style}
       />
     );
   }
 
-  _setTiming(position: Position, navigationState: NavigationParentState): void {
+  _applyAnimation(
+    position: NavigationAnimatedValue,
+    navigationState: NavigationParentState,
+  ): void {
     Animated.timing(
       position,
       {
@@ -126,17 +151,8 @@ class NavigationCardStack extends React.Component {
   }
 }
 
-NavigationCardStack.propTypes = {
-  direction: PropTypes.oneOf([Directions.HORIZONTAL, Directions.VERTICAL]),
-  navigationState: PropTypes.object.isRequired,
-  renderOverlay: PropTypes.func,
-  renderScene: PropTypes.func.isRequired,
-};
-
-NavigationCardStack.defaultProps = {
-  direction: Directions.HORIZONTAL,
-  renderOverlay: emptyFunction.thatReturnsNull,
-};
+NavigationCardStack.propTypes = propTypes;
+NavigationCardStack.defaultProps = defaultProps;
 
 const styles = StyleSheet.create({
   animatedView: {

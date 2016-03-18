@@ -209,6 +209,11 @@ public class TouchTargetHelper {
 
     } else if (pointerEvents == PointerEvents.AUTO) {
       // Either this view or one of its children is the target
+      if (view instanceof ReactCompoundViewGroup) {
+        if (((ReactCompoundViewGroup) view).interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
+          return view;
+        }
+      }
       if (view instanceof ViewGroup) {
         return findTouchTargetView(eventCoords, (ViewGroup) view);
       }
