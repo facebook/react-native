@@ -43,7 +43,13 @@ var SegmentedControlIOS = React.createClass({
     values: PropTypes.arrayOf(PropTypes.string),
 
     /**
-     * The index in `props.values` of the segment to be pre-selected
+     * The index in `props.values` of the segment to be pre-selected.  
+     * This can also be set to a state variable in order to be able 
+     * to programmatically change the selected index. Note that the 
+     * state variable would then need to be updated using the 
+     * event.nativeEvent.selectedSegmentIndex value that is passed 
+     * to the onChange callback, in order to keep the two values
+     * synchronized.
      */
     selectedIndex: PropTypes.number,
 
