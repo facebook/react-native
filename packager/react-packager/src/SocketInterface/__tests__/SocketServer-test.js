@@ -8,11 +8,12 @@
  */
 'use strict';
 
+jest.autoMockOff();
 jest.setMock('uglify-js')
     .mock('net')
     .mock('fs')
-    .dontMock('node-haste/node_modules/throat')
-    .dontMock('../SocketServer');
+    .mock('bser')
+    .mock('../../Server');
 
 var PackagerServer = require('../../Server');
 var SocketServer = require('../SocketServer');
