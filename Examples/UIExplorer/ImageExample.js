@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
  * The examples provided by Facebook are for non-commercial testing and
  * evaluation purposes only.
  *
@@ -383,38 +390,54 @@ exports.examples = [
       return (
         <View>
           {[smallImage, fullImage].map((image, index) => {
-            return <View style={styles.horizontal} key={index}>
-              <View>
-                <Text style={[styles.resizeModeText]}>
-                  Contain
-                </Text>
-                <Image
-                  style={styles.resizeMode}
-                  resizeMode={Image.resizeMode.contain}
-                  source={image}
-                />
+            return (
+            <View key={index}>
+              <View style={styles.horizontal}>
+                <View>
+                  <Text style={[styles.resizeModeText]}>
+                    Contain
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.contain}
+                    source={image}
+                  />
+                </View>
+                <View style={styles.leftMargin}>
+                  <Text style={[styles.resizeModeText]}>
+                    Cover
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.cover}
+                    source={image}
+                  />
+                </View>
               </View>
-              <View style={styles.leftMargin}>
-                <Text style={[styles.resizeModeText]}>
-                  Cover
-                </Text>
-                <Image
-                  style={styles.resizeMode}
-                  resizeMode={Image.resizeMode.cover}
-                  source={image}
-                />
+              <View style={styles.horizontal}>
+                <View>
+                  <Text style={[styles.resizeModeText]}>
+                    Stretch
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.stretch}
+                    source={image}
+                  />
+                </View>
+                <View style={styles.leftMargin}>
+                  <Text style={[styles.resizeModeText]}>
+                    Center
+                  </Text>
+                  <Image
+                    style={styles.resizeMode}
+                    resizeMode={Image.resizeMode.center}
+                    source={image}
+                  />
+                </View>
               </View>
-              <View style={styles.leftMargin}>
-                <Text style={[styles.resizeModeText]}>
-                  Stretch
-                </Text>
-                <Image
-                  style={styles.resizeMode}
-                  resizeMode={Image.resizeMode.stretch}
-                  source={image}
-                />
             </View>
-          </View>;
+          );
         })}
         </View>
       );
@@ -459,7 +482,7 @@ exports.examples = [
   {
     title: 'Image Size',
     render: function() {
-      return <ImageSizeExample source={fullImage} />; 
+      return <ImageSizeExample source={fullImage} />;
     },
     platform: 'ios',
   },
