@@ -50,7 +50,7 @@ public class ToastModule extends ReactContextBaseJavaModule {
   public void show(final String message, final int duration) {
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
-      void run(){
+      public void run(){
         Toast.makeText(getReactApplicationContext(), message, duration).show();        
       }
     });
