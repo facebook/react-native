@@ -31,6 +31,23 @@ type Event = Object;
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
+ * 
+ * #### Programmatically changing selected index
+ * 
+ * The selected index can be changed by the fly by assigning the 
+ * selectIndex prop to a state variable, and changing that variable.  
+ * Note that the state variable would need to be updated as the user 
+ * selects a value and changes the index, as shown in the example below.
+ * 
+ * ````
+ * <SegmentedControlIOS
+ *   values={['One', 'Two']}
+ *   selectedIndex={this.state.selectedIndex}
+ *   onChange={(event) => {
+ *     this.setState({selectedIndex: event.nativeEvent.selectedSegmentIndex});
+ *   }}
+ * />
+ * ````
  */
 var SegmentedControlIOS = React.createClass({
   mixins: [NativeMethodsMixin],
@@ -43,13 +60,7 @@ var SegmentedControlIOS = React.createClass({
     values: PropTypes.arrayOf(PropTypes.string),
 
     /**
-     * The index in `props.values` of the segment to be pre-selected.  
-     * This can also be set to a state variable in order to be able 
-     * to programmatically change the selected index. Note that the 
-     * state variable would then need to be updated using the 
-     * event.nativeEvent.selectedSegmentIndex value that is passed 
-     * to the onChange callback, in order to keep the two values
-     * synchronized.
+     * The index in `props.values` of the segment to be selected.  
      */
     selectedIndex: PropTypes.number,
 
