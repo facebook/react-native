@@ -34,8 +34,8 @@ type Event = Object;
  *
  * #### Programmatically changing selected index
  *
- * The selected index can be changed by the fly by assigning the
- * selectIndex prop to a state variable, and changing that variable.
+ * The selected index can be changed on the fly by assigning the
+ * selectIndex prop to a state variable, then changing that variable.
  * Note that the state variable would need to be updated as the user
  * selects a value and changes the index, as shown in the example below.
  *
