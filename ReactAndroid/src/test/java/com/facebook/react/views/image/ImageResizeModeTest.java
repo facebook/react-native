@@ -42,6 +42,9 @@ public class ImageResizeModeTest {
     assertThat(ImageResizeMode.toScaleType("stretch"))
         .isEqualTo(ScalingUtils.ScaleType.FIT_XY);
 
+    assertThat(ImageResizeMode.toScaleType("center"))
+        .isEqualTo(ScalingUtils.ScaleType.CENTER_INSIDE);
+
     // No resizeMode set
     assertThat(ImageResizeMode.defaultValue())
         .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP);

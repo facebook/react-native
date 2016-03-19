@@ -33,6 +33,9 @@ public class ImageResizeMode {
     if ("stretch".equals(resizeModeValue)) {
       return ScalingUtils.ScaleType.FIT_XY;
     }
+    if ("center".equals(resizeModeValue)) {
+      return ScalingUtils.ScaleType.CENTER_INSIDE;
+    }
     if (resizeModeValue == null) {
       // Use the default. Never use null.
       return defaultValue();
