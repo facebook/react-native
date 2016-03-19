@@ -6,37 +6,40 @@ machine:
   node:
     version: 5.6.0
   environment:
-    PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:$PATH"
+    PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:/home/ubuntu/buck/bin:$PATH"
     TERM: "dumb"
     ADB_INSTALL_TIMEOUT: 10
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"'
 
 dependencies:
-  pre:
-    # BUCK
-    - if [[ ! -e buck ]]; then git clone https://github.com/facebook/buck.git; fi
-    - cd buck && ant
-    - buck/bin/buck --version
-    - buck/bin/buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
-    - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react
-    - buck/bin/buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-    - buck/bin/buck fetch ReactAndroid/src/test/...
-    - buck/bin/buck fetch ReactAndroid/src/androidTest/...
+  override:
+    # BUCK and android
+    - if [[ ! -e /home/ubuntu/buck ]]; then git clone https://github.com/facebook/buck.git /home/ubuntu/buck; fi
+    - cd /home/ubuntu/buck && ant
+    - buck --version
+    - buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
+    - buck fetch ReactAndroid/src/main/java/com/facebook/react
+    - buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
+    - buck fetch ReactAndroid/src/test/...
+    - buck fetch ReactAndroid/src/androidTest/...
     - source scripts/circle-ci-android-setup.sh && getAndroidSDK
     - ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
-  cache_directories:
-    - "ReactAndroid/build/downloads"
-    - "buck"
-    - "buck-out/bin"
-    - "website/node_modules"
-  override:
     # CIRCLE_NPM_TOKEN is in React Native project settings in Circle CI.
     # It was generated for bestander user, easy to replace with anyone's else
     - echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
     - npm config set spin=false
     - npm config set progress=false
     - npm install
+    # for eslint bot
+    - npm install github@0.2.4
+    # for deployment scripts
+    - npm install shelljs@0.6.0
     - cd website && npm install
+  cache_directories:
+    - "ReactAndroid/build/downloads"
+    - "/home/ubuntu/buck"
+    - "website/node_modules"
+    - "node_modules"
 
 test:
   pre:
@@ -46,12 +49,18 @@ test:
     - source scripts/circle-ci-android-setup.sh && waitForAVD
 
   override:
+    # eslint bot
+    - cat <(echo eslint; npm run lint --silent -- --format=json; echo flow; npm run flow --silent -- check --json) | GITHUB_TOKEN="af6ef0d15709bc91d""06a6217a5a826a226fb57b7" CI_USER=$CIRCLE_PROJECT_USERNAME CI_REPO=$CIRCLE_PROJECT_REPONAME PULL_REQUEST_NUMBER=$CIRCLE_PR_NUMBER node bots/code-analysis-bot.js
+    # JS tests for dependencies installed with npm3
+    - npm run flow check
+    - npm test -- --maxWorkers=1
+
     # build app
-    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react
-    - buck/bin/buck build ReactAndroid/src/main/java/com/facebook/react/shell
+    - buck build ReactAndroid/src/main/java/com/facebook/react
+    - buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
     # unit tests
-    - buck/bin/buck test ReactAndroid/src/test/... --config build.threads=1
+    - buck test ReactAndroid/src/test/... --config build.threads=1
 
     # instrumentation tests
     # compile native libs with Gradle script
@@ -60,7 +69,7 @@ test:
     # build JS bundle for instrumentation tests
     - node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/assets/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
     # build test APK
-    - buck/bin/buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
+    - buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
     # run installed apk with tests
     - source scripts/circle-ci-android-setup.sh && retry3 ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests
 

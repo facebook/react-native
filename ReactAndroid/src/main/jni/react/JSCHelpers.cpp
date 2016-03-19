@@ -38,7 +38,9 @@ JSValueRef makeJSCException(
 JSValueRef evaluateScript(JSContextRef context, JSStringRef script, JSStringRef source, const char *cachePath) {
   JSValueRef exn, result;
 #if WITH_FBJSCEXTENSIONS
-  if (source){
+  // Only evaluate the script using pre-parsing cache if the script comes from
+  //  a bundle file and a cache path is given.
+  if (source && cachePath){
     // If evaluating an application script, send it through `JSEvaluateScriptWithCache()`
     //  to add cache support.
     result = JSEvaluateScriptWithCache(context, script, NULL, source, 0, &exn, cachePath);

@@ -113,6 +113,7 @@ private:
   void receiveMessageFromOwner(const std::string &msgString);
   void terminateOwnedWebWorker(int worker);
   Object createMessageObject(const std::string& msgData);
+  bool usePreparsingAndStringRef();
 
   static JSValueRef nativeStartWorker(
       JSContextRef ctx,
