@@ -66,15 +66,16 @@ void Bridge::callFunction(
       systraceCookie);
   #endif
 
+  #ifdef WITH_FBSYSTRACE
   runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName, systraceCookie] (JSExecutor* executor) {
-    #ifdef WITH_FBSYSTRACE
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
         tracingName.c_str(),
         systraceCookie);
     FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, tracingName.c_str());
-    #endif
-
+  #else
+  runOnExecutorQueue(executorToken, [moduleId, methodId, arguments, tracingName] (JSExecutor* executor) {
+  #endif
     // This is safe because we are running on the executor's thread: it won't
     // destruct until after it's been unregistered (which we check above) and
     // that will happen on this thread
@@ -91,15 +92,16 @@ void Bridge::invokeCallback(ExecutorToken executorToken, const double callbackId
       systraceCookie);
   #endif
 
+  #ifdef WITH_FBSYSTRACE
   runOnExecutorQueue(executorToken, [callbackId, arguments, systraceCookie] (JSExecutor* executor) {
-    #ifdef WITH_FBSYSTRACE
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE,
         "<callback>",
         systraceCookie);
     FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "Bridge.invokeCallback");
-    #endif
-
+  #else
+  runOnExecutorQueue(executorToken, [callbackId, arguments] (JSExecutor* executor) {
+  #endif
     executor->invokeCallback(callbackId, arguments);
   });
 }
