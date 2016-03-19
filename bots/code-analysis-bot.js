@@ -22,7 +22,8 @@ if (!process.env.GITHUB_TOKEN) {
 }
 if (!process.env.PULL_REQUEST_NUMBER) {
   console.error('Missing PULL_REQUEST_NUMBER. Example: 4687');
-  process.exit(1);
+  // for master branch don't throw and error
+  process.exit(0);
 }
 
 var GitHubApi = require('github');
