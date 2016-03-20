@@ -172,6 +172,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
   }
 
+  @ReactProp(name = ViewProps.FONT_FAMILY)
+  public void setFontFamily(ReactEditText view, String fontFamily) {
+      view.setTypeface(Typeface.create(fontFamily,view.getTypeface().getStyle()));
+  }
+
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
   public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
     if (onSelectionChange) {
@@ -197,6 +202,15 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setHintTextColor(DefaultStyleValuesUtil.getDefaultTextColorHint(view.getContext()));
     } else {
       view.setHintTextColor(color);
+    }
+  }
+
+  @ReactProp(name = ViewProps.COLOR, customType = "Color")
+  public void setColor(ReactEditText view, @Nullable Integer color) {
+    if (color == null) {
+      view.setTextColor(DefaultStyleValuesUtil.getDefaultTextColor(view.getContext()));
+    } else {
+      view.setTextColor(color);
     }
   }
 
