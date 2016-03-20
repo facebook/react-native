@@ -22,6 +22,7 @@
   NSInteger _nativeEventCount;
   BOOL _submitted;
   UITextRange *_previousSelectionRange;
+  BOOL _clearButtonImagesUpdated;
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -37,6 +38,7 @@
     [self addObserver:self forKeyPath:@"selectedTextRange" options:0 context:nil];
     _reactSubviews = [NSMutableArray new];
     _blurOnSubmit = YES;
+    _clearButtonImagesUpdated = NO;
   }
   return self;
 }
@@ -110,6 +112,51 @@ static void RCTUpdatePlaceholder(RCTTextField *self)
 {
   super.placeholder = placeholder;
   RCTUpdatePlaceholder(self);
+}
+
+- (void)setClearButtonTintColor:(UIColor *)clearButtonTintColor
+{
+ _clearButtonTintColor = clearButtonTintColor;
+
+ [self tintClearButton];
+}
+
++ (UIButton *)_findClearButton:(RCTTextField *)textField
+{
+  for (UIView *v in textField.subviews) {
+    if ([v isKindOfClass:[UIButton class]]) {
+      UIButton *buttonClear = (UIButton *) v;
+      return buttonClear;
+    }
+  }
+
+  return nil;
+}
+
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+
+  [self tintClearButton];
+}
+
+- (void)tintClearButton
+{
+  if (self.clearButtonTintColor) {
+    UIButton *clearButton = [[self class] _findClearButton:self];
+
+    if (clearButton) {
+      if (!_clearButtonImagesUpdated) {
+        UIImage *imageNormal = [clearButton imageForState:UIControlStateNormal];
+        UIImage *imageHighlighted = [clearButton imageForState:UIControlStateHighlighted];
+
+        [clearButton setImage:[imageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
+        [clearButton setImage:[imageHighlighted imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateHighlighted];
+      }
+
+      clearButton.tintColor = self.clearButtonTintColor;
+    }
+  }
 }
 
 - (NSArray<UIView *> *)reactSubviews
