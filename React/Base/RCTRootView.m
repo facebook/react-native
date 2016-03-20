@@ -25,6 +25,7 @@
 #import "RCTUtils.h"
 #import "RCTView.h"
 #import "UIView+React.h"
+#import "RCTProfile.h"
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
@@ -37,8 +38,11 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
 @interface RCTRootContentView : RCTView <RCTInvalidating>
 
 @property (nonatomic, readonly) BOOL contentHasAppeared;
+@property (nonatomic, readonly, strong) RCTTouchHandler *touchHandler;
 
-- (instancetype)initWithFrame:(CGRect)frame bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame
+                       bridge:(RCTBridge *)bridge
+                     reactTag:(NSNumber *)reactTag NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -58,6 +62,8 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
   RCTAssert(bridge, @"A bridge instance is required to create an RCTRootView");
   RCTAssert(moduleName, @"A moduleName is required to create an RCTRootView");
 
+  RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTRootView init]", nil);
+
   if ((self = [super initWithFrame:CGRectZero])) {
 
     self.backgroundColor = [UIColor whiteColor];
@@ -70,6 +76,11 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeDidReload)
+                                                 name:RCTJavaScriptWillStartLoadingNotification
+                                               object:_bridge];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(javaScriptDidLoad:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:_bridge];
@@ -78,12 +89,16 @@ NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotificat
                                              selector:@selector(hideLoadingView)
                                                  name:RCTContentDidAppearNotification
                                                object:self];
+
     if (!_bridge.loading) {
       [self bundleFinishedLoading:_bridge.batchedBridge];
     }
 
     [self showLoadingView];
   }
+
+  RCT_PROFILE_END_EVENT(0, @"", nil);
+
   return self;
 }
 
@@ -157,6 +172,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (NSNumber *)reactTag
+{
+  RCTAssertMainThread();
+  if (!super.reactTag) {
+    /**
+     * Every root view that is created must have a unique react tag.
+     * Numbering of these tags goes from 1, 11, 21, 31, etc
+     *
+     * NOTE: Since the bridge persists, the RootViews might be reused, so the
+     * react tag must be re-assigned every time a new UIManager is created.
+     */
+    self.reactTag = [_bridge.uiManager allocateRootTag];
+  }
+  return super.reactTag;
+}
+
+- (void)bridgeDidReload
+{
+  RCTAssertMainThread();
+  // Clear the reactTag so it can be re-assigned
+  self.reactTag = nil;
+}
+
 - (void)javaScriptDidLoad:(NSNotification *)notification
 {
   RCTAssertMainThread();
@@ -171,11 +209,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 
   [_contentView removeFromSuperview];
-  _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds bridge:bridge];
+  _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
+                                                    bridge:bridge
+                                                  reactTag:self.reactTag];
+  [self runApplication:bridge];
+
   _contentView.backgroundColor = self.backgroundColor;
   [self insertSubview:_contentView atIndex:0];
-
-  [self runApplication:bridge];
 }
 
 - (void)runApplication:(RCTBridge *)bridge
@@ -239,11 +279,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }
 
-- (NSNumber *)reactTag
-{
-  return _contentView.reactTag;
-}
-
 - (void)contentViewInvalidated
 {
   [_contentView removeFromSuperview];
@@ -255,6 +290,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_contentView invalidate];
+}
+
+- (void)cancelTouches
+{
+  [[_contentView touchHandler] cancel];
 }
 
 @end
@@ -273,16 +313,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 @implementation RCTRootContentView
 {
   __weak RCTBridge *_bridge;
-  RCTTouchHandler *_touchHandler;
   UIColor *_backgroundColor;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
+                     reactTag:(NSNumber *)reactTag
 {
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;
-    [self setUp];
+    self.reactTag = reactTag;
+    _touchHandler = [[RCTTouchHandler alloc] initWithBridge:_bridge];
+    [self addGestureRecognizer:_touchHandler];
+    [_bridge.uiManager registerRootView:self];
     self.layer.backgroundColor = NULL;
   }
   return self;
@@ -323,20 +366,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
 - (UIColor *)backgroundColor
 {
   return _backgroundColor;
-}
-
-- (void)setUp
-{
-  /**
-   * Every root view that is created must have a unique react tag.
-   * Numbering of these tags goes from 1, 11, 21, 31, etc
-   *
-   * NOTE: Since the bridge persists, the RootViews might be reused, so now
-   * the react tag is assigned every time we load new content.
-   */
-  self.reactTag = [_bridge.uiManager allocateRootTag];
-  [self addGestureRecognizer:[[RCTTouchHandler alloc] initWithBridge:_bridge]];
-  [_bridge.uiManager registerRootView:self];
 }
 
 - (void)invalidate

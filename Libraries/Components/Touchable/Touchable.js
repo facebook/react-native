@@ -6,9 +6,9 @@
 
 var BoundingDimensions = require('BoundingDimensions');
 var Position = require('Position');
-var TouchEventUtils = require('TouchEventUtils');
+var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
 
-var keyMirror = require('keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 var queryLayoutByID = require('queryLayoutByID');
 
 /**
@@ -49,24 +49,24 @@ var queryLayoutByID = require('queryLayoutByID');
  *
  * - Choose the rendered component who's touches should start the interactive
  *   sequence. On that rendered node, forward all `Touchable` responder
- *   handlers. You can choose any rendered node you like. Choose a node who's
+ *   handlers. You can choose any rendered node you like. Choose a node whose
  *   hit target you'd like to instigate the interaction sequence:
  *
  *   // In render function:
  *   return (
- *     <div
+ *     <View
  *       onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
  *       onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
  *       onResponderGrant={this.touchableHandleResponderGrant}
  *       onResponderMove={this.touchableHandleResponderMove}
  *       onResponderRelease={this.touchableHandleResponderRelease}
  *       onResponderTerminate={this.touchableHandleResponderTerminate}>
- *       <div>
+ *       <View>
  *         Even though the hit detection/interactions are triggered by the
  *         wrapping (typically larger) node, we usually end up implementing
  *         custom logic that highlights this inner one.
- *       </div>
- *     </div>
+ *       </View>
+ *     </View>
  *   );
  *
  * - You may set up your own handlers for each of these events, so long as you
@@ -337,7 +337,7 @@ var TouchableMixin = {
    * Must return true to start the process of `Touchable`.
    */
   touchableHandleStartShouldSetResponder: function() {
-    return true;
+    return !this.props.disabled;
   },
 
   /**
@@ -431,6 +431,16 @@ var TouchableMixin = {
     var pressExpandTop = pressRectOffset.top;
     var pressExpandRight = pressRectOffset.right;
     var pressExpandBottom = pressRectOffset.bottom;
+
+    var hitSlop = this.touchableGetHitSlop ?
+      this.touchableGetHitSlop() : null;
+
+    if (hitSlop) {
+      pressExpandLeft += hitSlop.left;
+      pressExpandTop += hitSlop.top;
+      pressExpandRight += hitSlop.right;
+      pressExpandBottom += hitSlop.bottom;
+    }
 
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
@@ -589,18 +599,22 @@ var TouchableMixin = {
    * @sideeffects
    */
   _receiveSignal: function(signal, e) {
+    var responderID = this.state.touchable.responderID;
     var curState = this.state.touchable.touchState;
     var nextState = Transitions[curState] && Transitions[curState][signal];
+    if (!responderID && signal === Signals.RESPONDER_RELEASE) {
+      return;
+    }
     if (!nextState) {
       throw new Error(
         'Unrecognized signal `' + signal + '` or state `' + curState +
-        '` for Touchable responder `' + this.state.touchable.responderID + '`'
+        '` for Touchable responder `' + responderID + '`'
       );
     }
     if (nextState === States.ERROR) {
       throw new Error(
         'Touchable cannot transition from `' + curState + '` to `' + signal +
-        '` for responder `' + this.state.touchable.responderID + '`'
+        '` for responder `' + responderID + '`'
       );
     }
     if (curState !== nextState) {
@@ -623,7 +637,9 @@ var TouchableMixin = {
     var touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
     var pageX = touch && touch.pageX;
     var pageY = touch && touch.pageY;
-    this.pressInLocation = {pageX: pageX, pageY: pageY};
+    var locationX = touch && touch.locationX;
+    var locationY = touch && touch.locationY;
+    this.pressInLocation = {pageX, pageY, locationX, locationY};
   },
 
   _getDistanceBetweenPoints: function (aX, aY, bX, bY) {
@@ -668,7 +684,7 @@ var TouchableMixin = {
       this.touchableHandleActivePressIn && this.touchableHandleActivePressIn(e);
     } else if (!newIsHighlight && curIsHighlight && this.touchableHandleActivePressOut) {
       if (this.touchableGetPressOutDelayMS && this.touchableGetPressOutDelayMS()) {
-        this.pressOutDelayTimeout = this.setTimeout(function() {
+        this.pressOutDelayTimeout = setTimeout(() => {
           this.touchableHandleActivePressOut(e);
         }, this.touchableGetPressOutDelayMS());
       } else {

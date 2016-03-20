@@ -12,7 +12,7 @@
 'use strict';
 
 var StyleSheetRegistry = require('StyleSheetRegistry');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 
 import type { StyleObj } from 'StyleSheetTypes';
 

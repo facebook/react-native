@@ -61,6 +61,12 @@ RCT_EXTERN NSString *const RCTUIManagerRootViewKey;
 - (void)setFrame:(CGRect)frame forView:(UIView *)view;
 
 /**
+ * Set the natural size of a view, which is used when no explicit size is set.
+ * Use UIViewNoIntrinsicMetric to ignore a dimension.
+ */
+- (void)setIntrinsicContentSize:(CGSize)size forView:(UIView *)view;
+
+/**
  * Update the background color of a root view. This is usually triggered by
  * manually setting the background color of the root view with native code.
  */

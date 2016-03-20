@@ -78,9 +78,9 @@ public class UIViewOperationQueue {
 
   private final class UpdatePropertiesOperation extends ViewOperation {
 
-    private final CatalystStylesDiffMap mProps;
+    private final ReactStylesDiffMap mProps;
 
-    private UpdatePropertiesOperation(int tag, CatalystStylesDiffMap props) {
+    private UpdatePropertiesOperation(int tag, ReactStylesDiffMap props) {
       super(tag);
       mProps = props;
     }
@@ -127,13 +127,13 @@ public class UIViewOperationQueue {
 
     private final ThemedReactContext mThemedContext;
     private final String mClassName;
-    private final @Nullable CatalystStylesDiffMap mInitialProps;
+    private final @Nullable ReactStylesDiffMap mInitialProps;
 
     public CreateViewOperation(
         ThemedReactContext themedContext,
         int tag,
         String className,
-        @Nullable CatalystStylesDiffMap initialProps) {
+        @Nullable ReactStylesDiffMap initialProps) {
       super(tag);
       mThemedContext = themedContext;
       mClassName = className;
@@ -385,6 +385,38 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class MeasureInWindowOperation implements UIOperation {
+
+    private final int mReactTag;
+    private final Callback mCallback;
+
+    private MeasureInWindowOperation(
+        final int reactTag,
+        final Callback callback) {
+      super();
+      mReactTag = reactTag;
+      mCallback = callback;
+    }
+
+    @Override
+    public void execute() {
+      try {
+        mNativeViewHierarchyManager.measureInWindow(mReactTag, mMeasureBuffer);
+      } catch (NoSuchNativeViewException e) {
+        // Invoke with no args to signal failure and to allow JS to clean up the callback
+        // handle.
+        mCallback.invoke();
+        return;
+      }
+
+      float x = PixelUtil.toDIPFromPixel(mMeasureBuffer[0]);
+      float y = PixelUtil.toDIPFromPixel(mMeasureBuffer[1]);
+      float width = PixelUtil.toDIPFromPixel(mMeasureBuffer[2]);
+      float height = PixelUtil.toDIPFromPixel(mMeasureBuffer[3]);
+      mCallback.invoke(x, y, width, height);
+    }
+  }
+
   private ArrayList<UIOperation> mOperations = new ArrayList<>();
 
   private final class FindTargetForTouchOperation implements UIOperation {
@@ -567,7 +599,7 @@ public class UIViewOperationQueue {
       ThemedReactContext themedContext,
       int viewReactTag,
       String viewClassName,
-      @Nullable CatalystStylesDiffMap initialProps) {
+      @Nullable ReactStylesDiffMap initialProps) {
     mOperations.add(
         new CreateViewOperation(
             themedContext,
@@ -576,7 +608,7 @@ public class UIViewOperationQueue {
             initialProps));
   }
 
-  public void enqueueUpdateProperties(int reactTag, String className, CatalystStylesDiffMap props) {
+  public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
 
@@ -634,6 +666,14 @@ public class UIViewOperationQueue {
         new MeasureOperation(reactTag, callback));
   }
 
+  public void enqueueMeasureInWindow(
+      final int reactTag,
+      final Callback callback) {
+    mOperations.add(
+        new MeasureInWindowOperation(reactTag, callback)
+    );
+  }
+
   public void enqueueFindTargetForTouch(
       final int reactTag,
       final float targetX,
@@ -673,6 +713,10 @@ public class UIViewOperationQueue {
                      operations.get(i).execute();
                    }
                  }
+
+                 // Clear layout animation, as animation only apply to current UI operations batch.
+                 mNativeViewHierarchyManager.clearLayoutAnimation();
+
                  if (mViewHierarchyUpdateDebugListener != null) {
                    mViewHierarchyUpdateDebugListener.onViewHierarchyUpdateFinished();
                  }
@@ -723,9 +767,6 @@ public class UIViewOperationQueue {
           mDispatchUIRunnables.get(i).run();
         }
         mDispatchUIRunnables.clear();
-
-        // Clear layout animation, as animation only apply to current UI operations batch.
-        mNativeViewHierarchyManager.clearLayoutAnimation();
       }
 
       ReactChoreographer.getInstance().postFrameCallback(

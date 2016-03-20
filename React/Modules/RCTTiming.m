@@ -174,15 +174,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
     return;
   }
 
-  NSTimeInterval jsSchedulingOverhead = -jsSchedulingTime.timeIntervalSinceNow;
-  if (jsSchedulingOverhead < 0) {
-    RCTLogWarn(@"jsSchedulingOverhead (%ims) should be positive", (int)(jsSchedulingOverhead * 1000));
-
-    /**
-     * Probably debugging on device, set to 0 so we don't ignore the interval
-     */
-    jsSchedulingOverhead = 0;
-  }
+  NSTimeInterval jsSchedulingOverhead = MAX(-jsSchedulingTime.timeIntervalSinceNow, 0);
 
   NSTimeInterval targetTime = jsDuration - jsSchedulingOverhead;
   if (jsDuration < 0.018) { // Make sure short intervals run each frame

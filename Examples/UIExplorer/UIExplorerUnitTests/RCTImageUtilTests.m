@@ -46,19 +46,19 @@ RCTAssertEqualSizes(a.size, b.size); \
 
   {
     CGRect expected = {CGPointZero, {100, 20}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeStretch);
     RCTAssertEqualRects(expected, result);
   }
 
   {
-    CGRect expected = {CGPointZero, {100, 10}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFit);
+    CGRect expected = {{0, 5}, {100, 10}};
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeContain);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {{-50, 0}, {200, 20}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFill);
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeCover);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -70,19 +70,19 @@ RCTAssertEqualSizes(a.size, b.size); \
 
   {
     CGRect expected = {CGPointZero, {100, 20}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeStretch);
     RCTAssertEqualRects(expected, result);
   }
 
   {
-    CGRect expected = {CGPointZero, {2, 20}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFit);
+    CGRect expected = {{49, 0}, {2, 20}};
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeContain);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {{0, -490}, {100, 1000}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFill);
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeCover);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -94,19 +94,19 @@ RCTAssertEqualSizes(a.size, b.size); \
 
   {
     CGRect expected = {CGPointZero, {20, 50}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeStretch);
     RCTAssertEqualRects(expected, result);
   }
 
   {
-    CGRect expected = {CGPointZero, {5, 50}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFit);
+    CGRect expected = {{7,0}, {5, 50}};
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeContain);
     RCTAssertEqualRects(expected, result);
   }
 
   {
     CGRect expected = {{0, -75}, {20, 200}};
-    CGRect result = RCTTargetRect(content, target, 2, UIViewContentModeScaleAspectFill);
+    CGRect result = RCTTargetRect(content, target, 2, RCTResizeModeCover);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -118,7 +118,7 @@ RCTAssertEqualSizes(a.size, b.size); \
 
   {
     CGRect expected = {{0, -75}, {20, 200}};
-    CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleAspectFill);
+    CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeCover);
     RCTAssertEqualRects(expected, result);
   }
 }
@@ -129,8 +129,56 @@ RCTAssertEqualSizes(a.size, b.size); \
   CGSize target = {3, 3};
 
   CGRect expected = {CGPointZero, {3, 3}};
-  CGRect result = RCTTargetRect(content, target, 1, UIViewContentModeScaleToFill);
+  CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeStretch);
   RCTAssertEqualRects(expected, result);
+}
+
+- (void)testPlaceholderImage
+{
+  CGSize size = {45, 22};
+  CGFloat expectedScale = 1.0;
+  UIImage *image = RCTGetPlaceholderImage(size, nil);
+  RCTAssertEqualSizes(size, image.size);
+  XCTAssertEqual(expectedScale, image.scale);
+}
+
+- (void)testPlaceholderNonintegralSize
+{
+  CGSize size = {3.0/2, 7.0/3};
+  CGFloat expectedScale = 6;
+  CGSize pixelSize = {
+    round(size.width * expectedScale),
+    round(size.height * expectedScale)
+  };
+  UIImage *image = RCTGetPlaceholderImage(size, nil);
+  RCTAssertEqualSizes(size, image.size);
+  XCTAssertEqual(pixelSize.width, CGImageGetWidth(image.CGImage));
+  XCTAssertEqual(pixelSize.height, CGImageGetHeight(image.CGImage));
+  XCTAssertEqual(expectedScale, image.scale);
+}
+
+- (void)testPlaceholderSquareImage
+{
+  CGSize size = {333, 333};
+  CGFloat expectedScale = 1.0/333;
+  CGSize pixelSize = {1, 1};
+  UIImage *image = RCTGetPlaceholderImage(size, nil);
+  RCTAssertEqualSizes(size, image.size);
+  XCTAssertEqual(pixelSize.width, CGImageGetWidth(image.CGImage));
+  XCTAssertEqual(pixelSize.height, CGImageGetHeight(image.CGImage));
+  XCTAssertEqual(expectedScale, image.scale);
+}
+
+- (void)testPlaceholderNonsquareImage
+{
+  CGSize size = {640, 480};
+  CGFloat expectedScale = 1.0/160;
+  CGSize pixelSize = {4, 3};
+  UIImage *image = RCTGetPlaceholderImage(size, nil);
+  RCTAssertEqualSizes(size, image.size);
+  XCTAssertEqual(pixelSize.width, CGImageGetWidth(image.CGImage));
+  XCTAssertEqual(pixelSize.height, CGImageGetHeight(image.CGImage));
+  XCTAssertEqual(expectedScale, image.scale);
 }
 
 @end

@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.common.ReactConstants;
 
 import java.util.ArrayList;
@@ -43,28 +44,25 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   }
 
   private ClipboardManager getClipboardService() {
-    ReactApplicationContext reactContext = getReactApplicationContext(); 
-    return (ClipboardManager) reactContext.getSystemService(reactContext.CLIPBOARD_SERVICE);
+    return (ClipboardManager) getReactApplicationContext().getSystemService(getReactApplicationContext().CLIPBOARD_SERVICE);
   }
 
   @ReactMethod
-  public void getString(Callback cb) {
+  public void getString(Promise promise){
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
       if (clipData == null) {
-        cb.invoke("");
-        return;
+        promise.resolve("");
       }
       if (clipData.getItemCount() >= 1) {
         ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
-        String text = "" + firstItem.getText();
-        cb.invoke(text);
+        promise.resolve("" + firstItem.getText());
       } else {
-        cb.invoke("");
+        promise.resolve("");
       }
     } catch(Exception e) {
-      FLog.w(ReactConstants.TAG, "Cannot get clipboard contents: " + e.getMessage());
+      promise.reject(e);
     }
   }
 

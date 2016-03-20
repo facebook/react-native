@@ -52,7 +52,7 @@ function execute() {
     files: [],
   };
 
-  function handleMarkdown(content) {
+  function handleMarkdown(content, filename) {
     var metadata = {};
 
     // Extract markdown metadata header
@@ -77,6 +77,8 @@ function execute() {
     if (metadata.permalink.match(/^https?:/)) {
       return;
     }
+
+    metadata.filename = filename;
 
     // Create a dummy .js version that just calls the associated layout
     var layout = metadata.layout[0].toUpperCase() + metadata.layout.substr(1) + 'Layout';
@@ -105,14 +107,16 @@ function execute() {
     fs.writeFileSync(targetFile, content);
   }
 
-  extractDocs().forEach(handleMarkdown);
+  extractDocs().forEach(function(content) {
+    handleMarkdown(content, null);
+  });
 
   var files = glob.sync(MD_DIR + '**/*.*');
   files.forEach(function(file) {
     var extension = path.extname(file);
     if (extension === '.md' || extension === '.markdown') {
       var content = fs.readFileSync(file, {encoding: 'utf8'});
-      handleMarkdown(content);
+      handleMarkdown(content, path.basename(file));
     }
 
     if (extension === '.json') {
@@ -120,6 +124,17 @@ function execute() {
       metadatas[path.basename(file, '.json')] = JSON.parse(content);
     }
   });
+
+  // we need to pass globals for the components to be configurable
+  // metadata is generated in this process which has access to process.env
+  // but the web pages are generated in a sandbox context and have only access to CommonJS module files
+  metadatas.config = Object.create(null);
+  Object
+    .keys(process.env)
+    .filter(key => key.startsWith('RN_'))
+    .forEach((key) => {
+      metadatas.config[key] = process.env[key];
+    });
 
   fs.writeFileSync(
     'core/metadata.js',

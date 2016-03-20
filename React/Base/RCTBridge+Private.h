@@ -13,6 +13,10 @@
 
 @interface RCTBridge ()
 
+// Used for the profiler flow events between JS and native
+@property (nonatomic, assign) int64_t flowID;
+@property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
+
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
 
@@ -49,6 +53,16 @@
 @end
 
 @interface RCTBridge (RCTBatchedBridge)
+
+/**
+ * Used for unit testing, to detect when executor has been invalidated.
+ */
+@property (nonatomic, weak, readonly) id<RCTJavaScriptExecutor> javaScriptExecutor;
+
+/**
+ * Used by RCTModuleData
+ */
+@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 /**
  * Used by RCTModuleData to register the module for frame updates after it is

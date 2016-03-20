@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
@@ -32,6 +33,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     return REACT_CLASS;
   }
 
+  private ResourceDrawableIdHelper mResourceDrawableIdHelper;
   private @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
 
@@ -40,12 +42,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public ReactImageManager() {
     // Lazily initialize as FrescoModule have not been initialized yet
     mDraweeControllerBuilder = null;
     mCallerContext = null;
+    mResourceDrawableIdHelper = new ResourceDrawableIdHelper();
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {
@@ -70,13 +74,13 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   // In JS this is Image.props.source.uri
   @ReactProp(name = "src")
   public void setSource(ReactImageView view, @Nullable String source) {
-    view.setSource(source);
+    view.setSource(source, mResourceDrawableIdHelper);
   }
 
   // In JS this is Image.props.loadingIndicatorSource.uri
   @ReactProp(name = "loadingIndicatorSrc")
   public void setLoadingIndicatorSource(ReactImageView view, @Nullable String source) {
-    view.setLoadingIndicatorSource(source);
+    view.setLoadingIndicatorSource(source, mResourceDrawableIdHelper);
   }
 
   @ReactProp(name = "borderColor", customType = "Color")
@@ -85,6 +89,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
       view.setBorderColor(Color.TRANSPARENT);
     } else {
       view.setBorderColor(borderColor);
+    }
+  }
+
+  @ReactProp(name = "overlayColor")
+  public void setOverlayColor(ReactImageView view, @Nullable Integer overlayColor) {
+    if (overlayColor == null) {
+      view.setOverlayColor(Color.TRANSPARENT);
+    } else {
+      view.setOverlayColor(overlayColor);
     }
   }
 
@@ -108,7 +121,7 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     if (tintColor == null) {
       view.clearColorFilter();
     } else {
-      view.setColorFilter(tintColor);
+      view.setColorFilter(tintColor, Mode.SRC_IN);
     }
   }
 

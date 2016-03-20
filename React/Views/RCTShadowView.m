@@ -507,10 +507,6 @@ RCT_BORDER_PROPERTY(Right, RIGHT)
 
 RCT_DIMENSIONS_PROPERTY(Width, width, WIDTH, dimensions)
 RCT_DIMENSIONS_PROPERTY(Height, height, HEIGHT, dimensions)
-RCT_DIMENSIONS_PROPERTY(MinWidth, minWidth, WIDTH, minDimensions)
-RCT_DIMENSIONS_PROPERTY(MinHeight, minHeight, HEIGHT, minDimensions)
-RCT_DIMENSIONS_PROPERTY(MaxWidth, maxWidth, WIDTH, maxDimensions)
-RCT_DIMENSIONS_PROPERTY(MaxHeight, maxHeight, HEIGHT, maxDimensions)
 
 // Position
 
@@ -537,6 +533,29 @@ RCT_POSITION_PROPERTY(Left, left, LEFT)
   _cssNode->style.dimensions[CSS_WIDTH] = CGRectGetWidth(frame);
   _cssNode->style.dimensions[CSS_HEIGHT] = CGRectGetHeight(frame);
   [self dirtyLayout];
+}
+
+static inline BOOL
+RCTAssignSuggestedDimension(css_node_t *css_node, int dimension, CGFloat amount)
+{
+  if (amount != UIViewNoIntrinsicMetric
+      && isnan(css_node->style.dimensions[dimension])) {
+    css_node->style.dimensions[dimension] = amount;
+    return YES;
+  }
+  return NO;
+}
+
+- (void)setIntrinsicContentSize:(CGSize)size
+{
+  if (_cssNode->style.flex == 0) {
+    BOOL dirty = NO;
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSS_HEIGHT, size.height);
+    dirty |= RCTAssignSuggestedDimension(_cssNode, CSS_WIDTH, size.width);
+    if (dirty) {
+      [self dirtyLayout];
+    }
+  }
 }
 
 - (void)setTopLeft:(CGPoint)topLeft

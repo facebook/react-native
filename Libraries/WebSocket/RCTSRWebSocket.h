@@ -69,8 +69,8 @@ extern NSString *const RCTSRHTTPResponseErrorKey;
 
 // Delegate queue will be dispatch_main_queue by default.
 // You cannot set both OperationQueue and dispatch_queue.
-- (void)setDelegateOperationQueue:(NSOperationQueue*) queue;
-- (void)setDelegateDispatchQueue:(dispatch_queue_t) queue;
+- (void)setDelegateOperationQueue:(NSOperationQueue *)queue;
+- (void)setDelegateDispatchQueue:(dispatch_queue_t)queue;
 
 // By default, it will schedule itself on +[NSRunLoop RCTSR_networkRunLoop] using defaultModes.
 - (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode;

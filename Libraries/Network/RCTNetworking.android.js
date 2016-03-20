@@ -25,7 +25,7 @@ var generateRequestId = function() {
  */
 class RCTNetworking {
 
-  static sendRequest(method, url, headers, data, useIncrementalUpdates) {
+  static sendRequest(method, url, headers, data, useIncrementalUpdates, timeout) {
     var requestId = generateRequestId();
     RCTNetworkingNative.sendRequest(
       method,
@@ -33,7 +33,8 @@ class RCTNetworking {
       requestId,
       headers,
       data,
-      useIncrementalUpdates);
+      useIncrementalUpdates,
+      timeout);
     return requestId;
   }
 

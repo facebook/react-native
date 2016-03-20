@@ -76,7 +76,6 @@ project(':ReactAndroid').projectDir = new File(
 ...
 ```
 
-
 Modify your `android/app/build.gradle` to use the `:ReactAndroid` project instead of the pre-compiled library, e.g. - replace `compile 'com.facebook.react:react-native:0.16.+'` with `compile project(':ReactAndroid')`:
 
 ```gradle
@@ -92,7 +91,6 @@ dependencies {
 ...
 ```
 
-
 #### 4. Making 3rd-party modules use your fork
 
 If you use 3rd-party React Native modules, you need to override their dependencies so that they don't bundle the pre-compiled library. Otherwise you'll get an error while compiling - `Error: more than one library with package name 'com.facebook.react'`.
@@ -105,6 +103,11 @@ compile(project(':react-native-custom-module')) {
 }
 ```
 
+## Building from Android Studio
+
+From the Welcome screen of Android Studio choose "Import project" and select the `android` folder of your app.
+
+You should be able to use the _Run_ button to run your app on a device. Android Studio won't start the packager automatically, you'll need to start it by running `npm start` on the command line.
 
 ## Additional notes
 
@@ -117,3 +120,7 @@ gradle.projectsLoaded {
     }
 }
 ```
+
+## Troubleshooting
+
+Gradle build fails in `ndk-build`. See the section about `local.properties` file above.

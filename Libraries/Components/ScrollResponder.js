@@ -17,11 +17,12 @@ var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 var React = require('React');
 var Subscribable = require('Subscribable');
 var TextInputState = require('TextInputState');
+var UIManager = require('UIManager');
 
-var { UIManager, ScrollViewManager } = require('NativeModules');
+var { ScrollViewManager } = require('NativeModules');
 
-var invariant = require('invariant');
-var warning = require('warning');
+var invariant = require('fbjs/lib/invariant');
+var warning = require('fbjs/lib/warning');
 
 import type ReactComponent from 'ReactComponent';
 
@@ -347,24 +348,42 @@ var ScrollResponderMixin = {
   },
 
   /**
-   * A helper function to scroll to a specific point  in the scrollview.
-   * This is currently used to help focus on child textviews, but this
-   * can also be used to quickly scroll to any element we want to focus
+   * Returns the node that represents native view that can be scrolled.
+   * Components can pass what node to use by defining a `getScrollableNode`
+   * function otherwise `this` is used.
    */
-  scrollResponderScrollTo: function(offsetX: number, offsetY: number, animated: boolean = true) {
-    if (Platform.OS === 'android') {
-      UIManager.dispatchViewManagerCommand(
-        React.findNodeHandle(this),
-        UIManager.RCTScrollView.Commands[animated ? 'scrollTo' : 'scrollWithoutAnimationTo'],
-        [Math.round(offsetX), Math.round(offsetY)],
-      );
+  scrollResponderGetScrollableNode: function(): any {
+    return this.getScrollableNode ?
+      this.getScrollableNode() :
+      React.findNodeHandle(this);
+  },
+
+  /**
+   * A helper function to scroll to a specific point  in the scrollview.
+   * This is currently used to help focus on child textviews, but can also
+   * be used to quickly scroll to any element we want to focus. Syntax:
+   *
+   * scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})
+   *
+   * Note: The weird argument signature is due to the fact that, for historical reasons,
+   * the function also accepts separate arguments as as alternative to the options object.
+   * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
+   */
+  scrollResponderScrollTo: function(
+    x?: number | { x?: number; y?: number; animated?: boolean },
+    y?: number,
+    animated?: boolean
+  ) {
+    if (typeof x === 'number') {
+      console.warn('`scrollResponderScrollTo(x, y, animated)` is deprecated. Use `scrollResponderScrollTo({x: 5, y: 5, animated: true})` instead.');
     } else {
-      ScrollViewManager.scrollTo(
-        React.findNodeHandle(this),
-        { x: offsetX, y: offsetY },
-        animated
-      );
+      ({x, y, animated} = x || {});
     }
+    UIManager.dispatchViewManagerCommand(
+      this.scrollResponderGetScrollableNode(),
+      UIManager.RCTScrollView.Commands.scrollTo,
+      [x || 0, y || 0, animated !== false],
+    );
   },
 
   /**
@@ -372,19 +391,28 @@ var ScrollResponderMixin = {
    */
   scrollResponderScrollWithoutAnimationTo: function(offsetX: number, offsetY: number) {
     console.warn('`scrollResponderScrollWithoutAnimationTo` is deprecated. Use `scrollResponderScrollTo` instead');
-    self.scrollResponderScrollTo(offsetX, offsetY, false);
+    this.scrollResponderScrollTo({x: offsetX, y: offsetY, animated: false});
   },
 
   /**
-   * A helper function to zoom to a specific rect in the scrollview.
-   * @param {object} rect Should have shape {x, y, width, height}
-   * @param {bool} animated Specify whether zoom is instant or animated
+   * A helper function to zoom to a specific rect in the scrollview. The argument has the shape
+   * {x: number; y: number; width: number; height: number; animated: boolean = true}
+   *
+   * @platform ios
    */
-  scrollResponderZoomTo: function(rect: { x: number; y: number; width: number; height: number; }, animated: boolean = true) {
+  scrollResponderZoomTo: function(
+    rect: { x: number; y: number; width: number; height: number; animated?: boolean },
+    animated?: boolean // deprecated, put this inside the rect argument instead
+  ) {
     if (Platform.OS === 'android') {
       invariant('zoomToRect is not implemented');
     } else {
-      ScrollViewManager.zoomToRect(React.findNodeHandle(this), rect, animated);
+      if ('animated' in rect) {
+        var { animated, ...rect } = rect;
+      } else if (typeof animated !== 'undefined') {
+        console.warn('`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead');
+      }
+      ScrollViewManager.zoomToRect(this.scrollResponderGetScrollableNode(), rect, animated !== false);
     }
   },
 
@@ -433,7 +461,7 @@ var ScrollResponderMixin = {
     if (this.preventNegativeScrollOffset) {
       scrollOffsetY = Math.max(0, scrollOffsetY);
     }
-    this.scrollResponderScrollTo(0, scrollOffsetY);
+    this.scrollResponderScrollTo({x: 0, y: scrollOffsetY, animated: true});
 
     this.additionalOffset = 0;
     this.preventNegativeScrollOffset = false;

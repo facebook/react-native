@@ -64,7 +64,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final Set<TypeName> BOXED_PRIMITIVES;
 
   private static final TypeName PROPS_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "CatalystStylesDiffMap");
+      ClassName.get("com.facebook.react.uimanager", "ReactStylesDiffMap");
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);

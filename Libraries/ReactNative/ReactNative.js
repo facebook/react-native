@@ -27,9 +27,9 @@ var ReactPropTypes = require('ReactPropTypes');
 var ReactUpdates = require('ReactUpdates');
 
 var findNodeHandle = require('findNodeHandle');
-var invariant = require('invariant');
+var invariant = require('fbjs/lib/invariant');
 var onlyChild = require('onlyChild');
-var warning = require('warning');
+var warning = require('fbjs/lib/warning');
 
 ReactNativeDefaultInjection.inject();
 
@@ -84,6 +84,7 @@ var ReactNative = {
     map: ReactChildren.map,
     forEach: ReactChildren.forEach,
     count: ReactChildren.count,
+    toArray: ReactChildren.toArray,
     only: onlyChild
   },
   Component: ReactComponent,

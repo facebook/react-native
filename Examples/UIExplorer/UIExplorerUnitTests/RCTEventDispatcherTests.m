@@ -18,25 +18,42 @@
 #import <OCMock/OCMock.h>
 #import "RCTEventDispatcher.h"
 
-@interface RCTTestEvent : RCTBaseEvent
-
-@property (nonatomic, assign) BOOL canCoalesce;
-
+@interface RCTTestEvent : NSObject  <RCTEvent>
+@property (atomic, assign, readwrite) BOOL canCoalesce;
 @end
 
 @implementation RCTTestEvent
+{
+  NSDictionary<NSString *, id> *_body;
+}
+
+@synthesize viewTag = _viewTag;
+@synthesize eventName = _eventName;
 
 - (instancetype)initWithViewTag:(NSNumber *)viewTag eventName:(NSString *)eventName body:(NSDictionary<NSString *, id> *)body
 {
-  if (self = [super initWithViewTag:viewTag eventName:eventName body:body]) {
-    self.canCoalesce = YES;
+  if (self = [super init]) {
+    _viewTag = viewTag;
+    _eventName = eventName;
+    _body = body;
+    _canCoalesce = YES;
   }
   return self;
+}
+
+- (id<RCTEvent>)coalesceWithEvent:(id<RCTEvent>)newEvent
+{
+  return newEvent;
 }
 
 + (NSString *)moduleDotMethod
 {
   return @"RCTDeviceEventEmitter.emit";
+}
+
+- (NSArray *)arguments
+{
+  return @[_eventName, _body];
 }
 
 @end
@@ -76,7 +93,7 @@
 - (void)testLegacyEventsAreImmediatelyDispatched
 {
   [[_bridge expect] enqueueJSCall:_JSMethod
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [_eventDispatcher sendDeviceEventWithName:_eventName body:_body];
 
@@ -87,7 +104,7 @@
 {
   _testEvent.canCoalesce = NO;
   [[_bridge expect] enqueueJSCall:_JSMethod
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [_eventDispatcher sendEvent:_testEvent];
 
@@ -97,12 +114,29 @@
 - (void)testCoalescedEventShouldBeDispatchedOnFrameUpdate
 {
   [_eventDispatcher sendEvent:_testEvent];
-
+  [_bridge verify];
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 
+  [_bridge verify];
+}
+
+- (void)testNonCoalescingEventForcesColescedEventsToBeImmediatelyDispatched
+{
+  RCTTestEvent *nonCoalescingEvent = [[RCTTestEvent alloc] initWithViewTag:nil
+                                                                 eventName:_eventName
+                                                                      body:@{}];
+  nonCoalescingEvent.canCoalesce = NO;
+  [_eventDispatcher sendEvent:_testEvent];
+
+  [[_bridge expect] enqueueJSCall:[[_testEvent class] moduleDotMethod]
+                             args:[_testEvent arguments]];
+  [[_bridge expect] enqueueJSCall:[[nonCoalescingEvent class] moduleDotMethod]
+                             args:[nonCoalescingEvent arguments]];
+
+  [_eventDispatcher sendEvent:nonCoalescingEvent];
   [_bridge verify];
 }
 
@@ -116,7 +150,7 @@
   [_eventDispatcher sendEvent:_testEvent];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 
@@ -134,10 +168,10 @@
   [_eventDispatcher sendEvent:_testEvent];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[firstEventName, _body]];
+                             args:[firstEvent arguments]];
 
   [[_bridge expect] enqueueJSCall:@"RCTDeviceEventEmitter.emit"
-                             args:@[_eventName, _body]];
+                             args:[_testEvent arguments]];
 
   [(id<RCTFrameUpdateObserver>)_eventDispatcher didUpdateFrame:nil];
 

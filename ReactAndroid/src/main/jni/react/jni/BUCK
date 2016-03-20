@@ -1,0 +1,82 @@
+include_defs('//ReactAndroid/DEFS')
+
+# We depend on JSC, support the same platforms
+SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
+
+DEPS = [
+  FBGLOGINIT_TARGET,
+  '//native/jni:jni',
+  '//native/third-party/android-ndk:android',
+  '//xplat/folly:molly',
+]
+
+def jni_library(**kwargs):
+  cxx_library(
+    name='jni',
+    visibility = [
+      'PUBLIC',
+    ],
+    deps = DEPS + JSC_DEPS + [
+      react_native_target('jni/react:react'),
+    ],
+    **kwargs
+  )
+
+  cxx_library(
+    name='jni-internal',
+    visibility = [INTERNAL_APP],
+    deps = DEPS + JSC_INTERNAL_DEPS + [
+      react_native_target('jni/react:react-internal'),
+    ],
+    **kwargs
+  )
+
+jni_library(
+  soname = 'libreactnativejni.so',
+  header_namespace = 'react/jni',
+  supported_platforms_regex = SUPPORTED_PLATFORMS,
+  srcs = [
+    'JExecutorToken.cpp',
+    'JMessageQueueThread.cpp',
+    'JSCPerfLogging.cpp',
+    'JSLoader.cpp',
+    'JniJSModulesUnbundle.cpp',
+    'NativeArray.cpp',
+    'OnLoad.cpp',
+    'ProxyExecutor.cpp',
+    'JSLogging.cpp',
+  ],
+  headers = [
+    'JSLoader.h',
+    'JExecutorToken.h',
+    'JExecutorTokenFactory.h',
+    'JMessageQueueThread.h',
+    'JNativeRunnable.h',
+    'JniJSModulesUnbundle.h',
+    'JSCPerfLogging.h',
+    'JSLogging.h',
+    'ProxyExecutor.h',
+    'WebWorkers.h',
+  ],
+  exported_headers = [
+    'NativeArray.h',
+    'ReadableNativeArray.h',
+  ],
+  preprocessor_flags = [
+    '-DLOG_TAG="ReactNativeJNI"',
+    '-DWITH_FBSYSTRACE=1',
+    '-DWITH_FBJSCEXTENSIONS=1',
+  ],
+  compiler_flags = [
+    '-Wall',
+    '-Werror',
+    '-fexceptions',
+    '-std=c++11',
+    '-fvisibility=hidden',
+    '-frtti',
+  ],
+)
+
+project_config(
+  src_target = ':jni',
+)

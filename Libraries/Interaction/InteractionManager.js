@@ -16,8 +16,8 @@ const EventEmitter = require('EventEmitter');
 const Set = require('Set');
 const TaskQueue = require('TaskQueue');
 
-const invariant = require('invariant');
-const keyMirror = require('keyMirror');
+const invariant = require('fbjs/lib/invariant');
+const keyMirror = require('fbjs/lib/keyMirror');
 const setImmediate = require('setImmediate');
 
 type Handle = number;

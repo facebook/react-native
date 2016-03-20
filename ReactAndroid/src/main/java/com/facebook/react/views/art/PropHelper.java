@@ -12,7 +12,7 @@ package com.facebook.react.views.art;
 import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.uimanager.CatalystStylesDiffMap;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 
 /**
  * Contains static helper methods for accessing props.

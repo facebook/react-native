@@ -72,7 +72,7 @@ out of the box than `Navigator`. The reason for this is that the
 animations for the transitions are done entirely on the main thread, and
 so they are not interrupted by frame drops on the JavaScript thread.
 ([Read about why you should probably use Navigator
-anyways.](/react-native/docs/navigator-comparison.html))
+anyways.](docs/navigator-comparison.html))
 
 Similarly, you can happily scroll up and down through a ScrollView when
 the JavaScript thread is locked up because the ScrollView lives on the
@@ -257,7 +257,6 @@ where the modal was opened from. See the Animations guide for more
 information about how to use LayoutAnimation.
 
 Caveats:
-- LayoutAnimation only exists on iOS.
 - LayoutAnimation only works for fire-and-forget animations ("static"
   animations) -- if it must be be interruptible, you will need to use
 Animated.

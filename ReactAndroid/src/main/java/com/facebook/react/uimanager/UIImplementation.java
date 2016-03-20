@@ -141,9 +141,9 @@ public class UIImplementation {
 
     mShadowNodeRegistry.addNode(cssNode);
 
-    CatalystStylesDiffMap styles = null;
+    ReactStylesDiffMap styles = null;
     if (props != null) {
-      styles = new CatalystStylesDiffMap(props);
+      styles = new ReactStylesDiffMap(props);
       cssNode.updateProperties(styles);
     }
 
@@ -153,7 +153,7 @@ public class UIImplementation {
   protected void handleCreateView(
       ReactShadowNode cssNode,
       int rootViewTag,
-      @Nullable CatalystStylesDiffMap styles) {
+      @Nullable ReactStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
       mNativeViewHierarchyOptimizer.handleCreateView(cssNode, cssNode.getThemedContext(), styles);
     }
@@ -173,7 +173,7 @@ public class UIImplementation {
     }
 
     if (props != null) {
-      CatalystStylesDiffMap styles = new CatalystStylesDiffMap(props);
+      ReactStylesDiffMap styles = new ReactStylesDiffMap(props);
       cssNode.updateProperties(styles);
       handleUpdateView(cssNode, className, styles);
     }
@@ -182,7 +182,7 @@ public class UIImplementation {
   protected void handleUpdateView(
       ReactShadowNode cssNode,
       String className,
-      CatalystStylesDiffMap styles) {
+      ReactStylesDiffMap styles) {
     if (!cssNode.isVirtual()) {
       mNativeViewHierarchyOptimizer.handleUpdateView(cssNode, className, styles);
     }
@@ -380,8 +380,8 @@ public class UIImplementation {
   }
 
   /**
-   * Determines the location on screen, width, and height of the given view and returns the values
-   * via an async callback.
+   * Determines the location on screen, width, and height of the given view relative to the root
+   * view and returns the values via an async callback.
    */
   public void measure(int reactTag, Callback callback) {
     // This method is called by the implementation of JS touchable interface (see Touchable.js for
@@ -389,6 +389,15 @@ public class UIImplementation {
     // a touchable view with a given reactTag, or when user drag finger back into the press
     // activation area of a touchable view that have been activated before.
     mOperationsQueue.enqueueMeasure(reactTag, callback);
+  }
+
+  /**
+   * Determines the location on screen, width, and height of the given view relative to the device
+   * screen and returns the values via an async callback.  This is the absolute position including
+   * things like the status bar
+   */
+  public void measureInWindow(int reactTag, Callback callback) {
+    mOperationsQueue.enqueueMeasureInWindow(reactTag, callback);
   }
 
   /**
@@ -437,6 +446,12 @@ public class UIImplementation {
    * Invoked at the end of the transaction to commit any updates to the node hierarchy.
    */
   public void dispatchViewUpdates(EventDispatcher eventDispatcher, int batchId) {
+    updateViewHierarchy(eventDispatcher);
+    mNativeViewHierarchyOptimizer.onBatchComplete();
+    mOperationsQueue.dispatchViewUpdates(batchId);
+  }
+
+  protected void updateViewHierarchy(EventDispatcher eventDispatcher) {
     for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
       int tag = mShadowNodeRegistry.getRootTag(i);
       ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
@@ -445,9 +460,6 @@ public class UIImplementation {
       calculateRootLayout(cssRoot);
       applyUpdatesRecursive(cssRoot, 0f, 0f, eventDispatcher);
     }
-
-    mNativeViewHierarchyOptimizer.onBatchComplete();
-    mOperationsQueue.dispatchViewUpdates(batchId);
   }
 
   /**

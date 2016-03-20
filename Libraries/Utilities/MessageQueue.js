@@ -16,9 +16,10 @@
 let Systrace = require('Systrace');
 let ErrorUtils = require('ErrorUtils');
 let JSTimersExecution = require('JSTimersExecution');
+let Platform = require('Platform');
 
-let invariant = require('invariant');
-let keyMirror = require('keyMirror');
+let invariant = require('fbjs/lib/invariant');
+let keyMirror = require('fbjs/lib/keyMirror');
 let stringifySafe = require('stringifySafe');
 
 let MODULE_IDS = 0;
@@ -110,7 +111,7 @@ class MessageQueue {
 
   processModuleConfig(config, moduleID) {
     const module = this._genModule(config, moduleID);
-    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable)
+    this._genLookup(config, moduleID, this._remoteModuleTable, this._remoteMethodTable);
     return module;
   }
 
@@ -318,10 +319,17 @@ class MessageQueue {
     if (type === MethodTypes.remoteAsync) {
       fn = function(...args) {
         return new Promise((resolve, reject) => {
-          self.__nativeCall(module, method, args, resolve, (errorData) => {
-            var error = createErrorFromErrorData(errorData);
-            reject(error);
-          });
+          self.__nativeCall(
+            module,
+            method,
+            args,
+            (data) => {
+              resolve(data);
+            },
+            (errorData) => {
+              var error = createErrorFromErrorData(errorData);
+              reject(error);
+            });
         });
       };
     } else {

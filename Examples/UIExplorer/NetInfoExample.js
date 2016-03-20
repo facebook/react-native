@@ -134,8 +134,8 @@ const IsConnectionExpensive = React.createClass({
     };
   },
   _checkIfExpensive() {
-    NetInfo.isConnectionExpensive(
-        (isConnectionExpensive) => { this.setState({isConnectionExpensive}); }
+    NetInfo.isConnectionExpensive().then(
+        isConnectionExpensive => { this.setState({isConnectionExpensive}); }
     );
   },
   render() {

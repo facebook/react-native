@@ -61,6 +61,17 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
   }
 
   /**
+   * Returns the launchOptions which will be passed to the {@link ReactInstanceManager}
+   * when the application is started. By default, this will return null and an empty
+   * object will be passed to your top level component as its initial props.
+   * If your React Native application requires props set outside of JS, override
+   * this method to return the Android.os.Bundle of your desired initial props.
+   */
+  protected @Nullable Bundle getLaunchOptions() {
+    return null;
+  }
+
+  /**
    * Returns the name of the main component registered from JavaScript.
    * This is used to schedule rendering of the component.
    * e.g. "MoviesApp"
@@ -128,7 +139,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
 
     mReactInstanceManager = createReactInstanceManager();
     ReactRootView mReactRootView = createRootView();
-    mReactRootView.startReactApplication(mReactInstanceManager, getMainComponentName());
+    mReactRootView.startReactApplication(mReactInstanceManager, getMainComponentName(), getLaunchOptions());
     setContentView(mReactRootView);
   }
 
@@ -139,7 +150,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
     mLifecycleState = LifecycleState.BEFORE_RESUME;
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onPause();
+      mReactInstanceManager.onHostPause();
     }
   }
 
@@ -150,7 +161,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
     mLifecycleState = LifecycleState.RESUMED;
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onResume(this, this);
+      mReactInstanceManager.onHostResume(this, this);
     }
   }
 
@@ -159,7 +170,7 @@ public abstract class ReactActivity extends Activity implements DefaultHardwareB
     super.onDestroy();
 
     if (mReactInstanceManager != null) {
-      mReactInstanceManager.onDestroy();
+      mReactInstanceManager.destroy();
     }
   }
 
