@@ -28,6 +28,9 @@ close
 comment {author} tells me to close this issue. If you think it should still be opened let us know why.
 close
 
+@facebook-github-bot bugfix
+Hey {issue_author}, if you're sure this is a bug can you send a PR with a fix? We're a small team and rely on the community to fix issues that don't affect fb apps.
+
 @facebook-github-bot reopen
 comment Okay, reopening this issue.
 reopen
