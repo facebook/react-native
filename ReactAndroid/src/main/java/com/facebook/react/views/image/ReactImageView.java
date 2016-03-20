@@ -295,7 +295,6 @@ public class ReactImageView extends GenericDraweeView {
     ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(mUri)
         .setPostprocessor(postprocessor)
         .setResizeOptions(resizeOptions)
-        .setAutoRotateEnabled(true)
         .setProgressiveRenderingEnabled(mProgressiveRenderingEnabled)
         .build();
 
