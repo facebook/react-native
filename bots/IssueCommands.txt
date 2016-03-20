@@ -31,3 +31,7 @@ close
 @facebook-github-bot reopen
 comment Okay, reopening this issue.
 reopen
+
+@facebook-github-bot feature
+comment Hey {issue_author}! Thanks for opening the issue, but we are closing it because it looks like a feature request. If this can't be implemented as a standalone [npm](https://npmjs.org) module free to send us a Pull Request or create an entry on [Product Pains](https://productpains.com/product/react-native). It has a voting system and if the feature gets upvoted enough it might get implemented.'
+feature
